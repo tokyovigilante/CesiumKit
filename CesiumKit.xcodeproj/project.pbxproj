@@ -7,6 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		943999461930418C00012DC4 /* CSCartographic.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999051930418C00012DC4 /* CSCartographic.m */; };
+		943999471930418C00012DC4 /* CSSpherical.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999091930418C00012DC4 /* CSSpherical.m */; };
+		943999481930418C00012DC4 /* CSEllipsoid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990B1930418C00012DC4 /* CSEllipsoid.m */; };
+		943999491930418C00012DC4 /* CSCartesian2.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990C1930418C00012DC4 /* CSCartesian2.m */; };
+		9439994A1930418C00012DC4 /* CSRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990D1930418C00012DC4 /* CSRectangle.m */; };
+		9439994B1930418C00012DC4 /* CSProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990F1930418C00012DC4 /* CSProjection.m */; };
+		9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999101930418C00012DC4 /* CSMatrix4.m */; };
+		9439994D1930418C00012DC4 /* CSBoundingRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999111930418C00012DC4 /* CSBoundingRectangle.m */; };
+		9439994E1930418C00012DC4 /* CSMath.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999131930418C00012DC4 /* CSMath.m */; };
+		9439994F1930418C00012DC4 /* CSCartesian3.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999151930418C00012DC4 /* CSCartesian3.m */; };
+		943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */; };
+		943999511930418C00012DC4 /* CSQuarternion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991E1930418C00012DC4 /* CSQuarternion.m */; };
+		943999521930418C00012DC4 /* CSGeographicProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999201930418C00012DC4 /* CSGeographicProjection.m */; };
+		943999531930418C00012DC4 /* CSVertexFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999211930418C00012DC4 /* CSVertexFormat.m */; };
+		943999541930418C00012DC4 /* CSInterval.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999221930418C00012DC4 /* CSInterval.m */; };
+		943999551930418C00012DC4 /* CSCartesian4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999231930418C00012DC4 /* CSCartesian4.m */; };
+		943999561930418C00012DC4 /* CSWebMercatorProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999251930418C00012DC4 /* CSWebMercatorProjection.m */; };
+		943999571930418C00012DC4 /* CSRay.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999281930418C00012DC4 /* CSRay.m */; };
+		943999581930418C00012DC4 /* CSRenderState.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439992F1930418C00012DC4 /* CSRenderState.m */; };
+		943999591930418C00012DC4 /* CSContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999331930418C00012DC4 /* CSContext.m */; };
+		9439995B1930418C00012DC4 /* CSDrawCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999351930418C00012DC4 /* CSDrawCommand.m */; };
+		9439995C1930418C00012DC4 /* CSUniformState.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999361930418C00012DC4 /* CSUniformState.m */; };
+		9439995D1930418C00012DC4 /* CSPassState.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999371930418C00012DC4 /* CSPassState.m */; };
+		9439995E1930418C00012DC4 /* CSScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999391930418C00012DC4 /* CSScene.m */; };
+		9439995F1930418C00012DC4 /* CSPrimitives.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439993B1930418C00012DC4 /* CSPrimitives.m */; };
+		943999601930418C00012DC4 /* CSCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439993C1930418C00012DC4 /* CSCamera.m */; };
+		943999611930418C00012DC4 /* CSPerspectiveFrustum.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439993E1930418C00012DC4 /* CSPerspectiveFrustum.m */; };
+		943999621930418C00012DC4 /* CSFrameState.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439993F1930418C00012DC4 /* CSFrameState.m */; };
+		943999631930418C00012DC4 /* CSFrustum.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999421930418C00012DC4 /* CSFrustum.m */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
 		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
@@ -42,6 +71,66 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
+		943999051930418C00012DC4 /* CSCartographic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartographic.m; sourceTree = "<group>"; };
+		943999061930418C00012DC4 /* CSCartesian4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian4.h; sourceTree = "<group>"; };
+		943999071930418C00012DC4 /* CSInterval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSInterval.h; sourceTree = "<group>"; };
+		943999081930418C00012DC4 /* CSWebMercatorProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWebMercatorProjection.h; sourceTree = "<group>"; };
+		943999091930418C00012DC4 /* CSSpherical.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSpherical.m; sourceTree = "<group>"; };
+		9439990A1930418C00012DC4 /* CSRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRay.h; sourceTree = "<group>"; };
+		9439990B1930418C00012DC4 /* CSEllipsoid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoid.m; sourceTree = "<group>"; };
+		9439990C1930418C00012DC4 /* CSCartesian2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian2.m; sourceTree = "<group>"; };
+		9439990D1930418C00012DC4 /* CSRectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRectangle.m; sourceTree = "<group>"; };
+		9439990E1930418C00012DC4 /* CSProjection+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CSProjection+Private.h"; sourceTree = "<group>"; };
+		9439990F1930418C00012DC4 /* CSProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSProjection.m; sourceTree = "<group>"; };
+		943999101930418C00012DC4 /* CSMatrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSMatrix4.m; sourceTree = "<group>"; };
+		943999111930418C00012DC4 /* CSBoundingRectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSBoundingRectangle.m; sourceTree = "<group>"; };
+		943999121930418C00012DC4 /* CSEllipsoidGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidGeometry.h; sourceTree = "<group>"; };
+		943999131930418C00012DC4 /* CSMath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSMath.m; sourceTree = "<group>"; };
+		943999141930418C00012DC4 /* CSGeographicProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGeographicProjection.h; sourceTree = "<group>"; };
+		943999151930418C00012DC4 /* CSCartesian3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian3.m; sourceTree = "<group>"; };
+		943999161930418C00012DC4 /* CSQuarternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSQuarternion.h; sourceTree = "<group>"; };
+		943999171930418C00012DC4 /* CSCartesian2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian2.h; sourceTree = "<group>"; };
+		943999181930418C00012DC4 /* CSRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRectangle.h; sourceTree = "<group>"; };
+		943999191930418C00012DC4 /* CSBoundingRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSBoundingRectangle.h; sourceTree = "<group>"; };
+		9439991A1930418C00012DC4 /* CSMatrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMatrix4.h; sourceTree = "<group>"; };
+		9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidGeometry.m; sourceTree = "<group>"; };
+		9439991C1930418C00012DC4 /* CSProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSProjection.h; sourceTree = "<group>"; };
+		9439991D1930418C00012DC4 /* CSCartesian3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian3.h; sourceTree = "<group>"; };
+		9439991E1930418C00012DC4 /* CSQuarternion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSQuarternion.m; sourceTree = "<group>"; };
+		9439991F1930418C00012DC4 /* CSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMath.h; sourceTree = "<group>"; };
+		943999201930418C00012DC4 /* CSGeographicProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSGeographicProjection.m; sourceTree = "<group>"; };
+		943999211930418C00012DC4 /* CSVertexFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVertexFormat.m; sourceTree = "<group>"; };
+		943999221930418C00012DC4 /* CSInterval.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSInterval.m; sourceTree = "<group>"; };
+		943999231930418C00012DC4 /* CSCartesian4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian4.m; sourceTree = "<group>"; };
+		943999241930418C00012DC4 /* CSCartographic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartographic.h; sourceTree = "<group>"; };
+		943999251930418C00012DC4 /* CSWebMercatorProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSWebMercatorProjection.m; sourceTree = "<group>"; };
+		943999261930418C00012DC4 /* CSIndexDataType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSIndexDataType.h; sourceTree = "<group>"; };
+		943999271930418C00012DC4 /* CSSpherical.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSpherical.h; sourceTree = "<group>"; };
+		943999281930418C00012DC4 /* CSRay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRay.m; sourceTree = "<group>"; };
+		943999291930418C00012DC4 /* CSEllipsoid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoid.h; sourceTree = "<group>"; };
+		9439992C1930418C00012DC4 /* CSDrawCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSDrawCommand.h; sourceTree = "<group>"; };
+		9439992D1930418C00012DC4 /* CSPassState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPassState.h; sourceTree = "<group>"; };
+		9439992E1930418C00012DC4 /* CSUniformState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUniformState.h; sourceTree = "<group>"; };
+		9439992F1930418C00012DC4 /* CSRenderState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRenderState.m; sourceTree = "<group>"; };
+		943999301930418C00012DC4 /* CSContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSContext.h; sourceTree = "<group>"; };
+		943999321930418C00012DC4 /* CSRenderState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRenderState.h; sourceTree = "<group>"; };
+		943999331930418C00012DC4 /* CSContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSContext.m; sourceTree = "<group>"; };
+		943999351930418C00012DC4 /* CSDrawCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSDrawCommand.m; sourceTree = "<group>"; };
+		943999361930418C00012DC4 /* CSUniformState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSUniformState.m; sourceTree = "<group>"; };
+		943999371930418C00012DC4 /* CSPassState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSPassState.m; sourceTree = "<group>"; };
+		943999391930418C00012DC4 /* CSScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSScene.m; sourceTree = "<group>"; };
+		9439993A1930418C00012DC4 /* CSFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSFrustum.h; sourceTree = "<group>"; };
+		9439993B1930418C00012DC4 /* CSPrimitives.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSPrimitives.m; sourceTree = "<group>"; };
+		9439993C1930418C00012DC4 /* CSCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCamera.m; sourceTree = "<group>"; };
+		9439993D1930418C00012DC4 /* CSFrameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSFrameState.h; sourceTree = "<group>"; };
+		9439993E1930418C00012DC4 /* CSPerspectiveFrustum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSPerspectiveFrustum.m; sourceTree = "<group>"; };
+		9439993F1930418C00012DC4 /* CSFrameState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSFrameState.m; sourceTree = "<group>"; };
+		943999401930418C00012DC4 /* CSPerspectiveFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPerspectiveFrustum.h; sourceTree = "<group>"; };
+		943999411930418C00012DC4 /* CSScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSScene.h; sourceTree = "<group>"; };
+		943999421930418C00012DC4 /* CSFrustum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSFrustum.m; sourceTree = "<group>"; };
+		943999431930418C00012DC4 /* CSPrimitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPrimitives.h; sourceTree = "<group>"; };
+		943999441930418C00012DC4 /* CSCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCamera.h; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -78,6 +167,101 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		943999031930418C00012DC4 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				943999191930418C00012DC4 /* CSBoundingRectangle.h */,
+				943999111930418C00012DC4 /* CSBoundingRectangle.m */,
+				943999171930418C00012DC4 /* CSCartesian2.h */,
+				9439990C1930418C00012DC4 /* CSCartesian2.m */,
+				9439991D1930418C00012DC4 /* CSCartesian3.h */,
+				943999151930418C00012DC4 /* CSCartesian3.m */,
+				943999061930418C00012DC4 /* CSCartesian4.h */,
+				943999231930418C00012DC4 /* CSCartesian4.m */,
+				943999241930418C00012DC4 /* CSCartographic.h */,
+				943999051930418C00012DC4 /* CSCartographic.m */,
+				943999291930418C00012DC4 /* CSEllipsoid.h */,
+				9439990B1930418C00012DC4 /* CSEllipsoid.m */,
+				943999121930418C00012DC4 /* CSEllipsoidGeometry.h */,
+				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
+				943999141930418C00012DC4 /* CSGeographicProjection.h */,
+				943999201930418C00012DC4 /* CSGeographicProjection.m */,
+				943999261930418C00012DC4 /* CSIndexDataType.h */,
+				943999071930418C00012DC4 /* CSInterval.h */,
+				943999221930418C00012DC4 /* CSInterval.m */,
+				9439991F1930418C00012DC4 /* CSMath.h */,
+				943999131930418C00012DC4 /* CSMath.m */,
+				9439991A1930418C00012DC4 /* CSMatrix4.h */,
+				943999101930418C00012DC4 /* CSMatrix4.m */,
+				9439990E1930418C00012DC4 /* CSProjection+Private.h */,
+				9439991C1930418C00012DC4 /* CSProjection.h */,
+				9439990F1930418C00012DC4 /* CSProjection.m */,
+				943999161930418C00012DC4 /* CSQuarternion.h */,
+				9439991E1930418C00012DC4 /* CSQuarternion.m */,
+				9439990A1930418C00012DC4 /* CSRay.h */,
+				943999281930418C00012DC4 /* CSRay.m */,
+				943999181930418C00012DC4 /* CSRectangle.h */,
+				9439990D1930418C00012DC4 /* CSRectangle.m */,
+				943999271930418C00012DC4 /* CSSpherical.h */,
+				943999091930418C00012DC4 /* CSSpherical.m */,
+				943999041930418C00012DC4 /* CSVertexFormat.h */,
+				943999211930418C00012DC4 /* CSVertexFormat.m */,
+				943999081930418C00012DC4 /* CSWebMercatorProjection.h */,
+				943999251930418C00012DC4 /* CSWebMercatorProjection.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		9439992A1930418C00012DC4 /* DynamicScene */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DynamicScene;
+			sourceTree = "<group>";
+		};
+		9439992B1930418C00012DC4 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				943999301930418C00012DC4 /* CSContext.h */,
+				943999331930418C00012DC4 /* CSContext.m */,
+				9439992C1930418C00012DC4 /* CSDrawCommand.h */,
+				943999351930418C00012DC4 /* CSDrawCommand.m */,
+				9439992D1930418C00012DC4 /* CSPassState.h */,
+				943999371930418C00012DC4 /* CSPassState.m */,
+				943999321930418C00012DC4 /* CSRenderState.h */,
+				9439992F1930418C00012DC4 /* CSRenderState.m */,
+				9439992E1930418C00012DC4 /* CSUniformState.h */,
+				943999361930418C00012DC4 /* CSUniformState.m */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		943999381930418C00012DC4 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				943999441930418C00012DC4 /* CSCamera.h */,
+				9439993C1930418C00012DC4 /* CSCamera.m */,
+				9439993D1930418C00012DC4 /* CSFrameState.h */,
+				9439993F1930418C00012DC4 /* CSFrameState.m */,
+				9439993A1930418C00012DC4 /* CSFrustum.h */,
+				943999421930418C00012DC4 /* CSFrustum.m */,
+				943999401930418C00012DC4 /* CSPerspectiveFrustum.h */,
+				9439993E1930418C00012DC4 /* CSPerspectiveFrustum.m */,
+				943999431930418C00012DC4 /* CSPrimitives.h */,
+				9439993B1930418C00012DC4 /* CSPrimitives.m */,
+				943999411930418C00012DC4 /* CSScene.h */,
+				943999391930418C00012DC4 /* CSScene.m */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
+		943999451930418C00012DC4 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
 		94DC79191918425300012DC4 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +294,11 @@
 		94DC79271918425300012DC4 /* CesiumKit */ = {
 			isa = PBXGroup;
 			children = (
+				943999031930418C00012DC4 /* Core */,
+				9439992A1930418C00012DC4 /* DynamicScene */,
+				9439992B1930418C00012DC4 /* Renderer */,
+				943999381930418C00012DC4 /* Scene */,
+				943999451930418C00012DC4 /* Shaders */,
 				94DC792A1918425300012DC4 /* CesiumKit.h */,
 				94DC792C1918425300012DC4 /* CesiumKit.m */,
 				94DC79281918425300012DC4 /* Supporting Files */,
@@ -224,7 +413,36 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				943999601930418C00012DC4 /* CSCamera.m in Sources */,
+				943999461930418C00012DC4 /* CSCartographic.m in Sources */,
+				943999611930418C00012DC4 /* CSPerspectiveFrustum.m in Sources */,
+				943999511930418C00012DC4 /* CSQuarternion.m in Sources */,
+				943999541930418C00012DC4 /* CSInterval.m in Sources */,
+				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
+				943999471930418C00012DC4 /* CSSpherical.m in Sources */,
+				9439995F1930418C00012DC4 /* CSPrimitives.m in Sources */,
+				943999491930418C00012DC4 /* CSCartesian2.m in Sources */,
+				943999631930418C00012DC4 /* CSFrustum.m in Sources */,
+				943999581930418C00012DC4 /* CSRenderState.m in Sources */,
+				943999551930418C00012DC4 /* CSCartesian4.m in Sources */,
+				9439995B1930418C00012DC4 /* CSDrawCommand.m in Sources */,
+				9439994D1930418C00012DC4 /* CSBoundingRectangle.m in Sources */,
 				94DC792D1918425300012DC4 /* CesiumKit.m in Sources */,
+				9439995D1930418C00012DC4 /* CSPassState.m in Sources */,
+				9439995E1930418C00012DC4 /* CSScene.m in Sources */,
+				943999531930418C00012DC4 /* CSVertexFormat.m in Sources */,
+				943999481930418C00012DC4 /* CSEllipsoid.m in Sources */,
+				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
+				9439994A1930418C00012DC4 /* CSRectangle.m in Sources */,
+				943999571930418C00012DC4 /* CSRay.m in Sources */,
+				943999561930418C00012DC4 /* CSWebMercatorProjection.m in Sources */,
+				943999591930418C00012DC4 /* CSContext.m in Sources */,
+				9439995C1930418C00012DC4 /* CSUniformState.m in Sources */,
+				9439994F1930418C00012DC4 /* CSCartesian3.m in Sources */,
+				9439994B1930418C00012DC4 /* CSProjection.m in Sources */,
+				9439994E1930418C00012DC4 /* CSMath.m in Sources */,
+				943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */,
+				943999521930418C00012DC4 /* CSGeographicProjection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +623,7 @@
 				94DC79471918425300012DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		94DC79481918425300012DC4 /* Build configuration list for PBXNativeTarget "CesiumKitTests" */ = {
 			isa = XCConfigurationList;
@@ -413,6 +632,7 @@
 				94DC794A1918425300012DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

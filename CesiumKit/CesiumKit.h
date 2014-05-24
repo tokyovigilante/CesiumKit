@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "CSScene.h"
+
 @interface CesiumKit : NSObject
 
 @end
