@@ -1037,10 +1037,10 @@ BoundingSphere.prototype.equals = function(right) {
  * @param {BoundingSphere} [result] The object onto which to store the result.
  * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
  */
-BoundingSphere.prototype.clone = function(result) {
-    return BoundingSphere.clone(this, result);
-};
+-(instancetype)copyWithZone:(NSZone *)zone
+{
+    
+}
 
-return BoundingSphere;
 
 @end
