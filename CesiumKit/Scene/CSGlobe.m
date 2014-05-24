@@ -6,11 +6,14 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+@import UIKit.UIColor;
+
 #import "CSGlobe.h"
 
 #import "CSEllipsoid.h"
 
 #import "CSDrawCommand.h"
+#import "CSBoundingSphere.h"
 
 @class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet;
 
@@ -69,9 +72,10 @@
         _rsColor = nil;
         _rsColorWithoutDepthTest = nil;
         
-        _clearDepthCommand = [[VTDrawCommand alloc] initWithOptions:@{ @"depth" : @1.0,
+        _clearDepthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"depth" : @1.0,
                                                                        @"stencil" : @0,
                                                                        @"owner" : self }];
+        _depthCommand [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [CSBoundingSphere alloc] initWith
     }
     return self;
 }

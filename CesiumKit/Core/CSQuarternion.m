@@ -632,7 +632,7 @@ Quaternion.fastSquad = function(q0, q1, s0, s1, t, result) {
     return self.x == other.x && self.y == other.y && self.z == other.z && self.w == other.w;
 }
 
--(BOOL)equalsEpsilon:(CSQuarternion *)other epsilon:(double)epsilon
+-(BOOL)equals:(CSQuarternion *)other epsilon:(double)epsilon
 {
     NSAssert(other != nil, @"Comparison object required");
     
