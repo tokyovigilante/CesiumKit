@@ -15,7 +15,7 @@ Nothing user-friendly yet. Likely to be via providing CSScene with a GLKView or 
 Licence
 -------
 
-[Apache 2.0].(http://www.apache.org/licenses/LICENSE-2.0.html)
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 Feedback
 --------
