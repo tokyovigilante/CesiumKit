@@ -1,6 +1,6 @@
 CesiumKit
 =========
-Objective-C/iOS port of the [Cesium](cesiumjs.org) WebGL virtual globe project.
+Objective-C/iOS port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
 
 Status
 ------
@@ -11,6 +11,11 @@ I'm currenty not going to implement 2D or Columbus view as these aren't prioriti
 Testing
 -------
 Nothing user-friendly yet. Likely to be via providing CSScene with a GLKView or EAGLContext. Once there's something to render I'll create a simple UIApplication test runner.
+
+Licence
+-------
+
+[Apache 2.0].(http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Feedback
 --------
