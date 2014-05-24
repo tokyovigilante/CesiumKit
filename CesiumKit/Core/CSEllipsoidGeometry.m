@@ -69,7 +69,7 @@
     Float64 positions[vertexCount * 3];
     
     UInt32 numIndices = 6 * (slicePartitions - 1) * (stackPartitions - 1);
-    
+    /*
     var indices = IndexDatatype.createTypedArray(vertexCount, numIndices);
     
     var normals = (vertexFormat.normal) ? new Float32Array(vertexCount * 3) : undefined;
@@ -245,7 +245,8 @@
         indices : indices,
         primitiveType : PrimitiveType.TRIANGLES,
         boundingSphere : BoundingSphere.fromEllipsoid(ellipsoid)
-    });
+    });*/
+    return nil;
 }
 
 @end

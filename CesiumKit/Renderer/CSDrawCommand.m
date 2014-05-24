@@ -10,4 +10,14 @@
 
 @implementation CSDrawCommand
 
+-(instancetype)initWithOptions:(NSDictionary *)options
+{
+    self = [super init];
+    if (self)
+    {
+        
+    }
+    return self;
+}
+
 @end

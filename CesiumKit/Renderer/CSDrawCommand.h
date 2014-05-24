@@ -10,5 +10,6 @@
 
 @interface CSDrawCommand : NSObject
 
+-(instancetype)initWithOptions:(NSDictionary *)options;
 
 @end
