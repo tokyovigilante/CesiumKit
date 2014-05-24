@@ -184,7 +184,7 @@ Cartesian3.unpack = function(array, startingIndex, result) {
                                        Z:self.z - other.z];
 }
 
--(CSCartesian3 *)multiplyScalar:(double)scalar
+-(CSCartesian3 *)multiplyByScalar:(double)scalar
 {
     return [[CSCartesian3 alloc] initWithX:self.x * scalar
                                        Y:self.y * scalar
@@ -258,7 +258,7 @@ Cartesian3.unpack = function(array, startingIndex, result) {
 -(CSCartesian3 *)linearExtrapolation:(CSCartesian3 *)other point:(Float64)t
 {
     NSAssert(other != nil, @"Comparison object required");
-    return [[self multiplyScalar:1.0 - t] add:[other multiplyScalar:t]];
+    return [[self multiplyByScalar:1.0 - t] add:[other multiplyByScalar:t]];
 };
 
 -(CSCartesian3 *)mostOrthogonalAxis

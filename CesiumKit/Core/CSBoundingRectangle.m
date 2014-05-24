@@ -103,15 +103,6 @@
     return [[CSBoundingRectangle alloc] initWithRect:CGRectUnion(self.rect, other.rect)];
 }
 
-/**
- * Computes a bounding rectangle by enlarging the provided rectangle until it contains the provided point.
- * @memberof BoundingRectangle
- *
- * @param {BoundingRectangle} rectangle A rectangle to expand.
- * @param {Cartesian2} point A point to enclose in a bounding rectangle.
- * @param {BoundingRectangle} [result] The object onto which to store the result.
- * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
- */
 -(CSBoundingRectangle *)expandToPoint:(CSCartesian2 *)point
 {
     NSAssert(point != nil, @"No point provided");

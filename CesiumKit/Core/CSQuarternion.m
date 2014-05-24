@@ -407,7 +407,7 @@ Quaternion.unpackInterpolationResult = function(array, sourceArray, firstIndex, 
         thetaOverSinTheta = theta / sin(theta);
     }
 #warning invalid
-    return [[CSCartesian3 unitX] multiplyScalar:thetaOverSinTheta];
+    return [[CSCartesian3 unitX] multiplyByScalar:thetaOverSinTheta];
     /*
     if (!defined(result)) {
         result = new Cartesian3();

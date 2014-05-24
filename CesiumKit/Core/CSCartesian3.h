@@ -116,7 +116,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
  */
--(CSCartesian3 *)multiplyScalar:(Float64)scalar;
+-(CSCartesian3 *)multiplyByScalar:(Float64)scalar;
 
 /**
  * Computes the componentwise product of two Cartesians.

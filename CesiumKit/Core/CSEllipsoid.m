@@ -274,7 +274,7 @@ static const Float64 CSEarthPolarRadius = 6356752.314245;
                              (position.y * position.y) * self.oneOverRadiiSquared.y +
                              (position.z * position.z) * self.oneOverRadiiSquared.z);
     
-    return [position multiplyScalar:beta];
+    return [position multiplyByScalar:beta];
 }
 
 -(NSArray *)computeCurve:(CSCartesian3 *)start stop:(CSCartesian3 *)stop granularity:(Float64)granularity

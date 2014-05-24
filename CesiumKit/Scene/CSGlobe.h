@@ -28,7 +28,7 @@
 
 
 
-var Globe = function(ellipsoid) {
+//var Globe = function(ellipsoid) {
 
     
        

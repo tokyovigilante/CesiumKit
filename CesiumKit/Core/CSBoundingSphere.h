@@ -24,6 +24,20 @@
  */
 @interface CSBoundingSphere : NSObject <NSCopying>
 
+/**
+ * The center point of the sphere.
+ * @type {Cartesian3}
+ * @default {@link Cartesian3.ZERO}
+ */
+@property (readonly) CSCartesian3 *center;
+
+/**
+ * The radius of the sphere.
+ * @type {Number}
+ * @default 0.0
+ */
+@property (readonly) Float64 radius;
+
 -(instancetype)initWithCenter:(CSCartesian3 *)center radius:(Float64)radius;
 
 /**
@@ -174,7 +188,7 @@
  * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
  * @param {Cartesian3} [result] The object into which to store the result.
  */
-+(CSBoundingSphere)unpack:(void *)array startingIndex:(UInt32)startingIndex;
+//+(CSBoundingSphere *)unpack:(void *)array startingIndex:(UInt32)startingIndex;
 
 /**
  * Computes a bounding sphere that contains both the left and right bounding spheres.
@@ -196,7 +210,7 @@
  * @param {BoundingSphere} [result] The object onto which to store the result.
  * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
  */
--(CSBoundingSphere *)expand:(CSBoundingSphere *)sphere point:(VTCartesian3 *)point;
+-(CSBoundingSphere *)expand:(CSBoundingSphere *)sphere point:(CSCartesian3 *)point;
 
 /**
  * Determines which side of a plane a sphere is located.

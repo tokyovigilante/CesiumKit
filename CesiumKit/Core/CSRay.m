@@ -40,7 +40,7 @@
 
 -(CSCartesian3 *)getPoint:(Float64)t
 {
-    return [self.origin add:[self.direction multiplyScalar:t]];
+    return [self.origin add:[self.direction multiplyByScalar:t]];
 }
 
 @end
