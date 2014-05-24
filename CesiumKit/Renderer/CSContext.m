@@ -8,7 +8,7 @@
 
 #import "CSContext.h"
 
-#import "CSIndexDataType.h"
+#import "CSTypedArray.h"
 
 @import GLKit;
 
