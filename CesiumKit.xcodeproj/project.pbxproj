@@ -1,0 +1,420 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
+		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
+		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
+		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
+		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
+		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
+		94DC793A1918425300012DC4 /* libCesiumKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79221918425300012DC4 /* libCesiumKit.a */; };
+		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
+		94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC79411918425300012DC4 /* CesiumKitTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		94DC79381918425300012DC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DC791A1918425300012DC4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DC79211918425300012DC4;
+			remoteInfo = CesiumKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		94DC79201918425300012DC4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
+		94DC792A1918425300012DC4 /* CesiumKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CesiumKit.h; sourceTree = "<group>"; };
+		94DC792C1918425300012DC4 /* CesiumKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CesiumKit.m; sourceTree = "<group>"; };
+		94DC79321918425300012DC4 /* CesiumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CesiumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		94DC79331918425300012DC4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		94DC79361918425300012DC4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		94DC793D1918425300012DC4 /* CesiumKitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CesiumKitTests-Info.plist"; sourceTree = "<group>"; };
+		94DC793F1918425300012DC4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		94DC79411918425300012DC4 /* CesiumKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CesiumKitTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		94DC791F1918425300012DC4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94DC79261918425300012DC4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94DC792F1918425300012DC4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94DC79341918425300012DC4 /* XCTest.framework in Frameworks */,
+				94DC79371918425300012DC4 /* UIKit.framework in Frameworks */,
+				94DC793A1918425300012DC4 /* libCesiumKit.a in Frameworks */,
+				94DC79351918425300012DC4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		94DC79191918425300012DC4 = {
+			isa = PBXGroup;
+			children = (
+				94DC79271918425300012DC4 /* CesiumKit */,
+				94DC793B1918425300012DC4 /* CesiumKitTests */,
+				94DC79241918425300012DC4 /* Frameworks */,
+				94DC79231918425300012DC4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		94DC79231918425300012DC4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				94DC79221918425300012DC4 /* libCesiumKit.a */,
+				94DC79321918425300012DC4 /* CesiumKitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		94DC79241918425300012DC4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				94DC79251918425300012DC4 /* Foundation.framework */,
+				94DC79331918425300012DC4 /* XCTest.framework */,
+				94DC79361918425300012DC4 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		94DC79271918425300012DC4 /* CesiumKit */ = {
+			isa = PBXGroup;
+			children = (
+				94DC792A1918425300012DC4 /* CesiumKit.h */,
+				94DC792C1918425300012DC4 /* CesiumKit.m */,
+				94DC79281918425300012DC4 /* Supporting Files */,
+			);
+			path = CesiumKit;
+			sourceTree = "<group>";
+		};
+		94DC79281918425300012DC4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		94DC793B1918425300012DC4 /* CesiumKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				94DC79411918425300012DC4 /* CesiumKitTests.m */,
+				94DC793C1918425300012DC4 /* Supporting Files */,
+			);
+			path = CesiumKitTests;
+			sourceTree = "<group>";
+		};
+		94DC793C1918425300012DC4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				94DC793D1918425300012DC4 /* CesiumKitTests-Info.plist */,
+				94DC793E1918425300012DC4 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		94DC79211918425300012DC4 /* CesiumKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94DC79451918425300012DC4 /* Build configuration list for PBXNativeTarget "CesiumKit" */;
+			buildPhases = (
+				94DC791E1918425300012DC4 /* Sources */,
+				94DC791F1918425300012DC4 /* Frameworks */,
+				94DC79201918425300012DC4 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CesiumKit;
+			productName = CesiumKit;
+			productReference = 94DC79221918425300012DC4 /* libCesiumKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		94DC79311918425300012DC4 /* CesiumKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94DC79481918425300012DC4 /* Build configuration list for PBXNativeTarget "CesiumKitTests" */;
+			buildPhases = (
+				94DC792E1918425300012DC4 /* Sources */,
+				94DC792F1918425300012DC4 /* Frameworks */,
+				94DC79301918425300012DC4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				94DC79391918425300012DC4 /* PBXTargetDependency */,
+			);
+			name = CesiumKitTests;
+			productName = CesiumKitTests;
+			productReference = 94DC79321918425300012DC4 /* CesiumKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		94DC791A1918425300012DC4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Test Toast";
+			};
+			buildConfigurationList = 94DC791D1918425300012DC4 /* Build configuration list for PBXProject "CesiumKit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 94DC79191918425300012DC4;
+			productRefGroup = 94DC79231918425300012DC4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				94DC79211918425300012DC4 /* CesiumKit */,
+				94DC79311918425300012DC4 /* CesiumKitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		94DC79301918425300012DC4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94DC79401918425300012DC4 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		94DC791E1918425300012DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94DC792D1918425300012DC4 /* CesiumKit.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94DC792E1918425300012DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		94DC79391918425300012DC4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94DC79211918425300012DC4 /* CesiumKit */;
+			targetProxy = 94DC79381918425300012DC4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		94DC793E1918425300012DC4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				94DC793F1918425300012DC4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		94DC79431918425300012DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		94DC79441918425300012DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		94DC79461918425300012DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/CesiumKit.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		94DC79471918425300012DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/CesiumKit.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		94DC79491918425300012DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "CesiumKitTests/CesiumKitTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		94DC794A1918425300012DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
+				INFOPLIST_FILE = "CesiumKitTests/CesiumKitTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		94DC791D1918425300012DC4 /* Build configuration list for PBXProject "CesiumKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94DC79431918425300012DC4 /* Debug */,
+				94DC79441918425300012DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		94DC79451918425300012DC4 /* Build configuration list for PBXNativeTarget "CesiumKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94DC79461918425300012DC4 /* Debug */,
+				94DC79471918425300012DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		94DC79481918425300012DC4 /* Build configuration list for PBXNativeTarget "CesiumKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94DC79491918425300012DC4 /* Debug */,
+				94DC794A1918425300012DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 94DC791A1918425300012DC4 /* Project object */;
+}
