@@ -16,6 +16,8 @@
 #import "CSPassState.h"
 #import "CSRenderState.h"
 
+#import "CSCartesian4.h"
+
 
 @interface CSContext () {
     
@@ -137,7 +139,7 @@
     
         GLfloat cc[4];
         glGetFloatv(GL_COLOR_CLEAR_VALUE, (GLfloat *)&cc);
-        _clearColor = [UIColor colorWithRed:cc[0] green:cc[1] blue:cc[2] alpha:cc[3]];
+        _clearColor = [CSCartesian4 cartesian4WithRed:cc[0] green:cc[1] blue:cc[2] alpha:cc[3]];
 
         glGetFloatv(GL_DEPTH_CLEAR_VALUE, &_clearDepth);
         glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &_clearStencil);

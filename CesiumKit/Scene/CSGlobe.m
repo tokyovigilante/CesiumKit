@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-@import UIKit.UIColor;
 
 #import "CSGlobe.h"
 
@@ -15,7 +14,9 @@
 #import "CSDrawCommand.h"
 #import "CSBoundingSphere.h"
 
-@class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet;
+#import "CSRendererDefines.h"
+
+@class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet, CSCartesian4;
 
 
 @interface CSGlobe ()
@@ -23,8 +24,8 @@
 @property (readonly) CSGlobeSurface *surface;
 @property (readonly) CSOccluder *occluder;
 @property (readonly) CSGlobeSurfaceShaderSet *surfaceShaderSet;
-@property (readonly) UIColor *rsColor;
-@property (readonly) UIColor *rsColorWithoutDepthTest;
+@property (readonly) CSCartesian4 *rsColor;
+@property (readonly) CSCartesian4 *rsColorWithoutDepthTest;
 @property (readonly) CSDrawCommand *clearDepthCommand;
 @property (readonly) CSDrawCommand *depthCommand;
 @property (readonly) CSDrawCommand *northPoleCommand;
@@ -75,41 +76,26 @@
         _clearDepthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"depth" : @1.0,
                                                                        @"stencil" : @0,
                                                                        @"owner" : self }];
-        _depthCommand [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [CSBoundingSphere alloc] initWith
+        _depthCommand [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [[CSBoundingSphere alloc] initWithCenter:[CSCartesian3 zero]
+                                                                                                                      radius:ellipsoid.maximumRadius],
+                                                                @"pass" : [NSNumber numberWithUnsignedInt:PassOpaque],
+                                                                @"owner" : self }];
+        _northPoleCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"pass" : [NSNumber numberWithUnsignedInt:PassOpaque],
+                                                                      @"owner" : self }];
+        _southPoleCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"pass" : [NSNumber numberWithUnsignedInt:PassOpaque],
+                                                                      @"owner" : self }];
+        _drawNorthPole = NO;
+        _drawSouthPole = NO;
+        
+        
     }
     return self;
 }
 
-    
+
 #warning terrain and imagery
 
-    
 
-
-
-    
-    this._rsColor = undefined;
-    this._rsColorWithoutDepthTest = undefined;
-    
-    this._clearDepthCommand = new ClearCommand({
-        depth : 1.0,
-        stencil : 0,
-        owner : this
-    });
-    
-    this._depthCommand = new DrawCommand({
-        boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
-        pass : Pass.OPAQUE,
-        owner : this
-    });
-    this._northPoleCommand = new DrawCommand({
-        pass : Pass.OPAQUE,
-        owner : this
-    });
-    this._southPoleCommand = new DrawCommand({
-        pass : Pass.OPAQUE,
-        owner : this
-    });
     
     this._drawNorthPole = false;
     this._drawSouthPole = false;

@@ -11,7 +11,7 @@
 @import OpenGLES.ES3.gl;
 @import CoreGraphics.CGGeometry;
 
-@class GLKView, CSShaderCache, CSUniformState, CSPassState, CSRenderState, CSTexture, CSCubeMap, CSShaderProgram, CSBuffer, CSVertexBuffer, CSIndexBuffer, UIColor;
+@class GLKView, CSShaderCache, CSUniformState, CSPassState, CSRenderState, CSTexture, CSCubeMap, CSShaderProgram, CSBuffer, CSVertexBuffer, CSIndexBuffer, CSCartesian4;
 
 
 typedef enum CSBufferUsage{
@@ -336,7 +336,7 @@ enum CSIndexDataType;
  */
 @property (readonly) UInt32 maximumColorAttachments;
 
-@property (nonatomic) UIColor *clearColor;
+@property (nonatomic) CSCartesian4 *clearColor;
 @property (readonly) GLfloat clearDepth;
 @property (readonly) GLint clearStencil;
 

@@ -8,8 +8,6 @@
 
 #import "CSCartesian4.h"
 
-@import UIKit.UIColor;
-
 @implementation CSCartesian4
 
 -(id)initWithX:(Float64)x Y:(Float64)y Z:(Float64)z W:(Float64)w
@@ -52,11 +50,8 @@
     return [[CSCartesian4 alloc] initWithX:0.0 Y:0.0 Z:0.0 W:1.0];
 }
 
--(CSCartesian4 *)cartesian4WithColor:(UIColor *)color
++(CSCartesian4 *)cartesian4WithRed:(Float64)r green:(Float64)g blue:(Float64)b alpha:(Float64)a
 {
-    NSAssert(color != nil, @"Nil color");
-    Float64 r, g, b, a;
-    [color getRed:&r green:&g blue:&b alpha:&a];
     return [[CSCartesian4 alloc] initWithX:r Y:g Z:b W:a];
 }
 

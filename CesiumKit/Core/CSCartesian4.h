@@ -8,8 +8,6 @@
 
 @import Foundation;
 
-@class UIColor;
-
 /**
  * A 4D Cartesian point.
  * @alias Cartesian4
@@ -42,7 +40,7 @@
 +(CSCartesian4 *)unitZ;
 +(CSCartesian4 *)unitW;
 
--(CSCartesian4 *)cartesian4WithColor:(UIColor *)color;
++(CSCartesian4 *)cartesian4WithRed:(Float64)r green:(Float64)g blue:(Float64)b alpha:(Float64)a;
 
 /**
  * Stores the provided instance into the provided array.

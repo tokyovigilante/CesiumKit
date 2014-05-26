@@ -36,7 +36,7 @@ typedef void(^CSDebugFilterBlock)(void);
 @import Foundation;
 
 @class CSFrameState, CSPassState, CSRenderState, CSContext, CSGlobe, CSPrimitives, CSCamera, CSScreenSpaceCameraController, CSClearCommand, CSSceneTransitioner, CSEvent;
-@class CSGeographicProjection, CSCanvas, CSImageryLayerCollection, CSTerrainProvider, CSInterval, CSDrawCommand, CSCartesian2, CSCullingVolume, CSShaderProgram, GLKView, UIColor;
+@class CSGeographicProjection, CSCanvas, CSImageryLayerCollection, CSTerrainProvider, CSInterval, CSDrawCommand, CSCartesian2, CSCullingVolume, CSShaderProgram, GLKView, CSCartesian4;
 
 @interface CSScene : NSObject
 
@@ -112,7 +112,7 @@ typedef void(^CSDebugFilterBlock)(void);
  *
  * @see Scene#skyBox
  */
-@property (nonatomic) UIColor *backgroundColor;
+@property (nonatomic) CSCartesian4 *backgroundColor;
 
 /**
  * The current mode of the scene.

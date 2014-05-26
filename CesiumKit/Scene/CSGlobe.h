@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSEllipsoid, CSTerrainProvider, CSImageryLayerCollection;
+@class CSEllipsoid, CSTerrainProvider, CSImageryLayerCollection, CSCartesian3;
 /**
  * The globe rendered in the scene, including its terrain ({@link Globe#terrainProvider})
  * and imagery layers ({@link Globe#imageryLayers}).  Access the globe using {@link Scene#globe}.
@@ -26,6 +26,23 @@
 @property (readonly) CSTerrainProvider *terrainProvider;
 @property (readonly) CSImageryLayerCollection *imageryLayerCollection;
 
+/**
+ * Determines the color of the north pole. If the day tile provider imagery does not
+ * extend over the north pole, it will be filled with this color before applying lighting.
+ *
+ * @type {Cartesian3}
+ * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
+ */
+@property (nonatomic) CSCartesian3 *northPoleColor;
+
+/**
+ * Determines the color of the south pole. If the day tile provider imagery does not
+ * extend over the south pole, it will be filled with this color before applying lighting.
+ *
+ * @type {Cartesian3}
+ * @default Cartesian3(1.0, 1.0, 1.0)
+ */
+@property (nonatomic) CSCartesian3 *southPoleColor;
 
 
 //var Globe = function(ellipsoid) {

@@ -74,6 +74,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9404F42F193357B500012DC4 /* CSRendererDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSRendererDefines.h; sourceTree = "<group>"; };
 		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
 		943999051930418C00012DC4 /* CSCartographic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartographic.m; sourceTree = "<group>"; };
 		943999061930418C00012DC4 /* CSCartesian4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian4.h; sourceTree = "<group>"; };
@@ -180,6 +181,8 @@
 			children = (
 				943999191930418C00012DC4 /* CSBoundingRectangle.h */,
 				943999111930418C00012DC4 /* CSBoundingRectangle.m */,
+				943CCACD193070D400012DC4 /* CSBoundingSphere.h */,
+				943CCACE193070D400012DC4 /* CSBoundingSphere.m */,
 				943999171930418C00012DC4 /* CSCartesian2.h */,
 				9439990C1930418C00012DC4 /* CSCartesian2.m */,
 				9439991D1930418C00012DC4 /* CSCartesian3.h */,
@@ -194,8 +197,6 @@
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				943999141930418C00012DC4 /* CSGeographicProjection.h */,
 				943999201930418C00012DC4 /* CSGeographicProjection.m */,
-				943999261930418C00012DC4 /* CSTypedArray.h */,
-				943CCAC8193051EA00012DC4 /* CSTypedArray.m */,
 				943999071930418C00012DC4 /* CSInterval.h */,
 				943999221930418C00012DC4 /* CSInterval.m */,
 				9439991F1930418C00012DC4 /* CSMath.h */,
@@ -213,12 +214,12 @@
 				9439990D1930418C00012DC4 /* CSRectangle.m */,
 				943999271930418C00012DC4 /* CSSpherical.h */,
 				943999091930418C00012DC4 /* CSSpherical.m */,
+				943999261930418C00012DC4 /* CSTypedArray.h */,
+				943CCAC8193051EA00012DC4 /* CSTypedArray.m */,
 				943999041930418C00012DC4 /* CSVertexFormat.h */,
 				943999211930418C00012DC4 /* CSVertexFormat.m */,
 				943999081930418C00012DC4 /* CSWebMercatorProjection.h */,
 				943999251930418C00012DC4 /* CSWebMercatorProjection.m */,
-				943CCACD193070D400012DC4 /* CSBoundingSphere.h */,
-				943CCACE193070D400012DC4 /* CSBoundingSphere.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -243,6 +244,7 @@
 				9439992F1930418C00012DC4 /* CSRenderState.m */,
 				9439992E1930418C00012DC4 /* CSUniformState.h */,
 				943999361930418C00012DC4 /* CSUniformState.m */,
+				9404F42F193357B500012DC4 /* CSRendererDefines.h */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
