@@ -31,6 +31,30 @@ static const Float64 CSEpsilon20 = 0.00000000000000000001;
 
 @interface CSMath : NSObject
 
+/**
+ * Returns the sign of the value; 1 if the value is positive, -1 if the value is
+ * negative, or 0 if the value is 0.
+ *
+ * @param {Number} value The value to return the sign of.
+ *
+ * @returns {Number} The sign of value.
+ */
++(UInt32)sign:(Float64)value;
+
 +(Float64)clampValue:(Float64)value min:(Float64)min max:(Float64)max;
+
+/**
+ * Converts degrees to radians.
+ * @param {Number} degrees The angle to convert in degrees.
+ * @returns {Number} The corresponding angle in radians.
+ */
++(Float64)toRadians:(Float64)degrees;
+
+/**
+ * Converts radians to degrees.
+ * @param {Number} radians The angle to convert in radians.
+ * @returns {Number} The corresponding angle in degrees.
+ */
++(Float64)toDegrees:(Float64)radians;
 
 @end

@@ -12,12 +12,14 @@
 #import "CSCartesian3.h"
 #import "CSCartographic.h"
 
+#import "CSMath.h"
+
 static const Float64 CSEarthEquatorialRadius = 6378137.0;
-static const Float64 CSEarthPolarRadius = 6356752.314245;
+static const Float64 CSEarthPolarRadius = 6356752.3142451793;
 
 @interface CSEllipsoid ()
 
-@property CSCartesian3 *radiiFourthPower;
+@property Float64 centerToleranceSquared;
 
 @end
 
@@ -31,27 +33,27 @@ static const Float64 CSEarthPolarRadius = 6356752.314245;
         _radii = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
         
         NSAssert(((_radii.x > 0.0) || (_radii.y > 0.0) || (_radii.z > 0.0)), @"Invalid negative ellipsoid");
+        _radiiSquared = [_radii multiplyComponents:_radii];
+        _radiiFourthPower = [_radiiSquared multiplyComponents:_radiiSquared];
         
-        _radiiSquared = [[CSCartesian3 alloc] initWithX:_radii.x * _radii.x
-                                                      Y:_radii.y * _radii.y
-                                                      Z:_radii.z * _radii.z];
-        _radiiFourthPower = [[CSCartesian3 alloc] initWithX:_radiiSquared.x * _radiiSquared.x
-                                                          Y:_radiiSquared.y * _radiiSquared.y
-                                                          Z:_radiiSquared.z * _radii.z];
-        _oneOverRadiiSquared = [[CSCartesian3 alloc] initWithX:1.0 / _radiiSquared.x
-                                                             Y:1.0 / _radiiSquared.y
-                                                             Z:1.0 / _radiiSquared.z];
+        _oneOverRadii = [[CSCartesian3 alloc] initWithX:x == 0.0 ? 0.0 : 1.0 / x
+                                                      Y:y == 0.0 ? 0.0 : 1.0 / y
+                                                      Z:z == 0.0 ? 0.0 : 1.0 / z];
+                         
+        _oneOverRadiiSquared = [[CSCartesian3 alloc] initWithX:0.0 ? 0.0 : 1.0 / _radiiSquared.x
+                                                             Y:0.0 ? 0.0 : 1.0 / _radiiSquared.y
+                                                             Z:0.0 ? 0.0 : 1.0 / _radiiSquared.z];
+        
+        _minimumRadius = MIN(self.radii.x, MIN(self.radii.y, self.radii.z));
+        _maximumRadius = MAX(self.radii.x, MAX(self.radii.y, self.radii.z));
+        
+        _centerToleranceSquared = CSEpsilon1;
     }
     return self;
 }
 +(CSEllipsoid *)wgs84Ellipsoid
 {
     return [[CSEllipsoid alloc] initWithX:CSEarthEquatorialRadius Y:CSEarthEquatorialRadius Z:CSEarthPolarRadius];
-}
-
-+(CSEllipsoid *)scaledwgs4ScaledEllipsoid
-{
-    return [[CSEllipsoid alloc] initWithX:1.0 Y:1.0 Z:6356752.314245 / 6378137.0];
 }
 
 +(CSEllipsoid *)unitSphereEllipsoid
@@ -61,211 +63,167 @@ static const Float64 CSEarthPolarRadius = 6356752.314245;
 
 +(CSEllipsoid *)ellipsoidWithCartesian3:(CSCartesian3 *)cartesian3
 {
+    NSAssert(cartesian3 != nil, @"no cartesian provided");
     return [[CSEllipsoid alloc] initWithX:cartesian3.x Y:cartesian3.y Z:cartesian3.z];
 }
 
--(CSCartesian3 *)centricSurfaceNormal:(CSCartesian3 *)positionOnEllipsoid
+-(CSCartesian3 *)geocentricSurfaceNormal:(CSCartesian3 *)cartesian3
 {
-    return positionOnEllipsoid.normalise;
+    return cartesian3.normalise;
 }
 
--(CSCartesian3 *)geodeticSurfaceNormalForPosition:(CSCartesian3 *)positionOnEllipsoid
+-(CSCartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic
 {
-    return [positionOnEllipsoid multiplyComponents:self.oneOverRadiiSquared.normalise];
-}
+    NSAssert(cartographic != nil, @"no cartographic provided");
 
--(CSCartesian3 *)geodeticSurfaceNormalForGeodetic3D:(CSCartographic *)cartographic
-{
     Float64 cosLatitude = cos(cartographic.latitude);
     
     return [[CSCartesian3 alloc] initWithX:cosLatitude * cos(cartographic.longitude)
-                                       Y:cosLatitude * sin(cartographic.longitude)
-                                       Z:sin(cartographic.latitude)];
+                                         Y:cosLatitude * sin(cartographic.longitude)
+                                         Z:sin(cartographic.latitude)].normalise;
 }
 
--(Float64)minimumRadius
+-(CSCartesian3 *)geodeticSurfaceNormal:(CSCartesian3 *)cartesian3
 {
-    return MIN(self.radii.x, MIN(self.radii.y, self.radii.z));
+    return [cartesian3 multiplyComponents:self.oneOverRadiiSquared].normalise;
 }
 
--(Float64)maximumRadius
+-(CSCartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic
 {
-    return MAX(self.radii.x, MAX(self.radii.y, self.radii.z));
-}
-
-// takes two double pointers, returns number of intersections,
--(UInt32)intersections:(CSCartesian3 *)origin direction:(CSCartesian3 *)direction first:(Float64 *)first second:(Float64 *)second
-{
-    CSCartesian3 *directionNormalised = direction.normalise;
-    
-    // By laborious algebraic manipulation....
-    Float64 a = directionNormalised.x * directionNormalised.x * _oneOverRadiiSquared.x +
-    directionNormalised.y * directionNormalised.y * _oneOverRadiiSquared.y +
-    directionNormalised.z * directionNormalised.z * _oneOverRadiiSquared.z;
-    Float64 b = 2.0 *
-    (origin.x * directionNormalised.x * _oneOverRadiiSquared.x +
-     origin.y * directionNormalised.y * _oneOverRadiiSquared.y +
-     origin.z * directionNormalised.z * _oneOverRadiiSquared.z);
-    Float64 c = origin.x * origin.x * _oneOverRadiiSquared.x +
-    origin.y * origin.y * _oneOverRadiiSquared.y +
-    origin.z * origin.z * _oneOverRadiiSquared.z - 1.0;
-    
-    // Solve the quadratic equation: ax^2 + bx + c = 0.
-    // Algorithm is from Wikipedia's "Quadratic equation" topic, and Wikipedia credits
-    // Numerical Recipes in C, section 5.6: "Quadratic and Cubic Equations"
-    Float64 discriminant = b * b - 4 * a * c;
-    if (discriminant < 0.0)
-    {
-        // no intersections
-        *first = NAN;
-        *second = NAN;
-        return 0;
-    }
-    else if (discriminant == 0.0)
-    {
-        // one intersection at a tangent point
-        *first = -0.5 * b / a ;
-        *second = NAN;
-        return 1;
-    }
-    
-    Float64 t = -0.5 * (b + (b > 0.0 ? 1.0 : -1.0) * sqrt(discriminant));
-    Float64 root1 = t / a;
-    Float64 root2 = c / t;
-    
-    // Two intersections - return the smallest first.
-    if (root1 < root2)
-    {
-        *first = root1;
-        *second = root2;
-    }
-    else
-    {
-        *first = root2;
-        *second = root1;
-    }
-    return 2;
-}
-#warning fix ellipsoid
-/*
--(CSCartesian3 *)vector3DfromGeodetic2D:(CSGeodetic2D *)geodetic2D
-{
-    return [self vector3DfromGeodetic3D:[[CSGeodetic3D alloc] initWithGeodetic2D:geodetic2D height:0.0]];
-}
-
--(CSCartesian3 *)vector3DfromGeodetic3D:(CSGeodetic3D *)geodetic3D
-{
-    CSCartesian3 *n = [self geodeticSurfaceNormalForGeodetic3D:geodetic3D];
+    //`cartographic is required` is thrown from geodeticSurfaceNormalCartographic.
+    CSCartesian3 *n = [self geodeticSurfaceNormalCartographic:cartographic];
     CSCartesian3 *k = [self.radiiSquared multiplyComponents:n];
-    Float64 gamma = sqrt((k.x * n.x) +
-                        (k.y * n.y) +
-                        (k.z * n.z));
     
-    CSCartesian3 *rSurface = [k divideScalar:gamma];
-    return [rSurface add:[n multiplyScalar:geodetic3D.height]];
-}*/
-
--(NSArray *)geodetic2DArrayFromPositionArray:(NSArray *)positionArray
-{
-    NSAssert(positionArray.count > 0, @"Empty vector array");
+    Float64 gamma = sqrt([n dot:k]);
+    k = [k divideByScalar:gamma];
+    n = [n multiplyByScalar:cartographic.height];
     
-    NSMutableArray *geodetics = [NSMutableArray arrayWithCapacity:positionArray.count];
-    
-    for (CSCartesian3 *position in positionArray)
-    {
-        [geodetics addObject:[self geodetic2DFromPosition:position]];
-    }
-    
-    return [NSArray arrayWithArray:geodetics];
+    return [k add:n];
 }
 
--(NSArray *)geodetic3DArrayFromPositionArray:(NSArray *)positionArray
+-(NSArray *)cartographicArrayToCartesianArray:(NSArray *)cartographicArray
 {
-    NSAssert(positionArray.count > 0, @"Empty vector array");
+    NSAssert(cartographicArray.count > 0, @"Empty vector array");
     
-    NSMutableArray *geodetics = [NSMutableArray arrayWithCapacity:positionArray.count];
+    NSMutableArray *cartesians = [NSMutableArray arrayWithCapacity:cartographicArray.count];
     
-    for (CSCartesian3 *position in positionArray)
+    for (CSCartographic *cartographic in cartographicArray)
     {
-        [geodetics addObject:[self geodetic3DFromPosition:position]];
+        [cartesians addObject:[self cartographicToCartesian:cartographic]];
     }
     
-    return [NSArray arrayWithArray:geodetics];
-
-}
-#warning fix ellipsoid
-/*
--(CSGeodetic2D *)geodetic2DFromPosition:(CSCartesian3 *)position
-{
-    CSCartesian3 *n = [self geodeticSurfaceNormalForPosition:position];
-    return [[CSGeodetic2D alloc] initWithLatitude:asin(n.z / n.magnitude)
-                                        longitude:atan2(n.y, n.x)];
+    return [NSArray arrayWithArray:cartesians];
 }
 
--(CSGeodetic3D *)geodetic3DFromPosition:(CSCartesian3 *)position
+-(CSCartographic *)cartesianToCartographic:(CSCartesian3 *)cartesian3
 {
-    CSCartesian3 *p = [self scaleToGeodeticSurface:position];
-    CSCartesian3 *h = [position subtract:p];
-    
-    Float64 heightIntermed = [h dot:position];
-    Float64 height = (heightIntermed > 0) - (heightIntermed < 0) * h.magnitude;
-    
-    return [[CSGeodetic3D alloc] initWithGeodetic2D:[self geodetic2DFromPosition:p] height:height];
-}*/
+    CSCartesian3 *p = [self scaleToGeodeticSurface:cartesian3];
+    CSCartesian3 *n = [self geodeticSurfaceNormal:p];
+    CSCartesian3 *h = [cartesian3 subtract:p];
 
--(CSCartesian3 *)scaleToGeodeticSurface:(CSCartesian3 *)position
+    return [[CSCartographic alloc] initWithLatitude:asin(n.z)
+                                          longitude:atan2(n.y, n.x)
+                                             height:[CSMath sign:([h dot:cartesian3])] * h.magnitude];
+}
+
+-(NSArray *)cartesianArrayToCartographicArray:(NSArray *)cartesianArray
 {
-    double beta = 1.0 / sqrt((position.x * position.x) * self.oneOverRadiiSquared.x +
-                             (position.y * position.y) * self.oneOverRadiiSquared.y +
-                             (position.z * position.z) * self.oneOverRadiiSquared.z);
+    NSAssert(cartesianArray.count > 0, @"Empty vector array");
     
-    double n = [[CSCartesian3 alloc] initWithX:beta * position.x * self.oneOverRadiiSquared.x
-                                           Y:beta * position.y * self.oneOverRadiiSquared.y
-                                           Z:beta * position.z * self.oneOverRadiiSquared.z].magnitude;
+    NSMutableArray *cartesians = [NSMutableArray arrayWithCapacity:cartesianArray.count];
     
-    double alpha = (1.0 - beta) * (position.magnitude / n);
-    
-    double x2 = position.x * position.x;
-    double y2 = position.y * position.y;
-    double z2 = position.z * position.z;
-    
-    double da = 0.0;
-    double db = 0.0;
-    double dc = 0.0;
-    
-    double s = 0.0;
-    double dSdA = 1.0;
-    
-    do
+    for (CSCartesian3 *cartesian in cartesianArray)
     {
-        alpha -= (s / dSdA);
-        
-        da = 1.0 + (alpha * self.oneOverRadiiSquared.x);
-        db = 1.0 + (alpha * self.oneOverRadiiSquared.y);
-        dc = 1.0 + (alpha * self.oneOverRadiiSquared.z);
-        
-        double da2 = da * da;
-        double db2 = db * db;
-        double dc2 = dc * dc;
-        
-        double da3 = da * da2;
-        double db3 = db * db2;
-        double dc3 = dc * dc2;
-        
-        s = x2 / (self.radiiSquared.x * da2) +
-        y2 / (self.radiiSquared.y * db2) +
-        z2 / (self.radiiSquared.z * dc2) - 1.0;
-        
-        dSdA = -2.0 *
-        (x2 / (self.radiiFourthPower.x * da3) +
-         y2 / (self.radiiFourthPower.y * db3) +
-         z2 / (self.radiiFourthPower.z * dc3));
+        [cartesians addObject:[self cartesianToCartographic:cartesian]];
     }
-    while (ABS(s) > 1e-10);
     
-    return [[CSCartesian3 alloc] initWithX:position.x / da
-                                       Y:position.y / db
-                                       Z:position.z / dc];
+    return [NSArray arrayWithArray:cartesians];
+}
+
+-(CSCartesian3 *)scaleToGeodeticSurface:(CSCartesian3 *)cartesian
+{
+    Float64 positionX = cartesian.x;
+    Float64 positionY = cartesian.y;
+    Float64 positionZ = cartesian.z;
+    
+    Float64 oneOverRadiiX = self.oneOverRadii.x;
+    Float64 oneOverRadiiY = self.oneOverRadii.y;
+    Float64 oneOverRadiiZ = self.oneOverRadii.z;
+    
+    Float64 x2 = positionX * positionX * oneOverRadiiX * oneOverRadiiX;
+    Float64 y2 = positionY * positionY * oneOverRadiiY * oneOverRadiiY;
+    Float64 z2 = positionZ * positionZ * oneOverRadiiZ * oneOverRadiiZ;
+    
+    // Compute the squared ellipsoid norm.
+    Float64 squaredNorm = x2 + y2 + z2;
+    Float64 ratio = sqrt(1.0 / squaredNorm);
+    
+    // As an initial approximation, assume that the radial intersection is the projection point.
+    CSCartesian3 *intersection = [cartesian multiplyByScalar:ratio];
+    
+    //* If the position is near the center, the iteration will not converge.
+    if (squaredNorm < self.centerToleranceSquared)
+    {
+        return intersection;
+    }
+    
+    Float64 oneOverRadiiSquaredX = self.oneOverRadiiSquared.x;
+    Float64 oneOverRadiiSquaredY = self.oneOverRadiiSquared.y;
+    Float64 oneOverRadiiSquaredZ = self.oneOverRadiiSquared.z;
+    
+    // Use the gradient at the intersection point in place of the true unit normal.
+    // The difference in magnitude will be absorbed in the multiplier.
+    CSCartesian3 *gradient = [[CSCartesian3 alloc] initWithX:intersection.x * oneOverRadiiSquaredX * 2.0
+                                                           Y:intersection.y * oneOverRadiiSquaredY * 2.0
+                                                           Z:intersection.z * oneOverRadiiSquaredZ * 2.0];
+    
+    // Compute the initial guess at the normal vector multiplier, lambda.
+    Float64 lambda = (1.0 - ratio) * cartesian.magnitude / (0.5 * gradient.magnitude);
+    Float64 correction = 0.0;
+    
+    Float64 func;
+    Float64 denominator;
+    Float64 xMultiplier;
+    Float64 yMultiplier;
+    Float64 zMultiplier;
+    Float64 xMultiplier2;
+    Float64 yMultiplier2;
+    Float64 zMultiplier2;
+    Float64 xMultiplier3;
+    Float64 yMultiplier3;
+    Float64 zMultiplier3;
+    
+    do {
+        lambda -= correction;
+        
+        xMultiplier = 1.0 / (1.0 + lambda * oneOverRadiiSquaredX);
+        yMultiplier = 1.0 / (1.0 + lambda * oneOverRadiiSquaredY);
+        zMultiplier = 1.0 / (1.0 + lambda * oneOverRadiiSquaredZ);
+        
+        xMultiplier2 = xMultiplier * xMultiplier;
+        yMultiplier2 = yMultiplier * yMultiplier;
+        zMultiplier2 = zMultiplier * zMultiplier;
+        
+        xMultiplier3 = xMultiplier2 * xMultiplier;
+        yMultiplier3 = yMultiplier2 * yMultiplier;
+        zMultiplier3 = zMultiplier2 * zMultiplier;
+        
+        func = x2 * xMultiplier2 + y2 * yMultiplier2 + z2 * zMultiplier2 - 1.0;
+        
+        // "denominator" here refers to the use of this expression in the velocity and acceleration
+        // computations in the sections to follow.
+        denominator = x2 * xMultiplier3 * oneOverRadiiSquaredX + y2 * yMultiplier3 * oneOverRadiiSquaredY + z2 * zMultiplier3 * oneOverRadiiSquaredZ;
+        
+        Float64 derivative = -2.0 * denominator;
+        
+        correction = func / derivative;
+    } while (abs(func) > CSEpsilon12);
+    
+    
+    return [[CSCartesian3 alloc] initWithX:positionX * xMultiplier
+                                         Y:positionY * yMultiplier
+                                         Z:positionZ * zMultiplier];
+
 }
 
 -(CSCartesian3 *)scaleToGeocentricSurface:(CSCartesian3 *)position
@@ -277,27 +235,31 @@ static const Float64 CSEarthPolarRadius = 6356752.314245;
     return [position multiplyByScalar:beta];
 }
 
--(NSArray *)computeCurve:(CSCartesian3 *)start stop:(CSCartesian3 *)stop granularity:(Float64)granularity
+-(CSCartesian3 *)transformPositionToScaledSpace:(CSCartesian3 *)position
 {
-    NSAssert(granularity <= 0.0, @"Granularity must be greater than zero.");
+    return [position multiplyComponents:self.oneOverRadii];
 
-    CSCartesian3 *normal = [start cross:stop].normalise;
-    Float64 theta = [start angleBetween:stop];
-    UInt32 n = MAX((UInt32)(theta / granularity) - 1, 0);
-    
-    NSMutableArray *positionArray = [NSMutableArray arrayWithCapacity:2 + n];
+}
 
-    [positionArray addObject:start];
-    
-    for (int i=1; i <= n; i++)
-    {
-        Float64 phi = i * granularity;
-        [positionArray addObject:[self scaleToGeocentricSurface:[start rotateAroundAxis:normal theta:phi]]];
-    }
-    
-    [positionArray addObject:stop];
-    
-    return [NSArray arrayWithArray:positionArray];
+-(BOOL)equals:(CSEllipsoid *)other
+{
+    NSAssert(other != nil, @"Nil comparison object");
+    return [self.radii equals:other.radii];
+}
+
+/**
+ * Duplicates an Ellipsoid instance.
+ *
+ * @memberof Ellipsoid
+ *
+ * @param {Ellipsoid} ellipsoid The ellipsoid to duplicate.
+ * @param {Ellipsoid} [result] The object onto which to store the result, or undefined if a new
+ *                    instance should be created.
+ * @returns {Ellipsoid} The cloned Ellipsoid. (Returns undefined if ellipsoid is undefined)
+ */
+-(instancetype)copyWithZone:(NSZone *)zone
+{
+    return [[CSEllipsoid alloc] initWithX:self.radii.x Y:self.radii.y Z:self.radii.z];
 }
 
 @end

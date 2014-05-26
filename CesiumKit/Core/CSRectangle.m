@@ -8,224 +8,59 @@
 
 #import "CSRectangle.h"
 
+#import "CSCartographic.h"
+#import "CSEllipsoid.h"
+#import "CSMath.h"
+
 @implementation CSRectangle
 
-/**
- * A two dimensional region specified as longitude and latitude coordinates.
- *
- * @alias Rectangle
- * @constructor
- *
- * @param {Number} [west=0.0] The westernmost longitude, in radians, in the range [-Pi, Pi].
- * @param {Number} [south=0.0] The southernmost latitude, in radians, in the range [-Pi/2, Pi/2].
- * @param {Number} [east=0.0] The easternmost longitude, in radians, in the range [-Pi, Pi].
- * @param {Number} [north=0.0] The northernmost latitude, in radians, in the range [-Pi/2, Pi/2].
- *
- * @see Packable
- */
-var Rectangle = function(west, south, east, north) {
-    /**
-     * The westernmost longitude in radians in the range [-Pi, Pi].
-     *
-     * @type {Number}
-     * @default 0.0
-     */
-    this.west = defaultValue(west, 0.0);
-    
-    /**
-     * The southernmost latitude in radians in the range [-Pi/2, Pi/2].
-     *
-     * @type {Number}
-     * @default 0.0
-     */
-    this.south = defaultValue(south, 0.0);
-    
-    /**
-     * The easternmost longitude in radians in the range [-Pi, Pi].
-     *
-     * @type {Number}
-     * @default 0.0
-     */
-    this.east = defaultValue(east, 0.0);
-    
-    /**
-     * The northernmost latitude in radians in the range [-Pi/2, Pi/2].
-     *
-     * @type {Number}
-     * @default 0.0
-     */
-    this.north = defaultValue(north, 0.0);
-};
+-(instancetype)initWithWest:(Float64)west south:(Float64)south east:(Float64)east north:(Float64)north
+{
+    self = [super init];
+    if (self)
+    {
+        _west = west;
+        _south = south;
+        _east = east;
+        _north = north;
+        [self validate];
+    }
+    return self;
+}
 
-/**
- * Creates an rectangle given the boundary longitude and latitude in degrees.
- *
- * @memberof Rectangle
- *
- * @param {Number} [west=0.0] The westernmost longitude in degrees in the range [-180.0, 180.0].
- * @param {Number} [south=0.0] The southernmost latitude in degrees in the range [-90.0, 90.0].
- * @param {Number} [east=0.0] The easternmost longitude in degrees in the range [-180.0, 180.0].
- * @param {Number} [north=0.0] The northernmost latitude in degrees in the range [-90.0, 90.0].
- * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
- *
- * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
- *
- * @example
- * var rectangle = Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0);
- */
-Rectangle.fromDegrees = function(west, south, east, north, result) {
-    west = CesiumMath.toRadians(defaultValue(west, 0.0));
-    south = CesiumMath.toRadians(defaultValue(south, 0.0));
-    east = CesiumMath.toRadians(defaultValue(east, 0.0));
-    north = CesiumMath.toRadians(defaultValue(north, 0.0));
-    
-    if (!defined(result)) {
-        return new Rectangle(west, south, east, north);
-    }
-    
-    result.west = west;
-    result.south = south;
-    result.east = east;
-    result.north = north;
-    
-    return result;
-};
+-(CSRectangle *)rectangleWithDegreesWest:(Float64)west south:(Float64)south east:(Float64)east north:(Float64)north
+{
+    return [[CSRectangle alloc] initWithWest:[CSMath toRadians:west]
+                                       south:[CSMath toRadians:south]
+                                        east:[CSMath toRadians:east]
+                                       north:[CSMath toRadians:north]];
+}
 
-/**
- * Creates the smallest possible Rectangle that encloses all positions in the provided array.
- * @memberof Rectangle
- *
- * @param {Cartographic[]} cartographics The list of Cartographic instances.
- * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
- * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
- */
-Rectangle.fromCartographicArray = function(cartographics, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(cartographics)) {
-        throw new DeveloperError('cartographics is required.');
-    }
-    //>>includeEnd('debug');
+-(CSRectangle *)rectangleWithCartographicArray:(NSArray *)cartographics
+{
+    NSAssert(cartographics != nil, "Must provide cartographics");
     
-    var minLon = Number.MAX_VALUE;
-    var maxLon = -Number.MAX_VALUE;
-    var minLat = Number.MAX_VALUE;
-    var maxLat = -Number.MAX_VALUE;
+    Float64 minLon = DBL_MAX;
+    Float64 maxLon = -DBL_MAX;
+    Float64 minLat = DBL_MAX;
+    Float64 maxLat = -DBL_MAX;
     
-    for ( var i = 0, len = cartographics.length; i < len; i++) {
-        var position = cartographics[i];
-        minLon = Math.min(minLon, position.longitude);
-        maxLon = Math.max(maxLon, position.longitude);
-        minLat = Math.min(minLat, position.latitude);
-        maxLat = Math.max(maxLat, position.latitude);
+    for (CSCartographic *cartographic in cartographics)
+    {
+        minLon = MIN(minLon, cartographic.longitude);
+        maxLon = MAX(maxLon, cartographic.longitude);
+        minLat = MIN(minLat, cartographic.latitude);
+        maxLat = MAX(maxLat, cartographic.latitude);
     }
     
-    if (!defined(result)) {
-        return new Rectangle(minLon, minLat, maxLon, maxLat);
-    }
-    
-    result.west = minLon;
-    result.south = minLat;
-    result.east = maxLon;
-    result.north = maxLat;
-    return result;
-};
+    return [[CSRectangle alloc] initWithWest:minLon south:minLat east:maxLon north:maxLat];
+}
 
-/**
- * The number of elements used to pack the object into an array.
- * @type {Number}
- */
-Rectangle.packedLength = 4;
+//Rectangle.packedLength = 4;
 
-/**
- * Stores the provided instance into the provided array.
- * @memberof Rectangle
- *
- * @param {Rectangle} value The value to pack.
- * @param {Number[]} array The array to pack into.
- * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
- */
-Rectangle.pack = function(value, array, startingIndex) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(value)) {
-        throw new DeveloperError('value is required');
-    }
-    
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    array[startingIndex++] = value.west;
-    array[startingIndex++] = value.south;
-    array[startingIndex++] = value.east;
-    array[startingIndex] = value.north;
-};
+//Rectangle.pack = function(value, array, startingIndex)
 
-/**
- * Retrieves an instance from a packed array.
- * @memberof Rectangle
- *
- * @param {Number[]} array The packed array.
- * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
- * @param {Rectangle} [result] The object into which to store the result.
- */
-Rectangle.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-        result = new Rectangle();
-    }
-    result.west = array[startingIndex++];
-    result.south = array[startingIndex++];
-    result.east = array[startingIndex++];
-    result.north = array[startingIndex];
-    return result;
-};
-
-/**
- * Duplicates an Rectangle.
- *
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle to clone.
- * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
- * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided. (Returns undefined if rectangle is undefined)
- */
-Rectangle.clone = function(rectangle, result) {
-    if (!defined(rectangle)) {
-        return undefined;
-    }
-    
-    if (!defined(result)) {
-        return new Rectangle(rectangle.west, rectangle.south, rectangle.east, rectangle.north);
-    }
-    
-    result.west = rectangle.west;
-    result.south = rectangle.south;
-    result.east = rectangle.east;
-    result.north = rectangle.north;
-    return result;
-};
-
-/**
- * Duplicates this Rectangle.
- *
- * @memberof Rectangle
- *
- * @param {Rectangle} [result] The object onto which to store the result.
- * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
- */
-Rectangle.prototype.clone = function(result) {
-    return Rectangle.clone(this, result);
-};
+//Rectangle.unpack = function(array, startingIndex, result) {
 
 /**
  * Compares the provided Rectangle with this Rectangle componentwise and returns
@@ -235,30 +70,14 @@ Rectangle.prototype.clone = function(result) {
  * @param {Rectangle} [other] The Rectangle to compare.
  * @returns {Boolean} <code>true</code> if the Rectangles are equal, <code>false</code> otherwise.
  */
-Rectangle.prototype.equals = function(other) {
-    return Rectangle.equals(this, other);
-};
-
-/**
- * Compares the provided rectangles and returns <code>true</code> if they are equal,
- * <code>false</code> otherwise.
- *
- * @memberof Rectangle
- *
- * @param {Rectangle} [left] The first Rectangle.
- * @param {Rectangle} [right] The second Rectangle.
- *
- * @returns {Boolean} <code>true</code> if left and right are equal; otherwise <code>false</code>.
- */
-Rectangle.equals = function(left, right) {
-    return (left === right) ||
-    ((defined(left)) &&
-     (defined(right)) &&
-     (left.west === right.west) &&
-     (left.south === right.south) &&
-     (left.east === right.east) &&
-     (left.north === right.north));
-};
+-(BOOL)equals:(CSRectangle *)other
+{
+    NSAssert(other != nil, @"Need comparison object");
+    return (self.west == other.west &&
+            self.south == other.south &&
+            self.east == other.east &&
+            self.north == other.north);
+}
 
 /**
  * Compares the provided Rectangle with this Rectangle componentwise and returns
@@ -270,271 +89,72 @@ Rectangle.equals = function(left, right) {
  * @param {Number} epsilon The epsilon to use for equality testing.
  * @returns {Boolean} <code>true</code> if the Rectangles are within the provided epsilon, <code>false</code> otherwise.
  */
-Rectangle.prototype.equalsEpsilon = function(other, epsilon) {
-    //>>includeStart('debug', pragmas.debug);
-    if (typeof epsilon !== 'number') {
-        throw new DeveloperError('epsilon is required and must be a number.');
-    }
-    //>>includeEnd('debug');
-    
-    return defined(other) &&
-    (Math.abs(this.west - other.west) <= epsilon) &&
-    (Math.abs(this.south - other.south) <= epsilon) &&
-    (Math.abs(this.east - other.east) <= epsilon) &&
-    (Math.abs(this.north - other.north) <= epsilon);
-};
+-(BOOL)equals:(CSRectangle *)other epsilon:(Float64)epsilon
+{
+    return ((ABS(self.west - other.west) <= epsilon) &&
+            (ABS(self.south - other.south) <= epsilon) &&
+            (ABS(self.east - other.east) <= epsilon) &&
+            (ABS(self.north - other.north) <= epsilon));
+}
 
-/**
- * Checks an Rectangle's properties and throws if they are not in valid ranges.
- *
- * @param {Rectangle} rectangle The rectangle to validate
- *
- * @exception {DeveloperError} <code>north</code> must be in the interval [<code>-Pi/2</code>, <code>Pi/2</code>].
- * @exception {DeveloperError} <code>south</code> must be in the interval [<code>-Pi/2</code>, <code>Pi/2</code>].
- * @exception {DeveloperError} <code>east</code> must be in the interval [<code>-Pi</code>, <code>Pi</code>].
- * @exception {DeveloperError} <code>west</code> must be in the interval [<code>-Pi</code>, <code>Pi</code>].
- */
-Rectangle.validate = function(rectangle) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    
-    var north = rectangle.north;
-    if (typeof north !== 'number') {
-        throw new DeveloperError('north is required to be a number.');
-    }
-    
-    if (north < -CesiumMath.PI_OVER_TWO || north > CesiumMath.PI_OVER_TWO) {
-        throw new DeveloperError('north must be in the interval [-Pi/2, Pi/2].');
-    }
-    
-    var south = rectangle.south;
-    if (typeof south !== 'number') {
-        throw new DeveloperError('south is required to be a number.');
-    }
-    
-    if (south < -CesiumMath.PI_OVER_TWO || south > CesiumMath.PI_OVER_TWO) {
-        throw new DeveloperError('south must be in the interval [-Pi/2, Pi/2].');
-    }
-    
-    var west = rectangle.west;
-    if (typeof west !== 'number') {
-        throw new DeveloperError('west is required to be a number.');
-    }
-    
-    if (west < -Math.PI || west > Math.PI) {
-        throw new DeveloperError('west must be in the interval [-Pi, Pi].');
-    }
-    
-    var east = rectangle.east;
-    if (typeof east !== 'number') {
-        throw new DeveloperError('east is required to be a number.');
-    }
-    
-    if (east < -Math.PI || east > Math.PI) {
-        throw new DeveloperError('east must be in the interval [-Pi, Pi].');
-    }
-    //>>includeEnd('debug');
-};
+-(void)validate
+{
+    NSAssert(north > -PI_2 && north < M_PI_2, @"north must be in the interval [-Pi/2, Pi/2].");
+    NSAssert(south > -PI_2 && south < M_PI_2, @"south must be in the interval [-Pi/2, Pi/2].");
+    NSAssert(west > -M_PI && west < M_PI, @"west must be in the interval [-Pi, Pi].");
+    NSAssert(east > -M_PI && east < M_PI, @"east must be in the interval [-Pi, Pi].");
+}
 
-/**
- * Computes the southwest corner of an rectangle.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle for which to find the corner
- * @param {Cartographic} [result] The object onto which to store the result.
- * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
- */
-Rectangle.getSouthwest = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Cartographic(rectangle.west, rectangle.south);
-    }
-    result.longitude = rectangle.west;
-    result.latitude = rectangle.south;
-    result.height = 0.0;
-    return result;
-};
+-(CSCartographic *)southwest
+{
+    return [[CSCartographic alloc] initWithLatitude:self.south longitude:self.west];
+}
 
-/**
- * Computes the northwest corner of an rectangle.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle for which to find the corner
- * @param {Cartographic} [result] The object onto which to store the result.
- * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
- */
-Rectangle.getNorthwest = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Cartographic(rectangle.west, rectangle.north);
-    }
-    result.longitude = rectangle.west;
-    result.latitude = rectangle.north;
-    result.height = 0.0;
-    return result;
-};
+-(CSCartographic *)northwest
+{
+    return [[CSCartographic alloc] initWithLatitude:self.north longitude:self.west];
+}
 
-/**
- * Computes the northeast corner of an rectangle.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle for which to find the corner
- * @param {Cartographic} [result] The object onto which to store the result.
- * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
- */
-Rectangle.getNortheast = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Cartographic(rectangle.east, rectangle.north);
-    }
-    result.longitude = rectangle.east;
-    result.latitude = rectangle.north;
-    result.height = 0.0;
-    return result;
-};
+-(CSCartographic *)northeast
+{
+    return [[CSCartographic alloc] initWithLatitude:self.north longitude:self.east];
+}
 
-/**
- * Computes the southeast corner of an rectangle.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle for which to find the corner
- * @param {Cartographic} [result] The object onto which to store the result.
- * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
- */
-Rectangle.getSoutheast = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Cartographic(rectangle.east, rectangle.south);
-    }
-    result.longitude = rectangle.east;
-    result.latitude = rectangle.south;
-    result.height = 0.0;
-    return result;
-};
+-(CSCartographic *)southeast
+{
+    return [[CSCartographic alloc] initWithLatitude:self.south longitude:self.east];
+}
 
-/**
- * Computes the center of an rectangle.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle for which to find the center
- * @param {Cartographic} [result] The object onto which to store the result.
- * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
- */
-Rectangle.getCenter = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Cartographic((rectangle.west + rectangle.east) * 0.5, (rectangle.south + rectangle.north) * 0.5);
-    }
-    result.longitude = (rectangle.west + rectangle.east) * 0.5;
-    result.latitude = (rectangle.south + rectangle.north) * 0.5;
-    result.height = 0.0;
-    return result;
-};
+-(CSCartographic *)center
+{
+    return [[CSCartographic alloc] initWithLatitude:(self.south + self.north) * 0.5 longitude:(self.west + self.east) * 0.5]
+}
 
-/**
- * Computes the intersection of two rectangles
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle On rectangle to find an intersection
- * @param {Rectangle} otherRectangle Another rectangle to find an intersection
- * @param {Rectangle} [result] The object onto which to store the result.
- * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
- */
-Rectangle.intersectWith = function(rectangle, otherRectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    if (!defined(otherRectangle)) {
-        throw new DeveloperError('otherRectangle is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var west = Math.max(rectangle.west, otherRectangle.west);
-    var south = Math.max(rectangle.south, otherRectangle.south);
-    var east = Math.min(rectangle.east, otherRectangle.east);
-    var north = Math.min(rectangle.north, otherRectangle.north);
-    if (!defined(result)) {
-        return new Rectangle(west, south, east, north);
-    }
-    result.west = west;
-    result.south = south;
-    result.east = east;
-    result.north = north;
-    return result;
-};
+-(CSRectangle *)intersectWith:(CSRectangle *)other
+{
+    NSAssert(other != nil, @"Need comparison object");
 
-/**
- * Returns true if the cartographic is on or inside the rectangle, false otherwise.
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle
- * @param {Cartographic} cartographic The cartographic to test.
- * @returns {Boolean} true if the provided cartographic is inside the rectangle, false otherwise.
- */
-Rectangle.contains = function(rectangle, cartographic) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    if (!defined(cartographic)) {
-        throw new DeveloperError('cartographic is required.');
-    }
-    //>>includeEnd('debug');
-    
-    return cartographic.longitude >= rectangle.west &&
-    cartographic.longitude <= rectangle.east &&
-    cartographic.latitude >= rectangle.south &&
-    cartographic.latitude <= rectangle.north;
-};
+    return [[CSRectangle alloc] initWithWest:MAX(self.west, other.west)
+                                       south:MAX(self.south, other.south)
+                                        east:MAX(self.east, other.east)
+                                       north:MAX(self.north, other.north)];
+}
 
-/**
- * Determines if the rectangle is empty, i.e., if <code>west >= east</code>
- * or <code>south >= north</code>.
- *
- * @memberof Rectangle
- *
- * @param {Rectangle} rectangle The rectangle
- * @returns {Boolean} True if the rectangle is empty; otherwise, false.
- */
-Rectangle.isEmpty = function(rectangle) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
-    
-    return rectangle.west >= rectangle.east || rectangle.south >= rectangle.north;
-};
+-(BOOL)contains:(CSCartographic *)cartographic
+{
+    NSAssert(cartographic != nil, @"Need cartographic object");
 
-var subsampleLlaScratch = new Cartographic();
+    return (cartographic.longitude >= self.west &&
+            cartographic.longitude <= self.east &&
+            cartographic.latitude >= self.south &&
+            cartographic.latitude <= self.north);
+}
+
+-(BOOL)isEmpty
+{
+    return self.west >= self.east || self.south >= self.north;
+}
+
 /**
  * Samples an rectangle so that it includes a list of Cartesian points suitable for passing to
  * {@link BoundingSphere#fromPoints}.  Sampling is necessary to account
@@ -546,22 +166,17 @@ var subsampleLlaScratch = new Cartographic();
  * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
  * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
  */
-Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-        throw new DeveloperError('rectangle is required');
+-(NSArray *)subsample:(CSEllipsoid *)ellipsoid surfaceHeight:(Float64)surfaceHeight
+{
+    if (!ellipsoid)
+    {
+        ellipsoid = [CSEllipsoid wgs84Ellipsoid];
     }
-    //>>includeEnd('debug');
+
+    NSMutableArray *result = [NSMutableArray array];
     
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    surfaceHeight = defaultValue(surfaceHeight, 0.0);
     
-    if (!defined(result)) {
-        result = [];
-    }
-    var length = 0;
-    
-    var north = rectangle.north;
+    var north = self.north;
     var south = rectangle.south;
     var east = rectangle.east;
     var west = rectangle.west;
@@ -570,7 +185,8 @@ Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
     lla.height = surfaceHeight;
     
     lla.longitude = west;
-    lla.latitude = north;
+    lla.latitude = self.north;
+    [ellipsoid carto]
     result[length] = ellipsoid.cartographicToCartesian(lla, result[length]);
     length++;
     
@@ -613,6 +229,41 @@ Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
     }
     result.length = length;
     return result;
+}
+
+/**
+ * The largest possible rectangle.
+ * @memberof Rectangle
+ * @type Rectangle
+ */
++(CSRectangle *)maxValue;
+
+
+/**
+ * Determines if the rectangle is empty, i.e., if <code>west >= east</code>
+ * or <code>south >= north</code>.
+ *
+ * @memberof Rectangle
+ *
+ * @param {Rectangle} rectangle The rectangle
+ * @returns {Boolean} True if the rectangle is empty; otherwise, false.
+ */
+
+
+var subsampleLlaScratch = new Cartographic();
+/**
+ * Samples an rectangle so that it includes a list of Cartesian points suitable for passing to
+ * {@link BoundingSphere#fromPoints}.  Sampling is necessary to account
+ * for rectangles that cover the poles or cross the equator.
+ *
+ * @param {Rectangle} rectangle The rectangle to subsample.
+ * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to use.
+ * @param {Number} [surfaceHeight=0.0] The height of the rectangle above the ellipsoid.
+ * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
+ * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
+ */
+Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
+
 };
 
 /**
@@ -622,6 +273,18 @@ Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
  */
 Rectangle.MAX_VALUE = freezeObject(new Rectangle(-Math.PI, -CesiumMath.PI_OVER_TWO, Math.PI, CesiumMath.PI_OVER_TWO));
 
-return Rectangle;
+/**
+ * Duplicates an Rectangle.
+ *
+ * @memberof Rectangle
+ *
+ * @param {Rectangle} rectangle The rectangle to clone.
+ * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
+ * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided. (Returns undefined if rectangle is undefined)
+ */
+-(instancetype)copyWithZone:(NSZone *)zone
+{
+    return [[CSRectangle alloc] initWithWest:self.west south:self.south east:self.east north:self.north];
+}
 
 @end

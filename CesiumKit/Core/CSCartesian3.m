@@ -200,7 +200,7 @@ Cartesian3.unpack = function(array, startingIndex, result) {
                                        Z:self.z * scale.z];
 }
 
--(CSCartesian3 *)divideScalar:(Float64)scalar
+-(CSCartesian3 *)divideByScalar:(Float64)scalar
 {
     return [[CSCartesian3 alloc] initWithX:self.x / scalar
                                        Y:self.y / scalar

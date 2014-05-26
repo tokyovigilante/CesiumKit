@@ -129,7 +129,7 @@
  */
 -(CSCartesian3 *)multiplyComponents:(CSCartesian3 *)scale;
 
--(CSCartesian3 *)divideScalar:(Float64)scalar;
+-(CSCartesian3 *)divideByScalar:(Float64)scalar;
 
 
 /**
