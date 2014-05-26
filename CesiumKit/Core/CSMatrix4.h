@@ -180,7 +180,7 @@ static const UInt32 Column3Row3 = 15;
  * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
  * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
  */
-+(CSMatrix4 *)fromRotation:(CSMatrix3 *) translation:(CSCartesian3 *)translation;
++(CSMatrix4 *)fromRotation:(CSMatrix3 *)rotation translation:(CSCartesian3 *)translation;
 
 /**
  * Computes a Matrix4 instance from a translation, rotation, and scale (TRS)
@@ -201,7 +201,7 @@ static const UInt32 Column3Row3 = 15;
  *   new Cesium.Cartesian3(7.0, 8.0, 9.0), // scale
  *   result);
  */
-+(CSMatrix4 *)fromTranslation:(CSCartesian3 *) rotation:(CSQuarternion *)rotation scale:(CSCartesian3 *)scale;
++(CSMatrix4 *)fromTranslation:(CSCartesian3 *)translation rotation:(CSQuarternion *)rotation scale:(CSCartesian3 *)scale;
 
 /**
  * Creates a Matrix4 instance from a Cartesian3 representing the translation.
