@@ -10,7 +10,9 @@
 
 #import "CSRectangle.h"
 #import "CSProjection.h"
+#import "CSGeographicProjection.h"
 #import "CSCartesian2.h"
+#import "CSCartesian3.h"
 
 @import UIKit.UIGeometry;
 
@@ -67,35 +69,18 @@
 
 +(CSBoundingRectangle *)fromRectangle:(CSRectangle *)rectangle projection:(CSProjection *)projection
 {
-#warning rectangle
-    /*
-     
-    if (!defined(result)) {
-        result = new BoundingRectangle();
+    NSAssert(rectangle != nil, @"No rectangle provided");
+    
+    if (!projection)
+    {
+        projection = [[CSGeographicProjection alloc] initWithEllipsoid:nil];
     }
+    CSCartesian3 *lowerLeft = [projection project:rectangle.southwest];
+    CSCartesian3 *upperRight = [projection project:rectangle.northeast];
     
-    if (!defined(rectangle)) {
-        result.x = 0;
-        result.y = 0;
-        result.width = 0;
-        result.height = 0;
-        return result;
-    }
+    upperRight = [upperRight subtract:lowerLeft];
     
-    projection = defaultValue(projection, defaultProjection);
-    
-    var lowerLeft = projection.project(Rectangle.getSouthwest(rectangle, fromRectangleLowerLeft));
-    var upperRight = projection.project(Rectangle.getNortheast(rectangle, fromRectangleUpperRight));
-    
-    Cartesian2.subtract(upperRight, lowerLeft, upperRight);
-    
-    result.x = lowerLeft.x;
-    result.y = lowerLeft.y;
-    result.width = upperRight.x;
-    result.height = upperRight.y;
-    return result;
-     */
-    return nil;
+    return [[CSBoundingRectangle alloc] initWithX:lowerLeft.x Y:lowerLeft.y width:upperRight.x height:upperRight.y];
 }
 
 -(CSBoundingRectangle *)unionRect:(CSBoundingRectangle *)other

@@ -12,8 +12,6 @@
 
 @interface CSProjection : NSObject
 
-@property CSEllipsoid *ellipsoid;
-
 -(id)initWithEllipsoid:(CSEllipsoid *)ellipsoid;
 
 /**

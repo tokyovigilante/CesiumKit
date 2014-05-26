@@ -18,12 +18,11 @@
     self = [super init];
     if (self)
     {
-        _ellipsoid = ellipsoid;
-        if (!_ellipsoid)
+        if (!ellipsoid)
         {
-            _ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+            ellipsoid = [CSEllipsoid wgs84Ellipsoid];
         }
-        _semimajorAxis = _ellipsoid.maximumRadius;
+        _semimajorAxis = ellipsoid.maximumRadius;
         _oneOverSemimajorAxis = 1.0 / _semimajorAxis;
     }
     return self;
