@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSEllipsoid, CSTerrainProvider, CSImageryLayerCollection, CSCartesian3;
+@class CSEllipsoid, CSTerrainProvider, CSImageryLayerCollection, CSCartesian4;
 /**
  * The globe rendered in the scene, including its terrain ({@link Globe#terrainProvider})
  * and imagery layers ({@link Globe#imageryLayers}).  Access the globe using {@link Scene#globe}.
@@ -33,7 +33,7 @@
  * @type {Cartesian3}
  * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
  */
-@property (nonatomic) CSCartesian3 *northPoleColor;
+@property (nonatomic) CSCartesian4 *northPoleColor;
 
 /**
  * Determines the color of the south pole. If the day tile provider imagery does not
@@ -42,133 +42,88 @@
  * @type {Cartesian3}
  * @default Cartesian3(1.0, 1.0, 1.0)
  */
-@property (nonatomic) CSCartesian3 *southPoleColor;
+@property (nonatomic) CSCartesian4 *southPoleColor;
 
+/**
+ * Determines if the globe will be shown.
+ *
+ * @type {Boolean}
+ * @default true
+ */
+@property (nonatomic) BOOL show;
 
-//var Globe = function(ellipsoid) {
+/**
+ * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
+ * against the terrain surface, or false if such primitives should always be drawn on top
+ * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
+ * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
+ * switched can sometimes make a primitive that should be on the surface disappear underneath it.
+ *
+ * @type {Boolean}
+ * @default false
+ */
+@property (nonatomic) BOOL depthTestAgainstTerrain;
+
+/**
+ * The maximum screen-space error used to drive level-of-detail refinement.  Higher
+ * values will provide better performance but lower visual quality.
+ *
+ * @type {Number}
+ * @default 2
+ */
+@property (nonatomic) SInt32 maximumScreenSpaceError;
+
+/**
+ * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
+ * tiles beyond this number will be freed, as long as they aren't needed for rendering
+ * this frame.  A larger number will consume more memory but will show detail faster
+ * when, for example, zooming out and then back in.
+ *
+ * @type {Number}
+ * @default 100
+ */
+@property (nonatomic) SInt32 tileCacheSize;
+
+/**
+ * Enable lighting the globe with the sun as a light source.
+ *
+ * @type {Boolean}
+ * @default false
+ */
+@property (nonatomic) BOOL enableLighting;
+
+/**
+ * The distance where everything becomes lit. This only takes effect
+ * when <code>enableLighting</code> is <code>true</code>.
+ *
+ * @type {Number}
+ * @default 6500000.0
+ */
+@property (nonatomic) Float64 lightingFadeOutDistance;
+
+/**
+ * The distance where lighting resumes. This only takes effect
+ * when <code>enableLighting</code> is <code>true</code>.
+ *
+ * @type {Number}
+ * @default 9000000.0
+ */
+@property (nonatomic) Float64 lightingFadeInDistance;
+
+//
+@property (nonatomic) NSDictionary *drawUniforms;
 
     
-       
 
-    
-    /**
-     * Determines the color of the north pole. If the day tile provider imagery does not
-     * extend over the north pole, it will be filled with this color before applying lighting.
-     *
-     * @type {Cartesian3}
-     * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
-     */
-    this.northPoleColor = new Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0);
-    
-    /**
-     * Determines the color of the south pole. If the day tile provider imagery does not
-     * extend over the south pole, it will be filled with this color before applying lighting.
-     *
-     * @type {Cartesian3}
-     * @default Cartesian3(1.0, 1.0, 1.0)
-     */
-    this.southPoleColor = new Cartesian3(1.0, 1.0, 1.0);
-    
-    /**
-     * Determines if the globe will be shown.
-     *
-     * @type {Boolean}
-     * @default true
-     */
-    this.show = true;
-    
-    this._mode = SceneMode.SCENE3D;
-    this._projection = undefined;
-    
-    /**
-     * The normal map to use for rendering waves in the ocean.  Setting this property will
-     * only have an effect if the configured terrain provider includes a water mask.
-     *
-     * @type {String}
-     * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
-     */
-    this.oceanNormalMapUrl = buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg');
-    
-    /**
-     * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
-     * against the terrain surface, or false if such primitives should always be drawn on top
-     * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
-     * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
-     * switched can sometimes make a primitive that should be on the surface disappear underneath it.
-     *
-     * @type {Boolean}
-     * @default false
-     */
-    this.depthTestAgainstTerrain = false;
-    
-    /**
-     * The maximum screen-space error used to drive level-of-detail refinement.  Higher
-     * values will provide better performance but lower visual quality.
-     *
-     * @type {Number}
-     * @default 2
-     */
-    this.maximumScreenSpaceError = 2;
-    
-    /**
-     * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
-     * tiles beyond this number will be freed, as long as they aren't needed for rendering
-     * this frame.  A larger number will consume more memory but will show detail faster
-     * when, for example, zooming out and then back in.
-     *
-     * @type {Number}
-     * @default 100
-     */
-    this.tileCacheSize = 100;
-    
-    /**
-     * Enable lighting the globe with the sun as a light source.
-     *
-     * @type {Boolean}
-     * @default false
-     */
-    this.enableLighting = false;
-    this._enableLighting = false;
-    
-    /**
-     * The distance where everything becomes lit. This only takes effect
-     * when <code>enableLighting</code> is <code>true</code>.
-     *
-     * @type {Number}
-     * @default 6500000.0
-     */
-    this.lightingFadeOutDistance = 6500000.0;
-    
-    /**
-     * The distance where lighting resumes. This only takes effect
-     * when <code>enableLighting</code> is <code>true</code>.
-     *
-     * @type {Number}
-     * @default 9000000.0
-     */
-    this.lightingFadeInDistance = 9000000.0;
-    
+/*
     this._lastOceanNormalMapUrl = undefined;
     this._oceanNormalMap = undefined;
     this._zoomedOutOceanSpecularIntensity = 0.5;
     this._showingPrettyOcean = false;
     this._hasWaterMask = false;
-    this._lightingFadeDistance = new Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance);
+    this._lightingFadeDistance = new Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance);*/
     
-    var that = this;
-    
-    this._drawUniforms = {
-        u_zoomedOutOceanSpecularIntensity : function() {
-            return that._zoomedOutOceanSpecularIntensity;
-        },
-        u_oceanNormalMap : function() {
-            return that._oceanNormalMap;
-        },
-        u_lightingFadeDistance : function() {
-            return that._lightingFadeDistance;
-        }
-    };
-};
+
 
 defineProperties(Globe.prototype, {
     /**
