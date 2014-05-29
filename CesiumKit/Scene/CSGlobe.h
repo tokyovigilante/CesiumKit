@@ -113,7 +113,6 @@
 //
 @property (nonatomic) NSDictionary *drawUniforms;
 
-    
 
 /*
     this._lastOceanNormalMapUrl = undefined;
@@ -124,30 +123,6 @@
     this._lightingFadeDistance = new Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance);*/
     
 
-
-defineProperties(Globe.prototype, {
-    /**
-     * Gets an ellipsoid describing the shape of this globe.
-     * @memberof Globe.prototype
-     * @type {Ellipsoid}
-     */
-    ellipsoid : {
-    get: function() {
-        return this._ellipsoid;
-    }
-    },
-    
-    /**
-     * Gets the collection of image layers that will be rendered on this globe.
-     * @memberof Globe.prototype
-     * @type {ImageryLayerCollection}
-     */
-imageryLayers: {
-    get : function() {
-        return this._imageryLayerCollection;
-    }
-}
-});
 
 var depthQuadScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(12) : [];
 var scratchCartesian1 = new Cartesian3();
