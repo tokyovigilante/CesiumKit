@@ -352,7 +352,7 @@ function executeTranslucentCommandsSorted(scene, executeFunction, passState, com
     }
 }*/
 
--(void)executeCommands:(CSPassState *)passState clearColour:(UIColor *)clearColour;
+-(void)executeCommands:(CSPassState *)passState clearColour:(CSCartesian4 *)clearColour;
 -(void)executeOverlayCommands:(CSPassState *)passState;
 -(void)updatePrimitives;
 -(void)callAfterRenderFunctions:(CSFrameState *)frameState;

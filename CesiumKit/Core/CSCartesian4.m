@@ -209,10 +209,10 @@
                                          W:ABS(self.w)];
 }
 
--(CSCartesian4 *)linearExtrapolation:(CSCartesian4 *)other point:(Float64)t
+-(CSCartesian4 *)linearExtrapolation:(CSCartesian4 *)end point:(Float64)t
 {
-    NSAssert(other != nil, @"Comparison object required");
-    return [[self multiplyByScalar:1.0 - t] add:[other multiplyByScalar:t]];
+    NSAssert(end != nil, @"Comparison object required");
+    return [[self multiplyByScalar:1.0 - t] add:[end multiplyByScalar:t]];
 }
 
 -(CSCartesian4 *)mostOrthogonalAxis

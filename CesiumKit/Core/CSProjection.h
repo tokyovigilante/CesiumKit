@@ -35,7 +35,7 @@
  *
  * @memberof WebMercatorProjection
  *
- * @param {Cartesian2} cartesian The web mercator coordinates in meters.
+ * @param {Cartesian3} cartesian The web mercator coordinates in meters.
  * @param {Cartographic} [result] The instance to which to copy the result, or undefined if a
  *        new instance should be created.
  * @returns {Cartographic} The equivalent cartographic coordinates.

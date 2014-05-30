@@ -234,7 +234,7 @@
  * @param {Cartesian4} [result] The object onto which to store the result.
  * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
  */
--(CSCartesian4 *)linearExtrapolation:(CSCartesian4 *)other point:(Float64)t;
+-(CSCartesian4 *)linearExtrapolation:(CSCartesian4 *)end point:(Float64)t;
 
 /**
  * Returns the axis that is most orthogonal to the provided Cartesian.

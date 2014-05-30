@@ -197,7 +197,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
  */
--(CSCartesian3 *)linearExtrapolation:(CSCartesian3 *)other point:(Float64)t;
+-(CSCartesian3 *)linearExtrapolation:(CSCartesian3 *)end point:(Float64)t;
 
 -(CSCartesian3 *)mostOrthogonalAxis;
 -(Float64)angleBetween:(CSCartesian3 *)other;

@@ -84,43 +84,9 @@
     array[index] = self.z;
 }
 
-/**
- * Retrieves an instance from a packed array.
- * @memberof Cartesian3
- *
- * @param {Array} array The packed array.
- * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
- * @param {Cartesian3} [result] The object into which to store the result.
- */
 +(CSCartesian3 *)unpack:(Float32 *)array startingIndex:(UInt32)index
 {
-    NSAssert(1 == 0, @"unimplemented");
-    /**
-     * Retrieves an instance from a packed array.
-     * @memberof Cartesian3
-     *
-     * @param {Array} array The packed array.
-     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-     * @param {Cartesian3} [result] The object into which to store the result.
-     
-     Cartesian3.unpack = function(array, startingIndex, result) {
-     //>>includeStart('debug', pragmas.debug);
-     if (!defined(array)) {
-     throw new DeveloperError('array is required');
-     }
-     //>>includeEnd('debug');
-     
-     startingIndex = defaultValue(startingIndex, 0);
-     
-     if (!defined(result)) {
-     result = new Cartesian3();
-     }
-     result.x = array[startingIndex++];
-     result.y = array[startingIndex++];
-     result.z = array[startingIndex];
-     return result;
-     };*/
-    return nil;
+    return [[CSCartesian3 alloc] initWithX:array[index+2] Y:array[index+1] Z:array[index]];
 }
 
 
@@ -258,10 +224,10 @@
     return [self subtract:other].magnitude;
 }
 
--(CSCartesian3 *)linearExtrapolation:(CSCartesian3 *)other point:(Float64)t
+-(CSCartesian3 *)linearExtrapolation:(CSCartesian3 *)end point:(Float64)t
 {
-    NSAssert(other != nil, @"Comparison object required");
-    return [[self multiplyByScalar:1.0 - t] add:[other multiplyByScalar:t]];
+    NSAssert(end != nil, @"Comparison object required");
+    return [[self multiplyByScalar:1.0 - t] add:[end multiplyByScalar:t]];
 };
 
 -(CSCartesian3 *)mostOrthogonalAxis

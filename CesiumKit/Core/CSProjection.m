@@ -42,7 +42,7 @@
  */
 -(CSCartesian3 *)project:(CSCartographic *)cartographic3
 {
-    NSAssert(YES, @"Invalid base class");
+    NSAssert(NO, @"Invalid base class");
     return nil;
 }
 
@@ -59,9 +59,9 @@
  *        new instance should be created.
  * @returns {Cartographic} The equivalent cartographic coordinates.
  */
--(CSCartographic *)unproject:(CSCartesian3 *)cartesian
+-(CSCartographic *)unproject:(CSCartesian2 *)cartesian
 {
-    NSAssert(YES, @"Invalid base class");
+    NSAssert(NO, @"Invalid base class");
     return nil;
 }
 
