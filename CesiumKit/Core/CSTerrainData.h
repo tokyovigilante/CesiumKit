@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface CSTerrainData : NSObject
+
+-(id)initWithOptions:(NSDictionary *)options;
 
 @end

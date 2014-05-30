@@ -87,7 +87,7 @@
     return ellipsoid.maximumRadius * 2 * M_PI * self.heightmapTerrainQuality / (tileImageWidth * numberOfTilesAtLevelZero);
 }
 
--(CSTerrainData *)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level
+-(CSTerrainData *)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle
 {
     NSAssert(NO, @"Invalid base class");
     return nil;

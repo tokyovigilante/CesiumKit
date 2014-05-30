@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "CSTerrainData.h"
 
 @interface CSHeightMapTerrainData : CSTerrainData
 
