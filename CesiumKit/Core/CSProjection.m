@@ -11,6 +11,7 @@
 
 #import "CSEllipsoid.h"
 
+
 @implementation CSProjection
 
 -(id)initWithEllipsoid:(CSEllipsoid *)ellipsoid
@@ -59,7 +60,7 @@
  *        new instance should be created.
  * @returns {Cartographic} The equivalent cartographic coordinates.
  */
--(CSCartographic *)unproject:(CSCartesian2 *)cartesian
+-(CSCartographic *)unproject:(CSCartesian3 *)cartesian
 {
     NSAssert(NO, @"Invalid base class");
     return nil;

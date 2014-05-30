@@ -118,7 +118,6 @@
     {
         yTileCoordinate = yTiles - 1;
     }
-
     return [[CSCartesian2 alloc] initWithX:xTileCoordinate Y:yTileCoordinate];
 }
 
