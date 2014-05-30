@@ -130,7 +130,8 @@
  *          returns undefined instead of a promise, it is an indication that too many requests are already
  *          pending and the request will be retried later.
  */
--(CSTerrainData *)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle;
+-(void)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle completionBlock:(void (^)(CSTerrainData *terrainData))completionBlock;
+;
 
 /**
  * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be

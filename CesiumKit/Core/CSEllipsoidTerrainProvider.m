@@ -50,9 +50,9 @@
     return self;
 }
 
--(CSTerrainData *)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle
+-(void)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle completionBlock:(void (^)(CSTerrainData *))completionBlock
 {
-    return _terrainData;
+    completionBlock(_terrainData);
 }
 
 -(Float64)getMaximumGeometricErrorForLevel:(UInt32)level
