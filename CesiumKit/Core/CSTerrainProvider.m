@@ -27,6 +27,7 @@
         _ready = NO;
         _heightmapTerrainQuality = 0.25;
         _regularGridIndexArrays = [NSMutableDictionary dictionary];
+        _hasWaterMask = NO;
     }
     return self;
 }

@@ -22,7 +22,11 @@
  * @see CesiumTerrainProvider
  * @see ArcGisImageServerTerrainProvider
  */
-@interface CSTerrainProvider : NSObject
+@interface CSTerrainProvider : NSObject {
+    CSTilingScheme *_tilingScheme;
+    BOOL _ready;
+    BOOL _hasWaterMask;
+}
 
 /**
  * Gets an event that is raised when the terrain provider encounters an asynchronous error..  By subscribing
@@ -66,6 +70,18 @@
  * screen pixels between adjacent heightmap vertices and thus rendering more quickly.
  */
 @property (nonatomic) Float64 heightmapTerrainQuality;
+
+/**
+ * Gets a value indicating whether or not the provider includes a water mask.  The water mask
+ * indicates which areas of the globe are water rather than land, so they can be rendered
+ * as a reflective surface with animated waves.  This function should not be
+ * called before {@link TerrainProvider#ready} returns true.
+ * @memberof TerrainProvider
+ * @function
+ *
+ * @returns {Boolean} True if the provider has a water mask; otherwise, false.
+ */
+@property (readonly) BOOL hasWaterMask;
 
 -(instancetype)initWithOptions:(NSDictionary *)options;
 
@@ -124,18 +140,6 @@
  * @returns {Number} The maximum geometric error.
  */
 -(Float64)getMaximumGeometricErrorForLevel:(UInt32)level;
-
-/**
- * Gets a value indicating whether or not the provider includes a water mask.  The water mask
- * indicates which areas of the globe are water rather than land, so they can be rendered
- * as a reflective surface with animated waves.  This function should not be
- * called before {@link TerrainProvider#ready} returns true.
- * @memberof TerrainProvider
- * @function
- *
- * @returns {Boolean} True if the provider has a water mask; otherwise, false.
- */
--(BOOL)hasWaterMask;
 
 @end
 

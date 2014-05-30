@@ -142,6 +142,7 @@
 }
 
 // depthQuad = Float32[12]
+#warning float32Array
 -(void)computeDepthQuad:(Float32 *)depthQuad forFrameState:(CSFrameState *)frameState
 {
     CSCartesian3 *radii = self.ellipsoid.radii;
