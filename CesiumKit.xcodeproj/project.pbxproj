@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		942A83D619384C1200012DC4 /* CSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D519384C1200012DC4 /* CSArray.m */; };
 		942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D819384F5500012DC4 /* CSUInt16Array.m */; };
+		942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */; };
 		943999461930418C00012DC4 /* CSCartographic.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999051930418C00012DC4 /* CSCartographic.m */; };
 		943999471930418C00012DC4 /* CSSpherical.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999091930418C00012DC4 /* CSSpherical.m */; };
 		943999481930418C00012DC4 /* CSEllipsoid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990B1930418C00012DC4 /* CSEllipsoid.m */; };
@@ -85,6 +86,8 @@
 		942A83D519384C1200012DC4 /* CSArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSArray.m; sourceTree = "<group>"; };
 		942A83D719384F5500012DC4 /* CSUInt16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUInt16Array.h; sourceTree = "<group>"; };
 		942A83D819384F5500012DC4 /* CSUInt16Array.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSUInt16Array.m; sourceTree = "<group>"; };
+		942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGeographicTilingScheme.h; sourceTree = "<group>"; };
+		942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSGeographicTilingScheme.m; sourceTree = "<group>"; };
 		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
 		943999051930418C00012DC4 /* CSCartographic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartographic.m; sourceTree = "<group>"; };
 		943999061930418C00012DC4 /* CSCartesian4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian4.h; sourceTree = "<group>"; };
@@ -214,6 +217,8 @@
 				943999121930418C00012DC4 /* CSEllipsoidGeometry.h */,
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */,
+				942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */,
+				942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */,
 				94502FCD1938248D00012DC4 /* CSEllipsoidTerrainProvider.m */,
 				943999141930418C00012DC4 /* CSGeographicProjection.h */,
 				943999201930418C00012DC4 /* CSGeographicProjection.m */,
@@ -490,6 +495,7 @@
 				943999561930418C00012DC4 /* CSWebMercatorProjection.m in Sources */,
 				943999591930418C00012DC4 /* CSContext.m in Sources */,
 				9439995C1930418C00012DC4 /* CSUniformState.m in Sources */,
+				942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */,
 				9439994F1930418C00012DC4 /* CSCartesian3.m in Sources */,
 				9439994B1930418C00012DC4 /* CSProjection.m in Sources */,
 				9439994E1930418C00012DC4 /* CSMath.m in Sources */,
