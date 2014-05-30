@@ -33,6 +33,10 @@
 
 -(id)initWithX:(Float64)x Y:(Float64)y Z:(Float64)z;
 
++(CSCartesian3 *)cartesian3FromArray:(Float64 *)array;
+
++(CSCartesian3 *)cartesian3FromSpherical:(CSSpherical *)spherical;
+
 /**
  * Stores the provided instance into the provided array.
  * @memberof Cartesian4
@@ -52,10 +56,6 @@
  * @param {Cartesian3} [result] The object into which to store the result.
  */
 +(CSCartesian3 *)unpack:(Float32 *)array startingIndex:(UInt32)index;
-
-+(CSCartesian3 *)cartesian3FromArray:(Float64 *)array;
-
-+(CSCartesian3 *)cartesian3FromSpherical:(CSSpherical *)spherical;
 
 -(CSCartesian2 *)xy;
 -(Float64)magnitudeSquared;

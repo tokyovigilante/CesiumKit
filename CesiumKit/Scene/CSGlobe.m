@@ -13,16 +13,19 @@
 
 #import "CSDrawCommand.h"
 #import "CSBoundingSphere.h"
+#import "CSBoundingRectangle.h"
 
 #import "CSRendererDefines.h"
 
 #import "CSCartesian2.h"
+#import "CSCartesian3.h"
 #import "CSCartesian4.h"
 
 #import "CSFrameState.h"
 #import "CSCamera.h"
+#import "CSContext.h"
 
-@class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet, CSCartesian4;
+@class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet;
 
 
 @interface CSGlobe ()
@@ -146,100 +149,48 @@
     
     // Find the corresponding position in the scaled space of the ellipsoid.
     CSCartesian3 *q = [self.ellipsoid.oneOverRadii multiplyComponents:p];
-    var q = Cartesian3.multiplyComponents(globe._ellipsoid.oneOverRadii, p, scratchCartesian1);
     
-    var qMagnitude = Cartesian3.magnitude(q);
-    var qUnit = Cartesian3.normalize(q, scratchCartesian2);
-    
-    // Determine the east and north directions at q.
-    var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3);
-    var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4);
-    
-    // Determine the radius of the 'limb' of the ellipsoid.
-    var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
-    
-    // Compute the center and offsets.
-    var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
-    var scalar = wMagnitude / qMagnitude;
-    var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
-    var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
-    
-    // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-    var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
-    Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-    Cartesian3.pack(upperLeft, depthQuadScratch, 0);
-    
-    var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
-    Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-    Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
-    
-    var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.add(upperRight, eastOffset, upperRight);
-    Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-    Cartesian3.pack(upperRight, depthQuadScratch, 6);
-    
-    var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.add(lowerRight, eastOffset, lowerRight);
-    Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-    Cartesian3.pack(lowerRight, depthQuadScratch, 9);
-    
-    return depthQuadScratch;
-}
-
-var depthQuadScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(12) : [];
-var scratchCartesian1 = new Cartesian3();
-var scratchCartesian2 = new Cartesian3();
-var scratchCartesian3 = new Cartesian3();
-var scratchCartesian4 = new Cartesian3();
-
-function computeDepthQuad(globe, frameState) {
-    var radii = globe._ellipsoid.radii;
-    var p = frameState.camera.positionWC;
-    
-    // Find the corresponding position in the scaled space of the ellipsoid.
-    var q = Cartesian3.multiplyComponents(globe._ellipsoid.oneOverRadii, p, scratchCartesian1);
-    
-    var qMagnitude = Cartesian3.magnitude(q);
-    var qUnit = Cartesian3.normalize(q, scratchCartesian2);
+    Float64 qMagnitude = q.magnitude;
+    CSCartesian3 *qUnit = q.normalise;
     
     // Determine the east and north directions at q.
-    var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3);
-    var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4);
+    CSCartesian3 *eUnit = [[CSCartesian3 unitz] cross:q].normalise;
+    CSCartesian3 *nUnit = [qUnit cross:eUnit].normalise;
     
     // Determine the radius of the 'limb' of the ellipsoid.
-    var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
+    Float64 wMagnitude = sqrt(q.magnitudeSquared - 1.0);
     
     // Compute the center and offsets.
-    var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
-    var scalar = wMagnitude / qMagnitude;
-    var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
-    var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
+    CSCartesian3 *center = [qUnit multiplyByScalar:1.0 / qMagnitude];
+    Float64 scalar = wMagnitude / qMagnitude;
+    CSCartesian3 *eastOffset = [eUnit multiplyByScalar:scalar];
+    CSCartesian3 *northOffset = [nUnit multiplyByScalar:scalar];
     
     // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-    var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
-    Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-    Cartesian3.pack(upperLeft, depthQuadScratch, 0);
+    CSCartesian3 *upperLeft = [center add:northOffset];
+    upperLeft = [upperLeft subtract:eastOffset];
+    upperLeft = [upperLeft multiplyComponents:radii];
+    [upperLeft pack:&depthQuad startingIndex:0];
     
-    var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
-    Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-    Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
+    CSCartesian3 *lowerLeft = [center subtract:northOffset];
+    lowerLeft = [lowerLeft subtract:eastOffset];
+    lowerLeft = [lowerLeft multiplyComponents:radii];
+    [lowerLeft pack:&depthQuad startingIndex:3];
     
-    var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.add(upperRight, eastOffset, upperRight);
-    Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-    Cartesian3.pack(upperRight, depthQuadScratch, 6);
+    CSCartesian3 *upperRight = [center add:northOffset];
+    upperRight = [upperRight add:eastOffset];
+    upperRight = [upperRight multiplyComponents:radii];
+    [upperRight pack:&depthQuad startingIndex:6];
     
-    var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.add(lowerRight, eastOffset, lowerRight);
-    Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-    Cartesian3.pack(lowerRight, depthQuadScratch, 9);
-    
-    return depthQuadScratch;
+    CSCartesian3 *lowerRight = [center subtract:northOffset];
+    lowerRight = [lowerRight add:eastOffset];
+    lowerRight = [lowerRight multiplyComponents:radii];
+    [lowerRight pack:&depthQuad startingIndex:9];
 }
+#warning computePoleQuad
+//-(CSBoundingRectangle *)computePoleQuad:(CSFrameState *)frameState maxLat:(Float64)maxLat maxGivenLat:(Float64)maxGivenLat viewProjMatrix:(CS)
+
+/*
 
 function computePoleQuad(globe, frameState, maxLat, maxGivenLat, viewProjMatrix, viewportTransformation) {
     var pt1 = globe._ellipsoid.cartographicToCartesian(new Cartographic(0.0, maxGivenLat));
@@ -275,11 +226,14 @@ function computePoleQuad(globe, frameState, maxLat, maxGivenLat, viewProjMatrix,
 
 var viewportScratch = new BoundingRectangle();
 var vpTransformScratch = new Matrix4();
-var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(8) : [];
+var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(8) : [];*/
 
-function fillPoles(globe, context, frameState) {
-    var terrainProvider = globe._surface._terrainProvider;
-    if (frameState.mode !== SceneMode.SCENE3D) {
+-(void)fillPoles:(CSContext *)context frameState:(CSFrameState *)frameState
+{
+    CSTerrainProvider *terrainProvider = self.surface.terrainProvider;
+    
+    if (!terrainProvider.ready)
+    {
         return;
     }
     

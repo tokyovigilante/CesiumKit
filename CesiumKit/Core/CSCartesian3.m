@@ -77,49 +77,52 @@
                                          Z:cartesian4.z];
 }
 
-/*    Cartesian3.pack = function(value, array, startingIndex) {
- //>>includeStart('debug', pragmas.debug);
- if (!defined(value)) {
- throw new DeveloperError('value is required');
- }
- 
- if (!defined(array)) {
- throw new DeveloperError('array is required');
- }
- //>>includeEnd('debug');
- 
- startingIndex = defaultValue(startingIndex, 0);
- 
- array[startingIndex++] = value.x;
- array[startingIndex++] = value.y;
- array[startingIndex] = value.z;
- };
- 
- /**
+-(void)pack:(Float32 *)array startingIndex:(UInt32)index
+{
+    array[index+2] = self.x;
+    array[index+1] = self.y;
+    array[index] = self.z;
+}
+
+/**
  * Retrieves an instance from a packed array.
  * @memberof Cartesian3
  *
  * @param {Array} array The packed array.
  * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
  * @param {Cartesian3} [result] The object into which to store the result.
- 
-Cartesian3.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-        result = new Cartesian3();
-    }
-    result.x = array[startingIndex++];
-    result.y = array[startingIndex++];
-    result.z = array[startingIndex];
-    return result;
-};*/
+ */
++(CSCartesian3 *)unpack:(Float32 *)array startingIndex:(UInt32)index
+{
+    NSAssert(1 == 0, @"unimplemented");
+    /**
+     * Retrieves an instance from a packed array.
+     * @memberof Cartesian3
+     *
+     * @param {Array} array The packed array.
+     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+     * @param {Cartesian3} [result] The object into which to store the result.
+     
+     Cartesian3.unpack = function(array, startingIndex, result) {
+     //>>includeStart('debug', pragmas.debug);
+     if (!defined(array)) {
+     throw new DeveloperError('array is required');
+     }
+     //>>includeEnd('debug');
+     
+     startingIndex = defaultValue(startingIndex, 0);
+     
+     if (!defined(result)) {
+     result = new Cartesian3();
+     }
+     result.x = array[startingIndex++];
+     result.y = array[startingIndex++];
+     result.z = array[startingIndex];
+     return result;
+     };*/
+    return nil;
+}
+
 
 -(CSCartesian2 *)xy
 {
