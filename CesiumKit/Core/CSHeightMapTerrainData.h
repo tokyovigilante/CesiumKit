@@ -77,7 +77,7 @@
 @property (readonly) CSArray *buffer;
 @property (readonly) UInt32 width;
 @property (readonly) UInt32 height;
-@property (readonly( CSUInt8Array *childTile
+@property (readonly) UInt8 *childTileMask;
 
 @end
 
