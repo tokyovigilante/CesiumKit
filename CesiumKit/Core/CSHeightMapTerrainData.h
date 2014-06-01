@@ -8,6 +8,8 @@
 
 #import "CSTerrainData.h"
 
+@class CSHeightMapStructure;
+
 /**
  * Terrain data for a single tile where the terrain data is represented as a heightmap.  A heightmap
  * is a rectangular array of heights in row-major order from south to north and west to east.
@@ -78,6 +80,7 @@
 @property (readonly) UInt32 width;
 @property (readonly) UInt32 height;
 @property (readonly) UInt8 *childTileMask;
+@property (readonly) CSHeightMapStructure *structure;
 
 @end
 

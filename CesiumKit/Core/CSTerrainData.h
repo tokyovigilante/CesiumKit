@@ -98,30 +98,19 @@
  *          or undefined if too many asynchronous upsample operations are in progress and the request has been
  *          deferred.
  */
-TerrainData.prototype.upsample = DeveloperError.throwInstantiationError;
+-(void)upsample:(CSTilingScheme *)tilingScheme thisX:(UInt32)thisX thisY:(UInt32)thisY thisLevel:(UInt32)thisLevel descendantX:(UInt32)descendantX descendantY:(UInt32)descendantY descendantLevelcompletionBlock:(void (^)(CSTerrainData *terrainData))completionBlock;
+
+/**
+ * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
+ * terrain data.  If this value is false, the data was obtained from some other source, such
+ * as by downloading it from a remote server.  This method should return true for instances
+ * returned from a call to {@link TerrainData#upsample}.
+ * @memberof TerrainData
+ * @function
+ *
+ * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
+ */
+-(BOOL)wasCreatedByUpsampling;
 
 @end
 
-
-
-
-
-
-
-
-
-
-    /**
-     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
-     * terrain data.  If this value is false, the data was obtained from some other source, such
-     * as by downloading it from a remote server.  This method should return true for instances
-     * returned from a call to {@link TerrainData#upsample}.
-     * @memberof TerrainData
-     * @function
-     *
-     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
-     */
-    TerrainData.prototype.wasCreatedByUpsampling = DeveloperError.throwInstantiationError;
-    
-    return TerrainData;
-});
