@@ -25,7 +25,7 @@
     NSAssert(NO, @"Invalid base class");
 }
 
--(Float64)interpolateHeightAtLongitude:(Float64)longitude latitude:(Float64)latitude
+-(Float64)interpolateHeightForRectangle:(CSRectangle *)rectangle longitude:(Float64)longitude latitude:(Float64)latitude
 {
     NSAssert(NO, @"Invalid base class");
     return 0.0;
@@ -42,16 +42,6 @@
     NSAssert(NO, @"Invalid base class");
 }
 
-/**
- * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
- * terrain data.  If this value is false, the data was obtained from some other source, such
- * as by downloading it from a remote server.  This method should return true for instances
- * returned from a call to {@link TerrainData#upsample}.
- * @memberof TerrainData
- * @function
- *
- * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
- */
 -(BOOL)wasCreatedByUpsampling
 {
     NSAssert(NO, @"Invalid base class");

@@ -75,7 +75,7 @@
                 ++index;
             }
         }
-        indices = [[CSUInt16Array alloc] initWithValues:indicesData length:indicesCount];
+        byWidth[heightNumber] = indices = [[CSUInt16Array alloc] initWithValues:indicesData length:indicesCount];
     }
     return indices;
 };
