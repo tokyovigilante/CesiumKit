@@ -24,6 +24,8 @@
 #import "CSFrameState.h"
 #import "CSCamera.h"
 #import "CSContext.h"
+#import "CSTerrainProvider.h"
+#import "CSEllipsoidTerrainProvider.h"
 
 @class CSGlobeSurface, CSOccluder, CSGlobeSurfaceShaderSet;
 
@@ -64,15 +66,11 @@
         {
             _ellipsoid = [CSEllipsoid wgs84Ellipsoid];
         }
-#warning terrainprovider
-        //var terrainProvider = new EllipsoidTerrainProvider({ellipsoid : ellipsoid});
+        _terrainProvider = [[CSEllipsoidTerrainProvider alloc] initWithOptions:@{ @"ellipsoid" : _ellipsoid }];
+#warning imagerylayercollection
+
         //var imageryLayerCollection = new ImageryLayerCollection();
         
-        /**
-         * The terrain provider providing surface geometry for this globe.
-         * @type {TerrainProvider}
-         */
-        //this.terrainProvider = terrainProvider;
 #warning surface
 /*        this._surface = new GlobeSurface({
             terrainProvider : terrainProvider,
@@ -237,10 +235,7 @@ var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32A
     {
         return;
     }
-    
-    if (!terrainProvider.ready) {
-        return;
-    }
+
     var terrainMaxRectangle = terrainProvider.tilingScheme.rectangle;
     
     var viewProjMatrix = context.uniformState.viewProjection;

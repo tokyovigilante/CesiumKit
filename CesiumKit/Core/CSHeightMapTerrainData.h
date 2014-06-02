@@ -75,7 +75,7 @@
  * });
  */
 @interface CSHeightMapTerrainData : CSTerrainData {
-    NSOperationQueue *_vertexProcessor;
+    NSOperationQueue *_vertexProcessorQueue;
 }
 
 @property (readonly) CSArray *buffer;

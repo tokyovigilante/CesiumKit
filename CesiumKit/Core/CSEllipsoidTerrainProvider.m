@@ -39,7 +39,8 @@
                                                                                                tileImageWidth:64
                                                                                      numberOfTilesAtLevelZero:_tilingScheme.numberOfLevelZeroTilesX];
         
-        _terrainData = [[CSHeightMapTerrainData alloc] initWithOptions: @{@"buffer": [[CSUInt8Array alloc] initWithCapacity:16 * 16],
+        _terrainData = [[CSHeightMapTerrainData alloc] initWithOptions: @{@"terrainProvider" : self,
+                                                                          @"buffer" : [[CSUInt8Array alloc] initWithCapacity:16 * 16],
                                                                           @"width" : @16,
                                                                           @"height" : @16 }];
 
@@ -52,7 +53,10 @@
 
 -(void)requestTileGeometryX:(UInt32)x Y:(UInt32)y level:(UInt32)level throttle:(BOOL)throttle completionBlock:(void (^)(CSTerrainData *))completionBlock
 {
-    completionBlock(_terrainData);
+    if (self.ready)
+    {
+        completionBlock(_terrainData);
+    }
 }
 
 -(Float64)getMaximumGeometricErrorForLevel:(UInt32)level

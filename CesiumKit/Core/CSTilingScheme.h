@@ -32,7 +32,7 @@
     UInt32 _numberOfLevelZeroTilesY;
 }
 
-@property  CSEllipsoid *ellipsoid;
+@property (nonatomic) CSEllipsoid *ellipsoid;
 @property (readonly) CSRectangle *rectangle;
 @property (readonly) CSProjection *projection;
 @property (readonly) UInt32 numberOfLevelZeroTilesX;

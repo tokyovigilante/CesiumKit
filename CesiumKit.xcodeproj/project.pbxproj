@@ -50,6 +50,7 @@
 		94502FD1193826AF00012DC4 /* CSTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 94502FD0193826AF00012DC4 /* CSTilingScheme.m */; };
 		94502FD4193826DF00012DC4 /* CSWebMercatorTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 94502FD3193826DF00012DC4 /* CSWebMercatorTilingScheme.m */; };
 		9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */ = {isa = PBXBuildFile; fileRef = 9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */; };
+		9451509E193C597E00012DC4 /* CSTerrainMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 9451509D193C597E00012DC4 /* CSTerrainMesh.m */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
 		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
@@ -173,6 +174,8 @@
 		94502FD3193826DF00012DC4 /* CSWebMercatorTilingScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSWebMercatorTilingScheme.m; sourceTree = "<group>"; };
 		94515099193ADB8500012DC4 /* CSHeightMapStructure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSHeightMapStructure.h; sourceTree = "<group>"; };
 		9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSHeightMapStructure.m; sourceTree = "<group>"; };
+		9451509C193C597E00012DC4 /* CSTerrainMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSTerrainMesh.h; sourceTree = "<group>"; };
+		9451509D193C597E00012DC4 /* CSTerrainMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSTerrainMesh.m; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -236,10 +239,10 @@
 				943999201930418C00012DC4 /* CSGeographicProjection.m */,
 				942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */,
 				942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */,
-				942A83E0193878DE00012DC4 /* CSHeightMapTerrainData.h */,
-				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
 				94515099193ADB8500012DC4 /* CSHeightMapStructure.h */,
 				9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */,
+				942A83E0193878DE00012DC4 /* CSHeightMapTerrainData.h */,
+				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
 				943999071930418C00012DC4 /* CSInterval.h */,
 				943999221930418C00012DC4 /* CSInterval.m */,
 				9439991F1930418C00012DC4 /* CSMath.h */,
@@ -259,6 +262,8 @@
 				943999091930418C00012DC4 /* CSSpherical.m */,
 				942A83E3193878EE00012DC4 /* CSTerrainData.h */,
 				942A83E4193878EE00012DC4 /* CSTerrainData.m */,
+				9451509C193C597E00012DC4 /* CSTerrainMesh.h */,
+				9451509D193C597E00012DC4 /* CSTerrainMesh.m */,
 				94502FC91938247F00012DC4 /* CSTerrainProvider.h */,
 				94502FCA1938247F00012DC4 /* CSTerrainProvider.m */,
 				94502FCF193826AF00012DC4 /* CSTilingScheme.h */,
@@ -507,6 +512,7 @@
 				9439995D1930418C00012DC4 /* CSPassState.m in Sources */,
 				9439995E1930418C00012DC4 /* CSScene.m in Sources */,
 				94502FD4193826DF00012DC4 /* CSWebMercatorTilingScheme.m in Sources */,
+				9451509E193C597E00012DC4 /* CSTerrainMesh.m in Sources */,
 				943999531930418C00012DC4 /* CSVertexFormat.m in Sources */,
 				943999481930418C00012DC4 /* CSEllipsoid.m in Sources */,
 				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,

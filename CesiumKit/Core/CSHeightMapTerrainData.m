@@ -9,9 +9,18 @@
 #import "CSHeightMapTerrainData.h"
 
 #import "CSHeightMapStructure.h"
+#import "CSEllipsoid.h"
+#import "CSTilingScheme.h"
+#import "CSGeographicTilingScheme.h"
+#import "CSRectangle.h"
+#import "CSTerrainProvider.h"
+#import "CSTerrainMesh.h"
 
-@interface CSHeightMapTerrainData ()
+@interface CSHeightMapTerrainData () {
+    
+}
 
+@property (weak) CSTerrainProvider *terrainProvider;
 /*
 
 function upsampleBySubsetting(terrainData, tilingScheme, thisX, thisY, thisLevel, descendantX, descendantY, descendantLevel)
@@ -46,13 +55,17 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     if (self)
     {
         NSAssert(options != nil, @"options is required");
-        NSAssert(options[@"buffer"] != nil, @"options.buffer is required");
-        NSAssert(options[@"width"] != nil, @"options.width is required");
-        NSAssert(options[@"height"] != nil, @"options.height is required");
         
+        _terrainProvider = options[@"terrainProvider"];
         _buffer = options[@"buffer"];
         _width = ((NSNumber *)options[@"width"]).unsignedIntValue;
         _height = ((NSNumber *)options[@"height"]).unsignedIntValue;
+        
+        NSAssert(_terrainProvider != nil, @"options.buffer is required");
+        NSAssert(_buffer != nil, @"options.width is required");
+        NSAssert(_width != nil, @"options.height is required");
+        NSAssert(_height != nil, @"options.terrainProvider is required");
+        
         NSNumber *childMask = options[@"childMask"];
         if (childMask)
         {
@@ -68,7 +81,7 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
             _structure = [CSHeightMapStructure defaultStructure];
         }
         NSNumber *wasCreatedByUpsampling = options[@"wasCreatedByUpsampling"];
-        if (_wasCreatedByUpsampling)
+        if (wasCreatedByUpsampling)
         {
             _wasCreatedByUpsampling = wasCreatedByUpsampling.boolValue;
         }
@@ -83,7 +96,51 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     return self;
 }
 
-@end
+-(void)createMesh:(CSTilingScheme *)tilingScheme X:(UInt32)x Y:(UInt32)y level:(UInt32)level completionBlock:(void (^)(CSTerrainMesh *))completionBlock
+{
+    CSHeightMapTerrainData weakSelf = self;
+    [_vertexProcessorQueue addOperationWithBlock:^
+    {
+        NSAssert(tilingScheme != nil, @"tilingScheme is required");
+        
+        CSEllipsoid *ellipsoid = tilingScheme.ellipsoid;
+        CSRectangle *nativeRectangle = [tilingScheme tileToNativeRectangleX:x Y:y level:level];
+        CSRectangle *rectangle = [tilingScheme tileToRectangleX:x Y:y level:level];
+        
+        // Compute the center of the tile for RTC rendering.
+        CSCartesian3 *center = [ellipsoid cartographicToCartesian:rectangle.center];
+        
+        Float64 levelZeroMaxError = [weakSelf.terrainProvider getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:ellipsoid
+                                                                                                             tileImageWidth:weakSelf.width
+                                                                                                   numberOfTilesAtLevelZero:tilingScheme.numberOfLevelZeroTilesX];
+        Float64 thisLevelMaxError = levelZeroMaxError / (1 << level);
+        
+        NSDictionary *verticesResult = [self createVerticesFromHeightmapWithParameters:@{ @"heightmap" : weakSelf.buffer,
+                                                                                          @"structure" : weakSelf.structure,
+                                                                                          @"width" : weakSelf.width,
+                                                                                          @"height" : weakSelf.height,
+                                                                                          @"nativeRectangle" : nativeRectangle,
+                                                                                          @"rectangle" : rectangle,
+                                                                                          @"relativeToCenter" : center,
+                                                                                          @"ellipsoid" : ellipsoid,
+                                                                                          @"skirtHeight" : [NSNumber numberWithDouble:MIN(thisLevelMaxError * 4.0, 1000.0)],
+                                                                                          @"isGeographic" : [NSNumber numberWithBool:[tilingScheme isMemberOfClass:[CSGeographicTilingScheme class]]] }
+                                                                   transferableObjects:nil];
+        
+        CSTerrainMesh *mesh = [[CSTerrainMesh alloc] initWithOptions:(NSDictionary *)options:
+                               @{
+                                   center,
+                                   new Float32Array(result.vertices),
+                                   TerrainProvider.getRegularGridIndices(result.gridWidth, result.gridHeight),
+                                   result.minimumHeight,
+                                   result.maximumHeight,
+                                   result.boundingSphere3D,
+                                   result.occludeePointInScaledSpace);
+        });
+
+    }];
+}
+
     
     
     var taskProcessor = new TaskProcessor('createVerticesFromHeightmap');
@@ -547,3 +604,46 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     
     return HeightmapTerrainData;
 });
+
+#pragma mark - Vertex Processor block
+
+-(NSDictionary *)createVerticesFromHeightmapWithParameters:(NSDictionary *)parameters transferableObjects:(NSDictionary *)transferableObjects)
+{
+    var numberOfAttributes = 6;
+    
+    var arrayWidth = parameters.width;
+    var arrayHeight = parameters.height;
+    
+    if (parameters.skirtHeight > 0.0) {
+        arrayWidth += 2;
+        arrayHeight += 2;
+    }
+    
+    var vertices = new Float32Array(arrayWidth * arrayHeight * numberOfAttributes);
+    transferableObjects.push(vertices.buffer);
+    
+    parameters.ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
+    parameters.rectangle = Rectangle.clone(parameters.rectangle);
+    
+    parameters.vertices = vertices;
+    
+    var statistics = HeightmapTessellator.computeVertices(parameters);
+    var boundingSphere3D = BoundingSphere.fromVertices(vertices, parameters.relativeToCenter, numberOfAttributes);
+    
+    var ellipsoid = parameters.ellipsoid;
+    var occluder = new EllipsoidalOccluder(ellipsoid);
+    var occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(parameters.relativeToCenter, vertices, numberOfAttributes, parameters.relativeToCenter);
+    
+    return @{
+        vertices : vertices.buffer,
+        numberOfAttributes : numberOfAttributes,
+        minimumHeight : statistics.minimumHeight,
+        maximumHeight : statistics.maximumHeight,
+        gridWidth : arrayWidth,
+        gridHeight : arrayHeight,
+        boundingSphere3D : boundingSphere3D,
+        occludeePointInScaledSpace : occludeePointInScaledSpace
+    };
+}
+
+@end

@@ -23,6 +23,10 @@
 
 @property (readonly) CSEllipsoid *ellipsoid;
 
+/**
+ * The terrain provider providing surface geometry for this globe.
+ * @type {TerrainProvider}
+ */
 @property (readonly) CSTerrainProvider *terrainProvider;
 @property (readonly) CSImageryLayerCollection *imageryLayerCollection;
 

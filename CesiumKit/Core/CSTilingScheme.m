@@ -24,12 +24,12 @@
 
 -(UInt32)numberOfXTilesAtLevel:(UInt32)level
 {
-    return _numberOfLevelZeroTilesX << level;
+    return self.numberOfLevelZeroTilesX << level;
 }
 
 -(UInt32)numberOfYTilesAtLevel:(UInt32)level
 {
-    return _numberOfLevelZeroTilesY << level;
+    return self.numberOfLevelZeroTilesY << level;
 }
 
 -(CSRectangle *)rectangleToNativeRectangle:(CSRectangle *)rectangle
