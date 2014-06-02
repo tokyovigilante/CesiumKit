@@ -13,9 +13,11 @@
 #import "CSTilingScheme.h"
 #import "CSGeographicTilingScheme.h"
 #import "CSRectangle.h"
+#import "CSBoundingSphere.h"
 #import "CSTerrainProvider.h"
 #import "CSTerrainMesh.h"
 #import "CSFloat32Array.h"
+#import "CSHeightMapTessellator.h"
 
 @interface CSHeightMapTerrainData () {
     
@@ -627,25 +629,25 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     
     CSFloat32Array *vertices = [[CSFloat32Array alloc] initWithCapacity:arrayWidth * arrayHeight * numberOfAttributes];
     
+    NSDictionary *processedVertices = [CSHeightMapTessellator computeVertices:parameters];
+
     
-    
-    CSOccluder *occluder =
     parameters.ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
     parameters.rectangle = Rectangle.clone(parameters.rectangle);
     
     parameters.vertices = vertices;
     
-    var statistics = HeightmapTessellator.computeVertices(parameters);
-    var boundingSphere3D = BoundingSphere.fromVertices(vertices, parameters.relativeToCenter, numberOfAttributes);
+    CSBoundingSphere *boundingSphere3D = BoundingSphere.fromVertices(vertices, parameters.relativeToCenter, numberOfAttributes);
     
     var ellipsoid = parameters.ellipsoid;
-    var occluder = new EllipsoidalOccluder(ellipsoid);
+    
+    CSEllipsoidalOccluder *occluder = new EllipsoidalOccluder(ellipsoid);
     var occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(parameters.relativeToCenter, vertices, numberOfAttributes, parameters.relativeToCenter);
     
-    return @{ @"vertices" : vertices,
+    return @{ @"vertices" : processedVertices[@"vertices"],
               @"numberOfAttributes" : numberOfAttributes,
-              @"minimumHeight" : statistics.minimumHeight,
-              @"maximumHeight" : statistics.maximumHeight,
+              @"minimumHeight" : processedVertices[@"minimumHeight"],
+              @"maximumHeight" : processedVertices.maximumHeight,
               @"gridWidth" : arrayWidth,
               @"gridHeight" : arrayHeight,
               @"boundingSphere3D" : boundingSphere3D,
