@@ -16,7 +16,7 @@
     if (self)
     {
         _elementSize = elementSize;
-        _backingCache = [[NSMutableData alloc] initWithCapacity:capacity * elementSize];
+        _backingCache = [[NSMutableData alloc] initWithLength:capacity * elementSize];
     }
     return self;
 }
