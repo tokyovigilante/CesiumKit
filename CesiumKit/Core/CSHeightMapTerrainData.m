@@ -15,6 +15,7 @@
 #import "CSRectangle.h"
 #import "CSTerrainProvider.h"
 #import "CSTerrainMesh.h"
+#import "CSFloat32Array.h"
 
 @interface CSHeightMapTerrainData () {
     
@@ -44,6 +45,8 @@ function getHeight(heights, elementsPerHeight, elementMultiplier, stride, isBigE
 
 
 function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, stride, isBigEndian, index, height)*/
+
+-(NSDictionary *)createVerticesFromHeightmapWithParameters:(NSDictionary *)parameters;
 
 @end
 
@@ -609,7 +612,7 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
 
 #pragma mark - Vertex Processor block
 
--(NSDictionary *)createVerticesFromHeightmapWithParameters:(NSDictionary *)parameters transferableObjects:(NSDictionary *)transferableObjects)
+-(NSDictionary *)createVerticesFromHeightmapWithParameters:(NSDictionary *)parameters
 {
     UInt32 numberOfAttributes = 6;
     
@@ -621,6 +624,8 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
         arrayWidth += 2;
         arrayHeight += 2;
     }
+    
+    CSFloat32Array *vertices = [[CSFloat32Array alloc] initWithCapacity:arrayWidth * arrayHeight * numberOfAttributes];
     
     var vertices = new Float32Array(arrayWidth * arrayHeight * numberOfAttributes);
     transferableObjects.push(vertices.buffer);
@@ -637,16 +642,14 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     var occluder = new EllipsoidalOccluder(ellipsoid);
     var occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(parameters.relativeToCenter, vertices, numberOfAttributes, parameters.relativeToCenter);
     
-    return @{
-        vertices : vertices.buffer,
-        numberOfAttributes : numberOfAttributes,
-        minimumHeight : statistics.minimumHeight,
-        maximumHeight : statistics.maximumHeight,
-        gridWidth : arrayWidth,
-        gridHeight : arrayHeight,
-        boundingSphere3D : boundingSphere3D,
-        occludeePointInScaledSpace : occludeePointInScaledSpace
-    };
+    return @{ @"vertices" : vertices,
+              @"numberOfAttributes" : numberOfAttributes,
+              @"minimumHeight" : statistics.minimumHeight,
+              @"maximumHeight" : statistics.maximumHeight,
+              @"gridWidth" : arrayWidth,
+              @"gridHeight" : arrayHeight,
+              @"boundingSphere3D" : boundingSphere3D,
+              @"occludeePointInScaledSpace" : occludeePointInScaledSpace };
 }
 
 @end
