@@ -12,6 +12,8 @@
 #import "CSGeographicProjection.h"
 #import "CSWebMercatorProjection.h"
 #import "CSRectangle.h"
+#import "CSFloat32Array.h"
+#import "CSEllipsoid.h"
 
 @implementation CSBoundingSphere
 
@@ -22,11 +24,11 @@
     {
         if (center == nil)
         {
-            _center = [CSCartesian3 zero];
+            _center = CSCartesian3.zero;
         }
         else
         {
-            _center = [center copy];
+            _center = center.copy;
         }
         _radius = radius;
     }
@@ -42,13 +44,13 @@
     
     CSCartesian3 *currentPos = [positions.firstObject copy];
     
-    CSCartesian3 *xMin = [currentPos copy];
-    CSCartesian3 *yMin = [currentPos copy];
-    CSCartesian3 *zMin = [currentPos copy];
+    CSCartesian3 *xMin = currentPos.copy;
+    CSCartesian3 *yMin = currentPos.copy;
+    CSCartesian3 *zMin = currentPos.copy;
     
-    CSCartesian3 *xMax = [currentPos copy];
-    CSCartesian3 *yMax = [currentPos copy];
-    CSCartesian3 *zMax = [currentPos copy];
+    CSCartesian3 *xMax = currentPos.copy;
+    CSCartesian3 *yMax = currentPos.copy;
+    CSCartesian3 *zMax = currentPos.copy;
 
     for (CSCartesian3 *position in positions)
     {
@@ -59,32 +61,32 @@
         // Store points containing the the smallest and largest components
         if (x < xMin.x)
         {
-            xMin = [position copy];
+            xMin = position.copy;
         }
         
         if (x > xMax.x)
         {
-            xMax = [position copy];
+            xMax = position.copy;
         }
         
         if (y < yMin.y)
         {
-            yMin = [position copy];
+            yMin = position.copy;
         }
         
         if (y > yMax.y)
         {
-            yMax = [position copy];
+            yMax = position.copy;
         }
         
         if (z < zMin.z)
         {
-            zMin = [position copy];
+            zMin = position.copy;
         }
         
         if (z > zMax.z)
         {
-            zMax = [position copy];
+            zMax = position.copy;
         }
 
     }
@@ -102,15 +104,15 @@
     if (ySpan > maxSpan)
     {
         maxSpan = ySpan;
-        diameter1 = [yMin copy];
-        diameter2 = [yMax copy];
+        diameter1 = yMin.copy;
+        diameter2 = yMax.copy;
     }
     
     if (zSpan > maxSpan)
     {
         maxSpan = zSpan;
-        diameter1 = [zMin copy];
-        diameter2 = [zMax copy];
+        diameter1 = zMin.copy;
+        diameter2 = zMax.copy;
     }
     
     // Calculate the center of the initial sphere found by Ritter's algorithm
@@ -208,22 +210,185 @@
 
 +(CSBoundingSphere *)sphereFromRectangle3D:(CSRectangle *)rectangle ellipsoid:(CSEllipsoid *)ellipsoid surfaceHeight:(Float64)surfaceHeight
 {
+    if (!ellipsoid)
+    {
+        ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+    }
     
+    NSArray *positions;
+    if (rectangle)
+    {
+        positions = [rectangle subsample:ellipsoid surfaceHeight:surfaceHeight];
+    }
+    
+    return [CSBoundingSphere sphereFromPoints:positions];
 }
 
-+(CSBoundingSphere *)sphereFromVertices:(NSArray *)positions center:(CSCartesian3 *)center stride:(UInt32)stride
++(CSBoundingSphere *)sphereFromVertices:(CSFloat32Array *)vertices center:(CSCartesian3 *)center stride:(UInt32)stride
 {
+    if (!vertices || vertices.length == 0)
+    {
+        return [[CSBoundingSphere alloc] initWithCenter:CSCartesian3.zero radius:0.0];
+    }
     
+    if (!center)
+    {
+        center = CSCartesian3.zero;
+    }
+    NSAssert(stride >= 3, @"stride must be 3 or greater");
+    
+    CSCartesian3 *currentPos = [[CSCartesian3 alloc] initWithX:vertices[0] + center.x
+                                                             Y:vertices[1] + center.y
+                                                             Z:vertices[2] + center.z];
+
+    
+    CSCartesian3 xMin = currentPos.copy;
+    CSCartesian3 yMin = currentPos.copy;
+    CSCartesian3 zMin = currentPos.copy;
+    
+    CSCartesian3 xMax = currentPos.copy;
+    CSCartesian3 yMax = currentPos.copy;
+    CSCartesian3 zMax = currentPos.copy;
+    
+    UInt32 numElements = positions.length;
+    for (var i = 0; i < numElements; i += stride)
+    {
+        Float64 x = positions[i] + center.x;
+        Float64 y = positions[i + 1] + center.y;
+        Float64 z = positions[i + 2] + center.z;
+        
+        // Store points containing the the smallest and largest components
+        if (x < xMin.x)
+        {
+            xMin = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+        
+        if (x > xMax.x)
+        {
+            xMax = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+        
+        if (y < yMin.y)
+        {
+            yMin = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+        
+        if (y > yMax.y)
+        {
+            yMax = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+        
+        if (z < zMin.z)
+        {
+            zMin = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+        
+        if (z > zMax.z)
+        {
+            zMax = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        }
+    }
+    
+    // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
+    Float64 xSpan = [xMax subtract:xMin].magnitudeSquared;
+    Float64 ySpan = [yMax subtract:yMin].magnitudeSquared;
+    Float64 zSpan = [zMax subtract:zMin].magnitudeSquared;
+    
+    // Set the diameter endpoints to the largest span.
+    CSCartesian3 *diameter1 = [xMin copy];
+    CSCartesian3 *diameter2 = [xMax copy];
+    Float64 maxSpan = xSpan;
+    
+    if (ySpan > maxSpan)
+    {
+        maxSpan = ySpan;
+        diameter1 = yMin.copy;
+        diameter2 = yMax.copy;
+    }
+    
+    if (zSpan > maxSpan)
+    {
+        maxSpan = zSpan;
+        diameter1 = zMin.copy;
+        diameter2 = zMax.copy;
+    }
+    
+    // Calculate the center of the initial sphere found by Ritter's algorithm
+    var ritterCenter = fromPointsRitterCenter;
+    ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
+    ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
+    ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
+    
+    // Calculate the center of the initial sphere found by Ritter's algorithm
+    CSCartesian3 *ritterCenter = [[CSCartesian3 alloc] initWithX:(diameter1.x + diameter2.x) * 0.5
+                                                               Y:(diameter1.y + diameter2.y) * 0.5
+                                                               Z:(diameter1.z + diameter2.z) * 0.5];
+    
+    // Calculate the radius of the initial sphere found by Ritter's algorithm
+    Float64 ritterRadius = sqrt([diameter2 subtract:ritterCenter].magnitudeSquared);
+    
+    // Find the center of the sphere found using the Naive method.
+    CSCartesian3 *minBoxPt = [[CSCartesian3 alloc] initWithX:xMin.x Y:yMin.y Z:zMin.z];
+    CSCartesian3 *maxBoxPt = [[CSCartesian3 alloc] initWithX:xMax.x Y:yMaz.y Z:zMax.z];
+    
+    CSCartesian3 *naiveCenter = [[minBoxPt add:maxBoxPt] multiplyScalar:0.5];
+    
+    // Begin 2nd pass to find naive radius and modify the ritter sphere.
+    Float64 naiveRadius = 0;
+
+    for (i = 0; i < numElements; i += stride)
+    {
+        currentPos = [[CSCartesian3 alloc] initWithX:vertices[i] + center.x
+                                                   Y:vertices[i+1] + center.y
+                                                   Z:vertices[i+2] + center.z];
+        
+        // Find the furthest point from the naive center to calculate the naive radius.
+        Float64 r = [currentPos subtract:naiveCenter].magnitude;
+        if (r > naiveRadius)
+        {
+            naiveRadius = r;
+        }
+        
+        // Make adjustments to the Ritter Sphere to include all points.
+        Float64 oldCenterToPointSquared = [currentPos subtract:ritterCenter].magnitudeSquared;
+        
+        if (oldCenterToPointSquared > radiusSquared)
+        {
+            Float64 oldCenterToPoint = sqrt(oldCenterToPointSquared);
+            
+            // Calculate new radius to include the point that lies outside
+            ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
+            radiusSquared = ritterRadius * ritterRadius;
+            // Calculate center of new Ritter sphere
+            Float64 oldToNew = oldCenterToPoint - ritterRadius;
+            ritterCenter = [[CSCartesian3 alloc] initWithX:(ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
+                                                         Y:(ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
+                                                         Z:(ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint];
+            
+        }
+    }
+    
+    if (ritterRadius < naiveRadius)
+    {
+        return [[CSBoundingSphere alloc] initWithCenter:[ritterCenter copy] radius:ritterRadius];
+    }
+    else
+    {
+        return [[CSBoundingSphere alloc] initWithCenter:[naiveCenter copy] radius:naiveRadius];
+    }
 }
 
-+(CSBoundingSphere *)sphereFromCornerPoint:(Float64)corner oppositeCorner:(Float64)oppositeCorner
++(CSBoundingSphere *)sphereFromCornerPoint:(CSCartesian3 *)corner oppositeCorner:(CSCartesian3 *)oppositeCorner
 {
-    
+    CSCartesian3 *center = [[corner add:oppositeCorner] multiplyByScalar:0.5];
+    return [[CSBoundingSphere alloc] initWithCenter:center radius:[center distance:oppositeCorner]];
 }
 
 +(CSBoundingSphere *)sphereFromEllipsoid:(CSEllipsoid *)ellipsoid
 {
+    NSAssert(ellipsoid != nil, @"ellipsoid is required");
     
+    return [[CSBoundingSphere alloc] initWithCenter:CSCartesian3.zero radius:ellipsoid.maximumRadius];
 }
 
 /**
@@ -297,314 +462,6 @@
     
 }
 
-
-/*
-var defaultProjection = new GeographicProjection();
-var fromRectangle2DLowerLeft = new Cartesian3();
-var fromRectangle2DUpperRight = new Cartesian3();
-var fromRectangle2DSouthwest = new Cartographic();
-var fromRectangle2DNortheast = new Cartographic();
-
-/**
- * Computes a bounding sphere from an rectangle projected in 2D.
- *
- * @memberof BoundingSphere
- *
- * @param {Rectangle} rectangle The rectangle around which to create a bounding sphere.
- * @param {Object} [projection=GeographicProjection] The projection used to project the rectangle into 2D.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-
-
-/**
- * Computes a bounding sphere from an rectangle projected in 2D.  The bounding sphere accounts for the
- * object's minimum and maximum heights over the rectangle.
- *
- * @memberof BoundingSphere
- *
- * @param {Rectangle} rectangle The rectangle around which to create a bounding sphere.
- * @param {Object} [projection=GeographicProjection] The projection used to project the rectangle into 2D.
- * @param {Number} [minimumHeight=0.0] The minimum height over the rectangle.
- * @param {Number} [maximumHeight=0.0] The maximum height over the rectangle.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-
-
-var fromRectangle3DScratch = [];
-
-/**
- * Computes a bounding sphere from an rectangle in 3D. The bounding sphere is created using a subsample of points
- * on the ellipsoid and contained in the rectangle. It may not be accurate for all rectangles on all types of ellipsoids.
- * @memberof BoundingSphere
- *
- * @param {Rectangle} rectangle The valid rectangle used to create a bounding sphere.
- * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid used to determine positions of the rectangle.
- * @param {Number} [surfaceHeight=0.0] The height above the surface of the ellipsoid.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, result) {
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    surfaceHeight = defaultValue(surfaceHeight, 0.0);
-    
-    var positions;
-    if (defined(rectangle)) {
-        positions = Rectangle.subsample(rectangle, ellipsoid, surfaceHeight, fromRectangle3DScratch);
-    }
-    
-    return BoundingSphere.fromPoints(positions, result);
-};
-
-/**
- * Computes a tight-fitting bounding sphere enclosing a list of 3D points, where the points are
- * stored in a flat array in X, Y, Z, order.  The bounding sphere is computed by running two
- * algorithms, a naive algorithm and Ritter's algorithm. The smaller of the two spheres is used to
- * ensure a tight fit.
- *
- * @memberof BoundingSphere
- *
- * @param {Cartesian3[]} positions An array of points that the bounding sphere will enclose.  Each point
- *        is formed from three elements in the array in the order X, Y, Z.
- * @param {Cartesian3} [center=Cartesian3.ZERO] The position to which the positions are relative, which need not be the
- *        origin of the coordinate system.  This is useful when the positions are to be used for
- *        relative-to-center (RTC) rendering.
- * @param {Number} [stride=3] The number of array elements per vertex.  It must be at least 3, but it may
- *        be higher.  Regardless of the value of this parameter, the X coordinate of the first position
- *        is at array index 0, the Y coordinate is at array index 1, and the Z coordinate is at array index
- *        2.  When stride is 3, the X coordinate of the next position then begins at array index 3.  If
- *        the stride is 5, however, two array elements are skipped and the next position begins at array
- *        index 5.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if one was not provided.
- *
- * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
- *
- * @example
- * // Compute the bounding sphere from 3 positions, each specified relative to a center.
- * // In addition to the X, Y, and Z coordinates, the points array contains two additional
- * // elements per point which are ignored for the purpose of computing the bounding sphere.
- * var center = new Cesium.Cartesian3(1.0, 2.0, 3.0);
- * var points = [1.0, 2.0, 3.0, 0.1, 0.2,
- *               4.0, 5.0, 6.0, 0.1, 0.2,
- *               7.0, 8.0, 9.0, 0.1, 0.2];
- * var sphere = Cesium.BoundingSphere.fromVertices(points, center, 5);
- */
-BoundingSphere.fromVertices = function(positions, center, stride, result) {
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    if (!defined(positions) || positions.length === 0) {
-        result.center = Cartesian3.clone(Cartesian3.ZERO, result.center);
-        result.radius = 0.0;
-        return result;
-    }
-    
-    center = defaultValue(center, Cartesian3.ZERO);
-    
-    stride = defaultValue(stride, 3);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (stride < 3) {
-        throw new DeveloperError('stride must be 3 or greater.');
-    }
-    //>>includeEnd('debug');
-    
-    var currentPos = fromPointsCurrentPos;
-    currentPos.x = positions[0] + center.x;
-    currentPos.y = positions[1] + center.y;
-    currentPos.z = positions[2] + center.z;
-    
-    var xMin = Cartesian3.clone(currentPos, fromPointsXMin);
-    var yMin = Cartesian3.clone(currentPos, fromPointsYMin);
-    var zMin = Cartesian3.clone(currentPos, fromPointsZMin);
-    
-    var xMax = Cartesian3.clone(currentPos, fromPointsXMax);
-    var yMax = Cartesian3.clone(currentPos, fromPointsYMax);
-    var zMax = Cartesian3.clone(currentPos, fromPointsZMax);
-    
-    var numElements = positions.length;
-    for (var i = 0; i < numElements; i += stride) {
-        var x = positions[i] + center.x;
-        var y = positions[i + 1] + center.y;
-        var z = positions[i + 2] + center.z;
-        
-        currentPos.x = x;
-        currentPos.y = y;
-        currentPos.z = z;
-        
-        // Store points containing the the smallest and largest components
-        if (x < xMin.x) {
-            Cartesian3.clone(currentPos, xMin);
-        }
-        
-        if (x > xMax.x) {
-            Cartesian3.clone(currentPos, xMax);
-        }
-        
-        if (y < yMin.y) {
-            Cartesian3.clone(currentPos, yMin);
-        }
-        
-        if (y > yMax.y) {
-            Cartesian3.clone(currentPos, yMax);
-        }
-        
-        if (z < zMin.z) {
-            Cartesian3.clone(currentPos, zMin);
-        }
-        
-        if (z > zMax.z) {
-            Cartesian3.clone(currentPos, zMax);
-        }
-    }
-    
-    // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-    var xSpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(xMax, xMin, fromPointsScratch));
-    var ySpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(yMax, yMin, fromPointsScratch));
-    var zSpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(zMax, zMin, fromPointsScratch));
-    
-    // Set the diameter endpoints to the largest span.
-    var diameter1 = xMin;
-    var diameter2 = xMax;
-    var maxSpan = xSpan;
-    if (ySpan > maxSpan) {
-        maxSpan = ySpan;
-        diameter1 = yMin;
-        diameter2 = yMax;
-    }
-    if (zSpan > maxSpan) {
-        maxSpan = zSpan;
-        diameter1 = zMin;
-        diameter2 = zMax;
-    }
-    
-    // Calculate the center of the initial sphere found by Ritter's algorithm
-    var ritterCenter = fromPointsRitterCenter;
-    ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
-    ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
-    ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
-    
-    // Calculate the radius of the initial sphere found by Ritter's algorithm
-    var radiusSquared = Cartesian3.magnitudeSquared(Cartesian3.subtract(diameter2, ritterCenter, fromPointsScratch));
-    var ritterRadius = Math.sqrt(radiusSquared);
-    
-    // Find the center of the sphere found using the Naive method.
-    var minBoxPt = fromPointsMinBoxPt;
-    minBoxPt.x = xMin.x;
-    minBoxPt.y = yMin.y;
-    minBoxPt.z = zMin.z;
-    
-    var maxBoxPt = fromPointsMaxBoxPt;
-    maxBoxPt.x = xMax.x;
-    maxBoxPt.y = yMax.y;
-    maxBoxPt.z = zMax.z;
-    
-    var naiveCenter = Cartesian3.multiplyByScalar(Cartesian3.add(minBoxPt, maxBoxPt, fromPointsScratch), 0.5, fromPointsNaiveCenterScratch);
-    
-    // Begin 2nd pass to find naive radius and modify the ritter sphere.
-    var naiveRadius = 0;
-    for (i = 0; i < numElements; i += stride) {
-        currentPos.x = positions[i] + center.x;
-        currentPos.y = positions[i + 1] + center.y;
-        currentPos.z = positions[i + 2] + center.z;
-        
-        // Find the furthest point from the naive center to calculate the naive radius.
-        var r = Cartesian3.magnitude(Cartesian3.subtract(currentPos, naiveCenter, fromPointsScratch));
-        if (r > naiveRadius) {
-            naiveRadius = r;
-        }
-        
-        // Make adjustments to the Ritter Sphere to include all points.
-        var oldCenterToPointSquared = Cartesian3.magnitudeSquared(Cartesian3.subtract(currentPos, ritterCenter, fromPointsScratch));
-        if (oldCenterToPointSquared > radiusSquared) {
-            var oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
-            // Calculate new radius to include the point that lies outside
-            ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
-            radiusSquared = ritterRadius * ritterRadius;
-            // Calculate center of new Ritter sphere
-            var oldToNew = oldCenterToPoint - ritterRadius;
-            ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint;
-            ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint;
-            ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint;
-        }
-    }
-    
-    if (ritterRadius < naiveRadius) {
-        Cartesian3.clone(ritterCenter, result.center);
-        result.radius = ritterRadius;
-    } else {
-        Cartesian3.clone(naiveCenter, result.center);
-        result.radius = naiveRadius;
-    }
-    
-    return result;
-};
-
-/**
- * Computes a bounding sphere from the corner points of an axis-aligned bounding box.  The sphere
- * tighly and fully encompases the box.
- *
- * @memberof BoundingSphere
- *
- * @param {Number} [corner] The minimum height over the rectangle.
- * @param {Number} [oppositeCorner] The maximum height over the rectangle.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- *
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- *
- * @example
- * // Create a bounding sphere around the unit cube
- * var sphere = Cesium.BoundingSphere.fromCornerPoints(new Cesium.Cartesian3(-0.5, -0.5, -0.5), new Cesium.Cartesian3(0.5, 0.5, 0.5));
- */
-BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(corner) || !defined(oppositeCorner)) {
-        throw new DeveloperError('corner and oppositeCorner are required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    var center = result.center;
-    Cartesian3.add(corner, oppositeCorner, center);
-    Cartesian3.multiplyByScalar(center, 0.5, center);
-    result.radius = Cartesian3.distance(center, oppositeCorner);
-    return result;
-};
-
-/**
- * Creates a bounding sphere encompassing an ellipsoid.
- *
- * @memberof BoundingSphere
- *
- * @param {Ellipsoid} ellipsoid The ellipsoid around which to create a bounding sphere.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- *
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- *
- * @example
- * var boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
- */
-BoundingSphere.fromEllipsoid = function(ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(ellipsoid)) {
-        throw new DeveloperError('ellipsoid is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    Cartesian3.clone(Cartesian3.ZERO, result.center);
-    result.radius = ellipsoid.maximumRadius;
-    return result;
-};
 
 /**
  * Duplicates a BoundingSphere instance.

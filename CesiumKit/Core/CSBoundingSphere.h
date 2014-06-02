@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSCartesian2, CSCartesian3, CSCartesian4, CSProjection, CSEllipsoid, CSRectangle, CSMatrix4, CSInterval;
+@class CSCartesian2, CSCartesian3, CSCartesian4, CSProjection, CSEllipsoid, CSRectangle, CSMatrix4, CSInterval, CSFloat32Array;
 
 /**
  * A bounding sphere with a center and a radius.
@@ -129,8 +129,7 @@
  *               7.0, 8.0, 9.0, 0.1, 0.2];
  * var sphere = Cesium.BoundingSphere.fromVertices(points, center, 5);
  */
-+(CSBoundingSphere *)sphereFromVertices:(NSArray *)positions center:(CSCartesian3 *)center stride:(UInt32)stride;
-
++(CSBoundingSphere *)sphereFromVertices:(CSFloat32Array *)vertices center:(CSCartesian3 *)center stride:(UInt32)stride;
 /**
  * Computes a bounding sphere from the corner points of an axis-aligned bounding box.  The sphere
  * tighly and fully encompases the box.
@@ -147,7 +146,7 @@
  * // Create a bounding sphere around the unit cube
  * var sphere = Cesium.BoundingSphere.fromCornerPoints(new Cesium.Cartesian3(-0.5, -0.5, -0.5), new Cesium.Cartesian3(0.5, 0.5, 0.5));
  */
-+(CSBoundingSphere *)sphereFromCornerPoint:(Float64)corner oppositeCorner:(Float64)oppositeCorner;
++(CSBoundingSphere *)sphereFromCornerPoint:(CSCartesian3 *)corner oppositeCorner:(CSCartesian3 *)oppositeCorner;
 
 /**
  * Creates a bounding sphere encompassing an ellipsoid.

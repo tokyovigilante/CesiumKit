@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		941F24C6193CC94200BDB515 /* CSEllipsoidalOccluder.m in Sources */ = {isa = PBXBuildFile; fileRef = 941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */; };
 		942A83D619384C1200012DC4 /* CSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D519384C1200012DC4 /* CSArray.m */; };
 		942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D819384F5500012DC4 /* CSUInt16Array.m */; };
 		942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */; };
@@ -89,6 +90,8 @@
 
 /* Begin PBXFileReference section */
 		9404F42F193357B500012DC4 /* CSRendererDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSRendererDefines.h; sourceTree = "<group>"; };
+		941F24C4193CC94200BDB515 /* CSEllipsoidalOccluder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidalOccluder.h; sourceTree = "<group>"; };
+		941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidalOccluder.m; sourceTree = "<group>"; };
 		942A83D419384C1200012DC4 /* CSArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSArray.h; sourceTree = "<group>"; };
 		942A83D519384C1200012DC4 /* CSArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSArray.m; sourceTree = "<group>"; };
 		942A83D719384F5500012DC4 /* CSUInt16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUInt16Array.h; sourceTree = "<group>"; };
@@ -249,6 +252,8 @@
 				9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */,
 				942A83E0193878DE00012DC4 /* CSHeightMapTerrainData.h */,
 				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
+				941F24C4193CC94200BDB515 /* CSEllipsoidalOccluder.h */,
+				941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */,
 				945150A2193C648700012DC4 /* CSHeightMapTessellator.h */,
 				945150A3193C648700012DC4 /* CSHeightMapTessellator.m */,
 				9451509F193C5F3400012DC4 /* CSFloat32Array.h */,
@@ -509,6 +514,7 @@
 				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				943999471930418C00012DC4 /* CSSpherical.m in Sources */,
+				941F24C6193CC94200BDB515 /* CSEllipsoidalOccluder.m in Sources */,
 				942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */,
 				9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */,
 				9439995F1930418C00012DC4 /* CSPrimitives.m in Sources */,

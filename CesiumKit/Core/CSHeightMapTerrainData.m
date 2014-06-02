@@ -632,14 +632,16 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     NSDictionary *processedVertices = [CSHeightMapTessellator computeVertices:parameters];
 
     
-    parameters.ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
-    parameters.rectangle = Rectangle.clone(parameters.rectangle);
+    //parameters.ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
+    //parameters.rectangle = Rectangle.clone(parameters.rectangle);
     
-    parameters.vertices = vertices;
+    //parameters.vertices = vertices;
     
-    CSBoundingSphere *boundingSphere3D = BoundingSphere.fromVertices(vertices, parameters.relativeToCenter, numberOfAttributes);
+    CSBoundingSphere *boundingSphere3D = [CSBoundingSphere sphereFromVertices:vertices
+                                                                       center:parameters[@"relativeToCenter"]
+                                                                       stride:numberOfAttributes];
     
-    var ellipsoid = parameters.ellipsoid;
+    //var ellipsoid = parameters.ellipsoid;
     
     CSEllipsoidalOccluder *occluder = new EllipsoidalOccluder(ellipsoid);
     var occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(parameters.relativeToCenter, vertices, numberOfAttributes, parameters.relativeToCenter);
