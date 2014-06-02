@@ -627,9 +627,9 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     
     CSFloat32Array *vertices = [[CSFloat32Array alloc] initWithCapacity:arrayWidth * arrayHeight * numberOfAttributes];
     
-    var vertices = new Float32Array(arrayWidth * arrayHeight * numberOfAttributes);
-    transferableObjects.push(vertices.buffer);
     
+    
+    CSOccluder *occluder =
     parameters.ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
     parameters.rectangle = Rectangle.clone(parameters.rectangle);
     

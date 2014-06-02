@@ -52,6 +52,7 @@
 		9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */ = {isa = PBXBuildFile; fileRef = 9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */; };
 		9451509E193C597E00012DC4 /* CSTerrainMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 9451509D193C597E00012DC4 /* CSTerrainMesh.m */; };
 		945150A1193C5F3400012DC4 /* CSFloat32Array.m in Sources */ = {isa = PBXBuildFile; fileRef = 945150A0193C5F3400012DC4 /* CSFloat32Array.m */; };
+		945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */ = {isa = PBXBuildFile; fileRef = 945150A3193C648700012DC4 /* CSHeightMapTessellator.m */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
 		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
@@ -179,6 +180,8 @@
 		9451509D193C597E00012DC4 /* CSTerrainMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSTerrainMesh.m; sourceTree = "<group>"; };
 		9451509F193C5F3400012DC4 /* CSFloat32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSFloat32Array.h; sourceTree = "<group>"; };
 		945150A0193C5F3400012DC4 /* CSFloat32Array.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSFloat32Array.m; sourceTree = "<group>"; };
+		945150A2193C648700012DC4 /* CSHeightMapTessellator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSHeightMapTessellator.h; sourceTree = "<group>"; };
+		945150A3193C648700012DC4 /* CSHeightMapTessellator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSHeightMapTessellator.m; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -246,6 +249,8 @@
 				9451509A193ADB8600012DC4 /* CSHeightMapStructure.m */,
 				942A83E0193878DE00012DC4 /* CSHeightMapTerrainData.h */,
 				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
+				945150A2193C648700012DC4 /* CSHeightMapTessellator.h */,
+				945150A3193C648700012DC4 /* CSHeightMapTessellator.m */,
 				9451509F193C5F3400012DC4 /* CSFloat32Array.h */,
 				945150A0193C5F3400012DC4 /* CSFloat32Array.m */,
 				943999071930418C00012DC4 /* CSInterval.h */,
@@ -502,6 +507,7 @@
 				943CCACF193070D400012DC4 /* CSBoundingSphere.m in Sources */,
 				943999541930418C00012DC4 /* CSInterval.m in Sources */,
 				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
+				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				943999471930418C00012DC4 /* CSSpherical.m in Sources */,
 				942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */,
 				9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */,
