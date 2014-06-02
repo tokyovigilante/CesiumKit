@@ -126,8 +126,10 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
                                                                                           @"skirtHeight" : [NSNumber numberWithDouble:MIN(thisLevelMaxError * 4.0, 1000.0)],
                                                                                           @"isGeographic" : [NSNumber numberWithBool:[tilingScheme isMemberOfClass:[CSGeographicTilingScheme class]]] }
                                                                    transferableObjects:nil];
-        
-        CSTerrainMesh *mesh = [[CSTerrainMesh alloc] initWithOptions:(NSDictionary *)options:
+        CSTerrainMesh *mesh = [[CSTerrainMesh alloc] initWithCenter:center
+                                                           vertices:[ indices:<#(CSUInt16Array *)#> minimumHeight:<#(Float64)#> maximumHeight:<#(Float64)#> boundingSphere3D:<#(CSBoundingSphere *)#> occludeePointInScaledSpace:<#(CSCartesian3 *)#>
+                               
+                               Options:(NSDictionary *)options:
                                @{
                                    center,
                                    new Float32Array(result.vertices),
@@ -609,12 +611,13 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
 
 -(NSDictionary *)createVerticesFromHeightmapWithParameters:(NSDictionary *)parameters transferableObjects:(NSDictionary *)transferableObjects)
 {
-    var numberOfAttributes = 6;
+    UInt32 numberOfAttributes = 6;
     
-    var arrayWidth = parameters.width;
-    var arrayHeight = parameters.height;
+    UInt32 arrayWidth = parameters[@"width"];
+    UInt32 arrayHeight = parameters[@"height" ];
     
-    if (parameters.skirtHeight > 0.0) {
+    if (parameters[@"skirtHeight"] > 0.0)
+    {
         arrayWidth += 2;
         arrayHeight += 2;
     }
