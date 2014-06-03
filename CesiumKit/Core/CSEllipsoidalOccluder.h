@@ -35,6 +35,8 @@
 
 @property (readonly) CSEllipsoid *ellipsoid;
 @property (nonatomic) CSCartesian3 *cameraPosition;
+@property (readonly) CSCartesian3 *cameraPositionInScaledSpace;
+@property (readonly) Float64 distanceToLimbInScaledSpaceSquared;
 
 -(instancetype)initWithEllipsoid:(CSEllipsoid)ellipsoid cameraPosition:(CSCartesian3 *)cameraPosition;
 

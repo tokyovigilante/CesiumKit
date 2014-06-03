@@ -22,38 +22,30 @@
 
 @implementation CSEllipsoidalOccluder
 
--(instancetype)initWithEllipsoid:(CSEllipsoid)ellipsoid cameraPosition:(CSCartesian3 *)cameraPosition
+-(instancetype)initWithEllipsoid:(CSEllipsoid *)ellipsoid cameraPosition:(CSCartesian3 *)cameraPosition
 {
     self = [super init];
     if (self)
     {
         NSAssert(ellipsoid != nil, @"ellipsoid is required");
         _ellipsoid = ellipsoid;
+        _cameraPosition = CSCartesian3.zero;
+        _cameraPositionInScaledSpace = CSCartesian3.zero;
+        _distanceToLimbInScaledSpaceSquared = 0.0;
         
-        var EllipsoidalOccluder = function(ellipsoid, cameraPosition) {
-            //>>includeStart('debug', pragmas.debug);
-            if (!defined(ellipsoid)) {
-                throw new DeveloperError('ellipsoid is required.');
-            }
-            //>>includeEnd('debug');
-            
-            this._ellipsoid = ellipsoid;
-            this._cameraPosition = new Cartesian3();
-            this._cameraPositionInScaledSpace = new Cartesian3();
-            this._distanceToLimbInScaledSpaceSquared = 0.0;
-            
-            // cameraPosition fills in the above values
-            if (defined(cameraPosition)) {
-                this.cameraPosition = cameraPosition;
-            }
-        };
+        if (cameraPosition)
+        {
+            [self setCameraPosition:cameraPosition];
+        }
     }
     return self;
 }
 
 -(void)setCameraPosition:(CSCartesian3 *)cameraPosition
 {
+    
     // See http://cesiumjs.org/2013/04/25/Horizon-culling/
+    
     var ellipsoid = this._ellipsoid;
     var cv = ellipsoid.transformPositionToScaledSpace(cameraPosition, this._cameraPositionInScaledSpace);
     var vhMagnitudeSquared = Cartesian3.magnitudeSquared(cv) - 1.0;
