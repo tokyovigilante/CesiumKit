@@ -123,15 +123,7 @@ class EllipsoidalOccluder {
     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
     */
     func computeHorizonCullingPoint(directionToPoint: CSCartesian3, positions: CSCartesian3[]) -> CSCartesian3 {
-        //>>includeStart('debug', pragmas.debug);
-        /*
-        if (!defined(directionToPoint)) {
-            throw new DeveloperError('directionToPoint is required');
-        }
-        if (!defined(positions)) {
-            throw new DeveloperError('positions is required');
-        }
-        //>>includeEnd('debug');
+        
         
         var ellipsoid = this._ellipsoid;
         var scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint);
@@ -195,7 +187,7 @@ class EllipsoidalOccluder {
 
 
 //@end
-/*
+
 #import "CSEllipsoidalOccluder.h"
 
 #import "CSEllipsoid.h"
