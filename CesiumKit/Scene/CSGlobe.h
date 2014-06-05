@@ -126,7 +126,7 @@
     this._hasWaterMask = false;
     this._lightingFadeDistance = new Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance);*/
     
-
+/*
 function computePoleQuad(globe, frameState, maxLat, maxGivenLat, viewProjMatrix, viewportTransformation) {
     var pt1 = globe._ellipsoid.cartographicToCartesian(new Cartographic(0.0, maxGivenLat));
     var pt2 = globe._ellipsoid.cartographicToCartesian(new Cartographic(Math.PI, maxGivenLat));
@@ -322,7 +322,7 @@ function fillPoles(globe, context, frameState) {
 
 /**
  * @private
- */
+ *
 Globe.prototype.update = function(context, frameState, commandList) {
     if (!this.show) {
         return;
@@ -593,7 +593,7 @@ Globe.prototype.update = function(context, frameState, commandList) {
  * @returns {Boolean} True if this object was destroyed; otherwise, false.
  *
  * @see Globe#destroy
- */
+ *
 Globe.prototype.isDestroyed = function() {
     return false;
 };
@@ -616,7 +616,7 @@ Globe.prototype.isDestroyed = function() {
  *
  * @example
  * globe = globe && globe.destroy();
- */
+ *
 Globe.prototype.destroy = function() {
     this._northPoleCommand.vertexArray = this._northPoleCommand.vertexArray && this._northPoleCommand.vertexArray.destroy();
     this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
@@ -639,6 +639,6 @@ Globe.prototype.destroy = function() {
 return Globe;
 
 });
-
+*/
 
 @end

@@ -5,3 +5,4 @@
 #import "CSCartesian3.h"
 #import "CSEllipsoid.h"
 #import "CSRectangle.h"
+#import "CSBoundingSphere.h"

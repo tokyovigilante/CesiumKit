@@ -86,7 +86,7 @@
         _clearDepthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"depth" : @1.0,
                                                                        @"stencil" : @0,
                                                                        @"owner" : self }];
-        _depthCommand [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [[CSBoundingSphere alloc] initWithCenter:[CSCartesian3 zero]
+        _depthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [[CSBoundingSphere alloc] initWithCenter:[CSCartesian3 zero]
                                                                                                                       radius:ellipsoid.maximumRadius],
                                                                 @"pass" : [NSNumber numberWithUnsignedInt:PassOpaque],
                                                                 @"owner" : self }];
@@ -134,7 +134,7 @@
 #warning ocean map
         _drawUniforms = @{ //@"u_zoomedOutOceanSpecularIntensity", ^{ return weakSelf.zoomedOutOceanSpecularIntensity; },
                            //@"u_oceanNormalMap", ^{ return weakSelf.oceanNormalMap },
-                           @"u_lightingFadeDistance", ^{ return weakSelf.lightingFadeDistance; }};
+                           @"u_lightingFadeDistance": ^{ return weakSelf.lightingFadeDistance; }};
     }
     return self;
 }
@@ -153,7 +153,7 @@
     CSCartesian3 *qUnit = q.normalise;
     
     // Determine the east and north directions at q.
-    CSCartesian3 *eUnit = [[CSCartesian3 unitz] cross:q].normalise;
+    CSCartesian3 *eUnit = [[CSCartesian3 unitZ] cross:q].normalise;
     CSCartesian3 *nUnit = [qUnit cross:eUnit].normalise;
     
     // Determine the radius of the 'limb' of the ellipsoid.
@@ -169,22 +169,22 @@
     CSCartesian3 *upperLeft = [center add:northOffset];
     upperLeft = [upperLeft subtract:eastOffset];
     upperLeft = [upperLeft multiplyComponents:radii];
-    [upperLeft pack:&depthQuad startingIndex:0];
+    [upperLeft pack:depthQuad startingIndex:0];
     
     CSCartesian3 *lowerLeft = [center subtract:northOffset];
     lowerLeft = [lowerLeft subtract:eastOffset];
     lowerLeft = [lowerLeft multiplyComponents:radii];
-    [lowerLeft pack:&depthQuad startingIndex:3];
+    [lowerLeft pack:depthQuad startingIndex:3];
     
     CSCartesian3 *upperRight = [center add:northOffset];
     upperRight = [upperRight add:eastOffset];
     upperRight = [upperRight multiplyComponents:radii];
-    [upperRight pack:&depthQuad startingIndex:6];
+    [upperRight pack:depthQuad startingIndex:6];
     
     CSCartesian3 *lowerRight = [center subtract:northOffset];
     lowerRight = [lowerRight add:eastOffset];
     lowerRight = [lowerRight multiplyComponents:radii];
-    [lowerRight pack:&depthQuad startingIndex:9];
+    [lowerRight pack:depthQuad startingIndex:9];
 }
 #warning computePoleQuad
 //-(CSBoundingRectangle *)computePoleQuad:(CSFrameState *)frameState maxLat:(Float64)maxLat maxGivenLat:(Float64)maxGivenLat viewProjMatrix:(CS)
@@ -228,7 +228,7 @@ var vpTransformScratch = new Matrix4();
 var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(8) : [];*/
 
 -(void)fillPoles:(CSContext *)context frameState:(CSFrameState *)frameState
-{
+{/*
     CSTerrainProvider *terrainProvider = self.surface.terrainProvider;
     
     if (!terrainProvider.ready)
@@ -381,12 +381,12 @@ var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32A
             }
         });
         globe._southPoleCommand.uniformMap = combine(southPoleUniforms, globe._drawUniforms);
-    }
+    }*/
 }
 
 /**
  * @private
- */
+ *
 Globe.prototype.update = function(context, frameState, commandList) {
     if (!this.show) {
         return;
@@ -657,7 +657,7 @@ Globe.prototype.update = function(context, frameState, commandList) {
  * @returns {Boolean} True if this object was destroyed; otherwise, false.
  *
  * @see Globe#destroy
- */
+ *
 Globe.prototype.isDestroyed = function() {
     return false;
 };
@@ -680,7 +680,7 @@ Globe.prototype.isDestroyed = function() {
  *
  * @example
  * globe = globe && globe.destroy();
- */
+ *
 Globe.prototype.destroy = function() {
     this._northPoleCommand.vertexArray = this._northPoleCommand.vertexArray && this._northPoleCommand.vertexArray.destroy();
     this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
@@ -704,5 +704,5 @@ return Globe;
 
 });
 
-
+*/
 @end
