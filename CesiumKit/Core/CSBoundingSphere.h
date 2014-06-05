@@ -209,7 +209,7 @@
  * @param {BoundingSphere} [result] The object onto which to store the result.
  * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
  */
--(CSBoundingSphere *)expand:(CSBoundingSphere *)sphere point:(CSCartesian3 *)point;
+-(CSBoundingSphere *)expand:(CSCartesian3 *)point
 
 /**
  * Determines which side of a plane a sphere is located.

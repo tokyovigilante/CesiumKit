@@ -422,9 +422,13 @@
     
 }
 
--(CSBoundingSphere *)expand:(CSBoundingSphere *)sphere point:(CSCartesian3 *)point
+-(CSBoundingSphere *)expand:(CSCartesian3 *)point
 {
+    NSAssert(point != nil, @"point is required");
     
+    Float64 radius = [point subtract:self.center].magnitude;
+    
+    return [[CSBoundingSphere alloc] initWithCenter:self.center radius:MAX(self.radius, radius)];
 }
 
 -(CSBoundingSphere *)intersect:(CSCartesian4 *)plane
@@ -459,7 +463,8 @@
 
 -(BOOL)equals:(CSBoundingSphere *)other
 {
-    
+    return ([self.center equals:other.center] &&
+            self.radius == other.radius;
 }
 
 
@@ -482,69 +487,6 @@ BoundingSphere.clone = function(sphere, result) {
     
     result.center = Cartesian3.clone(sphere.center, result.center);
     result.radius = sphere.radius;
-    return result;
-};
-
-/**
- * The number of elements used to pack the object into an array.
- * @type {Number}
- */
-BoundingSphere.packedLength = 4;
-
-/**
- * Stores the provided instance into the provided array.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} value The value to pack.
- * @param {Number[]} array The array to pack into.
- * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
- */
-BoundingSphere.pack = function(value, array, startingIndex) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(value)) {
-        throw new DeveloperError('value is required');
-    }
-    
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    var center = value.center;
-    array[startingIndex++] = center.x;
-    array[startingIndex++] = center.y;
-    array[startingIndex++] = center.z;
-    array[startingIndex] = value.radius;
-};
-
-/**
- * Retrieves an instance from a packed array.
- * @memberof BoundingSphere
- *
- * @param {Number[]} array The packed array.
- * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
- * @param {Cartesian3} [result] The object into which to store the result.
- */
-BoundingSphere.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    var center = result.center;
-    center.x = array[startingIndex++];
-    center.y = array[startingIndex++];
-    center.z = array[startingIndex++];
-    result.radius = array[startingIndex];
     return result;
 };
 
@@ -585,37 +527,6 @@ BoundingSphere.union = function(left, right, result) {
     
     result.radius = Math.max(radius1, radius2);
     Cartesian3.clone(center, result.center);
-    
-    return result;
-};
-
-var expandScratch = new Cartesian3();
-/**
- * Computes a bounding sphere by enlarging the provided sphere to contain the provided point.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere A sphere to expand.
- * @param {Cartesian3} point A point to enclose in a bounding sphere.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-BoundingSphere.expand = function(sphere, point, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
-    }
-    
-    if (!defined(point)) {
-        throw new DeveloperError('point is required.');
-    }
-    //>>includeEnd('debug');
-    
-    result = BoundingSphere.clone(sphere, result);
-    
-    var radius = Cartesian3.magnitude(Cartesian3.subtract(point, result.center, expandScratch));
-    if (radius > result.radius) {
-        result.radius = radius;
-    }
     
     return result;
 };
