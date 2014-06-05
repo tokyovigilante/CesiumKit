@@ -14,5 +14,6 @@
 -(instancetype)initWithValues:(Float32 *)values length:(UInt64)length;
 
 -(Float32)valueAtIndex:(UInt64)index;
+-(void)setValue:(Float32)value atIndex:(UInt64)index;
 
 @end

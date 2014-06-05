@@ -8,6 +8,8 @@
 
 @import Foundation;
 
+#import "CSPackable.h"
+
 @class CSCartesian2, CSCartesian3, CSCartesian4, CSProjection, CSEllipsoid, CSRectangle, CSMatrix4, CSInterval, CSFloat32Array;
 
 /**
@@ -22,7 +24,7 @@
  * @see BoundingRectangle
  * @see Packable
  */
-@interface CSBoundingSphere : NSObject <NSCopying>
+@interface CSBoundingSphere : CSPackable <NSCopying>
 
 /**
  * The center point of the sphere.
@@ -162,32 +164,6 @@
  * var boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
  */
 +(CSBoundingSphere *)sphereFromEllipsoid:(CSEllipsoid *)ellipsoid;
-
-/**
- * The number of elements used to pack the object into an array.
- * @type {Number}
- */
-//BoundingSphere.packedLength = 4;
-
-/**
- * Stores the provided instance into the provided array.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} value The value to pack.
- * @param {Number[]} array The array to pack into.
- * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
- */
-//-(void *)pack:(UInt32)startingIndex;
-
-/**
- * Retrieves an instance from a packed array.
- * @memberof BoundingSphere
- *
- * @param {Number[]} array The packed array.
- * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
- * @param {Cartesian3} [result] The object into which to store the result.
- */
-//+(CSBoundingSphere *)unpack:(void *)array startingIndex:(UInt32)startingIndex;
 
 /**
  * Computes a bounding sphere that contains both the left and right bounding spheres.

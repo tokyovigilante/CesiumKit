@@ -31,6 +31,7 @@
             _center = center.copy;
         }
         _radius = radius;
+        _packedLength = 4;
     }
     return self;
 }
@@ -391,35 +392,41 @@
     return [[CSBoundingSphere alloc] initWithCenter:CSCartesian3.zero radius:ellipsoid.maximumRadius];
 }
 
-/**
- * The number of elements used to pack the object into an array.
- * @type {Number}
- */
-//BoundingSphere.packedLength = 4;
+-(void)pack:(CSFloat32Array *)array startingIndex:(UInt32)index
+{
+    [array setValue:self.center.x atIndex:startingIndex++];
+    [array setValue:self.center.y atIndex:startingIndex++];
+    [array setValue:self.center.z atIndex:startingIndex++];
+    [array setValue:self.radius atIndex:startingIndex++];
+}
 
-/**
- * Stores the provided instance into the provided array.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} value The value to pack.
- * @param {Number[]} array The array to pack into.
- * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
- */
-//-(void *)pack:(UInt32)startingIndex;
++(CSBoundingSphere *)unpack:(CSFloat32Array *)array startingIndex:(UInt32)startingIndex
+{
+    NSAssert(array != nil, array is required);
 
-/**
- * Retrieves an instance from a packed array.
- * @memberof BoundingSphere
- *
- * @param {Number[]} array The packed array.
- * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
- * @param {Cartesian3} [result] The object into which to store the result.
- */
-//+(CSBoundingSphere *)unpack:(void *)array startingIndex:(UInt32)startingIndex;
+    CSCartesian3 *center = [[CSCartesian3 alloc] initWithX:[array valueAtIndex:startingIndex++]
+                                                         Y:[array valueAtIndex:startingIndex++]
+                                                         Z:[array valueAtIndex:startingIndex++]];
+    return [[CSBoundingSphere alloc] initWithCenter:center radius:array[startingIndex]];
+}
 
 -(CSBoundingSphere *)union:(CSBoundingSphere *)other
 {
+    NSAssert(other != nil, @"left is required");
+
+    CSCartesian3 *center = [[self.center add:other.center] multiplyByScalar:0.5];
+
     
+    Cartesian3.add(leftCenter, rightCenter, unionScratchCenter);
+    var center = Cartesian3.multiplyByScalar(unionScratchCenter, 0.5, unionScratchCenter);
+    
+    var radius1 = Cartesian3.magnitude(Cartesian3.subtract(leftCenter, center, unionScratch)) + left.radius;
+    var radius2 = Cartesian3.magnitude(Cartesian3.subtract(rightCenter, center, unionScratch)) + right.radius;
+    
+    result.radius = Math.max(radius1, radius2);
+    Cartesian3.clone(center, result.center);
+    
+    return result;
 }
 
 -(CSBoundingSphere *)expand:(CSCartesian3 *)point
@@ -467,69 +474,6 @@
             self.radius == other.radius;
 }
 
-
-/**
- * Duplicates a BoundingSphere instance.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere The bounding sphere to duplicate.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided. (Returns undefined if sphere is undefined)
- */
-BoundingSphere.clone = function(sphere, result) {
-    if (!defined(sphere)) {
-        return undefined;
-    }
-    
-    if (!defined(result)) {
-        return new BoundingSphere(sphere.center, sphere.radius);
-    }
-    
-    result.center = Cartesian3.clone(sphere.center, result.center);
-    result.radius = sphere.radius;
-    return result;
-};
-
-var unionScratch = new Cartesian3();
-var unionScratchCenter = new Cartesian3();
-/**
- * Computes a bounding sphere that contains both the left and right bounding spheres.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} left A sphere to enclose in a bounding sphere.
- * @param {BoundingSphere} right A sphere to enclose in a bounding sphere.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-BoundingSphere.union = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
-    }
-    
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    var leftCenter = left.center;
-    var rightCenter = right.center;
-    
-    Cartesian3.add(leftCenter, rightCenter, unionScratchCenter);
-    var center = Cartesian3.multiplyByScalar(unionScratchCenter, 0.5, unionScratchCenter);
-    
-    var radius1 = Cartesian3.magnitude(Cartesian3.subtract(leftCenter, center, unionScratch)) + left.radius;
-    var radius2 = Cartesian3.magnitude(Cartesian3.subtract(rightCenter, center, unionScratch)) + right.radius;
-    
-    result.radius = Math.max(radius1, radius2);
-    Cartesian3.clone(center, result.center);
-    
-    return result;
-};
 
 /**
  * Determines which side of a plane a sphere is located.
@@ -875,7 +819,7 @@ BoundingSphere.prototype.equals = function(right) {
  */
 -(instancetype)copyWithZone:(NSZone *)zone
 {
-    
+    return [[CSBoundingSphere alloc] initWithCenter:self.center.copy radius:self.radius];
 }
 
 
