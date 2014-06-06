@@ -56,6 +56,7 @@
 		945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */ = {isa = PBXBuildFile; fileRef = 945150A3193C648700012DC4 /* CSHeightMapTessellator.m */; };
 		945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
 		9465BB56193F8A57006F5994 /* CSPackable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9465BB55193F8A57006F5994 /* CSPackable.m */; };
+		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
 		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
@@ -189,9 +190,9 @@
 		945150A3193C648700012DC4 /* CSHeightMapTessellator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSHeightMapTessellator.m; sourceTree = "<group>"; };
 		945D2DBA193D7FA800012DC4 /* CesiumKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CesiumKit-Bridging-Header.h"; path = "Core/CesiumKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
-		94A4197B1940A3670098BF54 /* CSIntersect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSIntersect.h; sourceTree = "<group>"; };
 		9465BB54193F8A57006F5994 /* CSPackable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPackable.h; sourceTree = "<group>"; };
 		9465BB55193F8A57006F5994 /* CSPackable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSPackable.m; sourceTree = "<group>"; };
+		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -231,7 +232,6 @@
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				94A4197B1940A3670098BF54 /* CSIntersect.h */,
 				942A83D419384C1200012DC4 /* CSArray.h */,
 				942A83D519384C1200012DC4 /* CSArray.m */,
 				943999191930418C00012DC4 /* CSBoundingRectangle.h */,
@@ -306,6 +306,7 @@
 				94502FD2193826DF00012DC4 /* CSWebMercatorTilingScheme.h */,
 				94502FD3193826DF00012DC4 /* CSWebMercatorTilingScheme.m */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
+				949ABA8019410120009B1183 /* Intersect.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -525,6 +526,7 @@
 				943999541930418C00012DC4 /* CSInterval.m in Sources */,
 				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
+				949ABA8119410120009B1183 /* Intersect.swift in Sources */,
 				943999471930418C00012DC4 /* CSSpherical.m in Sources */,
 				941F24C6193CC94200BDB515 /* CSEllipsoidalOccluder.m in Sources */,
 				942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */,

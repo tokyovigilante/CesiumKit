@@ -9,11 +9,15 @@
 #import "CSBoundingSphere.h"
 
 #import "CSCartesian3.h"
+#import "CSCartesian4.h"
 #import "CSGeographicProjection.h"
 #import "CSWebMercatorProjection.h"
 #import "CSRectangle.h"
 #import "CSFloat32Array.h"
 #import "CSEllipsoid.h"
+#import "CSMatrix4.h"
+
+#import "CesiumKit-Swift.h"
 
 @implementation CSBoundingSphere
 
@@ -415,18 +419,11 @@
     NSAssert(other != nil, @"left is required");
 
     CSCartesian3 *center = [[self.center add:other.center] multiplyByScalar:0.5];
-
     
-    Cartesian3.add(leftCenter, rightCenter, unionScratchCenter);
-    var center = Cartesian3.multiplyByScalar(unionScratchCenter, 0.5, unionScratchCenter);
+    Float64 radius1 = [self.center subtract:center].magnitude + self.radius;
+    Float64 radius2 = [other.center subtract:center].magnitude + other.radius;
     
-    var radius1 = Cartesian3.magnitude(Cartesian3.subtract(leftCenter, center, unionScratch)) + left.radius;
-    var radius2 = Cartesian3.magnitude(Cartesian3.subtract(rightCenter, center, unionScratch)) + right.radius;
-    
-    result.radius = Math.max(radius1, radius2);
-    Cartesian3.clone(center, result.center);
-    
-    return result;
+    return [[CSBoundingSphere alloc] initWithCenter:center radius:MAX(radius1, radius2)];
 }
 
 -(CSBoundingSphere *)expand:(CSCartesian3 *)point
@@ -440,156 +437,38 @@
 
 -(CSBoundingSphere *)intersect:(CSCartesian4 *)plane
 {
+    NSAssert(plane != nil, @"plane is required");
     
+    Float64 distanceToPlane = [plane dot:self.center] + plane.w;
+    
+    if (distanceToPlane < -self.radius)
+    {
+        // The center point is negative side of the plane normal
+        return Intersect.Outside;
+    }
+    else if (distanceToPlane < self.radius)
+    {
+        // The center point is positive side of the plane, but radius extends beyond it; partial overlap
+        return Intersect.Intersecting;
+    }
+    return Intersect.Inside;
 }
 
 -(CSBoundingSphere *)transform:(CSMatrix4 *)transform
 {
-    
+    NSAssert(transform != nil, @"transform is required");
+
+    return [[CSBoundingSphere alloc] initWithCenter:[transform multiplyByPoint:self.center] radius:transform.getMaximumScale + self.radius];    
 }
 
 -(Float64)distanceSquaredTo:(CSCartesian3 *)point
 {
-    
+    NSAssert(point != nil, @"cartesian is required");
+    return [self.center subtract:point].magnitudeSquared - self.radius * self.radius;
 }
 
 -(CSBoundingSphere *)transformWithoutScale:(CSMatrix4 *)transform
 {
-    
-}
-
--(CSInterval *)planeDistances:(CSCartesian3 *)position direction:(CSCartesian2 *)direction
-{
-    
-}
-
--(CSBoundingSphere *)projectTo2D:(CSProjection *)projection
-{
-    
-}
-
--(BOOL)equals:(CSBoundingSphere *)other
-{
-    return ([self.center equals:other.center] &&
-            self.radius == other.radius;
-}
-
-
-/**
- * Determines which side of a plane a sphere is located.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere The bounding sphere to test.
- * @param {Cartesian4} plane The coefficients of the plane in the for ax + by + cz + d = 0
- *                           where the coefficients a, b, c, and d are the components x, y, z,
- *                           and w of the {@link Cartesian4}, respectively.
- * @returns {Intersect} {@link Intersect.INSIDE} if the entire sphere is on the side of the plane
- *                      the normal is pointing, {@link Intersect.OUTSIDE} if the entire sphere is
- *                      on the opposite side, and {@link Intersect.INTERSECTING} if the sphere
- *                      intersects the plane.
- */
-BoundingSphere.intersect = function(sphere, plane) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
-    }
-    
-    if (!defined(plane)) {
-        throw new DeveloperError('plane is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var center = sphere.center;
-    var radius = sphere.radius;
-    var distanceToPlane = Cartesian3.dot(plane, center) + plane.w;
-    
-    if (distanceToPlane < -radius) {
-        // The center point is negative side of the plane normal
-        return Intersect.OUTSIDE;
-    } else if (distanceToPlane < radius) {
-        // The center point is positive side of the plane, but radius extends beyond it; partial overlap
-        return Intersect.INTERSECTING;
-    }
-    return Intersect.INSIDE;
-};
-
-/**
- * Applies a 4x4 affine transformation matrix to a bounding sphere.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere The bounding sphere to apply the transformation to.
- * @param {Matrix4} transform The transformation matrix to apply to the bounding sphere.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-BoundingSphere.transform = function(sphere, transform, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
-    }
-    
-    if (!defined(transform)) {
-        throw new DeveloperError('transform is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    result.center = Matrix4.multiplyByPoint(transform, sphere.center, result.center);
-    result.radius = Matrix4.getMaximumScale(transform) * sphere.radius;
-    
-    return result;
-};
-
-var distanceSquaredToScratch = new Cartesian3();
-
-/**
- * Computes the estimated distance squared from the closest point on a bounding sphere to a point.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere The sphere.
- * @param {Cartesian3} cartesian The point
- * @returns {Number} The estimated distance squared from the bounding sphere to the point.
- *
- * @example
- * // Sort bounding spheres from back to front
- * spheres.sort(function(a, b) {
- *     return BoundingSphere.distanceSquaredTo(b, camera.positionWC) - BoundingSphere.distanceSquaredTo(a, camera.positionWC);
- * });
- */
-BoundingSphere.distanceSquaredTo = function(sphere, cartesian) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
-    }
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var diff = Cartesian3.subtract(sphere.center, cartesian, distanceSquaredToScratch);
-    return Cartesian3.magnitudeSquared(diff) - sphere.radius * sphere.radius;
-};
-
-/**
- * Applies a 4x4 affine transformation matrix to a bounding sphere where there is no scale
- * The transformation matrix is not verified to have a uniform scale of 1.
- * This method is faster than computing the general bounding sphere transform using {@link BoundingSphere.transform}.
- * @memberof BoundingSphere
- *
- * @param {BoundingSphere} sphere The bounding sphere to apply the transformation to.
- * @param {Matrix4} transform The transformation matrix to apply to the bounding sphere.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- *
- * @example
- * var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid);
- * var boundingSphere = new Cesium.BoundingSphere();
- * var newBoundingSphere = Cesium.BoundingSphere.transformWithoutScale(boundingSphere, modelMatrix);
- */
-BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(sphere)) {
         throw new DeveloperError('sphere is required.');
@@ -608,7 +487,25 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     result.radius = sphere.radius;
     
     return result;
-};
+}
+
+-(CSInterval *)planeDistances:(CSCartesian3 *)position direction:(CSCartesian2 *)direction
+{
+    
+}
+
+-(CSBoundingSphere *)projectTo2D:(CSProjection *)projection
+{
+    
+}
+
+-(BOOL)equals:(CSBoundingSphere *)other
+{
+    return ([self.center equals:other.center] &&
+            self.radius == other.radius;
+}
+
+            
 
 var scratchCartesian3 = new Cartesian3();
 /**

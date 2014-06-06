@@ -9,6 +9,7 @@
 #import "CSEllipsoidalOccluder.h"
 
 #import "CSEllipsoid.h"
+#import "CSCartesian3.h"
 
 @interface CSEllipsoidalOccluder ()
 
@@ -43,7 +44,7 @@
 
 -(void)setCameraPosition:(CSCartesian3 *)cameraPosition
 {
-    
+    /*
     // See http://cesiumjs.org/2013/04/25/Horizon-culling/
     
     var ellipsoid = this._ellipsoid;
@@ -52,12 +53,11 @@
     
     Cartesian3.clone(cameraPosition, this._cameraPosition);
     this._cameraPositionInScaledSpace = cv;
-    this._distanceToLimbInScaledSpaceSquared = vhMagnitudeSquared;
+    this._distanceToLimbInScaledSpaceSquared = vhMagnitudeSquared;*/
 }
 
     
-    var scratchCartesian = new Cartesian3();
-    
+
     /**
      * Determines whether or not a point, the <code>occludee</code>, is hidden from view by the occluder.
      *
@@ -73,7 +73,7 @@
      * var occluder = new Cesium.EllipsoidalOccluder(ellipsoid, cameraPosition);
      * var point = new Cesium.Cartesian3(0, -3, -3);
      * occluder.isPointVisible(point); //returns true
-     */
+     *
     EllipsoidalOccluder.prototype.isPointVisible = function(occludee) {
         var ellipsoid = this._ellipsoid;
         var occludeeScaledSpacePosition = ellipsoid.transformPositionToScaledSpace(occludee, scratchCartesian);
@@ -98,7 +98,7 @@
      * var point = new Cesium.Cartesian3(0, -3, -3);
      * var scaledSpacePoint = ellipsoid.transformPositionToScaledSpace(point);
      * occluder.isScaledSpacePointVisible(scaledSpacePoint); //returns true
-     */
+     *
     EllipsoidalOccluder.prototype.isScaledSpacePointVisible = function(occludeeScaledSpacePosition) {
         // See http://cesiumjs.org/2013/04/25/Horizon-culling/
         var cv = this._cameraPositionInScaledSpace;
@@ -125,7 +125,7 @@
      *                       ellipsoid's axes.
      * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
      * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
-     */
+     *
     EllipsoidalOccluder.prototype.computeHorizonCullingPoint = function(directionToPoint, positions, result) {
         //>>includeStart('debug', pragmas.debug);
         if (!defined(directionToPoint)) {
@@ -168,7 +168,7 @@
      * @param {Cartesian3} [center=Cartesian3.ZERO]
      * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
      * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
-     */
+     *
     EllipsoidalOccluder.prototype.computeHorizonCullingPointFromVertices = function(directionToPoint, vertices, stride, center, result) {
         //>>includeStart('debug', pragmas.debug);
         if (!defined(directionToPoint)) {
@@ -212,7 +212,7 @@
      *                    the ellipsoid used by this instance for occlusion testing.
      * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
      * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
-     */
+     *
     EllipsoidalOccluder.prototype.computeHorizonCullingPointFromRectangle = function(rectangle, ellipsoid, result) {
         //>>includeStart('debug', pragmas.debug);
         if (!defined(rectangle)) {
@@ -271,7 +271,7 @@
     }
     
     return EllipsoidalOccluder;
-});
+});*/
 
 
 @end

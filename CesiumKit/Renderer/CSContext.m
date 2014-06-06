@@ -126,7 +126,7 @@
         _floatingPointTexture = ([self checkGLExtension:@"GL_OES_texture_float"]  || _glkView.context.API == kEAGLRenderingAPIOpenGLES3);
         
         _textureFilterAnisotropic = ([self checkGLExtension:@"GL_EXT_texture_filter_anisotropic"]);
-        glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &_maximumTextureFilterAnisotropy);
+        //glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &_maximumTextureFilterAnisotropy);
        
         _vertexArrayObject = ([self checkGLExtension:@"GL_OES_vertex_array_object"] || _glkView.context.API == kEAGLRenderingAPIOpenGLES3);
         _fragmentDepth = ([self checkGLExtension:@"GL_EXT_frag_depth"] || _glkView.context.API == kEAGLRenderingAPIOpenGLES3);

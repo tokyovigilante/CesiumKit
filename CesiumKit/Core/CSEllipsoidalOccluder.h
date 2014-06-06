@@ -38,7 +38,7 @@
 @property (readonly) CSCartesian3 *cameraPositionInScaledSpace;
 @property (readonly) Float64 distanceToLimbInScaledSpaceSquared;
 
--(instancetype)initWithEllipsoid:(CSEllipsoid)ellipsoid cameraPosition:(CSCartesian3 *)cameraPosition;
+-(instancetype)initWithEllipsoid:(CSEllipsoid *)ellipsoid cameraPosition:(CSCartesian3 *)cameraPosition;
 
 /**
  * Determines whether or not a point, the <code>occludee</code>, is hidden from view by the occluder.

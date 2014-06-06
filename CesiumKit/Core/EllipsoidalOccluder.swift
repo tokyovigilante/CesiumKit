@@ -55,7 +55,6 @@ class EllipsoidalOccluder {
         {
             self.cameraPosition = CSCartesian3()
         }
-        UnsafePointer
     }
     
     /**
