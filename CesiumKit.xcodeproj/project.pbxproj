@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
 		941F24C6193CC94200BDB515 /* CSEllipsoidalOccluder.m in Sources */ = {isa = PBXBuildFile; fileRef = 941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */; };
 		942A83D619384C1200012DC4 /* CSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D519384C1200012DC4 /* CSArray.m */; };
 		942A83D919384F5500012DC4 /* CSUInt16Array.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83D819384F5500012DC4 /* CSUInt16Array.m */; };
@@ -28,7 +29,6 @@
 		943999511930418C00012DC4 /* CSQuarternion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991E1930418C00012DC4 /* CSQuarternion.m */; };
 		943999521930418C00012DC4 /* CSGeographicProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999201930418C00012DC4 /* CSGeographicProjection.m */; };
 		943999531930418C00012DC4 /* CSVertexFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999211930418C00012DC4 /* CSVertexFormat.m */; };
-		943999541930418C00012DC4 /* CSInterval.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999221930418C00012DC4 /* CSInterval.m */; };
 		943999551930418C00012DC4 /* CSCartesian4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999231930418C00012DC4 /* CSCartesian4.m */; };
 		943999561930418C00012DC4 /* CSWebMercatorProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999251930418C00012DC4 /* CSWebMercatorProjection.m */; };
 		943999571930418C00012DC4 /* CSRay.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999281930418C00012DC4 /* CSRay.m */; };
@@ -93,6 +93,7 @@
 
 /* Begin PBXFileReference section */
 		9404F42F193357B500012DC4 /* CSRendererDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSRendererDefines.h; sourceTree = "<group>"; };
+		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941F24C4193CC94200BDB515 /* CSEllipsoidalOccluder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidalOccluder.h; sourceTree = "<group>"; };
 		941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidalOccluder.m; sourceTree = "<group>"; };
 		942A83D419384C1200012DC4 /* CSArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSArray.h; sourceTree = "<group>"; };
@@ -110,7 +111,6 @@
 		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
 		943999051930418C00012DC4 /* CSCartographic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartographic.m; sourceTree = "<group>"; };
 		943999061930418C00012DC4 /* CSCartesian4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian4.h; sourceTree = "<group>"; };
-		943999071930418C00012DC4 /* CSInterval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSInterval.h; sourceTree = "<group>"; };
 		943999081930418C00012DC4 /* CSWebMercatorProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWebMercatorProjection.h; sourceTree = "<group>"; };
 		943999091930418C00012DC4 /* CSSpherical.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSpherical.m; sourceTree = "<group>"; };
 		9439990A1930418C00012DC4 /* CSRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRay.h; sourceTree = "<group>"; };
@@ -137,7 +137,6 @@
 		9439991F1930418C00012DC4 /* CSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMath.h; sourceTree = "<group>"; };
 		943999201930418C00012DC4 /* CSGeographicProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSGeographicProjection.m; sourceTree = "<group>"; };
 		943999211930418C00012DC4 /* CSVertexFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVertexFormat.m; sourceTree = "<group>"; };
-		943999221930418C00012DC4 /* CSInterval.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSInterval.m; sourceTree = "<group>"; };
 		943999231930418C00012DC4 /* CSCartesian4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian4.m; sourceTree = "<group>"; };
 		943999241930418C00012DC4 /* CSCartographic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartographic.h; sourceTree = "<group>"; };
 		943999251930418C00012DC4 /* CSWebMercatorProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSWebMercatorProjection.m; sourceTree = "<group>"; };
@@ -266,8 +265,7 @@
 				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
 				945150A2193C648700012DC4 /* CSHeightMapTessellator.h */,
 				945150A3193C648700012DC4 /* CSHeightMapTessellator.m */,
-				943999071930418C00012DC4 /* CSInterval.h */,
-				943999221930418C00012DC4 /* CSInterval.m */,
+				9417EC441942C31B00586516 /* Interval.swift */,
 				9439991F1930418C00012DC4 /* CSMath.h */,
 				943999131930418C00012DC4 /* CSMath.m */,
 				9439991A1930418C00012DC4 /* CSMatrix4.h */,
@@ -523,7 +521,6 @@
 				943CCACC193062E200012DC4 /* CSGlobe.m in Sources */,
 				943999511930418C00012DC4 /* CSQuarternion.m in Sources */,
 				943CCACF193070D400012DC4 /* CSBoundingSphere.m in Sources */,
-				943999541930418C00012DC4 /* CSInterval.m in Sources */,
 				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				949ABA8119410120009B1183 /* Intersect.swift in Sources */,
@@ -546,6 +543,7 @@
 				9451509E193C597E00012DC4 /* CSTerrainMesh.m in Sources */,
 				943999531930418C00012DC4 /* CSVertexFormat.m in Sources */,
 				943999481930418C00012DC4 /* CSEllipsoid.m in Sources */,
+				9417EC451942C31B00586516 /* Interval.swift in Sources */,
 				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
 				943CCAC9193051EA00012DC4 /* CSTypedArray.m in Sources */,
 				9439994A1930418C00012DC4 /* CSRectangle.m in Sources */,

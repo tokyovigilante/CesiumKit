@@ -8,6 +8,7 @@
 
 #import "CSBoundingSphere.h"
 
+#import "CSCartesian2.h"
 #import "CSCartesian3.h"
 #import "CSCartesian4.h"
 #import "CSGeographicProjection.h"
@@ -16,6 +17,7 @@
 #import "CSFloat32Array.h"
 #import "CSEllipsoid.h"
 #import "CSMatrix4.h"
+#import "CSInterval.h"
 
 #import "CesiumKit-Swift.h"
 
@@ -491,7 +493,13 @@
 
 -(CSInterval *)planeDistances:(CSCartesian3 *)position direction:(CSCartesian2 *)direction
 {
+    NSAssert(position != nil && direction != nil, @"sphere is required");
     
+    CSCartesian3 *toCenter = [self.center subtract:position];
+    CSCartesian2 *proj = [direction multiplyByScalar:[direction dot:toCenter]];
+    Float64 mag = proj.magnitude;
+    
+    return Interval(start: mag - self.radius, stop: mag + self.radius);
 }
 
 -(CSBoundingSphere *)projectTo2D:(CSProjection *)projection
