@@ -498,7 +498,6 @@
     CSCartesian3 *toCenter = [self.center subtract:position];
     CSCartesian2 *proj = [direction multiplyByScalar:[direction dot:toCenter]];
     Float64 mag = proj.magnitude;
-    
     return Interval(start: mag - self.radius, stop: mag + self.radius);
 }
 
