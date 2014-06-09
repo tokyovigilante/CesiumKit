@@ -14,7 +14,7 @@
 
 @property (readonly) Float64 latitude;
 @property (readonly) Float64 longitude;
-@property (readonly) Float64 height; // metres
+@property (nonatomic) Float64 height; // metres
 
 -(id)initWithLatitude:(Float64)latitude longitude:(Float64)longitude height:(Float64)height;
 -(id)initWithLatitude:(Float64)latitude longitude:(Float64)longitude;

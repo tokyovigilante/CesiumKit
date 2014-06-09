@@ -17,27 +17,6 @@ import Foundation
 * @exports Intersect
 */
 enum Intersect: Int {
-    case
-    /**
-    * Represents that an object is not contained within the frustum.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Outside = -1,
-    /**
-    * Represents that an object intersects one of the frustum's planes.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Intersecting,
-    /**
-    * Represents that an object is fully within the frustum.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Inside
+    case Outside = -1, Intersecting, Inside
 }
 

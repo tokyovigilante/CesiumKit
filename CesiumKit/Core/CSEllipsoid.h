@@ -9,7 +9,7 @@
 
 @import Foundation;
 
-@class CSCartesian3, CSCartographic;
+@class Cartesian3, CSCartographic;
 
 /**
  * A quadratic surface defined in Cartesian coordinates by the equation
@@ -34,11 +34,11 @@
  */
 @interface CSEllipsoid : NSObject <NSCopying>
 
-@property CSCartesian3 *radii;
-@property CSCartesian3 *radiiSquared;
-@property CSCartesian3 *oneOverRadii;
-@property CSCartesian3 *oneOverRadiiSquared;
-@property CSCartesian3 *radiiFourthPower;
+@property Cartesian3 *radii;
+@property Cartesian3 *radiiSquared;
+@property Cartesian3 *oneOverRadii;
+@property Cartesian3 *oneOverRadiiSquared;
+@property Cartesian3 *radiiFourthPower;
 @property Float64 maximumRadius;
 @property Float64 minimumRadius;
 
@@ -70,7 +70,7 @@
  * @see Ellipsoid.WGS84
  * @see Ellipsoid.UNIT_SPHERE
  */
-+(CSEllipsoid *)ellipsoidWithCartesian3:(CSCartesian3 *)cartesian3;
++(CSEllipsoid *)ellipsoidWithCartesian3:(Cartesian3 *)cartesian3;
 
 /**
  * Computes the unit vector directed from the center of this ellipsoid toward the provided Cartesian position.
@@ -80,7 +80,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
  */
--(CSCartesian3 *)geocentricSurfaceNormal:(CSCartesian3 *)cartesian3;
+-(Cartesian3 *)geocentricSurfaceNormal:(Cartesian3 *)cartesian3;
 
 /**
  * Computes the normal of the plane tangent to the surface of the ellipsoid at the provided position.
@@ -90,7 +90,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
  */
--(CSCartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic;
+-(Cartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic;
 
 /**
  * Computes the normal of the plane tangent to the surface of the ellipsoid at the provided position.
@@ -100,7 +100,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
  */
--(CSCartesian3 *)geodeticSurfaceNormal:(CSCartesian3 *)cartesian3;
+-(Cartesian3 *)geodeticSurfaceNormal:(Cartesian3 *)cartesian3;
 
 /**
  * Converts the provided cartographic to Cartesian representation.
@@ -115,7 +115,7 @@
  * var position = new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 5000);
  * var cartesianPosition = Cesium.Ellipsoid.WGS84.cartographicToCartesian(position);
  */
--(CSCartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic;
+-(Cartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic;
 
 /**
  * Converts the provided array of cartographics to an array of Cartesians.
@@ -148,7 +148,7 @@
  * var position = new Cesium.Cartesian(17832.12, 83234.52, 952313.73);
  * var cartographicPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
  */
--(CSCartographic *)cartesianToCartographic:(CSCartesian3 *)cartesian3;
+-(CSCartographic *)cartesianToCartographic:(Cartesian3 *)cartesian3;
 
 /**
  * Converts the provided array of cartesians to an array of cartographics.
@@ -177,7 +177,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter, a new Cartesian3 instance if none was provided, or undefined if the position is at the center.
  */
--(CSCartesian3 *)scaleToGeodeticSurface:(CSCartesian3 *)position;
+-(Cartesian3 *)scaleToGeodeticSurface:(Cartesian3 *)position;
 
 /**
  * Scales the provided Cartesian position along the geocentric surface normal
@@ -188,7 +188,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
  */
--(CSCartesian3 *)scaleToGeocentricSurface:(CSCartesian3 *)cartesian;
+-(Cartesian3 *)scaleToGeocentricSurface:(Cartesian3 *)cartesian;
 
 /**
  * Transforms a Cartesian X, Y, Z position to the ellipsoid-scaled space by multiplying
@@ -202,7 +202,7 @@
  * @returns {Cartesian3} The position expressed in the scaled space.  The returned instance is the
  *          one passed as the result parameter if it is not undefined, or a new instance of it is.
  */
--(CSCartesian3 *)transformPositionToScaledSpace:(CSCartesian3 *)position;
+-(Cartesian3 *)transformPositionToScaledSpace:(Cartesian3 *)position;
 
 /**
  * Compares this Ellipsoid against the provided Ellipsoid componentwise and returns

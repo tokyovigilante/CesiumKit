@@ -9,10 +9,11 @@
 
 #import "CSEllipsoid.h"
 
-#import "CSCartesian3.h"
 #import "CSCartographic.h"
 
 #import "CSMath.h"
+
+#import "CesiumKit-Bridging-Header.h"
 
 static const Float64 CSEarthEquatorialRadius = 6378137.0;
 static const Float64 CSEarthPolarRadius = 6356752.3142451793;
@@ -30,17 +31,18 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     self = [super init];
     if (self)
     {
-        _radii = [[CSCartesian3 alloc] initWithX:x Y:y Z:z];
+        
+        _radii = [[Cartesian3 alloc] initWithX:x Y:y Z:z];
         
         NSAssert(((_radii.x > 0.0) || (_radii.y > 0.0) || (_radii.z > 0.0)), @"Invalid negative ellipsoid");
         _radiiSquared = [_radii multiplyComponents:_radii];
         _radiiFourthPower = [_radiiSquared multiplyComponents:_radiiSquared];
         
-        _oneOverRadii = [[CSCartesian3 alloc] initWithX:x == 0.0 ? 0.0 : 1.0 / x
+        _oneOverRadii = [[Cartesian3 alloc] initWithX:x == 0.0 ? 0.0 : 1.0 / x
                                                       Y:y == 0.0 ? 0.0 : 1.0 / y
                                                       Z:z == 0.0 ? 0.0 : 1.0 / z];
                          
-        _oneOverRadiiSquared = [[CSCartesian3 alloc] initWithX:0.0 ? 0.0 : 1.0 / _radiiSquared.x
+        _oneOverRadiiSquared = [[Cartesian3 alloc] initWithX:0.0 ? 0.0 : 1.0 / _radiiSquared.x
                                                              Y:0.0 ? 0.0 : 1.0 / _radiiSquared.y
                                                              Z:0.0 ? 0.0 : 1.0 / _radiiSquared.z];
         
@@ -61,38 +63,38 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     return [[CSEllipsoid alloc] initWithX:1.0 Y:1.0 Z:1.0];
 }
 
-+(CSEllipsoid *)ellipsoidWithCartesian3:(CSCartesian3 *)cartesian3
++(CSEllipsoid *)ellipsoidWithCartesian3:(Cartesian3 *)cartesian3
 {
     NSAssert(cartesian3 != nil, @"no cartesian provided");
     return [[CSEllipsoid alloc] initWithX:cartesian3.x Y:cartesian3.y Z:cartesian3.z];
 }
 
--(CSCartesian3 *)geocentricSurfaceNormal:(CSCartesian3 *)cartesian3
+-(Cartesian3 *)geocentricSurfaceNormal:(Cartesian3 *)cartesian3
 {
     return cartesian3.normalise;
 }
 
--(CSCartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic
+-(Cartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic
 {
     NSAssert(cartographic != nil, @"no cartographic provided");
 
     Float64 cosLatitude = cos(cartographic.latitude);
     
-    return [[CSCartesian3 alloc] initWithX:cosLatitude * cos(cartographic.longitude)
+    return [[Cartesian3 alloc] initWithX:cosLatitude * cos(cartographic.longitude)
                                          Y:cosLatitude * sin(cartographic.longitude)
                                          Z:sin(cartographic.latitude)].normalise;
 }
 
--(CSCartesian3 *)geodeticSurfaceNormal:(CSCartesian3 *)cartesian3
+-(Cartesian3 *)geodeticSurfaceNormal:(Cartesian3 *)cartesian3
 {
     return [cartesian3 multiplyComponents:self.oneOverRadiiSquared].normalise;
 }
 
--(CSCartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic
+-(Cartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic
 {
     //`cartographic is required` is thrown from geodeticSurfaceNormalCartographic.
-    CSCartesian3 *n = [self geodeticSurfaceNormalCartographic:cartographic];
-    CSCartesian3 *k = [self.radiiSquared multiplyComponents:n];
+    Cartesian3 *n = [self geodeticSurfaceNormalCartographic:cartographic];
+    Cartesian3 *k = [self.radiiSquared multiplyComponents:n];
     
     Float64 gamma = sqrt([n dot:k]);
     k = [k divideByScalar:gamma];
@@ -115,11 +117,11 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     return [NSArray arrayWithArray:cartesians];
 }
 
--(CSCartographic *)cartesianToCartographic:(CSCartesian3 *)cartesian3
+-(CSCartographic *)cartesianToCartographic:(Cartesian3 *)cartesian3
 {
-    CSCartesian3 *p = [self scaleToGeodeticSurface:cartesian3];
-    CSCartesian3 *n = [self geodeticSurfaceNormal:p];
-    CSCartesian3 *h = [cartesian3 subtract:p];
+    Cartesian3 *p = [self scaleToGeodeticSurface:cartesian3];
+    Cartesian3 *n = [self geodeticSurfaceNormal:p];
+    Cartesian3 *h = [cartesian3 subtract:p];
 
     return [[CSCartographic alloc] initWithLatitude:asin(n.z)
                                           longitude:atan2(n.y, n.x)
@@ -132,7 +134,7 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     
     NSMutableArray *cartesians = [NSMutableArray arrayWithCapacity:cartesianArray.count];
     
-    for (CSCartesian3 *cartesian in cartesianArray)
+    for (Cartesian3 *cartesian in cartesianArray)
     {
         [cartesians addObject:[self cartesianToCartographic:cartesian]];
     }
@@ -140,7 +142,7 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     return [NSArray arrayWithArray:cartesians];
 }
 
--(CSCartesian3 *)scaleToGeodeticSurface:(CSCartesian3 *)cartesian
+-(Cartesian3 *)scaleToGeodeticSurface:(Cartesian3 *)cartesian
 {
     Float64 positionX = cartesian.x;
     Float64 positionY = cartesian.y;
@@ -159,7 +161,7 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     Float64 ratio = sqrt(1.0 / squaredNorm);
     
     // As an initial approximation, assume that the radial intersection is the projection point.
-    CSCartesian3 *intersection = [cartesian multiplyByScalar:ratio];
+    Cartesian3 *intersection = [cartesian multiplyByScalar:ratio];
     
     //* If the position is near the center, the iteration will not converge.
     if (squaredNorm < self.centerToleranceSquared)
@@ -173,7 +175,7 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     
     // Use the gradient at the intersection point in place of the true unit normal.
     // The difference in magnitude will be absorbed in the multiplier.
-    CSCartesian3 *gradient = [[CSCartesian3 alloc] initWithX:intersection.x * oneOverRadiiSquaredX * 2.0
+    Cartesian3 *gradient = [[Cartesian3 alloc] initWithX:intersection.x * oneOverRadiiSquaredX * 2.0
                                                            Y:intersection.y * oneOverRadiiSquaredY * 2.0
                                                            Z:intersection.z * oneOverRadiiSquaredZ * 2.0];
     
@@ -220,13 +222,13 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     } while (abs(func) > CSEpsilon12);
     
     
-    return [[CSCartesian3 alloc] initWithX:positionX * xMultiplier
+    return [[Cartesian3 alloc] initWithX:positionX * xMultiplier
                                          Y:positionY * yMultiplier
                                          Z:positionZ * zMultiplier];
 
 }
 
--(CSCartesian3 *)scaleToGeocentricSurface:(CSCartesian3 *)position
+-(Cartesian3 *)scaleToGeocentricSurface:(Cartesian3 *)position
 {
     double beta = 1.0 / sqrt((position.x * position.x) * self.oneOverRadiiSquared.x +
                              (position.y * position.y) * self.oneOverRadiiSquared.y +
@@ -235,7 +237,7 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     return [position multiplyByScalar:beta];
 }
 
--(CSCartesian3 *)transformPositionToScaledSpace:(CSCartesian3 *)position
+-(Cartesian3 *)transformPositionToScaledSpace:(Cartesian3 *)position
 {
     return [position multiplyComponents:self.oneOverRadii];
 
