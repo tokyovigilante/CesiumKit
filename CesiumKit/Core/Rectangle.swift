@@ -21,40 +21,20 @@ import Foundation
 *
 * @see Packable
 */
-var Rectangle = function(west, south, east, north) {
-    /**
-    * The westernmost longitude in radians in the range [-Pi, Pi].
-    *
-    * @type {Number}
-    * @default 0.0
-    */
-    this.west = defaultValue(west, 0.0);
+struct Rectangle: Packable {
+    var west: Double = 0.0
+    var south: Double = 0.0
+    var east: Double = 0.0
+    var north: Double = 0.0
     
-    /**
-    * The southernmost latitude in radians in the range [-Pi/2, Pi/2].
-    *
-    * @type {Number}
-    * @default 0.0
-    */
-    this.south = defaultValue(south, 0.0);
-    
-    /**
-    * The easternmost longitude in radians in the range [-Pi, Pi].
-    *
-    * @type {Number}
-    * @default 0.0
-    */
-    this.east = defaultValue(east, 0.0);
-    
-    /**
-    * The northernmost latitude in radians in the range [-Pi/2, Pi/2].
-    *
-    * @type {Number}
-    * @default 0.0
-    */
-    this.north = defaultValue(north, 0.0);
-};
+    var PackedLength: UInt = 4
 
+    init(west: Double, south: Double, east: Double, north: Double) {
+        self.west = west
+        self.south = south
+        self.east = east
+        self.north = north
+    }
 /**
 * Creates an rectangle given the boundary longitude and latitude in degrees.
 *
@@ -68,24 +48,24 @@ var Rectangle = function(west, south, east, north) {
 * @example
 * var rectangle = Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0);
 */
-Rectangle.fromDegrees = function(west, south, east, north, result) {
-    west = CesiumMath.toRadians(defaultValue(west, 0.0));
-    south = CesiumMath.toRadians(defaultValue(south, 0.0));
-    east = CesiumMath.toRadians(defaultValue(east, 0.0));
-    north = CesiumMath.toRadians(defaultValue(north, 0.0));
-    
-    if (!defined(result)) {
-        return new Rectangle(west, south, east, north);
+    static func fromDegrees(west: deg, south, east, north, result) {
+        west = CesiumMath.toRadians(defaultValue(west, 0.0));
+        south = CesiumMath.toRadians(defaultValue(south, 0.0));
+        east = CesiumMath.toRadians(defaultValue(east, 0.0));
+        north = CesiumMath.toRadians(defaultValue(north, 0.0));
+        
+        if (!defined(result)) {
+            return new Rectangle(west: west, south:south, east, north);
+        }
+        
+        result.west = west;
+        result.south = south;
+        result.east = east;
+        result.north = north;
+        
+        return result;
     }
-    
-    result.west = west;
-    result.south = south;
-    result.east = east;
-    result.north = north;
-    
-    return result;
-};
-
+/*
 /**
 * Creates the smallest possible Rectangle that encloses all positions in the provided array.
 *
@@ -129,7 +109,7 @@ Rectangle.fromCartographicArray = function(cartographics, result) {
 * @type {Number}
 */
 Rectangle.packedLength = 4;
-
+*/
 /**
 * Stores the provided instance into the provided array.
 *
@@ -137,24 +117,24 @@ Rectangle.packedLength = 4;
 * @param {Number[]} array The array to pack into.
 * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
 */
-Rectangle.pack = function(value, array, startingIndex) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(value)) {
-        throw new DeveloperError('value is required');
+    func pack(inout array: Float32[], startingIndex: Int)  {
+        //>>includeStart('debug', pragmas.debug);
+        if (!defined(value)) {
+            throw new DeveloperError('value is required');
+        }
+        
+        if (!defined(array)) {
+            throw new DeveloperError('array is required');
+        }
+        //>>includeEnd('debug');
+        
+        startingIndex = defaultValue(startingIndex, 0);
+        
+        array[startingIndex++] = value.west;
+        array[startingIndex++] = value.south;
+        array[startingIndex++] = value.east;
+        array[startingIndex] = value.north;
     }
-    
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    array[startingIndex++] = value.west;
-    array[startingIndex++] = value.south;
-    array[startingIndex++] = value.east;
-    array[startingIndex] = value.north;
-};
 
 /**
 * Retrieves an instance from a packed array.
@@ -163,7 +143,23 @@ Rectangle.pack = function(value, array, startingIndex) {
 * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
 * @param {Rectangle} [result] The object into which to store the result.
 */
-Rectangle.unpack = function(array, startingIndex, result) {
+    static func unpack(array: Float32[], startingIndex: Int) -> Packable? {
+        Rectangle.unpack = function(array, startingIndex, result)    //>>includeStart('debug', pragmas.debug);
+        if (!defined(value)) {
+            throw new DeveloperError('value is required');
+        }
+        
+        if (!defined(array)) {
+            throw new DeveloperError('array is required');
+        }
+        //>>includeEnd('debug');
+        
+        startingIndex = defaultValue(startingIndex, 0);
+        
+        array[startingIndex++] = value.west;
+        array[startingIndex++] = value.south;
+        array[startingIndex++] = value.east;
+        array[startingIndex] = value.north;
     //>>includeStart('debug', pragmas.debug);
     if (!defined(array)) {
         throw new DeveloperError('array is required');
@@ -180,8 +176,8 @@ Rectangle.unpack = function(array, startingIndex, result) {
     result.east = array[startingIndex++];
     result.north = array[startingIndex];
     return result;
-};
-
+}
+/*
 /**
 * Duplicates an Rectangle.
 *
@@ -594,5 +590,12 @@ Rectangle.subsample = function(rectangle, ellipsoid, surfaceHeight, result) {
 *
 * @type {Rectangle}
 * @constant
-*/
-Rectangle.MAX_VALUE = freezeObject(new Rectangle(-Math.PI, -CesiumMath.PI_OVER_TWO, Math.PI, CesiumMath.PI_OVER_TWO));
+*/*/
+    static func maxValue() -> Rectangle {
+        return Rectangle(west: M_PI, south: M_PI_2, east: M_PI, north: M_PI_2)
+    }
+
+}
+
+
+
