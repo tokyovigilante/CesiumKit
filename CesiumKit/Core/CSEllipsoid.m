@@ -9,8 +9,6 @@
 
 #import "CSEllipsoid.h"
 
-#import "CSCartographic.h"
-
 #import "CSMath.h"
 
 #import "CesiumKit-Bridging-Header.h"
@@ -31,7 +29,6 @@ static const Float64 CSEarthPolarRadius = 6356752.3142451793;
     self = [super init];
     if (self)
     {
-        
         _radii = [[Cartesian3 alloc] initWithX:x Y:y Z:z];
         
         NSAssert(((_radii.x > 0.0) || (_radii.y > 0.0) || (_radii.z > 0.0)), @"Invalid negative ellipsoid");

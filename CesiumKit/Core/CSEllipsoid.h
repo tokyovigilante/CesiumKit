@@ -9,7 +9,7 @@
 
 @import Foundation;
 
-@class Cartesian3, CSCartographic;
+@class Cartesian3, Cartographic;
 
 /**
  * A quadratic surface defined in Cartesian coordinates by the equation
@@ -90,7 +90,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
  */
--(Cartesian3 *)geodeticSurfaceNormalCartographic:(CSCartographic *)cartographic;
+-(Cartesian3 *)geodeticSurfaceNormalCartographic:(Cartographic *)cartographic;
 
 /**
  * Computes the normal of the plane tangent to the surface of the ellipsoid at the provided position.
@@ -115,7 +115,7 @@
  * var position = new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 5000);
  * var cartesianPosition = Cesium.Ellipsoid.WGS84.cartographicToCartesian(position);
  */
--(Cartesian3 *)cartographicToCartesian:(CSCartographic *)cartographic;
+-(Cartesian3 *)cartographicToCartesian:(Cartographic *)cartographic;
 
 /**
  * Converts the provided array of cartographics to an array of Cartesians.
@@ -148,7 +148,7 @@
  * var position = new Cesium.Cartesian(17832.12, 83234.52, 952313.73);
  * var cartographicPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
  */
--(CSCartographic *)cartesianToCartographic:(Cartesian3 *)cartesian3;
+-(Cartographic *)cartesianToCartographic:(Cartesian3 *)cartesian3;
 
 /**
  * Converts the provided array of cartesians to an array of cartographics.

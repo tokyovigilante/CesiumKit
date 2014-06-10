@@ -41,6 +41,11 @@ struct Cartographic {
     */
     var height: Double = 0.0
     
+    init(longitude: Double, latitude: Double, height: Double) {
+        self.longitude = longitude
+        self.latitude = latitude
+        self.height = height
+    }
     
     /**
     * Creates a new Cartographic instance from longitude and latitude
@@ -85,9 +90,9 @@ struct Cartographic {
     */
     /* @infix func == (left: Cartographic, right: Cartographic) -> Bool {
     
-    return (left.longitude === right.longitude) &&
-    (left.latitude === right.latitude) &&
-    (left.height === right.height))
+    return (left.longitude == right.longitude) &&
+    (left.latitude == right.latitude) &&
+    (left.height == right.height))
     }*/
     
     /**

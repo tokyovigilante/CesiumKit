@@ -410,9 +410,9 @@ struct Cartesian3: Packable {
     * @param {Cartesian3} [right] The second Cartesian.
     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
     */
-    @infix func == (left: Cartesian3, right: Cartesian3) -> Bool {
+    /*@infix func == (left: Cartesian3, right: Cartesian3) -> Bool {
     return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
-    }
+    }*/
 
     /**
     * Compares the provided Cartesians componentwise and returns
@@ -465,13 +465,13 @@ struct Cartesian3: Packable {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: CSEllipsoid = CSEllipsoid.wgs84Ellipsoid()) -> Cartesian3 {
+    static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
     
         var lon = CSMath.toRadians(longitude)
         var lat = CSMath.toRadians(latitude)
         return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
-
+/*
     
     /**
     * Returns a Cartesian3 position from longitude and latitude values given in radians.
@@ -486,11 +486,11 @@ struct Cartesian3: Packable {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: CSEllipsoid = CSEllipsoid.wgs84Ellipsoid()) -> Cartesian3 {
+    static func fromRadians(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
         
         var radiiSquared = ellipsoid.radiiSquared
         
-        var cosLatitude = Math.cos(latitude);
+        var cosLatitude = cos(latitude);
         scratchN.x = cosLatitude * Math.cos(longitude);
         scratchN.y = cosLatitude * Math.sin(longitude);
         scratchN.z = Math.sin(latitude);
@@ -712,16 +712,15 @@ Cartesian3.prototype.equals = function(right) {
 Cartesian3.prototype.equalsEpsilon = function(right, epsilon) {
     return Cartesian3.equalsEpsilon(this, right, epsilon);
 };
-
-/**
-* Creates a string representing this Cartesian in the format '(x, y, z)'.
-*
-* @returns {String} A string representing this Cartesian in the format '(x, y, z)'.
 */
-Cartesian3.prototype.toString = function() {
-    return '(' + this.x + ', ' + this.y + ', ' + this.z + ')';
-};
+    /**
+    * Creates a string representing this Cartesian in the format '(x, y, z)'.
+    *
+    * @returns {String} A string representing this Cartesian in the format '(x, y, z)'.
+    */
+    func toString() -> String {
+        return "(\(x)), (\(y)), (\(z))"
+    }
 
-*/
 }
 
