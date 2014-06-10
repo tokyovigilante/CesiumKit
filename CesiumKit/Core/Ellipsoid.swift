@@ -49,10 +49,7 @@ struct Ellipsoid {
     let centerToleranceSquared: Double = CSEpsilon1
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
-        
-        //>>includeStart('debug', pragmas.debug);
         assert(x >= 0.0 && y >= 0.0 && z >= 0.0, "All radii components must be greater than or equal to zero.")
-        //>>includeEnd('debug');
         
         radii = Cartesian3(x: x, y: y, z: z);
         radiiSquared = radii.multiplyComponents(radii)

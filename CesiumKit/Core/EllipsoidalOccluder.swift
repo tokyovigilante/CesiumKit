@@ -31,7 +31,7 @@ import Foundation
 */
 
 class EllipsoidalOccluder {
-    var ellipsoid: CSEllipsoid
+    var ellipsoid: Ellipsoid
     var cameraPosition: Cartesian3 = Cartesian3() {
     didSet {
         // See http://cesiumjs.org/2013/04/25/Horizon-culling/
@@ -42,7 +42,7 @@ class EllipsoidalOccluder {
     var cameraPositionInScaledSpace: Cartesian3
     var distanceToLimbInScaledSpaceSquared: Double
     
-    init(ellipsoid: CSEllipsoid, cameraPosition: Cartesian3?) {
+    init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3?) {
         self.ellipsoid = ellipsoid
 
         self.cameraPositionInScaledSpace = Cartesian3()
@@ -186,24 +186,19 @@ class EllipsoidalOccluder {
     * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
     */
-    func computeHorizonCullingPointFromRectangle(
-        rectangle: CSRectangle,
-        ellipsoid: CSEllipsoid) -> Cartesian3? {
-            var positions = rectangle.subsample(ellipsoid, surfaceHeight: 0.0);
-            var bs = BoundingSphere(fromPoints: positions);
-            
-            // If the bounding sphere center is too close to the center of the occluder, it doesn't make
-            // sense to try to horizon cull it.
-            if (bs.center.magnitude() < 0.1 * ellipsoid.minimumRadius) {
-                return nil;
-            }
-            return computeHorizonCullingPoint(bs.center, positions: positions)
+    func computeHorizonCullingPointFromRectangle(rectangle: CSRectangle, ellipsoid: Ellipsoid) -> Cartesian3? {
+        var positions = rectangle.subsample(ellipsoid, surfaceHeight: 0.0)
+        var bs = BoundingSphere(fromPoints: positions);
+        
+        // If the bounding sphere center is too close to the center of the occluder, it doesn't make
+        // sense to try to horizon cull it.
+        if (bs.center.magnitude() < 0.1 * ellipsoid.minimumRadius) {
+            return nil;
+        }
+        return computeHorizonCullingPoint(bs.center, positions: positions)
     }
     
-    func computeMagnitude(
-        ellipsoid: CSEllipsoid,
-        position: Cartesian3,
-        scaledSpaceDirectionToPoint: Cartesian3) -> Double {
+    func computeMagnitude(ellipsoid: Ellipsoid, position: Cartesian3, scaledSpaceDirectionToPoint: Cartesian3) -> Double {
             var scaledSpacePosition = ellipsoid.transformPositionToScaledSpace(position)
             var magnitudeSquared = scaledSpacePosition.magnitudeSquared();
             var magnitude = sqrt(magnitudeSquared);
@@ -233,10 +228,8 @@ class EllipsoidalOccluder {
             return scaledSpaceDirectionToPoint.multiplyByScalar(resultMagnitude);
     }
    
-    func computeScaledSpaceDirectionToPoint(
-        ellipsoid: CSEllipsoid,
-        directionToPoint: Cartesian3) -> Cartesian3 {
-            return ellipsoid.transformPositionToScaledSpace(directionToPoint).normalise();
+    func computeScaledSpaceDirectionToPoint(ellipsoid: Ellipsoid, directionToPoint: Cartesian3) -> Cartesian3 {
+            return ellipsoid.transformPositionToScaledSpace(directionToPoint).normalize();
     }
 }
 

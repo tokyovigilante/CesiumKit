@@ -65,7 +65,7 @@ struct Cartesian3: Packable {
         y = radial * sin(clock);
         z = magnitude * cos(cone);
     }
-
+    
     /**
     * Creates a Cartesian3 instance from x, y and z coordinates.
     *
@@ -80,7 +80,7 @@ struct Cartesian3: Packable {
         self.y = y;
         self.z = z;
     }
-
+    
     /**
     * Creates a Cartesian3 instance from an existing Cartesian4.  This simply takes the
     * x, y, and z properties of the Cartesian4 and drops w.
@@ -116,7 +116,7 @@ struct Cartesian3: Packable {
             array[startingIndex+1] = Float32(y)
             array[startingIndex+2] = Float32(z)
         }
-
+        
     }
     
     /**
@@ -133,8 +133,8 @@ struct Cartesian3: Packable {
         }
         return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex]), z: Double(array[startingIndex]))
     }
-
-
+    
+    
     /**
     * Creates a Cartesian3 from three consecutive elements in an array.
     * @function
@@ -169,7 +169,7 @@ struct Cartesian3: Packable {
     func maximumComponent() -> Double {
         return max(x, y, z)
     }
-
+    
     /**
     * Computes the value of the minimum component for the supplied Cartesian.
     *
@@ -179,7 +179,7 @@ struct Cartesian3: Packable {
     func minimumComponent() -> Double {
         return min(x, y, z)
     }
-
+    
     /**
     * Compares two Cartesians and computes a Cartesian which contains the minimum components of the supplied Cartesians.
     *
@@ -191,7 +191,7 @@ struct Cartesian3: Packable {
     func minimumByComponent(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(x: min(x, other.x), y: min(x, other.x), z: min(x, other.x))
     }
-
+    
     /**
     * Compares two Cartesians and computes a Cartesian which contains the maximum components of the supplied Cartesians.
     *
@@ -203,7 +203,7 @@ struct Cartesian3: Packable {
     func maximumByComponent(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(x: max(x, other.x), y: max(x, other.x), z: max(x, other.x))
     }
-
+    
     /**
     * Computes the provided Cartesian's squared magnitude.
     *
@@ -213,7 +213,7 @@ struct Cartesian3: Packable {
     func magnitudeSquared() -> Double {
         return x * x + y * y + z * z;
     }
-
+    
     /**
     * Computes the Cartesian's magnitude (length).
     *
@@ -238,7 +238,7 @@ struct Cartesian3: Packable {
     func distance(other: Cartesian3) -> Double {
         return subtract(other).magnitude()
     }
-
+    
     /**
     * Computes the normalized form of the supplied Cartesian.
     *
@@ -251,7 +251,7 @@ struct Cartesian3: Packable {
         var magnitude = self.magnitude();
         return Cartesian3(x: x / magnitude, y: y / magnitude, z: z / magnitude)
     }
-
+    
     /**
     * Computes the dot (scalar) product of two Cartesians.
     *
@@ -263,7 +263,7 @@ struct Cartesian3: Packable {
         
         return x * other.x + y * other.y + z * other.z;
     }
-
+    
     /**
     * Computes the componentwise product of two Cartesians.
     *
@@ -275,7 +275,7 @@ struct Cartesian3: Packable {
     func multiplyComponents(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z);
     }
-
+    
     /**
     * Computes the componentwise sum of two Cartesians.
     *
@@ -287,7 +287,7 @@ struct Cartesian3: Packable {
     func add(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z);
     }
-
+    
     /**
     * Computes the componentwise difference of two Cartesians.
     *
@@ -299,7 +299,7 @@ struct Cartesian3: Packable {
     func subtract(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(x: x - other.x, y: y - other.y, z: z - other.z);
     }
-
+    
     /**
     * Multiplies the provided Cartesian componentwise by the provided scalar.
     *
@@ -311,7 +311,7 @@ struct Cartesian3: Packable {
     func multiplyByScalar(scalar: Double) -> Cartesian3 {
         return  Cartesian3(x: x * scalar, y: y * scalar, z: z * scalar);
     }
-
+    
     /**
     * Divides the provided Cartesian componentwise by the provided scalar.
     *
@@ -323,8 +323,8 @@ struct Cartesian3: Packable {
     func divideByScalar(scalar: Double) -> Cartesian3 {
         return  Cartesian3(x: x / scalar, y: y / scalar, z: z / scalar);
     }
-
-
+    
+    
     /**
     * Negates the provided Cartesian.
     *
@@ -335,7 +335,7 @@ struct Cartesian3: Packable {
     func negate() -> Cartesian3 {
         return Cartesian3(x: -x, y: -y, z: -z)
     }
-
+    
     /**
     * Computes the absolute value of the provided Cartesian.
     *
@@ -359,7 +359,7 @@ struct Cartesian3: Packable {
     func lerp(end: Cartesian3, t: Double) -> Cartesian3 {
         return self.multiplyByScalar(1.0 - t).add(end.multiplyByScalar(t));
     }
-
+    
     /**
     * Returns the angle, in radians, between the provided Cartesians.
     *
@@ -372,7 +372,7 @@ struct Cartesian3: Packable {
         var sine = self.normalize().cross(other.normalize()).magnitude()
         return atan2(sine, cosine)
     }
-
+    
     /**
     * Returns the axis that is most orthogonal to the provided Cartesian.
     *
@@ -387,21 +387,21 @@ struct Cartesian3: Packable {
         
         if (f.x <= f.y) {
             if (f.x <= f.z) {
-                result = Cartesian3.unitX
+                result = Cartesian3.unitX()
             } else {
-                result = Cartesian3.unitZ
+                result = Cartesian3.unitZ()
             }
         } else {
             if (f.y <= f.z) {
-                result = Cartesian3.unitY
+                result = Cartesian3.unitY()
             } else {
-                result = Cartesian3.unitZ
+                result = Cartesian3.unitZ()
             }
         }
         
         return result;
     }
-
+    
     /**
     * Compares the provided Cartesians componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -413,7 +413,7 @@ struct Cartesian3: Packable {
     /*@infix func == (left: Cartesian3, right: Cartesian3) -> Bool {
     return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
     }*/
-
+    
     /**
     * Compares the provided Cartesians componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -427,7 +427,7 @@ struct Cartesian3: Packable {
     func equalsEpsilon(other: Cartesian3, epsilon: Double) -> Bool {
         return (abs(x - other.x) <= epsilon) && (abs(y - other.y) <= epsilon) && (abs(z - other.z) <= epsilon)
     }
-
+    
     /**
     * Computes the cross (outer) product of two Cartesians.
     *
@@ -451,7 +451,7 @@ struct Cartesian3: Packable {
         
         return Cartesian3(x: x, y: y, z: z);
     }
-
+    
     /**
     * Returns a Cartesian3 position from longitude and latitude values given in degrees.
     *
@@ -466,12 +466,11 @@ struct Cartesian3: Packable {
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
     static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
-    
+        
         var lon = CSMath.toRadians(longitude)
         var lat = CSMath.toRadians(latitude)
         return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
-/*
     
     /**
     * Returns a Cartesian3 position from longitude and latitude values given in radians.
@@ -488,162 +487,103 @@ struct Cartesian3: Packable {
     */
     static func fromRadians(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
         
-        var radiiSquared = ellipsoid.radiiSquared
-        
         var cosLatitude = cos(latitude);
-        scratchN.x = cosLatitude * Math.cos(longitude);
-        scratchN.y = cosLatitude * Math.sin(longitude);
-        scratchN.z = Math.sin(latitude);
-        scratchN = Cartesian3.normalize(scratchN, scratchN);
+        var n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
+        var k = n.multiplyComponents(ellipsoid.radiiSquared)
+        var gamma = sqrt(n.dot(k));
         
-        Cartesian3.multiplyComponents(radiiSquared, scratchN, scratchK);
-        var gamma = Math.sqrt(Cartesian3.dot(scratchN, scratchK));
-        scratchK = Cartesian3.divideByScalar(scratchK, gamma, scratchK);
-        scratchN = Cartesian3.multiplyByScalar(scratchN, height, scratchN);
-        return Cartesian3.add(scratchK, scratchN, result);
-    }
-
-/**
-* Returns an array of Cartesian3 positions given an array of longitude and latitude values given in degrees.
-*
-* @param {Number[]} coordinates A list of longitude and latitude values. Values alternate [longitude, latitude, longitude, latitude...].
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the coordinates lie.
-* @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
-* @returns {Cartesian3[]} The array of positions.
-*
-* @example
-* var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
-*/
-Cartesian3.fromDegreesArray = function(coordinates, ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(coordinates)) {
-        throw new DeveloperError('positions is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var pos = new Array(coordinates.length);
-    for (var i = 0; i < coordinates.length; i++) {
-        pos[i] = CesiumMath.toRadians(coordinates[i]);
+        return k.divideByScalar(gamma).add(n.multiplyByScalar(height));
     }
     
-    return Cartesian3.fromRadiansArray(pos, ellipsoid, result);
-};
-
-/**
-* Returns an array of Cartesian3 positions given an array of longitude and latitude values given in radians.
-*
-* @param {Number[]} coordinates A list of longitude and latitude values. Values alternate [longitude, latitude, longitude, latitude...].
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the coordinates lie.
-* @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
-* @returns {Cartesian3[]} The array of positions.
-*
-* @example
-* var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
-*/
-Cartesian3.fromRadiansArray = function(coordinates, ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(coordinates)) {
-        throw new DeveloperError('positions is required.');
-    }
-    if (coordinates.length < 2) {
-        throw new DeveloperError('positions length cannot be less than 2.');
-    }
-    if (coordinates.length % 2 !== 0) {
-        throw new DeveloperError('positions length must be a multiple of 2.');
-    }
-    //>>includeEnd('debug');
-    
-    var length = coordinates.length;
-    if (!defined(result)) {
-        result = new Array(length/2);
-    } else {
-        result.length = length/2;
+    /**
+    * Returns an array of Cartesian3 positions given an array of longitude and latitude values given in degrees.
+    *
+    * @param {Number[]} coordinates A list of longitude and latitude values. Values alternate [longitude, latitude, longitude, latitude...].
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the coordinates lie.
+    * @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
+    * @returns {Cartesian3[]} The array of positions.
+    *
+    * @example
+    * var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
+    */
+    static func fromDegreesArray(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+        
+        var pos = Double[]()
+        for coordinate in coordinates {
+            pos.append(CSMath.toRadians(coordinate))
+        }
+        
+        return Cartesian3.fromRadiansArray(coordinates: pos, ellipsoid: ellipsoid)
     }
     
-    for ( var i = 0; i < length; i+=2) {
-        var lon = coordinates[i];
-        var lat = coordinates[i+1];
-        result[i/2] = Cartesian3.fromRadians(lon, lat, 0, ellipsoid, result[i/2]);
+    /**
+    * Returns an array of Cartesian3 positions given an array of longitude and latitude values given in radians.
+    *
+    * @param {Number[]} coordinates A list of longitude and latitude values. Values alternate [longitude, latitude, longitude, latitude...].
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the coordinates lie.
+    * @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
+    * @returns {Cartesian3[]} The array of positions.
+    *
+    * @example
+    * var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
+    */
+    static func fromRadiansArray(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+        
+        assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
+        
+        var cartesians = Cartesian3[]()
+        var index = coordinates.count
+        for (var i = 0; i < coordinates.count; i += 2) {
+            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
+        }
+        return cartesians
     }
     
-    return result;
-};
-
-/**
-* Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in degrees.
-*
-* @param {Number[]} coordinates A list of longitude, latitude and height values. Values alternate [longitude, latitude, height,, longitude, latitude, height...].
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the position lies.
-* @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
-* @returns {Cartesian3[]} The array of positions.
-*
-* @example
-* var positions = Cartesian3.fromDegreesArrayHeights([-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]);
-*/
-Cartesian3.fromDegreesArrayHeights = function(coordinates, ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(coordinates)) {
-        throw new DeveloperError('positions is required.');
-    }
-    if (coordinates.length < 3) {
-        throw new DeveloperError('positions length cannot be less than 3.');
-    }
-    if (coordinates.length % 3 !== 0) {
-        throw new DeveloperError('positions length must be a multiple of 3.');
-    }
-    //>>includeEnd('debug');
-    
-    var pos = new Array(coordinates.length);
-    for (var i = 0; i < coordinates.length; i+=3) {
-        pos[i] = CesiumMath.toRadians(coordinates[i]);
-        pos[i+1] = CesiumMath.toRadians(coordinates[i+1]);
-        pos[i+2] = coordinates[i+2];
+    /**
+    * Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in degrees.
+    *
+    * @param {Number[]} coordinates A list of longitude, latitude and height values. Values alternate [longitude, latitude, height,, longitude, latitude, height...].
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the position lies.
+    * @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
+    * @returns {Cartesian3[]} The array of positions.
+    *
+    * @example
+    * var positions = Cartesian3.fromDegreesArrayHeights([-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]);
+    */
+    static func fromDegreesArrayHeights(coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+        
+        var pos = Double[]()
+        for (var i = 0; i < coordinates.count; i += 3) {
+            pos.append(CSMath.toRadians(coordinates[i]))
+            pos.append(CSMath.toRadians(coordinates[i+1]))
+            pos.append((coordinates[i+2]))
+        }
+        
+        return Cartesian3.fromRadiansArrayHeights(coordinates: pos, ellipsoid: ellipsoid)
     }
     
-    return Cartesian3.fromRadiansArrayHeights(pos, ellipsoid, result);
-};
-
-/**
-* Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in radians.
-*
-* @param {Number[]} coordinates A list of longitude, latitude and height values. Values alternate [longitude, latitude, height,, longitude, latitude, height...].
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the position lies.
-* @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
-* @returns {Cartesian3[]} The array of positions.
-*
-* @example
-* var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
-*/
-Cartesian3.fromRadiansArrayHeights = function(coordinates, ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(coordinates)) {
-        throw new DeveloperError('positions is required.');
+    /**
+    * Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in radians.
+    *
+    * @param {Number[]} coordinates A list of longitude, latitude and height values. Values alternate [longitude, latitude, height,, longitude, latitude, height...].
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid on which the position lies.
+    * @param {Cartesian3[]} [result] An array of Cartesian3 objects to store the result.
+    * @returns {Cartesian3[]} The array of positions.
+    *
+    * @example
+    * var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
+    */
+    static func fromRadiansArrayHeights(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+        
+        assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
+        
+        var cartesians = Cartesian3[]()
+        var index = coordinates.count
+        for (var i = 0; i < coordinates.count; i += 3) {
+            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
+        }
+        return cartesians
     }
-    if (coordinates.length < 3) {
-        throw new DeveloperError('positions length cannot be less than 3.');
-    }
-    if (coordinates.length % 3 !== 0) {
-        throw new DeveloperError('positions length must be a multiple of 3.');
-    }
-    //>>includeEnd('debug');
-    
-    var length = coordinates.length;
-    if (!defined(result)) {
-        result = new Array(length/3);
-    } else {
-        result.length = length/3;
-    }
-    
-    for ( var i = 0; i < length; i+=3) {
-        var lon = coordinates[i];
-        var lat = coordinates[i+1];
-        var alt = coordinates[i+2];
-        result[i/3] = Cartesian3.fromRadians(lon, lat, alt, ellipsoid, result[i/3]);
-    }
-    
-    return result;
-};
-*/
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 0.0).
     *
@@ -654,65 +594,35 @@ Cartesian3.fromRadiansArrayHeights = function(coordinates, ellipsoid, result) {
     static func zero() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 0.0, z: 0.0)
     }
-/*
-/**
-* An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
-*
-* @type {Cartesian3}
-* @constant
-*/
-Cartesian3.UNIT_X = freezeObject(new Cartesian3(1.0, 0.0, 0.0));
-
-/**
-* An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
-*
-* @type {Cartesian3}
-* @constant
-*/
-Cartesian3.UNIT_Y = freezeObject(new Cartesian3(0.0, 1.0, 0.0));
-
-/**
-* An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
-*
-* @type {Cartesian3}
-* @constant
-*/
-Cartesian3.UNIT_Z = freezeObject(new Cartesian3(0.0, 0.0, 1.0));
-
-/**
-* Duplicates this Cartesian3 instance.
-*
-* @param {Cartesian3} [result] The object onto which to store the result.
-* @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-*/
-Cartesian3.prototype.clone = function(result) {
-    return Cartesian3.clone(this, result);
-};
-
-/**
-* Compares this Cartesian against the provided Cartesian componentwise and returns
-* <code>true</code> if they are equal, <code>false</code> otherwise.
-*
-* @param {Cartesian3} [right] The right hand side Cartesian.
-* @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
-*/
-Cartesian3.prototype.equals = function(right) {
-    return Cartesian3.equals(this, right);
-};
-
-/**
-* Compares this Cartesian against the provided Cartesian componentwise and returns
-* <code>true</code> if they are within the provided epsilon,
-* <code>false</code> otherwise.
-*
-* @param {Cartesian3} [right] The right hand side Cartesian.
-* @param {Number} epsilon The epsilon to use for equality testing.
-* @returns {Boolean} <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-*/
-Cartesian3.prototype.equalsEpsilon = function(right, epsilon) {
-    return Cartesian3.equalsEpsilon(this, right, epsilon);
-};
-*/
+    
+    /**
+    * An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
+    *
+    * @type {Cartesian3}
+    * @constant
+    */
+    static func unitX() -> Cartesian3 {
+        return Cartesian3(x: 1.0, y: 0.0, z: 0.0)
+    }
+    
+    /**
+    * An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
+    *
+    * @type {Cartesian3}
+    * @constant
+    */
+    static func unitY() -> Cartesian3 {
+        return Cartesian3(x: 0.0, y: 1.0, z: 0.0)
+    }
+    /**
+    * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
+    *
+    * @type {Cartesian3}
+    * @constant
+    */
+    static func unitZ() -> Cartesian3 {
+        return Cartesian3(x: 1.0, y: 1.0, z: 0.0)
+    }
     /**
     * Creates a string representing this Cartesian in the format '(x, y, z)'.
     *
@@ -721,6 +631,6 @@ Cartesian3.prototype.equalsEpsilon = function(right, epsilon) {
     func toString() -> String {
         return "(\(x)), (\(y)), (\(z))"
     }
-
+    
 }
 

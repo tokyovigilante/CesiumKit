@@ -18,14 +18,12 @@
 		943744F61945D09F0017FE14 /* Cartographic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F51945D09F0017FE14 /* Cartographic.swift */; };
 		943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		943999471930418C00012DC4 /* CSSpherical.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999091930418C00012DC4 /* CSSpherical.m */; };
-		943999481930418C00012DC4 /* CSEllipsoid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990B1930418C00012DC4 /* CSEllipsoid.m */; };
 		943999491930418C00012DC4 /* CSCartesian2.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990C1930418C00012DC4 /* CSCartesian2.m */; };
 		9439994A1930418C00012DC4 /* CSRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990D1930418C00012DC4 /* CSRectangle.m */; };
 		9439994B1930418C00012DC4 /* CSProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990F1930418C00012DC4 /* CSProjection.m */; };
 		9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999101930418C00012DC4 /* CSMatrix4.m */; };
 		9439994D1930418C00012DC4 /* CSBoundingRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999111930418C00012DC4 /* CSBoundingRectangle.m */; };
 		9439994E1930418C00012DC4 /* CSMath.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999131930418C00012DC4 /* CSMath.m */; };
-		9439994F1930418C00012DC4 /* CSCartesian3.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999151930418C00012DC4 /* CSCartesian3.m */; };
 		943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */; };
 		943999511930418C00012DC4 /* CSQuarternion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991E1930418C00012DC4 /* CSQuarternion.m */; };
 		943999521930418C00012DC4 /* CSGeographicProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999201930418C00012DC4 /* CSGeographicProjection.m */; };
@@ -46,6 +44,7 @@
 		943999631930418C00012DC4 /* CSFrustum.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999421930418C00012DC4 /* CSFrustum.m */; };
 		943CCAC9193051EA00012DC4 /* CSTypedArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 943CCAC8193051EA00012DC4 /* CSTypedArray.m */; };
 		943CCACC193062E200012DC4 /* CSGlobe.m in Sources */ = {isa = PBXBuildFile; fileRef = 943CCACB193062E200012DC4 /* CSGlobe.m */; };
+		943D25B11947128A00263D91 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
 		94502FCB1938247F00012DC4 /* CSTerrainProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 94502FCA1938247F00012DC4 /* CSTerrainProvider.m */; };
 		94502FCE1938248D00012DC4 /* CSEllipsoidTerrainProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 94502FCD1938248D00012DC4 /* CSEllipsoidTerrainProvider.m */; };
 		94502FD1193826AF00012DC4 /* CSTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 94502FD0193826AF00012DC4 /* CSTilingScheme.m */; };
@@ -121,7 +120,6 @@
 		943999081930418C00012DC4 /* CSWebMercatorProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSWebMercatorProjection.h; sourceTree = "<group>"; };
 		943999091930418C00012DC4 /* CSSpherical.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSSpherical.m; sourceTree = "<group>"; };
 		9439990A1930418C00012DC4 /* CSRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRay.h; sourceTree = "<group>"; };
-		9439990B1930418C00012DC4 /* CSEllipsoid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoid.m; sourceTree = "<group>"; };
 		9439990C1930418C00012DC4 /* CSCartesian2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian2.m; sourceTree = "<group>"; };
 		9439990D1930418C00012DC4 /* CSRectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRectangle.m; sourceTree = "<group>"; };
 		9439990E1930418C00012DC4 /* CSProjection+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CSProjection+Private.h"; sourceTree = "<group>"; };
@@ -131,7 +129,6 @@
 		943999121930418C00012DC4 /* CSEllipsoidGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidGeometry.h; sourceTree = "<group>"; };
 		943999131930418C00012DC4 /* CSMath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSMath.m; sourceTree = "<group>"; };
 		943999141930418C00012DC4 /* CSGeographicProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGeographicProjection.h; sourceTree = "<group>"; };
-		943999151930418C00012DC4 /* CSCartesian3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian3.m; sourceTree = "<group>"; };
 		943999161930418C00012DC4 /* CSQuarternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSQuarternion.h; sourceTree = "<group>"; };
 		943999171930418C00012DC4 /* CSCartesian2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian2.h; sourceTree = "<group>"; };
 		943999181930418C00012DC4 /* CSRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRectangle.h; sourceTree = "<group>"; };
@@ -139,7 +136,6 @@
 		9439991A1930418C00012DC4 /* CSMatrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMatrix4.h; sourceTree = "<group>"; };
 		9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidGeometry.m; sourceTree = "<group>"; };
 		9439991C1930418C00012DC4 /* CSProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSProjection.h; sourceTree = "<group>"; };
-		9439991D1930418C00012DC4 /* CSCartesian3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian3.h; sourceTree = "<group>"; };
 		9439991E1930418C00012DC4 /* CSQuarternion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSQuarternion.m; sourceTree = "<group>"; };
 		9439991F1930418C00012DC4 /* CSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMath.h; sourceTree = "<group>"; };
 		943999201930418C00012DC4 /* CSGeographicProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSGeographicProjection.m; sourceTree = "<group>"; };
@@ -149,7 +145,6 @@
 		943999261930418C00012DC4 /* CSTypedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSTypedArray.h; sourceTree = "<group>"; };
 		943999271930418C00012DC4 /* CSSpherical.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSpherical.h; sourceTree = "<group>"; };
 		943999281930418C00012DC4 /* CSRay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRay.m; sourceTree = "<group>"; };
-		943999291930418C00012DC4 /* CSEllipsoid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoid.h; sourceTree = "<group>"; };
 		9439992C1930418C00012DC4 /* CSDrawCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSDrawCommand.h; sourceTree = "<group>"; };
 		9439992D1930418C00012DC4 /* CSPassState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSPassState.h; sourceTree = "<group>"; };
 		9439992E1930418C00012DC4 /* CSUniformState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUniformState.h; sourceTree = "<group>"; };
@@ -175,6 +170,7 @@
 		943CCAC8193051EA00012DC4 /* CSTypedArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSTypedArray.m; sourceTree = "<group>"; };
 		943CCACA193062E200012DC4 /* CSGlobe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSGlobe.h; sourceTree = "<group>"; };
 		943CCACB193062E200012DC4 /* CSGlobe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSGlobe.m; sourceTree = "<group>"; };
+		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		94502FC91938247F00012DC4 /* CSTerrainProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSTerrainProvider.h; sourceTree = "<group>"; };
 		94502FCA1938247F00012DC4 /* CSTerrainProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSTerrainProvider.m; sourceTree = "<group>"; };
 		94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidTerrainProvider.h; sourceTree = "<group>"; };
@@ -250,13 +246,9 @@
 				943999111930418C00012DC4 /* CSBoundingRectangle.m */,
 				943999171930418C00012DC4 /* CSCartesian2.h */,
 				9439990C1930418C00012DC4 /* CSCartesian2.m */,
-				9439991D1930418C00012DC4 /* CSCartesian3.h */,
-				943999151930418C00012DC4 /* CSCartesian3.m */,
 				943999061930418C00012DC4 /* CSCartesian4.h */,
 				943999231930418C00012DC4 /* CSCartesian4.m */,
-				943999291930418C00012DC4 /* CSEllipsoid.h */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
-				9439990B1930418C00012DC4 /* CSEllipsoid.m */,
 				943744F51945D09F0017FE14 /* Cartographic.swift */,
 				941F24C4193CC94200BDB515 /* CSEllipsoidalOccluder.h */,
 				941F24C5193CC94200BDB515 /* CSEllipsoidalOccluder.m */,
@@ -316,6 +308,7 @@
 				948D03E21944F45500DC0E52 /* defaultValue.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
+				943D25B01947128A00263D91 /* Rectangle.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
@@ -557,7 +550,6 @@
 				94502FD4193826DF00012DC4 /* CSWebMercatorTilingScheme.m in Sources */,
 				9451509E193C597E00012DC4 /* CSTerrainMesh.m in Sources */,
 				943999531930418C00012DC4 /* CSVertexFormat.m in Sources */,
-				943999481930418C00012DC4 /* CSEllipsoid.m in Sources */,
 				9417EC451942C31B00586516 /* Interval.swift in Sources */,
 				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
 				943CCAC9193051EA00012DC4 /* CSTypedArray.m in Sources */,
@@ -574,7 +566,6 @@
 				945150A1193C5F3400012DC4 /* CSFloat32Array.m in Sources */,
 				942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */,
 				942A83DF193878CC00012DC4 /* CSUInt8Array.m in Sources */,
-				9439994F1930418C00012DC4 /* CSCartesian3.m in Sources */,
 				9465BB56193F8A57006F5994 /* CSPackable.m in Sources */,
 				9439994B1930418C00012DC4 /* CSProjection.m in Sources */,
 				9439994E1930418C00012DC4 /* CSMath.m in Sources */,
@@ -585,6 +576,7 @@
 				94502FCB1938247F00012DC4 /* CSTerrainProvider.m in Sources */,
 				948D03DD19449E9600DC0E52 /* Packable.swift in Sources */,
 				943999521930418C00012DC4 /* CSGeographicProjection.m in Sources */,
+				943D25B11947128A00263D91 /* Rectangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
