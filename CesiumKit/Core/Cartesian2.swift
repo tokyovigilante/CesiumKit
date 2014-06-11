@@ -98,7 +98,7 @@ struct Cartesian2: Packable {
     array[startingIndex++] = value.x;
     array[startingIndex] = value.y;
 }
-
+/*
 /**
 * Retrieves an instance from a packed array.
 *
@@ -682,5 +682,5 @@ Cartesian2.prototype.equalsEpsilon = function(right, epsilon) {
 Cartesian2.prototype.toString = function() {
     return '(' + this.x + ', ' + this.y + ')';
 };
-
+*/
 }

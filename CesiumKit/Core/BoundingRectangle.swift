@@ -49,7 +49,15 @@ struct BoundingRectangle {
     */
     var height: Double = 0.0
     
-    var defaultProjection: Projection = GeographicProjection();
+    var defaultProjection: Projection = GeographicProjection()
+    
+    init (var x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: Projection = GeographicProjection()) {
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.projection = projection
+    }
 
     /**
     * Computes a bounding rectangle enclosing the list of 2D points.
@@ -90,8 +98,6 @@ struct BoundingRectangle {
         height = maximumY - minimumY
     }
     
-    var fromRectangleLowerLeft = new Cartographic();
-    var fromRectangleUpperRight = new Cartographic();
     /**
     * Computes a bounding rectangle from an rectangle.
     *
@@ -100,57 +106,22 @@ struct BoundingRectangle {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    BoundingRectangle.fromRectangle = function(rectangle, projection, result) {
-    if (!defined(result)) {
-    result = new BoundingRectangle();
+    init(fromRectangle rectangle: Rectangle, projection: Projection = GeographicProjection()) {
+        
+        self.projection = projection
+        
+        var lowerLeft = projection.project(rectangle.southwest())
+        var upperRight = projection.project(rectangle.northeast())
+        
+        upperRight.subtract(lowerLeft);
+        
+        x = lowerLeft.x;
+        y = lowerLeft.y;
+        width = upperRight.x;
+        height = upperRight.y;
     }
     
-    if (!defined(rectangle)) {
-    result.x = 0;
-    result.y = 0;
-    result.width = 0;
-    result.height = 0;
-    return result;
-    }
-    
-    projection = defaultValue(projection, defaultProjection);
-    
-    var lowerLeft = projection.project(Rectangle.getSouthwest(rectangle, fromRectangleLowerLeft));
-    var upperRight = projection.project(Rectangle.getNortheast(rectangle, fromRectangleUpperRight));
-    
-    Cartesian2.subtract(upperRight, lowerLeft, upperRight);
-    
-    result.x = lowerLeft.x;
-    result.y = lowerLeft.y;
-    result.width = upperRight.x;
-    result.height = upperRight.y;
-    return result;
-    };
-    
-    /**
-    * Duplicates a BoundingRectangle instance.
-    *
-    * @param {BoundingRectangle} rectangle The bounding rectangle to duplicate.
-    * @param {BoundingRectangle} [result] The object onto which to store the result.
-    * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided. (Returns undefined if rectangle is undefined)
-    */
-    BoundingRectangle.clone = function(rectangle, result) {
-    if (!defined(rectangle)) {
-    return undefined;
-    }
-    
-    if (!defined(result)) {
-    return new BoundingRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-    }
-    
-    result.x = rectangle.x;
-    result.y = rectangle.y;
-    result.width = rectangle.width;
-    result.height = rectangle.height;
-    return result;
-    };
-    
-    /**
+  /**
     * Computes a bounding rectangle that is the union of the left and right bounding rectangles.
     *
     * @param {BoundingRectangle} left A rectangle to enclose in bounding rectangle.
@@ -158,31 +129,21 @@ struct BoundingRectangle {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    BoundingRectangle.union = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-    throw new DeveloperError('left is required.');
-}
-if (!defined(right)) {
-    throw new DeveloperError('right is required.');
-}
-//>>includeEnd('debug');
+    func union(other: Rectangle) -> Rectangle {
+    
 
-if (!defined(result)) {
-    result = new BoundingRectangle();
-}
+var lowerLeftX = min(x, other.x);
+var lowerLeftY = min(y, other.y);
+var upperRightX = max(x + left.width, other.x + other.width);
+var upperRightY = max(y + left.height, other.y + other.height);
 
-var lowerLeftX = Math.min(left.x, right.x);
-var lowerLeftY = Math.min(left.y, right.y);
-var upperRightX = Math.max(left.x + left.width, right.x + right.width);
-var upperRightY = Math.max(left.y + left.height, right.y + right.height);
-
+        return BoundingRectangle(
 result.x = lowerLeftX;
 result.y = lowerLeftY;
 result.width = upperRightX - lowerLeftX;
 result.height = upperRightY - lowerLeftY;
 return result;
-};
+}
 
 /**
 * Computes a bounding rectangle by enlarging the provided rectangle until it contains the provided point.
