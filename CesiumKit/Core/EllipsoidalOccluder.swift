@@ -45,15 +45,17 @@ class EllipsoidalOccluder {
     init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3?) {
         self.ellipsoid = ellipsoid
         
-        self.cameraPositionInScaledSpace = Cartesian3()
-        self.distanceToLimbInScaledSpaceSquared = 0.0
         if (cameraPosition)
         {
             self.cameraPosition = cameraPosition!
+            self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
+            self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared() - 1.0;
         }
         else
         {
             self.cameraPosition = Cartesian3()
+            self.cameraPositionInScaledSpace = Cartesian3()
+            self.distanceToLimbInScaledSpaceSquared = 0.0
         }
     }
     
