@@ -9,19 +9,19 @@
 #import "CSProjection.h"
 #import "CSProjection+Private.h"
 
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 
 
 @implementation CSProjection
 
--(id)initWithEllipsoid:(CSEllipsoid *)ellipsoid
+-(id)initWithEllipsoid:(Ellipsoid *)ellipsoid
 {
     self = [super init];
     if (self)
     {
         if (!ellipsoid)
         {
-            ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+            ellipsoid = [Ellipsoid wgs84Ellipsoid];
         }
         _semimajorAxis = ellipsoid.maximumRadius;
         _oneOverSemimajorAxis = 1.0 / _semimajorAxis;
@@ -41,7 +41,7 @@
  *        new instance should be created.
  * @returns {Cartesian3} The equivalent web mercator X, Y, Z coordinates, in meters.
  */
--(CSCartesian3 *)project:(CSCartographic *)cartographic3
+-(Cartesian3 *)project:(CSCartographic *)cartographic3
 {
     NSAssert(NO, @"Invalid base class");
     return nil;
@@ -60,7 +60,7 @@
  *        new instance should be created.
  * @returns {Cartographic} The equivalent cartographic coordinates.
  */
--(CSCartographic *)unproject:(CSCartesian3 *)cartesian
+-(CSCartographic *)unproject:(Cartesian3 *)cartesian
 {
     NSAssert(NO, @"Invalid base class");
     return nil;

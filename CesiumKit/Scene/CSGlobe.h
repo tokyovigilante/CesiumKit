@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSEllipsoid, CSTerrainProvider, CSImageryLayerCollection, CSCartesian4;
+@class Ellipsoid, CSTerrainProvider, CSImageryLayerCollection, CSCartesian4;
 /**
  * The globe rendered in the scene, including its terrain ({@link Globe#terrainProvider})
  * and imagery layers ({@link Globe#imageryLayers}).  Access the globe using {@link Scene#globe}.
@@ -21,7 +21,7 @@
  */
 @interface CSGlobe : NSObject
 
-@property (readonly) CSEllipsoid *ellipsoid;
+@property (readonly) Ellipsoid *ellipsoid;
 
 /**
  * The terrain provider providing surface geometry for this globe.

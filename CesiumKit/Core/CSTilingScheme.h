@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSEllipsoid, CSRectangle, CSProjection, CSCartesian2, CSCartographic;
+@class Ellipsoid, CSRectangle, CSProjection, CSCartesian2, CSCartographic;
 
 /**
  * A tiling scheme for geometry or imagery on the surface of an ellipsoid.  At level-of-detail zero,
@@ -25,14 +25,14 @@
  */
 @interface CSTilingScheme : NSObject {
     @protected
-    CSEllipsoid *_ellipsoid;
+    Ellipsoid *_ellipsoid;
     CSRectangle *_rectangle;
     CSProjection *_projection;
     UInt32 _numberOfLevelZeroTilesX;
     UInt32 _numberOfLevelZeroTilesY;
 }
 
-@property (nonatomic) CSEllipsoid *ellipsoid;
+@property (nonatomic) Ellipsoid *ellipsoid;
 @property (readonly) CSRectangle *rectangle;
 @property (readonly) CSProjection *projection;
 @property (readonly) UInt32 numberOfLevelZeroTilesX;

@@ -9,8 +9,6 @@
 
 #import "CSGlobe.h"
 
-#import "CSEllipsoid.h"
-
 #import "CSDrawCommand.h"
 #import "CSBoundingSphere.h"
 #import "CSBoundingRectangle.h"
@@ -18,7 +16,7 @@
 #import "CSRendererDefines.h"
 
 #import "CSCartesian2.h"
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 #import "CSCartesian4.h"
 
 #import "CSFrameState.h"
@@ -53,7 +51,7 @@
 
 
 
--(instancetype)initWithEllipsoid:(CSEllipsoid *)ellipsoid
+-(instancetype)initWithEllipsoid:(Ellipsoid *)ellipsoid
 {
     self = [super init];
     if (self)
@@ -64,7 +62,7 @@
         }
         else
         {
-            _ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+            _ellipsoid = [Ellipsoid wgs84Ellipsoid];
         }
         _terrainProvider = [[CSEllipsoidTerrainProvider alloc] initWithOptions:@{ @"ellipsoid" : _ellipsoid }];
 #warning imagerylayercollection
@@ -86,7 +84,7 @@
         _clearDepthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"depth" : @1.0,
                                                                        @"stencil" : @0,
                                                                        @"owner" : self }];
-        _depthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [[CSBoundingSphere alloc] initWithCenter:[CSCartesian3 zero]
+        _depthCommand = [[CSDrawCommand alloc] initWithOptions:@{ @"boundingVolume" : [[CSBoundingSphere alloc] initWithCenter:[Cartesian3 zero]
                                                                                                                       radius:ellipsoid.maximumRadius],
                                                                 @"pass" : [NSNumber numberWithUnsignedInt:PassOpaque],
                                                                 @"owner" : self }];
@@ -143,45 +141,45 @@
 #warning float32Array
 -(void)computeDepthQuad:(Float32 *)depthQuad forFrameState:(CSFrameState *)frameState
 {
-    CSCartesian3 *radii = self.ellipsoid.radii;
-    CSCartesian3 *p = frameState.camera.positionWC;
+    Cartesian3 *radii = self.ellipsoid.radii;
+    Cartesian3 *p = frameState.camera.positionWC;
     
     // Find the corresponding position in the scaled space of the ellipsoid.
-    CSCartesian3 *q = [self.ellipsoid.oneOverRadii multiplyComponents:p];
+    Cartesian3 *q = [self.ellipsoid.oneOverRadii multiplyComponents:p];
     
     Float64 qMagnitude = q.magnitude;
-    CSCartesian3 *qUnit = q.normalise;
+    Cartesian3 *qUnit = q.normalise;
     
     // Determine the east and north directions at q.
-    CSCartesian3 *eUnit = [[CSCartesian3 unitZ] cross:q].normalise;
-    CSCartesian3 *nUnit = [qUnit cross:eUnit].normalise;
+    Cartesian3 *eUnit = [[Cartesian3 unitZ] cross:q].normalise;
+    Cartesian3 *nUnit = [qUnit cross:eUnit].normalise;
     
     // Determine the radius of the 'limb' of the ellipsoid.
     Float64 wMagnitude = sqrt(q.magnitudeSquared - 1.0);
     
     // Compute the center and offsets.
-    CSCartesian3 *center = [qUnit multiplyByScalar:1.0 / qMagnitude];
+    Cartesian3 *center = [qUnit multiplyByScalar:1.0 / qMagnitude];
     Float64 scalar = wMagnitude / qMagnitude;
-    CSCartesian3 *eastOffset = [eUnit multiplyByScalar:scalar];
-    CSCartesian3 *northOffset = [nUnit multiplyByScalar:scalar];
+    Cartesian3 *eastOffset = [eUnit multiplyByScalar:scalar];
+    Cartesian3 *northOffset = [nUnit multiplyByScalar:scalar];
     
     // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-    CSCartesian3 *upperLeft = [center add:northOffset];
+    Cartesian3 *upperLeft = [center add:northOffset];
     upperLeft = [upperLeft subtract:eastOffset];
     upperLeft = [upperLeft multiplyComponents:radii];
     [upperLeft pack:depthQuad startingIndex:0];
     
-    CSCartesian3 *lowerLeft = [center subtract:northOffset];
+    Cartesian3 *lowerLeft = [center subtract:northOffset];
     lowerLeft = [lowerLeft subtract:eastOffset];
     lowerLeft = [lowerLeft multiplyComponents:radii];
     [lowerLeft pack:depthQuad startingIndex:3];
     
-    CSCartesian3 *upperRight = [center add:northOffset];
+    Cartesian3 *upperRight = [center add:northOffset];
     upperRight = [upperRight add:eastOffset];
     upperRight = [upperRight multiplyComponents:radii];
     [upperRight pack:depthQuad startingIndex:6];
     
-    CSCartesian3 *lowerRight = [center subtract:northOffset];
+    Cartesian3 *lowerRight = [center subtract:northOffset];
     lowerRight = [lowerRight add:eastOffset];
     lowerRight = [lowerRight multiplyComponents:radii];
     [lowerRight pack:depthQuad startingIndex:9];

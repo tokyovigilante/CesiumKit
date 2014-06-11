@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSTilingScheme, CSUInt16Array, CSEllipsoid, CSTerrainData;
+@class CSTilingScheme, CSUInt16Array, Ellipsoid, CSTerrainData;
 
 /**
  * Provides terrain or other geometry for the surface of an ellipsoid.  The surface geometry is
@@ -109,7 +109,7 @@
  * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
  * @returns {Number} An estimated geometric error.
  */
--(Float64)getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:(CSEllipsoid *)ellipsoid
+-(Float64)getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:(Ellipsoid *)ellipsoid
                                                          tileImageWidth:(Float64)tileImageWidth
                                                numberOfTilesAtLevelZero:(UInt32)numberOfTilesAtLevelZero;
 

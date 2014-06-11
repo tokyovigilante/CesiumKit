@@ -8,11 +8,11 @@
 
 @import Foundation;
 
-@class CSEllipsoid, CSCartesian3, CSCartographic;
+@class Ellipsoid, Cartesian3, CSCartographic;
 
 @interface CSProjection : NSObject
 
--(id)initWithEllipsoid:(CSEllipsoid *)ellipsoid;
+-(id)initWithEllipsoid:(Ellipsoid *)ellipsoid;
 
 /**
  * Converts geodetic ellipsoid coordinates, in radians, to the equivalent
@@ -26,7 +26,7 @@
  *        new instance should be created.
  * @returns {Cartesian3} The equivalent web mercator X, Y, Z coordinates, in meters.
  */
--(CSCartesian3 *)project:(CSCartographic *)cartographic;
+-(Cartesian3 *)project:(CSCartographic *)cartographic;
 
 /**
  * Converts X, Y coordinates, expressed in meters, to a {@link Cartographic}
@@ -40,7 +40,7 @@
  *        new instance should be created.
  * @returns {Cartographic} The equivalent cartographic coordinates.
  */
--(CSCartographic *)unproject:(CSCartesian3 *)cartesian3;
+-(CSCartographic *)unproject:(Cartesian3 *)cartesian3;
 
 
 @end

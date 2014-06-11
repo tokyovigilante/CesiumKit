@@ -10,13 +10,13 @@
 
 @implementation CSTerrainMesh
 
--(instancetype) initWithCenter:(CSCartesian3 *)center
+-(instancetype) initWithCenter:(Cartesian3 *)center
                       vertices:(CSFloat32Array *)vertices
                        indices:(CSUInt16Array *)indices
                  minimumHeight:(Float64)minimumHeight
                  maximumHeight:(Float64)maximumHeight
               boundingSphere3D:(CSBoundingSphere *)boundingSphere3D
-    occludeePointInScaledSpace:(CSCartesian3 *)occludeePointInScaledSpace
+    occludeePointInScaledSpace:(Cartesian3 *)occludeePointInScaledSpace
 {
     self = [super init];
     if (self)

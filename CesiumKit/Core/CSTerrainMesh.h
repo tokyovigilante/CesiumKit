@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSCartesian3, CSFloat32Array, CSUInt16Array, CSBoundingSphere;
+@class Cartesian3, CSFloat32Array, CSUInt16Array, CSBoundingSphere;
 
 /**
  * A mesh plus related metadata for a single tile of terrain.  Instances of this type are
@@ -36,7 +36,7 @@
  * The center of the tile.  Vertex positions are specified relative to this center.
  * @type {Cartesian3}
  */
-@property (readonly) CSCartesian3 *center;
+@property (readonly) Cartesian3 *center;
 
 /**
  * The vertex data, including positions, texture coordinates, and heights.
@@ -77,14 +77,14 @@
  * the tile is considered to be entirely below the horizon.
  * @type {Cartesian3}
  */
-@property (readonly) CSCartesian3 *occludeePointInScaledSpace;
+@property (readonly) Cartesian3 *occludeePointInScaledSpace;
 
--(instancetype) initWithCenter:(CSCartesian3 *)center
+-(instancetype) initWithCenter:(Cartesian3 *)center
                       vertices:(CSFloat32Array *)vertices
                        indices:(CSUInt16Array *)indices
                  minimumHeight:(Float64)minimumHeight
                  maximumHeight:(Float64)maximumHeight
               boundingSphere3D:(CSBoundingSphere *)boundingSphere3D
-    occludeePointInScaledSpace:(CSCartesian3 *)occludeePointInScaledSpace;
+    occludeePointInScaledSpace:(Cartesian3 *)occludeePointInScaledSpace;
 
 @end

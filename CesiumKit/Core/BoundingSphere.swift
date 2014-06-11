@@ -20,7 +20,7 @@ import Foundation
 * @see BoundingRectangle
 * @see Packable
 */
-class BoundingSphere {
+struct BoundingSphere {
     /**
     * The center point of the sphere.
     * @type {Cartesian3}
@@ -46,135 +46,130 @@ class BoundingSphere {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    init(center: Cartesian3, radius: Double) {
-        self.center = center
-        self.radius = radius
-    }
-    
-    class func fromPoints(points: Cartesian3[]) -> BoundingSphere {
+    static func fromPoints(points: Cartesian3[]) -> BoundingSphere {
         if (points.count == 0) {
-            return BoundingSphere(center: Cartesian3.zero(), radius: 0.0)
+            return BoundingSphere()
         }
         
-        var currentPos = points[0]
+        var currentPos = points[points.startIndex]
 
-        var xMin = Cartesian3.clone(currentPos, fromPointsXMin);
-        var yMin = Cartesian3.clone(currentPos, fromPointsYMin);
-        var zMin = Cartesian3.clone(currentPos, fromPointsZMin);
+        var xMin = currentPos
+        var yMin = currentPos
+        var zMin = currentPos
         
-        var xMax = Cartesian3.clone(currentPos, fromPointsXMax);
-        var yMax = Cartesian3.clone(currentPos, fromPointsYMax);
-        var zMax = Cartesian3.clone(currentPos, fromPointsZMax);
+        var xMax = currentPos
+        var yMax = currentPos
+        var zMax = currentPos
         
-        var numPositions = positions.length;
-        for (var i = 1; i < numPositions; i++) {
-            Cartesian3.clone(positions[i], currentPos);
+        for i in 1..points.count {
             
-            var x = currentPos.x;
-            var y = currentPos.y;
-            var z = currentPos.z;
+            currentPos = points[i]
+            
+            var x = currentPos.x
+            var y = currentPos.y
+            var z = currentPos.z
             
             // Store points containing the the smallest and largest components
             if (x < xMin.x) {
-                Cartesian3.clone(currentPos, xMin);
+                xMin = currentPos
             }
             
             if (x > xMax.x) {
-                Cartesian3.clone(currentPos, xMax);
+                xMax = currentPos
             }
             
             if (y < yMin.y) {
-                Cartesian3.clone(currentPos, yMin);
+                yMin = currentPos
             }
             
             if (y > yMax.y) {
-                Cartesian3.clone(currentPos, yMax);
+                yMax = currentPos
             }
             
             if (z < zMin.z) {
-                Cartesian3.clone(currentPos, zMin);
+                zMin = currentPos
             }
             
             if (z > zMax.z) {
-                Cartesian3.clone(currentPos, zMax);
+                zMax = currentPos
             }
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        var xSpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(xMax, xMin, fromPointsScratch));
-        var ySpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(yMax, yMin, fromPointsScratch));
-        var zSpan = Cartesian3.magnitudeSquared(Cartesian3.subtract(zMax, zMin, fromPointsScratch));
+        var xSpan = xMax.subtract(xMin).magnitudeSquared()
+        var ySpan = yMax.subtract(yMin).magnitudeSquared()
+        var zSpan = zMax.subtract(zMin).magnitudeSquared()
         
         // Set the diameter endpoints to the largest span.
-        var diameter1 = xMin;
-        var diameter2 = xMax;
-        var maxSpan = xSpan;
+        var diameter1 = xMin
+        var diameter2 = xMax
+        var maxSpan = xSpan
         if (ySpan > maxSpan) {
-            maxSpan = ySpan;
-            diameter1 = yMin;
-            diameter2 = yMax;
+            maxSpan = ySpan
+            diameter1 = yMin
+            diameter2 = yMax
         }
         if (zSpan > maxSpan) {
-            maxSpan = zSpan;
-            diameter1 = zMin;
-            diameter2 = zMax;
+            maxSpan = zSpan
+            diameter1 = zMin
+            diameter2 = zMax
         }
         
         // Calculate the center of the initial sphere found by Ritter's algorithm
-        var ritterCenter = fromPointsRitterCenter;
-        ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
-        ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
-        ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
+        var ritterCenter = Cartesian3();
+        ritterCenter.x = (diameter1.x + diameter2.x) * 0.5
+        ritterCenter.y = (diameter1.y + diameter2.y) * 0.5
+        ritterCenter.z = (diameter1.z + diameter2.z) * 0.5
         
         // Calculate the radius of the initial sphere found by Ritter's algorithm
-        var radiusSquared = Cartesian3.magnitudeSquared(Cartesian3.subtract(diameter2, ritterCenter, fromPointsScratch));
-        var ritterRadius = Math.sqrt(radiusSquared);
+        var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared()
+        var ritterRadius = sqrt(radiusSquared)
         
         // Find the center of the sphere found using the Naive method.
-        var minBoxPt = fromPointsMinBoxPt;
-        minBoxPt.x = xMin.x;
-        minBoxPt.y = yMin.y;
-        minBoxPt.z = zMin.z;
+        var minBoxPt = Cartesian3()
+        minBoxPt.x = xMin.x
+        minBoxPt.y = yMin.y
+        minBoxPt.z = zMin.z
         
-        var maxBoxPt = fromPointsMaxBoxPt;
-        maxBoxPt.x = xMax.x;
-        maxBoxPt.y = yMax.y;
-        maxBoxPt.z = zMax.z;
+        var maxBoxPt = Cartesian3()
+        maxBoxPt.x = xMax.x
+        maxBoxPt.y = yMax.y
+        maxBoxPt.z = zMax.z
         
-        var naiveCenter = Cartesian3.multiplyByScalar(Cartesian3.add(minBoxPt, maxBoxPt, fromPointsScratch), 0.5, fromPointsNaiveCenterScratch);
+        var naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
-        var naiveRadius = 0;
-        for (i = 0; i < numPositions; i++) {
-            Cartesian3.clone(positions[i], currentPos);
+        var naiveRadius = 0.0;
+        for i in 0..points.count {
+            currentPos = points[i]
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            var r = Cartesian3.magnitude(Cartesian3.subtract(currentPos, naiveCenter, fromPointsScratch));
+            var r = currentPos.subtract(naiveCenter).magnitude()
             if (r > naiveRadius) {
-                naiveRadius = r;
+                naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            var oldCenterToPointSquared = Cartesian3.magnitudeSquared(Cartesian3.subtract(currentPos, ritterCenter, fromPointsScratch));
+            var oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
             if (oldCenterToPointSquared > radiusSquared) {
-                var oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
+                var oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
-                ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
-                radiusSquared = ritterRadius * ritterRadius;
+                ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5
+                radiusSquared = ritterRadius * ritterRadius
                 // Calculate center of new Ritter sphere
-                var oldToNew = oldCenterToPoint - ritterRadius;
-                ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint;
-                ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint;
-                ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint;
+                var oldToNew = oldCenterToPoint - ritterRadius
+                ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
+                ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
+                ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
             }
         }
-        
+        var result = BoundingSphere()
         if (ritterRadius < naiveRadius) {
-            Cartesian3.clone(ritterCenter, result.center);
-            result.radius = ritterRadius;
+            result.center = ritterCenter
+            result.radius = ritterRadius
         } else {
-            Cartesian3.clone(naiveCenter, result.center);
-            result.radius = naiveRadius;
+            result.center = naiveCenter
+            result.radius = naiveRadius
         }
         
         return result

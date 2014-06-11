@@ -9,7 +9,7 @@
 #import "CSTerrainProvider.h"
 
 #import "CSUInt16Array.h"
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 
 @interface CSTerrainProvider () {
     NSMutableDictionary *_regularGridIndexArrays; // each object in dict is indexed NSMutableDictionary containing UInt16Array of vertices (phew!)
@@ -80,7 +80,7 @@
     return indices;
 };
 
--(Float64)getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:(CSEllipsoid *)ellipsoid
+-(Float64)getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:(Ellipsoid *)ellipsoid
                                                          tileImageWidth:(Float64)tileImageWidth
                                                numberOfTilesAtLevelZero:(UInt32)numberOfTilesAtLevelZero
 {

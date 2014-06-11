@@ -9,7 +9,7 @@
 #import "CSRectangle.h"
 
 #import "CSCartographic.h"
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 #import "CSMath.h"
 
 @implementation CSRectangle
@@ -166,11 +166,11 @@
  * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
  * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
  */
--(NSArray *)subsample:(CSEllipsoid *)ellipsoid surfaceHeight:(Float64)surfaceHeight
+-(NSArray *)subsample:(Ellipsoid *)ellipsoid surfaceHeight:(Float64)surfaceHeight
 {
     if (!ellipsoid)
     {
-        ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+        ellipsoid = [Ellipsoid wgs84Ellipsoid];
     }
 
     NSMutableArray *result = [NSMutableArray array];

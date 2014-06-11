@@ -41,12 +41,6 @@ struct Cartographic {
     */
     var height: Double = 0.0
     
-    init(longitude: Double, latitude: Double, height: Double = 0.0) {
-        self.longitude = longitude
-        self.latitude = latitude
-        self.height = height
-    }
-    
     /**
     * Creates a new Cartographic instance from longitude and latitude
     * specified in radians.

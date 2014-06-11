@@ -12,7 +12,7 @@
 #import "CSProjection.h"
 #import "CSGeographicProjection.h"
 #import "CSCartesian2.h"
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 
 @import UIKit.UIGeometry;
 
@@ -75,8 +75,8 @@
     {
         projection = [[CSGeographicProjection alloc] initWithEllipsoid:nil];
     }
-    CSCartesian3 *lowerLeft = [projection project:rectangle.southwest];
-    CSCartesian3 *upperRight = [projection project:rectangle.northeast];
+    Cartesian3 *lowerLeft = [projection project:rectangle.southwest];
+    Cartesian3 *upperRight = [projection project:rectangle.northeast];
     
     upperRight = [upperRight subtract:lowerLeft];
     

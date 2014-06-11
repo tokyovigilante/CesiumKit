@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSCartesian3, CSMatrix3;
+@class Cartesian3, CSMatrix3;
 
 /**
  * A set of 4-dimensional coordinates used to represent rotation in 3-dimensional space.
@@ -55,7 +55,7 @@
  * @param {Quaternion} [result] The object onto which to store the result.
  * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
  */
-+(CSQuarternion *)quarternionWithAxis:(CSCartesian3 *)axis angle:(Float64)angle;
++(CSQuarternion *)quarternionWithAxis:(Cartesian3 *)axis angle:(Float64)angle;
 
 /**
  * Computes a Quaternion from the provided Matrix3 instance.
@@ -247,7 +247,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
  */
--(CSCartesian3 *)getAxis;
+-(Cartesian3 *)getAxis;
 
 /**
  * Computes the angle of rotation of the provided quaternion.
@@ -291,7 +291,7 @@
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new instance if one was not provided.
  */
--(CSCartesian3 *)log;
+-(Cartesian3 *)log;
 
 /**
  * The exponential quaternion function.
@@ -301,7 +301,7 @@
  * @param {Quaternion} [result] The object onto which to store the result.
  * @returns {Quaternion} The modified result parameter or a new instance if one was not provided.
  */
--(CSQuarternion *)exp:(CSCartesian3 *)cartesian3;
+-(CSQuarternion *)exp:(Cartesian3 *)cartesian3;
 
 /**
  * Computes an inner quadrangle point.

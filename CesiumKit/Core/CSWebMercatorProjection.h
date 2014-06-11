@@ -8,7 +8,7 @@
 
 #import "CSProjection.h"
 
-@class CSEllipsoid, CSCartesian3, CSCartographic;
+@class Ellipsoid, Cartesian3, CSCartographic;
 
 @interface CSWebMercatorProjection : CSProjection
 

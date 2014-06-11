@@ -9,7 +9,7 @@
 
 @import Foundation;
 
-@class CSCartesian3, CSCartesian4;
+@class Cartesian3, CSCartesian4;
 
 @interface CSCartesian2 : NSObject <NSCopying>
 
@@ -25,7 +25,7 @@
 +(CSCartesian2 *)unitY;
 +(CSCartesian2 *)undefined;
 
-+(CSCartesian2 *)cartesian2FromCartesian3:(CSCartesian3 *)cartesian3;
++(CSCartesian2 *)cartesian2FromCartesian3:(Cartesian3 *)cartesian3;
 +(CSCartesian2 *)cartesian2FromCartesian4:(CSCartesian4 *)cartesian4;
 
 

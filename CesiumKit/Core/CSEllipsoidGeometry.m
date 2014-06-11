@@ -8,13 +8,13 @@
 
 #import "CSEllipsoidGeometry.h"
 
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 #import "CSVertexFormat.h"
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 
 @interface CSEllipsoidGeometry ()
 
-@property (readonly) CSCartesian3 *radii;
+@property (readonly) Cartesian3 *radii;
 @property (readonly) UInt32 stackPartitions;
 @property (readonly) UInt32 slicePartitions;
 @property (readonly) CSVertexFormat *vertexFormat;
@@ -32,7 +32,7 @@
         _radii = options[@"radii"];
         if (!_radii)
         {
-            _radii = [[CSCartesian3 alloc] initWithX:1.0 Y:1.0 Z:1.0];
+            _radii = [[Cartesian3 alloc] initWithX:1.0 Y:1.0 Z:1.0];
         }
         
         NSNumber *stackPartitions = options[@"stackPartitions"];
@@ -56,7 +56,7 @@
 
 -(CSGeometry *)createGeometry
 {
-    CSEllipsoid *ellipsoid = [CSEllipsoid ellipsoidWithCartesian3:self.radii];
+    Ellipsoid *ellipsoid = [Ellipsoid ellipsoidWithCartesian3:self.radii];
     
     // The extra slice and stack are for duplicating points at the x axis and poles.
     // We need the texture coordinates to interpolate from (2 * pi - delta) to 2 * pi instead of

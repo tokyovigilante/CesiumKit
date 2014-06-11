@@ -8,17 +8,17 @@
 
 #import "CSWebMercatorTilingScheme.h"
 
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 #import "CSWebMercatorProjection.h"
 #import "CSCartesian2.h"
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 #import "CSCartographic.h"
 #import "CSRectangle.h"
 
 @interface CSWebMercatorTilingScheme ()
 
-@property (readonly) CSCartesian3 *rectangleSouthwestInMeters;
-@property (readonly) CSCartesian3 *rectangleNortheastInMeters;
+@property (readonly) Cartesian3 *rectangleSouthwestInMeters;
+@property (readonly) Cartesian3 *rectangleNortheastInMeters;
 
 @end
 
@@ -33,7 +33,7 @@
         _ellipsoid = options[@"ellipsoid"];
         if (!_ellipsoid)
         {
-            _ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+            _ellipsoid = [Ellipsoid wgs84Ellipsoid];
         }
         NSNumber *numberOfLevelZeroTilesX = options[@"numberOfLevelZeroTilesX"];
         if (numberOfLevelZeroTilesX)
@@ -59,12 +59,12 @@
         _rectangleSouthwestInMeters = options[@"rectangleSouthwestInMeters"];
         if (!_rectangleSouthwestInMeters)
         {
-            _rectangleSouthwestInMeters = [[CSCartesian3 alloc] initWithX:-semimajorAxisTimesPi Y:-semimajorAxisTimesPi Z:0.0];
+            _rectangleSouthwestInMeters = [[Cartesian3 alloc] initWithX:-semimajorAxisTimesPi Y:-semimajorAxisTimesPi Z:0.0];
         }
         _rectangleNortheastInMeters = options[@"rectangleNortheastInMeters"];
         if (!_rectangleNortheastInMeters)
         {
-            _rectangleNortheastInMeters = [[CSCartesian3 alloc] initWithX:semimajorAxisTimesPi Y:semimajorAxisTimesPi Z:0.0];
+            _rectangleNortheastInMeters = [[Cartesian3 alloc] initWithX:semimajorAxisTimesPi Y:semimajorAxisTimesPi Z:0.0];
         }
         
         CSCartographic *southWest = [_projection unproject:_rectangleSouthwestInMeters];
@@ -79,8 +79,8 @@
 {
     NSAssert(rectangle != nil, @"no rectangle");
     
-    CSCartesian3 *southwest = [self.projection project:rectangle.southwest];
-    CSCartesian3 *northeast = [self.projection project:rectangle.southeast];
+    Cartesian3 *southwest = [self.projection project:rectangle.southwest];
+    Cartesian3 *northeast = [self.projection project:rectangle.southeast];
 
     return [[CSRectangle alloc] initWithWest:southwest.x south:southwest.y east:northeast.x north:northeast.y];
 }
@@ -105,8 +105,8 @@
 {
     CSRectangle *nativeRectangle = [self tileToNativeRectangleX:x Y:y level:level];
     
-    CSCartographic *southwest = [self.projection unproject:[[CSCartesian3 alloc] initWithX:nativeRectangle.west Y:nativeRectangle.south Z:0]];
-    CSCartographic *northeast = [self.projection unproject:[[CSCartesian3 alloc] initWithX:nativeRectangle.east Y:nativeRectangle.north Z:0]];
+    CSCartographic *southwest = [self.projection unproject:[[Cartesian3 alloc] initWithX:nativeRectangle.west Y:nativeRectangle.south Z:0]];
+    CSCartographic *northeast = [self.projection unproject:[[Cartesian3 alloc] initWithX:nativeRectangle.east Y:nativeRectangle.north Z:0]];
 
     return [[CSRectangle alloc] initWithWest:southwest.longitude south:southwest.latitude east:northeast.longitude north:northeast.latitude];
 }
@@ -129,7 +129,7 @@
     Float64 overallHeight = self.rectangleNortheastInMeters.y - self.rectangleSouthwestInMeters.y;
     Float64 yTileHeight = overallHeight / yTiles;
     
-    CSCartesian3 *webMercatorPosition = [self.projection project:position];
+    Cartesian3 *webMercatorPosition = [self.projection project:position];
 
     Float64 distanceFromWest = webMercatorPosition.x - self.rectangleSouthwestInMeters.x;
     Float64 distanceFromNorth = self.rectangleNortheastInMeters.y - webMercatorPosition.y;

@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSCartesian3;
+@class Cartesian3;
 /**
  * Represents a ray that extends infinitely from the provided origin in the provided direction.
  * @alias Ray
@@ -20,10 +20,10 @@
 
 @interface CSRay : NSObject
 
-@property (readonly) CSCartesian3 *origin;
-@property (readonly) CSCartesian3 *direction;
+@property (readonly) Cartesian3 *origin;
+@property (readonly) Cartesian3 *direction;
 
--(id)initWithOrigin:(CSCartesian3 *)origin direction:(CSCartesian3 *)direction;
+-(id)initWithOrigin:(Cartesian3 *)origin direction:(Cartesian3 *)direction;
 
 /**
  * Computes the point along the ray given by r(t) = o + t*d,
@@ -39,6 +39,6 @@
  * var intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
  * var point = Ray.getPoint(ray, intersection.start);
  */
--(CSCartesian3 *)getPoint:(Float64)t;
+-(Cartesian3 *)getPoint:(Float64)t;
 
 @end

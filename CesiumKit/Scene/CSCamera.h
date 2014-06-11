@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSScene, CSFrustum, CSPerspectiveFrustum, CSOffCentrePerspectiveFrustum, CSOrthographicFrustum, CSCartesian2, CSCartesian3, CSCartesian4, CSMatrix4, CSProjection, CSCartographic, CSEllipsoid;
+@class CSScene, CSFrustum, CSPerspectiveFrustum, CSOffCentrePerspectiveFrustum, CSOrthographicFrustum, CSCartesian2, Cartesian3, CSCartesian4, CSMatrix4, CSProjection, CSCartographic, Ellipsoid;
 
 @interface CSCamera : NSObject <NSCopying>
 
@@ -67,23 +67,23 @@
  *
  * @type {Cartesian3}
  */
-@property (nonatomic) CSCartesian3 *position;
-@property (nonatomic, readonly) CSCartesian3 *positionWC; // world coordinates
+@property (nonatomic) Cartesian3 *position;
+@property (nonatomic, readonly) Cartesian3 *positionWC; // world coordinates
 /**
  * The up direction of the camera.
  *
  * @type {Cartesian3}
  */
-@property (nonatomic) CSCartesian3 *up;
-@property (nonatomic, readonly) CSCartesian3 *upWC; // world coordinates
+@property (nonatomic) Cartesian3 *up;
+@property (nonatomic, readonly) Cartesian3 *upWC; // world coordinates
 
 /**
  * The up direction of the camera.
  *
  * @type {Cartesian3}
  */
-@property (nonatomic) CSCartesian3 *right;
-@property (nonatomic, readonly) CSCartesian3 *rightWC; // world coordinates
+@property (nonatomic) Cartesian3 *right;
+@property (nonatomic, readonly) Cartesian3 *rightWC; // world coordinates
 
 /**
  * Gets the view matrix.
@@ -158,7 +158,7 @@
  * @type {Cartesian3}
  * @default undefined
  */
-@property (nonatomic) CSCartesian3 *constrainedAxis;
+@property (nonatomic) Cartesian3 *constrainedAxis;
 
 /**
  * The factor multiplied by the the map size used to determine where to clamp the camera position
@@ -218,7 +218,7 @@
  */
 -(CSCartesian4 *)cameraToWorldCoordinates:(CSCartesian4 *)cameraCartesian4;
 
--(void)clampMove2D:(CSCartesian3 *)position;
+-(void)clampMove2D:(Cartesian3 *)position;
 
 /**
  * Translates the camera's position by <code>amount</code> along <code>direction</code>.
@@ -235,7 +235,7 @@
  * @see Camera#moveUp
  * @see Camera#moveDown
  */
--(void)move:(CSCartesian3 *)direction amount:(Float64)amount;
+-(void)move:(Cartesian3 *)direction amount:(Float64)amount;
 
 /**
  * Translates the camera's position by <code>amount</code> along the camera's view vector.
@@ -369,7 +369,7 @@
  * @see Camera#lookLeft
  * @see Camera#lookRight
  */
--(void)look:(CSCartesian3 *)axis angle:(Float64)angle;
+-(void)look:(Cartesian3 *)axis angle:(Float64)angle;
 
 /**
  * Rotate the camera counter-clockwise around its direction vector by amount, in radians.
@@ -418,7 +418,7 @@
  * var transform = Cesium.Matrix4.fromTranslation(center);
  * camera.rotate(axis, angle, transform);
  */
--(void)rotate:(CSCartesian3 *)axis angle:(Float64)angle transform:(CSMatrix4 *)transform;
+-(void)rotate:(Cartesian3 *)axis angle:(Float64)angle transform:(CSMatrix4 *)transform;
 
 /**
  * Rotates the camera around the center of the camera's reference frame by angle downwards.
@@ -516,7 +516,7 @@
 
 -(void)setPosition:(CSCartographic *)cartographic;
 
--(void)lookAt:(CSCartesian3 *)eye target:(CSCartesian3 *)target up:(CSCartesian3 *)up;
+-(void)lookAt:(Cartesian3 *)eye target:(Cartesian3 *)target up:(Cartesian3 *)up;
 
 
 /**
@@ -529,7 +529,7 @@
  *
  * @returns {Cartesian3} The camera position needed to view the rectangle
  */
--(CSCartesian3 *)getRectangleCameraCoordinates:(CSCartesian3 *)rectangle;
+-(Cartesian3 *)getRectangleCameraCoordinates:(Cartesian3 *)rectangle;
 
 /**
  * Pick an ellipsoid or map.
@@ -544,7 +544,7 @@
  * in world coordinates. If the ellipsoid or map was not picked, returns undefined.
  */
 
--(CSCartesian3 *)pickEllipsoid:(CSEllipsoid *)ellipsoid windowPosition:(CSCartesian2 *)windowPosition;
+-(Cartesian3 *)pickEllipsoid:(Ellipsoid *)ellipsoid windowPosition:(CSCartesian2 *)windowPosition;
 
 /*
 var pickPerspCenter = new Cartesian3();

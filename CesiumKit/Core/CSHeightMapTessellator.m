@@ -10,8 +10,6 @@
 
 #import "CSFloat32Array.h"
 #import "CSRectangle.h"
-#import "CSEllipsoid.h"
-#import "CSCartesian3.h"
 #import "CSHeightMapStructure.h"
 
 @implementation CSHeightMapTessellator
@@ -64,10 +62,10 @@ inline Float64 toRadians(Float64 degrees)
         isGeographic = ((NSNumber *)options[@"skirtHeight"]).boolValue;
     }
 
-    CSEllipsoid *ellipsoid = options[@"ellipsoid"];
+    Ellipsoid *ellipsoid = options[@"ellipsoid"];
     if (!ellipsoid)
     {
-        ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+        ellipsoid = [Ellipsoid wgs84Ellipsoid];
     }
     Float64 oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius;
     
@@ -101,10 +99,10 @@ inline Float64 toRadians(Float64 degrees)
         geographicNorth = rectangle.north;
     }
     
-    CSCartesian3 *relativeToCenter = options[@"relativeToCenter"];
+    Cartesian3 *relativeToCenter = options[@"relativeToCenter"];
     if (!relativeToCenter)
     {
-        relativeToCenter = [CSCartesian3 zero];
+        relativeToCenter = [Cartesian3 zero];
     }
     
     CSHeightMapStructure *structure = options[@"structure"];

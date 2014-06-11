@@ -9,7 +9,7 @@
 #import "CSHeightMapTerrainData.h"
 
 #import "CSHeightMapStructure.h"
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 #import "CSTilingScheme.h"
 #import "CSGeographicTilingScheme.h"
 #import "CSRectangle.h"
@@ -108,12 +108,12 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
     {
         NSAssert(tilingScheme != nil, @"tilingScheme is required");
         
-        CSEllipsoid *ellipsoid = tilingScheme.ellipsoid;
+        Ellipsoid *ellipsoid = tilingScheme.ellipsoid;
         CSRectangle *nativeRectangle = [tilingScheme tileToNativeRectangleX:x Y:y level:level];
         CSRectangle *rectangle = [tilingScheme tileToRectangleX:x Y:y level:level];
         
         // Compute the center of the tile for RTC rendering.
-        CSCartesian3 *center = [ellipsoid cartographicToCartesian:rectangle.center];
+        Cartesian3 *center = [ellipsoid cartographicToCartesian:rectangle.center];
         
         Float64 levelZeroMaxError = [weakSelf.terrainProvider getEstimatedLevelZeroGeometricErrorForAHeightmapWithEllipsoid:ellipsoid
                                                                                                              tileImageWidth:weakSelf.width
@@ -132,7 +132,7 @@ function setHeight(heights, elementsPerHeight, elementMultiplier, divisor, strid
                                                                                           @"isGeographic" : [NSNumber numberWithBool:[tilingScheme isMemberOfClass:[CSGeographicTilingScheme class]]] }
                                                                    transferableObjects:nil];
         CSTerrainMesh *mesh = [[CSTerrainMesh alloc] initWithCenter:center
-                                                           vertices:[ indices:<#(CSUInt16Array *)#> minimumHeight:<#(Float64)#> maximumHeight:<#(Float64)#> boundingSphere3D:<#(CSBoundingSphere *)#> occludeePointInScaledSpace:<#(CSCartesian3 *)#>
+                                                           vertices:[ indices:<#(CSUInt16Array *)#> minimumHeight:<#(Float64)#> maximumHeight:<#(Float64)#> boundingSphere3D:<#(CSBoundingSphere *)#> occludeePointInScaledSpace:<#(Cartesian3 *)#>
                                
                                Options:(NSDictionary *)options:
                                @{

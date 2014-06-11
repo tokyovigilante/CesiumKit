@@ -7,7 +7,7 @@
 //
 
 #import "CSCartesian2.h"
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 #import "CSCartesian4.h"
 
 @implementation CSCartesian2
@@ -45,7 +45,7 @@
     return [[CSCartesian2 alloc] initWithX:NAN Y:NAN];
 }
 
-+(CSCartesian2 *)cartesian2FromCartesian3:(CSCartesian3 *)cartesian3
++(CSCartesian2 *)cartesian2FromCartesian3:(Cartesian3 *)cartesian3
 {
     NSAssert(cartesian3 != nil, @"No cartesian3");
     return [[CSCartesian2 alloc] initWithX:cartesian3.x Y:cartesian3.y];

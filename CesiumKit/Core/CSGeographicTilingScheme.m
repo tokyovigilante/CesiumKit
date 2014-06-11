@@ -7,7 +7,7 @@
 //
 
 #import "CSGeographicTilingScheme.h"
-#import "CSEllipsoid.h"
+#import "Ellipsoid.h"
 #import "CSRectangle.h"
 #import "CSGeographicProjection.h"
 #import "CSMath.h"
@@ -24,7 +24,7 @@
         _ellipsoid = options[@"ellipsoid"];
         if (!_ellipsoid)
         {
-            _ellipsoid = [CSEllipsoid wgs84Ellipsoid];
+            _ellipsoid = [Ellipsoid wgs84Ellipsoid];
         }
         _rectangle = options[@"rectangle"];
         if (!_rectangle)

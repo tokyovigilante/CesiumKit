@@ -9,8 +9,8 @@
 #import "CSProjection+Private.h"
 #import "CSWebMercatorProjection.h"
 
-#import "CSEllipsoid.h"
-#import "CSCartesian3.h"
+#import "Ellipsoid.h"
+#import "Cartesian3.h"
 #import "CSCartographic.h"
 
 @implementation CSWebMercatorProjection
@@ -40,14 +40,14 @@
     return [self mercatorAngleToGeodeticLatitude:M_PI];
 }
 
--(CSCartesian3 *)project:(CSCartographic *)cartographic
+-(Cartesian3 *)project:(CSCartographic *)cartographic
 {
-    return [[CSCartesian3 alloc] initWithX:cartographic.longitude * self.semimajorAxis
+    return [[Cartesian3 alloc] initWithX:cartographic.longitude * self.semimajorAxis
                                          Y:[self geodeticLatitudeToMercatorAngle:cartographic.latitude] * self.semimajorAxis
                                          Z:cartographic.height];
 }
 
--(CSCartographic *)unproject:(CSCartesian3 *)cartesian3
+-(CSCartographic *)unproject:(Cartesian3 *)cartesian3
 {
     return [[CSCartographic alloc] initWithLatitude:[self mercatorAngleToGeodeticLatitude:(cartesian3.y * self.oneOverSemimajorAxis)]
                                           longitude:cartesian3.x * self.oneOverSemimajorAxis

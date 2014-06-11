@@ -8,11 +8,11 @@
 
 #import "CSRay.h"
 
-#import "CSCartesian3.h"
+#import "Cartesian3.h"
 
 @implementation CSRay
 
--(id)initWithOrigin:(CSCartesian3 *)origin direction:(CSCartesian3 *)direction
+-(id)initWithOrigin:(Cartesian3 *)origin direction:(Cartesian3 *)direction
 {
     self = [super init];
     if (self)
@@ -23,7 +23,7 @@
         }
         else
         {
-            _direction = CSCartesian3.zero;
+            _direction = Cartesian3.zero;
         }
         if (origin)
         {
@@ -31,14 +31,14 @@
         }
         else
         {
-            _origin = CSCartesian3.zero;
+            _origin = Cartesian3.zero;
         }
 
     }
     return self;
 }
 
--(CSCartesian3 *)getPoint:(Float64)t
+-(Cartesian3 *)getPoint:(Float64)t
 {
     return [self.origin add:[self.direction multiplyByScalar:t]];
 }

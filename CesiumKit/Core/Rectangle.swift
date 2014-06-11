@@ -172,7 +172,7 @@ struct Rectangle: Packable {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func southwest() -> Cartographic {
-        return Cartographic(longitude: west, latitude: south)
+        return Cartographic(longitude: west, latitude: south, height:0.0)
     }
     
     /**
@@ -183,7 +183,7 @@ struct Rectangle: Packable {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func northwest() -> Cartographic {
-        return Cartographic(longitude: west, latitude: north)
+        return Cartographic(longitude: west, latitude: north, height:0.0)
     }
     
     
@@ -195,7 +195,7 @@ struct Rectangle: Packable {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func northeast() -> Cartographic {
-        return Cartographic(longitude: east, latitude: north)
+        return Cartographic(longitude: east, latitude: north, height:0.0)
     }
     
     
@@ -207,7 +207,7 @@ struct Rectangle: Packable {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func southeast() -> Cartographic {
-        return Cartographic(longitude: east, latitude: south)
+        return Cartographic(longitude: east, latitude: south, height:0.0)
     }
     
     /**
@@ -218,7 +218,7 @@ struct Rectangle: Packable {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func center() -> Cartographic {
-        return Cartographic(longitude: (west + east) * 0.5, latitude: (south + north) * 0.5)
+        return Cartographic(longitude: (west + east) * 0.5, latitude: (south + north) * 0.5, height:0.0)
     }
     
     /**

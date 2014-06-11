@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class CSMatrix3, CSQuarternion, CSCartesian3, CSCartesian4, CSCamera, CSBoundingRectangle;
+@class CSMatrix3, CSQuarternion, Cartesian3, CSCartesian4, CSCamera, CSBoundingRectangle;
 
 static const UInt32 Column0Row0 = 0;
 static const UInt32 Column0Row1 = 1;
@@ -180,7 +180,7 @@ static const UInt32 Column3Row3 = 15;
  * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
  * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
  */
-+(CSMatrix4 *)fromRotation:(CSMatrix3 *)rotation translation:(CSCartesian3 *)translation;
++(CSMatrix4 *)fromRotation:(CSMatrix3 *)rotation translation:(Cartesian3 *)translation;
 
 /**
  * Computes a Matrix4 instance from a translation, rotation, and scale (TRS)
@@ -201,7 +201,7 @@ static const UInt32 Column3Row3 = 15;
  *   new Cesium.Cartesian3(7.0, 8.0, 9.0), // scale
  *   result);
  */
-+(CSMatrix4 *)fromTranslation:(CSCartesian3 *)translation rotation:(CSQuarternion *)rotation scale:(CSCartesian3 *)scale;
++(CSMatrix4 *)fromTranslation:(Cartesian3 *)translation rotation:(CSQuarternion *)rotation scale:(Cartesian3 *)scale;
 
 /**
  * Creates a Matrix4 instance from a Cartesian3 representing the translation.
@@ -213,7 +213,7 @@ static const UInt32 Column3Row3 = 15;
  *
  * @see Matrix4.multiplyByTranslation
  */
-+(CSMatrix4 *)fromTranslation:(CSCartesian3 *)translation;
++(CSMatrix4 *)fromTranslation:(Cartesian3 *)translation;
 
 /**
  * Computes a Matrix4 instance representing a non-uniform scale.
@@ -231,7 +231,7 @@ static const UInt32 Column3Row3 = 15;
  * //   [0.0, 0.0, 0.0, 1.0]
  * var m = Cesium.Matrix4.fromScale(new Cartesian3(7.0, 8.0, 9.0));
  */
-+(CSMatrix4 *)fromScale:(CSCartesian3 *)scale;
++(CSMatrix4 *)fromScale:(Cartesian3 *)scale;
 
 /**
  * Computes a Matrix4 instance representing a uniform scale.
@@ -249,7 +249,7 @@ static const UInt32 Column3Row3 = 15;
  * //   [0.0, 0.0, 0.0, 1.0]
  * var m = Cesium.Matrix4.fromScale(2.0);
  */
-+(CSMatrix4 *)fromUniformScale:(CSCartesian3 *)scale;
++(CSMatrix4 *)fromUniformScale:(Cartesian3 *)scale;
 
 /**
  * Computes a Matrix4 instance from a Camera.
@@ -524,7 +524,7 @@ static const UInt32 Column3Row3 = 15;
  * @param {Cartesian3} [result] The object onto which to store the result.
  * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
  */
--(CSCartesian3 *)getScale;
+-(Cartesian3 *)getScale;
 
 /**
  * Computes the maximum scale assuming the matrix is an affine transformation.
@@ -589,7 +589,7 @@ static const UInt32 Column3Row3 = 15;
  * // Instead of Matrix4.multiply(m, Cesium.Matrix4.fromTranslation(position), m);
  * Cesium.Matrix4.multiplyByTranslation(m, position, m);
  */
--(CSMatrix4 *)multiplyByTranslation:(CSCartesian3 *)cartesian3;
+-(CSMatrix4 *)multiplyByTranslation:(Cartesian3 *)cartesian3;
 
 /**
  * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
@@ -633,7 +633,7 @@ static const UInt32 Column3Row3 = 15;
  * // Instead of Matrix4.multiply(m, Cesium.Matrix4.fromScale(scale), m);
  * Cesium.Matrix4.multiplyByUniformScale(m, scale, m);
  */
--(CSMatrix4 *)multiplyByScale:(CSCartesian3 *)scale;
+-(CSMatrix4 *)multiplyByScale:(Cartesian3 *)scale;
 
 /**
  * Computes the product of a matrix and a column vector.
@@ -663,7 +663,7 @@ static const UInt32 Column3Row3 = 15;
  * //   Cartesian3 p = ...
  * //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
  */
--(CSCartesian3 *)multiplyByPointAsVector:(CSCartesian3 *)point;
+-(Cartesian3 *)multiplyByPointAsVector:(Cartesian3 *)point;
 
 /**
  * Computes the product of a matrix and a {@link Cartesian3}. This is equivalent to calling {@link Matrix4.multiplyByVector}
@@ -679,7 +679,7 @@ static const UInt32 Column3Row3 = 15;
  * var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
  * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
  */
--(CSCartesian3 *)multiplyByPoint:(CSCartesian3 *)point;
+-(Cartesian3 *)multiplyByPoint:(Cartesian3 *)point;
 
 /**
  * Computes the product of a matrix and a scalar.
@@ -843,7 +843,7 @@ static const UInt32 Column3Row3 = 15;
  *
  * @see Cartesian3
  */
--(CSCartesian3 *)getTranslation;
+-(Cartesian3 *)getTranslation;
 
 /**
  * Gets the upper left 3x3 rotation matrix of the provided matrix, assuming the matrix is a affine transformation matrix.

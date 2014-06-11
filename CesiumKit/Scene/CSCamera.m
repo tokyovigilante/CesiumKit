@@ -8,7 +8,6 @@
 
 #import "CSCamera.h"
 
-#import "CSCartesian3.h"
 #import "CSMatrix4.h"
 #import "CSGeographicProjection.h"
 
@@ -17,7 +16,7 @@
 @property (nonatomic, weak) CSScene *scene;
 @property BOOL sceneIs3D;
 @property (nonatomic) CSProjection *projection;
-@property (nonatomic) CSCartesian3 *maxCoord;
+@property (nonatomic) Cartesian3 *maxCoord;
 @property (nonatomic) CSFrustum *max2DFrustum;
 
 -(Float64)getHeading2D;

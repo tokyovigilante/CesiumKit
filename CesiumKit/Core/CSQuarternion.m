@@ -8,8 +8,6 @@
 
 #import "CSQuarternion.h"
 
-#import "CSCartesian3.h"
-
 #import "CSMath.h"
 
 @implementation CSQuarternion
@@ -40,14 +38,14 @@
     return [[CSQuarternion alloc] initWithX:0.0 Y:0.0 Z:0.0 W:1.0];
 }
 
-+(CSQuarternion *)quarternionWithAxis:(CSCartesian3 *)axis angle:(Float64)angle
++(CSQuarternion *)quarternionWithAxis:(Cartesian3 *)axis angle:(Float64)angle
 {
     NSAssert(axis != nil, @"Angle must be given");
     
     Float64 halfAngle = angle / 2.0;
     Float64 s = sin(halfAngle);
     
-    CSCartesian3 *fromAxisAngleScratch = axis.normalise;
+    Cartesian3 *fromAxisAngleScratch = axis.normalise;
     
     return [[CSQuarternion alloc] initWithX:fromAxisAngleScratch.x * s
                                           Y:fromAxisAngleScratch.y * s
@@ -338,15 +336,15 @@ Quaternion.unpackInterpolationResult = function(array, sourceArray, firstIndex, 
                                           W:self.w / scalar];
 }
 
--(CSCartesian3 *)getAxis
+-(Cartesian3 *)getAxis
 {
     if (abs(self.w - 1.0) < CSEpsilon6)
     {
-        return [CSCartesian3 zero];
+        return [Cartesian3 zero];
     }
     Float64 scalar = 1.0 / sqrt(1.0 - (self.w * self.w));
     
-    return [[CSCartesian3 alloc] initWithX:self.x * scalar
+    return [[Cartesian3 alloc] initWithX:self.x * scalar
                                          Y:self.y * scalar
                                          Z:self.z * scalar];
 }
@@ -397,7 +395,7 @@ Quaternion.unpackInterpolationResult = function(array, sourceArray, firstIndex, 
     return [[slerpScaledP add:slerpScaledR] multiplyByScalar:1.0 / sin(theta)];
 }
 
--(CSCartesian3 *)log
+-(Cartesian3 *)log
 {
     Float64 theta = acos([CSMath clampValue:self.w min:-1.0 max:1.0]);
     Float64 thetaOverSinTheta = 0.0;
@@ -407,7 +405,7 @@ Quaternion.unpackInterpolationResult = function(array, sourceArray, firstIndex, 
         thetaOverSinTheta = theta / sin(theta);
     }
 #warning invalid
-    return [[CSCartesian3 unitX] multiplyByScalar:thetaOverSinTheta];
+    return [[Cartesian3 unitX] multiplyByScalar:thetaOverSinTheta];
     /*
     if (!defined(result)) {
         result = new Cartesian3();
@@ -416,7 +414,7 @@ Quaternion.unpackInterpolationResult = function(array, sourceArray, firstIndex, 
     return Cartesian3.multiplyByScalar(quaternion, thetaOverSinTheta, result);*/
 }
 
--(CSQuarternion *)exp:(CSCartesian3 *)cartesian3
+-(CSQuarternion *)exp:(Cartesian3 *)cartesian3
 {
     NSAssert(cartesian3 != nil, @"cartesian3 object required");
 
