@@ -47,7 +47,7 @@ struct Cartesian3: Packable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static var packedLength: UInt = 4
+    static var packedLength: Int = 4
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -103,18 +103,16 @@ struct Cartesian3: Packable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float32[], startingIndex: Int) {
-        if array.count < startingIndex - 4//Int(Cartesian3.packedLength)
-        {
-            array.append(Float32(x))
-            array.append(Float32(y))
-            array.append(Float32(z))
+    func pack(inout array: Float[], startingIndex: Int) {
+        if array.count < startingIndex - Int(Cartesian3.packedLength) {
+            array.append(Float(x))
+            array.append(Float(y))
+            array.append(Float(z))
         }
-        else
-        {
-            array[startingIndex] = Float32(x)
-            array[startingIndex+1] = Float32(y)
-            array[startingIndex+2] = Float32(z)
+        else {
+            array.insert(Float(x), atIndex: startingIndex)
+            array.insert(Float(y), atIndex: startingIndex+1)
+            array.insert(Float(z), atIndex: startingIndex+2)
         }
         
     }
@@ -126,11 +124,9 @@ struct Cartesian3: Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: Float32[], startingIndex: Int = 0) -> Packable? {
-        if array.count < startingIndex - 4//Int(Cartesian3.packedLength)
-        {
-            return nil
-        }
+    static func unpack(array: Float[], startingIndex: Int = 0) -> Packable {
+        assert((startingIndex + Cartesian3.packedLength < array.count), "Invalid starting index")
+
         return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex]), z: Double(array[startingIndex]))
     }
     

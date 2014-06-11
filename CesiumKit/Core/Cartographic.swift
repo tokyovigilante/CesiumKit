@@ -41,7 +41,7 @@ struct Cartographic {
     */
     var height: Double = 0.0
     
-    init(longitude: Double, latitude: Double, height: Double) {
+    init(longitude: Double, latitude: Double, height: Double = 0.0) {
         self.longitude = longitude
         self.latitude = latitude
         self.height = height

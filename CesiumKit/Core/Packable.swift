@@ -22,7 +22,7 @@ protocol Packable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    class var packedLength: UInt { get }
+    class var packedLength: Int { get }
     
     /**
     * Stores the provided instance into the provided array.
@@ -31,7 +31,7 @@ protocol Packable {
     * @param {Object} value The value to pack.
     * @param {Number[]} array The array to pack into.
     */
-    func pack(inout array: Float32[], startingIndex: Int)
+    func pack(inout array: Float[], startingIndex: Int)
    
     /**
     * Retrieves an instance from a packed array.
@@ -41,7 +41,7 @@ protocol Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Object} [result] The object into which to store the result.
     */
-    class func unpack(array: Float32[], startingIndex: Int) -> Packable?
+    class func unpack(array: Float[], startingIndex: Int) -> Packable
 }
 
 

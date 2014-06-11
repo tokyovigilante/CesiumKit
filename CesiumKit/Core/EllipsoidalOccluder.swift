@@ -186,7 +186,7 @@ class EllipsoidalOccluder {
     * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
     */
-    func computeHorizonCullingPointFromRectangle(rectangle: CSRectangle, ellipsoid: Ellipsoid) -> Cartesian3? {
+    func computeHorizonCullingPointFromRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid) -> Cartesian3? {
         var positions = rectangle.subsample(ellipsoid, surfaceHeight: 0.0)
         var bs = BoundingSphere(fromPoints: positions);
         

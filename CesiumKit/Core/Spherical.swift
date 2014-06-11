@@ -23,12 +23,12 @@ struct Spherical: Packable {
     var cone: Double = 0.0
     var magnitude: Double = 1.0
     
-    static var packedLength: UInt = 3;
+    static var packedLength: Int = 3;
     
-    func pack(inout array: Float32[], startingIndex: Int) {
+    func pack(inout array: Float[], startingIndex: Int) {
     }
     
-    static func unpack(array: Float32[], startingIndex: Int) -> Packable? {
-        return nil
+    static func unpack(array: Float[], startingIndex: Int) -> Packable {
+        return Spherical()
     }
 }

@@ -55,7 +55,7 @@ struct Cartesian4: Packable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static var packedLength: UInt = 4
+    static var packedLength: Int = 4
     
     /**
     * Stores the provided instance into the provided array.
@@ -64,7 +64,7 @@ struct Cartesian4: Packable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float32[], startingIndex: Int)
+    func pack(inout array: Float[], startingIndex: Int)
     {
         /*
         //>>includeStart('debug', pragmas.debug);
@@ -92,7 +92,7 @@ struct Cartesian4: Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian4} [result] The object into which to store the result.
     */
-    static func unpack(array: Float32[], startingIndex: Int) -> Packable? {
+    static func unpack(array: Float[], startingIndex: Int) -> Packable {
     /*
         //>>includeStart('debug', pragmas.debug);
         if (!defined(array)) {
