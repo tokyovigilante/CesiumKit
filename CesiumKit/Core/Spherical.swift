@@ -23,7 +23,7 @@ struct Spherical: Packable {
     var cone: Double = 0.0
     var magnitude: Double = 1.0
     
-    static var packedLength: Int = 3;
+    static let packedLength: Int = 3;
     
     func pack(inout array: Float[], startingIndex: Int) {
     }

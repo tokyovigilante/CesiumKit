@@ -41,7 +41,7 @@ protocol Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Object} [result] The object into which to store the result.
     */
-    class func unpack(array: Float[], startingIndex: Int) -> Packable
+    class func unpack(array: Float[], startingIndex: Int) -> Self
 }
 
 

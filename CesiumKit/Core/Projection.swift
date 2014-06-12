@@ -42,6 +42,6 @@ protocol Projection {
     *        new instance should be created.
     * @returns {Cartographic} The equivalent cartographic coordinates.
     */
-    func unproject(cartesian3: Cartesian3) -> Cartographic
+    func unproject(cartesian: Cartesian3) -> Cartographic
 
 }

@@ -21,7 +21,7 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-struct Cartesian3: Packable {
+struct Cartesian3: Packable, Equatable {
     /**
     * The X component.
     * @type {Number}
@@ -47,7 +47,7 @@ struct Cartesian3: Packable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static var packedLength: Int = 4
+    static let packedLength: Int = 4
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -125,7 +125,7 @@ struct Cartesian3: Packable {
     * @param {Cartesian3} [result] The object into which to store the result.
     */
     static func unpack(array: Float[], startingIndex: Int = 0) -> Packable {
-        assert((startingIndex + Cartesian3.packedLength < array.count), "Invalid starting index")
+        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
 
         return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex]), z: Double(array[startingIndex]))
     }
@@ -400,18 +400,6 @@ struct Cartesian3: Packable {
     
     /**
     * Compares the provided Cartesians componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
-    *
-    * @param {Cartesian3} [left] The first Cartesian.
-    * @param {Cartesian3} [right] The second Cartesian.
-    * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
-    */
-    /*@infix func == (left: Cartesian3, right: Cartesian3) -> Bool {
-    return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
-    }*/
-    
-    /**
-    * Compares the provided Cartesians componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
     * <code>false</code> otherwise.
     *
@@ -627,6 +615,17 @@ struct Cartesian3: Packable {
     func toString() -> String {
         return "(\(x)), (\(y)), (\(z))"
     }
-    
+}
+
+/**
+* Compares the provided Cartesians componentwise and returns
+* <code>true</code> if they are equal, <code>false</code> otherwise.
+*
+* @param {Cartesian3} [left] The first Cartesian.
+* @param {Cartesian3} [right] The second Cartesian.
+* @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
+*/
+func == (left: Cartesian3, right: Cartesian3) -> Bool {
+    return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
 }
 

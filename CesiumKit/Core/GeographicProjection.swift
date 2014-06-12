@@ -24,11 +24,11 @@ import Foundation
 */
 struct GeographicProjection: Projection {
     
-    let ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+    let ellipsoid: Ellipsoid
     let semimajorAxis: Double
     let oneOverSemimajorAxis: Double
     
-    init (ellipsoid: Ellipsoid) {
+    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis
