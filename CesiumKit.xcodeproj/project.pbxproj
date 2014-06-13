@@ -51,7 +51,8 @@
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802D194D3BD900012DC4 /* VertexFormat.swift */; };
 		948B8030194D462F00012DC4 /* Quarternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quarternion.swift */; };
-		9478681F194A868400B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9478681E194A868400B3F462 /* TerrainData.swift */; };
+		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
+		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
 		948D03D91944802300DC0E52 /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
 		948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DA19449DC900DC0E52 /* Cartesian3.swift */; };
 		948D03DD19449E9600DC0E52 /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
@@ -176,7 +177,8 @@
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948B802F194D462F00012DC4 /* Quarternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quarternion.swift; sourceTree = "<group>"; };
-		9478681E194A868400B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
+		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
+		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
 		948D03D81944802300DC0E52 /* BoundingSphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingSphere.swift; sourceTree = "<group>"; };
 		948D03DA19449DC900DC0E52 /* Cartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian3.swift; sourceTree = "<group>"; };
 		948D03DC19449E9600DC0E52 /* Packable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packable.swift; sourceTree = "<group>"; };
@@ -250,10 +252,6 @@
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */,
 				94502FCD1938248D00012DC4 /* CSEllipsoidTerrainProvider.m */,
-				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
-				9478681E194A868400B3F462 /* TerrainData.swift */,
-				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
-				9491BBB11949D156007C1C4C /* Credit.swift */,
 				942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */,
 				942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */,
 				94515099193ADB8500012DC4 /* CSHeightMapStructure.h */,
@@ -295,6 +293,10 @@
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
+				94786824194A95B800B3F462 /* TerrainData.swift */,
+				94786822194A959200B3F462 /* TerrainMesh.swift */,
+				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
+				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -572,6 +574,7 @@
 				9460F80B194DA8A400012DC4 /* Framebuffer.swift in Sources */,
 				943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */,
 				942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */,
+				94786825194A95B800B3F462 /* TerrainData.swift in Sources */,
 				9444499E1948326C009D1703 /* Projection.swift in Sources */,
 				94B87DC1194D678D00012DC4 /* Scene.swift in Sources */,
 				943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */,
@@ -579,6 +582,7 @@
 				942A83E2193878DE00012DC4 /* CSHeightMapTerrainData.m in Sources */,
 				94502FCB1938247F00012DC4 /* CSTerrainProvider.m in Sources */,
 				948D03DD19449E9600DC0E52 /* Packable.swift in Sources */,
+				94786823194A959200B3F462 /* TerrainMesh.swift in Sources */,
 				943D25B11947128A00263D91 /* Rectangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

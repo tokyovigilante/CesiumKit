@@ -18,7 +18,6 @@ import Foundation
 * @see HeightmapTerrainData
 * @see QuantizedMeshTerrainData
 */
-
 protocol TerrainData {
     
     /**
@@ -28,7 +27,7 @@ protocol TerrainData {
     * @memberof TerrainData.prototype
     * @type {Uint8Array|Image|Canvas}
     */
-    var waterMask: Array<UInt8>?
+    var waterMask: Array<UInt16>? { get }
     
     /**
     * Computes the terrain height at a specified longitude and latitude.
@@ -41,7 +40,7 @@ protocol TerrainData {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
+    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Dpuble
     
     /**
     * Determines if a given child tile is available, based on the
@@ -70,7 +69,8 @@ protocol TerrainData {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(x: Int, y: Int, level: Int, resolve: (TerrainMesh?) -> ())
+    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int, (TerrainMesh?) -> ())
+    
     /**
     * Upsamples this terrain data for use by a descendant tile.
     * @function
@@ -86,15 +86,8 @@ protocol TerrainData {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(
-        thisX: Int,
-        thisY: Int,
-        thisLevel: Int,
-        descendantX: Int,
-        descendantY: Int,
-        descendantLevel: Int,
-        resolve: (TerrainData?) -> ())
-
+    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, (TerrainData) -> ())
+    
     /**
     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
     * terrain data.  If this value is false, the data was obtained from some other source, such
@@ -104,5 +97,5 @@ protocol TerrainData {
     *
     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
     */
-    let wasCreatedByUpsampling: Bool
+    var wasCreatedByUpsampling: Bool { get }
 }

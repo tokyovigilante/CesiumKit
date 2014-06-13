@@ -8,54 +8,41 @@
 
 import Foundation
 
+/**
+* A tiling scheme for geometry or imagery on the surface of an ellipsoid.  At level-of-detail zero,
+* the coarsest, least-detailed level, the number of tiles is configurable.
+* At level of detail one, each of the level zero tiles has four children, two in each direction.
+* At level of detail two, each of the level one tiles has four children, two in each direction.
+* This continues for as many levels as are present in the geometry or imagery source.
+*
+* @alias TilingScheme
+* @constructor
+*
+* @see WebMercatorTilingScheme
+* @see GeographicTilingScheme
+*/
 protocol TilingScheme {
-        
-    /**
-    * A tiling scheme for geometry or imagery on the surface of an ellipsoid.  At level-of-detail zero,
-    * the coarsest, least-detailed level, the number of tiles is configurable.
-    * At level of detail one, each of the level zero tiles has four children, two in each direction.
-    * At level of detail two, each of the level one tiles has four children, two in each direction.
-    * This continues for as many levels as are present in the geometry or imagery source.
-    *
-    * @alias TilingScheme
-    * @constructor
-    *
-    * @see WebMercatorTilingScheme
-    * @see GeographicTilingScheme
-    */
-    var TilingScheme = function TilingScheme(options) {
-    throw new DeveloperError('This type should not be instantiated directly.  Instead, use WebMercatorTilingScheme or GeographicTilingScheme.');
-};
 
-defineProperties(TilingScheme.prototype, {
     /**
     * Gets the ellipsoid that is tiled by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Ellipsoid}
     */
-    ellipsoid: {
-        get : DeveloperError.throwInstantiationError
-    },
+    var ellipsoid: Ellipsoid
     
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
-    rectangle : {
-        get : DeveloperError.throwInstantiationError
-    },
-    
+    var rectangle : Rectangle
     
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    projection : {
-        get : DeveloperError.throwInstantiationError
-    }
-    });
+    var projection : Projection
 
 /**
 * Gets the total number of tiles in the X direction at a specified level-of-detail.
@@ -64,8 +51,8 @@ defineProperties(TilingScheme.prototype, {
 * @param {Number} level The level-of-detail.
 * @returns {Number} The number of tiles in the X direction at the given level.
 */
-TilingScheme.prototype.getNumberOfXTilesAtLevel = DeveloperError.throwInstantiationError;
-
+    func getNumberOfXTilesAtLevel(level: Int) -> Int
+    
 /**
 * Gets the total number of tiles in the Y direction at a specified level-of-detail.
 * @function
@@ -73,7 +60,7 @@ TilingScheme.prototype.getNumberOfXTilesAtLevel = DeveloperError.throwInstantiat
 * @param {Number} level The level-of-detail.
 * @returns {Number} The number of tiles in the Y direction at the given level.
 */
-TilingScheme.prototype.getNumberOfYTilesAtLevel = DeveloperError.throwInstantiationError;
+    func getNumberOfYTilesAtLevel(level: Int) -> Int
 
 /**
 * Transforms an rectangle specified in geodetic radians to the native coordinate system
@@ -86,7 +73,7 @@ TilingScheme.prototype.getNumberOfYTilesAtLevel = DeveloperError.throwInstantiat
 * @returns {Rectangle} The specified 'result', or a new object containing the native rectangle if 'result'
 *          is undefined.
 */
-TilingScheme.prototype.rectangleToNativeRectangle = DeveloperError.throwInstantiationError;
+    func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle
 
 /**
 * Converts tile x, y coordinates and level to an rectangle expressed in the native coordinates
@@ -101,8 +88,8 @@ TilingScheme.prototype.rectangleToNativeRectangle = DeveloperError.throwInstanti
 * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
 *          if 'result' is undefined.
 */
-TilingScheme.prototype.tileXYToNativeRectangle = DeveloperError.throwInstantiationError;
-
+    func tileXYToNativeRectangle(#x: Int, y: Int, level: Int) -> Rectangle
+    
 /**
 * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
 * @function
@@ -115,8 +102,7 @@ TilingScheme.prototype.tileXYToNativeRectangle = DeveloperError.throwInstantiati
 * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
 *          if 'result' is undefined.
 */
-TilingScheme.prototype.tileXYToRectangle = DeveloperError.throwInstantiationError;
-
+    func tileXYToRectangle(#x: Int, y: Int, level: Int) -> Rectangle
 /**
 * Calculates the tile x, y coordinates of the tile containing
 * a given cartographic position.
@@ -129,8 +115,6 @@ TilingScheme.prototype.tileXYToRectangle = DeveloperError.throwInstantiationErro
 * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
 *          if 'result' is undefined.
 */
-TilingScheme.prototype.positionToTileXY = DeveloperError.throwInstantiationError;
+    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2
 
-return TilingScheme;
-});
 }
