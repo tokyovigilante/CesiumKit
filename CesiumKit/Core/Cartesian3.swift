@@ -114,7 +114,6 @@ struct Cartesian3: Packable, Equatable {
             array.insert(Float(y), atIndex: startingIndex+1)
             array.insert(Float(z), atIndex: startingIndex+2)
         }
-        
     }
     
     /**
@@ -127,7 +126,7 @@ struct Cartesian3: Packable, Equatable {
     static func unpack(array: Float[], startingIndex: Int = 0) -> Packable {
         assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
 
-        return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex]), z: Double(array[startingIndex]))
+        return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]), z: Double(array[startingIndex+2]))
     }
     
     
@@ -154,7 +153,6 @@ struct Cartesian3: Packable, Equatable {
         y = array[1]
         z = array[2]
     }
-    
     
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
@@ -185,7 +183,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: min(x, other.x), y: min(x, other.x), z: min(x, other.x))
+        return Cartesian3(x: min(x, other.x), y: min(y, other.y), z: min(z, other.z))
     }
     
     /**
@@ -207,7 +205,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The squared magnitude.
     */
     func magnitudeSquared() -> Double {
-        return x * x + y * y + z * z;
+        return x * x + y * y + z * z
     }
     
     /**
@@ -217,7 +215,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The magnitude.
     */
     func magnitude() -> Double {
-        return sqrt(magnitudeSquared());
+        return sqrt(magnitudeSquared())
     }
     
     /**
@@ -256,8 +254,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian3) -> Double {
-        
-        return x * other.x + y * other.y + z * other.z;
+        return x * other.x + y * other.y + z * other.z
     }
     
     /**
@@ -269,7 +266,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func multiplyComponents(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z);
+        return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z)
     }
     
     /**
@@ -281,7 +278,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func add(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z);
+        return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z)
     }
     
     /**

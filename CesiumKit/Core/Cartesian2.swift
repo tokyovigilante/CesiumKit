@@ -104,7 +104,7 @@ struct Cartesian2: Packable, Equatable {
     */
     static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian2 {
         assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
-        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex]))
+        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]))
     }
     
     /**

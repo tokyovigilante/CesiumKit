@@ -16,7 +16,6 @@
 		9439994A1930418C00012DC4 /* CSRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990D1930418C00012DC4 /* CSRectangle.m */; };
 		943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */; };
 		943999531930418C00012DC4 /* CSVertexFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999211930418C00012DC4 /* CSVertexFormat.m */; };
-		943999551930418C00012DC4 /* CSCartesian4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999231930418C00012DC4 /* CSCartesian4.m */; };
 		943999571930418C00012DC4 /* CSRay.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999281930418C00012DC4 /* CSRay.m */; };
 		943999591930418C00012DC4 /* CSContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999331930418C00012DC4 /* CSContext.m */; };
 		9439995B1930418C00012DC4 /* CSDrawCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999351930418C00012DC4 /* CSDrawCommand.m */; };
@@ -119,14 +118,12 @@
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
 		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
-		943999061930418C00012DC4 /* CSCartesian4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSCartesian4.h; sourceTree = "<group>"; };
 		9439990A1930418C00012DC4 /* CSRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRay.h; sourceTree = "<group>"; };
 		9439990D1930418C00012DC4 /* CSRectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRectangle.m; sourceTree = "<group>"; };
 		943999121930418C00012DC4 /* CSEllipsoidGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidGeometry.h; sourceTree = "<group>"; };
 		943999181930418C00012DC4 /* CSRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRectangle.h; sourceTree = "<group>"; };
 		9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidGeometry.m; sourceTree = "<group>"; };
 		943999211930418C00012DC4 /* CSVertexFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVertexFormat.m; sourceTree = "<group>"; };
-		943999231930418C00012DC4 /* CSCartesian4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian4.m; sourceTree = "<group>"; };
 		943999281930418C00012DC4 /* CSRay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRay.m; sourceTree = "<group>"; };
 		9439992C1930418C00012DC4 /* CSDrawCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSDrawCommand.h; sourceTree = "<group>"; };
 		9439992E1930418C00012DC4 /* CSUniformState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUniformState.h; sourceTree = "<group>"; };
@@ -246,8 +243,6 @@
 				948D03E01944F1E200DC0E52 /* Cartesian4.swift */,
 				943744F51945D09F0017FE14 /* Cartographic.swift */,
 				9491BBB11949D156007C1C4C /* Credit.swift */,
-				943999061930418C00012DC4 /* CSCartesian4.h */,
-				943999231930418C00012DC4 /* CSCartesian4.m */,
 				943999121930418C00012DC4 /* CSEllipsoidGeometry.h */,
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */,
