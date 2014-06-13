@@ -51,6 +51,7 @@
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802D194D3BD900012DC4 /* VertexFormat.swift */; };
 		948B8030194D462F00012DC4 /* Quarternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quarternion.swift */; };
+		9478681F194A868400B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9478681E194A868400B3F462 /* TerrainData.swift */; };
 		948D03D91944802300DC0E52 /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
 		948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DA19449DC900DC0E52 /* Cartesian3.swift */; };
 		948D03DD19449E9600DC0E52 /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
@@ -59,6 +60,7 @@
 		948D55E9194982AB005A4DD6 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D55E8194982AB005A4DD6 /* Math.swift */; };
 		9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBAF1949D084007C1C4C /* TerrainProvider.swift */; };
 		9491BBB21949D156007C1C4C /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
+		9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB51949D63A007C1C4C /* TilingScheme.swift */; };
 		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DBE194D620E00012DC4 /* Matrix.swift */; };
 		94B87DC1194D678D00012DC4 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC0194D678D00012DC4 /* Scene.swift */; };
@@ -174,6 +176,7 @@
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948B802F194D462F00012DC4 /* Quarternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quarternion.swift; sourceTree = "<group>"; };
+		9478681E194A868400B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
 		948D03D81944802300DC0E52 /* BoundingSphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingSphere.swift; sourceTree = "<group>"; };
 		948D03DA19449DC900DC0E52 /* Cartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian3.swift; sourceTree = "<group>"; };
 		948D03DC19449E9600DC0E52 /* Packable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packable.swift; sourceTree = "<group>"; };
@@ -182,6 +185,7 @@
 		948D55E8194982AB005A4DD6 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		9491BBAF1949D084007C1C4C /* TerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainProvider.swift; sourceTree = "<group>"; };
 		9491BBB11949D156007C1C4C /* Credit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
+		9491BBB51949D63A007C1C4C /* TilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilingScheme.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
 		94B87DBE194D620E00012DC4 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		94B87DC0194D678D00012DC4 /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
@@ -246,6 +250,10 @@
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */,
 				94502FCD1938248D00012DC4 /* CSEllipsoidTerrainProvider.m */,
+				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
+				9478681E194A868400B3F462 /* TerrainData.swift */,
+				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
+				9491BBB11949D156007C1C4C /* Credit.swift */,
 				942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */,
 				942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */,
 				94515099193ADB8500012DC4 /* CSHeightMapStructure.h */,
@@ -544,6 +552,8 @@
 				9417EC451942C31B00586516 /* Interval.swift in Sources */,
 				9460F819194DB80500012DC4 /* RenderState.swift in Sources */,
 				9460F811194DAC4D00012DC4 /* GlobeSurface.swift in Sources */,
+				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
+				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9439994A1930418C00012DC4 /* CSRectangle.m in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
 				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
@@ -556,6 +566,7 @@
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,
 				9439995C1930418C00012DC4 /* CSUniformState.m in Sources */,
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
+				9478681F194A868400B3F462 /* TerrainData.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
 				9460F80B194DA8A400012DC4 /* Framebuffer.swift in Sources */,
