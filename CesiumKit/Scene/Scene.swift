@@ -76,6 +76,7 @@ class Scene {
 
     
     var context: Context = Context()// = new Context(canvas, contextOptions);
+    /*
     if (!defined(creditContainer)) {
         creditContainer = document.createElement('div');
         creditContainer.style.position = 'absolute';
@@ -85,11 +86,12 @@ class Scene {
         creditContainer.style['font-size'] = '10px';
         creditContainer.style['padding-right'] = '5px';
         canvas.parentNode.appendChild(creditContainer);
-    }
-    this._frameState = new FrameState(new CreditDisplay(creditContainer));
-    this._passState = new PassState(context);
-    this._canvas = canvas;
-    this._context = context;
+    }*/
+    var frameState: FrameState = FrameState()
+    
+    var passState: PassState = PassState(context: context)
+    
+    var globe: Globe = nil
     this._globe = undefined;
     this._primitives = new PrimitiveCollection();
     this._pickFramebuffer = undefined;

@@ -9,6 +9,7 @@
 import Foundation
 
 class Context {
+    /*
     function _errorToString(gl, error) {
     var message = 'OpenGL Error:  ';
     switch (error) {
@@ -862,10 +863,11 @@ Context.prototype.replaceShaderProgram = function(shaderProgram, vertexShaderSou
     return this.shaderCache.replaceShaderProgram(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations);
 };
 
-Context.prototype.createShaderProgram = function(vertexShaderSource, fragmentShaderSource, attributeLocations) {
-    return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
-};
-
+    */
+    func createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram {
+        //return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
+    }
+/*
 function createBuffer(gl, bufferTarget, typedArrayOrSizeInBytes, usage) {
     var sizeInBytes;
     
@@ -1674,9 +1676,10 @@ function bindFramebuffer(context, framebuffer) {
 }
 
 var defaultClearCommand = new ClearCommand();
-
-Context.prototype.clear = function(clearCommand, passState) {
-    clearCommand = defaultValue(clearCommand, defaultClearCommand);
+*/
+    func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState) {
+/*
+        clearCommand = defaultValue(clearCommand, defaultClearCommand);
     passState = defaultValue(passState, this._defaultPassState);
     
     var gl = this._gl;
@@ -1717,9 +1720,9 @@ Context.prototype.clear = function(clearCommand, passState) {
     var framebuffer = defaultValue(clearCommand.framebuffer, passState.framebuffer);
     bindFramebuffer(this, framebuffer);
     
-    gl.clear(bitmask);
-};
-
+    gl.clear(bitmask);*/
+}
+/*
 function beginDraw(context, framebuffer, drawCommand, passState, renderState, shaderProgram) {
     var rs = defaultValue(defaultValue(renderState, drawCommand.renderState), context._defaultRenderState);
     
@@ -2311,5 +2314,5 @@ Context.prototype.destroy = function() {
     return destroyObject(this);
 };
 
-return Context;
+return Context;*/
 }

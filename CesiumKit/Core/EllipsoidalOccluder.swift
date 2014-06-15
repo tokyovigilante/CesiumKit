@@ -31,6 +31,7 @@ import Foundation
 */
 
 class EllipsoidalOccluder {
+    
     var ellipsoid: Ellipsoid
     var cameraPosition: Cartesian3 = Cartesian3() {
     didSet {
