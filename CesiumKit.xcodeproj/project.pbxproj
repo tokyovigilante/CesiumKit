@@ -44,6 +44,7 @@
 		945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */ = {isa = PBXBuildFile; fileRef = 945150A3193C648700012DC4 /* CSHeightMapTessellator.m */; };
 		945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
+		948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802D194D3BD900012DC4 /* VertexFormat.swift */; };
 		948D03D91944802300DC0E52 /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
 		948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DA19449DC900DC0E52 /* Cartesian3.swift */; };
 		948D03DD19449E9600DC0E52 /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
@@ -158,6 +159,7 @@
 		945D2DBA193D7FA800012DC4 /* CesiumKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CesiumKit-Bridging-Header.h"; path = "Core/CesiumKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
+		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948D03D81944802300DC0E52 /* BoundingSphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingSphere.swift; sourceTree = "<group>"; };
 		948D03DA19449DC900DC0E52 /* Cartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian3.swift; sourceTree = "<group>"; };
 		948D03DC19449E9600DC0E52 /* Packable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packable.swift; sourceTree = "<group>"; };
@@ -209,22 +211,18 @@
 			isa = PBXGroup;
 			children = (
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
-				9444499D1948326C009D1703 /* Projection.swift */,
-				9444499F1948331C009D1703 /* GeographicProjection.swift */,
-				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
 				94BC43561948189A007117F2 /* Cartesian2.swift */,
 				948D03DA19449DC900DC0E52 /* Cartesian3.swift */,
 				948D03E01944F1E200DC0E52 /* Cartesian4.swift */,
 				943744F51945D09F0017FE14 /* Cartographic.swift */,
+				9491BBB11949D156007C1C4C /* Credit.swift */,
 				943999061930418C00012DC4 /* CSCartesian4.h */,
 				943999231930418C00012DC4 /* CSCartesian4.m */,
 				943999121930418C00012DC4 /* CSEllipsoidGeometry.h */,
 				9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */,
 				94502FCC1938248D00012DC4 /* CSEllipsoidTerrainProvider.h */,
 				94502FCD1938248D00012DC4 /* CSEllipsoidTerrainProvider.m */,
-				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
-				9491BBB11949D156007C1C4C /* Credit.swift */,
 				942A83DA19386F1F00012DC4 /* CSGeographicTilingScheme.h */,
 				942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */,
 				94515099193ADB8500012DC4 /* CSHeightMapStructure.h */,
@@ -233,7 +231,6 @@
 				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
 				945150A2193C648700012DC4 /* CSHeightMapTessellator.h */,
 				945150A3193C648700012DC4 /* CSHeightMapTessellator.m */,
-				948D55E8194982AB005A4DD6 /* Math.swift */,
 				9439991A1930418C00012DC4 /* CSMatrix4.h */,
 				943999101930418C00012DC4 /* CSMatrix4.m */,
 				943999161930418C00012DC4 /* CSQuarternion.h */,
@@ -252,15 +249,21 @@
 				94502FD0193826AF00012DC4 /* CSTilingScheme.m */,
 				943999041930418C00012DC4 /* CSVertexFormat.h */,
 				943999211930418C00012DC4 /* CSVertexFormat.m */,
+				948B802D194D3BD900012DC4 /* VertexFormat.swift */,
 				94502FD2193826DF00012DC4 /* CSWebMercatorTilingScheme.h */,
 				94502FD3193826DF00012DC4 /* CSWebMercatorTilingScheme.m */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
+				9444499F1948331C009D1703 /* GeographicProjection.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
+				948D55E8194982AB005A4DD6 /* Math.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
+				9444499D1948326C009D1703 /* Projection.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
+				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
+				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -478,6 +481,7 @@
 				943999511930418C00012DC4 /* CSQuarternion.m in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
 				943999621930418C00012DC4 /* CSFrameState.m in Sources */,
+				948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */,
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				948D03E11944F1E200DC0E52 /* Cartesian4.swift in Sources */,
 				949ABA8119410120009B1183 /* Intersect.swift in Sources */,
