@@ -74,9 +74,8 @@ class Scene {
     
 
 
-    /*
-var Scene = function(canvas, contextOptions, creditContainer) {
-    var context = new Context(canvas, contextOptions);
+    
+    var context: Context = Context()// = new Context(canvas, contextOptions);
     if (!defined(creditContainer)) {
         creditContainer = document.createElement('div');
         creditContainer.style.position = 'absolute';
