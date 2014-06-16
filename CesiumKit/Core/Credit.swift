@@ -22,16 +22,20 @@ import Foundation
 * //Create a credit with a tooltip, image and link
 * var credit = new Cesium.Credit('Cesium', '/images/cesium_logo.png', 'http://cesiumjs.org/');
 */
-struct Credit: Equatable, Printable {
+struct Credit: Equatable {
     
-    let text: String?
-    let imageUrl: String?
-    let link: String?
+    var text: String?
+    var imageUrl: String?
+    var link: String?
     
     init (text: String?, imageUrl: String?, link: String?) {
         assert(text != nil || imageUrl != nil || link != nil, "text, imageUrl or link is required")
 
-        (text == nil && imageUrl == nil) ? self.text = link : self.text = text
+        if (text == nil && imageUrl == nil) {
+            self.text = link
+        } else {
+            self.text = text
+        }
         self.imageUrl = imageUrl
         self.link = link
     }
@@ -43,6 +47,7 @@ struct Credit: Equatable, Printable {
 * @param {Credit} left The second credit
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func ==(left: Credit, right: Credit) {
+func == (left: Credit, right: Credit) -> Bool {
     return (left.text == right.text && left.imageUrl == right.imageUrl && left.link == right.link)
 }
+

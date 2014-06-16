@@ -47,7 +47,7 @@ struct Cartesian3: Packable, Equatable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static let packedLength: Int = 4
+    //static let packedLength: Int = 4
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -104,7 +104,7 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: Float[], startingIndex: Int) {
-        if array.count < startingIndex - Int(Cartesian3.packedLength) {
+        if array.count < startingIndex - 3 { //Int(Cartesian3.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
             array.append(Float(z))
@@ -123,8 +123,8 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: Float[], startingIndex: Int = 0) -> Packable {
-        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
+    static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian3 {
+        assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
 
         return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]), z: Double(array[startingIndex+2]))
     }
@@ -448,8 +448,8 @@ struct Cartesian3: Packable, Equatable {
     */
     static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
         
-        var lon = CSMath.toRadians(longitude)
-        var lat = CSMath.toRadians(latitude)
+        var lon = Math.toRadians(longitude)
+        var lat = Math.toRadians(latitude)
         return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
     
@@ -491,7 +491,7 @@ struct Cartesian3: Packable, Equatable {
         
         var pos = Double[]()
         for coordinate in coordinates {
-            pos.append(CSMath.toRadians(coordinate))
+            pos.append(Math.toRadians(coordinate))
         }
         
         return Cartesian3.fromRadiansArray(coordinates: pos, ellipsoid: ellipsoid)
@@ -535,8 +535,8 @@ struct Cartesian3: Packable, Equatable {
         
         var pos = Double[]()
         for (var i = 0; i < coordinates.count; i += 3) {
-            pos.append(CSMath.toRadians(coordinates[i]))
-            pos.append(CSMath.toRadians(coordinates[i+1]))
+            pos.append(Math.toRadians(coordinates[i]))
+            pos.append(Math.toRadians(coordinates[i+1]))
             pos.append((coordinates[i+2]))
         }
         

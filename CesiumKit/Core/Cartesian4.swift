@@ -51,11 +51,15 @@ struct Cartesian4: Packable, Equatable, Printable {
     */
     var w: Double = 0.0
     
+    var description: String {
+        return "(\(x), \(y), \(z), \(w))"
+    }
+    
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static let packedLength: Int = 4
+    //static let packedLength: Int = 4
     
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
@@ -79,7 +83,7 @@ struct Cartesian4: Packable, Equatable, Printable {
         self.z = blue
         self.w = alpha
     }
-
+    
     /**
     * Stores the provided instance into the provided array.
     *
@@ -88,7 +92,7 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: Float[], startingIndex: Int) {
-        if array.count < startingIndex - Int(Cartesian4.packedLength) {
+        if (array.count < startingIndex - 4) {// Int(Cartesian4.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
             array.append(Float(z))
@@ -110,7 +114,7 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Cartesian4} [result] The object into which to store the result.
     */
     static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian4 {
-        assert((startingIndex + Cartesian4.packedLength <= array.count), "Invalid starting index")
+        assert(startingIndex + 4 /*Cartesian4.packedLength*/ <= array.count, "Invalid starting index")
         
         return Cartesian4(
             x: Double(array[startingIndex]),
@@ -118,18 +122,18 @@ struct Cartesian4: Packable, Equatable, Printable {
             z: Double(array[startingIndex+2]),
             w: Double(array[startingIndex+3]))
     }
-
-/**
-* Creates a Cartesian4 from four consecutive elements in an array.
-* @function
-*
-* @param {Number[]} array The array whose four consecutive elements correspond to the x, y, z, and w components, respectively.
-* @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to the x component.
-* @param {Cartesian4} [result] The object onto which to store the result.
-* @returns {Cartesian4}  The modified result parameter or a new Cartesian4 instance if one was not provided.
-*
-* @example
-* // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0)
+    
+    /**
+    * Creates a Cartesian4 from four consecutive elements in an array.
+    * @function
+    *
+    * @param {Number[]} array The array whose four consecutive elements correspond to the x, y, z, and w components, respectively.
+    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to the x component.
+    * @param {Cartesian4} [result] The object onto which to store the result.
+    * @returns {Cartesian4}  The modified result parameter or a new Cartesian4 instance if one was not provided.
+    *
+    * @example
+    * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0)
 * var v = [1.0, 2.0, 3.0, 4.0];
 * var p = Cesium.Cartesian4.fromArray(v);
 *
@@ -387,7 +391,7 @@ struct Cartesian4: Packable, Equatable, Printable {
 * @param {Number} epsilon The epsilon to use for equality testing.
 * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
 */
-    func equalsEpsilon(other: Cartesian3, epsilon: Double) -> Bool {
+    func equalsEpsilon(other: Cartesian4, epsilon: Double) -> Bool {
         return (abs(x - other.x) <= epsilon && abs(y - other.y) <= epsilon && abs(z - other.z) <= epsilon && abs(w - other.w) <= epsilon)
     }
 
@@ -434,15 +438,12 @@ struct Cartesian4: Packable, Equatable, Printable {
 * @type {Cartesian4}
 * @constant
 */
-    static func unitZ() -> Cartesian4 {
-        return Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
+    static func unitW() -> Cartesian4 {
+        return Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
     }
-
-    func String() -> String {
-    return "\(x), \(y), \(z), \(w))"
 }
 
-}
+
 
 /**
 * Compares the provided Cartesians componentwise and returns

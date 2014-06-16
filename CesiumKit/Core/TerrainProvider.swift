@@ -29,7 +29,7 @@ class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Event}
     */
-    var errorEvent: () -> ()?
+    var errorEvent: (() -> ())?
     
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
@@ -134,7 +134,7 @@ class TerrainProvider {
     * @returns {Number} An estimated geometric error.
     */
     class func getEstimatedLevelZeroGeometricErrorForAHeightmap(
-        ellipsoid: Ellipsoid,
+        #ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             

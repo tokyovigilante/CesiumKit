@@ -1,6 +1,6 @@
 //
 //  TilingScheme.swift
-//  
+//
 //
 //  Created by Ryan Walklin on 12/06/14.
 //
@@ -28,21 +28,24 @@ protocol TilingScheme {
     * @memberof TilingScheme.prototype
     * @type {Ellipsoid}
     */
-    var ellipsoid: Ellipsoid
+    var ellipsoid: Ellipsoid { get }
     
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
-    var rectangle : Rectangle
+    var rectangle : Rectangle { get }
     
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    var projection : Projection
+    var projection : Projection { get }
+
+    var numberOfLevelZeroTilesX: Int { get }
+    var numberOfLevelZeroTilesY: Int { get }
 
 /**
 * Gets the total number of tiles in the X direction at a specified level-of-detail.
@@ -51,7 +54,7 @@ protocol TilingScheme {
 * @param {Number} level The level-of-detail.
 * @returns {Number} The number of tiles in the X direction at the given level.
 */
-    func getNumberOfXTilesAtLevel(level: Int) -> Int
+    func numberOfXTilesAtLevel(level: Int) -> Int
     
 /**
 * Gets the total number of tiles in the Y direction at a specified level-of-detail.
@@ -60,7 +63,7 @@ protocol TilingScheme {
 * @param {Number} level The level-of-detail.
 * @returns {Number} The number of tiles in the Y direction at the given level.
 */
-    func getNumberOfYTilesAtLevel(level: Int) -> Int
+    func numberOfYTilesAtLevel(level: Int) -> Int
 
 /**
 * Transforms an rectangle specified in geodetic radians to the native coordinate system
@@ -115,6 +118,6 @@ protocol TilingScheme {
 * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
 *          if 'result' is undefined.
 */
-    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2
+    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2?
 
 }

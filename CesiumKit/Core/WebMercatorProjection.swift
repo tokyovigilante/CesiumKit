@@ -23,7 +23,7 @@ import Foundation
 */
 struct WebMercatorProjection: Projection {
     
-    let ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+    let ellipsoid: Ellipsoid
     let semimajorAxis: Double
     let oneOverSemimajorAxis: Double
     
@@ -43,7 +43,7 @@ struct WebMercatorProjection: Projection {
     */
     static let maximumLatitude: Double = WebMercatorProjection.mercatorAngleToGeodeticLatitude(M_PI)
     
-    init (ellipsoid: Ellipsoid) {
+    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis
