@@ -42,8 +42,8 @@ class Globe {
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         
         self.ellipsoid = ellipsoid
-        self.terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
-        self.imageryLayerCollection = ImageryLayerCollection()
+        terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
+        imageryLayerCollection = ImageryLayerCollection()
         
         surface = GlobeSurface(terrainProvider: self.terrainProvider, imageryLayerCollection: self.imageryLayerCollection)
         
@@ -51,25 +51,27 @@ class Globe {
         
         surfaceShaderSet = GlobeSurfaceShaderSet(TerrainAttributeLocations())
         
-        this._clearDepthCommand = new ClearCommand({
+        weak var weakSelf = self
+        
+        sekf.clearDepthCommand = ClearCommand(
             depth : 1.0,
             stencil : 0,
-            owner : this
-            });
+            owner : weakSelf
+            )
         
-        this._depthCommand = new DrawCommand({
-            boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
-            pass : Pass.OPAQUE,
-            owner : this
-            });
-        this._northPoleCommand = new DrawCommand({
-            pass : Pass.OPAQUE,
-            owner : this
-            });
-        this._southPoleCommand = new DrawCommand({
-            pass : Pass.OPAQUE,
-            owner : this
-            });
+        this._depthCommand = DrawCommand(
+            boundingVolume : BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius),
+            pass : Pass.Opaque,
+            owner : weakSelf
+            )
+        this._northPoleCommand = DrawCommand(
+            pass : Pass.Opaque,
+            owner : weakSelf
+            )
+        this._southPoleCommand = DrawCommand(
+            pass : Pass.Opaque,
+            owner : weakSelf
+            )
         
         this._drawNorthPole = false;
         this._drawSouthPole = false;
@@ -81,7 +83,7 @@ class Globe {
         * @type {Cartesian3}
         * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
         */
-        this.northPoleColor = new Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0);
+        northPoleColor = Cartesian4(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0, 1.0)
         
         /**
         * Determines the color of the south pole. If the day tile provider imagery does not
@@ -151,7 +153,7 @@ class Globe {
         */
         this.enableLighting = false;
         this._enableLighting = false;
-        
+    /*
         /**
         * The distance where everything becomes lit. This only takes effect
         * when <code>enableLighting</code> is <code>true</code>.
