@@ -153,8 +153,8 @@ class Globe {
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         
         self.ellipsoid = ellipsoid
-        self.terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
-        self.imageryLayerCollection = ImageryLayerCollection()
+        terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
+        imageryLayerCollection = ImageryLayerCollection()
         
         surface = GlobeSurface(terrainProvider: self.terrainProvider, imageryLayerCollection: self.imageryLayerCollection)
         
@@ -162,15 +162,23 @@ class Globe {
         
         surfaceShaderSet = GlobeSurfaceShaderSet(TerrainAttributeLocations())
         
-        self.clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0, owner: self)
+        weak var weakSelf = self
+
+        self.clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0, owner: weakSelf)
         
         self.depthCommand = DrawCommand(boundingVolume: BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius), pass: Pass.Opaque, owner: self)
-        self.northPoleCommand = DrawCommand(pass: Pass.Opaque, owner: self)
-        self.SouthPoleCommand = DrawCommand(pass: Pass.Opaque, owner: self)
-        
+        self.northPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
+        self.SouthPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
+
         self.lightingFadeDistance = Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance)
-        
-        weak var weakSelf = self
+
+        /**
+        * Determines the color of the north pole. If the day tile provider imagery does not
+        * extend over the north pole, it will be filled with this color before applying lighting.
+        *
+        * @type {Cartesian3}
+        * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
+        */
         
         this._drawUniforms = [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
@@ -201,7 +209,7 @@ class Globe {
         // Determine the radius of the 'limb' of the ellipsoid.
         var wMagnitude = sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
         
-        // Compute the center and offsets.
+    w        // Compute the center and offsets.
         var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
         var scalar = wMagnitude / qMagnitude;
         var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
@@ -212,6 +220,7 @@ class Globe {
         Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
         Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
         Cartesian3.pack(upperLeft, depthQuadScratch, 0);
+
         
         var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
         Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);

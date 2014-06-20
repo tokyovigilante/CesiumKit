@@ -39,7 +39,7 @@ struct Cartesian2: Packable, Equatable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static let packedLength: Int = 2
+    //static let packedLength: Int = 2
     
     init(x: Double, y: Double) {
         self.x = x
@@ -83,7 +83,7 @@ struct Cartesian2: Packable, Equatable {
     */
     func pack(inout array: Float[], startingIndex: Int = 0) {
         
-        if array.count < startingIndex - Int(Cartesian2.packedLength) {
+        if array.count < startingIndex - 2 {//Int(Cartesian2.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
         }
@@ -103,8 +103,8 @@ struct Cartesian2: Packable, Equatable {
     * @param {Cartesian2} [result] The object into which to store the result.
     */
     static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian2 {
-        assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
-        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex]))
+        assert((startingIndex + /*Cartesian2.packedLength*/2 <= array.count), "Invalid starting index")
+        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]))
     }
     
     /**

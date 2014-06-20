@@ -47,7 +47,7 @@ struct Cartesian3: Packable, Equatable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static let packedLength: Int = 4
+    //static let packedLength: Int = 4
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -104,7 +104,7 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: Float[], startingIndex: Int) {
-        if array.count < startingIndex - Int(Cartesian3.packedLength) {
+        if array.count < startingIndex - 3 { //Int(Cartesian3.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
             array.append(Float(z))
@@ -114,7 +114,6 @@ struct Cartesian3: Packable, Equatable {
             array.insert(Float(y), atIndex: startingIndex+1)
             array.insert(Float(z), atIndex: startingIndex+2)
         }
-        
     }
     
     /**
@@ -124,10 +123,10 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: Float[], startingIndex: Int = 0) -> Packable {
-        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
+    static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian3 {
+        assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
 
-        return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex]), z: Double(array[startingIndex]))
+        return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]), z: Double(array[startingIndex+2]))
     }
     
     
@@ -154,7 +153,6 @@ struct Cartesian3: Packable, Equatable {
         y = array[1]
         z = array[2]
     }
-    
     
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
@@ -185,7 +183,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: min(x, other.x), y: min(x, other.x), z: min(x, other.x))
+        return Cartesian3(x: min(x, other.x), y: min(y, other.y), z: min(z, other.z))
     }
     
     /**
@@ -207,7 +205,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The squared magnitude.
     */
     func magnitudeSquared() -> Double {
-        return x * x + y * y + z * z;
+        return x * x + y * y + z * z
     }
     
     /**
@@ -217,7 +215,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The magnitude.
     */
     func magnitude() -> Double {
-        return sqrt(magnitudeSquared());
+        return sqrt(magnitudeSquared())
     }
     
     /**
@@ -256,8 +254,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian3) -> Double {
-        
-        return x * other.x + y * other.y + z * other.z;
+        return x * other.x + y * other.y + z * other.z
     }
     
     /**
@@ -269,7 +266,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func multiplyComponents(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z);
+        return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z)
     }
     
     /**
@@ -281,7 +278,7 @@ struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func add(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z);
+        return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z)
     }
     
     /**
@@ -451,8 +448,8 @@ struct Cartesian3: Packable, Equatable {
     */
     static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
         
-        var lon = CSMath.toRadians(longitude)
-        var lat = CSMath.toRadians(latitude)
+        var lon = Math.toRadians(longitude)
+        var lat = Math.toRadians(latitude)
         return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
     
@@ -494,7 +491,7 @@ struct Cartesian3: Packable, Equatable {
         
         var pos = Double[]()
         for coordinate in coordinates {
-            pos.append(CSMath.toRadians(coordinate))
+            pos.append(Math.toRadians(coordinate))
         }
         
         return Cartesian3.fromRadiansArray(coordinates: pos, ellipsoid: ellipsoid)
@@ -538,8 +535,8 @@ struct Cartesian3: Packable, Equatable {
         
         var pos = Double[]()
         for (var i = 0; i < coordinates.count; i += 3) {
-            pos.append(CSMath.toRadians(coordinates[i]))
-            pos.append(CSMath.toRadians(coordinates[i+1]))
+            pos.append(Math.toRadians(coordinates[i]))
+            pos.append(Math.toRadians(coordinates[i+1]))
             pos.append((coordinates[i+2]))
         }
         

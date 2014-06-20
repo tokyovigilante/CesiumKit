@@ -68,8 +68,8 @@ struct Cartographic {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if one was not provided.
     */
     static func fromDegreees(longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
-        let lon = CSMath.toRadians(longitude);
-        let lat = CSMath.toRadians(latitude);
+        let lon = Math.toRadians(longitude)
+        let lat = Math.toRadians(latitude)
         
         return Cartographic.fromRadians(longitude: lon, latitude: lat, height: height);
     }

@@ -337,7 +337,7 @@ struct Math {
     * @constant
     */
     CesiumMath.ONE_OVER_TWO_PI = 1.0 / (2.0 * Math.PI);
-    
+    */
     /**
     * The number of radians in a degree.
     *
@@ -345,7 +345,7 @@ struct Math {
     * @constant
     * @default Math.PI / 180.0
     */
-    CesiumMath.RADIANS_PER_DEGREE = Math.PI / 180.0;
+    static let RadiansPerDegree = M_PI / 180.0
     
     /**
     * The number of degrees in a radian.
@@ -354,7 +354,7 @@ struct Math {
     * @constant
     * @default 180.0 / Math.PI
     */
-    CesiumMath.DEGREES_PER_RADIAN = 180.0 / Math.PI;
+    static let DegreesPerRadian = 180.0 / M_PI
     
     /**
     * The number of radians in an arc second.
@@ -363,36 +363,26 @@ struct Math {
     * @constant
     * @default {@link CesiumMath.RADIANS_PER_DEGREE} / 3600.0
     */
-    CesiumMath.RADIANS_PER_ARCSECOND = CesiumMath.RADIANS_PER_DEGREE / 3600.0;
+    static let RadiansPerArcSecond = RadiansPerDegree / 3600.0
     
     /**
     * Converts degrees to radians.
     * @param {Number} degrees The angle to convert in degrees.
     * @returns {Number} The corresponding angle in radians.
     */
-    CesiumMath.toRadians = function(degrees) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(degrees)) {
-    throw new DeveloperError('degrees is required.');
-}
-//>>includeEnd('debug');
-return degrees * CesiumMath.RADIANS_PER_DEGREE;
-};
-
-/**
-* Converts radians to degrees.
-* @param {Number} radians The angle to convert in radians.
-* @returns {Number} The corresponding angle in degrees.
-*/
-CesiumMath.toDegrees = function(radians) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(radians)) {
-        throw new DeveloperError('radians is required.');
+    static func toRadians(degrees: Double) -> Double {
+        return degrees * RadiansPerDegree
     }
-    //>>includeEnd('debug');
-    return radians * CesiumMath.DEGREES_PER_RADIAN;
-};
 
+    /**
+    * Converts radians to degrees.
+    * @param {Number} radians The angle to convert in radians.
+    * @returns {Number} The corresponding angle in degrees.
+    */
+    static func toDegrees(radians: Double) -> Double {
+        return radians * DegreesPerRadian
+    }
+/*
 /**
 * Converts a longitude value, in radians, to the range [<code>-Math.PI</code>, <code>Math.PI</code>).
 *

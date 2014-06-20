@@ -29,9 +29,7 @@ class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Event}
     */
-    /*var errorEvent : {
-        get : DeveloperError.throwInstantiationError
-    },*/
+    var errorEvent: (() -> ())?
     
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
@@ -55,117 +53,141 @@ class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
-    var ready: Bool
+    var ready: Bool = false
     
-var regularGridIndexArrays = [];
-
-/**
-* Gets a list of indices for a triangle mesh representing a regular grid.  Calling
-* this function multiple times with the same grid width and height returns the
-* same list of indices.  The total number of vertices must be less than or equal
-* to 65536.
-*
-* @param {Number} width The number of vertices in the regular grid in the horizontal direction.
-* @param {Number} height The number of vertices in the regular grid in the vertical direction.
-* @returns {Uint16Array} The list of indices.
-*/
-TerrainProvider.getRegularGridIndices = function(width, height) {
-    //>>includeStart('debug', pragmas.debug);
-    if (width * height > 64 * 1024) {
-        throw new DeveloperError('The total number of vertices (width * height) must be less than or equal to 65536.');
+    let terrainProcessorQueue = dispatch_queue_create("terrainProcessorQueue", DISPATCH_QUEUE_SERIAL)
+    
+    /**
+    * Specifies the quality of terrain created from heightmaps.  A value of 1.0 will
+    * ensure that adjacent heightmap vertices are separated by no more than
+    * {@link Globe.maximumScreenSpaceError} screen pixels and will probably go very slowly.
+    * A value of 0.5 will cut the estimated level zero geometric error in half, allowing twice the
+    * screen pixels between adjacent heightmap vertices and thus rendering more quickly.
+    */
+    //class var heightmapTerrainQuality = 0.25;
+    
+    var regularGridIndexArrays: Dictionary<Int, Dictionary<Int, Array<UInt16>>> = [:]
+    
+    /**
+    * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
+    * this function multiple times with the same grid width and height returns the
+    * same list of indices.  The total number of vertices must be less than or equal
+    * to 65536.
+    *
+    * @param {Number} width The number of vertices in the regular grid in the horizontal direction.
+    * @param {Number} height The number of vertices in the regular grid in the vertical direction.
+    * @returns {Uint16Array} The list of indices.
+    */
+    
+    init(tilingScheme: TilingScheme) {
+        self.tilingScheme = tilingScheme
+        credit = Credit(text: "base class", imageUrl: nil, link: nil)
     }
-    //>>includeEnd('debug');
     
-    var byWidth = regularGridIndexArrays[width];
-    if (!defined(byWidth)) {
-        regularGridIndexArrays[width] = byWidth = [];
-    }
-    
-    var indices = byWidth[height];
-    if (!defined(indices)) {
-        indices = byWidth[height] = new Uint16Array((width - 1) * (height - 1) * 6);
+    func getRegularGridIndices(width: Int, height: Int) -> UInt16[] {
+        assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
-        var index = 0;
-        var indicesIndex = 0;
-        for ( var i = 0; i < height - 1; ++i) {
-            for ( var j = 0; j < width - 1; ++j) {
-                var upperLeft = index;
-                var lowerLeft = upperLeft + width;
-                var lowerRight = lowerLeft + 1;
-                var upperRight = upperLeft + 1;
-                
-                indices[indicesIndex++] = upperLeft;
-                indices[indicesIndex++] = lowerLeft;
-                indices[indicesIndex++] = upperRight;
-                indices[indicesIndex++] = upperRight;
-                indices[indicesIndex++] = lowerLeft;
-                indices[indicesIndex++] = lowerRight;
-                
+        var byWidth = regularGridIndexArrays[width]
+        if (byWidth == nil) {
+            byWidth = [:]
+            regularGridIndexArrays[width] = byWidth
+        }
+        var indices = byWidth![height]
+        if (indices == nil) {
+            indices = UInt16[](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            
+            var index = 0;
+            var indicesIndex = 0;
+            for i in 0..height-1 {
+                for j in 0..width-1 {
+                    var upperLeft = index;
+                    var lowerLeft = upperLeft + width;
+                    var lowerRight = lowerLeft + 1;
+                    var upperRight = upperLeft + 1;
+                    
+                    indices![indicesIndex++] = UInt16(upperLeft)
+                    indices![indicesIndex++] = UInt16(lowerLeft)
+                    indices![indicesIndex++] = UInt16(upperRight)
+                    indices![indicesIndex++] = UInt16(upperRight)
+                    indices![indicesIndex++] = UInt16(lowerLeft)
+                    indices![indicesIndex++] = UInt16(lowerRight)
+                    
+                    ++index;
+                }
                 ++index;
             }
-            ++index;
+            var unWrappedByWidth = byWidth!
+            
+            unWrappedByWidth[height] = indices
+            regularGridIndexArrays[width] = unWrappedByWidth
         }
+        
+        return indices!
     }
     
-    return indices;
-};
-
-/**
-* Specifies the quality of terrain created from heightmaps.  A value of 1.0 will
-* ensure that adjacent heightmap vertices are separated by no more than
-* {@link Globe.maximumScreenSpaceError} screen pixels and will probably go very slowly.
-* A value of 0.5 will cut the estimated level zero geometric error in half, allowing twice the
-* screen pixels between adjacent heightmap vertices and thus rendering more quickly.
-*/
-TerrainProvider.heightmapTerrainQuality = 0.25;
-
-/**
-* Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
-*
-* @param {Ellipsoid} ellipsoid The ellipsoid to which the terrain is attached.
-* @param {Number} tileImageWidth The width, in pixels, of the heightmap associated with a single tile.
-* @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
-* @returns {Number} An estimated geometric error.
-*/
-TerrainProvider.getEstimatedLevelZeroGeometricErrorForAHeightmap = function(ellipsoid, tileImageWidth, numberOfTilesAtLevelZero) {
-    return ellipsoid.maximumRadius * 2 * Math.PI * TerrainProvider.heightmapTerrainQuality / (tileImageWidth * numberOfTilesAtLevelZero);
-};
-
-/**
-* Requests the geometry for a given tile.  This function should not be called before
-* {@link TerrainProvider#ready} returns true.  The result must include terrain data and
-* may optionally include a water mask and an indication of which child tiles are available.
-* @function
-*
-* @param {Number} x The X coordinate of the tile for which to request geometry.
-* @param {Number} y The Y coordinate of the tile for which to request geometry.
-* @param {Number} level The level of the tile for which to request geometry.
-* @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
-*                  or false if the request should be initiated regardless of the number of requests
-*                  already in progress.
-* @returns {Promise|TerrainData} A promise for the requested geometry.  If this method
-*          returns undefined instead of a promise, it is an indication that too many requests are already
-*          pending and the request will be retried later.
-*/
-TerrainProvider.prototype.requestTileGeometry = DeveloperError.throwInstantiationError;
-
-/**
-* Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
-* called before {@link TerrainProvider#ready} returns true.
-* @function
-*
-* @param {Number} level The tile level for which to get the maximum geometric error.
-* @returns {Number} The maximum geometric error.
-*/
-TerrainProvider.prototype.getLevelMaximumGeometricError = DeveloperError.throwInstantiationError;
-
-/**
-* Gets a value indicating whether or not the provider includes a water mask.  The water mask
-* indicates which areas of the globe are water rather than land, so they can be rendered
-* as a reflective surface with animated waves.  This function should not be
-* called before {@link TerrainProvider#ready} returns true.
-* @function
-*
-* @returns {Boolean} True if the provider has a water mask; otherwise, false.
-*/
-TerrainProvider.prototype.hasWaterMask = DeveloperError.throwInstantiationError;
+    /**
+    * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
+    *
+    * @param {Ellipsoid} ellipsoid The ellipsoid to which the terrain is attached.
+    * @param {Number} tileImageWidth The width, in pixels, of the heightmap associated with a single tile.
+    * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
+    * @returns {Number} An estimated geometric error.
+    */
+    class func getEstimatedLevelZeroGeometricErrorForAHeightmap(
+        #ellipsoid: Ellipsoid,
+        tileImageWidth: Int,
+        numberOfTilesAtLevelZero: Int) -> Double {
+            
+            return ellipsoid.maximumRadius * 2 * M_PI * 0.25/*TerrainProvider.heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
+    }
+    
+    /**
+    * Requests the geometry for a given tile.  This function should not be called before
+    * {@link TerrainProvider#ready} returns true.  The result must include terrain data and
+    * may optionally include a water mask and an indication of which child tiles are available.
+    * @function
+    *
+    * @param {Number} x The X coordinate of the tile for which to request geometry.
+    * @param {Number} y The Y coordinate of the tile for which to request geometry.
+    * @param {Number} level The level of the tile for which to request geometry.
+    * @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
+    *                  or false if the request should be initiated regardless of the number of requests
+    *                  already in progress.
+    * @returns {Promise|TerrainData} A promise for the requested geometry.  If this method
+    *          returns undefined instead of a promise, it is an indication that too many requests are already
+    *          pending and the request will be retried later.
+    */
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, resolve: (TerrainData?) -> () )  {
+        dispatch_async(terrainProcessorQueue, {
+            // Do expensive work to make terrainData
+            dispatch_async(dispatch_get_main_queue(),  {
+                resolve(nil)
+                })
+            })
+    }
+    
+    /**
+    * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
+    * called before {@link TerrainProvider#ready} returns true.
+    * @function
+    *
+    * @param {Number} level The tile level for which to get the maximum geometric error.
+    * @returns {Number} The maximum geometric error.
+    */
+    func getLevelMaximumGeometricError(level: Int) -> Double {
+        return 0.0
+    }
+    
+    /**
+    * Gets a value indicating whether or not the provider includes a water mask.  The water mask
+    * indicates which areas of the globe are water rather than land, so they can be rendered
+    * as a reflective surface with animated waves.  This function should not be
+    * called before {@link TerrainProvider#ready} returns true.
+    * @function
+    *
+    * @returns {Boolean} True if the provider has a water mask; otherwise, false.
+    */
+    func hasWaterMask() -> Bool {
+        return false
+    }
+}

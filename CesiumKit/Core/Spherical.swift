@@ -28,7 +28,7 @@ struct Spherical: Packable {
     func pack(inout array: Float[], startingIndex: Int) {
     }
     
-    static func unpack(array: Float[], startingIndex: Int) -> Packable {
+    static func unpack(array: Float[], startingIndex: Int) -> Spherical {
         return Spherical()
     }
 }

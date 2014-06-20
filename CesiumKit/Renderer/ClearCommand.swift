@@ -14,6 +14,7 @@ import Foundation
 * @private
 */
 struct ClearCommand {
+
     /**
     * The value to clear the color buffer to.  When <code>undefined</code>, the color buffer is not cleared.
     *
