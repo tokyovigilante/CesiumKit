@@ -375,7 +375,7 @@ return 0.0
      *
      * @see GlobeSurface#destroy
      */
-    GlobeSurface.prototype.isDestroyed = function() {
+    /*GloeSurface.prototype.isDestroyed = function() {
         return false;
     };
 
@@ -1223,5 +1223,5 @@ return 0.0
     }
 
     return GlobeSurface;
-});
+});*/
 }

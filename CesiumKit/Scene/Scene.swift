@@ -92,6 +92,7 @@ class Scene {
     var passState: PassState = PassState(context: context)
     
     var globe: Globe = nil
+    /*
     this._globe = undefined;
     this._primitives = new PrimitiveCollection();
     this._pickFramebuffer = undefined;
@@ -1528,5 +1529,4 @@ Scene.prototype.isDestroyed = function() {
         
         return destroyObject(this);*/
     }
-
 }

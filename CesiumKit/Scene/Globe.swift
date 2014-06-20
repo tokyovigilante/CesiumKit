@@ -244,7 +244,7 @@ func getHeight(cartographic: Cartographic) -> Double? {
         var upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
         var lowerLeft = center.subtract(northOffset).subtract(eastOffset).multiplyComponents(radii)
         var upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
-        var lowerRight = center.subtract(northOffset).add(lowerRight).multiplyComponents(radii)
+        var lowerRight = center.subtract(northOffset).add(eastOffset).multiplyComponents(radii)
         
         upperLeft.pack(depthQuad, 0)
         lowerLeft.pack(depthQuad, 3)
@@ -295,7 +295,7 @@ func getHeight(cartographic: Cartographic) -> Double? {
     */
 
     
-    function fillPoles(globe, context, frameState) {
+        func fillPoles(context: Context, frameState: FrameState) {
         /*
         var viewportScratch = new BoundingRectangle();
         var vpTransformScratch = new Matrix4();
@@ -464,7 +464,7 @@ func getHeight(cartographic: Cartographic) -> Double? {
     if (!this.show) {
     return;
     }
-    
+    /*
     var width = context.drawingBufferWidth;
     var height = context.drawingBufferHeight;
     
