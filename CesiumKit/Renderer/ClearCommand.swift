@@ -14,9 +14,6 @@ import Foundation
 * @private
 */
 struct ClearCommand {
-    
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    
     /**
     * The value to clear the color buffer to.  When <code>undefined</code>, the color buffer is not cleared.
     *

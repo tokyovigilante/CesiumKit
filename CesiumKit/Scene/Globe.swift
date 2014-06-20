@@ -36,9 +36,120 @@ class Globe {
     
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
-    var rsColor: RenderState?
-    var rsColorWithoutDepthTest: Renderstate?
-  
+    var rsColor: RenderState? = nil
+    var rsColorWithoutDepthTest: Renderstate? = nil
+    
+    var clearDepthCommand: ClearCommand
+    
+    var depthCommand, northPoleCommand, SouthPoleCommand: DrawCommand
+    
+    var drawNorthPole = false
+    var drawSouthPole = false
+    
+    /**
+    * Determines the color of the north pole. If the day tile provider imagery does not
+    * extend over the north pole, it will be filled with this color before applying lighting.
+    *
+    * @type {Cartesian3}
+    * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
+    */
+    var northPoleColor = Cartesian4(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0, 1.0)
+    
+    /**
+    * Determines the color of the south pole. If the day tile provider imagery does not
+    * extend over the south pole, it will be filled with this color before applying lighting.
+    *
+    * @type {Cartesian3}
+    * @default Cartesian3(1.0, 1.0, 1.0)
+    */
+    var southPoleColor = Cartesian4(1.0, 1.0, 1.0, 1.0)
+    
+    /**
+    * Determines if the globe will be shown.
+    *
+    * @type {Boolean}
+    * @default true
+    */
+    var show = true
+
+    var mode = SceneMode.Scene3D
+    
+    /**
+    * The normal map to use for rendering waves in the ocean.  Setting this property will
+    * only have an effect if the configured terrain provider includes a water mask.
+    *
+    * @type {String}
+    * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
+    */
+    //var oceanNormalMapUrl = buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg');
+    
+    /**
+    * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
+    * against the terrain surface, or false if such primitives should always be drawn on top
+    * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
+    * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
+    * switched can sometimes make a primitive that should be on the surface disappear underneath it.
+    *
+    * @type {Boolean}
+    * @default false
+    */
+    var depthTestAgainstTerrain = false
+    
+    /**
+    * The maximum screen-space error used to drive level-of-detail refinement.  Higher
+    * values will provide better performance but lower visual quality.
+    *
+    * @type {Number}
+    * @default 2
+    */
+    var maximumScreenSpaceError = 2
+    
+    /**
+    * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
+    * tiles beyond this number will be freed, as long as they aren't needed for rendering
+    * this frame.  A larger number will consume more memory but will show detail faster
+    * when, for example, zooming out and then back in.
+    *
+    * @type {Number}
+    * @default 100
+    */
+    var tileCacheSize = 100
+    
+    /**
+    * Enable lighting the globe with the sun as a light source.
+    *
+    * @type {Boolean}
+    * @default false
+    */
+    var enableLighting = false
+
+    /**
+    * The distance where everything becomes lit. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 6500000.0
+    */
+    var lightingFadeOutDistance = 6500000.0
+    
+    /**
+    * The distance where lighting resumes. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 9000000.0
+    */
+    var lightingFadeInDistance = 9000000.0
+    
+    /*this._lastOceanNormalMapUrl = undefined;
+    this._oceanNormalMap = undefined;
+    this._zoomedOutOceanSpecularIntensity = 0.5;
+    this._showingPrettyOcean = false;
+    this._hasWaterMask = false;*/
+    var lightingFadeDistance: Cartesian2
+    
+    var drawUniforms: Dictionary<String, ()->()>
+    
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         
         self.ellipsoid = ellipsoid
@@ -51,224 +162,73 @@ class Globe {
         
         surfaceShaderSet = GlobeSurfaceShaderSet(TerrainAttributeLocations())
         
-        this._clearDepthCommand = new ClearCommand({
-            depth : 1.0,
-            stencil : 0,
-            owner : this
-            });
+        self.clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0, owner: self)
         
-        this._depthCommand = new DrawCommand({
-            boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
-            pass : Pass.OPAQUE,
-            owner : this
-            });
-        this._northPoleCommand = new DrawCommand({
-            pass : Pass.OPAQUE,
-            owner : this
-            });
-        this._southPoleCommand = new DrawCommand({
-            pass : Pass.OPAQUE,
-            owner : this
-            });
+        self.depthCommand = DrawCommand(boundingVolume: BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius), pass: Pass.Opaque, owner: self)
+        self.northPoleCommand = DrawCommand(pass: Pass.Opaque, owner: self)
+        self.SouthPoleCommand = DrawCommand(pass: Pass.Opaque, owner: self)
         
-        this._drawNorthPole = false;
-        this._drawSouthPole = false;
+        self.lightingFadeDistance = Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance)
         
-        /**
-        * Determines the color of the north pole. If the day tile provider imagery does not
-        * extend over the north pole, it will be filled with this color before applying lighting.
-        *
-        * @type {Cartesian3}
-        * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
-        */
-        this.northPoleColor = new Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0);
+        weak var weakSelf = self
         
-        /**
-        * Determines the color of the south pole. If the day tile provider imagery does not
-        * extend over the south pole, it will be filled with this color before applying lighting.
-        *
-        * @type {Cartesian3}
-        * @default Cartesian3(1.0, 1.0, 1.0)
-        */
-        this.southPoleColor = new Cartesian3(1.0, 1.0, 1.0);
-        
-        /**
-        * Determines if the globe will be shown.
-        *
-        * @type {Boolean}
-        * @default true
-        */
-        this.show = true;
-        
-        this._mode = SceneMode.SCENE3D;
-        
-        /**
-        * The normal map to use for rendering waves in the ocean.  Setting this property will
-        * only have an effect if the configured terrain provider includes a water mask.
-        *
-        * @type {String}
-        * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
-        */
-        this.oceanNormalMapUrl = buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg');
-        
-        /**
-        * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
-        * against the terrain surface, or false if such primitives should always be drawn on top
-        * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
-        * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
-        * switched can sometimes make a primitive that should be on the surface disappear underneath it.
-        *
-        * @type {Boolean}
-        * @default false
-        */
-        this.depthTestAgainstTerrain = false;
-        
-        /**
-        * The maximum screen-space error used to drive level-of-detail refinement.  Higher
-        * values will provide better performance but lower visual quality.
-        *
-        * @type {Number}
-        * @default 2
-        */
-        this.maximumScreenSpaceError = 2;
-        
-        /**
-        * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
-        * tiles beyond this number will be freed, as long as they aren't needed for rendering
-        * this frame.  A larger number will consume more memory but will show detail faster
-        * when, for example, zooming out and then back in.
-        *
-        * @type {Number}
-        * @default 100
-        */
-        this.tileCacheSize = 100;
-        
-        /**
-        * Enable lighting the globe with the sun as a light source.
-        *
-        * @type {Boolean}
-        * @default false
-        */
-        this.enableLighting = false;
-        this._enableLighting = false;
-        
-        /**
-        * The distance where everything becomes lit. This only takes effect
-        * when <code>enableLighting</code> is <code>true</code>.
-        *
-        * @type {Number}
-        * @default 6500000.0
-        */
-        this.lightingFadeOutDistance = 6500000.0;
-        
-        /**
-        * The distance where lighting resumes. This only takes effect
-        * when <code>enableLighting</code> is <code>true</code>.
-        *
-        * @type {Number}
-        * @default 9000000.0
-        */
-        this.lightingFadeInDistance = 9000000.0;
-        
-        this._lastOceanNormalMapUrl = undefined;
-        this._oceanNormalMap = undefined;
-        this._zoomedOutOceanSpecularIntensity = 0.5;
-        this._showingPrettyOcean = false;
-        this._hasWaterMask = false;
-        this._lightingFadeDistance = new Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance);
-        
-        var that = this;
-        
-        this._drawUniforms = {
-            u_zoomedOutOceanSpecularIntensity : function() {
-                return that._zoomedOutOceanSpecularIntensity;
-            },
-            u_oceanNormalMap : function() {
-                return that._oceanNormalMap;
-            },
-            u_lightingFadeDistance : function() {
-                return that._lightingFadeDistance;
-            }
-        };
-    };
+        this._drawUniforms = [
+            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
+            "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
+            "u_lightingFadeDistance" :  { weakSelf.lightingFadeDistance }
+        ]
     }
 
+
     
-    defineProperties(Globe.prototype, {
-    /**
-    * Gets an ellipsoid describing the shape of this globe.
-    * @memberof Globe.prototype
-    * @type {Ellipsoid}
-    */
-    ellipsoid : {
-    get: function() {
-    return this._ellipsoid;
-    }
-    },
     
-    /**
-    * Gets the collection of image layers that will be rendered on this globe.
-    * @memberof Globe.prototype
-    * @type {ImageryLayerCollection}
-    */
-    imageryLayers: {
-    get : function() {
-    return this._imageryLayerCollection;
-    }
-    }
-    });
-    
-    var depthQuadScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(12) : [];
-    var scratchCartesian1 = new Cartesian3();
-    var scratchCartesian2 = new Cartesian3();
-    var scratchCartesian3 = new Cartesian3();
-    var scratchCartesian4 = new Cartesian3();
-    
-    function computeDepthQuad(globe, frameState) {
-    var radii = globe._ellipsoid.radii;
-    var p = frameState.camera.positionWC;
-    
-    // Find the corresponding position in the scaled space of the ellipsoid.
-    var q = Cartesian3.multiplyComponents(globe._ellipsoid.oneOverRadii, p, scratchCartesian1);
-    
-    var qMagnitude = Cartesian3.magnitude(q);
-    var qUnit = Cartesian3.normalize(q, scratchCartesian2);
-    
-    // Determine the east and north directions at q.
-    var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3);
-    var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4);
-    
-    // Determine the radius of the 'limb' of the ellipsoid.
-    var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
-    
-    // Compute the center and offsets.
-    var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
-    var scalar = wMagnitude / qMagnitude;
-    var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
-    var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
-    
-    // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-    var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
-    Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-    Cartesian3.pack(upperLeft, depthQuadScratch, 0);
-    
-    var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
-    Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-    Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
-    
-    var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.add(upperRight, eastOffset, upperRight);
-    Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-    Cartesian3.pack(upperRight, depthQuadScratch, 6);
-    
-    var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.add(lowerRight, eastOffset, lowerRight);
-    Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-    Cartesian3.pack(lowerRight, depthQuadScratch, 9);
-    
-    return depthQuadScratch;
+    func computeDepthQuad(frameState: FrameState) {
+        
+        var depthQuad = Float32[]()
+        
+        var radii = ellipsoid.radii
+        
+        // Find the corresponding position in the scaled space of the ellipsoid.
+        var q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera.positionWC)
+        
+        var qMagnitude = q.magnitude()
+        var qUnit = q.normalize()
+        
+        // Determine the east and north directions at q.
+        var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3)
+        var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4)
+        
+        // Determine the radius of the 'limb' of the ellipsoid.
+        var wMagnitude = sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
+        
+        // Compute the center and offsets.
+        var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
+        var scalar = wMagnitude / qMagnitude;
+        var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
+        var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
+        
+        // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
+        var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
+        Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
+        Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
+        Cartesian3.pack(upperLeft, depthQuadScratch, 0);
+        
+        var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
+        Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
+        Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
+        Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
+        
+        var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
+        Cartesian3.add(upperRight, eastOffset, upperRight);
+        Cartesian3.multiplyComponents(radii, upperRight, upperRight);
+        Cartesian3.pack(upperRight, depthQuadScratch, 6);
+        
+        var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
+        Cartesian3.add(lowerRight, eastOffset, lowerRight);
+        Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
+        Cartesian3.pack(lowerRight, depthQuadScratch, 9);
+        
+        return depthQuadScratch;
     }
     
     var rightScratch = new Cartesian3();

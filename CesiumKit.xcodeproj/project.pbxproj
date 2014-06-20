@@ -11,6 +11,10 @@
 		942A83DC19386F1F00012DC4 /* CSGeographicTilingScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83DB19386F1F00012DC4 /* CSGeographicTilingScheme.m */; };
 		942A83E2193878DE00012DC4 /* CSHeightMapTerrainData.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */; };
 		942A83E5193878EE00012DC4 /* CSTerrainData.m in Sources */ = {isa = PBXBuildFile; fileRef = 942A83E4193878EE00012DC4 /* CSTerrainData.m */; };
+		942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
+		942D02EE194DBD0800012DC4 /* PrimitiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02ED194DBD0800012DC4 /* PrimitiveType.swift */; };
+		942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
+		942D02F2194DC09700012DC4 /* Pass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02F1194DC09700012DC4 /* Pass.swift */; };
 		943744F61945D09F0017FE14 /* Cartographic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F51945D09F0017FE14 /* Cartographic.swift */; };
 		943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9439994A1930418C00012DC4 /* CSRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439990D1930418C00012DC4 /* CSRectangle.m */; };
@@ -19,7 +23,6 @@
 		943999551930418C00012DC4 /* CSCartesian4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999231930418C00012DC4 /* CSCartesian4.m */; };
 		943999571930418C00012DC4 /* CSRay.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999281930418C00012DC4 /* CSRay.m */; };
 		943999591930418C00012DC4 /* CSContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999331930418C00012DC4 /* CSContext.m */; };
-		9439995B1930418C00012DC4 /* CSDrawCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999351930418C00012DC4 /* CSDrawCommand.m */; };
 		9439995C1930418C00012DC4 /* CSUniformState.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999361930418C00012DC4 /* CSUniformState.m */; };
 		9439995E1930418C00012DC4 /* CSScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999391930418C00012DC4 /* CSScene.m */; };
 		9439995F1930418C00012DC4 /* CSPrimitives.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439993B1930418C00012DC4 /* CSPrimitives.m */; };
@@ -113,6 +116,10 @@
 		942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSHeightMapTerrainData.m; sourceTree = "<group>"; };
 		942A83E3193878EE00012DC4 /* CSTerrainData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSTerrainData.h; sourceTree = "<group>"; };
 		942A83E4193878EE00012DC4 /* CSTerrainData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSTerrainData.m; sourceTree = "<group>"; };
+		942D02EB194DBC1E00012DC4 /* DrawCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawCommand.swift; sourceTree = "<group>"; };
+		942D02ED194DBD0800012DC4 /* PrimitiveType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveType.swift; sourceTree = "<group>"; };
+		942D02EF194DBDDF00012DC4 /* VertexArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexArray.swift; sourceTree = "<group>"; };
+		942D02F1194DC09700012DC4 /* Pass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pass.swift; sourceTree = "<group>"; };
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
 		943999041930418C00012DC4 /* CSVertexFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVertexFormat.h; sourceTree = "<group>"; };
@@ -125,11 +132,9 @@
 		943999211930418C00012DC4 /* CSVertexFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVertexFormat.m; sourceTree = "<group>"; };
 		943999231930418C00012DC4 /* CSCartesian4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSCartesian4.m; sourceTree = "<group>"; };
 		943999281930418C00012DC4 /* CSRay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRay.m; sourceTree = "<group>"; };
-		9439992C1930418C00012DC4 /* CSDrawCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSDrawCommand.h; sourceTree = "<group>"; };
 		9439992E1930418C00012DC4 /* CSUniformState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUniformState.h; sourceTree = "<group>"; };
 		943999301930418C00012DC4 /* CSContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSContext.h; sourceTree = "<group>"; };
 		943999331930418C00012DC4 /* CSContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSContext.m; sourceTree = "<group>"; };
-		943999351930418C00012DC4 /* CSDrawCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSDrawCommand.m; sourceTree = "<group>"; };
 		943999361930418C00012DC4 /* CSUniformState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSUniformState.m; sourceTree = "<group>"; };
 		943999391930418C00012DC4 /* CSScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSScene.m; sourceTree = "<group>"; };
 		9439993A1930418C00012DC4 /* CSFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSFrustum.h; sourceTree = "<group>"; };
@@ -279,11 +284,13 @@
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
 				948D55E8194982AB005A4DD6 /* Math.swift */,
+				942D02F1194DC09700012DC4 /* Pass.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				9444499D1948326C009D1703 /* Projection.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
+				942D02ED194DBD0800012DC4 /* PrimitiveType.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
@@ -304,8 +311,6 @@
 				943999301930418C00012DC4 /* CSContext.h */,
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
 				943999331930418C00012DC4 /* CSContext.m */,
-				9439992C1930418C00012DC4 /* CSDrawCommand.h */,
-				943999351930418C00012DC4 /* CSDrawCommand.m */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				9439992E1930418C00012DC4 /* CSUniformState.h */,
@@ -313,6 +318,8 @@
 				94B87DC4194D699400012DC4 /* Context.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
+				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
+				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -507,7 +514,9 @@
 				94BC43571948189A007117F2 /* Cartesian2.swift in Sources */,
 				94502FD1193826AF00012DC4 /* CSTilingScheme.m in Sources */,
 				943999611930418C00012DC4 /* CSPerspectiveFrustum.m in Sources */,
+				942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */,
 				94B87DC7194D6ADF00012DC4 /* FrameState.swift in Sources */,
+				942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */,
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,
 				943CCACC193062E200012DC4 /* CSGlobe.m in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
@@ -528,7 +537,6 @@
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
 				9460F80F194DABF000012DC4 /* ImageryLayerCollection.swift in Sources */,
 				943999551930418C00012DC4 /* CSCartesian4.m in Sources */,
-				9439995B1930418C00012DC4 /* CSDrawCommand.m in Sources */,
 				94DC792D1918425300012DC4 /* CesiumKit.m in Sources */,
 				9460F809194DA7F800012DC4 /* PassState.swift in Sources */,
 				94B87DD1194D75A100012DC4 /* Occluder.swift in Sources */,
@@ -536,6 +544,7 @@
 				9439995E1930418C00012DC4 /* CSScene.m in Sources */,
 				94B87DC9194D6B0A00012DC4 /* SceneMode.swift in Sources */,
 				94BC4355194816B8007117F2 /* BoundingRectangle.swift in Sources */,
+				942D02EE194DBD0800012DC4 /* PrimitiveType.swift in Sources */,
 				94502FD4193826DF00012DC4 /* CSWebMercatorTilingScheme.m in Sources */,
 				948B8030194D462F00012DC4 /* Quarternion.swift in Sources */,
 				94B87DC5194D699400012DC4 /* Context.swift in Sources */,
@@ -550,6 +559,7 @@
 				943999571930418C00012DC4 /* CSRay.m in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
 				94502FCE1938248D00012DC4 /* CSEllipsoidTerrainProvider.m in Sources */,
+				942D02F2194DC09700012DC4 /* Pass.swift in Sources */,
 				948D03DF1944EC1B00DC0E52 /* Spherical.swift in Sources */,
 				9460F815194DAF7000012DC4 /* TerrainAttributeLocations.swift in Sources */,
 				943999591930418C00012DC4 /* CSContext.m in Sources */,
