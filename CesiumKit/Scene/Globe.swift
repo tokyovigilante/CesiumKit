@@ -166,7 +166,7 @@ class Globe {
 
         self.clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0, owner: weakSelf)
         
-        self.depthCommand = DrawCommand(boundingVolume: BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius), pass: Pass.Opaque, owner: self)
+        self.depthCommand = DrawCommand(boundingVolume: BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius), pass: Pass.Opaque, owner: weakSelf)
         self.northPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
         self.SouthPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
 
@@ -180,14 +180,39 @@ class Globe {
         * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
         */
         
-        this._drawUniforms = [
+        self.drawUniforms = [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
             "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
             "u_lightingFadeDistance" :  { weakSelf.lightingFadeDistance }
         ]
     }
 
+    /**
+     * Find an intersection between a ray and the globe surface that was rendered.
+     *
+     * @param {Ray} ray The ray to test for intersection.
+     * @param {FrameState} frameState The current frame state.
+     * @param {Cartesian3} [result] The object onto which to store the result.
+     * @returns {Cartesian3|undefined} The intersection or <code>undefined</code> if none was found.
+     *
+     * @example
+     * // find intersection of ray through a pixel and the globe
+     * var ray = scene.camera.getPickRay(windowCoordinates);
+     * var intersection = globe.pick(ray, scene.frameState);
+     */
+func pick(ray: Ray, frameState: FrameState) -> Cartesian3 {
+        return surface.pick(ray, frameState)
+    }
 
+    /**
+     * Get the height of the surface at a given cartographic.
+     *
+     * @param {Cartographic} cartographic The cartographic for which to find the height.
+     * @returns {Number|undefined} The height of the cartographic or undefined if it could not be found.
+     */
+func getHeight(cartographic: Cartographic) -> Double? {
+        surface.getHeight(cartographic)
+    }
     
     
     func computeDepthQuad(frameState: FrameState) {
@@ -209,41 +234,34 @@ class Globe {
         // Determine the radius of the 'limb' of the ellipsoid.
         var wMagnitude = sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
         
-    w        // Compute the center and offsets.
+        // Compute the center and offsets.
         var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
         var scalar = wMagnitude / qMagnitude;
         var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
         var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
         
         // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-        var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
-        Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
-        Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-        Cartesian3.pack(upperLeft, depthQuadScratch, 0);
-
+        var upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
+        var lowerLeft = center.subtract(northOffset).subtract(eastOffset).multiplyComponents(radii)
+        var upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
+        var lowerRight = center.subtract(northOffset).add(lowerRight).multiplyComponents(radii)
         
-        var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-        Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
-        Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-        Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
+        upperLeft.pack(depthQuad, 0)
+        lowerLeft.pack(depthQuad, 3)
+        upperRight.pack(depthQuad, 6)
+        lowerRight.pack(depthQuad, 9)
         
-        var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
-        Cartesian3.add(upperRight, eastOffset, upperRight);
-        Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-        Cartesian3.pack(upperRight, depthQuadScratch, 6);
-        
-        var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-        Cartesian3.add(lowerRight, eastOffset, lowerRight);
-        Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-        Cartesian3.pack(lowerRight, depthQuadScratch, 9);
-        
-        return depthQuadScratch;
+        return depthQuadScratch
     }
     
+
+
+    func computePoleQuad(frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix, viewportTransformation: Matrix) {
+/*
     var rightScratch = new Cartesian3();
     var upScratch = new Cartesian3();
     var negativeZ = Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3());
-    function computePoleQuad(globe, frameState, maxLat, maxGivenLat, viewProjMatrix, viewportTransformation) {
+
     var pt1 = globe._ellipsoid.cartographicToCartesian(new Cartographic(0.0, maxGivenLat));
     var pt2 = globe._ellipsoid.cartographicToCartesian(new Cartographic(Math.PI, maxGivenLat));
     var radius = Cartesian3.magnitude(Cartesian3.subtract(pt1, pt2, rightScratch), rightScratch) * 0.5;
@@ -274,12 +292,15 @@ class Globe {
     halfWidth * 2.0,
     halfHeight * 2.0);
     }
-    
-    var viewportScratch = new BoundingRectangle();
-    var vpTransformScratch = new Matrix4();
-    var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(8) : [];
+    */
+
     
     function fillPoles(globe, context, frameState) {
+        /*
+        var viewportScratch = new BoundingRectangle();
+        var vpTransformScratch = new Matrix4();
+        var polePositionsScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(8) : [];
+        
     var terrainProvider = globe._surface._terrainProvider;
     if (frameState.mode !== SceneMode.SCENE3D) {
     return;
@@ -435,11 +456,11 @@ class Globe {
     globe._southPoleCommand.uniformMap = combine(southPoleUniforms, globe._drawUniforms);
     }
     }
-    
+    */
     /**
     * @private
     */
-    Globe.prototype.update = function(context, frameState, commandList) {
+        func update(context: Context, frameState: FrameState, commandList: Array<String, () -> ()>) {
     if (!this.show) {
     return;
     }

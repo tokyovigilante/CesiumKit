@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
 /**
 * Represents a command to the renderer for drawing.
 *
@@ -29,7 +27,7 @@ struct DrawCommand {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: BoundingVolume? = nil
+    var boundingVolume: Intersectable? = nil
     
     /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
@@ -181,6 +179,6 @@ struct DrawCommand {
     * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
     */
     func execute(context, passState, renderState, shaderProgram) {
-        context.draw(this, passState, renderState, shaderProgram)
+        context.draw(self, passState, renderState, shaderProgram)
     }
 }
