@@ -8,158 +8,144 @@
 
 import Foundation
 
-class Context {
-    /*
-    function _errorToString(gl, error) {
-    var message = 'OpenGL Error:  ';
-    switch (error) {
-    case gl.INVALID_ENUM:
-    message += 'Invalid enumeration';
-    break;
-    case gl.INVALID_VALUE:
-    message += 'Invalid value';
-    break;
-    case gl.INVALID_OPERATION:
-    message += 'Invalid operation';
-    break;
-    case gl.OUT_OF_MEMORY:
-    message += 'Out of memory';
-    break;
-    case gl.CONTEXT_LOST_WEBGL:
-    message += 'Context lost';
-    break;
-    default:
-    message += 'Unknown';
+/*
+function _errorToString(gl, error) {
+var message = 'OpenGL Error:  ';
+switch (error) {
+case gl.INVALID_ENUM:
+message += 'Invalid enumeration';
+break;
+case gl.INVALID_VALUE:
+message += 'Invalid value';
+break;
+case gl.INVALID_OPERATION:
+message += 'Invalid operation';
+break;
+case gl.OUT_OF_MEMORY:
+message += 'Out of memory';
+break;
+case gl.CONTEXT_LOST_WEBGL:
+message += 'Context lost';
+break;
+default:
+message += 'Unknown';
 }
 
 return message;
 }
 
 function _createErrorMessage(gl, glFunc, glFuncArguments, error) {
-    var message = _errorToString(gl, error) + ': ' + glFunc.name + '(';
-    
-    for ( var i = 0; i < glFuncArguments.length; ++i) {
-        if (i !== 0) {
-            message += ', ';
-        }
-        message += glFuncArguments[i];
-    }
-    message += ');';
-    
-    return message;
+var message = _errorToString(gl, error) + ': ' + glFunc.name + '(';
+
+for ( var i = 0; i < glFuncArguments.length; ++i) {
+if (i !== 0) {
+message += ', ';
+}
+message += glFuncArguments[i];
+}
+message += ');';
+
+return message;
 }
 
 function throwOnError(gl, glFunc, glFuncArguments) {
-    var error = gl.getError();
-    if (error !== gl.NO_ERROR) {
-        throw new RuntimeError(_createErrorMessage(gl, glFunc, glFuncArguments, error));
-    }
+var error = gl.getError();
+if (error !== gl.NO_ERROR) {
+throw new RuntimeError(_createErrorMessage(gl, glFunc, glFuncArguments, error));
+}
 }
 
 function makeGetterSetter(gl, propertyName, logFunc) {
-    return {
-        get : function() {
-            var value = gl[propertyName];
-            logFunc(gl, 'get: ' + propertyName, value);
-            return gl[propertyName];
-        },
-        set : function(value) {
-            gl[propertyName] = value;
-            logFunc(gl, 'set: ' + propertyName, value);
-        }
-    };
+return {
+get : function() {
+var value = gl[propertyName];
+logFunc(gl, 'get: ' + propertyName, value);
+return gl[propertyName];
+},
+set : function(value) {
+gl[propertyName] = value;
+logFunc(gl, 'set: ' + propertyName, value);
+}
+};
 }
 
 function wrapGL(gl, logFunc) {
-    if (!logFunc) {
-        return gl;
-    }
-    
-    function wrapFunction(property) {
-        return function() {
-            var result = property.apply(gl, arguments);
-            logFunc(gl, property, arguments);
-            return result;
-        };
-    }
-    
-    var glWrapper = {};
-    
-    /*jslint forin: true*/
-    /*jshint forin: false*/
-    // JSLint normally demands that a for..in loop must directly contain an if,
-    // but in our loop below, we actually intend to iterate all properties, including
-    // those in the prototype.
-    for ( var propertyName in gl) {
-        var property = gl[propertyName];
-        
-        // wrap any functions we encounter, otherwise just copy the property to the wrapper.
-        if (typeof property === 'function') {
-            glWrapper[propertyName] = wrapFunction(property);
-        } else {
-            Object.defineProperty(glWrapper, propertyName, makeGetterSetter(gl, propertyName, logFunc));
-        }
-    }
-    
-    return glWrapper;
+if (!logFunc) {
+return gl;
+}
+
+function wrapFunction(property) {
+return function() {
+var result = property.apply(gl, arguments);
+logFunc(gl, property, arguments);
+return result;
+};
+}
+
+var glWrapper = {};
+
+/*jslint forin: true*/
+/*jshint forin: false*/
+// JSLint normally demands that a for..in loop must directly contain an if,
+// but in our loop below, we actually intend to iterate all properties, including
+// those in the prototype.
+for ( var propertyName in gl) {
+var property = gl[propertyName];
+
+// wrap any functions we encounter, otherwise just copy the property to the wrapper.
+if (typeof property === 'function') {
+glWrapper[propertyName] = wrapFunction(property);
+} else {
+Object.defineProperty(glWrapper, propertyName, makeGetterSetter(gl, propertyName, logFunc));
+}
+}
+
+return glWrapper;
 }
 
 function getExtension(gl, names) {
-    var length = names.length;
-    for (var i = 0; i < length; ++i) {
-        var extension = gl.getExtension(names[i]);
-        if (extension) {
-            return extension;
-        }
-    }
-    
-    return undefined;
+var length = names.length;
+for (var i = 0; i < length; ++i) {
+var extension = gl.getExtension(names[i]);
+if (extension) {
+return extension;
 }
+}
+
+return undefined;
+}*/
+
+class Context {
+
 
 /**
 * @private
 */
-var Context = function(canvas, options) {
-    // this check must use typeof, not defined, because defined doesn't work with undeclared variables.
-    if (typeof WebGLRenderingContext === 'undefined') {
-        throw new RuntimeError('The browser does not support WebGL.  Visit http://get.webgl.org.');
-    }
+
+class Context {
     
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(canvas)) {
-        throw new DeveloperError('canvas is required.');
-    }
-    //>>includeEnd('debug');
+    var allowTextureFilterAnisotropic = true
     
-    this._canvas = canvas;
-    
-    options = clone(options, true);
-    options = defaultValue(options, {});
-    options.allowTextureFilterAnisotropic = defaultValue(options.allowTextureFilterAnisotropic, true);
-    var webglOptions = defaultValue(options.webgl, {});
-    
-    // Override select WebGL defaults
-    webglOptions.alpha = defaultValue(webglOptions.alpha, false); // WebGL default is true
-    // TODO: WebGL default is false. This works around a bug in Canary and can be removed when fixed: https://code.google.com/p/chromium/issues/detail?id=335273
-    webglOptions.stencil = defaultValue(webglOptions.stencil, false);
-    webglOptions.failIfMajorPerformanceCaveat = defaultValue(webglOptions.failIfMajorPerformanceCaveat, true); // WebGL default is false
-    
-    this._originalGLContext = canvas.getContext('webgl', webglOptions) || canvas.getContext('experimental-webgl', webglOptions) || undefined;
-    
-    if (!defined(this._originalGLContext)) {
-        throw new RuntimeError('The browser supports WebGL, but initialization failed.');
-    }
-    
-    this._id = createGuid();
+struct glOptions {
+
+var alpha = false
+
+var stencil = false
+
+}
+        
+    let id = NSUUID().UUIDString
     
     // Validation and logging disabled by default for speed.
-    this.validateFramebuffer = false;
-    this.validateShaderProgram = false;
-    this.logShaderCompilation = false;
+    var validateFramebuffer = false
+    var validateShaderProgram = false
+    var logShaderCompilation = false
     
-    this._throwOnWebGLError = false;
-    
-    this._shaderCache = new ShaderCache(this);
+    var shaderCache: ShaderCache
+
+init {
+ shaderCache = ShaderCache(self)
+}
     
     var gl = this._gl = this._originalGLContext;
     
