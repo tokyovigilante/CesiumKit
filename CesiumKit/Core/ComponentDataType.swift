@@ -77,20 +77,20 @@ enum ComponentDatatype {
     * @default 0x140A
     */
     Double = 0x140A
-
-
-/**
-* Returns the size, in bytes, of the corresponding datatype.
-*
-* @param {ComponentDatatype} componentDatatype The component datatype to get the size of.
-* @returns {Number} The size in bytes.
-*
-* @exception {DeveloperError} componentDatatype is not a valid value.
-*
-* @example
-* // Returns Int8Array.BYTES_PER_ELEMENT
-* var size = Cesium.ComponentDatatype.getSizeInBytes(Cesium.ComponentDatatype.BYTE);
-*/
+    
+    
+    /**
+    * Returns the size, in bytes, of the corresponding datatype.
+    *
+    * @param {ComponentDatatype} componentDatatype The component datatype to get the size of.
+    * @returns {Number} The size in bytes.
+    *
+    * @exception {DeveloperError} componentDatatype is not a valid value.
+    *
+    * @example
+    * // Returns Int8Array.BYTES_PER_ELEMENT
+    * var size = Cesium.ComponentDatatype.getSizeInBytes(Cesium.ComponentDatatype.BYTE);
+    */
     func getSizeInBytes() {
         
         switch (self) {
@@ -110,34 +110,34 @@ enum ComponentDatatype {
             assert("Invalid componentDataType")
         }
     }
-
-/**
-* Gets the ComponentDatatype for the provided TypedArray instance.
-*
-* @param {TypedArray} array The typed array.
-* @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
-*/
-static func fromTypedArray(array) -> ComponentDatatype {
-    if array is Int8[] {
-        return ComponentDatatype.Byte
+    
+    /**
+    * Gets the ComponentDatatype for the provided TypedArray instance.
+    *
+    * @param {TypedArray} array The typed array.
+    * @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
+    */
+    static func fromTypedArray(array) -> ComponentDatatype {
+        if array is Int8[] {
+            return ComponentDatatype.Byte
+        }
+        if array is Uint8[] {
+            return ComponentDatatype.UnsignedByte
+        }
+        if array is Int16[] {
+            return ComponentDatatype.Short
+        }
+        if array is Uint16[] {
+            return ComponentDatatype.UnsignedShort
+        }
+        if array is Float32[] {
+            return ComponentDatatype.Float32
+        }
+        if array is Double[] {
+            return ComponentDatatype.Double
+        }
     }
-    if array is Uint8[] {
-        return ComponentDatatype.UnsignedByte
-    }
-    if array is Int16[] {
-        return ComponentDatatype.Short
-    }
-    if array is Uint16[] {
-        return ComponentDatatype.UnsignedShort
-    }
-    if array is Float32[] {
-        return ComponentDatatype.Float32
-    }
-    if array is Double[] {
-        return ComponentDatatype.Double
-    }
-}
-
+    
     func getType<T>() -> T {
         switch (self) {
         case ComponentDatatype.Byte:
@@ -153,42 +153,43 @@ static func fromTypedArray(array) -> ComponentDatatype {
         case ComponentDatatype.Double:
             return Double.dynamicType
         }
-
-/**
-* Creates a typed array corresponding to component data type.
-*
-* @param {ComponentDatatype} componentDatatype The component data type.
-* @param {Number|Array} valuesOrLength The length of the array to create or an array.
-* @returns {Int8Array|Uint8Array|Int16Array|Uint16Array|Float32Array|Float64Array} A typed array.
-*
-* @exception {DeveloperError} componentDatatype is not a valid value.
-*
-* @example
-* // creates a Float32Array with length of 100
-* var typedArray = Cesium.ComponentDatatype.createTypedArray(Cesium.ComponentDatatype.FLOAT, 100);
-*/
-func createTypedArray<T>(length: Int) -> T {
-    return Array<self.self>(count: length, defaultValue: 0)
-}
-/*
-/**
-* Creates a typed view of an array of bytes.
-*
-* @param {ComponentDatatype} componentDatatype The type of the view to create.
-* @param {ArrayBuffer} buffer The buffer storage to use for the view.
-* @param {Number} [byteOffset] The offset, in bytes, to the first element in the view.
-* @param {Number} [length] The number of elements in the view.
-* @returns {Int8Array|Uint8Array|Int16Array|Uint16Array|Float32Array|Float64Array} A typed array view of the buffer.
-*
-* @exception {DeveloperError} componentDatatype is not a valid value.
-*/
-ComponentDatatype.createArrayBufferView = function(componentDatatype, buffer, byteOffset, length) {
+    }
+    
+    /**
+    * Creates a typed array corresponding to component data type.
+    *
+    * @param {ComponentDatatype} componentDatatype The component data type.
+    * @param {Number|Array} valuesOrLength The length of the array to create or an array.
+    * @returns {Int8Array|Uint8Array|Int16Array|Uint16Array|Float32Array|Float64Array} A typed array.
+    *
+    * @exception {DeveloperError} componentDatatype is not a valid value.
+    *
+    * @example
+    * // creates a Float32Array with length of 100
+    * var typedArray = Cesium.ComponentDatatype.createTypedArray(Cesium.ComponentDatatype.FLOAT, 100);
+    */
+    func createTypedArray<T>(length: Int) -> T {
+        return Array<self.self>(count: length, defaultValue: 0)
+    }
+    /*
+    /**
+    * Creates a typed view of an array of bytes.
+    *
+    * @param {ComponentDatatype} componentDatatype The type of the view to create.
+    * @param {ArrayBuffer} buffer The buffer storage to use for the view.
+    * @param {Number} [byteOffset] The offset, in bytes, to the first element in the view.
+    * @param {Number} [length] The number of elements in the view.
+    * @returns {Int8Array|Uint8Array|Int16Array|Uint16Array|Float32Array|Float64Array} A typed array view of the buffer.
+    *
+    * @exception {DeveloperError} componentDatatype is not a valid value.
+    */
+    ComponentDatatype.createArrayBufferView = function(componentDatatype, buffer, byteOffset, length) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(componentDatatype)) {
-        throw new DeveloperError('componentDatatype is required.');
+    throw new DeveloperError('componentDatatype is required.');
     }
     if (!defined(buffer)) {
-        throw new DeveloperError('buffer is required.');
+    throw new DeveloperError('buffer is required.');
     }
     //>>includeEnd('debug');
     
@@ -197,19 +198,19 @@ ComponentDatatype.createArrayBufferView = function(componentDatatype, buffer, by
     
     switch (componentDatatype) {
     case ComponentDatatype.BYTE:
-        return new Int8Array(buffer, byteOffset, length);
+    return new Int8Array(buffer, byteOffset, length);
     case ComponentDatatype.UNSIGNED_BYTE:
-        return new Uint8Array(buffer, byteOffset, length);
+    return new Uint8Array(buffer, byteOffset, length);
     case ComponentDatatype.SHORT:
-        return new Int16Array(buffer, byteOffset, length);
+    return new Int16Array(buffer, byteOffset, length);
     case ComponentDatatype.UNSIGNED_SHORT:
-        return new Uint16Array(buffer, byteOffset, length);
+    return new Uint16Array(buffer, byteOffset, length);
     case ComponentDatatype.FLOAT:
-        return new Float32Array(buffer, byteOffset, length);
+    return new Float32Array(buffer, byteOffset, length);
     case ComponentDatatype.DOUBLE:
-        return new Float64Array(buffer, byteOffset, length);
+    return new Float64Array(buffer, byteOffset, length);
     default:
-        throw new DeveloperError('componentDatatype is not a valid value.');
+    throw new DeveloperError('componentDatatype is not a valid value.');
     }
-}*/
+    }*/
 }

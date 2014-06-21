@@ -57,7 +57,7 @@
 * });
 */
 struct Geometry {
-
+    
     /**
     * Attributes, which make up the geometry's vertices.  Each property in this object corresponds to a
     * {@link GeometryAttribute} containing the attribute's data.
@@ -103,7 +103,7 @@ struct Geometry {
     *   values : new Float32Array()
     * });
     */
-    var geometryAttributes: GeometryAttributes
+    var attributes: GeometryAttributes
     
     /**
     * Optional index data that - along with {@link Geometry#primitiveType} -
@@ -134,57 +134,26 @@ struct Geometry {
     * @default undefined
     */
     var BoundingSphere: BoundingSphere? = nil
-  
-    this.attributes = options.attributes;
     
-    init (attributes: GeometryAttributes, indices: A)
-
-
-this.indices = options.indices;
-
-
-this.primitiveType = options.primitiveType;
-
-
-this.boundingSphere = options.boundingSphere;
-};
-
-/**
-* Computes the number of vertices in a geometry.  The runtime is linear with
-* respect to the number of attributes in a vertex, not the number of vertices.
-*
-* @param {Cartesian3} geometry The geometry.
-* @returns {Number} The number of vertices in the geometry.
-*
-* @example
-* var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
-*/
-Geometry.computeNumberOfVertices = function(geometry) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(geometry)) {
-        throw new DeveloperError('geometry is required.');
-    }
-    //>>includeEnd('debug');
+    var attributes: GeometryAttributes
     
-    var numberOfVertices = -1;
-    for ( var property in geometry.attributes) {
-        if (geometry.attributes.hasOwnProperty(property) &&
-            defined(geometry.attributes[property]) &&
-            defined(geometry.attributes[property].values)) {
-                
-                var attribute = geometry.attributes[property];
-                var num = attribute.values.length / attribute.componentsPerAttribute;
-                if ((numberOfVertices !== num) && (numberOfVertices !== -1)) {
-                    throw new DeveloperError('All attribute lists must have the same number of attributes.');
-                }
-                numberOfVertices = num;
-        }
+    init (attributes: GeometryAttributes, indices: Array<Any>? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil) {
+        
     }
     
-    return numberOfVertices;
-};
-
-return Geometry;
-});
-
+    /**
+    * Computes the number of vertices in a geometry.  The runtime is linear with
+    * respect to the number of attributes in a vertex, not the number of vertices.
+    *
+    * @param {Cartesian3} geometry The geometry.
+    * @returns {Number} The number of vertices in the geometry.
+    *
+    * @example
+    * var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
+    */
+    func getVertexCount() {
+        return attributes.getVertexCount()
+    }
+    
+    
 }

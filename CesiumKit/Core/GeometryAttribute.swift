@@ -43,99 +43,88 @@
 
 struct GeometryAttribute {
     
-        /**
-        * The datatype of each component in the attribute, e.g., individual elements in
-        * {@link GeometryAttribute#values}.
-        *
-        * @type ComponentDatatype
-        *
-        * @default undefined
-        */
-        this.componentDatatype = options.componentDatatype;
-        
-        /**
-        * A number between 1 and 4 that defines the number of components in an attributes.
-        * For example, a position attribute with x, y, and z components would have 3 as
-        * shown in the code example.
-        *
-        * @type Number
-        *
-        * @default undefined
-        *
-        * @example
-        * attribute.componentDatatype : Cesium.ComponentDatatype.FLOAT,
-        * attribute.componentsPerAttribute : 3,
-        * attribute.values = new Float32Array([
-        *   0.0, 0.0, 0.0,
-        *   7500000.0, 0.0, 0.0,
-        *   0.0, 7500000.0, 0.0
-        * ]);
-        */
-        this.componentsPerAttribute = options.componentsPerAttribute;
-        
-        /**
-        * When <code>true</code> and <code>componentDatatype</code> is an integer format,
-        * indicate that the components should be mapped to the range [0, 1] (unsigned)
-        * or [-1, 1] (signed) when they are accessed as floating-point for rendering.
-        * <p>
-        * This is commonly used when storing colors using {@link ComponentDatatype.UNSIGNED_BYTE}.
-        * </p>
-        *
-        * @type Boolean
-        *
-        * @default false
-        *
-        * @example
-        * attribute.componentDatatype : Cesium.ComponentDatatype.UNSIGNED_BYTE,
-        * attribute.componentsPerAttribute : 4,
-        * attribute.normalize = true;
-        * attribute.values = new Uint8Array([
-        *   Cesium.Color.floatToByte(color.red)
-        *   Cesium.Color.floatToByte(color.green)
-        *   Cesium.Color.floatToByte(color.blue)
-        *   Cesium.Color.floatToByte(color.alpha)
-        * ]);
-        */
-        this.normalize = defaultValue(options.normalize, false);
-        
-        /**
-        * The values for the attributes stored in a typed array.  In the code example,
-        * every three elements in <code>values</code> defines one attributes since
-        * <code>componentsPerAttribute</code> is 3.
-        *
-        * @type Array
-        *
-        * @default undefined
-        *
-        * @example
-        * attribute.componentDatatype : Cesium.ComponentDatatype.FLOAT,
-        * attribute.componentsPerAttribute : 3,
-        * attribute.values = new Float32Array([
-        *   0.0, 0.0, 0.0,
-        *   7500000.0, 0.0, 0.0,
-        *   0.0, 7500000.0, 0.0
-        * ]);
-        */
-        this.values = options.values;
-    };
+    /**
+    * The datatype of each component in the attribute, e.g., individual elements in
+    * {@link GeometryAttribute#values}.
+    *
+    * @type ComponentDatatype
+    *
+    * @default undefined
+    */
+    var componentDatatype: ComponentDataType
     
-init {
-    var GeometryAttribute = function(options) {
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(options.componentDatatype)) {
-            throw new DeveloperError('options.componentDatatype is required.');
-        }
-        if (!defined(options.componentsPerAttribute)) {
-            throw new DeveloperError('options.componentsPerAttribute is required.');
-        }
-        if (options.componentsPerAttribute < 1 || options.componentsPerAttribute > 4) {
-            throw new DeveloperError('options.componentsPerAttribute must be between 1 and 4.');
-        }
-        if (!defined(options.values)) {
-            throw new DeveloperError('options.values is required.');
-        }
-        //>>includeEnd('debug');
-}
+    /**
+    * A number between 1 and 4 that defines the number of components in an attributes.
+    * For example, a position attribute with x, y, and z components would have 3 as
+    * shown in the code example.
+    *
+    * @type Number
+    *
+    * @default undefined
+    *
+    * @example
+    * attribute.componentDatatype : Cesium.ComponentDatatype.FLOAT,
+    * attribute.componentsPerAttribute : 3,
+    * attribute.values = new Float32Array([
+    *   0.0, 0.0, 0.0,
+    *   7500000.0, 0.0, 0.0,
+    *   0.0, 7500000.0, 0.0
+    * ]);
+    */
+    var componentsPerAttribute: Int {
+    didSet {
+        assert(componentsPerAttribute >= 1 && componentsPerAttribute =< 4,"options.componentsPerAttribute must be between 1 and 4")
+    }
+    }
+    
+    /**
+    * When <code>true</code> and <code>componentDatatype</code> is an integer format,
+    * indicate that the components should be mapped to the range [0, 1] (unsigned)
+    * or [-1, 1] (signed) when they are accessed as floating-point for rendering.
+    * <p>
+    * var is commonly used when storing colors using {@link ComponentDatatype.UNSIGNED_BYTE}.
+    * </p>
+    *
+    * @type Boolean
+    *
+    * @default false
+    *
+    * @example
+    * attribute.componentDatatype : Cesium.ComponentDatatype.UNSIGNED_BYTE,
+    * attribute.componentsPerAttribute : 4,
+    * attribute.normalize = true;
+    * attribute.values = new Uint8Array([
+    *   Cesium.Color.floatToByte(color.red)
+    *   Cesium.Color.floatToByte(color.green)
+    *   Cesium.Color.floatToByte(color.blue)
+    *   Cesium.Color.floatToByte(color.alpha)
+    * ]);
+    */
+    var normalize: Bool? = false
+    
+    /**
+    * The values for the attributes stored in a typed array.  In the code example,
+    * every three elements in <code>values</code> defines one attributes since
+    * <code>componentsPerAttribute</code> is 3.
+    *
+    * @type Array
+    *
+    * @default undefined
+    *
+    * @example
+    * attribute.componentDatatype : Cesium.ComponentDatatype.FLOAT,
+    * attribute.componentsPerAttribute : 3,
+    * attribute.values = new Float32Array([
+    *   0.0, 0.0, 0.0,
+    *   7500000.0, 0.0, 0.0,
+    *   0.0, 7500000.0, 0.0
+    * ]);
+    */
+    var values: Array<Any>
+    
+    var vertexCount: Int {
+    get {
+        return values.count / componentsPerAttribute
+    }
+    }
 }

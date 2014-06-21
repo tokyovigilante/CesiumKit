@@ -6,4 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+struct RenderState {
+    
+}

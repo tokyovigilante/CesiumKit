@@ -142,11 +142,11 @@ var stencil = false
     var logShaderCompilation = false
     
     var shaderCache: ShaderCache
-/*
-init {
+
+init () {
  shaderCache = ShaderCache(self)
 }
-    
+    /*
     var gl = this._gl = this._originalGLContext;
     
     this._version = gl.getParameter(gl.VERSION);
@@ -2300,5 +2300,4 @@ Context.prototype.destroy = function() {
     return destroyObject(this);
 };
 
-return Context;*/
-}
+}*/
