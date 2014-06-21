@@ -59,7 +59,7 @@
 
 struct Geometry {
 
-    var geometryAttributes: VertexAttribute[]
+    var geometryAttributes: GeometryAttribute[]
     
     var primitiveType: PrimitiveType
     
