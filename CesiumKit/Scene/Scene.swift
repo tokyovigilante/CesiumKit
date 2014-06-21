@@ -128,7 +128,7 @@ class Scene {
     this._renderError = new Event();
     this._preRender = new Event();
     this._postRender = new Event();
-    
+    /*
     /**
     * Exceptions occurring in <code>render</code> are always caught in order to raise the
     * <code>renderError</code> event.  If this property is true, the error is rethrown

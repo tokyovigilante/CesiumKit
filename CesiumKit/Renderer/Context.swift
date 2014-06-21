@@ -142,7 +142,7 @@ var stencil = false
     var logShaderCompilation = false
     
     var shaderCache: ShaderCache
-
+/*
 init {
  shaderCache = ShaderCache(self)
 }

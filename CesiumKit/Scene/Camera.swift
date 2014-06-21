@@ -71,9 +71,9 @@ class Camera {
         this.position = position;
         this._position = Cartesian3.clone(position);
         this._positionWC = Cartesian3.clone(position);
-        
-        var direction = Cartesian3.normalize(Cartesian3.negate(position));
-        
+        */
+    var direction: Cartesian3// = //Cartesian3.normalize(Cartesian3.negate(position));
+        /*
         /**
         * The view direction of the camera.
         *

@@ -8,46 +8,8 @@
 
 import Foundation
 
-/*
-/*global define*/
-define([
-        '../ThirdParty/when',
-        './Cartesian2',
-        './Cartesian3',
-        './Cartesian4',
-        './defaultValue',
-        './defined',
-        './DeveloperError',
-        './EarthOrientationParameters',
-        './EarthOrientationParametersSample',
-        './Ellipsoid',
-        './Iau2006XysData',
-        './Iau2006XysSample',
-        './JulianDate',
-        './Math',
-        './Matrix3',
-        './Matrix4',
-        './TimeConstants'
-    ], function(
-        when,
-        Cartesian2,
-        Cartesian3,
-        Cartesian4,
-        defaultValue,
-        defined,
-        DeveloperError,
-        EarthOrientationParameters,
-        EarthOrientationParametersSample,
-        Ellipsoid,
-        Iau2006XysData,
-        Iau2006XysSample,
-        JulianDate,
-        CesiumMath,
-        Matrix3,
-        Matrix4,
-        TimeConstants) {
-    "use strict";
-
+struct Transforms {
+    /*
     /**
      * Contains functions for transforming positions to various reference frames.
      * @exports Transforms
@@ -551,8 +513,7 @@ define([
         return Matrix3.multiply(pfToIcrf, fToPfMtx, result);
     };
 
-    var pointToWindowCoordinatesTemp = new Cartesian4();
-
+*/
     /**
      * Transform a point from model coordinates to window coordinates.
      *
@@ -562,34 +523,12 @@ define([
      * @param {Cartesian2} [result] The object onto which to store the result.
      * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
      */
-    Transforms.pointToWindowCoordinates = function (modelViewProjectionMatrix, viewportTransformation, point, result) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(modelViewProjectionMatrix)) {
-            throw new DeveloperError('modelViewProjectionMatrix is required.');
-        }
+    static func pointToWindowCoordinates(modelViewProjectionMatrix: Matrix, viewportTransformation: Matrix, point: Cartesian3) -> Cartesian2 {
 
-        if (!defined(viewportTransformation)) {
-            throw new DeveloperError('viewportTransformation is required.');
-        }
+        var tmp = modelViewProjectionMatrix.multiplyByVector(Cartesian4.fromElements(point.x, point.y, point.z, 1.0))
+        tmp.multiplyByScalar(1.0 / tmp.w)
+        tmp = viewportTransformation.multiplyByVector(tmp)
+        return Cartesian2.fromCartesian4(tmp)
+    }
+}
 
-        if (!defined(point)) {
-            throw new DeveloperError('point is required.');
-        }
-        //>>includeEnd('debug');
-
-        if (!defined(result)) {
-            result = new Cartesian2();
-        }
-
-        var tmp = pointToWindowCoordinatesTemp;
-
-        Matrix4.multiplyByVector(modelViewProjectionMatrix, Cartesian4.fromElements(point.x, point.y, point.z, 1, tmp), tmp);
-        Cartesian4.multiplyByScalar(tmp, 1.0 / tmp.w, tmp);
-        Matrix4.multiplyByVector(viewportTransformation, tmp, tmp);
-        return Cartesian2.fromCartesian4(tmp, result);
-    };
-
-    return Transforms;
-});
-
-*/
