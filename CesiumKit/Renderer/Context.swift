@@ -115,8 +115,6 @@ return extension;
 return undefined;
 }*/
 
-class Context {
-
 
 /**
 * @private
@@ -126,13 +124,13 @@ class Context {
     
     var allowTextureFilterAnisotropic = true
     
-struct glOptions {
-
-var alpha = false
-
-var stencil = false
-
-}
+    struct glOptions {
+        
+        var alpha = false
+        
+        var stencil = false
+        
+    }
         
     let id = NSUUID().UUIDString
     
@@ -142,18 +140,374 @@ var stencil = false
     var logShaderCompilation = false
     
     var shaderCache: ShaderCache
-
-init () {
- shaderCache = ShaderCache(self)
-}
-    /*
-    var gl = this._gl = this._originalGLContext;
     
-    this._version = gl.getParameter(gl.VERSION);
-    this._shadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
-    this._vendor = gl.getParameter(gl.VENDOR);
-    this._renderer = gl.getParameter(gl.RENDERER);
-    this._redBits = gl.getParameter(gl.RED_BITS);
+    /**
+    * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
+    * @memberof Context.prototype
+    * @type {String}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>VERSION</code>.
+    */
+    var glVersion: String
+    /**
+    * The version or release number for the shading language of the form WebGL&lt;space&gt;GLSL&lt;space&gt;ES&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
+    * @memberof Context.prototype
+    * @type {String}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>SHADING_LANGUAGE_VERSION</code>.
+    */
+    var shadingLanguageVersion: String
+    
+    /**
+    * The company responsible for the WebGL implementation.
+    * @memberof Context.prototype
+    * @type {String}
+    */
+    var vendor: String
+    
+    /**
+    * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
+    * video card, e.g., 'GeForce 8800 GTS/PCI/SSE2', or the browser-dependent name of the GL implementation, e.g.
+    * 'Mozilla' or 'ANGLE.'
+    * @memberof Context.prototype
+    * @type {String}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>RENDERER</code>.
+    * @see <a href='http://code.google.com/p/angleproject/'>ANGLE</a>
+    */
+    var renderer: NSString
+    
+    /**
+    * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>RED_BITS</code>.
+    */
+    var redBits: GLint
+    
+    /**
+    * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>GREEN_BITS</code>.
+    */
+    var greenBits: GLint
+    
+    /**
+    * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>BLUE_BITS</code>.
+    */
+    var blueBits: GLint
+    
+    /**
+    * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
+    * <br /><br />
+    * The alpha channel is used for GL destination alpha operations and by the HTML compositor to combine the color buffer
+    * with the rest of the page.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALPHA_BITS</code>.
+    */
+    var alphaBits: GLint
+    
+    /**
+    * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
+    * implementations will have 24 bits.
+    * @memberof Context.protoytpe
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>DEPTH_BITS</code>.
+    */
+    var depthBits: GLint
+    
+    /**
+    * The number of stencil bits per pixel in the default bound framebuffer.  The minimum is eight bits.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>STENCIL_BITS</code>.
+    */
+    var stencilBits: GLint
+    
+    /**
+    * The maximum number of texture units that can be used from the vertex and fragment
+    * shader with this WebGL implementation.  The minimum is eight.  If both shaders access the
+    * same texture unit, this counts as two texture units.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_COMBINED_TEXTURE_IMAGE_UNITS</code>.
+    */
+    var maximumCombinedTextureImageUnits: GLint // min 8
+    
+    /**
+    * The approximate maximum cube mape width and height supported by this WebGL implementation.
+    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_CUBE_MAP_TEXTURE_SIZE</code>.
+    */
+    var maximumCubeMapSize: GLint // min 16
+    
+    /**
+    * Rhe maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
+    * uniforms that can be used by a fragment shader with this WebGL implementation.  The minimum is 16.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_FRAGMENT_UNIFORM_VECTORS</code>.
+    */
+    var maximumFragmentUniformVectors: GLint // min 16
+    
+    /**
+    * The maximum number of texture units that can be used from the fragment shader with this WebGL implementation.  The minimum is eight.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_IMAGE_UNITS</code>.
+    */
+    var maximumTextureImageUnits: GLint // min 8
+    
+    /**
+    * The maximum renderbuffer width and height supported by this WebGL implementation.
+    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_RENDERBUFFER_SIZE</code>.
+    */
+    var maximumRenderBufferSize: GLint // min 16
+    
+    /**
+    * The approximate maximum texture width and height supported by this WebGL implementation.
+    * The minimum is 64, but most desktop and laptop implementations will support much larger sizes like 8,192.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_SIZE</code>.
+    */
+    var maximumTextureSize: GLint // min 64
+    
+    /**
+    * The maximum number of <code>vec4</code> varying variables supported by this WebGL implementation.
+    * The minimum is eight.  Matrices and arrays count as multiple <code>vec4</code>s.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VARYING_VECTORS</code>.
+    */
+    var maximumVaryingVectors: GLint // min 8
+    
+    /**
+    * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_ATTRIBS</code>.
+    */
+    var maximumVertexAttributes: GLint // min 8
+    
+    /**
+    * The maximum number of texture units that can be used from the vertex shader with this WebGL implementation.
+    * The minimum is zero, which means the GL does not support vertex texture fetch.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_TEXTURE_IMAGE_UNITS</code>.
+    */
+    var maximumVertexTextureImageUnits: GLint // min 0
+    
+    /**
+    * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
+    * uniforms that can be used by a vertex shader with this WebGL implementation.  The minimum is 16.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_UNIFORM_VECTORS</code>.
+    */
+    var maximumVertexUniformVectors: GLint
+    
+    /**
+    * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_LINE_WIDTH_RANGE</code>.
+    */
+    var aliasedLineWidthRange: GLint // must include 1;
+    
+    /**
+    * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_POINT_SIZE_RANGE</code>.
+    */
+    var aliasedPointSizeRange: GLint
+    
+    /**
+    * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VIEWPORT_DIMS</code>.
+    */
+    var maximumViewportDimensions: ( height: Int, width: Int )
+    
+    /**
+    * <code>true</code> if the WebGL context supports antialiasing.  By default
+    * antialiasing is requested, but it is not supported by all systems.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    */
+    var antialias: Bool
+    
+    /**
+    * <code>true</code> if the OES_standard_derivatives extension is supported.  This
+    * extension provides access to <code>dFdx<code>, <code>dFdy<code>, and <code>fwidth<code>
+    * functions from GLSL.  A shader using these functions still needs to explicitly enable the
+    * extension with <code>#extension GL_OES_standard_derivatives : enable</code>.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_standard_derivatives.txt'>OES_standard_derivatives</a>
+    */
+    var standardDerivatives: Bool
+    
+    /**
+    * <code>true</code> if the OES_element_index_uint extension is supported.  This
+    * extension allows the use of unsigned int indices, which can improve performance by
+    * eliminating batch breaking caused by unsigned short indices.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/'>OES_element_index_uint</a>
+    */
+    var elementIndexUint: Bool
+    
+    /**
+    * <code>true</code> if WEBGL_depth_texture is supported.  This extension provides
+    * access to depth textures that, for example, can be attached to framebuffers for shadow mapping.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/'>WEBGL_depth_texture</a>
+    */
+    var depthTexture: Bool
+    
+    /**
+    * <code>true</code> if OES_texture_float is supported.  This extension provides
+    * access to floating point textures that, for example, can be attached to framebuffers for high dynamic range.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt'>OES_texture_float</a>
+    */
+    var floatingPointTexture: Bool
+    
+    /**
+    * DOC_TBA
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/'>EXT_texture_filter_anisotropic</a>
+    */
+    var textureFilterAnisotropic: Bool
+    var maximumTextureFilterAnisotropy: GLint
+    
+    /**
+    * <code>true</code> if the OES_vertex_array_object extension is supported.  This
+    * extension can improve performance by reducing the overhead of switching vertex arrays.
+    * When enabled, this extension is automatically used by {@link VertexArray}.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/'>OES_vertex_array_object</a>
+    */
+    var vertexArrayObject: Bool
+    
+    
+    /**
+    * <code>true</code> if the EXT_frag_depth extension is supported.  This
+    * extension provides access to the <code>gl_FragDepthEXT<code> built-in output variable
+    * from GLSL fragment shaders.  A shader using these functions still needs to explicitly enable the
+    * extension with <code>#extension GL_EXT_frag_depth : enable</code>.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/'>EXT_frag_depth</a>
+    */
+    var fragmentDepth: Bool
+    
+    /**
+    * <code>true</code> if the WEBGL_draw_buffers extension is supported. This
+    * extensions provides support for multiple render targets. The framebuffer object can have mutiple
+    * color attachments and the GLSL fragment shader can write to the built-in output array <code>gl_FragData</code>.
+    * A shader using this feature needs to explicitly enable the extension with
+    * <code>#extension GL_EXT_draw_buffers : enable</code>.
+    * @memberof Context.prototype
+    * @type {Boolean}
+    * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/'>WEBGL_draw_buffers</a>
+    */
+    var drawBuffers: Bool
+    
+    /**
+    * The maximum number of simultaneous outputs that may be written in a fragment shader.
+    * @memberof Context.prototype
+    * @type {Number}
+    */
+    var maximumDrawBuffers: GLint
+    
+    /**
+    * The maximum number of color attachments supported.
+    * @memberof Context.prototype
+    * @type {Number}
+    */
+    var maximumColorAttachments: GLint
+    
+    var  clearColor: Cartesian4
+    var clearDepth: GLfloat
+    var clearStencil: GLint
+    
+    var uniformState: UniformState
+    var passState: PassState
+    var renderState: RenderState
+    
+    let defaultPassState: PassState
+    let defaultRenderState: RenderState
+    
+    /**
+    * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
+    * be used as a placeholder texture while other textures are downloaded.
+    * @memberof Context.prototype
+    * @type {Texture}
+    */
+    let defaultTexture: Texture
+    
+    /**
+    * A cube map, where each face is a 1x1 RGBA texture initialized to
+    * [255, 255, 255, 255].  This can be used as a placeholder cube map while
+    * other cube maps are downloaded.
+    * @memberof Context.prototype
+    * @type {CubeMap}
+    */
+    let defaultCubeMap: CubeMap
+    
+    /**
+    * A cache of objects tied to this context.  Just before the Context is destroyed,
+    * <code>destroy</code> will be invoked on each object in this object literal that has
+    * such a method.  This is useful for caching any objects that might otherwise
+    * be stored globally, except they're tied to a particular context, and to manage
+    * their lifetime.
+    *
+    * @private
+    * @type {Object}
+    */
+    var cache: Array<Any>
+    
+    /**
+    * The drawingBufferWidth of the underlying GL context.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth'>drawingBufferWidth</a>
+    */
+    var drawingBufferHeight: GLint
+    
+    /**
+    * The drawingBufferHeight of the underlying GL context.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight'>drawingBufferHeight</a>
+    */
+    var drawingBufferWidth: GLint
+    
+    init () {
+        shaderCache = ShaderCache(self)
+    
+        self.version = glGetString(GL_VERSION)
+        self.shadingLanguageVersion = glGetString(GL_SHADING_LANGUAGE_VERSION)
+        self.vendor = glGetString(GL_VENDOR)
+        self.vendor = glGetString(GL_RENDERER)
+
+        this._redBits = gl.getParameter(gl.RED_BITS);
     this._greenBits = gl.getParameter(gl.GREEN_BITS);
     this._blueBits = gl.getParameter(gl.BLUE_BITS);
     this._alphaBits = gl.getParameter(gl.ALPHA_BITS);
@@ -174,7 +528,7 @@ init () {
     this._maximumViewportDimensions = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
     
     this._antialias = gl.getContextAttributes().antialias;
-    
+    /*
     // Query and initialize extensions
     this._standardDerivatives = getExtension(gl, ['OES_standard_derivatives']);
     this._elementIndexUint = getExtension(gl, ['OES_element_index_uint']);
@@ -242,9 +596,10 @@ init () {
     */
     this.cache = {};
     
-    
-    RenderState.apply(gl, rs, ps);
-};
+    */
+    //RenderState.apply(gl, rs, ps);
+}
+        /*
 
 var defaultFramebufferMarker = {};
 

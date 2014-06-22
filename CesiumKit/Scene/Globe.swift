@@ -320,7 +320,7 @@ class Globe {
                 M_PI_2
             )
             boundingVolume = BoundingSphere.fromRectangle3D(rectangle, ellipsoid)
-            frustumCull = frameState.cullingVolume.getVisibility(boundingVolume) === Intersect.OUTSIDE;
+            frustumCull = frameState.cullingVolume.visibility(boundingVolume) == Intersect.Outside
             occludeePoint = Occluder.computeOccludeePointFromRectangle(rectangle, globe._ellipsoid);
             occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint, 0.0)) || !occluder.isBoundingSphereVisible(boundingVolume);
             
