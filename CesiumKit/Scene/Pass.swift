@@ -12,5 +12,5 @@
 * @private
 */
 enum Pass {
-    case Opaque = 0, Translucent, Overlay
+    case Opaque, Translucent, Overlay
 }

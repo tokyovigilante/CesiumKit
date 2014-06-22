@@ -13,7 +13,7 @@ import Foundation
 *
 * @exports PrimitiveType
 */
-enum PrimitiveType {
+enum PrimitiveType: Int {
     /**
     * 0x0000.  Points primitive where each vertex (or index) is a separate point.
     *

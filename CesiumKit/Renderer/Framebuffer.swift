@@ -13,7 +13,7 @@ import Foundation
 /**
 * @private
 */
-struct Framebuffer {
+class Framebuffer {
     /*
     init (gl, maximumColorAttachments, options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);

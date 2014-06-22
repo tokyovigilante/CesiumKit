@@ -14,7 +14,7 @@ import Foundation
 *
 * @alias ComponentDatatype
 */
-enum ComponentDatatype {
+enum ComponentDatatype: Int {
     /**
     * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type
     * of an element in <code>Int8Array</code>.
@@ -117,17 +117,17 @@ enum ComponentDatatype {
     * @param {TypedArray} array The typed array.
     * @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
     */
-    static func fromTypedArray(array) -> ComponentDatatype {
+    static func fromTypedArray<T>(array: Array<T>) -> ComponentDatatype {
         if array is Int8[] {
             return ComponentDatatype.Byte
         }
-        if array is Uint8[] {
+        if array is UInt8[] {
             return ComponentDatatype.UnsignedByte
         }
         if array is Int16[] {
             return ComponentDatatype.Short
         }
-        if array is Uint16[] {
+        if array is UInt16[] {
             return ComponentDatatype.UnsignedShort
         }
         if array is Float32[] {

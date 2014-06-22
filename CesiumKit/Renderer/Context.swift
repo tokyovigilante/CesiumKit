@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OpenGLES
 
 /*
 function _errorToString(gl, error) {
@@ -443,7 +444,7 @@ class Context {
     */
     var maximumColorAttachments: GLint
     
-    var  clearColor: Cartesian4
+    var clearColor: Cartesian4
     var clearDepth: GLfloat
     var clearStencil: GLint
     
@@ -502,33 +503,37 @@ class Context {
     init () {
         shaderCache = ShaderCache(self)
     
-        self.version = glGetString(GL_VERSION)
-        self.shadingLanguageVersion = glGetString(GL_SHADING_LANGUAGE_VERSION)
-        self.vendor = glGetString(GL_VENDOR)
-        self.vendor = glGetString(GL_RENDERER)
-        self.redBits = glGetIntegerv(GL_RED_BITS)
-        self.greenBits = glGetIntegerv(GL_GREEN_BITS)
-        self.blueBits = glGetIntegerv(GL_BLUE_BITS)
-        self.alphaBits = glGetIntegerv(GL_ALPHA_BITS)
-        self.depthBits = glGetIntegerv(GL_DEPTH_BITS)
-        self.StencilBits = glGetIntegerv(GL_STENCIL_BITS)
-    this._depthBits = gl.getParameter(gl.DEPTH_BITS);
-    this._stencilBits = gl.getParameter(gl.STENCIL_BITS);
-    this._maximumCombinedTextureImageUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS); // min: 8
-    this._maximumCubeMapSize = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE); // min: 16
-    this._maximumFragmentUniformVectors = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS); // min: 16
-    this._maximumTextureImageUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS); // min: 8
-    this._maximumRenderbufferSize = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE); // min: 1
-    this._maximumTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE); // min: 64
-    this._maximumVaryingVectors = gl.getParameter(gl.MAX_VARYING_VECTORS); // min: 8
-    this._maximumVertexAttributes = gl.getParameter(gl.MAX_VERTEX_ATTRIBS); // min: 8
-    this._maximumVertexTextureImageUnits = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS); // min: 0
-    this._maximumVertexUniformVectors = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS); // min: 128
-    this._aliasedLineWidthRange = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE); // must include 1
-    this._aliasedPointSizeRange = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE); // must include 1
-    this._maximumViewportDimensions = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
     
-    this._antialias = gl.getContextAttributes().antialias;
+        version = glGetString(GL_VERSION)
+        shadingLanguageVersion = glGetString(GL_SHADING_LANGUAGE_VERSION)
+        vendor = glGetString(GL_VENDOR)
+        vendor = glGetString(GL_RENDERER)
+        glGetIntegerv(GL_RED_BITS, redBits)
+        glGetIntegerv(GL_GREEN_BITS, greenBits)
+        glGetIntegerv(GL_BLUE_BITS, blueBits)
+        glGetIntegerv(GL_ALPHA_BITS, alphaBits)
+        glGetIntegerv(GL_DEPTH_BITS, depthBits)
+        glGetIntegerv(GL_STENCIL_BITS, stencilBits)
+        glGetInterv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, maximumCombinedTextureImageUnits) // min 8
+        
+        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &maximumCubeMapSize) // min: 16
+        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maximumFragmentUniformVectors) // min: 16
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maximumTextureImageUnits) // min: 8
+        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maximumRenderbufferSize) // min: 1
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maximumTextureSize) // min: 64
+        glGetIntegerv(GL_MAX_VARYING_VECTORS, &maximumVaryingVectors) // min: 8
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maximumVertexAttributes) // min: 8
+        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maximumVertexTextureImageUnits) // min: 0
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &maximumVertexUniformVectors) // min: 128
+        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &aliasedLineWidthRange) // must include 1
+        glGetIntegerv(GL_ALIASED_POINT_SIZE_RANGE, &aliasedPointSizeRange) // must include 1
+
+        viewPortDims = GLint[](count: 2, repeatedValue: 0)
+        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &viewPortDims)
+        maximumViewportDimensions.width = viewPortDims[0]
+        maximumViewportDimensions.height = viewPortDims[1]
+        
+        //this._antialias = gl.getContextAttributes().antialias;
     /*
     // Query and initialize extensions
     this._standardDerivatives = getExtension(gl, ['OES_standard_derivatives']);
@@ -2130,17 +2135,8 @@ function continueDraw(context, drawCommand, shaderProgram) {
         va._unBind();
     }
 }
-
-Context.prototype.draw = function(drawCommand, passState, renderState, shaderProgram) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(drawCommand)) {
-        throw new DeveloperError('drawCommand is required.');
-    }
-    
-    if (!defined(drawCommand.shaderProgram)) {
-        throw new DeveloperError('drawCommand.shaderProgram is required.');
-    }
-    //>>includeEnd('debug');
+*/
+func draw(drawCommand: DrawCommand, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
     
     passState = defaultValue(passState, this._defaultPassState);
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
@@ -2148,8 +2144,8 @@ Context.prototype.draw = function(drawCommand, passState, renderState, shaderPro
     
     beginDraw(this, framebuffer, drawCommand, passState, renderState, shaderProgram);
     continueDraw(this, drawCommand, shaderProgram);
-};
-
+}
+/*
 Context.prototype.endFrame = function() {
     var gl = this._gl;
     gl.useProgram(null);

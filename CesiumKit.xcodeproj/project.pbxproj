@@ -16,7 +16,6 @@
 		942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		942D02EE194DBD0800012DC4 /* PrimitiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02ED194DBD0800012DC4 /* PrimitiveType.swift */; };
 		942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
-		942D02F2194DC09700012DC4 /* Pass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02F1194DC09700012DC4 /* Pass.swift */; };
 		94327177195468EA0011D8FC /* Transforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94327176195468EA0011D8FC /* Transforms.swift */; };
 		943744F61945D09F0017FE14 /* Cartographic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F51945D09F0017FE14 /* Cartographic.swift */; };
 		943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
@@ -40,6 +39,10 @@
 		9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F816194DB0ED00012DC4 /* ShaderProgram.swift */; };
 		9460F819194DB80500012DC4 /* RenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F818194DB80500012DC4 /* RenderState.swift */; };
 		9460F81B194DB87400012DC4 /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
+		9465B0221956F53700355D2C /* ShaderCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0211956F53700355D2C /* ShaderCache.swift */; };
+		9465B0241956F5A400355D2C /* UniformState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0231956F5A400355D2C /* UniformState.swift */; };
+		9465B0261956F5DE00355D2C /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0251956F5DE00355D2C /* Texture.swift */; };
+		9465B0281956F61400355D2C /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
@@ -115,7 +118,6 @@
 		942D02EB194DBC1E00012DC4 /* DrawCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawCommand.swift; sourceTree = "<group>"; };
 		942D02ED194DBD0800012DC4 /* PrimitiveType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveType.swift; sourceTree = "<group>"; };
 		942D02EF194DBDDF00012DC4 /* VertexArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexArray.swift; sourceTree = "<group>"; };
-		942D02F1194DC09700012DC4 /* Pass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pass.swift; sourceTree = "<group>"; };
 		94327176195468EA0011D8FC /* Transforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transforms.swift; sourceTree = "<group>"; };
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
@@ -144,6 +146,10 @@
 		9460F816194DB0ED00012DC4 /* ShaderProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderProgram.swift; sourceTree = "<group>"; };
 		9460F818194DB80500012DC4 /* RenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderState.swift; sourceTree = "<group>"; };
 		9460F81A194DB87400012DC4 /* ClearCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClearCommand.swift; sourceTree = "<group>"; };
+		9465B0211956F53700355D2C /* ShaderCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderCache.swift; sourceTree = "<group>"; };
+		9465B0231956F5A400355D2C /* UniformState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformState.swift; sourceTree = "<group>"; };
+		9465B0251956F5DE00355D2C /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
+		9465B0271956F61400355D2C /* CubeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMap.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
 		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
@@ -245,7 +251,6 @@
 				948D55E8194982AB005A4DD6 /* Math.swift */,
 				94B87DBE194D620E00012DC4 /* Matrix.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
-				942D02F1194DC09700012DC4 /* Pass.swift */,
 				942D02ED194DBD0800012DC4 /* PrimitiveType.swift */,
 				9444499D1948326C009D1703 /* Projection.swift */,
 				948B802F194D462F00012DC4 /* Quarternion.swift */,
@@ -275,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
+				9465B0271956F61400355D2C /* CubeMap.swift */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				94B87DC4194D699400012DC4 /* Context.swift */,
@@ -282,6 +288,9 @@
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
+				9465B0211956F53700355D2C /* ShaderCache.swift */,
+				9465B0231956F5A400355D2C /* UniformState.swift */,
+				9465B0251956F5DE00355D2C /* Texture.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -465,6 +474,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				94BC43571948189A007117F2 /* Cartesian2.swift in Sources */,
+				9465B0221956F53700355D2C /* ShaderCache.swift in Sources */,
 				9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */,
 				942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */,
 				942AEB1B1955286F00CD0858 /* ComponentDataType.swift in Sources */,
@@ -484,6 +494,7 @@
 				948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */,
 				94E61B3C194ACC2000415870 /* WebMercatorTilingScheme.swift in Sources */,
 				9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */,
+				9465B0261956F5DE00355D2C /* Texture.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
 				9460F80F194DABF000012DC4 /* ImageryLayerCollection.swift in Sources */,
@@ -501,12 +512,13 @@
 				9460F819194DB80500012DC4 /* RenderState.swift in Sources */,
 				9460F811194DAC4D00012DC4 /* GlobeSurface.swift in Sources */,
 				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
+				9465B0241956F5A400355D2C /* UniformState.swift in Sources */,
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
+				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
 				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
 				943999571930418C00012DC4 /* CSRay.m in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
-				942D02F2194DC09700012DC4 /* Pass.swift in Sources */,
 				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
 				943999571930418C00012DC4 /* CSRay.m in Sources */,
 				948D03DF1944EC1B00DC0E52 /* Spherical.swift in Sources */,

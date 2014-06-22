@@ -1528,5 +1528,5 @@ Scene.prototype.isDestroyed = function() {
         }
         
         return destroyObject(this);*/
-    }
+    }*/
 }

@@ -96,7 +96,7 @@ struct DrawCommand {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: Dictionary<String, ()->()> = nil
+    var uniformMap: Dictionary<String, ()->()>? = nil
     
     /**
     * The render state.
@@ -106,7 +106,7 @@ struct DrawCommand {
     *
     * @see Context#createRenderState
     */
-    weak var renderState: RenderState? = nil
+    var renderState: RenderState? = nil
     
     /**
     * The framebuffer to draw to.
@@ -122,7 +122,7 @@ struct DrawCommand {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass = nil
+    var pass: Pass? = nil
     
     /**
     * Specifies if this command is only to be executed in the frustum closest
@@ -144,7 +144,7 @@ struct DrawCommand {
     *
     * @see Scene#debugCommandFilter
     */
-    weak var owner: AnyObject = nil
+    weak var owner: AnyObject? = nil
     
     /**
     * This property is for debugging only; it is not for production use nor is it optimized.
@@ -178,7 +178,7 @@ struct DrawCommand {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
     */
-    func execute(context, passState, renderState, shaderProgram) {
-        context.draw(self, passState, renderState, shaderProgram)
+    func execute(context: Context, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
+        context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
     }
 }

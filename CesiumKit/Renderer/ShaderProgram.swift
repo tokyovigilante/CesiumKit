@@ -96,7 +96,7 @@ import Foundation
     */
 */*/
 struct Uniform {
-
+/*
     var activeUniform: 
     var Uniform = function(gl, activeUniform, uniformName, location, value) {
     this.value = value;
@@ -262,6 +262,8 @@ struct Uniform {
     }
     */
 }
+class UniformArray {
+/*
     /**
     * @private
     */
@@ -326,7 +328,8 @@ struct Uniform {
     /**
     * @private
     */
-*/
+
+}
 struct VertexAttribute {
     let name: String
     let type: Int
@@ -392,7 +395,7 @@ class ShaderProgram {
 
     var automaticUniforms: Array<Uniform>? = nil
 
-    var manualUniforms: Array<Uniforms>? = nil {
+    var manualUniforms: Array<Uniform>? = nil {
     get {
     initialize()
     return self.manualUniforms
@@ -523,9 +526,9 @@ self.fragmentShaderSource = fragmentShaderSource
     }
     
     currentNode.evaluated = true;
-    
+    /*
     // identify all dependencies that are referenced from this glsl source code
-    var czmMatches = currentNode.glslSource.match(/\bczm_[a-zA-Z0-9_]*/g);
+    // var czmMatches = currentNode.glslSource.match(/\bczm_[a-zA-Z0-9_]*/g);
     if (defined(czmMatches) && czmMatches !== null) {
     // remove duplicates
     czmMatches = czmMatches.filter(function(elem, pos) {
@@ -542,9 +545,9 @@ self.fragmentShaderSource = fragmentShaderSource
     generateDependencies(referencedNode, dependencyNodes);
     }
     });
-    }
+    }*/
 }
-
+/*
 function sortDependencies(dependencyNodes) {
     var nodesWithoutIncomingEdges = [];
     var allNodes = [];
@@ -911,8 +914,6 @@ ShaderProgram.prototype.destroy = function() {
 ShaderProgram.prototype.finalDestroy = function() {
     this._gl.deleteProgram(this._program);
     return destroyObject(this);
-};
+};*/
 
-return ShaderProgram;*/
 
-}
