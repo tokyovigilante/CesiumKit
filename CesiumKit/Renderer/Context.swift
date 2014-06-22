@@ -506,11 +506,12 @@ class Context {
         self.shadingLanguageVersion = glGetString(GL_SHADING_LANGUAGE_VERSION)
         self.vendor = glGetString(GL_VENDOR)
         self.vendor = glGetString(GL_RENDERER)
-
-        this._redBits = gl.getParameter(gl.RED_BITS);
-    this._greenBits = gl.getParameter(gl.GREEN_BITS);
-    this._blueBits = gl.getParameter(gl.BLUE_BITS);
-    this._alphaBits = gl.getParameter(gl.ALPHA_BITS);
+        self.redBits = glGetIntegerv(GL_RED_BITS)
+        self.greenBits = glGetIntegerv(GL_GREEN_BITS)
+        self.blueBits = glGetIntegerv(GL_BLUE_BITS)
+        self.alphaBits = glGetIntegerv(GL_ALPHA_BITS)
+        self.depthBits = glGetIntegerv(GL_DEPTH_BITS)
+        self.StencilBits = glGetIntegerv(GL_STENCIL_BITS)
     this._depthBits = gl.getParameter(gl.DEPTH_BITS);
     this._stencilBits = gl.getParameter(gl.STENCIL_BITS);
     this._maximumCombinedTextureImageUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS); // min: 8
@@ -2656,3 +2657,4 @@ Context.prototype.destroy = function() {
 };
 
 }*/
+}

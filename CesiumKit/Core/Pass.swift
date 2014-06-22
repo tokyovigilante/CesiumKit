@@ -14,7 +14,7 @@ import Foundation
 * @private
 */
 enum Pass {
-    Opaque : 0,
+    case Opaque,
     Translucent,
     Overlay
 }

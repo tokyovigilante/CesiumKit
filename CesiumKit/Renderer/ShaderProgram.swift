@@ -7,8 +7,8 @@
 //
 
 import Foundation
-
-    /*/*
+/*
+    /*
     var scratchUniformMatrix2;
     var scratchUniformMatrix3;
     var scratchUniformMatrix4;
@@ -91,12 +91,13 @@ import Foundation
     default:
     throw new RuntimeError('Unrecognized uniform type: ' + uniform._activeUniform.type + ' for uniform "' + uniform._activeUniform.name + '".');
     }
-    */
     /**
     * @private
     */
+*/*/
 struct Uniform {
-/*
+
+    var activeUniform: 
     var Uniform = function(gl, activeUniform, uniformName, location, value) {
     this.value = value;
     
