@@ -113,7 +113,7 @@ struct Geometry {
     *
     * @default undefined
     */
-    var indices: Array<Any>
+    var indices: Array<Any>?
     
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},
@@ -133,13 +133,14 @@ struct Geometry {
     *
     * @default undefined
     */
-    var BoundingSphere: BoundingSphere? = nil
-    
-    var attributes: GeometryAttributes
-    
+    var boundingSphere: BoundingSphere? = nil
+    /*
     init (attributes: GeometryAttributes, indices: Array<Any>? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil) {
-        
-    }
+        self.attributes = attributes
+        self.indices = indices
+        self.primitiveType = primitiveType
+        self.boundingSphere = boundingSphere
+    }*/
     
     /**
     * Computes the number of vertices in a geometry.  The runtime is linear with
@@ -151,8 +152,8 @@ struct Geometry {
     * @example
     * var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
     */
-    func getVertexCount() {
-        return attributes.getVertexCount()
+    func getVertexCount() -> Int {
+        return attributes.vertexCount()
     }
     
     

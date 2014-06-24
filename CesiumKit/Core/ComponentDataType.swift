@@ -91,21 +91,21 @@ enum ComponentDatatype: Int {
     * // Returns Int8Array.BYTES_PER_ELEMENT
     * var size = Cesium.ComponentDatatype.getSizeInBytes(Cesium.ComponentDatatype.BYTE);
     */
-    func getSizeInBytes() {
+    func getSizeInBytes() -> Int {
         
         switch (self) {
         case ComponentDatatype.Byte:
-            return sizeof(Int8)
+            return 1//sizeof(Int8)
         case ComponentDatatype.UnsignedByte:
-            return sizeof(UInt8)
+            return 1//sizeof(UInt8)
         case ComponentDatatype.Short:
-            return sizeof(Int16)
+            return 2//sizeof(Int16)
         case ComponentDatatype.UnsignedShort:
-            return sizeof(UInt16)
+            return 2//sizeof(UInt16)
         case ComponentDatatype.Float:
-            return sizeof(Float32)
+            return 4//sizeof(Float32)
         case ComponentDatatype.Double:
-            return sizeof(Double)
+            return 8//sizeof(Double)
         default:
             assert("Invalid componentDataType")
         }
@@ -117,7 +117,7 @@ enum ComponentDatatype: Int {
     * @param {TypedArray} array The typed array.
     * @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
     */
-    static func fromTypedArray<T>(array: Array<T>) -> ComponentDatatype {
+    static func fromTypedArray<T>(array: Array<Any>) -> ComponentDatatype {
         if array is Int8[] {
             return ComponentDatatype.Byte
         }
@@ -131,29 +131,31 @@ enum ComponentDatatype: Int {
             return ComponentDatatype.UnsignedShort
         }
         if array is Float32[] {
-            return ComponentDatatype.Float32
+            return ComponentDatatype.Float
         }
-        if array is Double[] {
+        if array is Float64[] {
             return ComponentDatatype.Double
         }
+        assert(true, "invalid componentDatatype")
+        return ComponentDatatype.Float
     }
-    
-    func getType<T>() -> T {
+    /*
+    func getType() -> String {
         switch (self) {
         case ComponentDatatype.Byte:
-            return Int8.dynamicType
+            return Int8.self.bridgeToObjectiveC().className
         case ComponentDatatype.UnsignedByte:
-            return UInt8.dynamicType
+            return UInt8.self.bridgeToObjectiveC().className
         case ComponentDatatype.Short:
-            return Int16.dynamicType
+            return Int16.self.bridgeToObjectiveC().className
         case ComponentDatatype.UnsignedShort:
-            return UInt16.dynamicType
+            return UInt16.self.bridgeToObjectiveC().className
         case ComponentDatatype.Float:
-            return Float32.dynamicType
+            return Float32.self.bridgeToObjectiveC().className
         case ComponentDatatype.Double:
-            return Double.dynamicType
+            return Double.self.bridgeToObjectiveC().className
         }
-    }
+    }*/
     
     /**
     * Creates a typed array corresponding to component data type.
@@ -168,9 +170,9 @@ enum ComponentDatatype: Int {
     * // creates a Float32Array with length of 100
     * var typedArray = Cesium.ComponentDatatype.createTypedArray(Cesium.ComponentDatatype.FLOAT, 100);
     */
-    func createTypedArray<T>(length: Int) -> T {
-        return Array<self.self>(count: length, defaultValue: 0)
-    }
+    //func createTypedArray<T>(length: Int) -> T {
+        //return Array<self.getType>(count: length, defaultValue: 0)
+    //}
     /*
     /**
     * Creates a typed view of an array of bytes.

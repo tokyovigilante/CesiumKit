@@ -51,7 +51,7 @@ struct GeometryAttribute {
     *
     * @default undefined
     */
-    var componentDatatype: ComponentDataType
+    var componentDatatype: ComponentDatatype
     
     /**
     * A number between 1 and 4 that defines the number of components in an attributes.

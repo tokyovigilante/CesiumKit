@@ -8,81 +8,82 @@
 
 import Foundation
 
+/**
+* The camera is defined by a position, orientation, and view frustum.
+* <br /><br />
+* The orientation forms an orthonormal basis with a view, up and right = view x up unit vectors.
+* <br /><br />
+* The viewing frustum is defined by 6 planes.
+* Each plane is represented by a {@link Cartesian4} object, where the x, y, and z components
+* define the unit vector normal to the plane, and the w component is the distance of the
+* plane from the origin/camera position.
+*
+* @alias Camera
+*
+* @constructor
+*
+* @example
+* // Create a camera looking down the negative z-axis, positioned at the origin,
+* // with a field of view of 60 degrees, and 1:1 aspect ratio.
+* var camera = new Cesium.Camera(scene);
+* camera.position = new Cesium.Cartesian3();
+* camera.direction = Cesium.Cartesian3.negate(Cesium.Cartesian3.UNIT_Z);
+* camera.up = Cesium.Cartesian3.clone(Cesium.Cartesian3.UNIT_Y);
+* camera.frustum.fovy = Cesium.Math.PI_OVER_THREE;
+* camera.frustum.near = 1.0;
+* camera.frustum.far = 2.0;
+*
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html|Cesium Sandcastle Camera Demo}
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
+*/
 class Camera {
+
+    weak var scene: Scene?
+    
+    let maxRadii: Double
+    
     /**
-    * The camera is defined by a position, orientation, and view frustum.
-    * <br /><br />
-    * The orientation forms an orthonormal basis with a view, up and right = view x up unit vectors.
-    * <br /><br />
-    * The viewing frustum is defined by 6 planes.
-    * Each plane is represented by a {@link Cartesian4} object, where the x, y, and z components
-    * define the unit vector normal to the plane, and the w component is the distance of the
-    * plane from the origin/camera position.
+    * The position of the camera.
     *
-    * @alias Camera
-    *
-    * @constructor
-    *
-    * @example
-    * // Create a camera looking down the negative z-axis, positioned at the origin,
-    * // with a field of view of 60 degrees, and 1:1 aspect ratio.
-    * var camera = new Cesium.Camera(scene);
-    * camera.position = new Cesium.Cartesian3();
-    * camera.direction = Cesium.Cartesian3.negate(Cesium.Cartesian3.UNIT_Z);
-    * camera.up = Cesium.Cartesian3.clone(Cesium.Cartesian3.UNIT_Y);
-    * camera.frustum.fovy = Cesium.Math.PI_OVER_THREE;
-    * camera.frustum.near = 1.0;
-    * camera.frustum.far = 2.0;
-    *
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html|Cesium Sandcastle Camera Demo}
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
+    * @type {Cartesian3}
     */
-    /*
-    var Camera = function(scene) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(scene)) {
-            throw new DeveloperError('scene is required.');
-        }
-        //>>includeEnd('debug');
-        this._scene = scene;
-        /**
-        * Modifies the camera's reference frame. The inverse of this transformation is appended to the view matrix.
-        *
-        * @type {Matrix4}
-        * @default {@link Matrix4.IDENTITY}
-        *
-        * @see Transforms
-        * @see Camera#inverseTransform
-        */
-        this.transform = Matrix4.clone(Matrix4.IDENTITY);
-        this._transform = Matrix4.clone(Matrix4.IDENTITY);
-        this._invTransform = Matrix4.clone(Matrix4.IDENTITY);
-        this._actualTransform = Matrix4.clone(Matrix4.IDENTITY);
-        this._actualInvTransform = Matrix4.clone(Matrix4.IDENTITY);
+    var position: Cartesian3
+    var positionWC: Cartesian3
+
+    /**
+    * The view direction of the camera.
+    *
+    * @type {Cartesian3}
+    */
+    var direction: Cartesian3
+    var directionWC: Cartesian3
+    /**
+    * Modifies the camera's reference frame. The inverse of this transformation is appended to the view matrix.
+    *
+    * @type {Matrix4}
+    * @default {@link Matrix4.IDENTITY}
+    *
+    * @see Transforms
+    * @see Camera#inverseTransform
+    */
+    /*this.transform = Matrix4.clone(Matrix4.IDENTITY);
+    this._transform = Matrix4.clone(Matrix4.IDENTITY);
+    this._invTransform = Matrix4.clone(Matrix4.IDENTITY);
+    this._actualTransform = Matrix4.clone(Matrix4.IDENTITY);
+    this._actualInvTransform = Matrix4.clone(Matrix4.IDENTITY);*/
+    
+    init(scene: Scene) {
         
-        var maxRadii = Ellipsoid.WGS84.maximumRadius;
-        var position = Cartesian3.multiplyByScalar(Cartesian3.normalize(new Cartesian3(0.0, -2.0, 1.0)), 2.5 * maxRadii);
+        self.scene = scene
         
-        /**
-        * The position of the camera.
-        *
-        * @type {Cartesian3}
-        */
-        this.position = position;
-        this._position = Cartesian3.clone(position);
-        this._positionWC = Cartesian3.clone(position);
-        */
-    var direction: Cartesian3// = //Cartesian3.normalize(Cartesian3.negate(position));
-        /*
-        /**
-        * The view direction of the camera.
-        *
-        * @type {Cartesian3}
-        */
-        this.direction = direction;
-        this._direction = Cartesian3.clone(direction);
-        this._directionWC = Cartesian3.clone(direction);
+        self.maxRadii = Ellipsoid.wgs84Ellipsoid().maximumRadius
         
+        self.position = Cartesian3(0.0, -2.0, 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
+        self.positionWC = position
+        
+        direction = position.negate().normalize()
+        directionWC = direction
+ /*
         var right = Cartesian3.normalize(Cartesian3.cross(direction, Cartesian3.UNIT_Z));
         var up = Cartesian3.cross(right, direction);
         
@@ -178,8 +179,9 @@ class Camera {
         this._projection = new GeographicProjection();
         this._maxCoord = new Cartesian3();
         this._max2Dfrustum = undefined;
-    };
-    
+    };*/
+    }
+    /*
     Camera.TRANSFORM_2D = new Matrix4(
     0.0, 0.0, 1.0, 0.0,
     1.0, 0.0, 0.0, 0.0,

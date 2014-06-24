@@ -37,7 +37,7 @@ class Globe {
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
     var rsColor: RenderState? = nil
-    var rsColorWithoutDepthTest: Renderstate? = nil
+    var rsColorWithoutDepthTest: RenderState? = nil
     
     var clearDepthCommand: ClearCommand
     
@@ -53,7 +53,7 @@ class Globe {
     * @type {Cartesian3}
     * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
     */
-    var northPoleColor = Cartesian4(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0, 1.0)
+    var northPoleColor = Cartesian4(x: 2.0 / 255.0, y: 6.0 / 255.0, z: 18.0 / 255.0, w: 1.0)
     
     /**
     * Determines the color of the south pole. If the day tile provider imagery does not
@@ -62,7 +62,7 @@ class Globe {
     * @type {Cartesian3}
     * @default Cartesian3(1.0, 1.0, 1.0)
     */
-    var southPoleColor = Cartesian4(1.0, 1.0, 1.0, 1.0)
+    var southPoleColor = Cartesian4(x: 1.0, y: 1.0, z: 1.0, w: 1.0)
     
     /**
     * Determines if the globe will be shown.

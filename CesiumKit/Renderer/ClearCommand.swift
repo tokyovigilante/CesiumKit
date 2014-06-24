@@ -22,7 +22,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var color: Cartesian4 = nil
+    var color: Cartesian4? = nil
     
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
@@ -31,7 +31,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var depth: Int = nil
+    var depth: Float32? = nil
     
     /**
     * The value to clear the stencil buffer to.  When <code>undefined</code>, the stencil buffer is not cleared.
@@ -40,7 +40,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var stencil: Int = nil
+    var stencil: Float32? = nil
     
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
@@ -53,7 +53,7 @@ struct ClearCommand {
     *
     * @see Context#createRenderState
     */
-    var renderState: RenderState = nil
+    var renderState: RenderState? = nil
     
     /**
     * The framebuffer to clear.
@@ -62,7 +62,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var framebuffer: Framebuffer = nil
+    var framebuffer: Framebuffer? = nil
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -76,7 +76,7 @@ struct ClearCommand {
     *
     * @see Scene#debugCommandFilter
     */
-    var owner: AnyObject = nil
+    var owner: AnyObject? = nil
     
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
@@ -90,11 +90,11 @@ struct ClearCommand {
         result.color = Cartesian4()
         result.depth = 1.0
         result.stencil = 1.0
-        return object
+        return result
     }
     
     func execute(context: Context, passState: PassState) {
-        context.clear(this, passState)
+        context.clear(clearCommand: self, passState: passState)
     }
     
 }
