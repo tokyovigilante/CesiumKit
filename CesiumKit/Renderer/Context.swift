@@ -500,40 +500,46 @@ class Context {
     */
     var drawingBufferWidth: GLint
     
-    init () {
-        shaderCache = ShaderCache(self)
-    
-    
-        version = glGetString(GL_VERSION)
-        shadingLanguageVersion = glGetString(GL_SHADING_LANGUAGE_VERSION)
-        vendor = glGetString(GL_VENDOR)
-        vendor = glGetString(GL_RENDERER)
-        glGetIntegerv(GL_RED_BITS, redBits)
-        glGetIntegerv(GL_GREEN_BITS, greenBits)
-        glGetIntegerv(GL_BLUE_BITS, blueBits)
-        glGetIntegerv(GL_ALPHA_BITS, alphaBits)
-        glGetIntegerv(GL_DEPTH_BITS, depthBits)
-        glGetIntegerv(GL_STENCIL_BITS, stencilBits)
-        glGetInterv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, maximumCombinedTextureImageUnits) // min 8
+    let cachedGLESExtensions: String[]
         
-        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &maximumCubeMapSize) // min: 16
-        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maximumFragmentUniformVectors) // min: 16
-        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maximumTextureImageUnits) // min: 8
-        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maximumRenderbufferSize) // min: 1
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maximumTextureSize) // min: 64
-        glGetIntegerv(GL_MAX_VARYING_VECTORS, &maximumVaryingVectors) // min: 8
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maximumVertexAttributes) // min: 8
-        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maximumVertexTextureImageUnits) // min: 0
-        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &maximumVertexUniformVectors) // min: 128
-        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &aliasedLineWidthRange) // must include 1
-        glGetIntegerv(GL_ALIASED_POINT_SIZE_RANGE, &aliasedPointSizeRange) // must include 1
+    init () {
+        shaderCache = ShaderCache()
+        
+        cachedGLESExtensions = getGLExtensions()
+        
+        glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION))))
+        shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION))))
+        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR))))
+        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER))))
+        glGetIntegerv(GLenum(GL_RED_BITS), &redBits)
+        glGetIntegerv(GLenum(GL_GREEN_BITS), &greenBits)
+        glGetIntegerv(GLenum(GL_BLUE_BITS), &blueBits)
+        glGetIntegerv(GLenum(GL_ALPHA_BITS), &alphaBits)
+        glGetIntegerv(GLenum(GL_DEPTH_BITS), &depthBits)
+        glGetIntegerv(GLenum(GL_STENCIL_BITS), &stencilBits)
+        glGetIntegerv(GLenum(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS), &maximumCombinedTextureImageUnits) // min 8
+        
+        glGetIntegerv(GLenum(GL_MAX_CUBE_MAP_TEXTURE_SIZE), &maximumCubeMapSize) // min: 16
+        glGetIntegerv(GLenum(GL_MAX_FRAGMENT_UNIFORM_VECTORS), &maximumFragmentUniformVectors) // min: 16
+        glGetIntegerv(GLenum(GL_MAX_TEXTURE_IMAGE_UNITS), &maximumTextureImageUnits) // min: 8
+        glGetIntegerv(GLenum(GL_MAX_RENDERBUFFER_SIZE), &maximumRenderBufferSize) // min: 1
+        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &maximumTextureSize) // min: 64
+        glGetIntegerv(GLenum(GL_MAX_VARYING_VECTORS), &maximumVaryingVectors) // min: 8
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_ATTRIBS), &maximumVertexAttributes) // min: 8
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), &maximumVertexTextureImageUnits) // min: 0
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_UNIFORM_VECTORS), &maximumVertexUniformVectors) // min: 128
+        glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
+        glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
 
-        viewPortDims = GLint[](count: 2, repeatedValue: 0)
-        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &viewPortDims)
-        maximumViewportDimensions.width = viewPortDims[0]
-        maximumViewportDimensions.height = viewPortDims[1]
+        var viewPortDims = GLint[](count: 2, repeatedValue: 0)
+        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &viewPortDims)
+        maximumViewportDimensions.width = Int(viewPortDims[0])
+        maximumViewportDimensions.height = Int(viewPortDims[1])
+        
         
         //this._antialias = gl.getContextAttributes().antialias;
+        
+        glget
     /*
     // Query and initialize extensions
     this._standardDerivatives = getExtension(gl, ['OES_standard_derivatives']);
@@ -2653,4 +2659,18 @@ Context.prototype.destroy = function() {
 };
 
 }*/
+    func getGLExtensions() -> String[] {
+        var glExtensions = NSString.stringWithUTF8String(glGetString(GL_EXTENSIONS))
+        return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet)
+    }
+
+    func checkGLExtension(glExtension: String) -> Bool {
+        for cachedExtension in cachedGLESExtensions {
+            if cachedExtension == glExtension {
+                return true
+            }
+        }
+        return false
+    }
+    
 }

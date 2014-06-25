@@ -78,7 +78,7 @@ class Camera {
         
         self.maxRadii = Ellipsoid.wgs84Ellipsoid().maximumRadius
         
-        self.position = Cartesian3(0.0, -2.0, 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
+        self.position = Cartesian3(x: 0.0, y: -2.0, z: 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
         self.positionWC = position
         
         direction = position.negate().normalize()

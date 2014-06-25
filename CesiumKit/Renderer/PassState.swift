@@ -55,7 +55,7 @@ struct PassState {
     * @type {Object}
     * @default undefined
     */
-    var scissorTest: () -> ()? = nil
+    var scissorTest: AnyObject? = nil
     
     init(context: Context) {
         self.context = context

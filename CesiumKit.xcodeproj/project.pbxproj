@@ -21,7 +21,6 @@
 		943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999101930418C00012DC4 /* CSMatrix4.m */; };
 		943999501930418C00012DC4 /* CSEllipsoidGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */; };
-		943999571930418C00012DC4 /* CSRay.m in Sources */ = {isa = PBXBuildFile; fileRef = 943999281930418C00012DC4 /* CSRay.m */; };
 		943D25B11947128A00263D91 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
 		9444499E1948326C009D1703 /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
 		944449A01948331C009D1703 /* GeographicProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499F1948331C009D1703 /* GeographicProjection.swift */; };
@@ -43,6 +42,7 @@
 		9465B0241956F5A400355D2C /* UniformState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0231956F5A400355D2C /* UniformState.swift */; };
 		9465B0261956F5DE00355D2C /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0251956F5DE00355D2C /* Texture.swift */; };
 		9465B0281956F61400355D2C /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
+		946D25AA19592BFD0080379D /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
@@ -121,11 +121,9 @@
 		94327176195468EA0011D8FC /* Transforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transforms.swift; sourceTree = "<group>"; };
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
-		9439990A1930418C00012DC4 /* CSRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSRay.h; sourceTree = "<group>"; };
 		943999101930418C00012DC4 /* CSMatrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSMatrix4.m; sourceTree = "<group>"; };
 		943999121930418C00012DC4 /* CSEllipsoidGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSEllipsoidGeometry.h; sourceTree = "<group>"; };
 		9439991B1930418C00012DC4 /* CSEllipsoidGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSEllipsoidGeometry.m; sourceTree = "<group>"; };
-		943999281930418C00012DC4 /* CSRay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSRay.m; sourceTree = "<group>"; };
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* Projection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
@@ -150,6 +148,7 @@
 		9465B0231956F5A400355D2C /* UniformState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformState.swift; sourceTree = "<group>"; };
 		9465B0251956F5DE00355D2C /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		9465B0271956F61400355D2C /* CubeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMap.swift; sourceTree = "<group>"; };
+		946D25A919592BFD0080379D /* Ray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
 		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
@@ -235,8 +234,6 @@
 				942A83E1193878DE00012DC4 /* CSHeightMapTerrainData.m */,
 				945150A2193C648700012DC4 /* CSHeightMapTessellator.h */,
 				945150A3193C648700012DC4 /* CSHeightMapTessellator.m */,
-				9439990A1930418C00012DC4 /* CSRay.h */,
-				943999281930418C00012DC4 /* CSRay.m */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
 				9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */,
@@ -254,6 +251,7 @@
 				942D02ED194DBD0800012DC4 /* PrimitiveType.swift */,
 				9444499D1948326C009D1703 /* Projection.swift */,
 				948B802F194D462F00012DC4 /* Quarternion.swift */,
+				946D25A919592BFD0080379D /* Ray.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				94786824194A95B800B3F462 /* TerrainData.swift */,
@@ -497,6 +495,7 @@
 				9465B0261956F5DE00355D2C /* Texture.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
+				946D25AA19592BFD0080379D /* Ray.swift in Sources */,
 				9460F80F194DABF000012DC4 /* ImageryLayerCollection.swift in Sources */,
 				94DC792D1918425300012DC4 /* CesiumKit.m in Sources */,
 				9460F809194DA7F800012DC4 /* PassState.swift in Sources */,
@@ -517,10 +516,8 @@
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
 				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
 				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
-				943999571930418C00012DC4 /* CSRay.m in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
 				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
-				943999571930418C00012DC4 /* CSRay.m in Sources */,
 				948D03DF1944EC1B00DC0E52 /* Spherical.swift in Sources */,
 				9460F815194DAF7000012DC4 /* TerrainAttributeLocations.swift in Sources */,
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,

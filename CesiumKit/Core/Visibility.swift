@@ -23,7 +23,7 @@ enum Visibility {
     * @type {Number}
     * @constant
     */
-    case None = -1,
+    case None,
     
     /**
     * Represents that part, but not all, of an object is visible

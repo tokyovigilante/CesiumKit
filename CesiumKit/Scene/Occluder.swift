@@ -73,6 +73,8 @@ class Occluder {
         
         // cameraPosition fills in the above values
         self.cameraPosition = cameraPosition
+        self.horizonPlaneNormal = Cartesian3.zero()
+        self.horizonPlanePosition = Cartesian3.zero()
         updateCameraPosition()
     }
     
@@ -195,15 +197,15 @@ class Occluder {
     * var occluder = new Cesium.Occluder(sphere1, cameraPosition);
     * occluder.getVisibility(sphere2); //returns Visibility.NONE
     */
-    func getVisibility(occludeeBS: BoundingSphere) {
+    func getVisibility(occludeeBS: BoundingSphere) -> Visibility {
     
         // If the occludee radius is larger than the occluders, this will return that
         // the entire ocludee is visible, even though that may not be the case, though this should
         // not occur too often.
-        var occludeePosition = Cartesian3.clone(occludeeBS.center);
-        var occludeeRadius = occludeeBS.radius;
+        var occludeePosition = occludeeBS.center
+        var occludeeRadius = occludeeBS.radius
         
-        if (occludeeRadius > this._occluderRadius) {
+        if (occludeeRadius > occluderRadius) {
             return Visibility.Full
         }
         
@@ -236,7 +238,7 @@ class Occluder {
                 //Check to see if the occluder is fully or partially visible when the occludee DOES
                 //intersect the occluder
                 tempVec = occludeePosition.subtract(horizonPlanePosition)
-                return (tempVec.dot(this._horizonPlaneNormal) > -occludeeRadius) ? Visibility.Partial : Visibility.Full
+                return (tempVec.dot(horizonPlaneNormal) > -occludeeRadius) ? Visibility.Partial : Visibility.Full
             }
         }
         return Visibility.None
