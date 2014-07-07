@@ -77,7 +77,7 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    init (fromColor red: Double, green: Double, blue: Double, alpha: Double) {
+    init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
         self.x = red
         self.y = green
         self.z = blue

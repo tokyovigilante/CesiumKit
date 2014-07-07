@@ -123,6 +123,9 @@ return undefined;
 
 class Context {
     
+    
+    weak var glContext: EAGLContext? = nil
+    
     var allowTextureFilterAnisotropic = true
     
     struct glOptions {
@@ -346,7 +349,7 @@ class Context {
     * @memberof Context.prototype
     * @type {Boolean}
     */
-    var antialias: Bool
+    var antialias: Bool = true
     
     /**
     * <code>true</code> if the OES_standard_derivatives extension is supported.  This
@@ -385,7 +388,7 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt'>OES_texture_float</a>
     */
-    var floatingPointTexture: Bool
+    var textureFloat: Bool
     
     /**
     * DOC_TBA
@@ -394,7 +397,7 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/'>EXT_texture_filter_anisotropic</a>
     */
     var textureFilterAnisotropic: Bool
-    var maximumTextureFilterAnisotropy: GLint
+    var maximumTextureFilterAnisotropy: GLint = 1
     
     /**
     * <code>true</code> if the OES_vertex_array_object extension is supported.  This
@@ -435,7 +438,7 @@ class Context {
     * @memberof Context.prototype
     * @type {Number}
     */
-    var maximumDrawBuffers: GLint
+    var maximumDrawBuffers: GLint = 1
     
     /**
     * The maximum number of color attachments supported.
@@ -502,7 +505,10 @@ class Context {
     
     let cachedGLESExtensions: String[]
         
-    init () {
+    init (glContext: EAGLContext) {
+        
+        self.glContext = glContext
+        
         shaderCache = ShaderCache()
         
         cachedGLESExtensions = getGLExtensions()
@@ -510,7 +516,7 @@ class Context {
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION))))
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION))))
         vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR))))
-        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER))))
+        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER))))
         glGetIntegerv(GLenum(GL_RED_BITS), &redBits)
         glGetIntegerv(GLenum(GL_GREEN_BITS), &greenBits)
         glGetIntegerv(GLenum(GL_BLUE_BITS), &blueBits)
@@ -539,46 +545,42 @@ class Context {
         
         //this._antialias = gl.getContextAttributes().antialias;
         
-        glget
-    /*
-    // Query and initialize extensions
-    this._standardDerivatives = getExtension(gl, ['OES_standard_derivatives']);
-    this._elementIndexUint = getExtension(gl, ['OES_element_index_uint']);
-    this._depthTexture = getExtension(gl, ['WEBGL_depth_texture', 'WEBKIT_WEBGL_depth_texture']);
-    this._textureFloat = getExtension(gl, ['OES_texture_float']);
+        // Query and initialize extensions
+        standardDerivatives = checkGLExtension("OES_standard_derivatives")
+        depthTexture = checkGLExtension("GL_OES_depth_texture") // || glContext.API == kEAGLRenderingAPIOpenGLES3
+        elementIndexUint = checkGLExtension("GL_OES_element_index_uint") // || glContext.API == kEAGLRenderingAPIOpenGLES3
+        textureFloat = checkGLExtension("OES_texture_float")
+        textureFilterAnisotropic = checkGLExtension("EXT_texture_filter_anisotropic")
+        if textureFilterAnisotropic {
+            glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
+        }
+
+        vertexArrayObject = checkGLExtension("OES_vertex_array_object")
+        fragmentDepth = checkGLExtension("EXT_frag_depth")
+        drawBuffers = checkGLExtension("WEBGL_draw_buffers")
+        if drawBuffers {
+            glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
+            //glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS_EXT), &maximumColorAttachments)
+        }
     
-    var textureFilterAnisotropic = options.allowTextureFilterAnisotropic ? getExtension(gl, ['EXT_texture_filter_anisotropic', 'WEBKIT_EXT_texture_filter_anisotropic']) : undefined;
-    this._textureFilterAnisotropic = textureFilterAnisotropic;
-    this._maximumTextureFilterAnisotropy = defined(textureFilterAnisotropic) ? gl.getParameter(textureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 1.0;
+        var cc = GLfloat[](count: 4, repeatedValue: 0.0)
+        glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
+        clearColor = Cartesian4(fromRed: cc[0], green: cc[1], blue: cc[2], alpha: cc[3])
+        glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
+        glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &clearStencil)
     
-    this._vertexArrayObject = getExtension(gl, ['OES_vertex_array_object']);
-    this._fragDepth = getExtension(gl, ['EXT_frag_depth']);
+        defaultPassState = PassState()
+        defaultRenderState = createRenderState()
+        defaultTexture = nil
+        defaultCubeMap = nil
     
-    this._drawBuffers = getExtension(gl, ['WEBGL_draw_buffers']);
-    this._maximumDrawBuffers = defined(this._drawBuffers) ? gl.getParameter(this._drawBuffers.MAX_DRAW_BUFFERS_WEBGL) : 1;
-    this._maximumColorAttachments = defined(this._drawBuffers) ? gl.getParameter(this._drawBuffers.MAX_COLOR_ATTACHMENTS_WEBGL) : 1; // min when supported: 4
+        uniformState = UniformState()
+        currentRenderState = defaultRenderState
+        currentFramebuffer = nil
+        maxFrameTextureUnitIndex = 0
     
-    var cc = gl.getParameter(gl.COLOR_CLEAR_VALUE);
-    this._clearColor = new Color(cc[0], cc[1], cc[2], cc[3]);
-    this._clearDepth = gl.getParameter(gl.DEPTH_CLEAR_VALUE);
-    this._clearStencil = gl.getParameter(gl.STENCIL_CLEAR_VALUE);
-    
-    var us = new UniformState();
-    var ps = new PassState(this);
-    var rs = this.createRenderState();
-    
-    this._defaultPassState = ps;
-    this._defaultRenderState = rs;
-    this._defaultTexture = undefined;
-    this._defaultCubeMap = undefined;
-    
-    this._us = us;
-    this._currentRenderState = rs;
-    this._currentFramebuffer = undefined;
-    this._maxFrameTextureUnitIndex = 0;
-    
-    this._pickObjects = {};
-    this._nextPickColor = new Uint32Array(1);
+        pickObjects = Array<Any>()
+        nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
     
     /**
     * @example
@@ -595,7 +597,7 @@ class Context {
     *   allowTextureFilterAnisotropic : true
     * }
     */
-    this.options = options;
+    //this.options = options;
     
     /**
     * A cache of objects tied to this context.  Just before the Context is destroyed,
@@ -606,10 +608,9 @@ class Context {
     *
     * @type {Object}
     */
-    this.cache = {};
+    cache = Array<Any>()
     
-    */
-    //RenderState.apply(gl, rs, ps);
+    currentRenderState.apply(defaultPassState)
 }
         /*
 
@@ -2143,13 +2144,13 @@ function continueDraw(context, drawCommand, shaderProgram) {
 }
 */
 func draw(drawCommand: DrawCommand, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
-    
+    /*
     passState = defaultValue(passState, this._defaultPassState);
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
     var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
     
     beginDraw(this, framebuffer, drawCommand, passState, renderState, shaderProgram);
-    continueDraw(this, drawCommand, shaderProgram);
+    continueDraw(this, drawCommand, shaderProgram);*/
 }
 /*
 Context.prototype.endFrame = function() {
@@ -2660,8 +2661,8 @@ Context.prototype.destroy = function() {
 
 }*/
     func getGLExtensions() -> String[] {
-        var glExtensions = NSString.stringWithUTF8String(glGetString(GL_EXTENSIONS))
-        return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet)
+        var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS))))
+        return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }
 
     func checkGLExtension(glExtension: String) -> Bool {
