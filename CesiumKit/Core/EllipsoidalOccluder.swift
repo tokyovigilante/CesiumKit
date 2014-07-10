@@ -125,7 +125,7 @@ class EllipsoidalOccluder {
     * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
     */
-    func computeHorizonCullingPoint(directionToPoint: Cartesian3, positions: Cartesian3[]) -> Cartesian3? {
+    func computeHorizonCullingPoint(directionToPoint: Cartesian3, positions: [Cartesian3]) -> Cartesian3? {
         var scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint);
         var resultMagnitude = 0.0
         for (var i = 0, len = positions.count; i < len; ++i) {
@@ -156,7 +156,7 @@ class EllipsoidalOccluder {
     */
     func computeHorizonCullingPointFromVertices(
         directionToPoint: Cartesian3,
-        vertices: Double[],
+        vertices: [Double],
         stride: Int,
         center: Cartesian3 = Cartesian3.zero()) -> Cartesian3? {
             

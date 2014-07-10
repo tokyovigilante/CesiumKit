@@ -84,22 +84,22 @@ class TerrainProvider {
         credit = Credit(text: "base class", imageUrl: nil, link: nil)
     }
     
-    func getRegularGridIndices(width: Int, height: Int) -> UInt16[] {
+    func getRegularGridIndices(width: Int, height: Int) -> [UInt16] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
-        if (byWidth == nil) {
+        if !byWidth {
             byWidth = [:]
             regularGridIndexArrays[width] = byWidth
         }
         var indices = byWidth![height]
-        if (indices == nil) {
-            indices = UInt16[](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+        if !indices {
+            indices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
-            var index = 0;
-            var indicesIndex = 0;
-            for i in 0..height-1 {
-                for j in 0..width-1 {
+            var index = 0
+            var indicesIndex = 0
+            for i in 0..<height-1 {
+                for j in 0..<width-1 {
                     var upperLeft = index;
                     var lowerLeft = upperLeft + width;
                     var lowerRight = lowerLeft + 1;

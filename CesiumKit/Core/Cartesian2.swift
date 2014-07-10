@@ -81,7 +81,7 @@ struct Cartesian2: Packable, Equatable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float[], startingIndex: Int = 0) {
+    func pack(inout array: [Float], startingIndex: Int = 0) {
         
         if array.count < startingIndex - 2 {//Int(Cartesian2.packedLength) {
             array.append(Float(x))
@@ -102,7 +102,7 @@ struct Cartesian2: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian2} [result] The object into which to store the result.
     */
-    static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian2 {
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian2 {
         assert((startingIndex + /*Cartesian2.packedLength*/2 <= array.count), "Invalid starting index")
         return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]))
     }
@@ -125,7 +125,7 @@ struct Cartesian2: Packable, Equatable {
     * var v2 = [0.0, 0.0, 1.0, 2.0];
     * var p2 = Cesium.Cartesian2.fromArray(v2, 2);
     */
-    static func fromArray(array: Float[]) -> Packable {
+    static func fromArray(array: [Float]) -> Packable {
         return Cartesian2.unpack(array)
     }
     

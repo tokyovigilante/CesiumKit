@@ -40,7 +40,7 @@ protocol TerrainData {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Dpuble
+    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
     
     /**
     * Determines if a given child tile is available, based on the

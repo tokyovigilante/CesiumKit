@@ -45,13 +45,13 @@ struct TerrainMesh {
     * U and V are the texture coordinates.
     * @type {Float32Array}
     */
-    let vertices: Float[]
+    let vertices: [Float]
     
     /**
     * The indices describing how the vertices are connected to form triangles.
     * @type {Uint16Array}
     */
-    let indices: Uint16[]
+    let indices: [UInt16]
     
     /**
     * The lowest height in the tile, in meters above the ellipsoid.

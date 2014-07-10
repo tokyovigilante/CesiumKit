@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
 /**
 * A credit contains data pertaining to how to display attributions/credits for certain content on the screen.
 *
@@ -22,7 +20,7 @@ import Foundation
 * //Create a credit with a tooltip, image and link
 * var credit = new Cesium.Credit('Cesium', '/images/cesium_logo.png', 'http://cesiumjs.org/');
 */
-struct Credit: Equatable {
+struct Credit/*: Equatable*/ {
     
     var text: String?
     var imageUrl: String?

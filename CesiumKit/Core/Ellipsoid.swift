@@ -186,7 +186,7 @@ struct Ellipsoid {
     *                  new Cesium.Cartographic(Cesium.Math.toRadians(21.645), Cesium.Math.toRadians(78.456), 250)
     * var cartesianPositions = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(positions);
     */
-    func cartographicArrayToCartesianArray(cartographics: Cartographic[]) -> Cartesian3[] {
+    func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3] {
         
         var cartesians = Cartesian3[]()
         
@@ -243,7 +243,7 @@ struct Ellipsoid {
     *                  new Cesium.Cartesian3(17832.14, 83234.54, 952313.73)]
     * var cartographicPositions = Cesium.Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
     */
-    func cartesianArrayToCartographicArray(cartesians: Cartesian3[]) -> Cartographic[] {
+    func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic] {
         
         var cartographics = Cartographic[]()
         

@@ -503,7 +503,7 @@ class Context {
     */
     var drawingBufferWidth: GLint
     
-    let cachedGLESExtensions: String[]
+    let cachedGLESExtensions: [String]
         
     init (glContext: EAGLContext) {
         
@@ -2660,7 +2660,7 @@ Context.prototype.destroy = function() {
 };
 
 }*/
-    func getGLExtensions() -> String[] {
+    func getGLExtensions() -> [String] {
         var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS))))
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }

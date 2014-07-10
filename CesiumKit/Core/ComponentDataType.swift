@@ -118,22 +118,22 @@ enum ComponentDatatype: Int {
     * @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
     */
     static func fromTypedArray<T>(array: Array<Any>) -> ComponentDatatype {
-        if array is Int8[] {
+        if array is [Int8] {
             return ComponentDatatype.Byte
         }
-        if array is UInt8[] {
+        if array is [UInt8] {
             return ComponentDatatype.UnsignedByte
         }
-        if array is Int16[] {
+        if array is [Int16] {
             return ComponentDatatype.Short
         }
-        if array is UInt16[] {
+        if array is [UInt16] {
             return ComponentDatatype.UnsignedShort
         }
-        if array is Float32[] {
+        if array is [Float32] {
             return ComponentDatatype.Float
         }
-        if array is Float64[] {
+        if array is [Float64] {
             return ComponentDatatype.Double
         }
         assert(true, "invalid componentDatatype")
