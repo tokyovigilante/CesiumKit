@@ -464,7 +464,7 @@ class Context {
     * @memberof Context.prototype
     * @type {Texture}
     */
-    let defaultTexture: Texture
+    let defaultTexture: Texture?
     
     /**
     * A cube map, where each face is a 1x1 RGBA texture initialized to
@@ -473,7 +473,7 @@ class Context {
     * @memberof Context.prototype
     * @type {CubeMap}
     */
-    let defaultCubeMap: CubeMap
+    let defaultCubeMap: CubeMap?
     
     /**
     * A cache of objects tied to this context.  Just before the Context is destroyed,
@@ -504,6 +504,8 @@ class Context {
     var drawingBufferWidth: GLint
     
     let cachedGLESExtensions: String[]
+    
+    var cachedState: RenderState? = nil
         
     init (glContext: EAGLContext) {
         
@@ -565,11 +567,11 @@ class Context {
     
         var cc = GLfloat[](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
-        clearColor = Cartesian4(fromRed: cc[0], green: cc[1], blue: cc[2], alpha: cc[3])
+        clearColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 1.0, alpha: 1.0)//Cartesian4(fromRed: cc[0], green: cc[1], blue: cc[2], alpha: cc[3])
         glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &clearStencil)
     
-        defaultPassState = PassState()
+        defaultPassState = PassState(context: self)
         defaultRenderState = createRenderState()
         defaultTexture = nil
         defaultCubeMap = nil
@@ -1783,7 +1785,7 @@ Context.prototype.createRenderbuffer = function(options) {
 
 var nextRenderStateId = 0;
 var renderStateCache = {};
-
+*/
 /**
 * Validates and then finds or creates an immutable render state, which defines the pipeline
 * state for a {@link DrawCommand} or {@link ClearCommand}.  All inputs states are optional.  Omitted states
@@ -1904,7 +1906,8 @@ var renderStateCache = {};
 * @see DrawCommand
 * @see ClearCommand
 */
-Context.prototype.createRenderState = function(renderState) {
+    func createRenderState() -> RenderState {
+        
     var partialKey = JSON.stringify(renderState);
     var cachedState = renderStateCache[partialKey];
     if (defined(cachedState)) {
@@ -1912,7 +1915,7 @@ Context.prototype.createRenderState = function(renderState) {
     }
     
     // Cache miss.  Fully define render state and try again.
-    var states = new RenderState(this, renderState);
+    var states = RenderState(this)
     var fullKey = JSON.stringify(states);
     cachedState = renderStateCache[fullKey];
     if (!defined(cachedState)) {
@@ -1928,8 +1931,8 @@ Context.prototype.createRenderState = function(renderState) {
     renderStateCache[partialKey] = cachedState;
     
     return cachedState;
-};
-
+}
+/*
 Context.prototype.createSampler = function(sampler) {
     var s = {
         wrapS : defaultValue(sampler.wrapS, TextureWrap.CLAMP_TO_EDGE),

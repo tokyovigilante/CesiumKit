@@ -6,81 +6,130 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-struct RenderState {
-    
+import OpenGLES
+
 /*
-    /*global WebGLRenderingContext*/
+/*global WebGLRenderingContext*/
 
-    function validateBlendEquation(blendEquation) {
-        return ((blendEquation === WebGLRenderingContext.FUNC_ADD) ||
-                (blendEquation === WebGLRenderingContext.FUNC_SUBTRACT) ||
-                (blendEquation === WebGLRenderingContext.FUNC_REVERSE_SUBTRACT));
+function validateBlendEquation(blendEquation) {
+return ((blendEquation === WebGLRenderingContext.FUNC_ADD) ||
+(blendEquation === WebGLRenderingContext.FUNC_SUBTRACT) ||
+(blendEquation === WebGLRenderingContext.FUNC_REVERSE_SUBTRACT));
+}
+
+function validateBlendFunction(blendFunction) {
+return ((blendFunction === WebGLRenderingContext.ZERO) ||
+(blendFunction === WebGLRenderingContext.ONE) ||
+(blendFunction === WebGLRenderingContext.SRC_COLOR) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_SRC_COLOR) ||
+(blendFunction === WebGLRenderingContext.DST_COLOR) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_DST_COLOR) ||
+(blendFunction === WebGLRenderingContext.SRC_ALPHA) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_SRC_ALPHA) ||
+(blendFunction === WebGLRenderingContext.DST_ALPHA) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_DST_ALPHA) ||
+(blendFunction === WebGLRenderingContext.CONSTANT_COLOR) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_CONSTANT_COLOR) ||
+(blendFunction === WebGLRenderingContext.CONSTANT_ALPHA) ||
+(blendFunction === WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA) ||
+(blendFunction === WebGLRenderingContext.SRC_ALPHA_SATURATE));
+}
+
+function validateCullFace(cullFace) {
+return ((cullFace === WebGLRenderingContext.FRONT) ||
+(cullFace === WebGLRenderingContext.BACK) ||
+(cullFace === WebGLRenderingContext.FRONT_AND_BACK));
+}
+
+function validateDepthFunction(depthFunction) {
+return ((depthFunction === WebGLRenderingContext.NEVER) ||
+(depthFunction === WebGLRenderingContext.LESS) ||
+(depthFunction === WebGLRenderingContext.EQUAL) ||
+(depthFunction === WebGLRenderingContext.LEQUAL) ||
+(depthFunction === WebGLRenderingContext.GREATER) ||
+(depthFunction === WebGLRenderingContext.NOTEQUAL) ||
+(depthFunction === WebGLRenderingContext.GEQUAL) ||
+(depthFunction === WebGLRenderingContext.ALWAYS));
+}
+
+function validateStencilFunction (stencilFunction) {
+return ((stencilFunction === WebGLRenderingContext.NEVER) ||
+(stencilFunction === WebGLRenderingContext.LESS) ||
+(stencilFunction === WebGLRenderingContext.EQUAL) ||
+(stencilFunction === WebGLRenderingContext.LEQUAL) ||
+(stencilFunction === WebGLRenderingContext.GREATER) ||
+(stencilFunction === WebGLRenderingContext.NOTEQUAL) ||
+(stencilFunction === WebGLRenderingContext.GEQUAL) ||
+(stencilFunction === WebGLRenderingContext.ALWAYS));
+}
+
+function validateStencilOperation(stencilOperation) {
+return ((stencilOperation === WebGLRenderingContext.ZERO) ||
+(stencilOperation === WebGLRenderingContext.KEEP) ||
+(stencilOperation === WebGLRenderingContext.REPLACE) ||
+(stencilOperation === WebGLRenderingContext.INCR) ||
+(stencilOperation === WebGLRenderingContext.DECR) ||
+(stencilOperation === WebGLRenderingContext.INVERT) ||
+(stencilOperation === WebGLRenderingContext.INCREMENT_WRAP) ||
+(stencilOperation === WebGLRenderingContext.DECR_WRAP));
+}
+
+*/
+struct RenderState {
+
+    var frontFace = WindingOrder.CounterClockwise
+    
+    struct cull {
+        var enabled: Bool = false
+        var face: GLenum = GLenum(GL_BACK)
+    }
+    
+    struct polygonOffset {
+        var enabled: Bool = false
+        var factor : Int32 = 0
+        var units : Int32 = 0
+    }
+    
+    var lineWidth: Double = 1.0
+
+    struct scissorTest {
+        var enabled: Bool = false
+        var rectangle: BoundingRectangle? = nil
     }
 
-    function validateBlendFunction(blendFunction) {
-        return ((blendFunction === WebGLRenderingContext.ZERO) ||
-                (blendFunction === WebGLRenderingContext.ONE) ||
-                (blendFunction === WebGLRenderingContext.SRC_COLOR) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_SRC_COLOR) ||
-                (blendFunction === WebGLRenderingContext.DST_COLOR) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_DST_COLOR) ||
-                (blendFunction === WebGLRenderingContext.SRC_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_SRC_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.DST_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_DST_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.CONSTANT_COLOR) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_CONSTANT_COLOR) ||
-                (blendFunction === WebGLRenderingContext.CONSTANT_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA) ||
-                (blendFunction === WebGLRenderingContext.SRC_ALPHA_SATURATE));
+    struct depthRange {
+        var near: Int = 0
+        var far: Int = 1
+    }
+    
+    struct depthTest {
+        var enabled: Bool = false
+        var function: GLenum = GLenum(GL_LESS)  // function, because func is a Swift keyword ;)
     }
 
-    function validateCullFace(cullFace) {
-        return ((cullFace === WebGLRenderingContext.FRONT) ||
-                (cullFace === WebGLRenderingContext.BACK) ||
-                (cullFace === WebGLRenderingContext.FRONT_AND_BACK));
+    struct colorMask {
+        var red: Bool = true
+        var green: Bool = true
+        var blue: Bool = true
+        var alpha: Bool = true
     }
-
-    function validateDepthFunction(depthFunction) {
-        return ((depthFunction === WebGLRenderingContext.NEVER) ||
-                (depthFunction === WebGLRenderingContext.LESS) ||
-                (depthFunction === WebGLRenderingContext.EQUAL) ||
-                (depthFunction === WebGLRenderingContext.LEQUAL) ||
-                (depthFunction === WebGLRenderingContext.GREATER) ||
-                (depthFunction === WebGLRenderingContext.NOTEQUAL) ||
-                (depthFunction === WebGLRenderingContext.GEQUAL) ||
-                (depthFunction === WebGLRenderingContext.ALWAYS));
+    
+    var depthMask: Bool = true
+    
+    var stencilMask: Int32 = ~0
+    
+    struct blending {
+        var enabled: Bool = false
+        var color: Cartesian4 = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+        var equationRgb: GLenum = GLenum(GL_FUNC_ADD)
+        var equationAlpha: GLenum = GLenum(GL_FUNC_ADD)
+        
     }
-
-    function validateStencilFunction (stencilFunction) {
-        return ((stencilFunction === WebGLRenderingContext.NEVER) ||
-                (stencilFunction === WebGLRenderingContext.LESS) ||
-                (stencilFunction === WebGLRenderingContext.EQUAL) ||
-                (stencilFunction === WebGLRenderingContext.LEQUAL) ||
-                (stencilFunction === WebGLRenderingContext.GREATER) ||
-                (stencilFunction === WebGLRenderingContext.NOTEQUAL) ||
-                (stencilFunction === WebGLRenderingContext.GEQUAL) ||
-                (stencilFunction === WebGLRenderingContext.ALWAYS));
-    }
-
-    function validateStencilOperation(stencilOperation) {
-        return ((stencilOperation === WebGLRenderingContext.ZERO) ||
-                (stencilOperation === WebGLRenderingContext.KEEP) ||
-                (stencilOperation === WebGLRenderingContext.REPLACE) ||
-                (stencilOperation === WebGLRenderingContext.INCR) ||
-                (stencilOperation === WebGLRenderingContext.DECR) ||
-                (stencilOperation === WebGLRenderingContext.INVERT) ||
-                (stencilOperation === WebGLRenderingContext.INCREMENT_WRAP) ||
-                (stencilOperation === WebGLRenderingContext.DECR_WRAP));
-    }
-
-    /**
-     * @private
-     */
+    
+    init(context: Context) {
+    /*
     var RenderState = function(context, renderState) {
-        var rs = defaultValue(renderState, {});
-        var cull = defaultValue(rs.cull, {});
-        var polygonOffset = defaultValue(rs.polygonOffset, {});
+
         var scissorTest = defaultValue(rs.scissorTest, {});
         var scissorTestRectangle = defaultValue(scissorTest.rectangle, {});
         var depthRange = defaultValue(rs.depthRange, {});
@@ -94,37 +143,8 @@ struct RenderState {
         var sampleCoverage = defaultValue(rs.sampleCoverage, {});
         var viewport = rs.viewport;
 
-        this.frontFace = defaultValue(rs.frontFace, WindingOrder.COUNTER_CLOCKWISE);
-        this.cull = {
-            enabled : defaultValue(cull.enabled, false),
-            face : defaultValue(cull.face, WebGLRenderingContext.BACK)
-        };
-        this.lineWidth = defaultValue(rs.lineWidth, 1.0);
-        this.polygonOffset = {
-            enabled : defaultValue(polygonOffset.enabled, false),
-            factor : defaultValue(polygonOffset.factor, 0),
-            units : defaultValue(polygonOffset.units, 0)
-        };
-        this.scissorTest = {
-            enabled : defaultValue(scissorTest.enabled, false),
-            rectangle : BoundingRectangle.clone(scissorTestRectangle)
-        };
-        this.depthRange = {
-            near : defaultValue(depthRange.near, 0),
-            far : defaultValue(depthRange.far, 1)
-        };
-        this.depthTest = {
-            enabled : defaultValue(depthTest.enabled, false),
-            func : defaultValue(depthTest.func, WebGLRenderingContext.LESS) // func, because function is a JavaScript keyword
-        };
-        this.colorMask = {
-            red : defaultValue(colorMask.red, true),
-            green : defaultValue(colorMask.green, true),
-            blue : defaultValue(colorMask.blue, true),
-            alpha : defaultValue(colorMask.alpha, true)
-        };
-        this.depthMask = defaultValue(rs.depthMask, true);
-        this.stencilMask = defaultValue(rs.stencilMask, ~0);
+
+        
         this.blending = {
             enabled : defaultValue(blending.enabled, false),
             color : new Color(
@@ -268,21 +288,21 @@ struct RenderState {
 
 
         this.id = 0;
-        this._applyFunctions = [];
-    };
+        this._applyFunctions = [];*/
+    }
 
-    function enableOrDisable(gl, glEnum, enable) {
-        if (enable) {
-            gl.enable(glEnum);
+    func enableOrDisable(feature: GLenum, enable: Bool) {
+        if enable {
+            glEnable(feature)
         } else {
-            gl.disable(glEnum);
+            glDisable(feature)
         }
     }
 
-    function applyFrontFace(gl, renderState) {
-        gl.frontFace(renderState.frontFace);
+    func applyFrontFace() {
+        glFrontFace(frontFace)
     }
-
+/*
     function applyCull(gl, renderState) {
         var cull = renderState.cull;
         var enabled = cull.enabled;
