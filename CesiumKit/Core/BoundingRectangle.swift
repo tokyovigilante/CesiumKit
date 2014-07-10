@@ -67,7 +67,7 @@ struct BoundingRectangle: Equatable {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    init(fromPoints points: Cartesian2[]) {
+    init(fromPoints points: [Cartesian2]) {
         
         if (points.count == 0) {
             x = 0

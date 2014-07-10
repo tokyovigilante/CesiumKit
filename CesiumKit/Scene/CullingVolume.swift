@@ -24,7 +24,7 @@ struct CullingVolume {
     * @type {Cartesian4[]}
     * @default []
     */
-    var planes = Cartesian4[]()
+    var planes = [Cartesian4]()
     
     /**
     * Determines whether a bounding volume intersects the culling volume.

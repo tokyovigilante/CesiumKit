@@ -46,7 +46,7 @@ struct BoundingSphere {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    static func fromPoints(points: Cartesian3[]) -> BoundingSphere {
+    static func fromPoints(points: [Cartesian3]) -> BoundingSphere {
         if (points.count == 0) {
             return BoundingSphere()
         }

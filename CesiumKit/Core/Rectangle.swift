@@ -64,7 +64,7 @@ struct Rectangle: Packable {
     * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
     * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
     */
-    static func fromCartographicArray(cartographics: Cartographic[]) -> Rectangle {
+    static func fromCartographicArray(cartographics: [Cartographic]) -> Rectangle {
         
         var minLon = Double.infinity
         var maxLon = -Double.infinity
@@ -87,7 +87,7 @@ struct Rectangle: Packable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float[], startingIndex: Int = 0)  {
+    func pack(inout array: [Float], startingIndex: Int = 0)  {
         
         if array.count < startingIndex - Int(Rectangle.packedLength)
         {
@@ -109,7 +109,7 @@ struct Rectangle: Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Rectangle} [result] The object into which to store the result.
     */
-    static func unpack(array: Float32[], startingIndex: Int) -> Packable {
+    static func unpack(array: [Float32], startingIndex: Int) -> Packable {
         assert((startingIndex + packedLength < array.count), "Invalid starting index")
         return Rectangle(
             west: Double(array[startingIndex]),
@@ -273,7 +273,7 @@ struct Rectangle: Packable {
     * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
     * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
     */
-    func subsample(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(), surfaceHeight: Double = 0.0) -> Cartesian3[] {
+    func subsample(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
         
         var result = Cartesian3[]()
         

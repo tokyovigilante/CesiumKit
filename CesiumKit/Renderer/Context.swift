@@ -503,7 +503,7 @@ class Context {
     */
     var drawingBufferWidth: GLint
     
-    let cachedGLESExtensions: String[]
+    let cachedGLESExtensions: [String]
     
     var cachedState: RenderState? = nil
         
@@ -514,8 +514,8 @@ class Context {
         shaderCache = ShaderCache()
         
         cachedGLESExtensions = getGLExtensions()
-        
-        glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION))))
+        var glvs: CString = CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VERSION))))
+        glVersion = String.fromCString(glvs)!
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION))))
         vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR))))
         renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER))))
@@ -2663,7 +2663,7 @@ Context.prototype.destroy = function() {
 };
 
 }*/
-    func getGLExtensions() -> String[] {
+    func getGLExtensions() -> [String] {
         var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS))))
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }

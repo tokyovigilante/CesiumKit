@@ -103,7 +103,7 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float[], startingIndex: Int) {
+    func pack(inout array: [Float], startingIndex: Int) {
         if array.count < startingIndex - 3 { //Int(Cartesian3.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
@@ -123,7 +123,7 @@ struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian3 {
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
 
         return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]), z: Double(array[startingIndex+2]))
@@ -148,7 +148,7 @@ struct Cartesian3: Packable, Equatable {
     * var v2 = [0.0, 0.0, 1.0, 2.0, 3.0];
     * var p2 = Cesium.Cartesian3.fromArray(v2, 2);
     */
-    init(fromArray array: Double[]) {
+    init(fromArray array: [Double]) {
         x = array[0]
         y = array[1]
         z = array[2]
@@ -487,9 +487,9 @@ struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
     */
-    static func fromDegreesArray(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+    static func fromDegreesArray(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
-        var pos = Double[]()
+        var pos = [Double]()
         for coordinate in coordinates {
             pos.append(Math.toRadians(coordinate))
         }
@@ -508,11 +508,11 @@ struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
     */
-    static func fromRadiansArray(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+    static func fromRadiansArray(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
-        var cartesians = Cartesian3[]()
+        var cartesians = [Cartesian3]()
         var index = coordinates.count
         for (var i = 0; i < coordinates.count; i += 2) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
@@ -531,9 +531,9 @@ struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromDegreesArrayHeights([-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]);
     */
-    static func fromDegreesArrayHeights(coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+    static func fromDegreesArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
-        var pos = Double[]()
+        var pos = [Double]()
         for (var i = 0; i < coordinates.count; i += 3) {
             pos.append(Math.toRadians(coordinates[i]))
             pos.append(Math.toRadians(coordinates[i+1]))
@@ -554,11 +554,11 @@ struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
     */
-    static func fromRadiansArrayHeights(#coordinates: Double[], ellipsoid: Ellipsoid) -> Cartesian3[] {
+    static func fromRadiansArrayHeights(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         
-        var cartesians = Cartesian3[]()
+        var cartesians = [Cartesian3]()
         var index = coordinates.count
         for (var i = 0; i < coordinates.count; i += 3) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))

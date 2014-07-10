@@ -91,7 +91,7 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: Float[], startingIndex: Int) {
+    func pack(inout array: [Float], startingIndex: Int) {
         if (array.count < startingIndex - 4) {// Int(Cartesian4.packedLength) {
             array.append(Float(x))
             array.append(Float(y))
@@ -113,7 +113,7 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian4} [result] The object into which to store the result.
     */
-    static func unpack(array: Float[], startingIndex: Int = 0) -> Cartesian4 {
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian4 {
         assert(startingIndex + 4 /*Cartesian4.packedLength*/ <= array.count, "Invalid starting index")
         
         return Cartesian4(
@@ -141,7 +141,7 @@ struct Cartesian4: Packable, Equatable, Printable {
 * var v2 = [0.0, 0.0, 1.0, 2.0, 3.0, 4.0];
 * var p2 = Cesium.Cartesian4.fromArray(v2, 2);
 */
-    static func fromArray(array: Float[]) -> Cartesian4 {
+    static func fromArray(array: [Float]) -> Cartesian4 {
         return Cartesian4.unpack(array)
     }
 

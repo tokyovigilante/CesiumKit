@@ -66,7 +66,7 @@ class TerrainProvider {
     */
     //class var heightmapTerrainQuality = 0.25;
     
-    var regularGridIndexArrays: Dictionary<Int, Dictionary<Int, Array<UInt16>>> = [:]
+    var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]//Dictionary<Int, Dictionary<Int, Array<UInt16>>> = [:]
     
     /**
     * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
@@ -84,41 +84,41 @@ class TerrainProvider {
         credit = Credit(text: "base class", imageUrl: nil, link: nil)
     }
     
-    func getRegularGridIndices(width: Int, height: Int) -> UInt16[] {
+    func getRegularGridIndices(width: Int, height: Int) -> [UInt16] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
-        if (byWidth == nil) {
+        if !byWidth {
             byWidth = [:]
             regularGridIndexArrays[width] = byWidth
         }
         var indices = byWidth![height]
-        if (indices == nil) {
-            indices = UInt16[](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+        if !indices {
+            var unwrappedIndices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
-            var index = 0;
-            var indicesIndex = 0;
-            for i in 0..height-1 {
-                for j in 0..width-1 {
-                    var upperLeft = index;
-                    var lowerLeft = upperLeft + width;
-                    var lowerRight = lowerLeft + 1;
-                    var upperRight = upperLeft + 1;
+            var index: UInt16 = 0
+            var indicesIndex = 0
+            for i in 0..<height-1 {
+                for j in 0..<width-1 {
+                    var upperLeft: UInt16 = index
+                    var lowerLeft: UInt16 = upperLeft + UInt16(width)
+                    var lowerRight: UInt16 = lowerLeft + 1
+                    var upperRight: UInt16 = upperLeft + 1
                     
-                    indices![indicesIndex++] = UInt16(upperLeft)
-                    indices![indicesIndex++] = UInt16(lowerLeft)
-                    indices![indicesIndex++] = UInt16(upperRight)
-                    indices![indicesIndex++] = UInt16(upperRight)
-                    indices![indicesIndex++] = UInt16(lowerLeft)
-                    indices![indicesIndex++] = UInt16(lowerRight)
+                    unwrappedIndices[indicesIndex++] = upperLeft
+                    unwrappedIndices[indicesIndex++] = lowerLeft
+                    unwrappedIndices[indicesIndex++] = upperRight
+                    unwrappedIndices[indicesIndex++] = upperRight
+                    unwrappedIndices[indicesIndex++] = lowerLeft
+                    unwrappedIndices[indicesIndex++] = lowerRight
                     
-                    ++index;
+                    ++index
                 }
-                ++index;
+                ++index
             }
             var unWrappedByWidth = byWidth!
             
-            unWrappedByWidth[height] = indices
+            unWrappedByWidth[height] = unwrappedIndices
             regularGridIndexArrays[width] = unWrappedByWidth
         }
         
