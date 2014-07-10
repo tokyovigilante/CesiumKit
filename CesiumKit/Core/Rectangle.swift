@@ -50,10 +50,10 @@ struct Rectangle: Packable {
     */
     static func fromDegrees(west: Double, south: Double, east: Double, north: Double) -> Rectangle {
         return Rectangle(
-            west: CSMath.toRadians(west),
-            south: CSMath.toRadians(south),
-            east: CSMath.toRadians(east),
-            north: CSMath.toRadians(north))
+            west: Math.toRadians(west),
+            south: Math.toRadians(south),
+            east: Math.toRadians(east),
+            north: Math.toRadians(north))
     }
     
     
@@ -109,7 +109,7 @@ struct Rectangle: Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Rectangle} [result] The object into which to store the result.
     */
-    static func unpack(array: [Float32], startingIndex: Int) -> Packable {
+    static func unpack(array: [Float32], startingIndex: Int) -> Rectangle {
         assert((startingIndex + packedLength < array.count), "Invalid starting index")
         return Rectangle(
             west: Double(array[startingIndex]),

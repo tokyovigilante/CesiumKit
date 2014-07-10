@@ -504,7 +504,7 @@ class Context {
     var drawingBufferWidth: GLint
     
     let cachedGLESExtensions: [String]
-    
+
     var cachedState: RenderState? = nil
         
     init (glContext: EAGLContext) {
