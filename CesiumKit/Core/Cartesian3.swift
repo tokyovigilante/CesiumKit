@@ -110,9 +110,9 @@ struct Cartesian3: Packable, Equatable {
             array.append(Float(z))
         }
         else {
-            array.insert(Float(x), atIndex: startingIndex)
-            array.insert(Float(y), atIndex: startingIndex+1)
-            array.insert(Float(z), atIndex: startingIndex+2)
+            array[startingIndex] = Float(x)
+            array[startingIndex+1] = Float(y)
+            array[startingIndex+2] = Float(z)
         }
     }
     

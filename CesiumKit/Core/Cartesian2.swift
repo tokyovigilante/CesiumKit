@@ -88,8 +88,9 @@ struct Cartesian2: Packable, Equatable {
             array.append(Float(y))
         }
         else {
-            array.insert(Float(x), atIndex: startingIndex)
-            array.insert(Float(y), atIndex: startingIndex+1)
+            array[startingIndex] = Float(x)
+            array[startingIndex+1] = Float(y)
+
         }
     }
     

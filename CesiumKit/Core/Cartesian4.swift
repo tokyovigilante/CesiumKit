@@ -99,10 +99,11 @@ struct Cartesian4: Packable, Equatable, Printable {
             array.append(Float(w))
         }
         else {
-            array.insert(Float(x), atIndex: startingIndex)
-            array.insert(Float(y), atIndex: startingIndex+1)
-            array.insert(Float(z), atIndex: startingIndex+2)
-            array.insert(Float(w), atIndex: startingIndex+3)
+            array[startingIndex] = Float(x)
+            array[startingIndex+1] = Float(y)
+            array[startingIndex+2] = Float(z)
+            array[startingIndex+3] = Float(w)
+
         }
     }
     
