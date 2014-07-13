@@ -384,21 +384,21 @@ class ShaderProgram {
     }
     }
 
-    var uniformsByName: Dictionary<String, Uniform>? = nil {
-    get {
-    initialize()
-    return self.uniformsByName
+    var uniformsByName: [String: Uniform]? {
+        get {
+            initialize()
+            return self.uniformsByName
+        }
     }
-    }
 
-    var uniforms: Array<Uniform>? = nil
+    var uniforms: [Uniform]? = nil
 
-    var automaticUniforms: Array<Uniform>? = nil
+    var automaticUniforms: [Uniform]
 
-    var manualUniforms: Array<Uniform>? = nil {
+    var manualUniforms: [Uniform] {
     get {
-    initialize()
-    return self.manualUniforms
+        initialize()
+        return self.manualUniforms
     }
     }
 
@@ -417,7 +417,7 @@ self.vertexShaderSource = vertexShaderSource
 self.fragmentShaderSource = fragmentShaderSource
 
     
-    this.id = 1
+    id = 1
 }
     /*
     /**

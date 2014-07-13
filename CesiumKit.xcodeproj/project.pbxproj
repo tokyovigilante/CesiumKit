@@ -55,10 +55,10 @@
 		948D03E11944F1E200DC0E52 /* Cartesian4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03E01944F1E200DC0E52 /* Cartesian4.swift */; };
 		948D55E9194982AB005A4DD6 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D55E8194982AB005A4DD6 /* Math.swift */; };
 		9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBAF1949D084007C1C4C /* TerrainProvider.swift */; };
-		9491BBB21949D156007C1C4C /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
 		9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB51949D63A007C1C4C /* TilingScheme.swift */; };
 		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		94A25E65196E711000012DC4 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A25E64196E711000012DC4 /* WindingOrder.swift */; };
+		94B6C5B41970A07C008792D9 /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
 		94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DBE194D620E00012DC4 /* Matrix.swift */; };
 		94B87DC1194D678D00012DC4 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC0194D678D00012DC4 /* Scene.swift */; };
 		94B87DC5194D699400012DC4 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC4194D699400012DC4 /* Context.swift */; };
@@ -70,6 +70,7 @@
 		94B87DD1194D75A100012DC4 /* Occluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DD0194D75A100012DC4 /* Occluder.swift */; };
 		94BC4355194816B8007117F2 /* BoundingRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC4354194816B8007117F2 /* BoundingRectangle.swift */; };
 		94BC43571948189A007117F2 /* Cartesian2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC43561948189A007117F2 /* Cartesian2.swift */; };
+		94C57E1419722AB90046791A /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
 		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
@@ -177,6 +178,7 @@
 		94B87DD0194D75A100012DC4 /* Occluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Occluder.swift; sourceTree = "<group>"; };
 		94BC4354194816B8007117F2 /* BoundingRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingRectangle.swift; sourceTree = "<group>"; };
 		94BC43561948189A007117F2 /* Cartesian2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian2.swift; sourceTree = "<group>"; };
+		94C57E1319722AB90046791A /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
 				94A25E64196E711000012DC4 /* WindingOrder.swift */,
+				94C57E1319722AB90046791A /* Matrix4.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -437,7 +440,7 @@
 		94DC791A1918425300012DC4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Test Toast";
 			};
 			buildConfigurationList = 94DC791D1918425300012DC4 /* Build configuration list for PBXProject "CesiumKit" */;
@@ -482,6 +485,7 @@
 				94B87DC7194D6ADF00012DC4 /* FrameState.swift in Sources */,
 				94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */,
 				942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */,
+				94C57E1419722AB90046791A /* Matrix4.swift in Sources */,
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
 				948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */,
@@ -519,9 +523,8 @@
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
 				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
-				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
+				94B6C5B41970A07C008792D9 /* Credit.swift in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
-				9491BBB21949D156007C1C4C /* Credit.swift in Sources */,
 				948D03DF1944EC1B00DC0E52 /* Spherical.swift in Sources */,
 				9460F815194DAF7000012DC4 /* TerrainAttributeLocations.swift in Sources */,
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,

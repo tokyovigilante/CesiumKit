@@ -131,12 +131,13 @@ class UniformState {
             get : function() {
                 return this._frameState;
             }
-        },
+        },*/
         /**
          * @memberof UniformState.prototype
          * @type {BoundingRectangle}
          */
-        viewport : {
+    var viewport = BoundingRectangle() /*
+        viewport: {
             get : function() {
                 return this._viewport;
             },
@@ -155,7 +156,7 @@ class UniformState {
                 }
             }
         },
-
+/*
         /**
          * @memberof UniformState.prototype
          * @private
@@ -1124,5 +1125,5 @@ class UniformState {
     }
 
     return UniformState;
-});*/
+});*/*/
 }

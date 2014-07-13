@@ -124,7 +124,7 @@ return undefined;
 class Context {
     
     
-    weak var glContext: EAGLContext? = nil
+    weak var glContext: EAGLContext?
     
     var allowTextureFilterAnisotropic = true
     
@@ -151,21 +151,21 @@ class Context {
     * @type {String}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>VERSION</code>.
     */
-    var glVersion: String
+    var glVersion = ""
     /**
     * The version or release number for the shading language of the form WebGL&lt;space&gt;GLSL&lt;space&gt;ES&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
     * @memberof Context.prototype
     * @type {String}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>SHADING_LANGUAGE_VERSION</code>.
     */
-    var shadingLanguageVersion: String
+    var shadingLanguageVersion = ""
     
     /**
     * The company responsible for the WebGL implementation.
     * @memberof Context.prototype
     * @type {String}
     */
-    var vendor: String
+    var vendor = ""
     
     /**
     * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
@@ -176,7 +176,7 @@ class Context {
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>RENDERER</code>.
     * @see <a href='http://code.google.com/p/angleproject/'>ANGLE</a>
     */
-    var renderer: NSString
+    var renderer = ""
     
     /**
     * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -184,7 +184,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>RED_BITS</code>.
     */
-    var redBits: GLint
+    var redBits: GLint = 0
     
     /**
     * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -192,7 +192,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>GREEN_BITS</code>.
     */
-    var greenBits: GLint
+    var greenBits: GLint = 0
     
     /**
     * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -200,7 +200,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>BLUE_BITS</code>.
     */
-    var blueBits: GLint
+    var blueBits: GLint = 0
     
     /**
     * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -211,7 +211,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALPHA_BITS</code>.
     */
-    var alphaBits: GLint
+    var alphaBits: GLint = 0
     
     /**
     * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
@@ -220,7 +220,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>DEPTH_BITS</code>.
     */
-    var depthBits: GLint
+    var depthBits: GLint = 0
     
     /**
     * The number of stencil bits per pixel in the default bound framebuffer.  The minimum is eight bits.
@@ -228,7 +228,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>STENCIL_BITS</code>.
     */
-    var stencilBits: GLint
+    var stencilBits: GLint = 0
     
     /**
     * The maximum number of texture units that can be used from the vertex and fragment
@@ -238,7 +238,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_COMBINED_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumCombinedTextureImageUnits: GLint // min 8
+    var maximumCombinedTextureImageUnits: GLint = 0// min 8
     
     /**
     * The approximate maximum cube mape width and height supported by this WebGL implementation.
@@ -247,7 +247,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_CUBE_MAP_TEXTURE_SIZE</code>.
     */
-    var maximumCubeMapSize: GLint // min 16
+    var maximumCubeMapSize: GLint = 0 // min 16
     
     /**
     * Rhe maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
@@ -256,7 +256,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_FRAGMENT_UNIFORM_VECTORS</code>.
     */
-    var maximumFragmentUniformVectors: GLint // min 16
+    var maximumFragmentUniformVectors: GLint = 0 // min 16
     
     /**
     * The maximum number of texture units that can be used from the fragment shader with this WebGL implementation.  The minimum is eight.
@@ -264,7 +264,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumTextureImageUnits: GLint // min 8
+    var maximumTextureImageUnits: GLint = 0 // min 8
     
     /**
     * The maximum renderbuffer width and height supported by this WebGL implementation.
@@ -273,7 +273,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_RENDERBUFFER_SIZE</code>.
     */
-    var maximumRenderBufferSize: GLint // min 16
+    var maximumRenderBufferSize: GLint = 0 // min 16
     
     /**
     * The approximate maximum texture width and height supported by this WebGL implementation.
@@ -282,7 +282,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_SIZE</code>.
     */
-    var maximumTextureSize: GLint // min 64
+    var maximumTextureSize: GLint = 0 // min 64
     
     /**
     * The maximum number of <code>vec4</code> varying variables supported by this WebGL implementation.
@@ -291,7 +291,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VARYING_VECTORS</code>.
     */
-    var maximumVaryingVectors: GLint // min 8
+    var maximumVaryingVectors: GLint = 0 // min 8
     
     /**
     * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
@@ -299,7 +299,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_ATTRIBS</code>.
     */
-    var maximumVertexAttributes: GLint // min 8
+    var maximumVertexAttributes: GLint = 0 // min 8
     
     /**
     * The maximum number of texture units that can be used from the vertex shader with this WebGL implementation.
@@ -308,7 +308,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumVertexTextureImageUnits: GLint // min 0
+    var maximumVertexTextureImageUnits: GLint = 0 // min 0
     
     /**
     * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
@@ -317,7 +317,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_UNIFORM_VECTORS</code>.
     */
-    var maximumVertexUniformVectors: GLint
+    var maximumVertexUniformVectors: GLint = 0
     
     /**
     * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
@@ -325,7 +325,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var aliasedLineWidthRange: GLint // must include 1;
+    var aliasedLineWidthRange: GLint = 0 // must include 1;
     
     /**
     * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
@@ -333,7 +333,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    var aliasedPointSizeRange: GLint
+    var aliasedPointSizeRange: GLint = 0
     
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
@@ -360,7 +360,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_standard_derivatives.txt'>OES_standard_derivatives</a>
     */
-    var standardDerivatives: Bool
+    var standardDerivatives: Bool {
+        get { return checkGLExtension("OES_standard_derivatives") }
+    }
     
     /**
     * <code>true</code> if the OES_element_index_uint extension is supported.  This
@@ -370,7 +372,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/'>OES_element_index_uint</a>
     */
-    var elementIndexUint: Bool
+    var elementIndexUint: Bool {
+    get { return glContext!.API == EAGLRenderingAPI.OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
+    }
     
     /**
     * <code>true</code> if WEBGL_depth_texture is supported.  This extension provides
@@ -379,7 +383,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/'>WEBGL_depth_texture</a>
     */
-    var depthTexture: Bool
+    var depthTexture: Bool {
+    get { return glContext!.API == EAGLRenderingAPI.OpenGLES3 || checkGLExtension("GL_OES_depth_texture") }
+    }
     
     /**
     * <code>true</code> if OES_texture_float is supported.  This extension provides
@@ -388,7 +394,10 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt'>OES_texture_float</a>
     */
-    var textureFloat: Bool
+    var textureFloat: Bool {
+    get { return checkGLExtension("OES_texture_float") }
+    }
+
     
     /**
     * DOC_TBA
@@ -396,7 +405,7 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/'>EXT_texture_filter_anisotropic</a>
     */
-    var textureFilterAnisotropic: Bool
+    var textureFilterAnisotropic: Bool = false
     var maximumTextureFilterAnisotropy: GLint = 1
     
     /**
@@ -407,7 +416,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/'>OES_vertex_array_object</a>
     */
-    var vertexArrayObject: Bool
+    var vertexArrayObject: Bool {
+    get { return checkGLExtension("OES_vertex_array_object") }
+    }
     
     
     /**
@@ -419,7 +430,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/'>EXT_frag_depth</a>
     */
-    var fragmentDepth: Bool
+    var fragmentDepth: Bool {
+    get { return checkGLExtension("EXT_frag_depth") }
+    }
     
     /**
     * <code>true</code> if the WEBGL_draw_buffers extension is supported. This
@@ -431,32 +444,44 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/'>WEBGL_draw_buffers</a>
     */
-    var drawBuffers: Bool
+    var drawBuffers: Bool {
+    get {
+        var db = checkGLExtension("EXT_draw_buffers")
+        if db {
+            glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
+            glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
+        }
+        return db
+    }
+    }
     
     /**
     * The maximum number of simultaneous outputs that may be written in a fragment shader.
     * @memberof Context.prototype
     * @type {Number}
     */
-    var maximumDrawBuffers: GLint = 1
+    var maximumDrawBuffers: GLint = 0
     
     /**
     * The maximum number of color attachments supported.
     * @memberof Context.prototype
     * @type {Number}
     */
-    var maximumColorAttachments: GLint
+    var maximumColorAttachments: GLint = 0
     
-    var clearColor: Cartesian4
-    var clearDepth: GLfloat
-    var clearStencil: GLint
+    var clearColor = Cartesian4()
+    var clearDepth: GLfloat = 0.0
+    var clearStencil: GLint = 0
     
     var uniformState: UniformState
     var passState: PassState
-    var renderState: RenderState
+    //var renderState: RenderState
+    var currentRenderState: RenderState
     
     let defaultPassState: PassState
     let defaultRenderState: RenderState
+    
+    var currentFrameBuffer: Framebuffer? = nil
     
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -485,7 +510,7 @@ class Context {
     * @private
     * @type {Object}
     */
-    var cache: Array<Any>
+    var cache: [AnyObject]
     
     /**
     * The drawingBufferWidth of the underlying GL context.
@@ -493,7 +518,15 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth'>drawingBufferWidth</a>
     */
-    var drawingBufferHeight: GLint
+    var drawingBufferHeight: GLint {
+    get
+    {
+        var width: GLint = 0
+        //GLint height;
+        glGetRenderbufferParameteriv(GLenum(GL_RENDERBUFFER), GLenum(GL_RENDERBUFFER_WIDTH_OES), &width)
+        return width
+    }
+    }
     
     /**
     * The drawingBufferHeight of the underlying GL context.
@@ -501,24 +534,35 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight'>drawingBufferHeight</a>
     */
-    var drawingBufferWidth: GLint
+    var drawingBufferWidth: GLint {
+    get
+    {
+        var height: GLint = 0
+        glGetRenderbufferParameteriv(GLenum(GL_RENDERBUFFER), GLenum(GL_RENDERBUFFER_HEIGHT_OES), &height)
+        return height
+    }
+    }
     
-    let cachedGLESExtensions: [String]
+    var cachedGLESExtensions: [String]?
 
     var cachedState: RenderState? = nil
-        
+    
+    var maxFrameTextureUnitIndex = 0
+    
+    var pickObjects: [AnyObject]
+    
+    var nextPickColor: [UInt32]
+    
     init (glContext: EAGLContext) {
         
         self.glContext = glContext
         
         shaderCache = ShaderCache()
         
-        cachedGLESExtensions = getGLExtensions()
-        var glvs: CString = CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VERSION))))
-        glVersion = String.fromCString(glvs)!
-        shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION))))
-        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR))))
-        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER))))
+        glVersion = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VERSION)))))!
+        shadingLanguageVersion = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))))!
+        vendor = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VENDOR)))))!
+        renderer = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_RENDERER)))))!
         glGetIntegerv(GLenum(GL_RED_BITS), &redBits)
         glGetIntegerv(GLenum(GL_GREEN_BITS), &greenBits)
         glGetIntegerv(GLenum(GL_BLUE_BITS), &blueBits)
@@ -539,7 +583,7 @@ class Context {
         glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
         glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
 
-        var viewPortDims = GLint[](count: 2, repeatedValue: 0)
+        var viewPortDims = [GLint](count: 2, repeatedValue: 0)
         glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &viewPortDims)
         maximumViewportDimensions.width = Int(viewPortDims[0])
         maximumViewportDimensions.height = Int(viewPortDims[1])
@@ -547,25 +591,18 @@ class Context {
         
         //this._antialias = gl.getContextAttributes().antialias;
         
-        // Query and initialize extensions
-        standardDerivatives = checkGLExtension("OES_standard_derivatives")
-        depthTexture = checkGLExtension("GL_OES_depth_texture") // || glContext.API == kEAGLRenderingAPIOpenGLES3
-        elementIndexUint = checkGLExtension("GL_OES_element_index_uint") // || glContext.API == kEAGLRenderingAPIOpenGLES3
-        textureFloat = checkGLExtension("OES_texture_float")
         textureFilterAnisotropic = checkGLExtension("EXT_texture_filter_anisotropic")
         if textureFilterAnisotropic {
             glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
         }
 
-        vertexArrayObject = checkGLExtension("OES_vertex_array_object")
-        fragmentDepth = checkGLExtension("EXT_frag_depth")
-        drawBuffers = checkGLExtension("WEBGL_draw_buffers")
         if drawBuffers {
             glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
-            //glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS_EXT), &maximumColorAttachments)
+            GL_MAX_COLOR_ATTACHMENTS
+            //glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
         }
     
-        var cc = GLfloat[](count: 4, repeatedValue: 0.0)
+        var cc = [GLfloat](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
         clearColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 1.0, alpha: 1.0)//Cartesian4(fromRed: cc[0], green: cc[1], blue: cc[2], alpha: cc[3])
         glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
@@ -577,11 +614,10 @@ class Context {
         defaultCubeMap = nil
     
         uniformState = UniformState()
+        passState = defaultPassState
         currentRenderState = defaultRenderState
-        currentFramebuffer = nil
-        maxFrameTextureUnitIndex = 0
     
-        pickObjects = Array<Any>()
+        pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
     
     /**
@@ -610,7 +646,7 @@ class Context {
     *
     * @type {Object}
     */
-    cache = Array<Any>()
+    cache = Array<AnyObject>()
     
     currentRenderState.apply(defaultPassState)
 }
@@ -1907,13 +1943,14 @@ var renderStateCache = {};
 * @see ClearCommand
 */
     func createRenderState() -> RenderState {
-        
+        return RenderState(context: self)
+        /*
     var partialKey = JSON.stringify(renderState);
     var cachedState = renderStateCache[partialKey];
     if (defined(cachedState)) {
         return cachedState;
     }
-    
+
     // Cache miss.  Fully define render state and try again.
     var states = RenderState(this)
     var fullKey = JSON.stringify(states);
@@ -1930,7 +1967,7 @@ var renderStateCache = {};
     // Cache partial render state so we can skip validation on a cache hit for a partially defined render state
     renderStateCache[partialKey] = cachedState;
     
-    return cachedState;
+    return cachedState;*/
 }
 /*
 Context.prototype.createSampler = function(sampler) {
@@ -2664,12 +2701,17 @@ Context.prototype.destroy = function() {
 
 }*/
     func getGLExtensions() -> [String] {
-        var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS))))
+        var glExtensions = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_EXTENSIONS)))))!
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }
 
     func checkGLExtension(glExtension: String) -> Bool {
-        for cachedExtension in cachedGLESExtensions {
+        
+        if (!cachedGLESExtensions) {
+            cachedGLESExtensions = getGLExtensions()
+        }
+        
+        for cachedExtension in cachedGLESExtensions! {
             if cachedExtension == glExtension {
                 return true
             }
