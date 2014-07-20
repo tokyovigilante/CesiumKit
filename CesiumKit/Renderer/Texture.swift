@@ -11,15 +11,18 @@ import Foundation
 struct TextureOptions {
     
     struct Source {
-        
+        var width: Int? = nil
+        var height: Int? = nil
     }
-    var source: Source
+    var source: Source?
     
-    var width: Int = 0
+    var width: Int? = nil
+
+    var height: Int? = nil
     
-    var height: Int = 0
+    var pixelFormat: PixelFormat = PixelFormat.RGBA
     
-    var pixelFormat: 
+    var pixelDatatype: PixelDatatype = PixelDatatype.UnsignedByte
     
 }
 
@@ -30,7 +33,19 @@ class Texture {
     var options: TextureOptions
 /*
     var Texture = function(context, options) {
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+            };*/
+    init(context: Context, options: TextureOptions) {
+        
+        self.options = options
+        source = options.source
+        
+        self.width = source.width
+        self.height = source.height
+        
+        pixelFormat = options.pixelFormat
+
+        PixelDatatype = options.pixelDatatype
+        
         
         var source = options.source;
         var width = defined(source) ? source.width : options.width;
@@ -147,9 +162,7 @@ class Texture {
         this._sampler = undefined;
         
         this.sampler = undefined;
-    };*/
-    init(context: Context, options: TextureOptions) {
-        
+
     }
     /*
     defineProperties(Texture.prototype, {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		940AE97F197B735200A33FF4 /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE97E197B735200A33FF4 /* PixelFormat.swift */; };
+		940AE981197B75CE00A33FF4 /* PixelDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE980197B75CE00A33FF4 /* PixelDatatype.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
@@ -112,6 +113,7 @@
 
 /* Begin PBXFileReference section */
 		940AE97E197B735200A33FF4 /* PixelFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelFormat.swift; sourceTree = "<group>"; };
+		940AE980197B75CE00A33FF4 /* PixelDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelDatatype.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 				94B87DC4194D699400012DC4 /* Context.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
+				940AE980197B75CE00A33FF4 /* PixelDatatype.swift */,
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				9465B0211956F53700355D2C /* ShaderCache.swift */,
@@ -492,6 +495,7 @@
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
 				948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */,
+				940AE981197B75CE00A33FF4 /* PixelDatatype.swift in Sources */,
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				948D03E11944F1E200DC0E52 /* Cartesian4.swift in Sources */,
 				9460F81B194DB87400012DC4 /* ClearCommand.swift in Sources */,
