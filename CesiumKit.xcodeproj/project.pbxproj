@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		940AE97F197B735200A33FF4 /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE97E197B735200A33FF4 /* PixelFormat.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
@@ -110,6 +111,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		940AE97E197B735200A33FF4 /* PixelFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelFormat.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
 				94A25E64196E711000012DC4 /* WindingOrder.swift */,
 				94C57E1319722AB90046791A /* Matrix4.swift */,
+				940AE97E197B735200A33FF4 /* PixelFormat.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -502,6 +505,7 @@
 				9465B0261956F5DE00355D2C /* Texture.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,
 				94A25E65196E711000012DC4 /* WindingOrder.swift in Sources */,
+				940AE97F197B735200A33FF4 /* PixelFormat.swift in Sources */,
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
 				946D25AA19592BFD0080379D /* Ray.swift in Sources */,
 				9460F80F194DABF000012DC4 /* ImageryLayerCollection.swift in Sources */,

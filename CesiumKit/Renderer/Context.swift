@@ -323,9 +323,23 @@ class Context {
     * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
     * @memberof Context.prototype
     * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_LINE_WIDTH_RANGE</code>.
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var aliasedLineWidthRange: GLint = 0 // must include 1;
+    var minimumAliasedLineWidth: GLint {
+    get { return aliasedLineWidthRange[0] }
+    }
+    
+    /**
+    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
+    */
+    var maximumAliasedLineWidth: GLint {
+    get { return aliasedLineWidthRange[1] }
+    }
+    
+    var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
     
     /**
     * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
@@ -333,15 +347,49 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    var aliasedPointSizeRange: GLint = 0
+    /**
+    * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
+    */
+    var minimumAliasedPointSize: GLint {
+    get { return aliasedPointSizeRange[0] }
+    }
+    
+    /**
+    * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
+    */
+    var maximumAliasedPointSize: GLint {
+    get { aliasedPointSizeRange[1] }
+    }
+    
+    var aliasedPointSizeRange = Array<GLint>(count: 2, repeatedValue: 0)
     
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
     * @memberof Context.prototype
     * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VIEWPORT_DIMS</code>.
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
     */
-    var maximumViewportDimensions: ( height: Int, width: Int )
+    var maximumViewportWidth: GLint {
+    get { maximumViewportDimensions[0] }
+    }
+    
+    /**
+    * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
+    * @memberof Context.prototype
+    * @type {Number}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
+    */
+    var maximumViewportHeight: GLint {
+    get { maximumViewportDimensions[1] }
+    }
+    
+    var maximumViewportDimensions = Array<GLint>(count: 2, repeatedValue: 0)
     
     /**
     * <code>true</code> if the WebGL context supports antialiasing.  By default
@@ -394,7 +442,7 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt'>OES_texture_float</a>
     */
-    var textureFloat: Bool {
+    var floatingPointTexture: Bool {
     get { return checkGLExtension("OES_texture_float") }
     }
 
@@ -405,8 +453,17 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/'>EXT_texture_filter_anisotropic</a>
     */
-    var textureFilterAnisotropic: Bool = false
-    var maximumTextureFilterAnisotropy: GLint = 1
+    var textureFilterAnisotropic: Bool {
+    get {
+        var result = checkGLExtension("EXT_texture_filter_anisotropic")
+        if result {
+            glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
+        }
+        return result
+    }
+    }
+    
+    var maximumTextureFilterAnisotropy: GLint = 0
     
     /**
     * <code>true</code> if the OES_vertex_array_object extension is supported.  This
@@ -489,7 +546,22 @@ class Context {
     * @memberof Context.prototype
     * @type {Texture}
     */
-    let defaultTexture: Texture?
+    var _defaultTexture: Texture
+    var defaultTexture: Texture {
+    get {
+        if !_defaultTexture {
+            {
+                self.createTexture2D(TextureOptions(this._defaultTexture = this.createTexture2D({
+                    source : {
+                        width : 1,
+                        height : 1,
+                        arrayBufferView : new Uint8Array([255, 255, 255, 255])
+                    }))
+            }
+        }
+        return _defaultTexture
+    }
+    }
     
     /**
     * A cube map, where each face is a 1x1 RGBA texture initialized to
@@ -498,7 +570,7 @@ class Context {
     * @memberof Context.prototype
     * @type {CubeMap}
     */
-    let defaultCubeMap: CubeMap?
+    var _defaultCubeMap: CubeMap
     
     /**
     * A cache of objects tied to this context.  Just before the Context is destroyed,
@@ -510,7 +582,7 @@ class Context {
     * @private
     * @type {Object}
     */
-    var cache: [AnyObject]
+    var cache = Array<AnyObject>()
     
     /**
     * The drawingBufferWidth of the underlying GL context.
@@ -553,6 +625,14 @@ class Context {
     
     var nextPickColor: [UInt32]
     
+    /**
+    * Gets an object representing the currently bound framebuffer.  While this instance is not an actual
+    * {@link Framebuffer}, it is used to represent the default framebuffer in calls to
+    * {@link Context.createTexture2DFromFramebuffer}.
+    * @type {Object}
+    */
+    var defaultFramebuffer: Framebuffer? = nil
+
     init (glContext: EAGLContext) {
         
         self.glContext = glContext
@@ -583,24 +663,9 @@ class Context {
         glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
         glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
 
-        var viewPortDims = [GLint](count: 2, repeatedValue: 0)
-        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &viewPortDims)
-        maximumViewportDimensions.width = Int(viewPortDims[0])
-        maximumViewportDimensions.height = Int(viewPortDims[1])
+        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
         
-        
-        //this._antialias = gl.getContextAttributes().antialias;
-        
-        textureFilterAnisotropic = checkGLExtension("EXT_texture_filter_anisotropic")
-        if textureFilterAnisotropic {
-            glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
-        }
-
-        if drawBuffers {
-            glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
-            GL_MAX_COLOR_ATTACHMENTS
-            //glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
-        }
+        antialias = true
     
         var cc = [GLfloat](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
@@ -636,550 +701,11 @@ class Context {
     * }
     */
     //this.options = options;
-    
-    /**
-    * A cache of objects tied to this context.  Just before the Context is destroyed,
-    * <code>destroy</code> will be invoked on each object in this object literal that has
-    * such a method.  This is useful for caching any objects that might otherwise
-    * be stored globally, except they're tied to a particular context, and to manage
-    * their lifetime.
-    *
-    * @type {Object}
-    */
-    cache = Array<AnyObject>()
+
     
     currentRenderState.apply(defaultPassState)
-}
-        /*
 
-var defaultFramebufferMarker = {};
 
-defineProperties(Context.prototype, {
-    id : {
-        get : function() {
-            return this._id;
-        }
-    },
-    canvas : {
-        get : function() {
-            return this._canvas;
-        }
-    },
-    shaderCache : {
-        get : function() {
-            return this._shaderCache;
-        }
-    },
-    uniformState : {
-        get : function() {
-            return this._us;
-        }
-    },
-    
-    /**
-    * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
-    * @memberof Context.prototype
-    * @type {String}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml|glGetString} with <code>VERSION</code>.
-    */
-    version : {
-        get : function() {
-            return this._version;
-        }
-    },
-    
-    /**
-    * The version or release number for the shading language of the form WebGL&lt;space&gt;GLSL&lt;space&gt;ES&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
-    * @memberof Context.prototype
-    * @type {String}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml|glGetString} with <code>SHADING_LANGUAGE_VERSION</code>.
-    */
-    shadingLanguageVersion : {
-        get : function() {
-            return this._shadingLanguageVersion;
-        }
-    },
-    
-    /**
-    * The company responsible for the WebGL implementation.
-    * @memberof Context.prototype
-    * @type {String}
-    */
-    vendor : {
-        get : function() {
-            return this._vendor;
-        }
-    },
-    
-    /**
-    * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
-    * video card, e.g., 'GeForce 8800 GTS/PCI/SSE2', or the browser-dependent name of the GL implementation, e.g.
-    * 'Mozilla' or 'ANGLE.'
-    * @memberof Context.prototype
-    * @type {String}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml|glGetString} with <code>RENDERER</code>.
-    * @see {@link http://code.google.com/p/angleproject/|ANGLE}
-    */
-    renderer : {
-        get : function() {
-            return this._renderer;
-        }
-    },
-    
-    /**
-    * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>RED_BITS</code>.
-    */
-    redBits : {
-        get : function() {
-            return this._redBits;
-        }
-    },
-    
-    /**
-    * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>GREEN_BITS</code>.
-    */
-    greenBits : {
-        get : function() {
-            return this._greenBits;
-        }
-    },
-    
-    /**
-    * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>BLUE_BITS</code>.
-    */
-    blueBits : {
-        get : function() {
-            return this._blueBits;
-        }
-    },
-    
-    /**
-    * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * <br /><br />
-    * The alpha channel is used for GL destination alpha operations and by the HTML compositor to combine the color buffer
-    * with the rest of the page.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALPHA_BITS</code>.
-    */
-    alphaBits : {
-        get : function() {
-            return this._alphaBits;
-        }
-    },
-    
-    /**
-    * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
-    * implementations will have 24 bits.
-    * @memberof Context.protoytpe
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>DEPTH_BITS</code>.
-    */
-    depthBits : {
-        get : function() {
-            return this._depthBits;
-        }
-    },
-    
-    /**
-    * The number of stencil bits per pixel in the default bound framebuffer.  The minimum is eight bits.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>STENCIL_BITS</code>.
-    */
-    stencilBits : {
-        get : function() {
-            return this._stencilBits;
-        }
-    },
-    
-    /**
-    * The maximum number of texture units that can be used from the vertex and fragment
-    * shader with this WebGL implementation.  The minimum is eight.  If both shaders access the
-    * same texture unit, this counts as two texture units.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_COMBINED_TEXTURE_IMAGE_UNITS</code>.
-    */
-    maximumCombinedTextureImageUnits : {
-        get : function() {
-            return this._maximumCombinedTextureImageUnits;
-        }
-    },
-    
-    /**
-    * The approximate maximum cube mape width and height supported by this WebGL implementation.
-    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_CUBE_MAP_TEXTURE_SIZE</code>.
-    */
-    maximumCubeMapSize : {
-        get : function() {
-            return this._maximumCubeMapSize;
-        }
-    },
-    
-    /**
-    * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
-    * uniforms that can be used by a fragment shader with this WebGL implementation.  The minimum is 16.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_FRAGMENT_UNIFORM_VECTORS</code>.
-    */
-    maximumFragmentUniformVectors : {
-        get : function() {
-            return this._maximumFragmentUniformVectors;
-        }
-    },
-    
-    /**
-    * The maximum number of texture units that can be used from the fragment shader with this WebGL implementation.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_TEXTURE_IMAGE_UNITS</code>.
-    */
-    maximumTextureImageUnits : {
-        get : function() {
-            return this._maximumTextureImageUnits;
-        }
-    },
-    
-    /**
-    * The maximum renderbuffer width and height supported by this WebGL implementation.
-    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_RENDERBUFFER_SIZE</code>.
-    */
-    maximumRenderbufferSize : {
-        get : function() {
-            return this._maximumRenderbufferSize;
-        }
-    },
-    
-    /**
-    * The approximate maximum texture width and height supported by this WebGL implementation.
-    * The minimum is 64, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_TEXTURE_SIZE</code>.
-    */
-    maximumTextureSize : {
-        get : function() {
-            return this._maximumTextureSize;
-        }
-    },
-    
-    /**
-    * The maximum number of <code>vec4</code> varying variables supported by this WebGL implementation.
-    * The minimum is eight.  Matrices and arrays count as multiple <code>vec4</code>s.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VARYING_VECTORS</code>.
-    */
-    maximumVaryingVectors : {
-        get : function() {
-            return this._maximumVaryingVectors;
-        }
-    },
-    
-    /**
-    * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VERTEX_ATTRIBS</code>.
-    */
-    maximumVertexAttributes : {
-        get : function() {
-            return this._maximumVertexAttributes;
-        }
-    },
-    
-    /**
-    * The maximum number of texture units that can be used from the vertex shader with this WebGL implementation.
-    * The minimum is zero, which means the GL does not support vertex texture fetch.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VERTEX_TEXTURE_IMAGE_UNITS</code>.
-    */
-    maximumVertexTextureImageUnits : {
-        get : function() {
-            return this._maximumVertexTextureImageUnits;
-        }
-    },
-    
-    /**
-    * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
-    * uniforms that can be used by a vertex shader with this WebGL implementation.  The minimum is 16.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VERTEX_UNIFORM_VECTORS</code>.
-    */
-    maximumVertexUniformVectors : {
-        get : function() {
-            return this._maximumVertexUniformVectors;
-        }
-    },
-    
-    /**
-    * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
-    */
-    minimumAliasedLineWidth : {
-        get :  function() {
-            return this._aliasedLineWidthRange[0];
-        }
-    },
-    
-    /**
-    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
-    */
-    maximumAliasedLineWidth : {
-        get : function() {
-            return this._aliasedLineWidthRange[1];
-        }
-    },
-    
-    /**
-    * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
-    */
-    minimumAliasedPointSize : {
-        get : function() {
-            return this._aliasedPointSizeRange[0];
-        }
-    },
-    
-    /**
-    * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
-    */
-    maximumAliasedPointSize : {
-        get : function() {
-            return this._aliasedPointSizeRange[1];
-        }
-    },
-    
-    /**
-    * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
-    */
-    maximumViewportWidth : {
-        get : function() {
-            return this._maximumViewportDimensions[0];
-        }
-    },
-    
-    /**
-    * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
-    */
-    maximumViewportHeight : {
-        get : function() {
-            return this._maximumViewportDimensions[1];
-        }
-    },
-    
-    /**
-    * <code>true</code> if the WebGL context supports antialiasing.  By default
-    * antialiasing is requested, but it is not supported by all systems.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    */
-    antialias : {
-        get : function() {
-            return this._antialias;
-        }
-    },
-    
-    /**
-    * <code>true</code> if the OES_standard_derivatives extension is supported.  This
-    * extension provides access to <code>dFdx<code>, <code>dFdy<code>, and <code>fwidth<code>
-    * functions from GLSL.  A shader using these functions still needs to explicitly enable the
-    * extension with <code>#extension GL_OES_standard_derivatives : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/gles/extensions/OES/OES_standard_derivatives.txt|OES_standard_derivatives}
-    */
-    standardDerivatives : {
-        get : function() {
-            return !!this._standardDerivatives;
-        }
-    },
-    
-    /**
-    * <code>true</code> if the OES_element_index_uint extension is supported.  This
-    * extension allows the use of unsigned int indices, which can improve performance by
-    * eliminating batch breaking caused by unsigned short indices.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/|OES_element_index_uint}
-    */
-    elementIndexUint : {
-        get : function() {
-            return !!this._elementIndexUint;
-        }
-    },
-    
-    /**
-    * <code>true</code> if WEBGL_depth_texture is supported.  This extension provides
-    * access to depth textures that, for example, can be attached to framebuffers for shadow mapping.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/|WEBGL_depth_texture}
-    */
-    depthTexture : {
-        get : function() {
-            return !!this._depthTexture;
-        }
-    },
-    
-    /**
-    * <code>true</code> if OES_texture_float is supported.  This extension provides
-    * access to floating point textures that, for example, can be attached to framebuffers for high dynamic range.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt|OES_texture_float}
-    */
-    floatingPointTexture : {
-        get : function() {
-            return !!this._textureFloat;
-        }
-    },
-    
-    textureFilterAnisotropic : {
-        get : function() {
-            return !!this._textureFilterAnisotropic;
-        }
-    },
-    
-    maximumTextureFilterAnisotropy : {
-        get : function() {
-            return this._maximumTextureFilterAnisotropy;
-        }
-    },
-    
-    /**
-    * <code>true</code> if the OES_vertex_array_object extension is supported.  This
-    * extension can improve performance by reducing the overhead of switching vertex arrays.
-    * When enabled, this extension is automatically used by {@link VertexArray}.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/|OES_vertex_array_object}
-    */
-    vertexArrayObject : {
-        get : function() {
-            return !!this._vertexArrayObject;
-        }
-    },
-    
-    /**
-    * <code>true</code> if the EXT_frag_depth extension is supported.  This
-    * extension provides access to the <code>gl_FragDepthEXT<code> built-in output variable
-    * from GLSL fragment shaders.  A shader using these functions still needs to explicitly enable the
-    * extension with <code>#extension GL_EXT_frag_depth : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/|EXT_frag_depth}
-    */
-    fragmentDepth : {
-        get : function() {
-            return !!this._fragDepth;
-        }
-    },
-    
-    /**
-    * <code>true</code> if the WEBGL_draw_buffers extension is supported. This
-    * extensions provides support for multiple render targets. The framebuffer object can have mutiple
-    * color attachments and the GLSL fragment shader can write to the built-in output array <code>gl_FragData</code>.
-    * A shader using this feature needs to explicitly enable the extension with
-    * <code>#extension GL_EXT_draw_buffers : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/|WEBGL_draw_buffers}
-    */
-    drawBuffers : {
-        get : function() {
-            return !!this._drawBuffers;
-        }
-    },
-    
-    /**
-    * The maximum number of simultaneous outputs that may be written in a fragment shader.
-    * @memberof Context.prototype
-    * @type {Number}
-    */
-    maximumDrawBuffers : {
-        get : function() {
-            return this._maximumDrawBuffers;
-        }
-    },
-    
-    /**
-    * The maximum number of color attachments supported.
-    * @memberof Context.prototype
-    * @type {Number}
-    */
-    maximumColorAttachments : {
-        get : function() {
-            return this._maximumColorAttachments;
-        }
-    },
-    
-    throwOnWebGLError : {
-        get : function() {
-            return this._throwOnWebGLError;
-        },
-        set : function(value) {
-            this._throwOnWebGLError = value;
-            this._gl = wrapGL(this._originalGLContext, value ? throwOnError : null);
-        }
-    },
-    
-    /**
-    * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
-    * be used as a placeholder texture while other textures are downloaded.
-    * @memberof Context.prototype
-    * @type {Texture}
-    */
-    defaultTexture : {
-        get : function() {
-            if (this._defaultTexture === undefined) {
-                this._defaultTexture = this.createTexture2D({
-                    source : {
-                        width : 1,
-                        height : 1,
-                        arrayBufferView : new Uint8Array([255, 255, 255, 255])
-                    }
-                    });
-            }
-            
-            return this._defaultTexture;
-        }
-    },
     
     /**
     * A cube map, where each face is a 1x1 RGBA texture initialized to
@@ -1238,12 +764,7 @@ defineProperties(Context.prototype, {
         }
     },
     
-    /**
-    * Gets an object representing the currently bound framebuffer.  While this instance is not an actual
-    * {@link Framebuffer}, it is used to represent the default framebuffer in calls to
-    * {@link Context.createTexture2DFromFramebuffer}.
-    * @type {Object}
-    */
+
     defaultFramebuffer : {
         get : function() {
             return defaultFramebufferMarker;
@@ -1496,7 +1017,7 @@ Context.prototype.createIndexBuffer = function(typedArrayOrSizeInBytes, usage, i
 Context.prototype.createVertexArray = function(attributes, indexBuffer) {
     return new VertexArray(this._gl, this._vertexArrayObject, attributes, indexBuffer);
 };
-
+*/
 /**
 * options.source can be {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
 *
@@ -1517,10 +1038,10 @@ Context.prototype.createVertexArray = function(attributes, indexBuffer) {
 * @see Context#createCubeMap
 * @see Context#createSampler
 */
-Context.prototype.createTexture2D = function(options) {
-    return new Texture(this, options);
-};
-
+    func createTexture2D(options: TextureOptions) {
+        return Texture(self, options: options)
+    }
+/*
 /**
 * Creates a texture, and copies a subimage of the framebuffer to it.  When called without arguments,
 * the texture is the same width and height as the framebuffer and contains its contents.

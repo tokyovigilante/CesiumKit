@@ -54,28 +54,54 @@ struct Matrix4 : Packable {
     */
     static let packedLength = 16
     
-    var internalRep = [Double](count: 16, repeatedValue: 0.0)
+    var grid = [Double](count: 16, repeatedValue: 0.0)
 
     init(column0Row0: Double = 0.0, column1Row0: Double = 0.0, column2Row0: Double = 0.0, column3Row0: Double = 0.0,
         column0Row1: Double = 0.0, column1Row1: Double = 0.0, column2Row1: Double = 0.0, column3Row1: Double = 0.0,
         column0Row2: Double = 0.0, column1Row2: Double = 0.0, column2Row2: Double = 0.0, column3Row2: Double = 0.0,
         column0Row3: Double = 0.0, column1Row3: Double = 0.0, column2Row3: Double = 0.0, column3Row3: Double = 0.0) {
-            internalRep[0] = column0Row0
-            internalRep[1] = column0Row1
-            internalRep[2] = column0Row2
-            internalRep[3] = column0Row3
-            internalRep[4] = column1Row0
-            internalRep[5] = column1Row1
-            internalRep[6] = column1Row2
-            internalRep[7] = column1Row3
-            internalRep[8] = column2Row0
-            internalRep[9] = column2Row1
-            internalRep[10] = column2Row2
-            internalRep[11] = column2Row3
-            internalRep[12] = column3Row0
-            internalRep[13] = column3Row1
-            internalRep[14] = column3Row2
-            internalRep[15] = column3Row3
+            grid[0] = column0Row0
+            grid[1] = column0Row1
+            grid[2] = column0Row2
+            grid[3] = column0Row3
+            grid[4] = column1Row0
+            grid[5] = column1Row1
+            grid[6] = column1Row2
+            grid[7] = column1Row3
+            grid[8] = column2Row0
+            grid[9] = column2Row1
+            grid[10] = column2Row2
+            grid[11] = column2Row3
+            grid[12] = column3Row0
+            grid[13] = column3Row1
+            grid[14] = column3Row2
+            grid[15] = column3Row3
+    }
+    
+    subscript(index: Int) -> Double {
+        get {
+            assert(index < Matrix4.packedLength, "Index out of range")
+            return grid[index]
+        }
+        set {
+            assert(index < Matrix4.packedLength, "Index out of range")
+            grid[index] = newValue
+        }
+    }
+    
+    func indexIsValidForRow(row: Int, column: Int) -> Bool {
+        return row >= 0 && column >= 0 && (row * column) + column < Matrix4.packedLength
+    }
+    
+    subscript(row: Int, column: Int) -> Double {
+        get {
+            assert(indexIsValidForRow(row, column: column), "Index out of range")
+            return grid[(row * column) + column]
+        }
+        set {
+            assert(indexIsValidForRow(row, column: column), "Index out of range")
+            grid[(row * column) + column] = newValue
+        }
     }
 
     /**
@@ -86,54 +112,31 @@ struct Matrix4 : Packable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        for var index = 0; index < 3; ++index {
+        for var index = 0; index < Matrix4.packedLength; ++index {
             if array.count < startingIndex - Matrix4.packedLength {
-                array.append(Float(internalRep[index])
+                array.append(Float(grid[index]))
             } else {
-                array[startingIndex + index] = Float(internalRep[index])
+                array[startingIndex + index] = Float(grid[index])
             }
         }
     }
 
-/**
-* Retrieves an instance from a packed array.
-*
-* @param {Number[]} array The packed array.
-* @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-* @param {Matrix4} [result] The object into which to store the result.
-*/
-Matrix4.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-        result = new Matrix4();
-    }
-    
-    result[0] = array[startingIndex++];
-    result[1] = array[startingIndex++];
-    result[2] = array[startingIndex++];
-    result[3] = array[startingIndex++];
-    result[4] = array[startingIndex++];
-    result[5] = array[startingIndex++];
-    result[6] = array[startingIndex++];
-    result[7] = array[startingIndex++];
-    result[8] = array[startingIndex++];
-    result[9] = array[startingIndex++];
-    result[10] = array[startingIndex++];
-    result[11] = array[startingIndex++];
-    result[12] = array[startingIndex++];
-    result[13] = array[startingIndex++];
-    result[14] = array[startingIndex++];
-    result[15] = array[startingIndex];
-    return result;
-};
-
+    /**
+    * Retrieves an instance from a packed array.
+    *
+    * @param {Number[]} array The packed array.
+    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+    * @param {Matrix4} [result] The object into which to store the result.
+    */
+    static func unpack(array: [Float], startingIndex: Int) -> Matrix4 {
+        var result = Matrix4()
+        
+        for var index = 0; index < Matrix4.packedLength; ++index {
+            result[index] = Double(array[index])
+        }
+        return result
+}
+/*
 /**
 * Duplicates a Matrix4 instance.
 *
@@ -1572,6 +1575,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     result[15] = 1.0;
     return result;
 };
+    */
 
 /**
 * Computes the product of a matrix and a column vector.
@@ -1581,35 +1585,21 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 * @param {Cartesian4} result The object onto which to store the result.
 * @returns {Cartesian4} The modified result parameter.
 */
-Matrix4.multiplyByVector = function(matrix, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
+
+        var vX = cartesian.x
+        var vY = cartesian.y
+        var vZ = cartesian.z
+        var vW = cartesian.w
+        
+        var x = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
+        var y = grid[1] * vX + grid[5] * vY + grid[9] * vZ + grid[13] * vW
+        var z = grid[2] * vX + grid[6] * vY + grid[10] * vZ + grid[14] * vW
+        var w = grid[3] * vX + grid[7] * vY + grid[11] * vZ + grid[15] * vW
+
+        return Cartesian4(x: x, y: y, z: z, w: w)
     }
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var vX = cartesian.x;
-    var vY = cartesian.y;
-    var vZ = cartesian.z;
-    var vW = cartesian.w;
-    
-    var x = matrix[0] * vX + matrix[4] * vY + matrix[8] * vZ + matrix[12] * vW;
-    var y = matrix[1] * vX + matrix[5] * vY + matrix[9] * vZ + matrix[13] * vW;
-    var z = matrix[2] * vX + matrix[6] * vY + matrix[10] * vZ + matrix[14] * vW;
-    var w = matrix[3] * vX + matrix[7] * vY + matrix[11] * vZ + matrix[15] * vW;
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
+    /*
 
 /**
 * Computes the product of a matrix and a {@link Cartesian3}.  This is equivalent to calling {@link Matrix4.multiplyByVector}
@@ -2443,6 +2433,6 @@ Matrix4.prototype.toString = function() {
     '(' + this[1] + ', ' + this[5] + ', ' + this[9] + ', ' + this[13] +')\n' +
     '(' + this[2] + ', ' + this[6] + ', ' + this[10] + ', ' + this[14] +')\n' +
     '(' + this[3] + ', ' + this[7] + ', ' + this[11] + ', ' + this[15] +')';
-};
+};*/
 
 }
