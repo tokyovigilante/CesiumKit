@@ -107,7 +107,7 @@ enum ComponentDatatype: Int {
         case ComponentDatatype.Double:
             return 8//sizeof(Double)
         default:
-            assert("Invalid componentDataType")
+            assert(true, "Invalid componentDataType")
         }
     }
     

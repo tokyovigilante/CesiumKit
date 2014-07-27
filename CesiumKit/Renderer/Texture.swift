@@ -6,14 +6,18 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
 
 struct TextureOptions {
     
     struct Source {
         var width: Int? = nil
         var height: Int? = nil
+        
+        var arrayBufferView: [UInt8]?
+        var frameBuffer: Framebuffer?
     }
+    
     var source: Source?
     
     var width: Int? = nil
@@ -24,142 +28,121 @@ struct TextureOptions {
     
     var pixelDatatype: PixelDatatype = PixelDatatype.UnsignedByte
     
+    var flipY: Bool = true
+    
+    var premultiplyAlpha = true
 }
 
 
 
 class Texture {
     
+    var width: Int
+    
+    var height: Int
+    
+    var pixelFormat: PixelFormat
+    
+    var pixelDatatype: PixelDatatype
+    
     var options: TextureOptions
-/*
-    var Texture = function(context, options) {
-            };*/
+    
+    var textureFilterAnisotropic = true
+    
+    weak var context: Context?
+    
     init(context: Context, options: TextureOptions) {
         
         self.options = options
-        source = options.source
         
-        self.width = source.width
-        self.height = source.height
+        var source = options.source
         
-        pixelFormat = options.pixelFormat
+        self.width = options.source ? options.source!.width! : options.width!
+        self.height = options.source ? options.source!.width! : options.width!
+        
+        self.pixelFormat = options.pixelFormat
 
-        PixelDatatype = options.pixelDatatype
+        self.pixelDatatype = options.pixelDatatype
         
-        
-        var source = options.source;
-        var width = defined(source) ? source.width : options.width;
-        var height = defined(source) ? source.height : options.height;
-        var pixelFormat = defaultValue(options.pixelFormat, PixelFormat.RGBA);
-        var pixelDatatype = defaultValue(options.pixelDatatype, PixelDatatype.UNSIGNED_BYTE);
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(width) || !defined(height)) {
-            throw new DeveloperError('options requires a source field to create an initialized texture or width and height fields to create a blank texture.');
+        assert(self.width > 0, "Width must be greater than zero.")
+        assert(self.width <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+        assert(self.height > 0, "Height must be greater than zero.")
+        assert(self.height <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+
+        if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
+            assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
+        }
+        if self.pixelFormat == PixelFormat.DepthStencil && self.pixelDatatype != PixelDatatype.UnsignedInt24_8 {
+            assert(true, "When options.pixelFormat is DEPTH_STENCIL, options.pixelDatatype must be UNSIGNED_INT_24_8_WEBGL")
+        }
+        if self.pixelDatatype == PixelDatatype.Float && !context.floatingPointTexture {
+            assert(true, "When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.  Check context.floatingPointTexture.")∫
         }
         
-        if (width <= 0) {
-            throw new DeveloperError('Width must be greater than zero.');
-        }
-        
-        if (width > context._maximumTextureSize) {
-            throw new DeveloperError('Width must be less than or equal to the maximum texture size (' + context._maximumTextureSize + ').  Check maximumTextureSize.');
-        }
-        
-        if (height <= 0) {
-            throw new DeveloperError('Height must be greater than zero.');
-        }
-        
-        if (height > context._maximumTextureSize) {
-            throw new DeveloperError('Height must be less than or equal to the maximum texture size (' + context._maximumTextureSize + ').  Check maximumTextureSize.');
-        }
-        
-        if (!PixelFormat.validate(pixelFormat)) {
-            throw new DeveloperError('Invalid options.pixelFormat.');
-        }
-        
-        if (!PixelDatatype.validate(pixelDatatype)) {
-            throw new DeveloperError('Invalid options.pixelDatatype.');
-        }
-        
-        if ((pixelFormat === PixelFormat.DEPTH_COMPONENT) &&
-            ((pixelDatatype !== PixelDatatype.UNSIGNED_SHORT) && (pixelDatatype !== PixelDatatype.UNSIGNED_INT))) {
-                throw new DeveloperError('When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.');
-        }
-        
-        if ((pixelFormat === PixelFormat.DEPTH_STENCIL) && (pixelDatatype !== PixelDatatype.UNSIGNED_INT_24_8_WEBGL)) {
-            throw new DeveloperError('When options.pixelFormat is DEPTH_STENCIL, options.pixelDatatype must be UNSIGNED_INT_24_8_WEBGL.');
-        }
-        //>>includeEnd('debug');
-        
-        if ((pixelDatatype === PixelDatatype.FLOAT) && !context.floatingPointTexture) {
-            throw new DeveloperError('When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.  Check context.floatingPointTexture.');
-        }
-        
-        if (PixelFormat.isDepthFormat(pixelFormat)) {
+        if self.pixelFormat.isDepthFormat() {
             //>>includeStart('debug', pragmas.debug);
-            if (defined(source)) {
-                throw new DeveloperError('When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.');
+            if source {
+                assert(true, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.")
             }
             //>>includeEnd('debug');
             
             if (!context.depthTexture) {
-                throw new DeveloperError('When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture.');
+                assert(true, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture")
             }
         }
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.preMultiplyAlpha || pixelFormat === PixelFormat.RGB || pixelFormat === PixelFormat.LUMINANCE;
-        var flipY = defaultValue(options.flipY, true);
+        var preMultiplyAlpha = options.preMultiplyAlpha || self.pixelFormat === PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        var flipY = options.flipY
         
-        var gl = context._gl;
-        var textureTarget = gl.TEXTURE_2D;
-        var texture = gl.createTexture();
+        var textureName: GLuint = 0
+        glGenTextures(1, &textureName)
         
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(textureTarget, texture);
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, textureName)
         
         if (defined(source)) {
             // TODO: _gl.pixelStorei(_gl._UNPACK_ALIGNMENT, 4);
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
+            //glPixelStorei(GL_UNPACK, <#param: GLint#>)
+            //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
+            //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             
-            if (defined(source.arrayBufferView)) {
+            if source.arrayBufferView {
                 // Source: typed array
-                gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, source.arrayBufferView);
+                glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, GLsizei(width), GLsizei(height), 0, pixelFormat, pixelDatatype, &source!.arrayBufferView!)
             } else if (defined(source.framebuffer)) {
                 // Source: framebuffer
-                if (source.framebuffer !== context.defaultFramebuffer) {
-                    source.framebuffer._bind();
+                if (source.framebuffer != context.defaultFramebuffer) {
+                    source.framebuffer.bind()
                 }
                 
-                gl.copyTexImage2D(textureTarget, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0);
+                glCopyTexImage2D(textureTarget, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
                 
-                if (source.framebuffer !== context.defaultFramebuffer) {
-                    source.framebuffer._unBind();
+                if (source.framebuffer != context.defaultFramebuffer) {
+                    source.framebuffer.unbind()
                 }
-            } else {
+            } /*else {
                 // Source: ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement
                 gl.texImage2D(textureTarget, 0, pixelFormat, pixelFormat, pixelDatatype, source);
-            }
+            }*/
         } else {
-            gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, null);
+            gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
         }
-        gl.bindTexture(textureTarget, null);
+        gl.bindTexture(textureTarget, null)
         
-        this._context = context;
-        this._textureFilterAnisotropic = context._textureFilterAnisotropic;
-        this._textureTarget = textureTarget;
-        this._texture = texture;
-        this._pixelFormat = pixelFormat;
-        this._pixelDatatype = pixelDatatype;
-        this._width = width;
-        this._height = height;
-        this._dimensions = new Cartesian2(width, height);
-        this._preMultiplyAlpha = preMultiplyAlpha;
-        this._flipY = flipY;
-        this._sampler = undefined;
+        self.context = context
+        self.textureFilterAnisotropic = context.textureFilterAnisotropic
+        this._textureTarget = textureTarget
+        this._texture = texture
+        this._pixelFormat = pixelFormat
+        this._pixelDatatype = pixelDatatype
+        this._width = width
+        this._height = height
+        this._dimensions = Cartesian2(width, height)
+        this._preMultiplyAlpha = preMultiplyAlpha
+        this._flipY = flipY
+        this._sampler = undefined
         
         this.sampler = undefined;
 

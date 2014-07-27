@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
 
 
 
@@ -14,6 +14,9 @@ import Foundation
 * @private
 */
 class Framebuffer {
+    
+    private
+    var framebuffer: GLint
     /*
     init (gl, maximumColorAttachments, options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
@@ -235,17 +238,16 @@ class Framebuffer {
     }
     }
     });
+    */
+    func bind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, self.framebuffer)
+    }
+
+    func unbind () {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+    }
     
-    Framebuffer.prototype._bind = function() {
-    var gl = this._gl;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
-    };
-    
-    Framebuffer.prototype._unBind = function() {
-    var gl = this._gl;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    };
-    
+    /*
     Framebuffer.prototype._getActiveColorAttachments = function() {
     return this._activeColorAttachments;
     };

@@ -546,21 +546,19 @@ class Context {
     * @memberof Context.prototype
     * @type {Texture}
     */
-    var _defaultTexture: Texture
+    var _defaultTexture: Texture?
     var defaultTexture: Texture {
     get {
         if !_defaultTexture {
-            {
-                self.createTexture2D(TextureOptions(this._defaultTexture = this.createTexture2D({
-                    source : {
-                        width : 1,
-                        height : 1,
-                        arrayBufferView : new Uint8Array([255, 255, 255, 255])
-                    }))
+                _defaultTexture = self.createTexture2D(TextureOptions(
+                    source : Texture.TextureOptions.Source(
+                        width: 1,
+                        height: 1,
+                        arrayBufferView: Array<Uint8> = [255, 255, 255, 255]
+                    )))
             }
-        }
         return _defaultTexture
-    }
+        }
     }
     
     /**
@@ -570,7 +568,33 @@ class Context {
     * @memberof Context.prototype
     * @type {CubeMap}
     */
-    var _defaultCubeMap: CubeMap
+    var _defaultCubeMap: CubeMap?
+    var defaultCubeMap: CubeMap {
+    get {
+        /*
+        if !_defaultCubeMap {
+                var face = {
+                    width : 1,
+                    height : 1,
+                    arrayBufferView : new Uint8Array([255, 255, 255, 255])
+                };
+                
+                this._defaultCubeMap = this.createCubeMap({
+                    source : {
+                        positiveX : face,
+                        negativeX : face,
+                        positiveY : face,
+                        negativeY : face,
+                        positiveZ : face,
+                        negativeZ : face
+                    }
+                    });
+            }
+            */
+            return _defaultCubeMap
+            
+        }
+    }
     
     /**
     * A cache of objects tied to this context.  Just before the Context is destroyed,
@@ -685,98 +709,31 @@ class Context {
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
     
-    /**
-    * @example
-    * {
-    *   webgl : {
-    *     alpha : false,
-    *     depth : true,
-    *     stencil : false,
-    *     antialias : true,
-    *     premultipliedAlpha : true,
-    *     preserveDrawingBuffer : false
-    *     failIfMajorPerformanceCaveat : true
-    *   },
-    *   allowTextureFilterAnisotropic : true
-    * }
-    */
-    //this.options = options;
-
-    
-    currentRenderState.apply(defaultPassState)
-
-
-    
-    /**
-    * A cube map, where each face is a 1x1 RGBA texture initialized to
-    * [255, 255, 255, 255].  This can be used as a placeholder cube map while
-    * other cube maps are downloaded.
-    * @memberof Context.prototype
-    * @type {CubeMap}
-    */
-    defaultCubeMap : {
-        get : function() {
-            if (this._defaultCubeMap === undefined) {
-                var face = {
-                    width : 1,
-                    height : 1,
-                    arrayBufferView : new Uint8Array([255, 255, 255, 255])
-                };
-                
-                this._defaultCubeMap = this.createCubeMap({
-                    source : {
-                        positiveX : face,
-                        negativeX : face,
-                        positiveY : face,
-                        negativeY : face,
-                        positiveZ : face,
-                        negativeZ : face
-                    }
-                    });
-            }
-            
-            return this._defaultCubeMap;
-            
-        }
-    },
-    
-    /**
-    * The drawingBufferWidth of the underlying GL context.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
-    */
-    drawingBufferHeight : {
-        get : function() {
-            return this._gl.drawingBufferHeight;
-        }
-    },
-    
-    /**
-    * The drawingBufferHeight of the underlying GL context.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
-    */
-    drawingBufferWidth : {
-        get : function() {
-            return this._gl.drawingBufferWidth;
-        }
-    },
-    
-
-    defaultFramebuffer : {
-        get : function() {
-            return defaultFramebufferMarker;
-        }
+        /**
+        * @example
+        * {
+        *   webgl : {
+        *     alpha : false,
+        *     depth : true,
+        *     stencil : false,
+        *     antialias : true,
+        *     premultipliedAlpha : true,
+        *     preserveDrawingBuffer : false
+        *     failIfMajorPerformanceCaveat : true
+        *   },
+        *   allowTextureFilterAnisotropic : true
+        * }
+        */
+        //this.options = options;
+        
+        
+        currentRenderState.apply(defaultPassState)
     }
-    });
+    
+    func replaceShaderProgram(shaderProgram: ShaderProgram, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram {
+        //return shaderCache.replaceShaderProgram(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations)
+    }
 
-Context.prototype.replaceShaderProgram = function(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations) {
-    return this.shaderCache.replaceShaderProgram(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations);
-};
-
-    */
     func createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram {
         //return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
     }

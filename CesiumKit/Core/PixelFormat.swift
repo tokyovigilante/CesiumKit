@@ -63,4 +63,17 @@ enum PixelFormat: Int {
     * @default 0x190A
     */
     LuminanceAlpha = 0x190A
+    
+    func isColorFormat() {
+        return self == PixelFormat.Alpha ||
+            self == PixelFormat.RGB ||
+            self == PixelFormat.RGBA ||
+            self == PixelFormat.Luminance ||
+            self == PixelFormat.LuminanceAlpha
+    }
+    
+    func isDepthFormat() {
+        return self === PixelFormat.DepthComponent ||
+            pixelFormat === PixelFormat.DepthStencil
+    }
 }
