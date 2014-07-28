@@ -21,7 +21,7 @@ struct TextureOptions {
     var source: Source?
     
     var width: Int? = nil
-
+    
     var height: Int? = nil
     
     var pixelFormat: PixelFormat = PixelFormat.RGBA
@@ -61,14 +61,14 @@ class Texture {
         self.height = options.source ? options.source!.width! : options.width!
         
         self.pixelFormat = options.pixelFormat
-
+        
         self.pixelDatatype = options.pixelDatatype
         
         assert(self.width > 0, "Width must be greater than zero.")
         assert(self.width <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
-
+        
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
         }
@@ -123,8 +123,8 @@ class Texture {
                     source.framebuffer.unbind()
                 }
             } /*else {
-                // Source: ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement
-                gl.texImage2D(textureTarget, 0, pixelFormat, pixelFormat, pixelDatatype, source);
+            // Source: ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement
+            gl.texImage2D(textureTarget, 0, pixelFormat, pixelFormat, pixelDatatype, source);
             }*/
         } else {
             gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
@@ -144,8 +144,8 @@ class Texture {
         this._flipY = flipY
         this._sampler = undefined
         
-        this.sampler = undefined;
-
+        this.sampler = undefined
+        
     }
     /*
     defineProperties(Texture.prototype, {
@@ -186,147 +186,147 @@ class Texture {
     if (sampler.minificationFilter !== TextureMinificationFilter.NEAREST &&
     sampler.minificationFilter !== TextureMinificationFilter.NEAREST_MIPMAP_NEAREST) {
     throw new DeveloperError('Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.');
-}
-
-if (sampler.magnificationFilter !== TextureMagnificationFilter.NEAREST) {
+    }
+    
+    if (sampler.magnificationFilter !== TextureMagnificationFilter.NEAREST) {
     throw new DeveloperError('Only the NEAREST magnification filter is supported for floating point textures.');
-}
-}
-
-var gl = this._context._gl;
-var target = this._textureTarget;
-
-gl.activeTexture(gl.TEXTURE0);
-gl.bindTexture(target, this._texture);
-gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, sampler.minificationFilter);
-gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, sampler.magnificationFilter);
-
-gl.texParameteri(target, gl.TEXTURE_WRAP_S, sampler.wrapS);
-gl.texParameteri(target, gl.TEXTURE_WRAP_T, sampler.wrapT);
-if (defined(this._textureFilterAnisotropic)) {
+    }
+    }
+    
+    var gl = this._context._gl;
+    var target = this._textureTarget;
+    
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(target, this._texture);
+    gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, sampler.minificationFilter);
+    gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, sampler.magnificationFilter);
+    
+    gl.texParameteri(target, gl.TEXTURE_WRAP_S, sampler.wrapS);
+    gl.texParameteri(target, gl.TEXTURE_WRAP_T, sampler.wrapT);
+    if (defined(this._textureFilterAnisotropic)) {
     gl.texParameteri(target, this._textureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, sampler.maximumAnisotropy);
-}
-gl.bindTexture(target, null);
-
-this._sampler = !samplerDefined ? undefined : {
+    }
+    gl.bindTexture(target, null);
+    
+    this._sampler = !samplerDefined ? undefined : {
     wrapS : sampler.wrapS,
     wrapT : sampler.wrapT,
     minificationFilter : sampler.minificationFilter,
     magnificationFilter : sampler.magnificationFilter,
     maximumAnisotropy : sampler.maximumAnisotropy
-};
-}
-},
-pixelFormat : {
-    get : function() {
-        return this._pixelFormat;
+    };
     }
-},
-pixelDatatype : {
+    },
+    pixelFormat : {
     get : function() {
-        return this._pixelDatatype;
+    return this._pixelFormat;
     }
-},
-dimensions : {
+    },
+    pixelDatatype : {
     get : function() {
-        return this._dimensions;
+    return this._pixelDatatype;
     }
-},
-preMultiplyAlpha : {
+    },
+    dimensions : {
     get : function() {
-        return this._preMultiplyAlpha;
+    return this._dimensions;
     }
-},
-flipY : {
+    },
+    preMultiplyAlpha : {
     get : function() {
-        return this._flipY;
+    return this._preMultiplyAlpha;
     }
-},
-width : {
+    },
+    flipY : {
     get : function() {
-        return this._width;
+    return this._flipY;
     }
-},
-height : {
+    },
+    width : {
     get : function() {
-        return this._height;
+    return this._width;
     }
-},
-_target : {
+    },
+    height : {
     get : function() {
-        return this._textureTarget;
+    return this._height;
     }
-}
-});
-
-/**
-* Copy new image data into this texture, from a source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
-* or an object with width, height, and arrayBufferView properties.
-*
-* @param {Object} source The source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video},
-*                        or an object with width, height, and arrayBufferView properties.
-* @param {Number} [xOffset=0] The offset in the x direction within the texture to copy into.
-* @param {Number} [yOffset=0] The offset in the y direction within the texture to copy into.
-*
-* @exception {DeveloperError} Cannot call copyFrom when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
-* @exception {DeveloperError} xOffset must be greater than or equal to zero.
-* @exception {DeveloperError} yOffset must be greater than or equal to zero.
-* @exception {DeveloperError} xOffset + source.width must be less than or equal to width.
-* @exception {DeveloperError} yOffset + source.height must be less than or equal to height.
-* @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
-*
-* @example
-* texture.copyFrom({
-*   width : 1,
-*   height : 1,
-*   arrayBufferView : new Uint8Array([255, 0, 0, 255])
-* });
-*/
-Texture.prototype.copyFrom = function(source, xOffset, yOffset) {
+    },
+    _target : {
+    get : function() {
+    return this._textureTarget;
+    }
+    }
+    });
+    
+    /**
+    * Copy new image data into this texture, from a source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
+    * or an object with width, height, and arrayBufferView properties.
+    *
+    * @param {Object} source The source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video},
+    *                        or an object with width, height, and arrayBufferView properties.
+    * @param {Number} [xOffset=0] The offset in the x direction within the texture to copy into.
+    * @param {Number} [yOffset=0] The offset in the y direction within the texture to copy into.
+    *
+    * @exception {DeveloperError} Cannot call copyFrom when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
+    * @exception {DeveloperError} xOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} yOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} xOffset + source.width must be less than or equal to width.
+    * @exception {DeveloperError} yOffset + source.height must be less than or equal to height.
+    * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
+    *
+    * @example
+    * texture.copyFrom({
+    *   width : 1,
+    *   height : 1,
+    *   arrayBufferView : new Uint8Array([255, 0, 0, 255])
+    * });
+    */
+    Texture.prototype.copyFrom = function(source, xOffset, yOffset) {
     xOffset = defaultValue(xOffset, 0);
     yOffset = defaultValue(yOffset, 0);
     
     //>>includeStart('debug', pragmas.debug);
     if (!defined(source)) {
-        throw new DeveloperError('source is required.');
+    throw new DeveloperError('source is required.');
     }
     if (PixelFormat.isDepthFormat(this._pixelFormat)) {
-        throw new DeveloperError('Cannot call copyFrom when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
+    throw new DeveloperError('Cannot call copyFrom when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
     }
     if (xOffset < 0) {
-        throw new DeveloperError('xOffset must be greater than or equal to zero.');
+    throw new DeveloperError('xOffset must be greater than or equal to zero.');
     }
     if (yOffset < 0) {
-        throw new DeveloperError('yOffset must be greater than or equal to zero.');
+    throw new DeveloperError('yOffset must be greater than or equal to zero.');
     }
     if (xOffset +  source.width > this._width) {
-        throw new DeveloperError('xOffset + source.width must be less than or equal to width.');
+    throw new DeveloperError('xOffset + source.width must be less than or equal to width.');
     }
     if (yOffset + source.height > this._height) {
-        throw new DeveloperError('yOffset + source.height must be less than or equal to height.');
+    throw new DeveloperError('yOffset + source.height must be less than or equal to height.');
     }
     //>>includeEnd('debug');
     
     // Internet Explorer 11.0.8 is apparently unable to upload a texture to a non-zero
     // yOffset when the pipeline is configured to FLIP_Y.  So do the flip manually.
     if (FeatureDetection.isInternetExplorer() && yOffset !== 0 && this._flipY) {
-        var texture = new Texture(this._context, {
-            source : source,
-            flipY : true,
-            pixelFormat : this._pixelFormat,
-            pixelDatatype : this._pixelDatatype,
-            preMultiplyAlpha : this._preMultiplyAlpha
-            });
-        
-        var framebuffer = this._context.createFramebuffer({
-            colorTextures : [texture]
-            });
-        framebuffer._bind();
-        this.copyFromFramebuffer(xOffset, yOffset, 0, 0, texture.width, texture.height);
-        framebuffer._unBind();
-        framebuffer.destroy();
-        
-        return;
+    var texture = new Texture(this._context, {
+    source : source,
+    flipY : true,
+    pixelFormat : this._pixelFormat,
+    pixelDatatype : this._pixelDatatype,
+    preMultiplyAlpha : this._preMultiplyAlpha
+    });
+    
+    var framebuffer = this._context.createFramebuffer({
+    colorTextures : [texture]
+    });
+    framebuffer._bind();
+    this.copyFromFramebuffer(xOffset, yOffset, 0, 0, texture.width, texture.height);
+    framebuffer._unBind();
+    framebuffer.destroy();
+    
+    return;
     }
     
     var gl = this._context._gl;
@@ -339,33 +339,33 @@ Texture.prototype.copyFrom = function(source, xOffset, yOffset) {
     gl.bindTexture(target, this._texture);
     
     if (source.arrayBufferView) {
-        gl.texSubImage2D(target, 0, xOffset, yOffset,  source.width, source.height, this._pixelFormat, this._pixelDatatype, source.arrayBufferView);
+    gl.texSubImage2D(target, 0, xOffset, yOffset,  source.width, source.height, this._pixelFormat, this._pixelDatatype, source.arrayBufferView);
     } else {
-        gl.texSubImage2D(target, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
+    gl.texSubImage2D(target, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
     }
     
     gl.bindTexture(target, null);
-};
-
-/**
-* @param {Number} [xOffset=0] The offset in the x direction within the texture to copy into.
-* @param {Number} [yOffset=0] The offset in the y direction within the texture to copy into.
-* @param {Number} [framebufferXOffset=0] optional
-* @param {Number} [framebufferYOffset=0] optional
-* @param {Number} [width=width] optional
-* @param {Number} [height=height] optional
-*
-* @exception {DeveloperError} Cannot call copyFromFramebuffer when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
-* @exception {DeveloperError} Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT.
-* @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
-* @exception {DeveloperError} xOffset must be greater than or equal to zero.
-* @exception {DeveloperError} yOffset must be greater than or equal to zero.
-* @exception {DeveloperError} framebufferXOffset must be greater than or equal to zero.
-* @exception {DeveloperError} framebufferYOffset must be greater than or equal to zero.
-* @exception {DeveloperError} xOffset + width must be less than or equal to width.
-* @exception {DeveloperError} yOffset + height must be less than or equal to height.
-*/
-Texture.prototype.copyFromFramebuffer = function(xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height) {
+    };
+    
+    /**
+    * @param {Number} [xOffset=0] The offset in the x direction within the texture to copy into.
+    * @param {Number} [yOffset=0] The offset in the y direction within the texture to copy into.
+    * @param {Number} [framebufferXOffset=0] optional
+    * @param {Number} [framebufferYOffset=0] optional
+    * @param {Number} [width=width] optional
+    * @param {Number} [height=height] optional
+    *
+    * @exception {DeveloperError} Cannot call copyFromFramebuffer when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
+    * @exception {DeveloperError} Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT.
+    * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
+    * @exception {DeveloperError} xOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} yOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} framebufferXOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} framebufferYOffset must be greater than or equal to zero.
+    * @exception {DeveloperError} xOffset + width must be less than or equal to width.
+    * @exception {DeveloperError} yOffset + height must be less than or equal to height.
+    */
+    Texture.prototype.copyFromFramebuffer = function(xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height) {
     xOffset = defaultValue(xOffset, 0);
     yOffset = defaultValue(yOffset, 0);
     framebufferXOffset = defaultValue(framebufferXOffset, 0);
@@ -375,28 +375,28 @@ Texture.prototype.copyFromFramebuffer = function(xOffset, yOffset, framebufferXO
     
     //>>includeStart('debug', pragmas.debug);
     if (PixelFormat.isDepthFormat(this._pixelFormat)) {
-        throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
+    throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
     }
     if (this._pixelDatatype === PixelDatatype.FLOAT) {
-        throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT.');
+    throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT.');
     }
     if (xOffset < 0) {
-        throw new DeveloperError('xOffset must be greater than or equal to zero.');
+    throw new DeveloperError('xOffset must be greater than or equal to zero.');
     }
     if (yOffset < 0) {
-        throw new DeveloperError('yOffset must be greater than or equal to zero.');
+    throw new DeveloperError('yOffset must be greater than or equal to zero.');
     }
     if (framebufferXOffset < 0) {
-        throw new DeveloperError('framebufferXOffset must be greater than or equal to zero.');
+    throw new DeveloperError('framebufferXOffset must be greater than or equal to zero.');
     }
     if (framebufferYOffset < 0) {
-        throw new DeveloperError('framebufferYOffset must be greater than or equal to zero.');
+    throw new DeveloperError('framebufferYOffset must be greater than or equal to zero.');
     }
     if (xOffset + width > this._width) {
-        throw new DeveloperError('xOffset + width must be less than or equal to width.');
+    throw new DeveloperError('xOffset + width must be less than or equal to width.');
     }
     if (yOffset + height > this._height) {
-        throw new DeveloperError('yOffset + height must be less than or equal to height.');
+    throw new DeveloperError('yOffset + height must be less than or equal to height.');
     }
     //>>includeEnd('debug');
     
@@ -407,53 +407,53 @@ Texture.prototype.copyFromFramebuffer = function(xOffset, yOffset, framebufferXO
     gl.bindTexture(target, this._texture);
     gl.copyTexSubImage2D(target, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height);
     gl.bindTexture(target, null);
-};
-
-/**
-* @param {MipmapHint} [hint=MipmapHint.DONT_CARE] optional.
-*
-* @exception {DeveloperError} Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
-* @exception {DeveloperError} hint is invalid.
-* @exception {DeveloperError} This texture's width must be a power of two to call generateMipmap().
-* @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
-* @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
-*/
-Texture.prototype.generateMipmap = function(hint) {
+    };
+    
+    /**
+    * @param {MipmapHint} [hint=MipmapHint.DONT_CARE] optional.
+    *
+    * @exception {DeveloperError} Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.
+    * @exception {DeveloperError} hint is invalid.
+    * @exception {DeveloperError} This texture's width must be a power of two to call generateMipmap().
+    * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
+    * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
+    */
+    Texture.prototype.generateMipmap = function(hint) {
     hint = defaultValue(hint, MipmapHint.DONT_CARE);
     
-        //>>includeStart('debug', pragmas.debug);
-        if (PixelFormat.isDepthFormat(this._pixelFormat)) {
-            throw new DeveloperError('Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
-        }
-        if (this._width > 1 && !CesiumMath.isPowerOfTwo(this._width)) {
-            throw new DeveloperError('width must be a power of two to call generateMipmap().');
-        }
-        if (this._height > 1 && !CesiumMath.isPowerOfTwo(this._height)) {
-            throw new DeveloperError('height must be a power of two to call generateMipmap().');
-        }
-        if (!MipmapHint.validate(hint)) {
-            throw new DeveloperError('hint is invalid.');
-        }
-        //>>includeEnd('debug');
-
-        var gl = this._context._gl;
-        var target = this._textureTarget;
-
-        gl.hint(gl.GENERATE_MIPMAP_HINT, hint);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(target, this._texture);
-        gl.generateMipmap(target);
-        gl.bindTexture(target, null);
+    //>>includeStart('debug', pragmas.debug);
+    if (PixelFormat.isDepthFormat(this._pixelFormat)) {
+    throw new DeveloperError('Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
+    }
+    if (this._width > 1 && !CesiumMath.isPowerOfTwo(this._width)) {
+    throw new DeveloperError('width must be a power of two to call generateMipmap().');
+    }
+    if (this._height > 1 && !CesiumMath.isPowerOfTwo(this._height)) {
+    throw new DeveloperError('height must be a power of two to call generateMipmap().');
+    }
+    if (!MipmapHint.validate(hint)) {
+    throw new DeveloperError('hint is invalid.');
+    }
+    //>>includeEnd('debug');
+    
+    var gl = this._context._gl;
+    var target = this._textureTarget;
+    
+    gl.hint(gl.GENERATE_MIPMAP_HINT, hint);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(target, this._texture);
+    gl.generateMipmap(target);
+    gl.bindTexture(target, null);
     };
-
+    
     Texture.prototype.isDestroyed = function() {
-        return false;
+    return false;
     };
-
+    
     Texture.prototype.destroy = function() {
-        this._context._gl.deleteTexture(this._texture);
-        return destroyObject(this);
+    this._context._gl.deleteTexture(this._texture);
+    return destroyObject(this);
     };
-
+    
     return Texture;*/
 }

@@ -151,21 +151,21 @@ class Context {
     * @type {String}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>VERSION</code>.
     */
-    var glVersion = ""
+    let glVersion: String
     /**
     * The version or release number for the shading language of the form WebGL&lt;space&gt;GLSL&lt;space&gt;ES&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
     * @memberof Context.prototype
     * @type {String}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>SHADING_LANGUAGE_VERSION</code>.
     */
-    var shadingLanguageVersion = ""
+    var shadingLanguageVersion = "Unknown GLSL version"
     
     /**
     * The company responsible for the WebGL implementation.
     * @memberof Context.prototype
     * @type {String}
     */
-    var vendor = ""
+    var vendor = "Unknown Vendor"
     
     /**
     * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
@@ -176,7 +176,7 @@ class Context {
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>RENDERER</code>.
     * @see <a href='http://code.google.com/p/angleproject/'>ANGLE</a>
     */
-    var renderer = ""
+    var renderer = "Unknown Renderer"
     
     /**
     * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -184,7 +184,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>RED_BITS</code>.
     */
-    var redBits: GLint = 0
+    var redBits = 0
     
     /**
     * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -192,7 +192,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>GREEN_BITS</code>.
     */
-    var greenBits: GLint = 0
+    var greenBits = 0
     
     /**
     * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -200,7 +200,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>BLUE_BITS</code>.
     */
-    var blueBits: GLint = 0
+    let blueBits = 0
     
     /**
     * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -211,7 +211,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALPHA_BITS</code>.
     */
-    var alphaBits: GLint = 0
+    var alphaBits = 0
     
     /**
     * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
@@ -220,7 +220,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>DEPTH_BITS</code>.
     */
-    var depthBits: GLint = 0
+    var depthBits = 0
     
     /**
     * The number of stencil bits per pixel in the default bound framebuffer.  The minimum is eight bits.
@@ -228,7 +228,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>STENCIL_BITS</code>.
     */
-    var stencilBits: GLint = 0
+    var stencilBits = 0
     
     /**
     * The maximum number of texture units that can be used from the vertex and fragment
@@ -238,7 +238,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_COMBINED_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumCombinedTextureImageUnits: GLint = 0// min 8
+    var maximumCombinedTextureImageUnits = 0// min 8
     
     /**
     * The approximate maximum cube mape width and height supported by this WebGL implementation.
@@ -247,7 +247,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_CUBE_MAP_TEXTURE_SIZE</code>.
     */
-    var maximumCubeMapSize: GLint = 0 // min 16
+    var maximumCubeMapSize = 0 // min 16
     
     /**
     * Rhe maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
@@ -256,7 +256,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_FRAGMENT_UNIFORM_VECTORS</code>.
     */
-    var maximumFragmentUniformVectors: GLint = 0 // min 16
+    var maximumFragmentUniformVectors = 0 // min 16
     
     /**
     * The maximum number of texture units that can be used from the fragment shader with this WebGL implementation.  The minimum is eight.
@@ -264,7 +264,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumTextureImageUnits: GLint = 0 // min 8
+    var maximumTextureImageUnits = 0 // min 8
     
     /**
     * The maximum renderbuffer width and height supported by this WebGL implementation.
@@ -273,7 +273,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_RENDERBUFFER_SIZE</code>.
     */
-    var maximumRenderBufferSize: GLint = 0 // min 16
+    var maximumRenderBufferSize = 0 // min 16
     
     /**
     * The approximate maximum texture width and height supported by this WebGL implementation.
@@ -282,7 +282,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_SIZE</code>.
     */
-    var maximumTextureSize: GLint = 0 // min 64
+    var maximumTextureSize = 0 // min 64
     
     /**
     * The maximum number of <code>vec4</code> varying variables supported by this WebGL implementation.
@@ -291,7 +291,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VARYING_VECTORS</code>.
     */
-    var maximumVaryingVectors: GLint = 0 // min 8
+    var maximumVaryingVectors = 0 // min 8
     
     /**
     * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
@@ -299,7 +299,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_ATTRIBS</code>.
     */
-    var maximumVertexAttributes: GLint = 0 // min 8
+    var maximumVertexAttributes = 0 // min 8
     
     /**
     * The maximum number of texture units that can be used from the vertex shader with this WebGL implementation.
@@ -308,7 +308,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_TEXTURE_IMAGE_UNITS</code>.
     */
-    var maximumVertexTextureImageUnits: GLint = 0 // min 0
+    var maximumVertexTextureImageUnits = 0 // min 0
     
     /**
     * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
@@ -317,7 +317,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_UNIFORM_VECTORS</code>.
     */
-    var maximumVertexUniformVectors: GLint = 0
+    var maximumVertexUniformVectors = 0
     
     /**
     * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
@@ -325,28 +325,15 @@ class Context {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var minimumAliasedLineWidth: GLint {
-    get { return aliasedLineWidthRange[0] }
-    }
-    
+    var minimumAliasedLineWidth = 0
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
     * @memberof Context.prototype
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var maximumAliasedLineWidth: GLint {
-    get { return aliasedLineWidthRange[1] }
-    }
+    var maximumAliasedLineWidth = 0
     
-    var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
-    
-    /**
-    * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALIASED_POINT_SIZE_RANGE</code>.
-    */
     /**
     * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
     * @memberof Context.prototype
@@ -367,7 +354,6 @@ class Context {
     get { aliasedPointSizeRange[1] }
     }
     
-    var aliasedPointSizeRange = Array<GLint>(count: 2, repeatedValue: 0)
     
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
@@ -663,8 +649,8 @@ class Context {
         
         shaderCache = ShaderCache()
         
-        glVersion = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VERSION)))))!
-        shadingLanguageVersion = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))))!
+        glVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) !! "Unknown GL version"
+        shadingLanguageVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))
         vendor = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VENDOR)))))!
         renderer = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_RENDERER)))))!
         glGetIntegerv(GLenum(GL_RED_BITS), &redBits)
@@ -684,8 +670,16 @@ class Context {
         glGetIntegerv(GLenum(GL_MAX_VERTEX_ATTRIBS), &maximumVertexAttributes) // min: 8
         glGetIntegerv(GLenum(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), &maximumVertexTextureImageUnits) // min: 0
         glGetIntegerv(GLenum(GL_MAX_VERTEX_UNIFORM_VECTORS), &maximumVertexUniformVectors) // min: 128
+
+        var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
         glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
+        self.minimumAliasedLineWidth = aliasedLineWidthRange[0]
+        self.maximumAliasedLineWidth = aliasedLineWidthRange[1]
+        
+        var aliasedPointSizeRange = Array<GLint>(count: 2, repeatedValue: 0)
         glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
+        self.minimumAliasedPointSize = aliasedPointSizeRange[0]
+        self.maximumAliasedPointSize = aliasedPointSizeRange[1]
 
         glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
         
