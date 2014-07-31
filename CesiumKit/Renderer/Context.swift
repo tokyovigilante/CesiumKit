@@ -158,14 +158,14 @@ class Context {
     * @type {String}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>SHADING_LANGUAGE_VERSION</code>.
     */
-    var shadingLanguageVersion = "Unknown GLSL version"
+    let shadingLanguageVersion: String
     
     /**
     * The company responsible for the WebGL implementation.
     * @memberof Context.prototype
     * @type {String}
     */
-    var vendor = "Unknown Vendor"
+    let vendor: String
     
     /**
     * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
@@ -176,7 +176,7 @@ class Context {
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>RENDERER</code>.
     * @see <a href='http://code.google.com/p/angleproject/'>ANGLE</a>
     */
-    var renderer = "Unknown Renderer"
+    let renderer: String
     
     /**
     * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -184,7 +184,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>RED_BITS</code>.
     */
-    var redBits = 0
+    let redBits: Int
     
     /**
     * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -192,7 +192,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>GREEN_BITS</code>.
     */
-    var greenBits = 0
+    let greenBits: Int
     
     /**
     * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -200,7 +200,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>BLUE_BITS</code>.
     */
-    let blueBits = 0
+    let blueBits: Int
     
     /**
     * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
@@ -211,7 +211,7 @@ class Context {
     * @type {Number}
     * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALPHA_BITS</code>.
     */
-    var alphaBits = 0
+    let alphaBits: Int
     
     /**
     * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
@@ -650,26 +650,58 @@ class Context {
         shaderCache = ShaderCache()
         
         glVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) !! "Unknown GL version"
-        shadingLanguageVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))
-        vendor = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VENDOR)))))!
-        renderer = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_RENDERER)))))!
-        glGetIntegerv(GLenum(GL_RED_BITS), &redBits)
-        glGetIntegerv(GLenum(GL_GREEN_BITS), &greenBits)
-        glGetIntegerv(GLenum(GL_BLUE_BITS), &blueBits)
-        glGetIntegerv(GLenum(GL_ALPHA_BITS), &alphaBits)
-        glGetIntegerv(GLenum(GL_DEPTH_BITS), &depthBits)
-        glGetIntegerv(GLenum(GL_STENCIL_BITS), &stencilBits)
-        glGetIntegerv(GLenum(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS), &maximumCombinedTextureImageUnits) // min 8
+        shadingLanguageVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) !! "Unknown GLSL version"
+        vendor = String.fromCString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VENDOR)))) !! "Unknown GL vendor"
+        renderer = String.fromCString(UnsafePointer<UInt8>(glGetString(GLenum(GL_RENDERER)))) !! "Unknown GL renderer"
         
-        glGetIntegerv(GLenum(GL_MAX_CUBE_MAP_TEXTURE_SIZE), &maximumCubeMapSize) // min: 16
-        glGetIntegerv(GLenum(GL_MAX_FRAGMENT_UNIFORM_VECTORS), &maximumFragmentUniformVectors) // min: 16
-        glGetIntegerv(GLenum(GL_MAX_TEXTURE_IMAGE_UNITS), &maximumTextureImageUnits) // min: 8
-        glGetIntegerv(GLenum(GL_MAX_RENDERBUFFER_SIZE), &maximumRenderBufferSize) // min: 1
-        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &maximumTextureSize) // min: 64
-        glGetIntegerv(GLenum(GL_MAX_VARYING_VECTORS), &maximumVaryingVectors) // min: 8
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_ATTRIBS), &maximumVertexAttributes) // min: 8
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), &maximumVertexTextureImageUnits) // min: 0
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_UNIFORM_VECTORS), &maximumVertexUniformVectors) // min: 128
+        var GLIntTemp: GLint = 0
+        glGetIntegerv(GLenum(GL_RED_BITS), &GLIntTemp)
+        redBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_GREEN_BITS), &GLIntTemp)
+        greenBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_BLUE_BITS), &GLIntTemp)
+        blueBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_ALPHA_BITS), &GLIntTemp)
+        alphaBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_DEPTH_BITS), &GLIntTemp)
+        depthBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_STENCIL_BITS), &GLIntTemp)
+        stencilBits = Int(GLIntTemp)
+
+        glGetIntegerv(GLenum(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min 8
+        maximumCombinedTextureImageUnits = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_CUBE_MAP_TEXTURE_SIZE), &GLIntTemp) // min: 16
+        maximumCubeMapSize = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_FRAGMENT_UNIFORM_VECTORS), &GLIntTemp) // min: 16
+        maximumFragmentUniformVectors = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min: 8
+        maximumTextureImageUnits = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_RENDERBUFFER_SIZE), &GLIntTemp) // min: 1
+        maximumRenderBufferSize = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &GLIntTemp) // min: 64
+        maximumTextureSize = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_VARYING_VECTORS), &GLIntTemp) // min: 8
+        maximumVaryingVectors = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_ATTRIBS), &GLIntTemp) // min: 8
+        maximumVertexAttributes = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min: 0
+        maximumTextureImageUnits = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_VERTEX_UNIFORM_VECTORS), &GLIntTemp) // min: 128
+        maximumVertexUniformVectors = Int(GLIntTemp)
 
         var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
         glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
@@ -681,7 +713,8 @@ class Context {
         self.minimumAliasedPointSize = aliasedPointSizeRange[0]
         self.maximumAliasedPointSize = aliasedPointSizeRange[1]
 
-        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
+        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &GLIntTemp)
+        maximumViewportDimensions = Int(GLIntTemp)
         
         antialias = true
     
