@@ -651,8 +651,8 @@ class Context {
         
         glVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) !! "Unknown GL version"
         shadingLanguageVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) !! "Unknown GLSL version"
-        vendor = String.fromCString(UnsafePointer<UInt8>(glGetString(GLenum(GL_VENDOR)))) !! "Unknown GL vendor"
-        renderer = String.fromCString(UnsafePointer<UInt8>(glGetString(GLenum(GL_RENDERER)))) !! "Unknown GL renderer"
+        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR)))) !! "Unknown GL vendor"
+        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER)))) !! "Unknown GL renderer"
         
         var GLIntTemp: GLint = 0
         glGetIntegerv(GLenum(GL_RED_BITS), &GLIntTemp)
@@ -2184,27 +2184,26 @@ Context.prototype.createPickId = function(object) {
 Context.prototype.isDestroyed = function() {
     return false;
 };
-
-Context.prototype.destroy = function() {
-    // Destroy all objects in the cache that have a destroy method.
-    var cache = this.cache;
-    for (var property in cache) {
-        if (cache.hasOwnProperty(property)) {
-            var propertyValue = cache[property];
-            if (defined(propertyValue.destroy)) {
-                propertyValue.destroy();
+*/
+    deinit {
+        /*
+        // Destroy all objects in the cache that have a destroy method.
+        var cache = this.cache;
+        for (var property in cache) {
+            if (cache.hasOwnProperty(property)) {
+                var propertyValue = cache[property];
+                if (defined(propertyValue.destroy)) {
+                    propertyValue.destroy();
+                }
             }
         }
+        this._shaderCache = this._shaderCache.destroy();
+        this._defaultTexture = this._defaultTexture && this._defaultTexture.destroy();
+        this._defaultCubeMap = this._defaultCubeMap && this._defaultCubeMap.destroy();
     }
-    
-    this._shaderCache = this._shaderCache.destroy();
-    this._defaultTexture = this._defaultTexture && this._defaultTexture.destroy();
-    this._defaultCubeMap = this._defaultCubeMap && this._defaultCubeMap.destroy();
-    
-    return destroyObject(this);
-};
+    */
+    }
 
-}*/
     func getGLExtensions() -> [String] {
         var glExtensions = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_EXTENSIONS)))))!
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())

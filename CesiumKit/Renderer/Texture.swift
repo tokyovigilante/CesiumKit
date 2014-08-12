@@ -33,6 +33,9 @@ struct TextureOptions {
     var premultiplyAlpha = true
 }
 
+struct TextureSampler {
+    
+}
 
 
 class Texture {
@@ -49,7 +52,17 @@ class Texture {
     
     var textureFilterAnisotropic = true
     
+    var premultiplyAlpha = true
+
     weak var context: Context?
+    
+    let textureName: GLint
+    
+    let textureTarget = GL_TEXTURE_2D
+    
+    var sampler: TextureSampler? = nil
+    
+    var dimensions: Cartesian2
     
     init(context: Context, options: TextureOptions) {
         
@@ -64,10 +77,12 @@ class Texture {
         
         self.pixelDatatype = options.pixelDatatype
         
+        self.premultiplyAlpha = options.premultiplyAlpha
+        
         assert(self.width > 0, "Width must be greater than zero.")
-        assert(self.width <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+        assert(self.width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
         assert(self.height > 0, "Height must be greater than zero.")
-        assert(self.height <= Int(context.maximumTextureSize), "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+        assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
         
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
@@ -76,7 +91,7 @@ class Texture {
             assert(true, "When options.pixelFormat is DEPTH_STENCIL, options.pixelDatatype must be UNSIGNED_INT_24_8_WEBGL")
         }
         if self.pixelDatatype == PixelDatatype.Float && !context.floatingPointTexture {
-            assert(true, "When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.  Check context.floatingPointTexture.")∫
+            assert(true, "When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.  Check context.floatingPointTexture.")
         }
         
         if self.pixelFormat.isDepthFormat() {
@@ -117,7 +132,7 @@ class Texture {
                     source.framebuffer.bind()
                 }
                 
-                glCopyTexImage2D(textureTarget, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
+                glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
                 
                 if (source.framebuffer != context.defaultFramebuffer) {
                     source.framebuffer.unbind()
@@ -133,18 +148,10 @@ class Texture {
         
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        this._textureTarget = textureTarget
-        this._texture = texture
-        this._pixelFormat = pixelFormat
-        this._pixelDatatype = pixelDatatype
-        this._width = width
-        this._height = height
-        this._dimensions = Cartesian2(width, height)
-        this._preMultiplyAlpha = preMultiplyAlpha
-        this._flipY = flipY
-        this._sampler = undefined
-        
-        this.sampler = undefined
+        self.textureName = textureName
+        self.pixelFormat = pixelFormat
+
+        self.dimensions = Cartesian2(x: width, y: height)
         
     }
     /*

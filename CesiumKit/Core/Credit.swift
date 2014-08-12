@@ -20,7 +20,7 @@
 * //Create a credit with a tooltip, image and link
 * var credit = new Cesium.Credit('Cesium', '/images/cesium_logo.png', 'http://cesiumjs.org/');
 */
-struct Credit/*: Equatable*/ {
+struct Credit: Equatable {
     var text: String?
     var imageUrl: String?
     var link: String?
@@ -44,8 +44,8 @@ struct Credit/*: Equatable*/ {
 * @param {Credit} left The second credit
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-/*
+
 func ==(lhs: Credit, rhs: Credit) -> Bool {
     return (left.text == right.text && left.imageUrl == right.imageUrl && left.link == right.link)
-}*/
+}
 
