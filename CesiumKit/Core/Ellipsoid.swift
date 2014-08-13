@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
 /**
 * A quadratic surface defined in Cartesian coordinates by the equation
 * <code>(x / a)^2 + (y / b)^2 + (z / c)^2 = 1</code>.  Primarily used
