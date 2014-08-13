@@ -74,14 +74,13 @@
 		94BC43571948189A007117F2 /* Cartesian2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC43561948189A007117F2 /* Cartesian2.swift */; };
 		94C57E1419722AB90046791A /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
-		94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DC792A1918425300012DC4 /* CesiumKit.h */; };
-		94DC792D1918425300012DC4 /* CesiumKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC792C1918425300012DC4 /* CesiumKit.m */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
 		94DC793A1918425300012DC4 /* libCesiumKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79221918425300012DC4 /* libCesiumKit.a */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
 		94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC79411918425300012DC4 /* CesiumKitTests.m */; };
+		94DF8301199A0A9100FB093D /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 		94E4CB2C1950581300F7E37D /* Pass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E4CB2B1950581300F7E37D /* Pass.swift */; };
 		94E61B3C194ACC2000415870 /* WebMercatorTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */; };
 		94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1A19550A9600012DC4 /* Geometry.swift */; };
@@ -105,7 +104,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				94DC792B1918425300012DC4 /* CesiumKit.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,14 +184,13 @@
 		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
-		94DC792A1918425300012DC4 /* CesiumKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CesiumKit.h; sourceTree = "<group>"; };
-		94DC792C1918425300012DC4 /* CesiumKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CesiumKit.m; sourceTree = "<group>"; };
 		94DC79321918425300012DC4 /* CesiumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CesiumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79331918425300012DC4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		94DC79361918425300012DC4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		94DC793D1918425300012DC4 /* CesiumKitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CesiumKitTests-Info.plist"; sourceTree = "<group>"; };
 		94DC793F1918425300012DC4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		94DC79411918425300012DC4 /* CesiumKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CesiumKitTests.m; sourceTree = "<group>"; };
+		94DF8300199A0A9100FB093D /* CesiumKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumKit.swift; sourceTree = "<group>"; };
 		94E4CB2B1950581300F7E37D /* Pass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pass.swift; sourceTree = "<group>"; };
 		94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorTilingScheme.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
@@ -363,14 +360,13 @@
 		94DC79271918425300012DC4 /* CesiumKit */ = {
 			isa = PBXGroup;
 			children = (
+				94DF8300199A0A9100FB093D /* CesiumKit.swift */,
 				945D2DBA193D7FA800012DC4 /* CesiumKit-Bridging-Header.h */,
 				943999031930418C00012DC4 /* Core */,
 				9439992A1930418C00012DC4 /* DynamicScene */,
 				9439992B1930418C00012DC4 /* Renderer */,
 				943999381930418C00012DC4 /* Scene */,
 				943999451930418C00012DC4 /* Shaders */,
-				94DC792A1918425300012DC4 /* CesiumKit.h */,
-				94DC792C1918425300012DC4 /* CesiumKit.m */,
 				94DC79281918425300012DC4 /* Supporting Files */,
 			);
 			path = CesiumKit;
@@ -499,6 +495,7 @@
 				945150A4193C648700012DC4 /* CSHeightMapTessellator.m in Sources */,
 				948D03E11944F1E200DC0E52 /* Cartesian4.swift in Sources */,
 				9460F81B194DB87400012DC4 /* ClearCommand.swift in Sources */,
+				94DF8301199A0A9100FB093D /* CesiumKit.swift in Sources */,
 				94B87DCB194D6F5000012DC4 /* Camera.swift in Sources */,
 				949ABA8119410120009B1183 /* Intersect.swift in Sources */,
 				9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */,
@@ -513,7 +510,6 @@
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
 				946D25AA19592BFD0080379D /* Ray.swift in Sources */,
 				9460F80F194DABF000012DC4 /* ImageryLayerCollection.swift in Sources */,
-				94DC792D1918425300012DC4 /* CesiumKit.m in Sources */,
 				9460F809194DA7F800012DC4 /* PassState.swift in Sources */,
 				94B87DD1194D75A100012DC4 /* Occluder.swift in Sources */,
 				944449A01948331C009D1703 /* GeographicProjection.swift in Sources */,

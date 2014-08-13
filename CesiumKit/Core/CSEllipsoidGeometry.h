@@ -39,7 +39,6 @@
 @property (readonly) NSDictionary *options;
 
 -(instancetype)initWithOptions:(NSDictionary *)options;
-
 /**
  * Computes the geometric representation of an ellipsoid, including its vertices, indices, and a bounding sphere.
  * @memberof EllipsoidGeometry
