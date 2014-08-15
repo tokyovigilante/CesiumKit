@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
 
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -70,10 +70,7 @@ import Foundation
 * });
 */
 
-class Scene {
-    
-
-
+public class Scene {
     
     var context: Context = Context()// = new Context(canvas, contextOptions);
     /*
@@ -91,11 +88,14 @@ class Scene {
     
     var passState: PassState = PassState(context: context)
     
-    var globe: Globe = nil
+    var globe: Globe? = nil
+    
+    var primitives = PrimitiveCollection()
+    
+    var pickFramebuffer: Framebuffer? = nil
+    
+    lazy var camera = Camera(self)
     /*
-    this._globe = undefined;
-    this._primitives = new PrimitiveCollection();
-    this._pickFramebuffer = undefined;
     this._camera = new Camera(this);
     this._screenSpaceCameraController = new ScreenSpaceCameraController(canvas, this._camera);
     
@@ -1125,23 +1125,23 @@ function callAfterRenderFunctions(frameState) {
     }
     functions.length = 0;
 }
-
-/**
-* @private
-*/
-Scene.prototype.initializeFrame = function() {
-    // Destroy released shaders once every 120 frames to avoid thrashing the cache
-    if (this._shaderFrameCount++ === 120) {
-        this._shaderFrameCount = 0;
-        this._context.shaderCache.destroyReleasedShaderPrograms();
+*/*/
+    /**
+    * @private
+    */
+    func initializeFrame() {
+        // Destroy released shaders once every 120 frames to avoid thrashing the cache
+        if (shaderFrameCount++ === 120) {
+            shaderFrameCount = 0
+            context.shaderCache.destroyReleasedShaderPrograms()
+        }
+        
+        animations.update()
+        camera.update(this.mode, this.scene2D)
+        screenSpaceCameraController.update(this.mode)
     }
-    
-    this._animations.update();
-    this._camera.update(this.mode, this.scene2D);
-    this._screenSpaceCameraController.update(this.mode);
-};
-
-function render(scene, time) {
+/*
+    func render(scene, time) {
     if (!defined(time)) {
         time = new JulianDate();
     }
@@ -1528,5 +1528,6 @@ Scene.prototype.isDestroyed = function() {
         }
         
         return destroyObject(this);*/
-    }*/
+    }
+
 }

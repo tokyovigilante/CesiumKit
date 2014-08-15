@@ -66,7 +66,7 @@ import OpenGLES
 * });
 */
 
-public class CesiumKit {
+public class CesiumGlobe {
 
     var canRender = false
     var renderLoopRunning = false
@@ -128,8 +128,6 @@ public class CesiumKit {
     var sceneMode: SceneMode
     
     var scene3DOnly: Bool
-    
-
     
     var targetFrameRate: Int
     
@@ -479,20 +477,15 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         configureCanvasSize(this);
         configureCameraFrustum(this);
     }
-/*
-/**
-* Renders the scene.  This function is called automatically
-* unless <code>useDefaultRenderLoop</code> is set to false;
-*/
-CesiumWidget.prototype.render = function() {
-    this._scene.initializeFrame();
-    var currentTime = this._clock.tick();
-    if (this._canRender) {
-        this._scene.render(currentTime);
+    /**
+    * Renders the scene.  This function is called automatically
+    * unless <code>useDefaultRenderLoop</code> is set to false;
+    */
+    public func render() {
+        scene.initializeFrame()
+        var currentTime = clock.tick()
+        if canRender {
+            scene.render(currentTime)
+        }
     }
-};
-
-return CesiumWidget;
-});
-*/
 }

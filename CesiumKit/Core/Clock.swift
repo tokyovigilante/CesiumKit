@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class Clock {
+public class Clock {
 
     /* 
     /*global define*/
