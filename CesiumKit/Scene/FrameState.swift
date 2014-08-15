@@ -49,6 +49,12 @@ struct FrameState {
     */
     var time: NSDate? = nil
     
+    /**
+    * The map projection to use in 2D and Columbus View modes.
+    *
+    * @type {MapProjection}
+    * @default undefined
+    */
     var projection: Projection? = nil
     
     /**
@@ -71,6 +77,21 @@ struct FrameState {
     * @default undefined
     */
     var occluder: Occluder? = nil
+
+    struct Passes {
+        /**
+        * <code>true</code> if the primitive should update for a render pass, <code>false</code> otherwise.
+        * @type {Boolean}
+        * @default false
+        */
+        var render = false
+        /**
+        * <code>true</code> if the primitive should update for a picking pass, <code>false</code> otherwise.
+        * @type {Boolean}
+        * @default false
+        */
+        var pick = false
+    }
     
     var passes: Passes = Passes()
     
@@ -97,20 +118,15 @@ struct FrameState {
     *   // take some action, raise an event, etc.
     * });
     */
-    let afterRender: Array<() -> ()> = Array<() -> ()>()
+    var afterRender: Array<() -> ()> = Array<() -> ()>()
+    
+    
+    /**
+    * Gets whether or not to optimized for 3D only.
+    * @type {Boolean}
+    * @default false
+    */
+    var scene3DOnly = false
 }
 
-struct Passes {
-    /**
-    * <code>true</code> if the primitive should update for a render pass, <code>false</code> otherwise.
-    * @type {Boolean}
-    * @default false
-    */
-    var render = false
-    /**
-    * <code>true</code> if the primitive should update for a picking pass, <code>false</code> otherwise.
-    * @type {Boolean}
-    * @default false
-    */
-    var pick = false
-}
+

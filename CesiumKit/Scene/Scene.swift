@@ -84,7 +84,7 @@ public class Scene {
         creditContainer.style['padding-right'] = '5px';
         canvas.parentNode.appendChild(creditContainer);
     }*/
-    var frameState: FrameState = FrameState()
+    var frameState: FrameState
     
     var passState: PassState = PassState(context: context)
     
@@ -94,9 +94,20 @@ public class Scene {
     
     var pickFramebuffer: Framebuffer? = nil
     
-    lazy var camera = Camera(self)
+    let camera: Camera
+    
+    private var screenSpaceCameraController: ScreenSpaceCameraController
+    
+    
+    init (scene3DOnly: Bool?) {
+        
+        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
+        frameState.scene3DOnly = scene3DOnly ?? false
+        camera = Camera(self)
+        screenSpaceCameraController = ScreenSpaceCameraController(self.camera)
+    }
+    
     /*
-    this._camera = new Camera(this);
     this._screenSpaceCameraController = new ScreenSpaceCameraController(canvas, this._camera);
     
     this._animations = new AnimationCollection();

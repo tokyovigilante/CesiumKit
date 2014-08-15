@@ -66,6 +66,30 @@ import OpenGLES
 * });
 */
 
+// Describes Globe object options
+public struct CesiumGlobeOptions {
+    
+    /// :param: Clock [options.clock=new Clock()] The clock to use to control current time.
+    let clock = Clock()
+    
+    /// :param: ImageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
+    let imageryProvider = BingMapsImageryProvider()
+    
+    /// :param: TerrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
+    let terrainProvider = EllipsoidTerrainProvider()
+    
+    /// :param: SkyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
+    let skyBox: SkyBox = nil
+    /// :param: SceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
+    /// :param: Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+    /// :param: MapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
+    /// :param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
+    /// :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
+    /// :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+    /// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
+    /// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.
+}
+
 public class CesiumGlobe {
 
     var canRender = false
@@ -165,11 +189,7 @@ public class CesiumGlobe {
     *
     * @type {ScreenSpaceEventHandler}
     */
-    // FIXME    screenSpaceEventHandler : {
-/*    get : function() {
-    return this._screenSpaceEventHandler;
-    }
-    },*/
+    var screenSpaceEventHandler: ScreenSpaceEventHandler
     
     /**
     * Gets the clock.
@@ -234,8 +254,6 @@ public class CesiumGlobe {
         scene.moon = new Moon();*/
         
         //Set the base imagery layer
-        // FIXME: Imagery providers
-        /*
         var imageryProvider = options.imageryProvider;
         if (!defined(imageryProvider)) {
         imageryProvider = new BingMapsImageryProvider({
@@ -251,8 +269,7 @@ public class CesiumGlobe {
         if terrainProvider != nil {
             scene.terrainProvider = terrainProvider
         }
-        //FIXME: ScreenspaceEventHandler
-        //this._screenSpaceEventHandler = new ScreenSpaceEventHandler(canvas);
+        self.screenSpaceEventHandler = ScreenSpaceEventHandler(/*canvas*/)
         self.sceneMode = sceneMode
         self.scene3DOnly = scene3DOnly
         
@@ -268,22 +285,17 @@ public class CesiumGlobe {
         self.targetFrameRate = targetFrameRate
         
         self.resolutionScale = resolutionScale
-        /*
-        var that = this;
-        scene.renderError.addEventListener(function(scene, error) {
-        that._useDefaultRenderLoop = false;
-        that._renderLoopRunning = false;
-        if (that._showRenderLoopErrors) {
-        var title = 'An error occurred while rendering.  Rendering has stopped.';
-        var message = 'This may indicate an incompatibility with your hardware or web browser, or it may indicate a bug in the application.  Visit <a href="http://get.webgl.org">http://get.webgl.org</a> to verify that your web browser and hardware support WebGL.  Consider trying a different web browser or updating your video drivers.  Detailed error information is below:';
-        that.showErrorPanel(title, message, error);
+        
+        // FIXME: Render errors
+        /*scene.renderError.addEventListener( { (scene: Scene, error: String) {
+            self.useDefaultRenderLoop = false;
+            self.renderLoopRunning = false;
+            if (showRenderLoopErrors) {
+                var title = "An error occurred while rendering.  Rendering has stopped."
+                var message = "This may indicate an incompatibility with your hardware or web browser, or it may indicate a bug in the application.  Visit <a href=\"http://get.webgl.org\">http://get.webgl.org</a> to verify that your web browser and hardware support WebGL.  Consider trying a different web browser or updating your video drivers.  Detailed error information is below:"
+                self.showErrorPanel(title, message, error)
+            }
         }
-        });
-        } catch (error) {
-        var title = 'Error constructing CesiumWidget.';
-        var message = 'Visit <a href="http://get.webgl.org">http://get.webgl.org</a> to verify that your web browser and hardware support WebGL.  Consider trying a different web browser or updating your video drivers.  Detailed error information is below:';
-        this.showErrorPanel(title, message, error);
-        throw error;
         }*/
     }
 
