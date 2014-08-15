@@ -9,6 +9,45 @@
 import Foundation
 import OpenGLES
 
+// Describes Globe object options
+public struct CesiumGlobeOptions {
+    
+    /// :param: Clock [options.clock=new Clock()] The clock to use to control current time.
+    let clock = Clock()
+    
+    /// :param: imageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
+    let imageryProvider: ImageryProvider? = BingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
+
+    /// :param: terrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
+    let terrainProvider = EllipsoidTerrainProvider()
+    
+    /// :param: skyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
+    let skyBox: SkyBox? = nil
+    
+    /// :param: sceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
+    let sceneMode: SceneMode = .Scene3D
+    
+    /// :param: scene3DOnly Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+    let scene3DOnly = false
+    
+    /// :param: mapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
+    let mapProjection = GeographicProjection()
+
+        /// :param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
+    let useDefaultRenderLoop = true
+    
+    /// :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
+    let targetFrameRate = 60
+    
+    /// :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+    let showRenderLoopErrors = true
+    
+    /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
+    let contextOptions = ContextOptions()*/
+    
+    /*/// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.*/
+}
+
 /**
 * A widget containing a Cesium scene.
 *
@@ -65,31 +104,6 @@ import OpenGLES
 *     mapProjection : new Cesium.WebMercatorProjection()
 * });
 */
-
-// Describes Globe object options
-public struct CesiumGlobeOptions {
-    
-    /// :param: Clock [options.clock=new Clock()] The clock to use to control current time.
-    let clock = Clock()
-    
-    /// :param: ImageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
-    let imageryProvider = BingMapsImageryProvider()
-    
-    /// :param: TerrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
-    let terrainProvider = EllipsoidTerrainProvider()
-    
-    /// :param: SkyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
-    let skyBox: SkyBox = nil
-    /// :param: SceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
-    /// :param: Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
-    /// :param: MapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
-    /// :param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
-    /// :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
-    /// :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
-    /// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
-    /// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.
-}
-
 public class CesiumGlobe {
 
     var canRender = false
@@ -97,7 +111,7 @@ public class CesiumGlobe {
     var showRenderLoopErrors = false
     var forceResize = false
     
-    var lastFrameTime: Double
+    var lastFrameTime: Double?
     
     /**
     * Gets or sets whether or not this widget should control the render loop.
@@ -152,9 +166,7 @@ public class CesiumGlobe {
     var sceneMode: SceneMode
     
     var scene3DOnly: Bool
-    
-    var targetFrameRate: Int
-    
+   
     /**
     * Gets or sets a scaling factor for rendering resolution.  Values less than 1.0 can improve
     * performance on less powerful devices while values greater than 1.0 will render at a higher
@@ -199,7 +211,7 @@ public class CesiumGlobe {
     */
     public let clock: Clock
     
-    init (context: EAGLContext, showRenderLoopErrors: Bool = true, resolutionScale = 1.0, forceResize: Bool = false, clock: Clock?, sceneMode: SceneMode = .SceneMode3D, scene3DOnly = false, useDefaultRenderLoop = true, targetFrameRate = -1, imageryProvider: ImageryProvider?, terrainProvider: TerrainProvider?) {
+    init (context: EAGLContext, options: CesiumGlobeOptions) {
         
         /*
         var creditContainer = document.createElement('div');
@@ -208,8 +220,13 @@ public class CesiumGlobe {
         var creditContainerContainer = defined(options.creditContainer) ? getElement(options.creditContainer) : element;
         creditContainerContainer.appendChild(creditContainer);*/
         
-        self.clock = clock ?? Clock()
-        lastFrameTime = -1.0
+        self.canRender = false
+        self.renderLoopRunning = false
+        self.showRenderLoopErrors = options.showRenderLoopErrors
+        self.resolutionScale = 1.0
+        self.forceResize = false
+        self.clock = options.clock
+        lastFrameTime = nil
         
         configureCanvasSize()
         
@@ -218,9 +235,9 @@ public class CesiumGlobe {
             canvas : canvas,
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,
-            mapProjection : options.mapProjection,
-            scene3DOnly : defaultValue(options.scene3DOnly, false)
-            }*/)
+            mapProjection : options.mapProjection,*/
+            scene3DOnly: options.scene3DOnly ?? false
+/*            }*/)
         
         self.scene.camera.constrainedAxis = Cartesian3.unitZ()
         configureCameraFrustum()
@@ -230,7 +247,7 @@ public class CesiumGlobe {
         var cesiumCredit = new Credit('Cesium', cesiumLogoData, 'http://cesiumjs.org/');
         creditDisplay.addDefaultCredit(cesiumCredit);*/
         
-        globe = Globe(ellipsoid)
+        let globe = Globe(ellipsoid: ellipsoid)
         self.globe = globe
         self.scene.globe = globe
         
@@ -252,39 +269,30 @@ public class CesiumGlobe {
         scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
         scene.sun = new Sun();
         scene.moon = new Moon();*/
-        
-        //Set the base imagery layer
-        var imageryProvider = options.imageryProvider;
-        if (!defined(imageryProvider)) {
-        imageryProvider = new BingMapsImageryProvider({
-        url : '//dev.virtualearth.net'
-        });*/
-        
-        
-        if imageryProvider != nil {
+
+        if options.imageryProvider != nil {
             scene.imageryLayers.addImageryProvider(imageryProvider)
         }
         
         //Set the terrain provider if one is provided.
-        if terrainProvider != nil {
-            scene.terrainProvider = terrainProvider
+        if options.terrainProvider != nil {
+            scene.terrainProvider = options.terrainProvider
         }
+
         self.screenSpaceEventHandler = ScreenSpaceEventHandler(/*canvas*/)
-        self.sceneMode = sceneMode
-        self.scene3DOnly = scene3DOnly
+        self.sceneMode = options.sceneMode
+        self.scene3DOnly = options.scene3DOnly
         
-        if self.sceneMode == .Scene2D {
+        if self.sceneMode == SceneMode.Scene2D {
             self.scene.morphTo2D(0)
         }
-        if self.sceneMode = .ColumbusView {
-            this._scene.morphToColumbusView(0)
+        if self.sceneMode == SceneMode.ColumbusView {
+            self.scene.morphToColumbusView(0)
         }
         
         self.useDefaultRenderLoop = useDefaultRenderLoop
         
-        self.targetFrameRate = targetFrameRate
-        
-        self.resolutionScale = resolutionScale
+        self.targetFrameRate = options.targetFrameRate
         
         // FIXME: Render errors
         /*scene.renderError.addEventListener( { (scene: Scene, error: String) {

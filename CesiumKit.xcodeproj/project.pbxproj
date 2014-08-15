@@ -324,23 +324,23 @@
 		943999381930418C00012DC4 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */,
 				94B87DCA194D6F5000012DC4 /* Camera.swift */,
-				94E4CB2B1950581300F7E37D /* Pass.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
 				9460F80C194DAA6200012DC4 /* Globe.swift */,
 				9460F810194DAC4D00012DC4 /* GlobeSurface.swift */,
 				9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */,
-				942CEED2199E063E00012DC4 /* SkyBox.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
-				94B87DD0194D75A100012DC4 /* Occluder.swift */,
-				94B87DC0194D678D00012DC4 /* Scene.swift */,
-				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
-				94B87DC8194D6B0A00012DC4 /* SceneMode.swift */,
-				9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
+				94B87DD0194D75A100012DC4 /* Occluder.swift */,
+				94E4CB2B1950581300F7E37D /* Pass.swift */,
+				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
+				94B87DC0194D678D00012DC4 /* Scene.swift */,
+				94B87DC8194D6B0A00012DC4 /* SceneMode.swift */,
 				94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */,
-				94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */,
+				942CEED2199E063E00012DC4 /* SkyBox.swift */,
+				9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";

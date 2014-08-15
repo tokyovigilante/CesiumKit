@@ -28,7 +28,7 @@ class Globe {
     */
     var terrainProvider: TerrainProvider
     
-    var imageryLayerCollection: ImageryLayerCollection
+    var imageryLayers: ImageryLayerCollection
     
     var surface: GlobeSurface
     

@@ -8,13 +8,17 @@
 
 import OpenGLES
 
+/// RGBA image data
+struct ImageBuffer {
+    let width: Int
+    let height: Int
+    let arrayBufferView: [UInt8]
+}
+
 struct TextureOptions {
     
     struct Source {
-        var width: Int? = nil
-        var height: Int? = nil
-        
-        var arrayBufferView: [UInt8]?
+        var imageBuffer: ImageBuffer?
         var frameBuffer: Framebuffer?
     }
     

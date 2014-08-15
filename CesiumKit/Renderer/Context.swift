@@ -554,13 +554,6 @@ class Context {
     * @memberof Context.prototype
     * @type {CubeMap}
     */
-    
-    private struct CubeMapFaceInfo {
-        let width: Int
-        let height: Int
-        let arrayBufferView: [UInt8]
-    }
-    
     var _defaultCubeMap: CubeMap?
     var defaultCubeMap: CubeMap {
         get {
@@ -1121,7 +1114,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
 * @see Context#createSampler
 */
 
-    func createCubeMap (faces: [CubeMapFaceInfo]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap {
+    func createCubeMap (faces: [ImageBuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap {
         /*
         Context.prototype.createCubeMap = function(options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);

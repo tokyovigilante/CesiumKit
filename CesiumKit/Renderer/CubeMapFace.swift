@@ -6,10 +6,12 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import OpenGLES
+
 class CubeMapFace {
     
-    weak var texture: Texture?
-    let textureTarget: Int
+    let texture: Int
+    let target: Int
     let targetFace: Int
     let pixelFormat: PixelFormat
     let pixelDatatype: PixelDatatype
@@ -17,9 +19,9 @@ class CubeMapFace {
     private let preMultiplyAlpha: Bool
     private let flipY: Bool
     
-    init(texture: Texture,  textureTarget: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
+    init(texture: Texture, target: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
         self.texture = texture
-        self.textureTarget = textureTarget
+        self.target = textureTarget
         self.targetFace = targetFace
         self.pixelFormat = pixelFormat
         self.pixelDatatype = pixelDatatype
@@ -27,7 +29,7 @@ class CubeMapFace {
         self.preMultiplyAlpha = preMultiplyAlpha
         self.flipY = flipY
     }
-/*
+
     
     /**
     * Copies texels from the source to the cubemap's face.
@@ -54,46 +56,32 @@ class CubeMapFace {
     *   arrayBufferView : new Uint8Array([255, 0, 0, 255])
     * });
     */
-    CubeMapFace.prototype.copyFrom = function(source, xOffset, yOffset) {
-    xOffset = defaultValue(xOffset, 0);
-    yOffset = defaultValue(yOffset, 0);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!source) {
-    throw new DeveloperError('source is required.');
+    func copyFrom(source: ImageBuffer, xOffset: Int = 0, yOffset: Int = 0) {
+        
+        assert(xOffset >= 0 && yOffset >= 0, "xOffset and yOffset must be greater than or equal to zero")
+        
+        assert(xOffset + source.width <= this._size, "xOffset + source.width must be less than or equal to width")
+        assert(yOffset + source.height <= this._size, "yOffset + source.height must be less than or equal to height")
+        
+        var gl = this._gl;
+        var target = this._textureTarget;
+        
+        // TODO: gl.pixelStorei(gl._UNPACK_ALIGNMENT, 4);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
+        //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
+        //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(target, texture)
+        
+        if source.arrayBufferView {
+            glTexSubImage2D(target, 0, xOffset, yOffset, width, height, pixelFormat, PixelDatatype, source.arrayBufferView)
+            /*} else {
+            gl.texSubImage2D(this._targetFace, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
+            }*/
+            glBindTexture(target, 0)
+        }
     }
-    if (xOffset < 0) {
-    throw new DeveloperError('xOffset must be greater than or equal to zero.');
-    }
-    if (yOffset < 0) {
-    throw new DeveloperError('yOffset must be greater than or equal to zero.');
-    }
-    if (xOffset + source.width > this._size) {
-    throw new DeveloperError('xOffset + source.width must be less than or equal to width.');
-    }
-    if (yOffset + source.height > this._size) {
-    throw new DeveloperError('yOffset + source.height must be less than or equal to height.');
-    }
-    //>>includeEnd('debug');
-    
-    var gl = this._gl;
-    var target = this._textureTarget;
-    
-    // TODO: gl.pixelStorei(gl._UNPACK_ALIGNMENT, 4);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(target, this._texture);
-    
-    if (source.arrayBufferView) {
-    gl.texSubImage2D(this._targetFace, 0, xOffset, yOffset, source.width, source.height, this._pixelFormat, this._pixelDatatype, source.arrayBufferView);
-    } else {
-    gl.texSubImage2D(this._targetFace, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
-    }
-    
-    gl.bindTexture(target, null);
-    };
-    
+    /*
     /**
     * Copies texels from the framebuffer to the cubemap's face.
     *

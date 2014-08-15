@@ -488,31 +488,31 @@ defineProperties(Scene.prototype, {
             return this._animations;
         }
     },
-    
+    */*/
     /**
     * Gets the collection of image layers that will be rendered on the globe.
     * @memberof Scene.prototype
     * @type {ImageryLayerCollection}
     */
-    imageryLayers : {
-        get : function() {
-            return this.globe.imageryLayers;
+    var imageryLayers: ImageryLayerCollection {
+        get {
+            return this.globe.imageryLayers
         }
-    },
-    
+    }
     /**
     * The terrain provider providing surface geometry for the globe.
     * @memberof Scene.prototype
     * @type {TerrainProvider}
     */
-    terrainProvider : {
-        get : function() {
+    var terrainProvider: TerrainProvider {
+        get {
             return this.globe.terrainProvider;
-        },
-        set : function(terrainProvider) {
-            this.globe.terrainProvider = terrainProvider;
         }
-    },
+        set (newTerrainProvider) {
+            this.globe.terrainProvider = newTerrainProvider
+        }
+    }
+    /*
     
     /**
     * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
@@ -1136,7 +1136,7 @@ function callAfterRenderFunctions(frameState) {
     }
     functions.length = 0;
 }
-*/*/
+*/
     /**
     * @private
     */
