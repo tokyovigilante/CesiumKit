@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class ImageryProvider {
+protocol ImageryProvider {
     /*
     /*global define*/
     define([

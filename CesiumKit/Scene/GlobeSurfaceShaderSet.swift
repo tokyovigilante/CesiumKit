@@ -29,7 +29,7 @@ class GlobeSurfaceShaderSet {
     }
     
     func invalidateShaders() {
-        shaders = Dictionary<String, ShaderProgram>()
+        shaders = [String : ShaderProgram]()
     }
     
     func getShaderKey(#textureCount: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool) -> String {

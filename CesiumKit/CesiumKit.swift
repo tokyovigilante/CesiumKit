@@ -9,37 +9,31 @@
 import Foundation
 import OpenGLES
 
-// Describes Globe object options
+/**
+Describes Globe object options
+
+:param: Clock [options.clock=new Clock()] The clock to use to control current time.
+:param: imageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
+:param: terrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
+:param: skyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
+:param: sceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
+:param: scene3DOnly Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+:param: mapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
+:param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
+:param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
+:param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+*/
 public struct CesiumGlobeOptions {
     
-    /// :param: Clock [options.clock=new Clock()] The clock to use to control current time.
     let clock = Clock()
-    
-    /// :param: imageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
     let imageryProvider: ImageryProvider? = BingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
-
-    /// :param: terrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
     let terrainProvider = EllipsoidTerrainProvider()
-    
-    /// :param: skyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
     let skyBox: SkyBox? = nil
-    
-    /// :param: sceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
     let sceneMode: SceneMode = .Scene3D
-    
-    /// :param: scene3DOnly Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
     let scene3DOnly = false
-    
-    /// :param: mapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
     let mapProjection = GeographicProjection()
-
-        /// :param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
     let useDefaultRenderLoop = true
-    
-    /// :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
     let targetFrameRate = 60
-    
-    /// :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
     let showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.

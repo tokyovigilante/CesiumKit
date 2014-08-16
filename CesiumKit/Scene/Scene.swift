@@ -72,7 +72,7 @@ import OpenGLES
 
 public class Scene {
     
-    var context: Context = Context()// = new Context(canvas, contextOptions);
+    private var context: Context = Context()// = new Context(canvas, contextOptions);
     /*
     if (!defined(creditContainer)) {
         creditContainer = document.createElement('div');
@@ -84,61 +84,111 @@ public class Scene {
         creditContainer.style['padding-right'] = '5px';
         canvas.parentNode.appendChild(creditContainer);
     }*/
-    var frameState: FrameState
     
     var passState: PassState = PassState(context: context)
     
-    var globe: Globe? = nil
+    /**
+    * Gets or sets the depth-test ellipsoid.
+    * @memberof Scene.prototype
+    * @type {Globe}
+    */
+    var globe: Globe?
     
+    /**
+    * Gets the collection of primitives.
+    * @memberof Scene.prototype
+    * @type {PrimitiveCollection}
+    */
     var primitives = PrimitiveCollection()
     
     var pickFramebuffer: Framebuffer? = nil
     
-    let camera: Camera
+    //TODO: TweenCollection
+//    var tweens = TweenCollection()
+
+    /**
+    * Gets the camera.
+    * @memberof Scene.prototype
+    * @type {Camera}
+    */
+    // TODO: setCamera
+    public var camera: Camera
     
-    private var screenSpaceCameraController: ScreenSpaceCameraController
+    /**
+    * Gets the controller for camera input handling.
+    * @memberof Scene.prototype
+    * @type {ScreenSpaceCameraController}
+    */
+    public var screenSpaceCameraController: ScreenSpaceCameraController
     
     
-    init (scene3DOnly: Bool?) {
-        
-        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
-        frameState.scene3DOnly = scene3DOnly ?? false
-        camera = Camera(self)
-        screenSpaceCameraController = ScreenSpaceCameraController(self.camera)
-    }
+    /**
+    * Gets state information about the current scene. If called outside of a primitive's <code>update</code>
+    * function, the previous frame's state is returned.
+    * @memberof Scene.prototype
+    * @type {FrameState}
+    */
+    var frameState: FrameState
+
+    /**
+    * Gets the collection of animations taking place in the scene.
+    * @memberof Scene.prototype
+    * @type {AnimationCollection}
+    */
+    // TODO: AnimationCollection
+    //var animations = AnimationCollection()
+    
+    
+    var shaderFrameCount = 0
+    
+    //this._sunPostProcess = undefined;
+    
+    
+    var commandList = [DrawCommand]()
+    var frustumCommandsList = [FrustumCommands]()
+    var overlayCommandList = [DrawCommand]()
+    
     
     /*
-    this._screenSpaceCameraController = new ScreenSpaceCameraController(canvas, this._camera);
-    
-    this._animations = new AnimationCollection();
-    
-    this._shaderFrameCount = 0;
-    
-    this._sunPostProcess = undefined;
-    
-    this._commandList = [];
-    this._frustumCommandsList = [];
-    this._overlayCommandList = [];
-    
+    // TODO: OIT and FXAA
     this._oit = new OIT(context);
     this._executeOITFunction = undefined;
     
     this._fxaa = new FXAA();
+    */
     
-    this._clearColorCommand = new ClearCommand({
-    color : new Color(),
-    owner : this
-    });
-    this._depthClearCommand = new ClearCommand({
-    depth : 1.0,
-    owner : this
-    });
+    var clearColorCommand: ClearCommand
     
-    this._transitioner = new SceneTransitioner(this);
+    var depthClearCommand: ClearCommand
     
-    this._renderError = new Event();
-    this._preRender = new Event();
-    this._postRender = new Event();
+    //var transitioner: SceneTransitioner(owner: Scene)
+    
+    /**
+    * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
+    * The Scene instance and the thrown error are the only two parameters passed to the event handler.
+    * By default, errors are not rethrown after this event is raised, but that can be changed by setting
+    * the <code>rethrowRenderErrors</code> property.
+    * @memberof Scene.prototype
+    * @type {Event}
+    */
+    var renderError = Event()
+    
+    /**
+    * Gets the event that will be raised at the start of each call to <code>render</code>.  Subscribers to the event
+    * receive the Scene instance as the first parameter and the current time as the second parameter.
+    * @memberof Scene.prototype
+    * @type {Event}
+    */
+    var preRender = Event()
+    
+    /**
+    * Gets the event that will be raised at the end of each call to <code>render</code>.  Subscribers to the event
+    * receive the Scene instance as the first parameter and the current time as the second parameter.
+    * @memberof Scene.prototype
+    * @type {Event}
+    */
+    var postRender = Event()
+    
     /*
     /**
     * Exceptions occurring in <code>render</code> are always caught in order to raise the
@@ -150,6 +200,7 @@ public class Scene {
     * @default false
     */
     this.rethrowRenderErrors = false;
+    */
     
     /**
     * Determines whether or not to instantly complete the
@@ -158,21 +209,21 @@ public class Scene {
     * @type {Boolean}
     * @default true
     */
-    this.completeMorphOnUserInput = true;
+    var completeMorphOnUserInput = true
     
     /**
     * The event fired at the beginning of a scene transition.
     * @type {Event}
     * @default Event()
     */
-    this.morphStart = new Event();
+    var morphStart = Event()
     
     /**
     * The event fired at the completion of a scene transition.
     * @type {Event}
     * @default Event()
     */
-    this.morphComplete = new Event();
+    var morphComplete = Event()
     
     /**
     * The {@link SkyBox} used to draw the stars.
@@ -182,7 +233,7 @@ public class Scene {
     *
     * @see Scene#backgroundColor
     */
-    this.skyBox = undefined;
+    var skyBox: SkyBox? = nil
     
     /**
     * The sky atmosphere drawn around the globe.
@@ -190,7 +241,8 @@ public class Scene {
     * @type {SkyAtmosphere}
     * @default undefined
     */
-    this.skyAtmosphere = undefined;
+    // TODO: SkyAtmosphere
+    //var skyAtmosphere: SkyAtmosphere = nil
     
     /**
     * The {@link Sun}.
@@ -198,7 +250,7 @@ public class Scene {
     * @type {Sun}
     * @default undefined
     */
-    this.sun = undefined;
+    //this.sun = undefined;
     
     /**
     * Uses a bloom filter on the sun when enabled.
@@ -206,8 +258,8 @@ public class Scene {
     * @type {Boolean}
     * @default true
     */
-    this.sunBloom = true;
-    this._sunBloom = undefined;
+    //this.sunBloom = true;
+    //this._sunBloom = undefined;
     
     /**
     * The {@link Moon}
@@ -215,7 +267,7 @@ public class Scene {
     * @type Moon
     * @default undefined
     */
-    this.moon = undefined;
+    //this.moon = undefined;
     
     /**
     * The background color, which is only visible if there is no sky box, i.e., {@link Scene#skyBox} is undefined.
@@ -225,7 +277,7 @@ public class Scene {
     *
     * @see Scene#skyBox
     */
-    this.backgroundColor = Color.clone(Color.BLACK);
+    var backgroundColor = Cartesian4.zero()
     
     /**
     * The current mode of the scene.
@@ -233,16 +285,16 @@ public class Scene {
     * @type {SceneMode}
     * @default {@link SceneMode.SCENE3D}
     */
-    this.mode = SceneMode.SCENE3D;
+    var mode = SceneMode.Scene3D
+    
     /**
     * DOC_TBA
     */
-    this.scene2D = {
-        /**
-        * The projection to use in 2D mode.
-        */
-        projection : new GeographicProjection(Ellipsoid.WGS84)
-    };
+    struct Scene2D {
+        var projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84Ellipsoid())
+    }
+    var scene2D = Scene2D()
+    
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
     * with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -250,14 +302,15 @@ public class Scene {
     * @type {Number}
     * @default 1.0
     */
-    this.morphTime = 1.0;
+    var morphTime = 1.0
+
     /**
     * The far-to-near ratio of the multi-frustum. The default is 1,000.0.
     *
     * @type {Number}
     * @default 1000.0
     */
-    this.farToNearRatio = 1000.0;
+    var farToNearRatio = 1000.0
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -289,7 +342,7 @@ public class Scene {
     * @see DrawCommand
     * @see ClearCommand
     */
-    this.debugCommandFilter = undefined;
+    //var debugCommandFilter = () -> ()?
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -303,7 +356,7 @@ public class Scene {
     *
     * @default false
     */
-    this.debugShowCommands = false;
+    public var debugShowCommands = false
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -320,246 +373,7 @@ public class Scene {
     *
     * @default false
     */
-    this.debugShowFrustums = false;
-    
-    this._debugFrustumStatistics = undefined;
-    
-    /**
-    * This property is for debugging only; it is not for production use.
-    * <p>
-    * Displays frames per second and time between frames.
-    * </p>
-    *
-    * @type Boolean
-    *
-    * @default false
-    */
-    this.debugShowFramesPerSecond = false;
-    
-    /**
-    * If <code>true</code>, enables Fast Aproximate Anti-aliasing only if order independent translucency
-    * is supported.
-    *
-    * @type Boolean
-    * @default true
-    */
-    this.fxaaOrderIndependentTranslucency = true;
-    
-    /**
-    * When <code>true</code>, enables Fast Approximate Anti-aliasing even when order independent translucency
-    * is unsupported.
-    *
-    * @type Boolean
-    * @default false
-    */
-    this.fxaa = false;
-    
-    this._performanceDisplay = undefined;
-    this._debugSphere = undefined;
-    
-    // initial guess at frustums.
-    var near = this._camera.frustum.near;
-    var far = this._camera.frustum.far;
-    var numFrustums = Math.ceil(Math.log(far / near) / Math.log(this.farToNearRatio));
-    updateFrustums(near, far, this.farToNearRatio, numFrustums, this._frustumCommandsList);
-    
-    // give frameState, camera, and screen space camera controller initial state before rendering
-    updateFrameState(this, 0.0, new JulianDate());
-    this.initializeFrame();
-};
-
-defineProperties(Scene.prototype, {
-    /**
-    * Gets the canvas element to which this scene is bound.
-    * @memberof Scene.prototype
-    * @type {Element}
-    */
-    canvas : {
-        get : function() {
-            return this._canvas;
-        }
-    },
-    
-    /**
-    * The drawingBufferWidth of the underlying GL context.
-    * @memberof Scene.prototype
-    * @type {Number}
-    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
-    */
-    drawingBufferHeight : {
-        get : function() {
-            return this._context.drawingBufferHeight;
-        }
-    },
-    
-    /**
-    * The drawingBufferHeight of the underlying GL context.
-    * @memberof Scene.prototype
-    * @type {Number}
-    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
-    */
-    drawingBufferWidth : {
-        get : function() {
-            return this._context.drawingBufferWidth;
-        }
-    },
-    
-    /**
-    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
-    * @memberof Scene.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
-    */
-    maximumAliasedLineWidth : {
-        get : function() {
-            return this._context.maximumAliasedLineWidth;
-        }
-    },
-    
-    /**
-    * Gets or sets the depth-test ellipsoid.
-    * @memberof Scene.prototype
-    * @type {Globe}
-    */
-    globe : {
-        get: function() {
-            return this._globe;
-        },
-        
-        set: function(globe) {
-            this._globe = this._globe && this._globe.destroy();
-            this._globe = globe;
-        }
-    },
-    
-    /**
-    * Gets the collection of primitives.
-    * @memberof Scene.prototype
-    * @type {PrimitiveCollection}
-    */
-    primitives : {
-        get : function() {
-            return this._primitives;
-        }
-    },
-    
-    /**
-    * Gets the camera.
-    * @memberof Scene.prototype
-    * @type {Camera}
-    */
-    camera : {
-        get : function() {
-            return this._camera;
-        }
-    },
-    // TODO: setCamera
-    
-    /**
-    * Gets the controller for camera input handling.
-    * @memberof Scene.prototype
-    * @type {ScreenSpaceCameraController}
-    */
-    screenSpaceCameraController : {
-        get : function() {
-            return this._screenSpaceCameraController;
-        }
-    },
-    
-    /**
-    * Gets state information about the current scene. If called outside of a primitive's <code>update</code>
-    * function, the previous frame's state is returned.
-    * @memberof Scene.prototype
-    * @type {FrameState}
-    */
-    frameState : {
-        get: function() {
-            return this._frameState;
-        }
-    },
-    
-    /**
-    * Gets the collection of animations taking place in the scene.
-    * @memberof Scene.prototype
-    * @type {AnimationCollection}
-    */
-    animations : {
-        get : function() {
-            return this._animations;
-        }
-    },
-    */*/
-    /**
-    * Gets the collection of image layers that will be rendered on the globe.
-    * @memberof Scene.prototype
-    * @type {ImageryLayerCollection}
-    */
-    var imageryLayers: ImageryLayerCollection {
-        get {
-            return this.globe.imageryLayers
-        }
-    }
-    /**
-    * The terrain provider providing surface geometry for the globe.
-    * @memberof Scene.prototype
-    * @type {TerrainProvider}
-    */
-    var terrainProvider: TerrainProvider {
-        get {
-            return this.globe.terrainProvider;
-        }
-        set (newTerrainProvider) {
-            this.globe.terrainProvider = newTerrainProvider
-        }
-    }
-    /*
-    
-    /**
-    * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
-    * The Scene instance and the thrown error are the only two parameters passed to the event handler.
-    * By default, errors are not rethrown after this event is raised, but that can be changed by setting
-    * the <code>rethrowRenderErrors</code> property.
-    * @memberof Scene.prototype
-    * @type {Event}
-    */
-    renderError : {
-        get : function() {
-            return this._renderError;
-        }
-    },
-    
-    /**
-    * Gets the event that will be raised at the start of each call to <code>render</code>.  Subscribers to the event
-    * receive the Scene instance as the first parameter and the current time as the second parameter.
-    * @memberof Scene.prototype
-    * @type {Event}
-    */
-    preRender : {
-        get : function() {
-            return this._preRender;
-        }
-    },
-    
-    /**
-    * Gets the event that will be raised at the end of each call to <code>render</code>.  Subscribers to the event
-    * receive the Scene instance as the first parameter and the current time as the second parameter.
-    * @memberof Scene.prototype
-    * @type {Event}
-    */
-    postRender : {
-        get : function() {
-            return this._postRender;
-        }
-    },
-    
-    /**
-    * @private
-    */
-    context : {
-        get : function() {
-            return this._context;
-        }
-    },
+    public var debugShowFrustums = false
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -579,13 +393,117 @@ defineProperties(Scene.prototype, {
     *
     * @default undefined
     */
-    debugFrustumStatistics : {
-        get : function() {
-            return this._debugFrustumStatistics;
+    //var debugFrustumStatistics = nil //undefined;
+    
+    /**
+    * This property is for debugging only; it is not for production use.
+    * <p>
+    * Displays frames per second and time between frames.
+    * </p>
+    *
+    * @type Boolean
+    *
+    * @default false
+    */
+    var debugShowFramesPerSecond = false
+    
+    /**
+    * If <code>true</code>, enables Fast Aproximate Anti-aliasing only if order independent translucency
+    * is supported.
+    *
+    * @type Boolean
+    * @default true
+    */
+    var fxaaOrderIndependentTranslucency = true
+    
+    /**
+    * When <code>true</code>, enables Fast Approximate Anti-aliasing even when order independent translucency
+    * is unsupported.
+    *
+    * @type Boolean
+    * @default false
+    */
+    var fxaa = false
+    
+    //this._performanceDisplay = undefined;
+    //this._debugSphere = undefined;
+
+    
+    /**
+    * The drawingBufferWidth of the underlying GL context.
+    * @memberof Scene.prototype
+    * @type {Number}
+    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
+    */
+    var drawingBufferHeight = 0
+    
+    /**
+    * The drawingBufferHeight of the underlying GL context.
+    * @memberof Scene.prototype
+    * @type {Number}
+    * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
+    */
+    var drawingBufferWidth = 0
+
+    
+    /**
+    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
+    * @memberof Scene.prototype
+    * @type {Number}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
+    */
+    var maximumAliasedLineWidth: Int {
+        get {
+            return context.maximumAliasedLineWidth
         }
     }
-    });
+    
+    /**
+    * Gets the collection of image layers that will be rendered on the globe.
+    * @memberof Scene.prototype
+    * @type {ImageryLayerCollection}
+    */
+    var imageryLayers: ImageryLayerCollection {
+        get {
+            return globe.imageryLayers
+        }
+    }
+    /**
+    * The terrain provider providing surface geometry for the globe.
+    * @memberof Scene.prototype
+    * @type {TerrainProvider}
+    */
+    var terrainProvider: TerrainProvider {
+        get {
+            return this.globe.terrainProvider;
+        }
+        set (newTerrainProvider) {
+            globe.terrainProvider = newTerrainProvider
+        }
+    }
 
+    init (scene3DOnly: Bool?) {
+        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
+        frameState.scene3DOnly = scene3DOnly ?? false
+        camera = Camera(self)
+        screenSpaceCameraController = ScreenSpaceCameraController(self.camera)
+        
+        clearColorCommand = ClearCommand(color: Cartesian4.zero(), owner: self)
+        depthClearCommand = ClearCommand(depth: 1.0, owner: self)
+        
+        //transitioner = SceneTransitioner(self)
+        
+        // initial guess at frustums.
+        var near = camera.frustum.near
+        var far = camera.frustum.far
+        var numFrustums = ceil(log(far / near) / log(this.farToNearRatio))
+        updateFrustums(near, far, this.farToNearRatio, numFrustums, frustumCommandsList)
+        
+        // give frameState, camera, and screen space camera controller initial state before rendering
+        updateFrameState(this, 0.0, JulianDate())
+        this.initializeFrame()
+    }
+    /*
 var scratchOccluderBoundingSphere = new BoundingSphere();
 var scratchOccluder;
 
@@ -1151,77 +1069,67 @@ function callAfterRenderFunctions(frameState) {
         camera.update(this.mode, this.scene2D)
         screenSpaceCameraController.update(this.mode)
     }
-/*
-    func render(scene, time) {
-    if (!defined(time)) {
-        time = new JulianDate();
-    }
+
     
-    scene._preRender.raiseEvent(scene, time);
+    func render(width: Int, height: Int, time: JulianDate = JulianDate()) {
     
-    var us = scene.context.uniformState;
-    var frameState = scene._frameState;
-    
-    var frameNumber = CesiumMath.incrementWrap(frameState.frameNumber, 15000000.0, 1.0);
-    updateFrameState(scene, frameNumber, time);
-    frameState.passes.render = true;
-    frameState.creditDisplay.beginFrame();
-    
-    var context = scene.context;
-    us.update(context, frameState);
-    
-    scene._commandList.length = 0;
-    scene._overlayCommandList.length = 0;
-    
-    updatePrimitives(scene);
-    createPotentiallyVisibleSet(scene);
-    
-    var passState = scene._passState;
-    
-    executeCommands(scene, passState, defaultValue(scene.backgroundColor, Color.BLACK));
-    executeOverlayCommands(scene, passState);
-    
-    frameState.creditDisplay.endFrame();
-    
-    if (scene.debugShowFramesPerSecond) {
-        if (!defined(scene._performanceDisplay)) {
-            var performanceContainer = document.createElement('div');
-            performanceContainer.style.position = 'absolute';
-            performanceContainer.style.top = '10px';
-            performanceContainer.style.left = '10px';
-            var container = scene._canvas.parentNode;
-            container.appendChild(performanceContainer);
-            var performanceDisplay = new PerformanceDisplay({container: performanceContainer});
-            scene._performanceDisplay = performanceDisplay;
-            scene._performanceContainer = performanceContainer;
+        drawingBufferWidth = width
+        drawingBufferHeight = height
+        
+        scene.preRender.raiseEvent(scene, time)
+        
+        var us = scene.context.uniformState;
+        var frameState = scene._frameState;
+        
+        var frameNumber = CesiumMath.incrementWrap(frameState.frameNumber, 15000000.0, 1.0);
+        updateFrameState(scene, frameNumber, time);
+        frameState.passes.render = true;
+        frameState.creditDisplay.beginFrame();
+        
+        var context = scene.context;
+        us.update(context, frameState);
+        
+        scene._commandList.length = 0;
+        scene._overlayCommandList.length = 0;
+        
+        updatePrimitives(scene);
+        createPotentiallyVisibleSet(scene);
+        
+        var passState = scene._passState;
+        
+        executeCommands(scene, passState, defaultValue(scene.backgroundColor, Color.BLACK));
+        executeOverlayCommands(scene, passState);
+        
+        frameState.creditDisplay.endFrame();
+        
+        if (scene.debugShowFramesPerSecond) {
+            // TODO: Performance display
+/*            if (!defined(scene._performanceDisplay)) {
+                var performanceContainer = document.createElement('div');
+                performanceContainer.style.position = 'absolute';
+                performanceContainer.style.top = '10px';
+                performanceContainer.style.left = '10px';
+                var container = scene._canvas.parentNode;
+                container.appendChild(performanceContainer);
+                var performanceDisplay = new PerformanceDisplay({container: performanceContainer});
+                scene._performanceDisplay = performanceDisplay;
+                scene._performanceContainer = performanceContainer;
+            }
+            
+            //scene._performanceDisplay.update();
+        } else if (defined(scene._performanceDisplay)) {
+            scene._performanceDisplay = scene._performanceDisplay && scene._performanceDisplay.destroy();
+            scene._performanceContainer.parentNode.removeChild(scene._performanceContainer);*/
         }
         
-        scene._performanceDisplay.update();
-    } else if (defined(scene._performanceDisplay)) {
-        scene._performanceDisplay = scene._performanceDisplay && scene._performanceDisplay.destroy();
-        scene._performanceContainer.parentNode.removeChild(scene._performanceContainer);
-    }
-    
-    context.endFrame();
-    callAfterRenderFunctions(frameState);
-    
-    scene._postRender.raiseEvent(scene, time);
+        context.endFrame();
+        callAfterRenderFunctions(frameState);
+        
+        scene._postRender.raiseEvent(scene, time);
+        
 }
 
-/**
-* @private
-*/
-Scene.prototype.render = function(time) {
-    try {
-        render(this, time);
-    } catch (error) {
-        this._renderError.raiseEvent(this, error);
-        
-        if (this.rethrowRenderErrors) {
-            throw error;
-        }
-    }
-};
+/*
 
 var orthoPickingFrustum = new OrthographicFrustum();
 var scratchOrigin = new Cartesian3();

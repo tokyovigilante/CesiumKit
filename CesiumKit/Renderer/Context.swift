@@ -1461,41 +1461,8 @@ var renderStateCache = {};
     
     return cachedState;*/
 }
-/*
-Context.prototype.createSampler = function(sampler) {
-    var s = {
-        wrapS : defaultValue(sampler.wrapS, TextureWrap.CLAMP_TO_EDGE),
-        wrapT : defaultValue(sampler.wrapT, TextureWrap.CLAMP_TO_EDGE),
-        minificationFilter : defaultValue(sampler.minificationFilter, TextureMinificationFilter.LINEAR),
-        magnificationFilter : defaultValue(sampler.magnificationFilter, TextureMagnificationFilter.LINEAR),
-        maximumAnisotropy : (defined(sampler.maximumAnisotropy)) ? sampler.maximumAnisotropy : 1.0
-    };
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!TextureWrap.validate(s.wrapS)) {
-        throw new DeveloperError('Invalid sampler.wrapS.');
-    }
-    
-    if (!TextureWrap.validate(s.wrapT)) {
-        throw new DeveloperError('Invalid sampler.wrapT.');
-    }
-    
-    if (!TextureMinificationFilter.validate(s.minificationFilter)) {
-        throw new DeveloperError('Invalid sampler.minificationFilter.');
-    }
-    
-    if (!TextureMagnificationFilter.validate(s.magnificationFilter)) {
-        throw new DeveloperError('Invalid sampler.magnificationFilter.');
-    }
-    
-    if (s.maximumAnisotropy < 1.0) {
-        throw new DeveloperError('sampler.maximumAnisotropy must be greater than or equal to one.');
-    }
-    //>>includeEnd('debug');
-    
-    return s;
-};
 
+/*
 function validateFramebuffer(context, framebuffer) {
     if (context.validateFramebuffer) {
         var gl = context._gl;
@@ -1675,14 +1642,14 @@ function continueDraw(context, drawCommand, shaderProgram) {
     }
 }
 */
-func draw(drawCommand: DrawCommand, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
-    /*
-    passState = defaultValue(passState, this._defaultPassState);
-    // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-    var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
+func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState, shaderProgram: ShaderProgram) {
     
-    beginDraw(this, framebuffer, drawCommand, passState, renderState, shaderProgram);
-    continueDraw(this, drawCommand, shaderProgram);*/
+    var activePassState = passState ?? defaultPassState
+    // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+    var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
+    
+    beginDraw(framebuffer, drawCommand, activePassState, renderState, shaderProgram)
+    continueDraw(this, drawCommand, shaderProgram)
 }
 /*
 Context.prototype.endFrame = function() {

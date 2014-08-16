@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import OpenGLES
+
 enum PixelDatatype: Int {
     case UnsignedByte = 0x1401,
     UnsignedShort = 0x1403,
@@ -15,4 +17,12 @@ enum PixelDatatype: Int {
     UnsignedShort4444 = 0x8033,
     UnsignedShort5551 = 0x8034,
     UnsignedShort565 = 0x8363
+    
+    /**
+    Allows passing enum directly to OpenGL
+    :result: GLenum equivalent
+    */
+    func __conversion() -> GLenum {
+        return GLenum(self)
+    }
 }

@@ -19,9 +19,9 @@ class CubeMapFace {
     private let preMultiplyAlpha: Bool
     private let flipY: Bool
     
-    init(texture: Texture, target: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
+    init(texture: Int, target: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
         self.texture = texture
-        self.target = textureTarget
+        self.target = target
         self.targetFace = targetFace
         self.pixelFormat = pixelFormat
         self.pixelDatatype = pixelDatatype
@@ -60,28 +60,24 @@ class CubeMapFace {
         
         assert(xOffset >= 0 && yOffset >= 0, "xOffset and yOffset must be greater than or equal to zero")
         
-        assert(xOffset + source.width <= this._size, "xOffset + source.width must be less than or equal to width")
-        assert(yOffset + source.height <= this._size, "yOffset + source.height must be less than or equal to height")
+        assert(xOffset + source.width <= size, "xOffset + source.width must be less than or equal to width")
+        assert(yOffset + source.height <= size, "yOffset + source.height must be less than or equal to height")
         
-        var gl = this._gl;
-        var target = this._textureTarget;
-        
-        // TODO: gl.pixelStorei(gl._UNPACK_ALIGNMENT, 4);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
         //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(target, texture)
         
-        if source.arrayBufferView {
-            glTexSubImage2D(target, 0, xOffset, yOffset, width, height, pixelFormat, PixelDatatype, source.arrayBufferView)
+        if source.arrayBufferView != nil {
+            glTexSubImage2D(target, 0, xOffset, yOffset, source.width, source.height, pixelFormat, pixelDatatype, source.arrayBufferView)
             /*} else {
             gl.texSubImage2D(this._targetFace, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
             }*/
             glBindTexture(target, 0)
         }
     }
-    /*
+    
     /**
     * Copies texels from the framebuffer to the cubemap's face.
     *
@@ -106,49 +102,24 @@ class CubeMapFace {
     * // Copy the framebuffer contents to the +x cube map face.
     * cubeMap.positiveX.copyFromFramebuffer();
     */
-    CubeMapFace.prototype.copyFromFramebuffer = function(xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height) {
-    xOffset = defaultValue(xOffset, 0);
-    yOffset = defaultValue(yOffset, 0);
-    framebufferXOffset = defaultValue(framebufferXOffset, 0);
-    framebufferYOffset = defaultValue(framebufferYOffset, 0);
-    width = defaultValue(width, this._size);
-    height = defaultValue(height, this._size);
+    func copyFromFramebuffer(xOffset: Int = 0, yOffset: Int = 0, framebufferXOffset: Int = 0, framebufferYOffset: Int = 0, width: Int?, height: Int?) {
+        
+        let copyWidth = width ?? size
+        let copyHeight = height ?? size
+        
+        assert(xOffset >= 0 && yOffset >= 0, "xOffset and yOffset must be greater than or equal to zero")
+        assert(framebufferXOffset >= 0 && framebufferYOffset >= 0, "framebufferXOffset and framebufferYOffset must be greater than or equal to zero")
+        
+        assert(xOffset + copyWidth <= size, "xOffset + source.width must be less than or equal to width")
+        assert(yOffset + copyHeight <= size, "yOffset + source.height must be less than or equal to height")
     
-    //>>includeStart('debug', pragmas.debug);
-    if (xOffset < 0) {
-    throw new DeveloperError('xOffset must be greater than or equal to zero.');
+        assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
+        
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(target, texture)
+        glCopyTexSubImage2D(targetFace, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, copyWidth, copyHeight)
+        glBindTexture(target, 0)
     }
-    if (yOffset < 0) {
-    throw new DeveloperError('yOffset must be greater than or equal to zero.');
-    }
-    if (framebufferXOffset < 0) {
-    throw new DeveloperError('framebufferXOffset must be greater than or equal to zero.');
-    }
-    if (framebufferYOffset < 0) {
-    throw new DeveloperError('framebufferYOffset must be greater than or equal to zero.');
-    }
-    if (xOffset + width > this._size) {
-    throw new DeveloperError('xOffset + source.width must be less than or equal to width.');
-    }
-    if (yOffset + height > this._size) {
-    throw new DeveloperError('yOffset + source.height must be less than or equal to height.');
-    }
-    if (this._pixelDatatype === PixelDatatype.FLOAT) {
-    throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT.');
-    }
-    //>>includeEnd('debug');
-    
-    var gl = this._gl;
-    var target = this._textureTarget;
-    
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(target, this._texture);
-    gl.copyTexSubImage2D(this._targetFace, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height);
-    gl.bindTexture(target, null);
-    };
-    
-    return CubeMapFace;
-    });
-*/
-    
+
 }
+

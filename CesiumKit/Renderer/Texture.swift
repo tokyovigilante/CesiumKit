@@ -8,13 +8,6 @@
 
 import OpenGLES
 
-/// RGBA image data
-struct ImageBuffer {
-    let width: Int
-    let height: Int
-    let arrayBufferView: [UInt8]
-}
-
 struct TextureOptions {
     
     struct Source {
@@ -122,7 +115,7 @@ class Texture {
         glBindTexture(GL_TEXTURE_2D, textureName)
         
         if (defined(source)) {
-            // TODO: _gl.pixelStorei(_gl._UNPACK_ALIGNMENT, 4);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
             //glPixelStorei(GL_UNPACK, <#param: GLint#>)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);

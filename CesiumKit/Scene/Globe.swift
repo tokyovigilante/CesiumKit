@@ -663,20 +663,7 @@ commandList.push(this._depthCommand);
 }
 };
 
-/**
-* Returns true if this object was destroyed; otherwise, false.
-* <br /><br />
-* If this object was destroyed, it should not be used; calling any function other than
-* <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
-*
-* @returns {Boolean} True if this object was destroyed; otherwise, false.
-*
-* @see Globe#destroy
-*/
-Globe.prototype.isDestroyed = function() {
-return false;
-};
-
+*/*/
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
 * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
@@ -694,25 +681,23 @@ return false;
 * @example
 * globe = globe && globe.destroy();
 */
-Globe.prototype.destroy = function() {
-this._northPoleCommand.vertexArray = this._northPoleCommand.vertexArray && this._northPoleCommand.vertexArray.destroy();
-this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
-
-this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
-
-this._northPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram && this._northPoleCommand.shaderProgram.destroy();
-this._southPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram;
-
-this._depthCommand.shaderProgram = this._depthCommand.shaderProgram && this._depthCommand.shaderProgram.destroy();
-this._depthCommand.vertexArray = this._depthCommand.vertexArray && this._depthCommand.vertexArray.destroy();
-
-this._surface = this._surface && this._surface.destroy();
-
-this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
-
-return destroyObject(this);
-};
-
-*/
-*/
+    deinit {
+        /*this._northPoleCommand.vertexArray = this._northPoleCommand.vertexArray && this._northPoleCommand.vertexArray.destroy();
+        this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
+        
+        this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
+        
+        this._northPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram && this._northPoleCommand.shaderProgram.destroy();
+        this._southPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram;
+        
+        this._depthCommand.shaderProgram = this._depthCommand.shaderProgram && this._depthCommand.shaderProgram.destroy();
+        this._depthCommand.vertexArray = this._depthCommand.vertexArray && this._depthCommand.vertexArray.destroy();
+        
+        this._surface = this._surface && this._surface.destroy();
+        
+        this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
+        
+        return destroyObject(this);*/
+    }
 }
+

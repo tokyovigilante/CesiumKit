@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import OpenGLES
+
 enum PixelFormat: Int {
     /**
     * 0x1902.  A pixel format containing a depth value.
@@ -75,5 +77,12 @@ enum PixelFormat: Int {
     func isDepthFormat() -> Bool {
         return self === PixelFormat.DepthComponent ||
             pixelFormat === PixelFormat.DepthStencil
+    }
+    /** 
+    Allows passing enum directly to OpenGL
+    :result: GLenum equivalent
+    */
+    func __conversion() -> GLenum {
+        return GLenum(self)
     }
 }
