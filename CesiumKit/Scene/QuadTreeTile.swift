@@ -190,11 +190,9 @@ class QuadTreeTile {
         renderable = false
         upsampledFromParent = false
         
-        if data != nil  {
-            data.freeResources()
-        }
+        data?.freeResources()
         
-        if ._children != nil {
+        if _children != nil {
             for tile in _children {
                 tile.freeResources()
             }

@@ -43,6 +43,9 @@
 		9454042F199F5C7D00012DC4 /* TileTerrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9454042E199F5C7D00012DC4 /* TileTerrain.swift */; };
 		94540431199F5D0900012DC4 /* TerrainState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540430199F5D0900012DC4 /* TerrainState.swift */; };
 		94540433199F5F3F00012DC4 /* TileImagery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540432199F5F3F00012DC4 /* TileImagery.swift */; };
+		94540435199F62C900012DC4 /* ImageryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540434199F62C900012DC4 /* ImageryState.swift */; };
+		94540437199F63A700012DC4 /* Imagery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540436199F63A700012DC4 /* Imagery.swift */; };
+		94540439199F649000012DC4 /* ImageryLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540438199F649000012DC4 /* ImageryLayer.swift */; };
 		945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
 		9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F806194DA5AF00012DC4 /* Visibility.swift */; };
 		9460F809194DA7F800012DC4 /* PassState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F808194DA7F800012DC4 /* PassState.swift */; };
@@ -170,6 +173,9 @@
 		9454042E199F5C7D00012DC4 /* TileTerrain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileTerrain.swift; sourceTree = "<group>"; };
 		94540430199F5D0900012DC4 /* TerrainState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainState.swift; sourceTree = "<group>"; };
 		94540432199F5F3F00012DC4 /* TileImagery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileImagery.swift; sourceTree = "<group>"; };
+		94540434199F62C900012DC4 /* ImageryState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryState.swift; sourceTree = "<group>"; };
+		94540436199F63A700012DC4 /* Imagery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imagery.swift; sourceTree = "<group>"; };
+		94540438199F649000012DC4 /* ImageryLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayer.swift; sourceTree = "<group>"; };
 		945D2DBA193D7FA800012DC4 /* CesiumKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CesiumKit-Bridging-Header.h"; path = "Core/CesiumKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
 		9460F806194DA5AF00012DC4 /* Visibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Visibility.swift; sourceTree = "<group>"; };
@@ -366,6 +372,7 @@
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
+				94540434199F62C900012DC4 /* ImageryState.swift */,
 				94E4CB2B1950581300F7E37D /* Pass.swift */,
 				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
 				94540428199F4CD900012DC4 /* QuadTreeTile.swift */,
@@ -378,6 +385,8 @@
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
+				94540436199F63A700012DC4 /* Imagery.swift */,
+				94540438199F649000012DC4 /* ImageryLayer.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -579,11 +588,13 @@
 				9451509B193ADB8600012DC4 /* CSHeightMapStructure.m in Sources */,
 				94540421199F03C300012DC4 /* JulianDate.swift in Sources */,
 				94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */,
+				94540437199F63A700012DC4 /* Imagery.swift in Sources */,
 				948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */,
 				94E61B3C194ACC2000415870 /* WebMercatorTilingScheme.swift in Sources */,
 				942CEED3199E063E00012DC4 /* SkyBox.swift in Sources */,
 				9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */,
 				9465B0261956F5DE00355D2C /* Texture.swift in Sources */,
+				94540439199F649000012DC4 /* ImageryLayer.swift in Sources */,
 				94540423199F045600012DC4 /* Event.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,
 				94E7A863199DD71600012DC4 /* ScreenSpaceEventHandler.swift in Sources */,
@@ -616,6 +627,7 @@
 				9465B0241956F5A400355D2C /* UniformState.swift in Sources */,
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
+				94540435199F62C900012DC4 /* ImageryState.swift in Sources */,
 				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
 				94B6C5B41970A07C008792D9 /* Credit.swift in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,

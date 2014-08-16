@@ -1,0 +1,98 @@
+//
+//  Imagery.swift
+//  CesiumKit
+//
+//  Created by Ryan Walklin on 16/08/14.
+//  Copyright (c) 2014 Test Toast. All rights reserved.
+//
+
+/**
+* Stores details about a tile of imagery.
+*
+* @alias Imagery
+* @private
+*/
+class Imagery {
+    
+    var level: Int
+    
+    var x: Int
+    
+    var y: Int
+    
+    var imageryLayer: ImageryLayer
+
+    var rectangle: Rectangle
+
+init(imageryLayer, x, y, level, rectangle) {
+
+    
+    
+    
+    this.imageryLayer = imageryLayer;
+    this.x = x;
+    this.y = y;
+    this.level = level;
+    
+    if (level !== 0) {
+        var parentX = x / 2 | 0;
+        var parentY = y / 2 | 0;
+        var parentLevel = level - 1;
+        this.parent = imageryLayer.getImageryFromCache(parentX, parentY, parentLevel);
+    }
+    
+    this.state = ImageryState.UNLOADED;
+    this.imageUrl = undefined;
+    this.image = undefined;
+    this.texture = undefined;
+    this.credits = undefined;
+    this.referenceCount = 0;
+    
+    if (!defined(rectangle) && imageryLayer.imageryProvider.ready) {
+        var tilingScheme = imageryLayer.imageryProvider.tilingScheme;
+        rectangle = tilingScheme.tileXYToRectangle(x, y, level);
+    }
+    
+    this.rectangle = rectangle;
+    };
+}
+    Imagery.createPlaceholder = function(imageryLayer) {
+    var result = new Imagery(imageryLayer, 0, 0, 0);
+    result.addReference();
+    result.state = ImageryState.PLACEHOLDER;
+    return result;
+    };
+    
+    Imagery.prototype.addReference = function() {
+    ++this.referenceCount;
+    };
+    
+    Imagery.prototype.releaseReference = function() {
+    --this.referenceCount;
+    
+    if (this.referenceCount === 0) {
+    this.imageryLayer.removeImageryFromCache(this);
+    
+    if (defined(this.parent)) {
+    this.parent.releaseReference();
+    }
+    
+    if (defined(this.image) && defined(this.image.destroy)) {
+    this.image.destroy();
+    }
+    
+    if (defined(this.texture)) {
+    this.texture.destroy();
+    }
+    
+    destroyObject(this);
+    
+    return 0;
+    }
+    
+    return this.referenceCount;
+    };
+    
+    return Imagery;
+    });*/
+}

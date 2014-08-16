@@ -20,7 +20,7 @@ class GlobeSurfaceTile {
     * @type {TileImagery[]}
     * @default []
     */
-    varimagery = [TileImagery]
+    var imagery = [TileImagery]()
     /*
     /**
     * The world coordinates of the southwest corner of the tile's rectangle.
@@ -184,44 +184,46 @@ class GlobeSurfaceTile {
     
     return undefined;
     };
+    */
     
-    GlobeSurfaceTile.prototype.freeResources = function() {
-    if (defined(this.waterMaskTexture)) {
-    --this.waterMaskTexture.referenceCount;
-    if (this.waterMaskTexture.referenceCount === 0) {
-    this.waterMaskTexture.destroy();
+    func freeResources () {
+        /*
+        if (defined(this.waterMaskTexture)) {
+            --this.waterMaskTexture.referenceCount;
+            if (this.waterMaskTexture.referenceCount === 0) {
+                this.waterMaskTexture.destroy();
+            }
+            this.waterMaskTexture = undefined;
+        }
+        
+        this.terrainData = undefined;
+        
+        if (defined(this.loadedTerrain)) {
+            this.loadedTerrain.freeResources();
+            this.loadedTerrain = undefined;
+        }
+        
+        if (defined(this.upsampledTerrain)) {
+            this.upsampledTerrain.freeResources();
+            this.upsampledTerrain = undefined;
+        }
+        
+        if (defined(this.pickTerrain)) {
+            this.pickTerrain.freeResources();
+            this.pickTerrain = undefined;
+        }
+        
+        var i, len;
+        
+        var imageryList = this.imagery;
+        for (i = 0, len = imageryList.length; i < len; ++i) {
+            imageryList[i].freeResources();
+        }
+        this.imagery.length = 0;
+        
+        this.freeVertexArray();*/
     }
-    this.waterMaskTexture = undefined;
-    }
-    
-    this.terrainData = undefined;
-    
-    if (defined(this.loadedTerrain)) {
-    this.loadedTerrain.freeResources();
-    this.loadedTerrain = undefined;
-    }
-    
-    if (defined(this.upsampledTerrain)) {
-    this.upsampledTerrain.freeResources();
-    this.upsampledTerrain = undefined;
-    }
-    
-    if (defined(this.pickTerrain)) {
-    this.pickTerrain.freeResources();
-    this.pickTerrain = undefined;
-    }
-    
-    var i, len;
-    
-    var imageryList = this.imagery;
-    for (i = 0, len = imageryList.length; i < len; ++i) {
-    imageryList[i].freeResources();
-    }
-    this.imagery.length = 0;
-    
-    this.freeVertexArray();
-    };
-    
+    /*
     GlobeSurfaceTile.prototype.freeVertexArray = function() {
     var indexBuffer;
     
