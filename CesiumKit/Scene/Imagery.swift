@@ -14,49 +14,51 @@
 */
 class Imagery {
     
+    var imageryLayer: ImageryLayer
+
     var level: Int
     
     var x: Int
     
     var y: Int
     
-    var imageryLayer: ImageryLayer
+    var parent: ImageryLayer? = nil
+    
+    var rectangle: Rectangle? = nil
+    
+    var image: AnyObject? = nil
+    
+    var imageUrl: String? = nil
+    
+    var state: ImageryState = ImageryState.Unloaded
+    
+    var texture: Texture? = nil
+    
+    var referenceCount = 0
+    
+    var credits: Credit? = nil
 
-    var rectangle: Rectangle
-
-init(imageryLayer, x, y, level, rectangle) {
-
-    
-    
-    
-    this.imageryLayer = imageryLayer;
-    this.x = x;
-    this.y = y;
-    this.level = level;
-    
-    if (level !== 0) {
-        var parentX = x / 2 | 0;
-        var parentY = y / 2 | 0;
-        var parentLevel = level - 1;
-        this.parent = imageryLayer.getImageryFromCache(parentX, parentY, parentLevel);
+    init(imageryLayer, level, x, y, rectangle) {
+        
+        self.imageryLayer = imageryLayer
+        self.level = level
+        self.x = x
+        self.y = y
+        
+        if (level != 0) {
+            var parentX = x / 2 | 0
+            var parentY = y / 2 | 0
+            var parentLevel = level - 1
+            parent = imageryLayer.getImageryFromCache(parentX, parentY, parentLevel);
+        }
+        
+        if self.rectangle = nil && imageryLayer.imageryProvider.ready {
+            var tilingScheme = imageryLayer.imageryProvider.tilingScheme
+            self.rectangle = tilingScheme.tileXYToRectangle(x, y, level)
+        }
     }
-    
-    this.state = ImageryState.UNLOADED;
-    this.imageUrl = undefined;
-    this.image = undefined;
-    this.texture = undefined;
-    this.credits = undefined;
-    this.referenceCount = 0;
-    
-    if (!defined(rectangle) && imageryLayer.imageryProvider.ready) {
-        var tilingScheme = imageryLayer.imageryProvider.tilingScheme;
-        rectangle = tilingScheme.tileXYToRectangle(x, y, level);
-    }
-    
-    this.rectangle = rectangle;
-    };
-}
-    Imagery.createPlaceholder = function(imageryLayer) {
+
+    /*Imagery.createPlaceholder = function(imageryLayer) {
     var result = new Imagery(imageryLayer, 0, 0, 0);
     result.addReference();
     result.state = ImageryState.PLACEHOLDER;

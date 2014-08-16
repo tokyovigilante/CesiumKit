@@ -76,6 +76,7 @@
 		948D55E9194982AB005A4DD6 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D55E8194982AB005A4DD6 /* Math.swift */; };
 		9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBAF1949D084007C1C4C /* TerrainProvider.swift */; };
 		9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB51949D63A007C1C4C /* TilingScheme.swift */; };
+		949AABAD199F730700037973 /* QuadTreePrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949AABAC199F730700037973 /* QuadTreePrimitive.swift */; };
 		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		94A25E65196E711000012DC4 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A25E64196E711000012DC4 /* WindingOrder.swift */; };
 		94B6C5B41970A07C008792D9 /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
@@ -208,6 +209,7 @@
 		9491BBAF1949D084007C1C4C /* TerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainProvider.swift; sourceTree = "<group>"; };
 		9491BBB11949D156007C1C4C /* Credit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		9491BBB51949D63A007C1C4C /* TilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilingScheme.swift; sourceTree = "<group>"; };
+		949AABAC199F730700037973 /* QuadTreePrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadTreePrimitive.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
 		94A25E64196E711000012DC4 /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
 		94B87DBE194D620E00012DC4 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
@@ -370,11 +372,14 @@
 				9460F80C194DAA6200012DC4 /* Globe.swift */,
 				9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */,
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
+				94540436199F63A700012DC4 /* Imagery.swift */,
+				94540438199F649000012DC4 /* ImageryLayer.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
 				94540434199F62C900012DC4 /* ImageryState.swift */,
 				94E4CB2B1950581300F7E37D /* Pass.swift */,
 				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
+				949AABAC199F730700037973 /* QuadTreePrimitive.swift */,
 				94540428199F4CD900012DC4 /* QuadTreeTile.swift */,
 				9454042A199F4FD900012DC4 /* QuadTreeTileLoadState.swift */,
 				94B87DC0194D678D00012DC4 /* Scene.swift */,
@@ -385,8 +390,6 @@
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
-				94540436199F63A700012DC4 /* Imagery.swift */,
-				94540438199F649000012DC4 /* ImageryLayer.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -566,6 +569,7 @@
 				9465B0221956F53700355D2C /* ShaderCache.swift in Sources */,
 				94540429199F4CD900012DC4 /* QuadTreeTile.swift in Sources */,
 				94CD3FAF199B6F8A00012DC4 /* Clock.swift in Sources */,
+				949AABAD199F730700037973 /* QuadTreePrimitive.swift in Sources */,
 				9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */,
 				942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */,
 				942AEB1B1955286F00CD0858 /* ComponentDataType.swift in Sources */,

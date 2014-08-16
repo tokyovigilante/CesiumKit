@@ -193,7 +193,7 @@ class QuadTreeTile {
         data?.freeResources()
         
         if _children != nil {
-            for tile in _children {
+            for tile in _children! {
                 tile.freeResources()
             }
             _children = nil
