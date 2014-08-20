@@ -78,11 +78,4 @@ enum PixelFormat: Int {
         return self === PixelFormat.DepthComponent ||
             pixelFormat === PixelFormat.DepthStencil
     }
-    /** 
-    Allows passing enum directly to OpenGL
-    :result: GLenum equivalent
-    */
-    func __conversion() -> GLenum {
-        return GLenum(self)
-    }
 }

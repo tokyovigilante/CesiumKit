@@ -17,12 +17,5 @@ enum PixelDatatype: Int {
     UnsignedShort4444 = 0x8033,
     UnsignedShort5551 = 0x8034,
     UnsignedShort565 = 0x8363
-    
-    /**
-    Allows passing enum directly to OpenGL
-    :result: GLenum equivalent
-    */
-    func __conversion() -> GLenum {
-        return GLenum(self)
-    }
 }
+

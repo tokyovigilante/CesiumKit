@@ -14,7 +14,7 @@ extension Array {
         return self.count * sizeofValue(self[0])
     }
 }
-
+/*
 extension Int32 {
     func __conversion() -> GLenum {
         return GLenum(self)
@@ -38,4 +38,4 @@ extension Int {
         return GLubyte(self)
     }
     
-}
+}*/

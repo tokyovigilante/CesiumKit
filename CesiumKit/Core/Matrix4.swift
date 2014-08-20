@@ -2248,146 +2248,21 @@ Matrix4.inverseTransformation = function(matrix, result) {
     result[15] = 1.0;
     return result;
 };
-
-/**
-* An immutable Matrix4 instance initialized to the identity matrix.
-*
-* @type {Matrix4}
-* @constant
 */
-Matrix4.IDENTITY = freezeObject(new Matrix4(1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 1.0));
-
-/**
-* The index into Matrix4 for column 0, row 0.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN0ROW0 = 0;
-
-/**
-* The index into Matrix4 for column 0, row 1.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN0ROW1 = 1;
-
-/**
-* The index into Matrix4 for column 0, row 2.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN0ROW2 = 2;
-
-/**
-* The index into Matrix4 for column 0, row 3.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN0ROW3 = 3;
-
-/**
-* The index into Matrix4 for column 1, row 0.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN1ROW0 = 4;
-
-/**
-* The index into Matrix4 for column 1, row 1.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN1ROW1 = 5;
-
-/**
-* The index into Matrix4 for column 1, row 2.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN1ROW2 = 6;
-
-/**
-* The index into Matrix4 for column 1, row 3.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN1ROW3 = 7;
-
-/**
-* The index into Matrix4 for column 2, row 0.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN2ROW0 = 8;
-
-/**
-* The index into Matrix4 for column 2, row 1.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN2ROW1 = 9;
-
-/**
-* The index into Matrix4 for column 2, row 2.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN2ROW2 = 10;
-
-/**
-* The index into Matrix4 for column 2, row 3.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN2ROW3 = 11;
-
-/**
-* The index into Matrix4 for column 3, row 0.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN3ROW0 = 12;
-
-/**
-* The index into Matrix4 for column 3, row 1.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN3ROW1 = 13;
-
-/**
-* The index into Matrix4 for column 3, row 2.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN3ROW2 = 14;
-
-/**
-* The index into Matrix4 for column 3, row 3.
-*
-* @type {Number}
-* @constant
-*/
-Matrix4.COLUMN3ROW3 = 15;
-
+    /**
+    * An immutable Matrix4 instance initialized to the identity matrix.
+    *
+    * @type {Matrix4}
+    * @constant
+    */
+    static func identity() -> Matrix4 {
+        return Matrix4(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0)
+    }
+/*
 /**
 * Duplicates the provided Matrix4 instance.
 *

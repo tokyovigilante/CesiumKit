@@ -156,16 +156,9 @@ class Globe {
         terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
         imageryLayerCollection = ImageryLayerCollection()
         
-        surface = QuadTreePrimitive(terrainProvider: terrainProvider, imageryLayers: imageryLayerCollection, surfaceShaderSet: surfaceShaderSet)
-        
-        
-        this._surface = new QuadtreePrimitive({
-        tileProvider : new GlobeSurfaceTileProvider({
-        terrainProvider : terrainProvider,
-        imageryLayers : imageryLayerCollection,
-        surfaceShaderSet : this._surfaceShaderSet
-        })
-        });
+        surface = QuadTreePrimitive(
+            tileProvider: GlobeSurfaceTileProvider(terrainProvider: terrainProvider, imageryLayers: imageryLayerCollection, surfaceShaderSet: surfaceShaderSet))
+
         
         occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         

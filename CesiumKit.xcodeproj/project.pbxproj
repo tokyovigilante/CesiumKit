@@ -77,6 +77,7 @@
 		9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBAF1949D084007C1C4C /* TerrainProvider.swift */; };
 		9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB51949D63A007C1C4C /* TilingScheme.swift */; };
 		949AABAD199F730700037973 /* QuadTreePrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949AABAC199F730700037973 /* QuadTreePrimitive.swift */; };
+		949AABAF199F73C600037973 /* GlobeSurfaceTileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */; };
 		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		94A25E65196E711000012DC4 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A25E64196E711000012DC4 /* WindingOrder.swift */; };
 		94B6C5B41970A07C008792D9 /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
@@ -99,7 +100,7 @@
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
-		94DC793A1918425300012DC4 /* libCesiumKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79221918425300012DC4 /* libCesiumKit.a */; };
+		94DC793A1918425300012DC4 /* CesiumKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79221918425300012DC4 /* CesiumKit.dylib */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
 		94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC79411918425300012DC4 /* CesiumKitTests.m */; };
 		94DF8301199A0A9100FB093D /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
@@ -210,6 +211,7 @@
 		9491BBB11949D156007C1C4C /* Credit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		9491BBB51949D63A007C1C4C /* TilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilingScheme.swift; sourceTree = "<group>"; };
 		949AABAC199F730700037973 /* QuadTreePrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadTreePrimitive.swift; sourceTree = "<group>"; };
+		949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeSurfaceTileProvider.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
 		94A25E64196E711000012DC4 /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
 		94B87DBE194D620E00012DC4 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
@@ -227,7 +229,7 @@
 		94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMapFace.swift; sourceTree = "<group>"; };
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
 		94CD3FAE199B6F8A00012DC4 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
-		94DC79221918425300012DC4 /* libCesiumKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCesiumKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		94DC79221918425300012DC4 /* CesiumKit.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = CesiumKit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
 		94DC79321918425300012DC4 /* CesiumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CesiumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -262,7 +264,7 @@
 			files = (
 				94DC79341918425300012DC4 /* XCTest.framework in Frameworks */,
 				94DC79371918425300012DC4 /* UIKit.framework in Frameworks */,
-				94DC793A1918425300012DC4 /* libCesiumKit.a in Frameworks */,
+				94DC793A1918425300012DC4 /* CesiumKit.dylib in Frameworks */,
 				94DC79351918425300012DC4 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -390,6 +392,7 @@
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
+				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -414,7 +417,7 @@
 		94DC79231918425300012DC4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				94DC79221918425300012DC4 /* libCesiumKit.a */,
+				94DC79221918425300012DC4 /* CesiumKit.dylib */,
 				94DC79321918425300012DC4 /* CesiumKitTests.xctest */,
 			);
 			name = Products;
@@ -501,7 +504,7 @@
 			);
 			name = CesiumKit;
 			productName = CesiumKit;
-			productReference = 94DC79221918425300012DC4 /* libCesiumKit.a */;
+			productReference = 94DC79221918425300012DC4 /* CesiumKit.dylib */;
 			productType = "com.apple.product-type.library.static";
 		};
 		94DC79311918425300012DC4 /* CesiumKitTests */ = {
@@ -654,6 +657,7 @@
 				948D03D91944802300DC0E52 /* BoundingSphere.swift in Sources */,
 				942A83E2193878DE00012DC4 /* CSHeightMapTerrainData.m in Sources */,
 				940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */,
+				949AABAF199F73C600037973 /* GlobeSurfaceTileProvider.swift in Sources */,
 				948D03DD19449E9600DC0E52 /* Packable.swift in Sources */,
 				94786823194A959200B3F462 /* TerrainMesh.swift in Sources */,
 				942CD41819553F9E00012DC4 /* GeometryAttributes.swift in Sources */,
@@ -766,10 +770,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DSTROOT = /tmp/CesiumKit.dst;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -784,10 +791,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DSTROOT = /tmp/CesiumKit.dst;
+				EXECUTABLE_EXTENSION = dylib;
+				EXECUTABLE_PREFIX = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

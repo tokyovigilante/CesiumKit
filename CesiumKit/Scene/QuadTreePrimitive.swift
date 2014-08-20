@@ -6,56 +6,32 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+/**
+* Renders massive sets of data by utilizing level-of-detail and culling.  The globe surface is divided into
+* a quadtree of tiles with large, low-detail tiles at the root and small, high-detail tiles at the leaves.
+* The set of tiles to render is selected by projecting an estimate of the geometric error in a tile onto
+* the screen to estimate screen-space error, in pixels, which must be below a user-specified threshold.
+* The actual content of the tiles is arbitrary and is specified using a {@link QuadtreeTileProvider}.
+*
+* @alias QuadtreePrimitive
+* @constructor
+* @private
+*
+* @param {QuadtreeTileProvider} options.tileProvider The tile provider that loads, renders, and estimates
+*        the distance to individual tiles.
+* @param {Number} [options.maximumScreenSpaceError=2] The maximum screen-space error, in pixels, that is allowed.
+*        A higher maximum error will render fewer tiles and improve performance, while a lower
+*        value will improve visual quality.
+* @param {Number} [options.tileCacheSize=100] The maximum number of tiles that will be retained in the tile cache.
+*        Note that tiles will never be unloaded if they were used for rendering the last
+*        frame, so the actual number of resident tiles may be higher.  The value of
+*        this property will not affect visual quality.
+*/
+
 class QuadTreePrimitive {
-    /*/*global define*/
-    define([
-    '../Core/defaultValue',
-    '../Core/defined',
-    '../Core/defineProperties',
-    '../Core/DeveloperError',
-    '../Core/getTimestamp',
-    '../Core/Queue',
-    '../Core/Visibility',
-    './QuadtreeOccluders',
-    './QuadtreeTile',
-    './SceneMode',
-    './TileReplacementQueue'
-    ], function(
-    defaultValue,
-    defined,
-    defineProperties,
-    DeveloperError,
-    getTimestamp,
-    Queue,
-    Visibility,
-    QuadtreeOccluders,
-    QuadtreeTile,
-    SceneMode,
-    TileReplacementQueue) {
-    "use strict";
-    
-    /**
-    * Renders massive sets of data by utilizing level-of-detail and culling.  The globe surface is divided into
-    * a quadtree of tiles with large, low-detail tiles at the root and small, high-detail tiles at the leaves.
-    * The set of tiles to render is selected by projecting an estimate of the geometric error in a tile onto
-    * the screen to estimate screen-space error, in pixels, which must be below a user-specified threshold.
-    * The actual content of the tiles is arbitrary and is specified using a {@link QuadtreeTileProvider}.
-    *
-    * @alias QuadtreePrimitive
-    * @constructor
-    * @private
-    *
-    * @param {QuadtreeTileProvider} options.tileProvider The tile provider that loads, renders, and estimates
-    *        the distance to individual tiles.
-    * @param {Number} [options.maximumScreenSpaceError=2] The maximum screen-space error, in pixels, that is allowed.
-    *        A higher maximum error will render fewer tiles and improve performance, while a lower
-    *        value will improve visual quality.
-    * @param {Number} [options.tileCacheSize=100] The maximum number of tiles that will be retained in the tile cache.
-    *        Note that tiles will never be unloaded if they were used for rendering the last
-    *        frame, so the actual number of resident tiles may be higher.  The value of
-    *        this property will not affect visual quality.
-    */
-    var QuadtreePrimitive = function QuadtreePrimitive(options) {
+
+    /*
+        var QuadtreePrimitive = function QuadtreePrimitive(options) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(options) || !defined(options.tileProvider)) {
     throw new DeveloperError('options.tileProvider is required.');
@@ -132,13 +108,17 @@ class QuadTreePrimitive {
     }
     }
     });
-    
+    */
+    init(tileProvider: GlobeSurfaceTileProvider) {
+        
+    }
     /**
     * Invalidates and frees all the tiles in the quadtree.  The tiles must be reloaded
     * before they can be displayed.
     *
     * @memberof QuadtreePrimitive
     */
+        /*
     QuadtreePrimitive.prototype.invalidateAllTiles = function() {
     // Clear the replacement queue
     var replacementQueue = this._tileReplacementQueue;

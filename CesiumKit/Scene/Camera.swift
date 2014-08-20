@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
 /**
 * The camera is defined by a position, orientation, and view frustum.
 * <br /><br />
@@ -36,7 +34,7 @@ import Foundation
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html|Cesium Sandcastle Camera Demo}
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
 */
-class Camera {
+public class Camera {
 
     weak var scene: Scene?
     
@@ -57,6 +55,7 @@ class Camera {
     */
     var direction: Cartesian3
     var directionWC: Cartesian3
+    
     /**
     * Modifies the camera's reference frame. The inverse of this transformation is appended to the view matrix.
     *
@@ -66,9 +65,10 @@ class Camera {
     * @see Transforms
     * @see Camera#inverseTransform
     */
-    /*this.transform = Matrix4.clone(Matrix4.IDENTITY);
-    this._transform = Matrix4.clone(Matrix4.IDENTITY);
-    this._invTransform = Matrix4.clone(Matrix4.IDENTITY);
+    var transform = Matrix4.identity()
+    var invTransform = Matrix4.identity()
+    var actualTransform = Matrix4.identity()
+    var actualInvTran
     this._actualTransform = Matrix4.clone(Matrix4.IDENTITY);
     this._actualInvTransform = Matrix4.clone(Matrix4.IDENTITY);*/
     
