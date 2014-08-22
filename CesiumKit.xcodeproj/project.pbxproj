@@ -90,6 +90,8 @@
 		94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DCC194D706800012DC4 /* CullingVolume.swift */; };
 		94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DCE194D71A200012DC4 /* Intersectable.swift */; };
 		94B87DD1194D75A100012DC4 /* Occluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DD0194D75A100012DC4 /* Occluder.swift */; };
+		94BA59EF19A695B90049322D /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BA59EE19A695B90049322D /* Frustum.swift */; };
+		94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BA59F019A695DD0049322D /* OrthographicFrustum.swift */; };
 		94BC4355194816B8007117F2 /* BoundingRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC4354194816B8007117F2 /* BoundingRectangle.swift */; };
 		94BC43571948189A007117F2 /* Cartesian2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC43561948189A007117F2 /* Cartesian2.swift */; };
 		94C57E1419722AB90046791A /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
@@ -223,6 +225,8 @@
 		94B87DCC194D706800012DC4 /* CullingVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CullingVolume.swift; sourceTree = "<group>"; };
 		94B87DCE194D71A200012DC4 /* Intersectable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersectable.swift; sourceTree = "<group>"; };
 		94B87DD0194D75A100012DC4 /* Occluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Occluder.swift; sourceTree = "<group>"; };
+		94BA59EE19A695B90049322D /* Frustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
+		94BA59F019A695DD0049322D /* OrthographicFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrthographicFrustum.swift; sourceTree = "<group>"; };
 		94BC4354194816B8007117F2 /* BoundingRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingRectangle.swift; sourceTree = "<group>"; };
 		94BC43561948189A007117F2 /* Cartesian2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian2.swift; sourceTree = "<group>"; };
 		94C57E1319722AB90046791A /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
@@ -371,6 +375,7 @@
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
 				94540424199F05D300012DC4 /* FrustumCommands.swift */,
+				94BA59F019A695DD0049322D /* OrthographicFrustum.swift */,
 				9460F80C194DAA6200012DC4 /* Globe.swift */,
 				9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */,
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
@@ -393,6 +398,7 @@
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
+				94BA59EE19A695B90049322D /* Frustum.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -630,6 +636,7 @@
 				9460F819194DB80500012DC4 /* RenderState.swift in Sources */,
 				9454042F199F5C7D00012DC4 /* TileTerrain.swift in Sources */,
 				94E7A865199E02AB00012DC4 /* BingMapsImageryProvider.swift in Sources */,
+				94BA59EF19A695B90049322D /* Frustum.swift in Sources */,
 				9439994C1930418C00012DC4 /* CSMatrix4.m in Sources */,
 				9465B0241956F5A400355D2C /* UniformState.swift in Sources */,
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
@@ -645,6 +652,7 @@
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
+				94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */,
 				9460F80B194DA8A400012DC4 /* Framebuffer.swift in Sources */,
 				94E4CB2C1950581300F7E37D /* Pass.swift in Sources */,
 				943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */,

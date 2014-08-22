@@ -35,7 +35,7 @@
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
 */
 public class Camera {
-
+    
     weak var scene: Scene?
     
     let maxRadii: Double
@@ -47,7 +47,7 @@ public class Camera {
     */
     var position: Cartesian3
     var positionWC: Cartesian3
-
+    
     /**
     * The view direction of the camera.
     *
@@ -55,6 +55,22 @@ public class Camera {
     */
     var direction: Cartesian3
     var directionWC: Cartesian3
+    
+    /**
+    * The right direction of the camera.
+    *
+    * @type {Cartesian3}
+    */
+    var right: Cartesian3
+    var rightWC: Cartesian3
+    
+    /**
+    * The up direction of the camera.
+    *
+    * @type {Cartesian3}
+    */
+    var up: Cartesian3
+    var upWC: Cartesian3
     
     /**
     * Modifies the camera's reference frame. The inverse of this transformation is appended to the view matrix.
@@ -65,12 +81,22 @@ public class Camera {
     * @see Transforms
     * @see Camera#inverseTransform
     */
-    var transform = Matrix4.identity()
-    var invTransform = Matrix4.identity()
-    var actualTransform = Matrix4.identity()
-    var actualInvTran
-    this._actualTransform = Matrix4.clone(Matrix4.IDENTITY);
-    this._actualInvTransform = Matrix4.clone(Matrix4.IDENTITY);*/
+    var transform: Matrix4
+    var invTransform: Matrix4
+    var actualTransform: Matrix4
+    var actualInvTransform: Matrix4
+    
+    /**
+    * The region of space in view.
+    *
+    * @type {Frustum}
+    * @default PerspectiveFrustum()
+    *
+    * @see PerspectiveFrustum
+    * @see PerspectiveOffCenterFrustum
+    * @see OrthographicFrustum
+    */
+    var frustum: P
     
     init(scene: Scene) {
         
@@ -83,29 +109,17 @@ public class Camera {
         
         direction = position.negate().normalize()
         directionWC = direction
- /*
-        var right = Cartesian3.normalize(Cartesian3.cross(direction, Cartesian3.UNIT_Z));
-        var up = Cartesian3.cross(right, direction);
         
-        /**
-        * The up direction of the camera.
-        *
-        * @type {Cartesian3}
-        */
-        this.up = up;
-        this._up = Cartesian3.clone(up);
-        this._upWC = Cartesian3.clone(up);
+        right = Cartesian3.unitZ().cross(direction).normalize
+        rightWC = right
         
-        right = Cartesian3.cross(direction, up);
+        up = right.cross(direction)
+        upWC = up
         
-        /**
-        * The right direction of the camera.
-        *
-        * @type {Cartesian3}
-        */
-        this.right = right;
-        this._right = Cartesian3.clone(right);
-        this._rightWC = Cartesian3.clone(right);
+        transform = Matrix4.identity()
+        invTransform = Matrix4.identity()
+        actualTransform = Matrix4.identity()
+        actualInvTransform = Matrix4.identity()
         
         /**
         * The region of space in view.
@@ -120,7 +134,7 @@ public class Camera {
         this.frustum = new PerspectiveFrustum();
         this.frustum.fovy = CesiumMath.toRadians(60.0);
         this.frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight;
-        
+        /*
         /**
         * The default amount to move the camera when an argument is not
         * provided to the move methods.
@@ -180,15 +194,15 @@ public class Camera {
         this._maxCoord = new Cartesian3();
         this._max2Dfrustum = undefined;
     };*/
-    }
-    /*
-    Camera.TRANSFORM_2D = new Matrix4(
-    0.0, 0.0, 1.0, 0.0,
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0);
-    
-    Camera.TRANSFORM_2D_INVERSE = Matrix4.inverseTransformation(Camera.TRANSFORM_2D);
+}
+/*
+Camera.TRANSFORM_2D = new Matrix4(
+0.0, 0.0, 1.0, 0.0,
+1.0, 0.0, 0.0, 0.0,
+0.0, 1.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 1.0);
+
+Camera.TRANSFORM_2D_INVERSE = Matrix4.inverseTransformation(Camera.TRANSFORM_2D);
     
     function updateViewMatrix(camera) {
     var r = camera._right;
