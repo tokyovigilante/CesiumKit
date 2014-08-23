@@ -159,7 +159,7 @@ class TerrainProvider {
     */
     func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, resolve: (TerrainData?) -> () )  {
         dispatch_async(terrainProcessorQueue, {
-            // Do expensive work to make terrainData
+            // FIXME: Do expensive work to make terrainData
             dispatch_async(dispatch_get_main_queue(),  {
                 resolve(nil)
                 })

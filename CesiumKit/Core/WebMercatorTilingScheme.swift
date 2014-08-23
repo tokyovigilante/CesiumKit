@@ -29,7 +29,6 @@
 *        globe is covered in the longitude direction and an equal distance is covered in the latitude
 *        direction, resulting in a square projection.
 */
-import Foundation
 
 class WebMercatorTilingScheme: TilingScheme {
     /**

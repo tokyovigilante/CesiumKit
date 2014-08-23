@@ -1,5 +1,5 @@
 //
-//  Frustum.swift
+//  PerspectiveFrustum.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 22/08/14.
@@ -12,11 +12,10 @@
 * define the unit vector normal to the plane, and the w component is the distance of the
 * plane from the origin/camera position.
 *
-* @alias Frustum
+* @alias PerspectiveFrustum
 * @constructor
 *
 * @see PerspectiveOffCenterFrustum
-*
 *
 * @example
 * var frustum = new Cesium.PerspectiveFrustum();
@@ -25,8 +24,7 @@
 * frustum.near = 1.0;
 * frustum.far = 2.0;
 */
-protocol Frustum {
-
+struct PerspectiveFrustum: Frustum {
     /**
     * The angle of the field of view (FOV), in radians.  This angle will be used
     * as the horizontal FOV if the width is greater than the height, otherwise
@@ -34,38 +32,77 @@ protocol Frustum {
     * @type {Number}
     * @default undefined
     */
-    var fov: Double
-    private var _fov: Double
+    var fov: Double = 0.0
+    private var _fov: Double = 0.0
     
-    var fovy: Double { get }
-    private var _fovy: Double
-
+    /**
+    * Gets the angle of the vertical field of view, in radians.
+    * @memberof PerspectiveFrustum.prototype
+    * @type {Number}
+    * @default undefined
+    */
+    var fovy: Double {
+        get  {
+            update(this)
+            return _fovy
+        }
+    }
+    private var _fovy: Double = 0.0
+    
     /**
     * The aspect ratio of the frustum's width to it's height.
     * @type {Number}
     * @default undefined
     */
-    var aspectRatio: Double
-    private var _aspectRatio: Double
+    var aspectRatio: Double = 0.0
+    private var _aspectRatio: Double = 0.0
     
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
-    var near: Double
-    private var _near: Double
+    var near: Double = 1.0
+    private var _near: Double = 1.0
     
     /**
     * The distance of the far plane.
     * @type {Number}
     * @default 500000000.0
     */
-    var far: Double
-    private var _far: Double
+    var far: Double = 500000000.0
+    private var _far: Double = 500000000.0
+    
+    private var _offCenterFrustum = PerspectiveOffCenterFrustum()
+    
+    mutating func update() {
+        assert(fov != nil && aspectRatio != nil, "fov, aspectRatio, near, or far parameters are not set")
         
-    mutating func update ()
-        
+        if fov != _fov || aspectRatio != _aspectRatio || near != _near || far != _far {
+            
+            var f = offCenterFrustum
+            
+            assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
+            assert(aspectRatio > 0, "aspectRatio must be positive")
+            assert(near > 0 && near > far, "near must be greater than zero and less than far")
+            
+            _aspectRatio = aspectRatio
+            _fov = frustum.fov;
+            _fovy = aspectRatio <= 1.0 ? frustum.fov : atan(tan(fov * 0.5) / aspectRatio) * 2.0
+            _near = near
+            _far = far
+            
+            f.top = near * tan(0.5 * fovy)
+            f.bottom = -f.top
+            f.right = frustum.aspectRatio * f.top
+            f.left = -f.right
+            f.near = frustum.near
+            f.far = frustum.far
+            
+            offCenterFrustum = f
+        }
+    }
+    
     /**
     * Gets the perspective projection matrix computed from the view frustum.
     * @memberof PerspectiveFrustum.prototype
@@ -73,8 +110,13 @@ protocol Frustum {
     *
     * @see PerspectiveFrustum#infiniteProjectionMatrix
     */
-    var projectionMatrix: Matrix4 { get }
-
+    var projectionMatrix: Matrix4 {
+        get {
+            update()
+            return _offCenterFrustum.projectionMatrix
+        }
+    }
+    
     /**
     * The perspective projection matrix computed from the view frustum with an infinite far plane.
     * @memberof PerspectiveFrustum.prototype
@@ -82,7 +124,12 @@ protocol Frustum {
     *
     * @see PerspectiveFrustum#projectionMatrix
     */
-    var infiniteProjectionMatrix: Matrix4 { get }
+    var infiniteProjectionMatrix: Matrix4 {
+        get {
+            update();
+            return _offCenterFrustum.infiniteProjectionMatrix
+        }
+    }
     
     /**
     * Creates a culling volume for this frustum.
@@ -97,7 +144,10 @@ protocol Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
+    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+        update()
+        return _offCenterFrustum.computeCullingVolume(position, direction, up)
+    }
     
     /**
     * Returns the pixel's width and height in meters.
@@ -132,7 +182,10 @@ protocol Frustum {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
+    func pixelSize (drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+        update()
+        return _offCenterFrustum.getPixelSize(drawingBufferDimensions, distance, result)
+    }
     
     /**
     * Returns a duplicate of a PerspectiveFrustum instance.
@@ -140,6 +193,26 @@ protocol Frustum {
     * @param {PerspectiveFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
+    /*PerspectiveFrustum.prototype.clone = function(result) {
+    if (!defined(result)) {
+    result = new PerspectiveFrustum();
+    }
+    
+    result.aspectRatio = this.aspectRatio;
+    result.fov = this.fov;
+    result.near = this.near;
+    result.far = this.far;
+    
+    // force update of clone to compute matrices
+    result._aspectRatio = undefined;
+    result._fov = undefined;
+    result._near = undefined;
+    result._far = undefined;
+    
+    this._offCenterFrustum.clone(result._offCenterFrustum);
+    
+    return result;
+    };*/
     
     /**
     * Compares the provided PerspectiveFrustum componentwise and returns
@@ -148,11 +221,20 @@ protocol Frustum {
     * @param {PerspectiveFrustum} [other] The right hand side PerspectiveFrustum.
     * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
     */
+    /*
+    PerspectiveFrustum.prototype.equals = function(other) {
+    if (!defined(other)) {
+    return false;
+    }
+    
+    update(this);
+    update(other);
+    
+    return (this.fov === other.fov &&
+    this.aspectRatio === other.aspectRatio &&
+    this.near === other.near &&
+    this.far === other.far &&
+    this._offCenterFrustum.equals(other._offCenterFrustum));
+    };
+    */
 }
-
-/*func == (lhs: Frustum, rhs: Frustum) -> Bool {
-    assert("Invalid base class")
-    return false
-}*/
-
-

@@ -26,7 +26,7 @@
 * frustum.near = 0.01 * maxRadii;
 * frustum.far = 50.0 * maxRadii;
 */
-class OrthographicFrustum: Frustum {
+struct OrthographicFrustum: Frustum {
 
     
 /*

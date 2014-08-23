@@ -54,7 +54,7 @@ struct Matrix4 : Packable {
     */
     static let packedLength = 16
     
-    var grid = [Double](count: 16, repeatedValue: 0.0)
+    var grid: [Double] = [Double](count: 16, repeatedValue: 0.0)
 
     init(column0Row0: Double = 0.0, column1Row0: Double = 0.0, column2Row0: Double = 0.0, column3Row0: Double = 0.0,
         column0Row1: Double = 0.0, column1Row1: Double = 0.0, column2Row1: Double = 0.0, column3Row1: Double = 0.0,
@@ -715,132 +715,90 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     result[15] = 1.0;
     return result;
 };
-
-/**
-* Computes a Matrix4 instance representing an off center perspective transformation.
-*
-* @param {Number} left The number of meters to the left of the camera that will be in view.
-* @param {Number} right The number of meters to the right of the camera that will be in view.
-* @param {Number} bottom The number of meters below of the camera that will be in view.
-* @param {Number} top The number of meters above of the camera that will be in view.
-* @param {Number} near The distance to the near plane in meters.
-* @param {Number} far The distance to the far plane in meters.
-* @param {Matrix4} result The object in which the result will be stored.
-* @returns The modified result parameter.
 */
-Matrix4.computePerspectiveOffCenter = function(left, right, bottom, top, near, far, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
+    /**
+    * Computes a Matrix4 instance representing an off center perspective transformation.
+    *
+    * @param {Number} left The number of meters to the left of the camera that will be in view.
+    * @param {Number} right The number of meters to the right of the camera that will be in view.
+    * @param {Number} bottom The number of meters below of the camera that will be in view.
+    * @param {Number} top The number of meters above of the camera that will be in view.
+    * @param {Number} near The distance to the near plane in meters.
+    * @param {Number} far The distance to the far plane in meters.
+    * @param {Matrix4} result The object in which the result will be stored.
+    * @returns The modified result parameter.
+    */
+    static func computePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+        
+        var result = Matrix4()
+        var column0Row0 = 2.0 * near / (right - left)
+        var column1Row1 = 2.0 * near / (top - bottom)
+        var column2Row0 = (right + left) / (right - left)
+        var column2Row1 = (top + bottom) / (top - bottom)
+        var column2Row2 = -(far + near) / (far - near)
+        var column2Row3 = -1.0
+        var column3Row2 = -2.0 * far * near / (far - near)
+        
+        result[0] = column0Row0
+        result[1] = 0.0
+        result[2] = 0.0
+        result[3] = 0.0
+        result[4] = 0.0
+        result[5] = column1Row1
+        result[6] = 0.0
+        result[7] = 0.0
+        result[8] = column2Row0
+        result[9] = column2Row1
+        result[10] = column2Row2
+        result[11] = column2Row3
+        result[12] = 0.0
+        result[13] = 0.0
+        result[14] = column3Row2
+        result[15] = 0.0
+        return result
     }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    if (!defined(bottom)) {
-        throw new DeveloperError('bottom is required.');
-    }
-    if (!defined(top)) {
-        throw new DeveloperError('top is required.');
-    }
-    if (!defined(near)) {
-        throw new DeveloperError('near is required.');
-    }
-    if (!defined(far)) {
-        throw new DeveloperError('far is required.');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
     
-    var column0Row0 = 2.0 * near / (right - left);
-    var column1Row1 = 2.0 * near / (top - bottom);
-    var column2Row0 = (right + left) / (right - left);
-    var column2Row1 = (top + bottom) / (top - bottom);
-    var column2Row2 = -(far + near) / (far - near);
-    var column2Row3 = -1.0;
-    var column3Row2 = -2.0 * far * near / (far - near);
-    
-    result[0] = column0Row0;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = 0.0;
-    result[5] = column1Row1;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = column2Row0;
-    result[9] = column2Row1;
-    result[10] = column2Row2;
-    result[11] = column2Row3;
-    result[12] = 0.0;
-    result[13] = 0.0;
-    result[14] = column3Row2;
-    result[15] = 0.0;
-    return result;
-};
-
-/**
-* Computes a Matrix4 instance representing an infinite off center perspective transformation.
-*
-* @param {Number} left The number of meters to the left of the camera that will be in view.
-* @param {Number} right The number of meters to the right of the camera that will be in view.
-* @param {Number} bottom The number of meters below of the camera that will be in view.
-* @param {Number} top The number of meters above of the camera that will be in view.
-* @param {Number} near The distance to the near plane in meters.
-* @param {Number} far The distance to the far plane in meters.
-* @param {Matrix4} result The object in which the result will be stored.
-* @returns The modified result parameter.
-*/
-Matrix4.computeInfinitePerspectiveOffCenter = function(left, right, bottom, top, near, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
-    }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    if (!defined(bottom)) {
-        throw new DeveloperError('bottom is required.');
-    }
-    if (!defined(top)) {
-        throw new DeveloperError('top is required.');
-    }
-    if (!defined(near)) {
-        throw new DeveloperError('near is required.');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var column0Row0 = 2.0 * near / (right - left);
-    var column1Row1 = 2.0 * near / (top - bottom);
-    var column2Row0 = (right + left) / (right - left);
-    var column2Row1 = (top + bottom) / (top - bottom);
-    var column2Row2 = -1.0;
-    var column2Row3 = -1.0;
-    var column3Row2 = -2.0 * near;
-    
-    result[0] = column0Row0;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = 0.0;
-    result[5] = column1Row1;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = column2Row0;
-    result[9] = column2Row1;
-    result[10] = column2Row2;
-    result[11] = column2Row3;
-    result[12] = 0.0;
-    result[13] = 0.0;
-    result[14] = column3Row2;
-    result[15] = 0.0;
-    return result;
-};
-
+    /**
+    * Computes a Matrix4 instance representing an infinite off center perspective transformation.
+    *
+    * @param {Number} left The number of meters to the left of the camera that will be in view.
+    * @param {Number} right The number of meters to the right of the camera that will be in view.
+    * @param {Number} bottom The number of meters below of the camera that will be in view.
+    * @param {Number} top The number of meters above of the camera that will be in view.
+    * @param {Number} near The distance to the near plane in meters.
+    * @param {Matrix4} result The object in which the result will be stored.
+    * @returns The modified result parameter.
+    */
+    static func computeInfinitePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+        var column0Row0 = 2.0 * near / (right - left)
+        var column1Row1 = 2.0 * near / (top - bottom)
+        var column2Row0 = (right + left) / (right - left)
+        var column2Row1 = (top + bottom) / (top - bottom)
+        var column2Row2 = -1.0
+        var column2Row3 = -1.0
+        var column3Row2 = -2.0 * near
+        
+        var result = Matrix4()
+        
+        result[0] = column0Row0
+        result[1] = 0.0
+        result[2] = 0.0
+        result[3] = 0.0
+        result[4] = 0.0
+        result[5] = column1Row1
+        result[6] = 0.0
+        result[7] = 0.0
+        result[8] = column2Row0
+        result[9] = column2Row1
+        result[10] = column2Row2
+        result[11] = column2Row3
+        result[12] = 0.0
+        result[13] = 0.0
+        result[14] = column3Row2
+        result[15] = 0.0
+        return result
+}
+/*
 /**
 * Computes a Matrix4 instance that transforms from normalized device coordinates to window coordinates.
 *
@@ -1592,7 +1550,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
         var vZ = cartesian.z
         var vW = cartesian.w
         
-        var x = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
+        var x: Double = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
         var y = grid[1] * vX + grid[5] * vY + grid[9] * vZ + grid[13] * vW
         var z = grid[2] * vX + grid[6] * vY + grid[10] * vZ + grid[14] * vW
         var w = grid[3] * vX + grid[7] * vY + grid[11] * vZ + grid[15] * vW
@@ -2257,10 +2215,10 @@ Matrix4.inverseTransformation = function(matrix, result) {
     */
     static func identity() -> Matrix4 {
         return Matrix4(
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0)
+            column0Row0: 1.0, column1Row0: 0.0, column2Row0: 0.0, column3Row0: 0.0,
+            column0Row1: 0.0, column1Row1: 1.0, column2Row1: 0.0, column3Row1: 0.0,
+            column0Row2: 0.0, column1Row2: 0.0, column2Row2: 1.0, column3Row2: 0.0,
+            column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
     }
 /*
 /**

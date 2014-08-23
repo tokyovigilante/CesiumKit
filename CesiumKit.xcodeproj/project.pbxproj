@@ -92,6 +92,7 @@
 		94B87DD1194D75A100012DC4 /* Occluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DD0194D75A100012DC4 /* Occluder.swift */; };
 		94BA59EF19A695B90049322D /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BA59EE19A695B90049322D /* Frustum.swift */; };
 		94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BA59F019A695DD0049322D /* OrthographicFrustum.swift */; };
+		94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BA59F219A6DA640049322D /* PerspectiveFrustum.swift */; };
 		94BC4355194816B8007117F2 /* BoundingRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC4354194816B8007117F2 /* BoundingRectangle.swift */; };
 		94BC43571948189A007117F2 /* Cartesian2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC43561948189A007117F2 /* Cartesian2.swift */; };
 		94C57E1419722AB90046791A /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
@@ -111,6 +112,7 @@
 		94E7A861199DD48000012DC4 /* ScreenSpaceCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */; };
 		94E7A863199DD71600012DC4 /* ScreenSpaceEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */; };
 		94E7A865199E02AB00012DC4 /* BingMapsImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */; };
+		94E8511619A81461006B7780 /* PerspectiveOffCenterFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */; };
 		94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1A19550A9600012DC4 /* Geometry.swift */; };
 		94E9BA1D19550B5E00012DC4 /* GeometryAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */; };
 /* End PBXBuildFile section */
@@ -227,6 +229,7 @@
 		94B87DD0194D75A100012DC4 /* Occluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Occluder.swift; sourceTree = "<group>"; };
 		94BA59EE19A695B90049322D /* Frustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		94BA59F019A695DD0049322D /* OrthographicFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrthographicFrustum.swift; sourceTree = "<group>"; };
+		94BA59F219A6DA640049322D /* PerspectiveFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveFrustum.swift; sourceTree = "<group>"; };
 		94BC4354194816B8007117F2 /* BoundingRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingRectangle.swift; sourceTree = "<group>"; };
 		94BC43561948189A007117F2 /* Cartesian2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian2.swift; sourceTree = "<group>"; };
 		94C57E1319722AB90046791A /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
@@ -248,6 +251,7 @@
 		94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceCameraController.swift; sourceTree = "<group>"; };
 		94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceEventHandler.swift; sourceTree = "<group>"; };
 		94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsImageryProvider.swift; sourceTree = "<group>"; };
+		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -374,17 +378,21 @@
 				94B87DCA194D6F5000012DC4 /* Camera.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
+				94BA59EE19A695B90049322D /* Frustum.swift */,
 				94540424199F05D300012DC4 /* FrustumCommands.swift */,
-				94BA59F019A695DD0049322D /* OrthographicFrustum.swift */,
 				9460F80C194DAA6200012DC4 /* Globe.swift */,
 				9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */,
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
+				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
 				94540436199F63A700012DC4 /* Imagery.swift */,
 				94540438199F649000012DC4 /* ImageryLayer.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
 				94540434199F62C900012DC4 /* ImageryState.swift */,
+				94BA59F019A695DD0049322D /* OrthographicFrustum.swift */,
 				94E4CB2B1950581300F7E37D /* Pass.swift */,
+				94BA59F219A6DA640049322D /* PerspectiveFrustum.swift */,
+				94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */,
 				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
 				949AABAC199F730700037973 /* QuadTreePrimitive.swift */,
 				94540428199F4CD900012DC4 /* QuadTreeTile.swift */,
@@ -397,8 +405,6 @@
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
-				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
-				94BA59EE19A695B90049322D /* Frustum.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -651,11 +657,13 @@
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
+				94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
 				94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */,
 				9460F80B194DA8A400012DC4 /* Framebuffer.swift in Sources */,
 				94E4CB2C1950581300F7E37D /* Pass.swift in Sources */,
 				943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */,
+				94E8511619A81461006B7780 /* PerspectiveOffCenterFrustum.swift in Sources */,
 				94786825194A95B800B3F462 /* TerrainData.swift in Sources */,
 				94E7A861199DD48000012DC4 /* ScreenSpaceCameraController.swift in Sources */,
 				94E9BA1D19550B5E00012DC4 /* GeometryAttribute.swift in Sources */,

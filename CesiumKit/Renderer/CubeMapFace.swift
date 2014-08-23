@@ -63,19 +63,16 @@ class CubeMapFace {
         assert(xOffset + source.width <= size, "xOffset + source.width must be less than or equal to width")
         assert(yOffset + source.height <= size, "yOffset + source.height must be less than or equal to height")
         
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
+        glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
         //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(target, texture)
-        
-        if source.arrayBufferView != nil {
-            glTexSubImage2D(target, 0, xOffset, yOffset, source.width, source.height, pixelFormat, pixelDatatype, source.arrayBufferView)
-            /*} else {
-            gl.texSubImage2D(this._targetFace, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
-            }*/
-            glBindTexture(target, 0)
-        }
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(target), GLuint(texture))
+
+        // FIXME: glTexSubImage2D(GLenum(target), GLint(0), GLint(xOffset), GLint(yOffset), GLsizei(source.width), GLsizei(source.height), GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(source.arrayBufferView))
+        glBindTexture(GLenum(target), 0)
+
+
     }
     
     /**
@@ -115,10 +112,10 @@ class CubeMapFace {
     
         assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
         
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(target, texture)
-        glCopyTexSubImage2D(targetFace, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, copyWidth, copyHeight)
-        glBindTexture(target, 0)
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(target), GLuint(texture))
+        // FIXME: glCopyTexSubImage2D(GLenum(targetFace), 0, GLsizei(xOffset), GLsizei(yOffset), GLsizei(framebufferXOffset), GLsizei(framebufferYOffset), GLsizei(copyWidth), GLsizei(copyHeight))
+        glBindTexture(GLenum(target), 0)
     }
 
 }

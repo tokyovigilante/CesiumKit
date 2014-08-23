@@ -96,7 +96,7 @@ public class Camera {
     * @see PerspectiveOffCenterFrustum
     * @see OrthographicFrustum
     */
-    var frustum: P
+    var frustum: Frustum
     
     init(scene: Scene) {
         
@@ -120,19 +120,10 @@ public class Camera {
         invTransform = Matrix4.identity()
         actualTransform = Matrix4.identity()
         actualInvTransform = Matrix4.identity()
-        
-        /**
-        * The region of space in view.
-        *
-        * @type {Frustum}
-        * @default PerspectiveFrustum()
-        *
-        * @see PerspectiveFrustum
-        * @see PerspectiveOffCenterFrustum
-        * @see OrthographicFrustum
-        */
-        this.frustum = new PerspectiveFrustum();
-        this.frustum.fovy = CesiumMath.toRadians(60.0);
+       
+
+        frustum = PerspectiveFrustum()
+        frustum.fovy = CesiumMath.toRadians(60.0);
         this.frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight;
         /*
         /**

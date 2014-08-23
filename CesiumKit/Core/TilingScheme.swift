@@ -6,7 +6,6 @@
 //
 //
 
-import Foundation
 
 /**
 * A tiling scheme for geometry or imagery on the surface of an ellipsoid.  At level-of-detail zero,
