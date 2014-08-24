@@ -1550,12 +1550,13 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
         var vZ = cartesian.z
         var vW = cartesian.w
         
-        var x: Double = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
+    //FIXME: compiler bug
+        /*var x = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
         var y = grid[1] * vX + grid[5] * vY + grid[9] * vZ + grid[13] * vW
         var z = grid[2] * vX + grid[6] * vY + grid[10] * vZ + grid[14] * vW
-        var w = grid[3] * vX + grid[7] * vY + grid[11] * vZ + grid[15] * vW
+        var w = grid[3] * vX + grid[7] * vY + grid[11] * vZ + grid[15] * vW*/
 
-        return Cartesian4(x: x, y: y, z: z, w: w)
+        return Cartesian4()//x: x, y: y, z: z, w: w)
     }
     /*
 

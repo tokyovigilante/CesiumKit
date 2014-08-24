@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
+		9409DC9E19A962A200F9842B /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9D19A962A200F9842B /* Image.swift */; };
 		940AE97F197B735200A33FF4 /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE97E197B735200A33FF4 /* PixelFormat.swift */; };
 		940AE981197B75CE00A33FF4 /* PixelDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE980197B75CE00A33FF4 /* PixelDatatype.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
@@ -140,6 +142,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
+		9409DC9D19A962A200F9842B /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		940AE97E197B735200A33FF4 /* PixelFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelFormat.swift; sourceTree = "<group>"; };
 		940AE980197B75CE00A33FF4 /* PixelDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelDatatype.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
@@ -303,17 +307,21 @@
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
 				9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */,
+				94540422199F045600012DC4 /* Event.swift */,
 				9444499F1948331C009D1703 /* GeographicProjection.swift */,
 				940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */,
 				94E9BA1A19550A9600012DC4 /* Geometry.swift */,
 				94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */,
 				942CD41719553F9E00012DC4 /* GeometryAttributes.swift */,
+				9409DC9D19A962A200F9842B /* Image.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
+				94540420199F03C300012DC4 /* JulianDate.swift */,
 				948D55E8194982AB005A4DD6 /* Math.swift */,
 				94B87DBE194D620E00012DC4 /* Matrix.swift */,
 				94C57E1319722AB90046791A /* Matrix4.swift */,
+				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				940AE97E197B735200A33FF4 /* PixelFormat.swift */,
 				942D02ED194DBD0800012DC4 /* PrimitiveType.swift */,
@@ -321,7 +329,6 @@
 				948B802F194D462F00012DC4 /* Quarternion.swift */,
 				946D25A919592BFD0080379D /* Ray.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
-				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				94786824194A95B800B3F462 /* TerrainData.swift */,
@@ -334,8 +341,6 @@
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
 				94A25E64196E711000012DC4 /* WindingOrder.swift */,
-				94540420199F03C300012DC4 /* JulianDate.swift */,
-				94540422199F045600012DC4 /* Event.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -405,6 +410,7 @@
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
+				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -657,6 +663,7 @@
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
+				9409DC9E19A962A200F9842B /* Image.swift in Sources */,
 				94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
 				94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */,
@@ -678,6 +685,7 @@
 				94786823194A959200B3F462 /* TerrainMesh.swift in Sources */,
 				942CD41819553F9E00012DC4 /* GeometryAttributes.swift in Sources */,
 				94CD3FAD199B6BF000012DC4 /* ImageryProvider.swift in Sources */,
+				9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */,
 				943D25B11947128A00263D91 /* Rectangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

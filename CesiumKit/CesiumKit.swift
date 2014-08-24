@@ -23,18 +23,18 @@ Describes Globe object options
 :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
 :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
-public struct CesiumGlobeOptions {
+public struct CesiumOptions {
     
-    let clock = Clock()
-    let imageryProvider: ImageryProvider? = BingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
-    let terrainProvider = EllipsoidTerrainProvider()
-    let skyBox: SkyBox? = nil
-    let sceneMode: SceneMode = .Scene3D
-    let scene3DOnly = false
-    let mapProjection = GeographicProjection()
-    let useDefaultRenderLoop = true
-    let targetFrameRate = 60
-    let showRenderLoopErrors = true
+    var clock = Clock()
+    var imageryProvider: ImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
+    var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
+    var skyBox: SkyBox? = nil
+    var sceneMode: SceneMode = .Scene3D
+    var scene3DOnly = false
+    var mapProjection = GeographicProjection()
+    var useDefaultRenderLoop = true
+    var targetFrameRate = 60
+    var showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
     let contextOptions = ContextOptions()*/
@@ -98,7 +98,7 @@ public struct CesiumGlobeOptions {
 *     mapProjection : new Cesium.WebMercatorProjection()
 * });
 */
-public class CesiumGlobe {
+public class Cesium {
 
     var canRender = false
     var renderLoopRunning = false
@@ -152,6 +152,8 @@ public class CesiumGlobe {
     public let scene: Scene
     
     let ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+
+    var globe: Globe
     
     //let skyBox: SkyBox
     
@@ -205,8 +207,9 @@ public class CesiumGlobe {
     */
     public let clock: Clock
     
-    init (context: EAGLContext, options: CesiumGlobeOptions) {
+    init (context: EAGLContext, options: CesiumOptions) {
         
+        self.context = context
         /*
         var creditContainer = document.createElement('div');
         creditContainer.className = 'cesium-widget-credits';
@@ -216,25 +219,22 @@ public class CesiumGlobe {
         
         self.canRender = false
         self.renderLoopRunning = false
+        self.useDefaultRenderLoop = options.useDefaultRenderLoop
         self.showRenderLoopErrors = options.showRenderLoopErrors
         self.resolutionScale = 1.0
         self.forceResize = false
         self.clock = options.clock
         lastFrameTime = nil
         
-        configureCanvasSize()
-        
-        
         self.scene = Scene(/*{
             canvas : canvas,
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,
             mapProjection : options.mapProjection,*/
-            scene3DOnly: options.scene3DOnly ?? false
+            scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
 /*            }*/)
         
         self.scene.camera.constrainedAxis = Cartesian3.unitZ()
-        configureCameraFrustum()
         
         /*var creditDisplay = scene.frameState.creditDisplay;
         
@@ -265,29 +265,30 @@ public class CesiumGlobe {
         scene.moon = new Moon();*/
 
         if options.imageryProvider != nil {
-            scene.imageryLayers.addImageryProvider(imageryProvider)
+            scene.imageryLayers.addImageryProvider(options.imageryProvider!, index: nil)
         }
         
-        //Set the terrain provider if one is provided.
-        if options.terrainProvider != nil {
-            scene.terrainProvider = options.terrainProvider
-        }
-
+        //Set the terrain provider
+        scene.terrainProvider = options.terrainProvider
+        
         self.screenSpaceEventHandler = ScreenSpaceEventHandler(/*canvas*/)
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
         
         if self.sceneMode == SceneMode.Scene2D {
-            self.scene.morphTo2D(0)
+            self.scene.morphTo2D(duration: 0)
         }
         if self.sceneMode == SceneMode.ColumbusView {
-            self.scene.morphToColumbusView(0)
+            self.scene.morphToColumbusView(duration: 0)
         }
         
-        self.useDefaultRenderLoop = useDefaultRenderLoop
+        useDefaultRenderLoop = options.useDefaultRenderLoop
         
         self.targetFrameRate = options.targetFrameRate
         
+        configureCanvasSize()
+        configureCameraFrustum()
+
         // FIXME: Render errors
         /*scene.renderError.addEventListener( { (scene: Scene, error: String) {
             self.useDefaultRenderLoop = false;
@@ -302,14 +303,16 @@ public class CesiumGlobe {
     }
 
     func getDefaultSkyBoxUrl(suffix: String) -> String {
+        //FIXME: Skybox URL
         //return buildModuleUrl('Assets/Textures/SkyBox/tycho2t3_80_' + suffix + '.jpg')
+        return suffix
     }
     
     func startRenderLoop() {
         
         renderLoopRunning = true
         lastFrameTime = NSDate.timeIntervalSinceReferenceDate() + NSTimeIntervalSince1970
-        
+        /*
         func render() {
             //if (widget.isDestroyed()) {
             //  return;
@@ -337,7 +340,7 @@ public class CesiumGlobe {
                 renderLoopRunning = false
             }
         }
-        requestAnimationFrame(render)
+        requestAnimationFrame(render)*/
     }
 
     func configureCanvasSize() {
@@ -480,16 +483,18 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     */
     
     func resize() {
-        var canvas = this._canvas;
-        var width = canvas.clientWidth;
-        var height = canvas.clientHeight;
+// FIXME: Resize
+/*
+//        var canvas = this._canvas;
+//        var width = canvas.clientWidth;
+//        var height = canvas.clientHeight;
         if (!this._forceResize && this._canvasWidth === width && this._canvasHeight === height) {
             return;
         }
         this._forceResize = false;
         
         configureCanvasSize(this);
-        configureCameraFrustum(this);
+        configureCameraFrustum(this);*/
     }
     /**
     * Renders the scene.  This function is called automatically

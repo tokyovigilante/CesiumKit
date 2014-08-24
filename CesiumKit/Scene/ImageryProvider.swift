@@ -6,25 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-protocol ImageryProvider {
-    /*
-    /*global define*/
-    define([
-    '../Core/defined',
-    '../Core/defineProperties',
-    '../Core/DeveloperError',
-    '../Core/loadImage',
-    '../Core/loadImageViaBlob',
-    '../Core/throttleRequestByServer'
-    ], function(
-    defined,
-    defineProperties,
-    DeveloperError,
-    loadImage,
-    loadImageViaBlob,
-    throttleRequestByServer) {
-    "use strict";
-    
     /**
     * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
     * interface and is not intended to be instantiated directly.
@@ -43,16 +24,16 @@ protocol ImageryProvider {
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
     */
-    var ImageryProvider = function ImageryProvider() {
-    /**
-    * The default alpha blending value of this provider, with 0.0 representing fully transparent and
-    * 1.0 representing fully opaque.
-    *
-    * @type {Number}
-    * @default undefined
-    */
-    this.defaultAlpha = undefined;
-    
+protocol ImageryProvider {
+
+/**
+* The default alpha blending value of this provider, with 0.0 representing fully transparent and
+* 1.0 representing fully opaque.
+*
+* @type {Number}
+* @default undefined
+*/
+    var defaultAlpha: Double
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -60,7 +41,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    this.defaultBrightness = undefined;
+    var defaultBrightness: Double
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -69,7 +50,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    this.defaultContrast = undefined;
+    var defaultContrast: Double
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -77,7 +58,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    this.defaultHue = undefined;
+    var defaultHue: Double
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -86,7 +67,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    this.defaultSaturation = undefined;
+    var defaultSaturation: Double
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -94,20 +75,14 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    this.defaultGamma = undefined;
+    var defaultGamma: Double
     
-    DeveloperError.throwInstantiationError();
-    };
-    
-    defineProperties(ImageryProvider.prototype, {
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    ready : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var ready: Bool { get }
     
     /**
     * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
@@ -115,9 +90,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Rectangle}
     */
-    rectangle: {
-    get : DeveloperError.throwInstantiationError
-    },
+    var rectangle: Rectangle { get }
     
     /**
     * Gets the width of each tile, in pixels.  This function should
@@ -125,9 +98,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    tileWidth : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var tileWidth: Int { get }
     
     /**
     * Gets the height of each tile, in pixels.  This function should
@@ -135,9 +106,8 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    tileHeight : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var tileHeight: Int { get }
+
     
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
@@ -145,10 +115,8 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    maximumLevel : {
-    get : DeveloperError.throwInstantiationError
-    },
-    
+    var maximumLevel: Int { get }
+
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
     * not be called before {@link ImageryProvider#ready} returns true. Generally,
@@ -159,9 +127,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    minimumLevel : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var minimumLevel: Int { get }
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -169,10 +135,8 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-    tilingScheme : {
-    get : DeveloperError.throwInstantiationError
-    },
-    
+    var tilingScheme: TilingScheme { get }
+
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
     * for filtering out "missing" tiles via its shouldDiscardImage function.  If this function
@@ -181,9 +145,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TileDiscardPolicy}
     */
-    tileDiscardPolicy : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var tileDiscardPolicy: TileDiscardPolicy { get }
     
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -192,9 +154,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    errorEvent : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var errorEvent: Event { get }
     
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
@@ -203,18 +163,14 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    credit : {
-    get : DeveloperError.throwInstantiationError
-    },
+    var credit: Credit  { get }
     
     /**
     * Gets the proxy used by this provider.
     * @memberof ImageryProvider.prototype
     * @type {Proxy}
     */
-    proxy : {
-    get : DeveloperError.throwInstantiationError
-    },
+    /// FIXME: Disabled var proxy: Proxy { get }
     
     /**
     * Gets a value indicating whether or not the images provided by this imagery provider
@@ -225,10 +181,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    hasAlphaChannel : {
-    get : DeveloperError.throwInstantiationError
-    }
-    });
+    var hasAlphaChannel: Bool { get }
     
     /**
     * Gets the credits to be displayed when a given tile is displayed.
@@ -241,7 +194,7 @@ protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    ImageryProvider.prototype.getTileCredits = DeveloperError.throwInstantiationError;
+    func getTileCredits (x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -251,14 +204,22 @@ protocol ImageryProvider {
     * @param {Number} x The tile X coordinate.
     * @param {Number} y The tile Y coordinate.
     * @param {Number} level The tile level.
+    * @param (Function) completion Block
     * @returns {Promise} A promise for the image that will resolve when the image is available, or
     *          undefined if there are too many active requests to the server, and the request
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     *
+    * requestImage(x: 0, y: 0, level: 0) {
+    * (result: Image?) in
+    * if let returnedImage = Image? {
+    * // process Image
+    *   }
+    * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    ImageryProvider.prototype.requestImage = DeveloperError.throwInstantiationError;
+    //func requestImage(x: Int, y: Int, level: Int, completion: (result: Image?) -> Void)
+
     
     /**
     * Loads an image from a given URL.  If the server referenced by the URL already has
@@ -271,15 +232,6 @@ protocol ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    ImageryProvider.loadImage = function(imageryProvider, url) {
-    if (defined(imageryProvider.tileDiscardPolicy)) {
-    return throttleRequestByServer(url, loadImageViaBlob);
-    }
-    return throttleRequestByServer(url, loadImage);
-    };
-    
-    return ImageryProvider;
-    });
+    //func loadImage (imageryProvider: ImageryProvider, url: String, completion: (result: Image?) -> Void)
 
-*/
 }

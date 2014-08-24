@@ -37,7 +37,7 @@ protocol Frustum {
     var fov: Double
     private var _fov: Double
     
-    var fovy: Double { get }
+    var fovy: Double { get set }
     private var _fovy: Double
 
     /**

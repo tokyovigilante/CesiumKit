@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * The camera is defined by a position, orientation, and view frustum.
 * <br /><br />
@@ -38,7 +40,7 @@ public class Camera {
     
     weak var scene: Scene?
     
-    let maxRadii: Double
+    let maxRadii: Double = Ellipsoid.wgs84Ellipsoid().maximumRadius
     
     /**
     * The position of the camera.
@@ -96,13 +98,89 @@ public class Camera {
     * @see PerspectiveOffCenterFrustum
     * @see OrthographicFrustum
     */
-    var frustum: Frustum
+
+
+    var frustum: Frustum = PerspectiveFrustum()
+
+        /**
+        * The default amount to move the camera when an argument is not
+        * provided to the move methods.
+        * @type {Number}
+        * @default 100000.0;
+        */
+        var defaultMoveAmount = 100000.0
+
+        /**
+        * The default amount to rotate the camera when an argument is not
+        * provided to the look methods.
+        * @type {Number}
+        * @default Math.PI / 60.0
+        */
+        var defaultLookAmount: Double = M_PI / 60.0
+
+        /**
+        * The default amount to rotate the camera when an argument is not
+        * provided to the rotate methods.
+        * @type {Number}
+        * @default Math.PI / 3600.0
+        */
+        var defaultRotateAmount = M_PI / 3600.0
+        /**
+        * The default amount to move the camera when an argument is not
+        * provided to the zoom methods.
+        * @type {Number}
+        * @default 100000.0;
+        */
+        var defaultZoomAmount = 100000.0
+
+        /**
+        * If set, the camera will not be able to rotate past this axis in either direction.
+        * @type {Cartesian3}
+        * @default undefined
+        */
+        var constrainedAxis: Cartesian3 = nil
+        /**
+        * The factor multiplied by the the map size used to determine where to clamp the camera position
+        * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
+        * @type {Number}
+        * @default 1.5
+        */
+        var maximumTranslateFactor = 1.5
+        /**
+        * The factor multiplied by the the map size used to determine where to clamp the camera position
+        * when zooming out from the surface. The default is 2.5. Only valid for 2D.
+        * @type {Number}
+        * @default 2.5
+        */
+        var maximumZoomFactor = 2.5
+
+    private var _viewMatrix = Matrix4()
+    private var _invViewMatrix = Matrix4()
+
+var mode: SceneMode = .Scene3D
+
+private var _modeChanged = true
+
+private var _projection = GeographicProjection()
+
+private var _maxCoord = Cartesian3()
+
+private var _max2Dfrustum: Frustum? = nil
+
+var transform2D = Matrix4(
+column0Row0: 0.0, column1Row0: 0.0, column2Row0: 1.0, column3Row0: 0.0,
+column0Row1: 1.0, column1Row1: 0.0, column2Row1: 0.0, column3Row1: 0.0,
+column0Row2: 0.0, column1Row2: 1.0, column2Row2: 0.0, column3Row2: 0.0,
+column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
+
+var transform2DInverse: Matrix4
+
     
     init(scene: Scene) {
         
         self.scene = scene
         
-        self.maxRadii = Ellipsoid.wgs84Ellipsoid().maximumRadius
+        //self.maxRadii = Ellipsoid.wgs84Ellipsoid().maximumRadius
         
         self.position = Cartesian3(x: 0.0, y: -2.0, z: 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
         self.positionWC = position
@@ -121,87 +199,24 @@ public class Camera {
         actualTransform = Matrix4.identity()
         actualInvTransform = Matrix4.identity()
        
+        transform2DInverse = transform2D.inverseTransformation()
 
         frustum = PerspectiveFrustum()
-        frustum.fovy = CesiumMath.toRadians(60.0);
-        this.frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight;
-        /*
-        /**
-        * The default amount to move the camera when an argument is not
-        * provided to the move methods.
-        * @type {Number}
-        * @default 100000.0;
-        */
-        this.defaultMoveAmount = 100000.0;
-        /**
-        * The default amount to rotate the camera when an argument is not
-        * provided to the look methods.
-        * @type {Number}
-        * @default Math.PI / 60.0
-        */
-        this.defaultLookAmount = Math.PI / 60.0;
-        /**
-        * The default amount to rotate the camera when an argument is not
-        * provided to the rotate methods.
-        * @type {Number}
-        * @default Math.PI / 3600.0
-        */
-        this.defaultRotateAmount = Math.PI / 3600.0;
-        /**
-        * The default amount to move the camera when an argument is not
-        * provided to the zoom methods.
-        * @type {Number}
-        * @default 100000.0;
-        */
-        this.defaultZoomAmount = 100000.0;
-        /**
-        * If set, the camera will not be able to rotate past this axis in either direction.
-        * @type {Cartesian3}
-        * @default undefined
-        */
-        this.constrainedAxis = undefined;
-        /**
-        * The factor multiplied by the the map size used to determine where to clamp the camera position
-        * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
-        * @type {Number}
-        * @default 1.5
-        */
-        this.maximumTranslateFactor = 1.5;
-        /**
-        * The factor multiplied by the the map size used to determine where to clamp the camera position
-        * when zooming out from the surface. The default is 2.5. Only valid for 2D.
-        * @type {Number}
-        * @default 2.5
-        */
-        this.maximumZoomFactor = 2.5;
-        
-        this._viewMatrix = new Matrix4();
-        this._invViewMatrix = new Matrix4();
-        updateViewMatrix(this);
-        
-        this._mode = SceneMode.SCENE3D;
-        this._modeChanged = true;
-        this._projection = new GeographicProjection();
-        this._maxCoord = new Cartesian3();
-        this._max2Dfrustum = undefined;
-    };*/
-}
-/*
-Camera.TRANSFORM_2D = new Matrix4(
-0.0, 0.0, 1.0, 0.0,
-1.0, 0.0, 0.0, 0.0,
-0.0, 1.0, 0.0, 0.0,
-0.0, 0.0, 0.0, 1.0);
+        frustum.fovy = Math.toRadians(60.0)
+        frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight
 
-Camera.TRANSFORM_2D_INVERSE = Matrix4.inverseTransformation(Camera.TRANSFORM_2D);
+        
+        updateViewMatrix()
+    }
+
     
-    function updateViewMatrix(camera) {
-    var r = camera._right;
-    var u = camera._up;
-    var d = camera._direction;
-    var e = camera._position;
+    func updateViewMatrix() {
+    /*var r = _right
+    var u = _up
+    var d = _direction
+    var e = _position
     
-    var viewMatrix = camera._viewMatrix;
+    //var viewMatrix = camera._viewMatrix;
     viewMatrix[0] = r.x;
     viewMatrix[1] = u.x;
     viewMatrix[2] = -d.x;
@@ -220,9 +235,9 @@ Camera.TRANSFORM_2D_INVERSE = Matrix4.inverseTransformation(Camera.TRANSFORM_2D)
     viewMatrix[15] = 1.0;
     
     Matrix4.multiply(viewMatrix, camera._actualInvTransform, camera._viewMatrix);
-    Matrix4.inverseTransformation(camera._viewMatrix, camera._invViewMatrix);
+    Matrix4.inverseTransformation(camera._viewMatrix, camera._invViewMatrix);*/
     }
-    
+    /*
     var scratchCartographic = new Cartographic();
     var scratchCartesian3Projection = new Cartesian3();
     var scratchCartesian3 = new Cartesian3();

@@ -468,6 +468,7 @@ public class Scene {
             return globe.imageryLayers
         }
     }
+
     /**
     * The terrain provider providing surface geometry for the globe.
     * @memberof Scene.prototype
@@ -475,7 +476,7 @@ public class Scene {
     */
     var terrainProvider: TerrainProvider {
         get {
-            return this.globe.terrainProvider;
+            return this.globe.terrainProvider
         }
         set (newTerrainProvider) {
             globe.terrainProvider = newTerrainProvider
@@ -1071,8 +1072,8 @@ function callAfterRenderFunctions(frameState) {
     }
 
     
-    func render(width: Int, height: Int, time: JulianDate = JulianDate()) {
-    
+    func render(time: JulianDate) {
+    /*
         drawingBufferWidth = width
         drawingBufferHeight = height
         
@@ -1125,7 +1126,7 @@ function callAfterRenderFunctions(frameState) {
         context.endFrame();
         callAfterRenderFunctions(frameState);
         
-        scene._postRender.raiseEvent(scene, time);
+        scene._postRender.raiseEvent(scene, time);*/
         
 }
 
@@ -1347,46 +1348,45 @@ Scene.prototype.drillPick = function(windowPosition) {
 Scene.prototype.completeMorph = function(){
     this._transitioner.completeMorph();
 };
-
+*/
 /**
 * Asynchronously transitions the scene to 2D.
 * @param {Number} [duration=2000] The amount of time, in milliseconds, for transition animations to complete.
 * @memberof Scene
 */
-Scene.prototype.morphTo2D = function(duration) {
-    var globe = this.globe;
+// FIXME: Morph functions
+func morphTo2D (duration: Double = 2000) {
+    /*var globe = this.globe;
     if (defined(globe)) {
-        duration = defaultValue(duration, 2000);
         this._transitioner.morphTo2D(duration, globe.ellipsoid);
-    }
-};
+    }*/
+}
 
 /**
 * Asynchronously transitions the scene to Columbus View.
 * @param {Number} [duration=2000] The amount of time, in milliseconds, for transition animations to complete.
 * @memberof Scene
 */
-Scene.prototype.morphToColumbusView = function(duration) {
-    var globe = this.globe;
+func morphToColumbusView (duration: Double = 2000) {
+    /*var globe = this.globe;
     if (defined(globe)) {
-        duration = defaultValue(duration, 2000);
         this._transitioner.morphToColumbusView(duration, globe.ellipsoid);
-    }
-};
+    }*/
+}
 
 /**
 * Asynchronously transitions the scene to 3D.
 * @param {Number} [duration=2000] The amount of time, in milliseconds, for transition animations to complete.
 * @memberof Scene
 */
-Scene.prototype.morphTo3D = function(duration) {
-    var globe = this.globe;
+    func morphTo3D (duration: Double = 2000) {
+    /*var globe = this.globe;
     if (defined(globe)) {
         duration = defaultValue(duration, 2000);
         this._transitioner.morphTo3D(duration, globe.ellipsoid);
-    }
-};
-
+    }*/
+}
+/*
 /**
 * Returns true if this object was destroyed; otherwise, false.
 * <br /><br />

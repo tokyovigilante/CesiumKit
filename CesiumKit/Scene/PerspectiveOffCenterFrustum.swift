@@ -34,8 +34,8 @@ struct PerspectiveOffCenterFrustum: Frustum {
     * @type {Number}
     * @default undefined
     */
-    var left = Double
-    private var _left = Double
+    var left = 0.0
+    private var _left = 0.0
     
     /**
     * Defines the right clipping plane.

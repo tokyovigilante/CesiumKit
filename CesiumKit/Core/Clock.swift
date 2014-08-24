@@ -166,7 +166,7 @@ public class Clock {
     
     this._lastSystemTime = getTimestamp();
     };
-    
+    */
     /**
     * Advances the clock from the currentTime based on the current configuration options.
     * tick should be called every frame, regardless of whether animation is taking place
@@ -174,8 +174,8 @@ public class Clock {
     *
     * @returns {JulianDate} The new value of the <code>currentTime</code> property.
     */
-    Clock.prototype.tick = function() {
-    var currentSystemTime = getTimestamp();
+    func tick() -> JulianDate {
+    /*var currentSystemTime = getTimestamp();
     var currentTime = JulianDate.clone(this.currentTime);
     var startTime = this.startTime;
     var stopTime = this.stopTime;
@@ -211,11 +211,8 @@ public class Clock {
     
     this.currentTime = currentTime;
     this._lastSystemTime = currentSystemTime;
-    this.onTick.raiseEvent(this);
-    return currentTime;
-    };
+    this.onTick.raiseEvent(this);*/
+    return JulianDate()// currentTime
+    }
     
-    return Clock;
-    });
-*/
-}
+    }

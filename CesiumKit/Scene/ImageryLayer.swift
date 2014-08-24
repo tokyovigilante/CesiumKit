@@ -6,86 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class ImageryLayer {
-/*
-    /*global define*/
-    define([
-    '../Core/BoundingRectangle',
-    '../Core/Cartesian2',
-    '../Core/Cartesian4',
-    '../Core/Color',
-    '../Core/ComponentDatatype',
-    '../Core/defaultValue',
-    '../Core/defined',
-    '../Core/defineProperties',
-    '../Core/destroyObject',
-    '../Core/FeatureDetection',
-    '../Core/GeographicTilingScheme',
-    '../Core/Geometry',
-    '../Core/GeometryAttribute',
-    '../Core/Math',
-    '../Core/PixelFormat',
-    '../Core/PrimitiveType',
-    '../Core/Rectangle',
-    '../Core/TerrainProvider',
-    '../Core/TileProviderError',
-    '../Renderer/BufferUsage',
-    '../Renderer/ClearCommand',
-    '../Renderer/DrawCommand',
-    '../Renderer/MipmapHint',
-    '../Renderer/TextureMagnificationFilter',
-    '../Renderer/TextureMinificationFilter',
-    '../Renderer/TextureWrap',
-    '../Shaders/ReprojectWebMercatorFS',
-    '../Shaders/ReprojectWebMercatorVS',
-    '../ThirdParty/when',
-    './Imagery',
-    './ImageryState',
-    './TileImagery'
-    ], function(
-    BoundingRectangle,
-    Cartesian2,
-    Cartesian4,
-    Color,
-    ComponentDatatype,
-    defaultValue,
-    defined,
-    defineProperties,
-    destroyObject,
-    FeatureDetection,
-    GeographicTilingScheme,
-    Geometry,
-    GeometryAttribute,
-    CesiumMath,
-    PixelFormat,
-    PrimitiveType,
-    Rectangle,
-    TerrainProvider,
-    TileProviderError,
-    BufferUsage,
-    ClearCommand,
-    DrawCommand,
-    MipmapHint,
-    TextureMagnificationFilter,
-    TextureMinificationFilter,
-    TextureWrap,
-    ReprojectWebMercatorFS,
-    ReprojectWebMercatorVS,
-    when,
-    Imagery,
-    ImageryState,
-    TileImagery) {
-    "use strict";
-    
-    /**
-    * An imagery layer that displays tiled image data from a single imagery provider
-    * on a {@link Globe}.
-    *
-    * @alias ImageryLayer
-    * @constructor
-    *
-    * @param {ImageryProvider} imageryProvider The imagery provider to use.
-    * @param {Object} [options] Object with the following properties:
+/** @param {Object} [options] Object with the following properties:
     * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
     *        can limit the visible portion of the imagery provider.
     * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
@@ -142,7 +63,27 @@ class ImageryLayer {
     * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
     *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
     */
-    var ImageryLayer = function ImageryLayer(imageryProvider, options) {
+
+struct ImageryLayerOptions {
+// FIXME: ImageryLayerOptions
+}
+
+/**
+    * An imagery layer that displays tiled image data from a single imagery provider
+    * on a {@link Globe}.
+    *
+    * @alias ImageryLayer
+    * @constructor
+    *
+    * @param {ImageryProvider} imageryProvider The imagery provider to use.
+    */
+class ImageryLayer {
+
+    init (imageryProvider: ImageryProvider, options: ImageryLayerOptions = ImageryLayerOptions()) {
+
+    self.imageryProvider = imageryProvider
+/*
+       
     this._imageryProvider = imageryProvider;
     
     options = defaultValue(options, {});
@@ -240,9 +181,9 @@ class ImageryLayer {
     imageryProvider : {
     get: function() {
     return this._imageryProvider;
+    }*/
     }
-    },
-    
+    /*
     /**
     * Gets the rectangle of this layer.  If this rectangle is smaller than the rectangle of the
     * {@link ImageryProvider}, only a portion of the imagery provider is shown.

@@ -18,7 +18,9 @@ import Foundation
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
 class ImageryLayerCollection {
-/*    this._layers = [];
+    
+    private var _layers = [ImageryLayer]()
+/*
     
     /**
     * An event that is raised when a layer is added to the collection.  Event handlers are passed the layer that
@@ -54,21 +56,20 @@ class ImageryLayerCollection {
     * @default Event()
     */
     this.layerShownOrHidden = new Event();
-};
+}*/
 
-defineProperties(ImageryLayerCollection.prototype, {
+
     /**
     * Gets the number of layers in this collection.
     * @memberof ImageryLayerCollection.prototype
     * @type {Number}
     */
-    length : {
-        get : function() {
-            return this._layers.length;
+    var count: Int {
+        get {
+            return _layers.count
         }
     }
-    });
-
+    
 /**
 * Adds a layer to the collection.
 *
@@ -78,21 +79,13 @@ defineProperties(ImageryLayerCollection.prototype, {
 *
 * @exception {DeveloperError} index, if supplied, must be greater than or equal to zero and less than or equal to the number of the layers.
 */
-ImageryLayerCollection.prototype.add = function(layer, index) {
-    var hasIndex = defined(index);
+    func add (layer: ImageryLayer, index: Int? = nil) {
+    let hasIndex = index != nil
     
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(layer)) {
-        throw new DeveloperError('layer is required.');
-    }
     if (hasIndex) {
-        if (index < 0) {
-            throw new DeveloperError('index must be greater than or equal to zero.');
-        } else if (index > this._layers.length) {
-            throw new DeveloperError('index must be less than or equal to the number of layers.');
+        assert (index! >= 0, "index must be greater than or equal to zero")
+        assert (index <= this._layers.length, "index must be less than or equal to the number of layers")
         }
-    }
-    //>>includeEnd('debug');
     
     if (!hasIndex) {
         index = this._layers.length;
@@ -103,7 +96,7 @@ ImageryLayerCollection.prototype.add = function(layer, index) {
     
     this._update();
     this.layerAdded.raiseEvent(layer, index);
-};
+}
 
 /**
 * Creates a new layer using the given ImageryProvider and adds it to the collection.
@@ -113,18 +106,13 @@ ImageryLayerCollection.prototype.add = function(layer, index) {
 *                         added on top of all existing layers.
 * @returns {ImageryLayer} The newly created layer.
 */
-ImageryLayerCollection.prototype.addImageryProvider = function(imageryProvider, index) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(imageryProvider)) {
-        throw new DeveloperError('imageryProvider is required.');
-    }
-    //>>includeEnd('debug');
+func addImageryProvider(imageryProvider: ImageryProvider, index: Int?) -> ImageryLayer {
     
-    var layer = new ImageryLayer(imageryProvider);
-    this.add(layer, index);
-    return layer;
-};
-
+    var layer = ImageryLayer(imageryProvider)
+    add(layer, index)
+    return layer
+}
+/*
 /**
 * Removes a layer from this collection, if present.
 *
@@ -390,7 +378,5 @@ ImageryLayerCollection.prototype._update = function() {
         }
     }
 };
-
-return ImageryLayerCollection;
-});*/
+*/
 }

@@ -46,6 +46,9 @@ struct PerspectiveFrustum: Frustum {
             update(this)
             return _fovy
         }
+        set (newFovy) {
+            _fovy = newFovy
+        }
     }
     private var _fovy: Double = 0.0
     
@@ -87,12 +90,12 @@ struct PerspectiveFrustum: Frustum {
             assert(near > 0 && near > far, "near must be greater than zero and less than far")
             
             _aspectRatio = aspectRatio
-            _fov = frustum.fov;
+            _fov = fov
             _fovy = aspectRatio <= 1.0 ? frustum.fov : atan(tan(fov * 0.5) / aspectRatio) * 2.0
             _near = near
             _far = far
             
-            f.top = near * tan(0.5 * fovy)
+            f.top = near * tan(0.5 * _fovy)
             f.bottom = -f.top
             f.right = frustum.aspectRatio * f.top
             f.left = -f.right
