@@ -22,11 +22,11 @@ class Imagery {
     
     var y: Int
     
-    var parent: ImageryLayer? = nil
+    var parent: Imagery? = nil
     
     var rectangle: Rectangle? = nil
     
-    var image: AnyObject? = nil
+    var image: Image? = nil
     
     var imageUrl: String? = nil
     
@@ -38,7 +38,7 @@ class Imagery {
     
     var credits: Credit? = nil
 
-    init(imageryLayer, level, x, y, rectangle) {
+    init(imageryLayer: ImageryLayer, level: Int, x: Int, y: Int, rectangle: Rectangle? = nil) {
         
         self.imageryLayer = imageryLayer
         self.level = level
@@ -49,12 +49,12 @@ class Imagery {
             var parentX = x / 2 | 0
             var parentY = y / 2 | 0
             var parentLevel = level - 1
-            parent = imageryLayer.getImageryFromCache(parentX, parentY, parentLevel);
+            parent = imageryLayer.getImageryFromCache(x: parentX, y: parentY, level: parentLevel)
         }
         
-        if self.rectangle = nil && imageryLayer.imageryProvider.ready {
+        if rectangle == nil && imageryLayer.imageryProvider.ready {
             var tilingScheme = imageryLayer.imageryProvider.tilingScheme
-            self.rectangle = tilingScheme.tileXYToRectangle(x, y, level)
+            self.rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         }
     }
 

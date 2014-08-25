@@ -408,7 +408,7 @@ var maximumTextureUnitIndex: Int? = nil
 
 var id: Int
     
-    init(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) {
+    init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) {
         
     
         self.logShaderCompilation = logShaderCompilation

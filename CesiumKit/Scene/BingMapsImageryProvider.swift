@@ -127,12 +127,9 @@ class BingMapsImageryProvider { // FIXME: ImageryProvider {
     if (this._mapStyle === BingMapsStyle.AERIAL || this._mapStyle === BingMapsStyle.AERIAL_WITH_LABELS) {
     this.defaultGamma = 1.3;
     }
-    
-    this._tilingScheme = new WebMercatorTilingScheme({
-    numberOfLevelZeroTilesX : 2,
-    numberOfLevelZeroTilesY : 2
-    });
-    
+    */
+    var tilingScheme = WebMercatorTilingScheme(numberOfLevelZeroTilesX: 2, numberOfLevelZeroTilesY: 2)
+    /*
     this._tileWidth = undefined;
     this._tileHeight = undefined;
     this._maximumLevel = undefined;
@@ -140,9 +137,9 @@ class BingMapsImageryProvider { // FIXME: ImageryProvider {
     this._imageUrlSubdomains = undefined;
     
     this._errorEvent = new Event();
-    
-    this._ready = false;
-    
+    */
+    var ready = false
+    /*
     var metadataUrl = this._url + '/REST/v1/Imagery/Metadata/' + this._mapStyle + '?incl=ImageryProviders&key=' + this._key;
     var that = this;
     var metadataError;

@@ -26,7 +26,8 @@
 * frustum.near = 1.0;
 * frustum.far = 2.0;
 */
-struct PerspectiveOffCenterFrustum: Frustum {
+// FIXME: Frustum protocol
+struct PerspectiveOffCenterFrustum/*: Frustum*/ {
     
 
     /**

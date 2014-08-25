@@ -11,4 +11,11 @@ class ImageBuffer {
     let width: Int
     let height: Int
     let arrayBufferView: [UInt8]
+    
+    init(width: Int, height: Int, arrayBufferView: [UInt8]) {
+        self.width = width
+        self.height = height
+        self.arrayBufferView = arrayBufferView
+    }
+    
 }

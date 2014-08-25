@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * A tiling scheme for geometry referenced to a {@link WebMercatorProjection}, EPSG:3857.  This is
 * the tiling scheme used by Google Maps, Microsoft Bing Maps, and most of ESRI ArcGIS Online.
@@ -61,8 +63,8 @@ class WebMercatorTilingScheme: TilingScheme {
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(),
         numberOfLevelZeroTilesX: Int = 1,
         numberOfLevelZeroTilesY: Int = 1,
-        rectangleSouthwestInMeters: Cartesian3?,
-        rectangleNortheastInMeters: Cartesian3?) {
+        rectangleSouthwestInMeters: Cartesian3? = nil,
+        rectangleNortheastInMeters: Cartesian3? = nil) {
             
             self.ellipsoid = ellipsoid
             self.projection = WebMercatorProjection(ellipsoid: ellipsoid)

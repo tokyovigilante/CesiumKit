@@ -80,23 +80,24 @@ class ImageryLayerCollection {
 * @exception {DeveloperError} index, if supplied, must be greater than or equal to zero and less than or equal to the number of the layers.
 */
     func add (layer: ImageryLayer, index: Int? = nil) {
-    let hasIndex = index != nil
-    
-    if (hasIndex) {
-        assert (index! >= 0, "index must be greater than or equal to zero")
-        assert (index <= this._layers.length, "index must be less than or equal to the number of layers")
+        //FIXME: Unimplemented
+        /*let hasIndex = index != nil
+        
+        if (hasIndex) {
+            assert (index! >= 0, "index must be greater than or equal to zero")
+            assert (index <= this._layers.length, "index must be less than or equal to the number of layers")
         }
-    
-    if (!hasIndex) {
-        index = this._layers.length;
-        this._layers.push(layer);
-    } else {
-        this._layers.splice(index, 0, layer);
+        
+        if (!hasIndex) {
+            index = this._layers.length;
+            this._layers.push(layer);
+        } else {
+            this._layers.splice(index, 0, layer);
+        }
+        
+        this._update();
+        this.layerAdded.raiseEvent(layer, index);*/
     }
-    
-    this._update();
-    this.layerAdded.raiseEvent(layer, index);
-}
 
 /**
 * Creates a new layer using the given ImageryProvider and adds it to the collection.
@@ -106,10 +107,11 @@ class ImageryLayerCollection {
 *                         added on top of all existing layers.
 * @returns {ImageryLayer} The newly created layer.
 */
-func addImageryProvider(imageryProvider: ImageryProvider, index: Int?) -> ImageryLayer {
+// FIXME: ImageryProvider
+func addImageryProvider(imageryProvider: BingMapsImageryProvider, index: Int?) -> ImageryLayer {
     
-    var layer = ImageryLayer(imageryProvider)
-    add(layer, index)
+    var layer = ImageryLayer(imageryProvider: imageryProvider)
+    add(layer, index: index)
     return layer
 }
 /*

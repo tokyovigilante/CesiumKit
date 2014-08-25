@@ -75,7 +75,7 @@ enum PixelFormat: Int {
     }
     
     func isDepthFormat() -> Bool {
-        return self === PixelFormat.DepthComponent ||
-            pixelFormat === PixelFormat.DepthStencil
+        return self == PixelFormat.DepthComponent ||
+            self == PixelFormat.DepthStencil
     }
 }

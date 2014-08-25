@@ -11,7 +11,6 @@
 @class CSGeometry;
 
 @interface CSEllipsoidGeometry : NSObject
-
 /**
  * A description of an ellipsoid centered at the origin.
  *

@@ -79,7 +79,10 @@ struct ImageryLayerOptions {
     */
 class ImageryLayer {
 
-    init (imageryProvider: ImageryProvider, options: ImageryLayerOptions = ImageryLayerOptions()) {
+    var imageryProvider: BingMapsImageryProvider
+
+    // FIXME: ImageryProvider
+    init (imageryProvider: BingMapsImageryProvider/*ImageryProvider*/, options: ImageryLayerOptions = ImageryLayerOptions()) {
 
     self.imageryProvider = imageryProvider
 /*
@@ -653,20 +656,21 @@ ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
     
     imagery.state = ImageryState.READY;
 };
-
-ImageryLayer.prototype.getImageryFromCache = function(x, y, level, imageryRectangle) {
-    var cacheKey = getImageryCacheKey(x, y, level);
-    var imagery = this._imageryCache[cacheKey];
-    
-    if (!defined(imagery)) {
-        imagery = new Imagery(this, x, y, level, imageryRectangle);
-        this._imageryCache[cacheKey] = imagery;
+*/
+    // FIXME: Not implemented
+    func getImageryFromCache (#x: Int, y: Int, level: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+        //var cacheKey = getImageryCacheKey(x, y, level);
+        var imagery /*= this._imageryCache[cacheKey];
+        
+        if (!defined(imagery)) {
+        imagery*/ = Imagery(imageryLayer: self, level: x, x: y, y: level, rectangle: imageryRectangle)
+        /*this._imageryCache[cacheKey] = imagery;
+        }
+        
+        imagery.addReference();*/
+        return imagery
     }
-    
-    imagery.addReference();
-    return imagery;
-};
-
+/*
 ImageryLayer.prototype.removeImageryFromCache = function(imagery) {
     var cacheKey = getImageryCacheKey(imagery.x, imagery.y, imagery.level);
     delete this._imageryCache[cacheKey];

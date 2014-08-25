@@ -24,7 +24,8 @@
 * frustum.near = 1.0;
 * frustum.far = 2.0;
 */
-struct PerspectiveFrustum: Frustum {
+// FIXME: Frustum protocol
+struct PerspectiveFrustum/*: Frustum*/ {
     /**
     * The angle of the field of view (FOV), in radians.  This angle will be used
     * as the horizontal FOV if the width is greater than the height, otherwise

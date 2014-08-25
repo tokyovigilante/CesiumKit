@@ -88,12 +88,12 @@ class TerrainProvider {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
-        if !byWidth {
+        if byWidth == nil {
             byWidth = [:]
             regularGridIndexArrays[width] = byWidth
         }
         var indices = byWidth![height]
-        if !indices {
+        if indices == nil {
             var unwrappedIndices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
             var index: UInt16 = 0

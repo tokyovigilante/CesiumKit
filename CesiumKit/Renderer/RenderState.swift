@@ -83,14 +83,14 @@ struct RenderState {
         var enabled: Bool = false
         var face: GLenum = GLenum(GL_BACK)
     }
-    var cull: Cull
+    var cull = Cull()
     
     struct PolygonOffset {
         var enabled: Bool = false
         var factor : GLfloat = 0.0
         var units : GLfloat = 0.0
     }
-    var polygonOffset: PolygonOffset
+    var polygonOffset = PolygonOffset()
     
     var lineWidth: Double = 1.0
     
@@ -98,19 +98,19 @@ struct RenderState {
         var enabled: Bool = false
         var rectangle: BoundingRectangle? = nil
     }
-    var scissorTest: ScissorTest
+    var scissorTest = ScissorTest()
     
     struct DepthRange {
         var near = 0.0
         var far = 0.0
     }
-    var depthRange: DepthRange
+    var depthRange = DepthRange()
     
     struct DepthTest {
         var enabled: Bool = false
         var function: GLenum = GLenum(GL_LESS)  // function, because func is a Swift keyword ;)
     }
-    var depthTest: DepthTest
+    var depthTest = DepthTest()
     
     struct ColorMask {
         var red: GLboolean = GLboolean(GL_TRUE)
@@ -118,9 +118,9 @@ struct RenderState {
         var blue: GLboolean = GLboolean(GL_TRUE)
         var alpha: GLboolean = GLboolean(GL_TRUE)
     }
-    var colorMask: ColorMask
+    var colorMask = ColorMask()
     
-    var depthMask: GLboolean = GLboolean(GL_TRUE)
+    var depthMask = GLboolean(GL_TRUE)
     
     var stencilMask: GLuint = ~0
     
@@ -134,7 +134,7 @@ struct RenderState {
         var functionDestinationRgb: GLenum = GLenum(GL_ZERO)
         var functionDestinationAlpha: GLenum = GLenum(GL_ZERO)
     }
-    var blending: Blending
+    var blending = Blending()
     
     struct StencilTest {
         var enabled: Bool = false
@@ -148,23 +148,23 @@ struct RenderState {
             var zFail: GLenum = GLenum(GL_KEEP)
             var zPass: GLenum = GLenum(GL_KEEP)
         }
-        var frontOperation: FrontOperation
+        var frontOperation = FrontOperation()
         
         struct BackOperation {
             var fail: GLenum = GLenum(GL_KEEP)
             var zFail: GLenum = GLenum(GL_KEEP)
             var zPass: GLenum = GLenum(GL_KEEP)
         }
-        var backOperation: BackOperation
+        var backOperation = BackOperation()
     }
-    var stencilTest: StencilTest
+    var stencilTest = StencilTest()
     
     struct SampleCoverage {
         var enabled = false
         var value: GLclampf = 1.0
         var invert: GLboolean = GLboolean(GL_FALSE)
     }
-    var sampleCoverage: SampleCoverage
+    var sampleCoverage = SampleCoverage()
     
     var viewport: BoundingRectangle? = nil
     
@@ -321,12 +321,12 @@ struct RenderState {
     
     func applyScissorTest(passState: PassState) {
         
-        var enabled = (passState.scissorTest ? passState.scissorTest!.enabled : scissorTest.enabled)
+        var enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
         
-        enableOrDisable(GLenum(GL_SCISSOR_TEST), enable: enabled);
+        enableOrDisable(GLenum(GL_SCISSOR_TEST), enable: enabled)
         
         if (enabled) {
-            var rectangle = passState.scissorTest ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
+            var rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
             glScissor(GLint(rectangle.x), GLint(rectangle.y), GLsizei(rectangle.width), GLsizei(rectangle.height))
         }
     }
@@ -358,7 +358,7 @@ struct RenderState {
     
     func applyBlending(passState: PassState) {
         
-        var enabled = passState.blendingEnabled ? passState.blendingEnabled! : blending.enabled
+        var enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
         
         enableOrDisable(GLenum(GL_BLEND), enable: enabled)
         
@@ -403,15 +403,15 @@ struct RenderState {
     func applyViewport(passState: PassState) {
         
         var actualViewport = BoundingRectangle()
-        
-        if !viewport {
-            actualViewport.width = Double(passState.context.drawingBufferWidth)
-            actualViewport.height = Double(passState.context.drawingBufferHeight)
+        var context = passState.context!
+        if !(viewport != nil) {
+            actualViewport.width = Double(context.drawingBufferWidth)
+            actualViewport.height = Double(context.drawingBufferHeight)
         } else {
             actualViewport = viewport!
         }
         
-        passState.context.uniformState.viewport = actualViewport
+        context.uniformState.viewport = actualViewport
         glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
     }
     

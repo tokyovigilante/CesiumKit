@@ -26,7 +26,8 @@
 * frustum.near = 0.01 * maxRadii;
 * frustum.far = 50.0 * maxRadii;
 */
-struct OrthographicFrustum: Frustum {
+// FIXME: Frustum protocol
+struct OrthographicFrustum/*: Frustum*/ {
 
     
 /*

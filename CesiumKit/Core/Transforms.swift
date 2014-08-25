@@ -523,12 +523,12 @@ struct Transforms {
      * @param {Cartesian2} [result] The object onto which to store the result.
      * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
      */
-    static func pointToWindowCoordinates(modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix, point: Cartesian3) -> Cartesian2 {
+    static func pointToWindowCoordinates(modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
 
-        var tmp = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, 1.0))
+        var tmp = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1.0))
         tmp.multiplyByScalar(1.0 / tmp.w)
         tmp = viewportTransformation.multiplyByVector(tmp)
-        return Cartesian2.fromCartesian4(tmp)
+        return Cartesian2(fromCartesian4: tmp)
     }
 }
 

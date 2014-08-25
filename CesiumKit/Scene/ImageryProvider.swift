@@ -218,7 +218,7 @@ protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    //func requestImage(x: Int, y: Int, level: Int, completion: (result: Image?) -> Void)
+    func requestImage(x: Int, y: Int, level: Int, completion: (result: Image?) -> Void)
 
     
     /**
@@ -232,6 +232,6 @@ protocol ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    //func loadImage (imageryProvider: ImageryProvider, url: String, completion: (result: Image?) -> Void)
+    func loadImage (url: String, completion: (result: Image?) -> Void)
 
 }

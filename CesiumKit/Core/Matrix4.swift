@@ -2141,7 +2141,7 @@ Matrix4.inverse = function(matrix, result) {
     result[15] = dst15 * det;
     return result;
 };
-
+*/
 /**
 * Computes the inverse of the provided matrix assuming it is
 * an affine transformation matrix, where the upper left 3x3 elements
@@ -2155,15 +2155,8 @@ Matrix4.inverse = function(matrix, result) {
 * @param {Matrix4} result The object onto which to store the result.
 * @returns {Matrix4} The modified result parameter.
 */
-Matrix4.inverseTransformation = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
+    
+ func inverseTransformation () -> Matrix4 {
     
     //This function is an optimized version of the below 4 lines.
     //var rT = Matrix3.transpose(Matrix4.getRotation(matrix));
@@ -2171,43 +2164,32 @@ Matrix4.inverseTransformation = function(matrix, result) {
     //var rTT = Matrix3.multiplyByVector(rTN, Matrix4.getTranslation(matrix));
     //return Matrix4.fromRotationTranslation(rT, rTT, result);
     
-    var matrix0 = matrix[0];
-    var matrix1 = matrix[1];
-    var matrix2 = matrix[2];
-    var matrix4 = matrix[4];
-    var matrix5 = matrix[5];
-    var matrix6 = matrix[6];
-    var matrix8 = matrix[8];
-    var matrix9 = matrix[9];
-    var matrix10 = matrix[10];
     
-    var vX = matrix[12];
-    var vY = matrix[13];
-    var vZ = matrix[14];
+    var matrix0 = grid[0]
+    var matrix1 = grid[1]
+    var matrix2 = grid[2]
+    var matrix4 = grid[4]
+    var matrix5 = grid[5]
+    var matrix6 = grid[6]
+    var matrix8 = grid[8]
+    var matrix9 = grid[9]
+    var matrix10 = grid[10]
     
-    var x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ;
-    var y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ;
-    var z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ;
+    var vX = grid[12]
+    var vY = grid[13]
+    var vZ = grid[14]
     
-    result[0] = matrix0;
-    result[1] = matrix4;
-    result[2] = matrix8;
-    result[3] = 0.0;
-    result[4] = matrix1;
-    result[5] = matrix5;
-    result[6] = matrix9;
-    result[7] = 0.0;
-    result[8] = matrix2;
-    result[9] = matrix6;
-    result[10] = matrix10;
-    result[11] = 0.0;
-    result[12] = x;
-    result[13] = y;
-    result[14] = z;
-    result[15] = 1.0;
-    return result;
-};
-*/
+    var x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ
+    var y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ
+    var z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
+    
+    return Matrix4(
+        column0Row0: matrix0, column1Row0: matrix4, column2Row0: matrix8, column3Row0: 0.0,
+        column0Row1: matrix1, column1Row1: matrix5, column2Row1: matrix9, column3Row1: 0.0,
+        column0Row2: matrix2, column1Row2: matrix6, column2Row2: matrix10, column3Row2: 0.0,
+        column0Row3: x, column1Row3: y, column2Row3: z, column3Row3: 1.0)
+}
+
     /**
     * An immutable Matrix4 instance initialized to the identity matrix.
     *

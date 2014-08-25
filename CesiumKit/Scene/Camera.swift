@@ -99,8 +99,8 @@ public class Camera {
     * @see OrthographicFrustum
     */
 
-
-    var frustum: Frustum = PerspectiveFrustum()
+    // FIXME: Frustum protocol
+    var frustum/*: Frustum*/ = PerspectiveFrustum()
 
         /**
         * The default amount to move the camera when an argument is not
@@ -138,7 +138,7 @@ public class Camera {
         * @type {Cartesian3}
         * @default undefined
         */
-        var constrainedAxis: Cartesian3 = nil
+        var constrainedAxis: Cartesian3? = nil
         /**
         * The factor multiplied by the the map size used to determine where to clamp the camera position
         * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
@@ -165,7 +165,7 @@ private var _projection = GeographicProjection()
 
 private var _maxCoord = Cartesian3()
 
-private var _max2Dfrustum: Frustum? = nil
+private var _max2Dfrustum: OrthographicFrustum? = nil
 
 var transform2D = Matrix4(
 column0Row0: 0.0, column1Row0: 0.0, column2Row0: 1.0, column3Row0: 0.0,
@@ -188,7 +188,7 @@ var transform2DInverse: Matrix4
         direction = position.negate().normalize()
         directionWC = direction
         
-        right = Cartesian3.unitZ().cross(direction).normalize
+        right = Cartesian3.unitZ().cross(direction).normalize()
         rightWC = right
         
         up = right.cross(direction)
@@ -201,9 +201,9 @@ var transform2DInverse: Matrix4
        
         transform2DInverse = transform2D.inverseTransformation()
 
-        frustum = PerspectiveFrustum()
+        //frustum = PerspectiveFrustum()
         frustum.fovy = Math.toRadians(60.0)
-        frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight
+        frustum.aspectRatio = Double(scene.drawingBufferWidth) / Double(scene.drawingBufferHeight)
 
         
         updateViewMatrix()

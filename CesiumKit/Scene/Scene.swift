@@ -435,7 +435,7 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
     */
-    var drawingBufferHeight = 0
+    var drawingBufferHeight: Int = 0
     
     /**
     * The drawingBufferHeight of the underlying GL context.
@@ -443,7 +443,7 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
     */
-    var drawingBufferWidth = 0
+    var drawingBufferWidth: Int = 0
 
     
     /**

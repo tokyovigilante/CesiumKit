@@ -23,10 +23,10 @@ Describes Globe object options
 :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
 :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
-public struct CesiumOptions {
+struct CesiumOptions {
     
     var clock = Clock()
-    var imageryProvider: ImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
+    var imageryProvider: BingMapsImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
     var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
     var skyBox: SkyBox? = nil
     var sceneMode: SceneMode = .Scene3D
@@ -157,7 +157,8 @@ public class Cesium {
     
     //let skyBox: SkyBox
     
-    var imageryProvider: ImageryProvider? = nil
+    // FIXME: ImageryProvider
+    var imageryProvider: BingMapsImageryProvider? = nil//ImageryProvider? = nil
     
     var sceneMode: SceneMode
     

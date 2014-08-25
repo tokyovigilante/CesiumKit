@@ -113,7 +113,9 @@ class GlobeSurfaceTile {
         get {
             // Do not remove tiles that are transitioning or that have
             // imagery that is transitioning.
-            var loadingIsTransitioning = loadedTerrain != nil &&
+            
+            //FIXME: Unimplemented
+            /*var loadingIsTransitioning = loadedTerrain != nil &&
                 (loadedTerrain.state == TerrainState.Receiving || loadedTerrain.state == TerrainState.Transforming)
             
             var upsampledTerrain = this.upsampledTerrain
@@ -127,7 +129,8 @@ class GlobeSurfaceTile {
                 shouldRemoveTile = !defined(tileImagery.loadingImagery) || tileImagery.loadingImagery.state !== ImageryState.TRANSITIONING;
             }
             
-            return shouldRemoveTile;
+            return shouldRemoveTile;*/
+            return false
         }
     }
     

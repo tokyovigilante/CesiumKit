@@ -11,15 +11,17 @@ import OpenGLES
 struct TextureOptions {
     
     struct Source {
-        var imageBuffer: ImageBuffer?
-        var frameBuffer: Framebuffer?
+        var imageBuffer: ImageBuffer? = nil
+        var frameBuffer: Framebuffer? = nil
+        var width: Int? = nil
+        var height: Int? = nil
     }
     
     var source: Source?
     
-    var width: Int? = nil
+    var width: Int? = 0
     
-    var height: Int? = nil
+    var height: Int? = 0
     
     var pixelFormat: PixelFormat = PixelFormat.RGBA
     
@@ -53,7 +55,7 @@ class Texture {
 
     weak var context: Context?
     
-    let textureName: GLint
+    let textureName: Int
     
     let textureTarget = GL_TEXTURE_2D
     
@@ -67,8 +69,9 @@ class Texture {
         
         var source = options.source
         
-        self.width = options.source ? options.source!.width! : options.width!
-        self.height = options.source ? options.source!.width! : options.width!
+        // FIXME: Textureoptions
+        width = 1//options.source != nil ? options.source!.width : options.width!
+        height = 1//options.source != nil ? options.source!.width : options.width!
         
         self.pixelFormat = options.pixelFormat
         
@@ -77,9 +80,9 @@ class Texture {
         self.premultiplyAlpha = options.premultiplyAlpha
         
         assert(self.width > 0, "Width must be greater than zero.")
-        assert(self.width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+        assert(self.width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
-        assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size" + context.maximumTextureSize)
+        assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
@@ -92,43 +95,37 @@ class Texture {
         }
         
         if self.pixelFormat.isDepthFormat() {
-            //>>includeStart('debug', pragmas.debug);
-            if source {
-                assert(true, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.")
-            }
-            //>>includeEnd('debug');
-            
-            if (!context.depthTexture) {
-                assert(true, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture")
-            }
+            assert(source == nil, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.")
+            assert(context.depthTexture, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture")
         }
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.preMultiplyAlpha || self.pixelFormat === PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
         var textureName: GLuint = 0
         glGenTextures(1, &textureName)
         
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, textureName)
+        /*glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(GL_TEXTURE_2D), textureName)
         
-        if (defined(source)) {
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 4)
+         if (source != nil) {
+            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, <#param: GLint#>)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             
-            if source.arrayBufferView {
+           if source!.imageBuffer != nil {
                 // Source: typed array
-                glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, GLsizei(width), GLsizei(height), 0, pixelFormat, pixelDatatype, &source!.arrayBufferView!)
-            } else if (defined(source.framebuffer)) {
+                var pixelBuffer = source!.imageBuffer!.arrayBufferView
+                // FIXME - glTexImage2D
+                //glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat), GLsizei(width), GLsizei(height), 0, GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(pixelBuffer))
+            } else if source!.frameBuffer != nil {
                 // Source: framebuffer
-                if (source.framebuffer != context.defaultFramebuffer) {
-                    source.framebuffer.bind()
+                if source.frameBuffer! !== context.defaultFramebuffer {
+                    source.frameBuffer.bind()
                 }
-                
                 glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
                 
                 if (source.framebuffer != context.defaultFramebuffer) {
@@ -142,13 +139,11 @@ class Texture {
             gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
         }
         gl.bindTexture(textureTarget, null)
-        
+        */
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        self.textureName = textureName
-        self.pixelFormat = pixelFormat
-
-        self.dimensions = Cartesian2(x: width, y: height)
+        self.textureName = Int(textureName)
+        self.dimensions = Cartesian2(x: Double(width), y: Double(height))
         
     }
     /*

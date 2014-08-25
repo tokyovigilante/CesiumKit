@@ -340,20 +340,14 @@ class Context {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    var minimumAliasedPointSize: GLint {
-    get { return aliasedPointSizeRange[0] }
-    }
-    
+    var minimumAliasedPointSize: Int
     /**
     * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
     * @memberof Context.prototype
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    var maximumAliasedPointSize: GLint {
-    get { aliasedPointSizeRange[1] }
-    }
-    
+    var maximumAliasedPointSize: Int
     
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
@@ -361,21 +355,14 @@ class Context {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
     */
-    var maximumViewportWidth: GLint {
-    get { maximumViewportDimensions[0] }
-    }
-    
+    var maximumViewportWidth: Int
     /**
     * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
     * @memberof Context.prototype
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
     */
-    var maximumViewportHeight: GLint {
-    get { maximumViewportDimensions[1] }
-    }
-    
-    var maximumViewportDimensions = Array<GLint>(count: 2, repeatedValue: 0)
+    var maximumViewportHeight: Int
     
     /**
     * <code>true</code> if the WebGL context supports antialiasing.  By default
@@ -517,12 +504,12 @@ class Context {
     var clearStencil: GLint = 0
     
     var uniformState: UniformState
-    var passState: PassState
+    lazy var passState: PassState = { return self.defaultPassState }()
     //var renderState: RenderState
-    var currentRenderState: RenderState
+    lazy var currentRenderState: RenderState = { return self.defaultRenderState }()
     
-    let defaultPassState: PassState
-    let defaultRenderState: RenderState
+    lazy var defaultPassState: PassState = { return PassState(context: self) }()
+    lazy var defaultRenderState: RenderState = { return self.createRenderState() }()
     
     var currentFrameBuffer: Framebuffer? = nil
     
@@ -532,20 +519,12 @@ class Context {
     * @memberof Context.prototype
     * @type {Texture}
     */
-    var _defaultTexture: Texture?
-    var defaultTexture: Texture {
-    get {
-        if !_defaultTexture {
-                _defaultTexture = self.createTexture2D(TextureOptions(
-                    source : Texture.TextureOptions.Source(
-                        width: 1,
-                        height: 1,
-                        arrayBufferView: Array<Uint8> = [255, 255, 255, 255]
-                    )))
-            }
-        return _defaultTexture
-        }
-    }
+    lazy var defaultTexture: Texture = {
+        var imageBuffer = ImageBuffer(width: 1, height: 1, arrayBufferView: [255, 255, 255, 255])
+        var source = TextureOptions.Source(imageBuffer: imageBuffer, frameBuffer: nil, width: 1, height: 1)
+        var options = TextureOptions(source: source, width: nil, height: nil, pixelFormat: .RGBA, pixelDatatype: .UnsignedByte, flipY: false, premultiplyAlpha: true)
+        return self.createTexture2D(options)
+        }()
     
     /**
     * A cube map, where each face is a 1x1 RGBA texture initialized to
@@ -554,7 +533,8 @@ class Context {
     * @memberof Context.prototype
     * @type {CubeMap}
     */
-    var _defaultCubeMap: CubeMap?
+    //FIXME: cubemap
+    /*var _defaultCubeMap: CubeMap?
     var defaultCubeMap: CubeMap {
         get {
             if !_defaultCubeMap {
@@ -563,7 +543,7 @@ class Context {
             return _defaultCubeMap!
             
         }
-    }
+    }*/
     
     /**
     * A cache of objects tied to this context.  Just before the Context is destroyed,
@@ -632,10 +612,10 @@ class Context {
         
         shaderCache = ShaderCache()
         
-        glVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) !! "Unknown GL version"
-        shadingLanguageVersion = String.fromCString(ConstUnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) !! "Unknown GLSL version"
-        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR)))) !! "Unknown GL vendor"
-        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER)))) !! "Unknown GL renderer"
+        glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
+        shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
+        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR)))) ?? "Unknown GL vendor"
+        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER)))) ?? "Unknown GL renderer"
         
         var GLIntTemp: GLint = 0
         glGetIntegerv(GLenum(GL_RED_BITS), &GLIntTemp)
@@ -688,16 +668,19 @@ class Context {
 
         var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
         glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
-        self.minimumAliasedLineWidth = aliasedLineWidthRange[0]
-        self.maximumAliasedLineWidth = aliasedLineWidthRange[1]
+        minimumAliasedLineWidth = Int(aliasedLineWidthRange[0])
+        maximumAliasedLineWidth = Int(aliasedLineWidthRange[1])
         
         var aliasedPointSizeRange = Array<GLint>(count: 2, repeatedValue: 0)
         glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
-        self.minimumAliasedPointSize = aliasedPointSizeRange[0]
-        self.maximumAliasedPointSize = aliasedPointSizeRange[1]
+        minimumAliasedPointSize = Int(aliasedPointSizeRange[0])
+        maximumAliasedPointSize = Int(aliasedPointSizeRange[1])
 
-        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &GLIntTemp)
-        maximumViewportDimensions = Int(GLIntTemp)
+        var maximumViewportDimensions = Array<GLint>(count: 2, repeatedValue: 0)
+        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
+        maximumViewportWidth = Int(maximumViewportDimensions[0])
+        maximumViewportHeight = Int(maximumViewportDimensions[1])
+        //maximumViewportDimensions = Int(GLIntTemp)
         
         antialias = true
     
@@ -707,14 +690,10 @@ class Context {
         glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &clearStencil)
     
-        defaultPassState = PassState(context: self)
-        defaultRenderState = createRenderState()
-        defaultTexture = nil
-        defaultCubeMap = nil
-    
         uniformState = UniformState()
-        passState = defaultPassState
-        currentRenderState = defaultRenderState
+   
+        //passState = defaultPassState
+        //currentRenderState = defaultRenderState
     
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
@@ -740,12 +719,15 @@ class Context {
         currentRenderState.apply(defaultPassState)
     }
     
-    func replaceShaderProgram(shaderProgram: ShaderProgram, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram {
+    func replaceShaderProgram(shaderProgram: ShaderProgram, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram? {
+        // FIXME: replaceShaderProgram
         //return shaderCache.replaceShaderProgram(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations)
+        return nil
     }
 
-    func createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram {
+    func createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram? {
         //return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
+        return nil
     }
 /*
 function createBuffer(gl, bufferTarget, typedArrayOrSizeInBytes, usage) {
@@ -1005,8 +987,8 @@ Context.prototype.createVertexArray = function(attributes, indexBuffer) {
 * @see Context#createCubeMap
 * @see Context#createSampler
 */
-    func createTexture2D(options: TextureOptions) {
-        return Texture(self, options: options)
+    func createTexture2D(options: TextureOptions) -> Texture {
+        return Texture(context: self, options: options)
     }
 /*
 /**
@@ -1114,7 +1096,8 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
 * @see Context#createSampler
 */
 
-    func createCubeMap (faces: [ImageBuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap {
+    func createCubeMap (faces: [ImageBuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap? {
+        // FIXME: cubemap
         /*
         Context.prototype.createCubeMap = function(options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
@@ -1228,6 +1211,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         
         return new CubeMap(gl, this._textureFilterAnisotropic, textureTarget, texture, pixelFormat, pixelDatatype, size, preMultiplyAlpha, flipY);
         */
+        return nil
     }
 /*
 /**
@@ -1647,9 +1631,9 @@ func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderSt
     var activePassState = passState ?? defaultPassState
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
     var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
-    
-    beginDraw(framebuffer, drawCommand, activePassState, renderState, shaderProgram)
-    continueDraw(this, drawCommand, shaderProgram)
+    // FIXME: Unimplemented
+    //beginDraw(framebuffer, drawCommand, activePassState, renderState, shaderProgram)
+    //continueDraw(this, drawCommand, shaderProgram)
 }
 /*
 Context.prototype.endFrame = function() {
@@ -2159,13 +2143,13 @@ Context.prototype.isDestroyed = function() {
     }
 
     func getGLExtensions() -> [String] {
-        var glExtensions = String.fromCString(CString(UnsafePointer<UInt8>(glGetString(GLenum(GL_EXTENSIONS)))))!
+        var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS)))) ?? ""
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }
 
     func checkGLExtension(glExtension: String) -> Bool {
         
-        if (!cachedGLESExtensions) {
+        if (cachedGLESExtensions == nil) {
             cachedGLESExtensions = getGLExtensions()
         }
         
