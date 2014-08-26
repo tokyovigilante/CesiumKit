@@ -45,7 +45,7 @@ struct Credit: Equatable {
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 
-func ==(lhs: Credit, rhs: Credit) -> Bool {
+func ==(left: Credit, right: Credit) -> Bool {
     return (left.text == right.text && left.imageUrl == right.imageUrl && left.link == right.link)
 }
 

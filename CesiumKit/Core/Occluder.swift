@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * Creates an Occluder derived from an object's position and radius, as well as the camera position.
 * The occluder can be used to determine whether or not other objects are visible or hidden behind the
@@ -82,6 +84,7 @@ class Occluder {
         var occluderRadiusSqrd = occluderRadius * occluderRadius
         
         if (invCameraToOccluderDistance > occluderRadiusSqrd) {
+            
             horizonDistance = sqrt(invCameraToOccluderDistance - occluderRadiusSqrd)
             invCameraToOccluderDistance = 1.0 / sqrt(invCameraToOccluderDistance)
             horizonPlaneNormal = cameraToOccluderVec.multiplyByScalar(invCameraToOccluderDistance)

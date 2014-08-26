@@ -22,7 +22,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var color: Cartesian4? = nil
+    var color: Cartesian4?
     
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
@@ -31,7 +31,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var depth: Float32? = nil
+    var depth: Double?
     
     /**
     * The value to clear the stencil buffer to.  When <code>undefined</code>, the stencil buffer is not cleared.
@@ -40,7 +40,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var stencil: Float32? = nil
+    var stencil: Double?
     
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
@@ -53,7 +53,7 @@ struct ClearCommand {
     *
     * @see Context#createRenderState
     */
-    var renderState: RenderState? = nil
+    var renderState: RenderState?
     
     /**
     * The framebuffer to clear.
@@ -62,7 +62,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var framebuffer: Framebuffer? = nil
+    var framebuffer: Framebuffer?
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -76,7 +76,7 @@ struct ClearCommand {
     *
     * @see Scene#debugCommandFilter
     */
-    var owner: AnyObject? = nil
+    weak var owner: AnyObject?
     
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
@@ -85,12 +85,17 @@ struct ClearCommand {
     *
     * @constant
     */
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Double? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, owner: AnyObject? = nil) {
+        self.color = color
+        self.depth = depth
+        self.stencil = stencil
+        self.renderState = renderState
+        self.framebuffer = framebuffer
+        self.owner = owner
+    }
+    
     static func all() -> ClearCommand {
-        var result = ClearCommand()
-        result.color = Cartesian4()
-        result.depth = 1.0
-        result.stencil = 1.0
-        return result
+        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1.0, renderState: nil, framebuffer: nil, owner: nil)
     }
     
     func execute(context: Context, passState: PassState) {

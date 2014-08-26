@@ -686,7 +686,7 @@ class Context {
     
         var cc = [GLfloat](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
-        clearColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 1.0, alpha: 1.0)//Cartesian4(fromRed: cc[0], green: cc[1], blue: cc[2], alpha: cc[3])
+        clearColor = Cartesian4.fromColor(red: Double(cc[0]), green: Double(cc[1]), blue: Double(cc[2]), alpha: Double(cc[3]))
         glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &clearStencil)
     

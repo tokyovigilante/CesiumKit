@@ -61,7 +61,7 @@ class GlobeSurfaceShaderSet {
         }
         return key
     }
-    
+    // FIXME: GetShaderProgram
     func getShaderProgram(context: Context,
         textureCount: Int,
         applyBrightness: Bool,
@@ -69,8 +69,8 @@ class GlobeSurfaceShaderSet {
         applyHue: Bool,
         applySaturation: Bool,
         applyGamma: Bool,
-        applyAlpha: Bool) -> ShaderProgram {
-            var key = getShaderKey(
+        applyAlpha: Bool) {//-> ShaderProgram {
+/*            var key = getShaderKey(
                 textureCount: textureCount,
                 applyBrightness: applyBrightness,
                 applyContrast: applyContrast,
@@ -117,7 +117,7 @@ class GlobeSurfaceShaderSet {
                 shader = context.createShaderProgram(vs, fs, this._attributeLocations)
                 self.shaders[key] = shader
             }
-            return shader
+            return shader*/
     }
     
     deinit {

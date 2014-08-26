@@ -16,7 +16,7 @@ import OpenGLES
 class Framebuffer {
     
     private
-    var framebuffer: GLint
+    var framebuffer: Int
     /*
     init (gl, maximumColorAttachments, options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
@@ -240,11 +240,11 @@ class Framebuffer {
     });
     */
     func bind() {
-        glBindFramebuffer(GL_FRAMEBUFFER, self.framebuffer)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), self.framebuffer)
     }
 
     func unbind () {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
     }
     
     /*

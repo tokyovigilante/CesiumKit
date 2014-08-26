@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * The viewing frustum is defined by 6 planes.
 * Each plane is represented by a {@link Cartesian4} object, where the x, y, and z components
@@ -25,7 +27,7 @@
 * frustum.far = 2.0;
 */
 // FIXME: Frustum protocol
-struct PerspectiveFrustum/*: Frustum*/ {
+class PerspectiveFrustum/*: Frustum*/ {
     /**
     * The angle of the field of view (FOV), in radians.  This angle will be used
     * as the horizontal FOV if the width is greater than the height, otherwise
@@ -44,7 +46,7 @@ struct PerspectiveFrustum/*: Frustum*/ {
     */
     var fovy: Double {
         get  {
-            update(this)
+            update()
             return _fovy
         }
         set (newFovy) {
@@ -79,12 +81,10 @@ struct PerspectiveFrustum/*: Frustum*/ {
     
     private var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
-    mutating func update() {
-        assert(fov != nil && aspectRatio != nil, "fov, aspectRatio, near, or far parameters are not set")
+    func update() {
+        //assert(_fov != nil && aspectRatio != nil, "fov, aspectRatio, near, or far parameters are not set")
         
         if fov != _fov || aspectRatio != _aspectRatio || near != _near || far != _far {
-            
-            var f = offCenterFrustum
             
             assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
             assert(aspectRatio > 0, "aspectRatio must be positive")
@@ -92,18 +92,16 @@ struct PerspectiveFrustum/*: Frustum*/ {
             
             _aspectRatio = aspectRatio
             _fov = fov
-            _fovy = aspectRatio <= 1.0 ? frustum.fov : atan(tan(fov * 0.5) / aspectRatio) * 2.0
+            _fovy = aspectRatio <= 1.0 ? fov : atan(tan(fov * 0.5) / aspectRatio) * 2.0
             _near = near
             _far = far
             
-            f.top = near * tan(0.5 * _fovy)
-            f.bottom = -f.top
-            f.right = frustum.aspectRatio * f.top
-            f.left = -f.right
-            f.near = frustum.near
-            f.far = frustum.far
-            
-            offCenterFrustum = f
+            _offCenterFrustum.top = near * tan(0.5 * _fovy)
+            _offCenterFrustum.bottom = -_offCenterFrustum.top
+            _offCenterFrustum.right = aspectRatio * _offCenterFrustum.top
+            _offCenterFrustum.left = -_offCenterFrustum.right
+            _offCenterFrustum.near = near
+            _offCenterFrustum.far = far
         }
     }
     
@@ -130,7 +128,7 @@ struct PerspectiveFrustum/*: Frustum*/ {
     */
     var infiniteProjectionMatrix: Matrix4 {
         get {
-            update();
+            update()
             return _offCenterFrustum.infiniteProjectionMatrix
         }
     }
@@ -148,9 +146,9 @@ struct PerspectiveFrustum/*: Frustum*/ {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         update()
-        return _offCenterFrustum.computeCullingVolume(position, direction, up)
+        return _offCenterFrustum.computeCullingVolume(position: position, direction: direction, up: up)
     }
     
     /**
@@ -186,9 +184,9 @@ struct PerspectiveFrustum/*: Frustum*/ {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
         update()
-        return _offCenterFrustum.getPixelSize(drawingBufferDimensions, distance, result)
+        return _offCenterFrustum.getPixelSize(drawingBufferDimensions: drawingBufferDimensions, distance: distance)
     }
     
     /**

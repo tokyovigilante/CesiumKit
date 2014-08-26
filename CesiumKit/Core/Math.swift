@@ -612,8 +612,8 @@ CesiumMath.nextPowerOfTwo = function(n) {
     * @param {Number} max The maximum value.
     * @returns The value clamped so that min <= value <= max.
     */
-    static func clamp<T: Clampable>(value: T, min: T, max: T) -> T {
-        return Double(value) < Double(min) ? min : Double(value) > Double(max) ? max : value
+    static func clamp (value: Double, min: Double, max: Double) -> Double {
+        return value < min ? min : value > max ? max : value
     }
 /*
 var randomNumberGenerator = new MersenneTwister();
@@ -672,13 +672,4 @@ CesiumMath.asinClamped = function(value) {
 };*/
 
 }
-
-protocol Clampable {
-//    func clamp(value: Self, min: Self, max: Self) -> Self
-}
-
-extension Double: Clampable {}
-extension Float: Clampable {}
-extension Int: Clampable {}
-extension UInt: Clampable {}
 

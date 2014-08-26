@@ -368,10 +368,12 @@ class ShaderProgram {
     
     var program: Int? = nil
     
-    var numberOfVertexAttributes: Int? = nil {
+    //FIXME: Uniform in ShaderProgram
+    /*
+    var numberOfVertexAttributes: Int {
     get {
         initialize()
-        return self.numberOfVertexAttributes;
+        return self.numberOfVertexAttributes
 
     }
     }
@@ -393,32 +395,32 @@ class ShaderProgram {
 
     var uniforms: [Uniform]? = nil
 
-    var automaticUniforms: [Uniform]
+    var automaticUniforms = [Uniform]()
 
     var manualUniforms: [Uniform] {
     get {
         initialize()
         return self.manualUniforms
     }
-    }
+    }*/
 
-var cachedShader: Int? = nil // Used by ShaderCache
-
-var maximumTextureUnitIndex: Int? = nil
-
-var id: Int
+    var cachedShader: Int? = nil // Used by ShaderCache
+    
+    var maximumTextureUnitIndex: Int? = nil
+    
+    var id: Int
     
     init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) {
         
-    
+        
         self.logShaderCompilation = logShaderCompilation
         self.attributeLocations = attributeLocations
-self.vertexShaderSource = vertexShaderSource
-self.fragmentShaderSource = fragmentShaderSource
-
-    
-    id = 1
-}
+        self.vertexShaderSource = vertexShaderSource
+        self.fragmentShaderSource = fragmentShaderSource
+        
+        
+        id = 1
+    }
     /*
     /**
     * For ShaderProgram testing
@@ -833,9 +835,10 @@ function partitionUniforms(uniforms) {
         manualUniforms : manualUniforms
     };
 }
-
+*/
 func initialize() {
-    if (defined(shader._program)) {
+    //FIXME: Initialise
+    /*if (defined(shader._program)) {
         return;
     }
     
@@ -853,9 +856,9 @@ func initialize() {
     shader._automaticUniforms = partitionedUniforms.automaticUniforms;
     shader._manualUniforms = partitionedUniforms.manualUniforms;
     
-    shader.maximumTextureUnitIndex = setSamplerUniforms(gl, program, uniforms.samplerUniforms);
+    shader.maximumTextureUnitIndex = setSamplerUniforms(gl, program, uniforms.samplerUniforms);*/
 }
-
+/*
 ShaderProgram.prototype._bind = function() {
     initialize(this);
     this._gl.useProgram(this._program);

@@ -32,16 +32,38 @@ class Globe {
     
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
-    var surface: QuadTreePrimitive
+    lazy var surface: QuadTreePrimitive = {
+        return QuadTreePrimitive(
+            tileProvider: GlobeSurfaceTileProvider(
+                terrainProvider: self.terrainProvider,
+                imageryLayers: self.imageryLayerCollection,
+                surfaceShaderSet: self.surfaceShaderSet))
+    }()
     
     var occluder: Occluder
     
     var rsColor: RenderState? = nil
     var rsColorWithoutDepthTest: RenderState? = nil
     
-    var clearDepthCommand: ClearCommand
+    lazy var clearDepthCommand: ClearCommand = {
+        return ClearCommand(depth: 1.0, stencil: 0, owner: self)
+    }()
     
-    var depthCommand, northPoleCommand, SouthPoleCommand: DrawCommand
+    lazy var depthCommand: DrawCommand = {
+        DrawCommand(
+            boundingVolume:  BoundingSphere(center: Cartesian3.zero(), radius: self.ellipsoid.maximumRadius),
+            pass: Pass.Opaque,
+            owner: self)
+        }()
+    
+    lazy var northPoleCommand: DrawCommand = {
+        DrawCommand(pass: Pass.Opaque, owner: self)
+        
+        }()
+    
+    lazy var SouthPoleCommand: DrawCommand = {
+        DrawCommand(pass: Pass.Opaque, owner: self)
+        }()
     
     var drawNorthPole = false
     var drawSouthPole = false
@@ -148,7 +170,15 @@ class Globe {
     this._hasWaterMask = false;*/
     var lightingFadeDistance: Cartesian2
     
-    var drawUniforms: Dictionary<String, ()->()>
+    lazy var drawUniforms: Dictionary<String, ()->Any> = {
+        
+        weak var weakSelf = self
+        return [
+            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
+            "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
+            "u_lightingFadeDistance" :  { return weakSelf!.lightingFadeDistance }
+        ]
+        }()
     
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         
@@ -156,46 +186,101 @@ class Globe {
         terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
         imageryLayerCollection = ImageryLayerCollection()
         
-        surface = QuadTreePrimitive(
-            tileProvider: GlobeSurfaceTileProvider(terrainProvider: terrainProvider, imageryLayers: imageryLayerCollection, surfaceShaderSet: surfaceShaderSet))
-
-        
         occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         
-        surfaceShaderSet = GlobeSurfaceShaderSet(TerrainAttributeLocations())
+        surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: TerrainAttributeLocations())
         
-        weak var weakSelf = self
         
-        self.clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0, owner: weakSelf)
         
-        self.depthCommand = DrawCommand(boundingVolume: BoundingSphere(Cartesian3.zero(), ellipsoid.maximumRadius), pass: Pass.Opaque, owner: weakSelf)
-        self.northPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
-        self.SouthPoleCommand = DrawCommand(pass: Pass.Opaque, owner: weakSelf)
+        lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
         
-        self.lightingFadeDistance = Cartesian2(this.lightingFadeOutDistance, this.lightingFadeInDistance)
-        
-        self.drawUniforms = [
-            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
-            "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
-            "u_lightingFadeDistance" :  { weakSelf.lightingFadeDistance }
-        ]
+    }
+    
+    func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Double) {
+        func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Double {
+            var aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
+            var bDist = b.pickBoundingSphere.distanceSquaredTo(rayOrigin)
+            return aDist - bDist
+        }
+        return comparePickTileFunction
     }
     
     /**
-    * Find an intersection between a ray and the globe surface that was rendered.
+    * Find an intersection between a ray and the globe surface that was rendered. The ray must be given in world coordinates.
     *
     * @param {Ray} ray The ray to test for intersection.
-    * @param {FrameState} frameState The current frame state.
+    * @param {Scene} scene The scene.
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3|undefined} The intersection or <code>undefined</code> if none was found.
     *
     * @example
     * // find intersection of ray through a pixel and the globe
     * var ray = scene.camera.getPickRay(windowCoordinates);
-    * var intersection = globe.pick(ray, scene.frameState);
+    * var intersection = globe.pick(ray, scene);
     */
-    func pick(#ray: Ray, frameState: FrameState) -> Cartesian3 {
-        return surface.pick(ray, frameState)
+    func pick(ray: Ray, scene: Scene) -> Cartesian3? {
+        //FIXME: Unimplemented
+        /*
+        var scratchArray = [];
+        var scratchSphereIntersectionResult = Interval)
+        start : 0.0,
+        stop : 0.0
+        )
+        //>>includeStart('debug', pragmas.debug);
+        if (!defined(ray)) {
+        throw new DeveloperError('ray is required');
+        }
+        if (!defined(scene)) {
+        throw new DeveloperError('scene is required');
+        }
+        //>>includeEnd('debug');
+        
+        var mode = scene.mode;
+        var projection = scene.mapProjection;
+        
+        var sphereIntersections = scratchArray;
+        sphereIntersections.length = 0;
+        
+        var tilesToRender = this._surface._tilesToRender;
+        var length = tilesToRender.length;
+        
+        var tile;
+        var i;
+        
+        for (i = 0; i < length; ++i) {
+        tile = tilesToRender[i];
+        var tileData = tile.data;
+        
+        if (!defined(tileData)) {
+        continue;
+        }
+        
+        var boundingVolume = tileData.pickBoundingSphere;
+        if (mode !== SceneMode.SCENE3D) {
+        BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, projection, tileData.minimumHeight, tileData.maximumHeight, boundingVolume);
+        Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
+        } else {
+        BoundingSphere.clone(tileData.boundingSphere3D, boundingVolume);
+        }
+        
+        var boundingSphereIntersection = IntersectionTests.raySphere(ray, boundingVolume, scratchSphereIntersectionResult);
+        if (defined(boundingSphereIntersection)) {
+        sphereIntersections.push(tileData);
+        }
+        }
+        
+        sphereIntersections.sort(createComparePickTileFunction(ray.origin));
+        
+        var intersection;
+        length = sphereIntersections.length;
+        for (i = 0; i < length; ++i) {
+        intersection = sphereIntersections[i].pick(ray, scene, true, result);
+        if (defined(intersection)) {
+        break;
+        }
+        }
+        
+        return intersection;*/ return Cartesian3()
     }
     
     /**
@@ -204,35 +289,97 @@ class Globe {
     * @param {Cartographic} cartographic The cartographic for which to find the height.
     * @returns {Number|undefined} The height of the cartographic or undefined if it could not be found.
     */
-    func getHeight(#cartographic: Cartographic) -> Double? {
-        surface.getHeight(cartographic)
-    }
-    
-    
-    func computeDepthQuad(#frameState: FrameState) {
+    func getHeight(cartographic: Cartographic) -> Double? {
+        //FIXME: Unimplemented
+        /*
+        var scratchGetHeightCartesian = new Cartesian3();
+        var scratchGetHeightIntersection = new Cartesian3();
+        var scratchGetHeightCartographic = new Cartographic();
+        var scratchGetHeightRay = new Ray();
+        //>>includeStart('debug', pragmas.debug);
+        if (!defined(cartographic)) {
+        throw new DeveloperError('cartographic is required');
+        }
+        //>>includeEnd('debug');
         
-        var depthQuad = Float32[]()
+        var levelZeroTiles = this._surface._levelZeroTiles;
+        if (!defined(levelZeroTiles)) {
+        return;
+        }
+        
+        var tile;
+        var i;
+        
+        var length = levelZeroTiles.length;
+        for (i = 0; i < length; ++i) {
+        tile = levelZeroTiles[i];
+        if (Rectangle.contains(tile.rectangle, cartographic)) {
+        break;
+        }
+        }
+        
+        if (!defined(tile) || !Rectangle.contains(tile.rectangle, cartographic)) {
+        return undefined;
+        }
+        
+        while (tile.renderable) {
+        var children = tile.children;
+        length = children.length;
+        
+        for (i = 0; i < length; ++i) {
+        tile = children[i];
+        if (Rectangle.contains(tile.rectangle, cartographic)) {
+        break;
+        }
+        }
+        }
+        
+        while (defined(tile) && (!defined(tile.data) || !defined(tile.data.pickTerrain))) {
+        tile = tile.parent;
+        }
+        
+        if (!defined(tile)) {
+        return undefined;
+        }
+        
+        var ellipsoid = this._surface._tileProvider.tilingScheme.ellipsoid;
+        var cartesian = ellipsoid.cartographicToCartesian(cartographic, scratchGetHeightCartesian);
+        
+        var ray = scratchGetHeightRay;
+        Cartesian3.normalize(cartesian, ray.direction);
+        
+        var intersection = tile.data.pick(ray, undefined, false, scratchGetHeightIntersection);
+        if (!defined(intersection)) {
+        return undefined;
+        }
+        
+        return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
+    }
+
+    func computeDepthQuad(#frameState: FrameState) -> [Float32] {
+        
+        var depthQuad = [Float32](count: 12, repeatedValue: 0.0)
         
         var radii = ellipsoid.radii
         
         // Find the corresponding position in the scaled space of the ellipsoid.
-        var q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera.positionWC)
+        var q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera!.positionWC)
         
         var qMagnitude = q.magnitude()
         var qUnit = q.normalize()
         
         // Determine the east and north directions at q.
-        var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3)
-        var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4)
+        var eUnit = q.cross(Cartesian3.unitZ()).normalize()
+        var nUnit = qUnit.cross(eUnit).normalize()
         
         // Determine the radius of the 'limb' of the ellipsoid.
-        var wMagnitude = sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
+        var wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
         
         // Compute the center and offsets.
-        var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
+        var center = qUnit.multiplyByScalar(qMagnitude)
         var scalar = wMagnitude / qMagnitude;
-        var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
-        var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
+        var eastOffset = eUnit.multiplyByScalar(scalar)
+        var northOffset = nUnit.multiplyByScalar(scalar)
         
         // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
         var upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
@@ -240,16 +387,17 @@ class Globe {
         var upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
         var lowerRight = center.subtract(northOffset).add(eastOffset).multiplyComponents(radii)
         
-        upperLeft.pack(depthQuad, 0)
-        lowerLeft.pack(depthQuad, 3)
-        upperRight.pack(depthQuad, 6)
-        lowerRight.pack(depthQuad, 9)
+        upperLeft.pack(&depthQuad, startingIndex: 0)
+        lowerLeft.pack(&depthQuad, startingIndex: 3)
+        upperRight.pack(&depthQuad, startingIndex: 6)
+        lowerRight.pack(&depthQuad, startingIndex: 9)
         
-        return depthQuadScratch
+        return depthQuad
     }
     
-    func computePoleQuad(#frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix, viewportTransformation: Matrix) {
-        
+    func computePoleQuad(#frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
+        //FIXME: PoleQuad
+        /*
         let negativeZ = Cartesian3.unitZ().negate()
         
         var pt1 = ellipsoid.cartographicToCartesian(Cartographic(0.0, maxGivenLat))
@@ -275,17 +423,18 @@ class Globe {
         
         var halfWidth = floor(max(screenUp.distance(center), screenRight.distance(center)))
         var halfHeight = halfWidth
-        
-        return BoundingRectangle(
-            floor(center.x) - halfWidth,
+        */
+        return BoundingRectangle()
+            /*floor(center.x) - halfWidth,
             floor(center.y) - halfHeight,
             halfWidth * 2.0,
-            halfHeight * 2.0)
+            halfHeight * 2.0)*/
  
     }
     
     func fillPoles(#context: Context, frameState: FrameState) {
-        
+        //FIXME: Fillpoles
+        /*
         var viewportScratch = BoundingRectangle()
         var vpTransformScratch = Matrix()
         var polePositionsScratch = Float32[](count: 8, repeatedValue: 0.0)
@@ -403,7 +552,7 @@ class Globe {
         if southPoleCommand.uniformMap != nil {
             var northPoleUniforms = drawUniforms + [ "u_color" : { weakSelf.southPoleColor } ]
             southPoleCommand.uniformMap += drawUniforms
-        }
+        }*/
     }
 /*
 /**

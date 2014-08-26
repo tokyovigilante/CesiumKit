@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
-		9409DC9E19A962A200F9842B /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9D19A962A200F9842B /* Image.swift */; };
 		940AE97F197B735200A33FF4 /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE97E197B735200A33FF4 /* PixelFormat.swift */; };
 		940AE981197B75CE00A33FF4 /* PixelDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE980197B75CE00A33FF4 /* PixelDatatype.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
@@ -140,7 +139,6 @@
 
 /* Begin PBXFileReference section */
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
-		9409DC9D19A962A200F9842B /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		940AE97E197B735200A33FF4 /* PixelFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelFormat.swift; sourceTree = "<group>"; };
 		940AE980197B75CE00A33FF4 /* PixelDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelDatatype.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
@@ -309,7 +307,6 @@
 				94E9BA1A19550A9600012DC4 /* Geometry.swift */,
 				94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */,
 				942CD41719553F9E00012DC4 /* GeometryAttributes.swift */,
-				9409DC9D19A962A200F9842B /* Image.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
@@ -657,7 +654,6 @@
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
-				9409DC9E19A962A200F9842B /* Image.swift in Sources */,
 				94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
 				94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */,

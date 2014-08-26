@@ -20,7 +20,7 @@ import Foundation
 * @see BoundingRectangle
 * @see Packable
 */
-struct BoundingSphere {
+struct BoundingSphere: Intersectable {
     /**
     * The center point of the sphere.
     * @type {Cartesian3}
@@ -46,9 +46,12 @@ struct BoundingSphere {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    init (fromPoints points: [Cartesian3]) {
+
+    static func fromPoints (points: [Cartesian3]) -> BoundingSphere {
+        
+        var result = BoundingSphere()
         if (points.count == 0) {
-            return BoundingSphere()
+            return result
         }
         
         var currentPos = points[points.startIndex]
@@ -61,7 +64,7 @@ struct BoundingSphere {
         var yMax = currentPos
         var zMax = currentPos
         
-        for i in 1..points.count {
+        for i in 1..<points.count {
             
             currentPos = points[i]
             
@@ -163,14 +166,14 @@ struct BoundingSphere {
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
             }
         }
-        var result = BoundingSphere()
         if (ritterRadius < naiveRadius) {
-            center = ritterCenter
-            radius = ritterRadius
+            result.center = ritterCenter
+            result.radius = ritterRadius
         } else {
-            center = naiveCenter
-            radius = naiveRadius
+            result.center = naiveCenter
+            result.radius = naiveRadius
         }
+        return result
     }
    
     /**
@@ -650,7 +653,7 @@ BoundingSphere.expand = function(sphere, point, result) {
     
     return result;
 };
-
+*/
 /**
 * Determines which side of a plane a sphere is located.
 *
@@ -663,31 +666,20 @@ BoundingSphere.expand = function(sphere, point, result) {
 *                      on the opposite side, and {@link Intersect.INTERSECTING} if the sphere
 *                      intersects the plane.
 */
-BoundingSphere.intersect = function(sphere, plane) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
+    func intersect(plane: Cartesian4) -> Intersect {
+        
+        var distanceToPlane = plane.dot(center) + plane.w
+        
+        if (distanceToPlane < -radius) {
+            // The center point is negative side of the plane normal
+            return Intersect.Outside
+        } else if (distanceToPlane < radius) {
+            // The center point is positive side of the plane, but radius extends beyond it; partial overlap
+            return Intersect.Intersecting
+        }
+        return Intersect.Inside
     }
-    
-    if (!defined(plane)) {
-        throw new DeveloperError('plane is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var center = sphere.center;
-    var radius = sphere.radius;
-    var distanceToPlane = Cartesian3.dot(plane, center) + plane.w;
-    
-    if (distanceToPlane < -radius) {
-        // The center point is negative side of the plane normal
-        return Intersect.OUTSIDE;
-    } else if (distanceToPlane < radius) {
-        // The center point is positive side of the plane, but radius extends beyond it; partial overlap
-        return Intersect.INTERSECTING;
-    }
-    return Intersect.INSIDE;
-};
-
+/*
 /**
 * Applies a 4x4 affine transformation matrix to a bounding sphere.
 *
@@ -717,8 +709,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
     return result;
 };
 
-var distanceSquaredToScratch = new Cartesian3();
-
+*/
 /**
 * Computes the estimated distance squared from the closest point on a bounding sphere to a point.
 *
@@ -732,20 +723,11 @@ var distanceSquaredToScratch = new Cartesian3();
 *     return BoundingSphere.distanceSquaredTo(b, camera.positionWC) - BoundingSphere.distanceSquaredTo(a, camera.positionWC);
 * });
 */
-BoundingSphere.distanceSquaredTo = function(sphere, cartesian) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
+    func distanceSquaredTo(cartesian: Cartesian3) -> Double {
+        var diff = center.subtract(cartesian)
+        return diff.magnitudeSquared(diff) - radius * radius
     }
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var diff = Cartesian3.subtract(sphere.center, cartesian, distanceSquaredToScratch);
-    return Cartesian3.magnitudeSquared(diff) - sphere.radius * sphere.radius;
-};
-
+/*
 /**
 * Applies a 4x4 affine transformation matrix to a bounding sphere where there is no scale
 * The transformation matrix is not verified to have a uniform scale of 1.

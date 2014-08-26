@@ -46,14 +46,12 @@ class EllipsoidalOccluder {
     init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3?) {
         self.ellipsoid = ellipsoid
         
-        if (cameraPosition)
-        {
+        if cameraPosition != nil {
             self.cameraPosition = cameraPosition!
             self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
             self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared() - 1.0;
         }
-        else
-        {
+        else {
             self.cameraPosition = Cartesian3()
             self.cameraPositionInScaledSpace = Cartesian3()
             self.distanceToLimbInScaledSpaceSquared = 0.0
@@ -77,8 +75,8 @@ class EllipsoidalOccluder {
     * occluder.isPointVisible(point); //returns true
     */
     func isPointVisible(occludee: Cartesian3) -> Bool {
-        var occludeeScaledSpacePosition = ellipsoid.transformPositionToScaledSpace(occludee);
-        return isScaledSpacePointVisible(occludeeScaledSpacePosition);
+        var occludeeScaledSpacePosition = ellipsoid.transformPositionToScaledSpace(occludee)
+        return isScaledSpacePointVisible(occludeeScaledSpacePosition)
     }
     
     /**
@@ -106,7 +104,7 @@ class EllipsoidalOccluder {
         var vtDotVc = -vt.dot(cameraPositionInScaledSpace)
         var isOccluded = vtDotVc > distanceToLimbInScaledSpaceSquared &&
             vtDotVc * vtDotVc / vt.magnitudeSquared() > distanceToLimbInScaledSpaceSquared
-        return !isOccluded;
+        return !isOccluded
     }
     
     /**
@@ -126,7 +124,7 @@ class EllipsoidalOccluder {
     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
     */
     func computeHorizonCullingPoint(directionToPoint: Cartesian3, positions: [Cartesian3]) -> Cartesian3? {
-        var scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint);
+        var scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
         var resultMagnitude = 0.0
         for (var i = 0, len = positions.count; i < len; ++i) {
             var candidateMagnitude = computeMagnitude(ellipsoid, position: positions[i], scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)

@@ -126,7 +126,7 @@ struct RenderState {
     
     struct Blending {
         var enabled: Bool = false
-        var color: Cartesian4 = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+        var color: Cartesian4 = Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         var equationRgb: GLenum = GLenum(GL_FUNC_ADD)
         var equationAlpha: GLenum = GLenum(GL_FUNC_ADD)
         var functionSourceRgb: GLenum = GLenum(GL_ONE)

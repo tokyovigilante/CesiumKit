@@ -27,7 +27,7 @@ struct DrawCommand {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: Intersectable? = nil
+    var boundingVolume: Intersectable?
     
     /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
@@ -36,7 +36,7 @@ struct DrawCommand {
     * @type {Boolean}
     * @default true
     */
-    var cull = true
+    var cull: Bool
     
     /**
     * The transformation from the geometry in model space to world space.
@@ -47,7 +47,7 @@ struct DrawCommand {
     * @type {Matrix4}
     * @default undefined
     */
-    var modelMatrix: Matrix? = nil
+    var modelMatrix: Matrix?
     
     /**
     * The type of geometry in the vertex array.
@@ -55,7 +55,7 @@ struct DrawCommand {
     * @type {PrimitiveType}
     * @default PrimitiveType.TRIANGLES
     */
-    var primitiveType = PrimitiveType.Triangles
+    var primitiveType: PrimitiveType
     
     /**
     * The vertex array.
@@ -63,7 +63,7 @@ struct DrawCommand {
     * @type {VertexArray}
     * @default undefined
     */
-    weak var vertexArray: VertexArray? = nil
+    weak var vertexArray: VertexArray?
     
     /**
     * The number of vertices to draw in the vertex array.
@@ -71,15 +71,15 @@ struct DrawCommand {
     * @type {Number}
     * @default undefined
     */
-    var count: Int? = nil
-    
+    var count: Int?
+
     /**
     * The offset to start drawing in the vertex array.
     *
     * @type {Number}
     * @default 0
     */
-    var offset = 0
+    var offset: Int
     
     /**
     * The shader program to apply.
@@ -87,7 +87,7 @@ struct DrawCommand {
     * @type {ShaderProgram}
     * @default undefined
     */
-    weak var shaderProgram: ShaderProgram? = nil
+    weak var shaderProgram: ShaderProgram?
     
     /**
     * An object with functions whose names match the uniforms in the shader program
@@ -96,7 +96,7 @@ struct DrawCommand {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: Dictionary<String, ()->()>? = nil
+    var uniformMap: [String: ()->()]?
     
     /**
     * The render state.
@@ -106,7 +106,7 @@ struct DrawCommand {
     *
     * @see Context#createRenderState
     */
-    var renderState: RenderState? = nil
+    var renderState: RenderState?
     
     /**
     * The framebuffer to draw to.
@@ -114,7 +114,7 @@ struct DrawCommand {
     * @type {Framebuffer}
     * @default undefined
     */
-    weak var framebuffer: Framebuffer? = nil
+    weak var framebuffer: Framebuffer?
     
     /**
     * The pass when to render.
@@ -122,7 +122,7 @@ struct DrawCommand {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass? = nil
+    var pass: Pass?
     
     /**
     * Specifies if this command is only to be executed in the frustum closest
@@ -131,7 +131,7 @@ struct DrawCommand {
     * @type {Boolean}
     * @default false
     */
-    var executeInClosestFrustum = false
+    var executeInClosestFrustum: Bool
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -144,7 +144,7 @@ struct DrawCommand {
     *
     * @see Scene#debugCommandFilter
     */
-    weak var owner: AnyObject? = nil
+    weak var owner: AnyObject?
     
     /**
     * This property is for debugging only; it is not for production use nor is it optimized.
@@ -157,18 +157,35 @@ struct DrawCommand {
     *
     * @see DrawCommand#boundingVolume
     */
-    var debugShowBoundingVolume = false
+    var debugShowBoundingVolume: Bool
     
     /**
     * Used to implement Scene.debugShowFrustums.
     * @private
     */
-    var debugOverlappingFrustums = 0
+    var debugOverlappingFrustums: Int
     
     /**
     * @private
     */
     //var oit = undefined;
+    
+    init(boundingVolume: Intersectable? = nil, cull: Bool = true, modelMatrix: Matrix4? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, vertexArray: VertexArray? = nil, count: Int? = nil, offset: Int = 0, shaderProgram: ShaderProgram? = nil, uniformMap: Dictionary<String, ()->()>? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, pass: Pass? = nil, executeInClosestFrustum: Bool = false, owner: AnyObject? = nil, debugShowBoundingVolume: Bool = false, debugOverlappingFrustums: Int = 0) {
+        self.boundingVolume = boundingVolume
+        self.cull = cull
+        self.primitiveType = primitiveType
+        self.vertexArray = vertexArray
+        self.count = count
+        self.offset = offset
+        self.shaderProgram = shaderProgram
+        self.renderState = renderState
+        self.framebuffer = framebuffer
+        self.pass = pass
+        self.executeInClosestFrustum = executeInClosestFrustum
+        self.owner = owner
+        self.debugShowBoundingVolume = debugShowBoundingVolume
+        self.debugOverlappingFrustums = debugOverlappingFrustums
+    }
     
     /**
     * Executes the draw command.
@@ -180,5 +197,6 @@ struct DrawCommand {
     */
     func execute(context: Context, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
         context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
+
     }
 }

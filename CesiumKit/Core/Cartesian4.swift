@@ -55,6 +55,30 @@ struct Cartesian4: Packable, Equatable, Printable {
         return "(\(x), \(y), \(z), \(w))"
     }
     
+    var red: Double {
+        get {
+            return x
+        }
+    }
+    
+    var green: Double {
+        get {
+            return y
+        }
+    }
+    
+    var blue: Double {
+        get {
+            return z
+        }
+    }
+    
+    var alpha: Double {
+        get {
+            return w
+        }
+    }
+    
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
@@ -77,11 +101,8 @@ struct Cartesian4: Packable, Equatable, Printable {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
-        self.x = red
-        self.y = green
-        self.z = blue
-        self.w = alpha
+    static func fromColor (#red: Double, green: Double, blue: Double, alpha: Double) -> Cartesian4 {
+        return Cartesian4(x: red, y: green, z: blue, w: alpha)
     }
     
     /**
