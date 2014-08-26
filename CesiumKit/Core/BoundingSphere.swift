@@ -46,7 +46,7 @@ struct BoundingSphere {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    static func fromPoints(points: [Cartesian3]) -> BoundingSphere {
+    init (fromPoints points: [Cartesian3]) {
         if (points.count == 0) {
             return BoundingSphere()
         }
@@ -165,14 +165,12 @@ struct BoundingSphere {
         }
         var result = BoundingSphere()
         if (ritterRadius < naiveRadius) {
-            result.center = ritterCenter
-            result.radius = ritterRadius
+            center = ritterCenter
+            radius = ritterRadius
         } else {
-            result.center = naiveCenter
-            result.radius = naiveRadius
+            center = naiveCenter
+            radius = naiveRadius
         }
-        
-        return result
     }
    
     /**
@@ -234,8 +232,6 @@ struct BoundingSphere {
             center.z = lowerLeft.z + elevation * 0.5;
             return result;
     }
-
-var fromRectangle3DScratch = [];
 
 /**
 * Computes a bounding sphere from an rectangle in 3D. The bounding sphere is created using a subsample of points
