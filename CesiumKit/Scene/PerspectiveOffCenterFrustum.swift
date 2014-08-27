@@ -27,7 +27,8 @@
 * frustum.far = 2.0;
 */
 // FIXME: Frustum protocol
-struct PerspectiveOffCenterFrustum/*: Frustum*/ {
+// FIXME: Struct
+class PerspectiveOffCenterFrustum/*: Frustum*/ {
     
 
     /**
@@ -84,18 +85,18 @@ struct PerspectiveOffCenterFrustum/*: Frustum*/ {
 
     private var _infinitePerspective = Matrix4()
 
-    mutating func update () {
+    /*mutating*/ func update () {
         
         var t = top
-        var b = frustum.bottom
-        var r = frustum.right
-        var l = frustum.left
-        var n = frustum.near
-        var f = frustum.far
+        var b = bottom
+        var r = right
+        var l = left
+        var n = near
+        var f = far
         
-        if t != frustum._top || b != frustum._bottom || l != frustum._left ||
-            r != frustum._right || n != frustum._near || f != frustum._far {
-                assert(frustum.near > 0 && frustum.near < frustum.far, "near must be greater than zero and less than far")
+        if t != _top || b != _bottom || l != _left ||
+            r != _right || n != _near || f != _far {
+                assert(near > 0 && near < far, "near must be greater than zero and less than far")
                 
                 _left = l
                 _right = r
@@ -103,8 +104,8 @@ struct PerspectiveOffCenterFrustum/*: Frustum*/ {
                 _bottom = b
                 _near = n
                 _far = f
-                _perspectiveMatrix = Matrix4.computePerspectiveOffCenter(l, r, b, t, n, f)
-                _infinitePerspective = Matrix4.computeInfinitePerspectiveOffCenter(l, r, b, t, n)
+                _perspectiveMatrix = Matrix4.computePerspectiveOffCenter(left: l, right: r, bottom: b, top: t, near: n, far: f)
+                _infinitePerspective = Matrix4.computeInfinitePerspectiveOffCenter(left: l, right: r, bottom: b, top: t, near: n)
         }
     }
     
@@ -149,7 +150,7 @@ struct PerspectiveOffCenterFrustum/*: Frustum*/ {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
         var t = this.top
         var b = this.bottom

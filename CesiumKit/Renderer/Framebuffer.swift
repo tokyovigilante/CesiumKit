@@ -8,7 +8,9 @@
 
 import OpenGLES
 
-
+struct FramebufferOptions {
+    
+}
 
 /**
 * @private
@@ -17,8 +19,14 @@ class Framebuffer {
     
     private
     var framebuffer: Int
-    /*
-    init (gl, maximumColorAttachments, options) {
+    
+    init (maximumColorAttachments: Int, options: FramebufferOptions) {
+        
+        var framebufferTemp: GLuint = 0
+        glGenFramebuffers(GLsizei(1), &framebufferTemp)
+        framebuffer = Int(framebufferTemp)
+    }
+        /*
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
         
         this._gl = gl;
@@ -240,7 +248,7 @@ class Framebuffer {
     });
     */
     func bind() {
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), self.framebuffer)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(self.framebuffer))
     }
 
     func unbind () {

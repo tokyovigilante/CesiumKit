@@ -186,7 +186,7 @@ class PerspectiveFrustum/*: Frustum*/ {
     */
     func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
         update()
-        return _offCenterFrustum.getPixelSize(drawingBufferDimensions: drawingBufferDimensions, distance: distance)
+        return _offCenterFrustum.pixelSize(drawingBufferDimensions, distance: distance)
     }
     
     /**

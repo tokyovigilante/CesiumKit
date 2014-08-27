@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * A quadratic surface defined in Cartesian coordinates by the equation
 * <code>(x / a)^2 + (y / b)^2 + (z / c)^2 = 1</code>.  Primarily used
@@ -44,7 +46,7 @@ struct Ellipsoid {
     
     let minimumRadius: Double
     let maximumRadius: Double
-    let centerToleranceSquared: Double = CSEpsilon1
+    let centerToleranceSquared: Double = Math.Epsilon1
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
         assert(x >= 0.0 && y >= 0.0 && z >= 0.0, "All radii components must be greater than or equal to zero.")
@@ -79,10 +81,10 @@ struct Ellipsoid {
     */
     static func fromCartesian3(cartesian: Cartesian3?) -> Ellipsoid {
         
-        if (!cartesian) {
-            return Ellipsoid()
+        if let actualCartesian = cartesian {
+            return Ellipsoid(x: actualCartesian.x, y: actualCartesian.y, z: actualCartesian.z)
         }
-        return Ellipsoid(x: cartesian!.x, y: cartesian!.y, z: cartesian!.z);
+        return Ellipsoid()
     }
     
     /**
@@ -186,7 +188,7 @@ struct Ellipsoid {
     */
     func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3] {
         
-        var cartesians = Cartesian3[]()
+        var cartesians = [Cartesian3]()
         
         for cartographic in cartographics {
             cartesians.append(cartographicToCartesian(cartographic))
@@ -211,19 +213,19 @@ struct Ellipsoid {
     func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic? {
         
         var p = scaleToGeodeticSurface(cartesian)
-        if (!p) {
+        if p == nil {
             return nil
         }
         
-        var n = geodeticSurfaceNormal(p!);
-        var h = cartesian.subtract(p!);
+        var n = geodeticSurfaceNormal(p!)
+        var h = cartesian.subtract(p!)
         
-        var longitude = atan2(n.y, n.x);
-        var latitude = asin(n.z);
+        var longitude = atan2(n.y, n.x)
+        var latitude = asin(n.z)
         
-        var height = Double(CSMath.sign(h.dot(cartesian))) * h.magnitude();
+        var height = Double(Math.sign(h.dot(cartesian))) * h.magnitude()
         
-        return Cartographic(longitude: longitude, latitude: latitude, height: height);
+        return Cartographic(longitude: longitude, latitude: latitude, height: height)
         
     }
     
@@ -243,11 +245,10 @@ struct Ellipsoid {
     */
     func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic] {
         
-        var cartographics = Cartographic[]()
+        var cartographics = [Cartographic]()
         
         for cartesian in cartesians {
-            let cartographic = cartesianToCartographic(cartesian)
-            if (cartographic) {
+            if let cartographic = cartesianToCartographic(cartesian) {
                 cartographics.append(cartographic!)
             }
         }
@@ -340,7 +341,7 @@ struct Ellipsoid {
             var derivative = -2.0 * denominator
             
             correction = funcMultiplier / derivative
-        } while (abs(funcMultiplier) > CSEpsilon12)
+        } while (abs(funcMultiplier) > Math.Epsilon12)
         
         return Cartesian3(x: positionX * xMultiplier, y: positionY * yMultiplier, z: positionZ * zMultiplier)
     }

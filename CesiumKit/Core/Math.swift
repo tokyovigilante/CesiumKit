@@ -178,7 +178,7 @@ struct Math {
     * @constant
     */
     static let SixtyFourKilobytes: Double = 64 * 1024
-    /*
+    
     /**
     * Returns the sign of the value; 1 if the value is positive, -1 if the value is
     * negative, or 0 if the value is 0.
@@ -186,17 +186,16 @@ struct Math {
     * @param {Number} value The value to return the sign of.
     * @returns {Number} The sign of value.
     */
-    CesiumMath.sign = function(value) {
-    if (value > 0) {
-    return 1;
+    static func sign (value: Double) -> Int {
+        if value > 0.0 {
+            return 1
+        }
+        if value < 0.0 {
+            return -1
+        }
+        return 0
     }
-    if (value < 0) {
-    return -1;
-    }
-    
-    return 0;
-    };
-    
+    /*
     /**
     * Returns the hyperbolic sine of a number.
     * The hyperbolic sine of <em>value</em> is defined to be
@@ -672,4 +671,6 @@ CesiumMath.asinClamped = function(value) {
 };*/
 
 }
+
+
 

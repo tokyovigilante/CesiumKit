@@ -728,7 +728,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
         var result = Matrix4()
         var column0Row0 = 2.0 * near / (right - left)
@@ -769,7 +769,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeInfinitePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+    static func computeInfinitePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
         var column0Row0 = 2.0 * near / (right - left)
         var column1Row1 = 2.0 * near / (top - bottom)
         var column2Row0 = (right + left) / (right - left)
