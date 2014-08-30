@@ -22,13 +22,13 @@ import Foundation
 *
 * @see WebMercatorProjection
 */
-struct GeographicProjection: Projection {
+public struct GeographicProjection: Projection {
     
-    let ellipsoid: Ellipsoid
-    let semimajorAxis: Double
-    let oneOverSemimajorAxis: Double
-    
-    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
+    public let ellipsoid: Ellipsoid
+    public let semimajorAxis: Double
+    public let oneOverSemimajorAxis: Double
+  
+    public init (ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis
@@ -46,7 +46,7 @@ struct GeographicProjection: Projection {
     *          coordinates are copied there and that instance is returned.  Otherwise, a new instance is
     *          created and returned.
     */
-    func project(cartographic: Cartographic) -> Cartesian3 {
+    public func project(cartographic: Cartographic) -> Cartesian3 {
     // Actually this is the special case of equidistant cylindrical called the plate carree
         return Cartesian3(x: cartographic.longitude * semimajorAxis,
             y: cartographic.latitude * semimajorAxis,
@@ -65,7 +65,7 @@ struct GeographicProjection: Projection {
     *          coordinates are copied there and that instance is returned.  Otherwise, a new instance is
     *          created and returned.
     */
-    func unproject(cartesian: Cartesian3) -> Cartographic {
+    public func unproject(cartesian: Cartesian3) -> Cartographic {
         var longitude = cartesian.x * oneOverSemimajorAxis
         var latitude = cartesian.y * oneOverSemimajorAxis
         var height = cartesian.z

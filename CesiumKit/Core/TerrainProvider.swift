@@ -20,7 +20,8 @@ import Foundation
 * @see CesiumTerrainProvider
 * @see ArcGisImageServerTerrainProvider
 */
-class TerrainProvider {
+// FIXME turn into protocol
+public class TerrainProvider {
     
     /**
     * Gets an event that is raised when the terrain provider encounters an asynchronous error..  By subscribing

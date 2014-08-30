@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
 /**
 * Indicates if the scene is viewed in 3D, 2D, or 2.5D Columbus view.
 *
@@ -15,7 +13,7 @@ import Foundation
 *
 * @see Scene#mode
 */
-enum SceneMode {
+public enum SceneMode {
     /**
     * 2D mode.  The map is viewed top-down with an orthographic projection.
     *

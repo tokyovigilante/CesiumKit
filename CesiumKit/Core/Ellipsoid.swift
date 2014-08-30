@@ -33,7 +33,7 @@ import Foundation
 let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
-struct Ellipsoid {
+public struct Ellipsoid {
     let x: Double = 0.0
     let y: Double = 0.0
     let z: Double = 0.0

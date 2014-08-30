@@ -20,7 +20,7 @@ import Foundation
 * @see Ellipsoid
 */
 
-struct Cartographic {
+public struct Cartographic {
     /**
     * The longitude, in radians.
     * @type {Number}

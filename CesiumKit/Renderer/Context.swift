@@ -715,8 +715,8 @@ class Context {
         */
         //this.options = options;
         
-        
-        currentRenderState.apply(defaultPassState)
+        //FIXME: currentrenderstate.apply
+        //currentRenderState.apply(defaultPassState)
     }
     
     func replaceShaderProgram(shaderProgram: ShaderProgram, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram? {

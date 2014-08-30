@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol Projection {
+public protocol Projection {
     
     var ellipsoid: Ellipsoid { get }
     var semimajorAxis: Double { get }

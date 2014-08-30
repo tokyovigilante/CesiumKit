@@ -21,7 +21,7 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-struct Cartesian3: Packable, Equatable {
+public struct Cartesian3: Packable, Equatable {
     /**
     * The X component.
     * @type {Number}
@@ -622,7 +622,7 @@ struct Cartesian3: Packable, Equatable {
 * @param {Cartesian3} [right] The second Cartesian.
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func == (left: Cartesian3, right: Cartesian3) -> Bool {
+public func == (left: Cartesian3, right: Cartesian3) -> Bool {
     return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
 }
 

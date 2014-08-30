@@ -23,23 +23,40 @@ Describes Globe object options
 :param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
 :param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
-struct CesiumOptions {
+public struct CesiumOptions {
     
-    var clock = Clock()
-    var imageryProvider: BingMapsImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
-    var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
-    var skyBox: SkyBox? = nil
-    var sceneMode: SceneMode = .Scene3D
-    var scene3DOnly = false
-    var mapProjection = GeographicProjection()
-    var useDefaultRenderLoop = true
-    var targetFrameRate = 60
-    var showRenderLoopErrors = true
+    public var clock = Clock()
+    public var imageryProvider: BingMapsImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
+    public var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
+    //public var skyBox: SkyBox? = nil
+    public var sceneMode: SceneMode = .Scene3D
+    public var scene3DOnly = false
+    public var mapProjection: Projection = GeographicProjection()
+    public var useDefaultRenderLoop = true
+    public var targetFrameRate = 60
+    public var showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
     let contextOptions = ContextOptions()*/
     
     /*/// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.*/
+    
+    public init(
+        clock: Clock = Clock(),
+        imageryProvider: BingMapsImageryProvider? = nil,
+        sceneMode: SceneMode = SceneMode.Scene3D,
+        scene3DOnly: Bool = false,
+        mapProjection: Projection = GeographicProjection(),
+        targetFrameRate: Int = 60,
+        showRenderLoopErrors: Bool = true) {
+            self.clock = clock
+            self.imageryProvider = imageryProvider
+            self.sceneMode = sceneMode
+            self.scene3DOnly = false
+            self.mapProjection = mapProjection
+            self.targetFrameRate = targetFrameRate
+            self.showRenderLoopErrors = showRenderLoopErrors
+    }
 }
 
 /**
@@ -98,7 +115,7 @@ struct CesiumOptions {
 *     mapProjection : new Cesium.WebMercatorProjection()
 * });
 */
-public class Cesium {
+public class CesiumGlobe {
 
     var canRender = false
     var renderLoopRunning = false
@@ -208,7 +225,7 @@ public class Cesium {
     */
     public let clock: Clock
     
-    init (context: EAGLContext, options: CesiumOptions) {
+    public init (context: EAGLContext, options: CesiumOptions) {
         
         self.context = context
         /*

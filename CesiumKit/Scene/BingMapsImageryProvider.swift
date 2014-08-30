@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class BingMapsImageryProvider { // FIXME: ImageryProvider {
+public class BingMapsImageryProvider { // FIXME: ImageryProvider {
     /*
     /*global define*/
     define([
