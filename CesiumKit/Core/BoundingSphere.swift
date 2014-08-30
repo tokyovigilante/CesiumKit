@@ -143,7 +143,7 @@ struct BoundingSphere: Intersectable {
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0;
-        for i in 0..points.count {
+        for i in 0..<points.count {
             currentPos = points[i]
             
             // Find the furthest point from the naive center to calculate the naive radius.
@@ -185,7 +185,7 @@ struct BoundingSphere: Intersectable {
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
     static func fromRectangle2D(rectangle: Rectangle?, projection: Projection = GeographicProjection()) -> BoundingSphere {
-        return BoundingSphere.fromRectangleWithHeights2D(rectangle, projection, 0.0, 0.0)
+        return BoundingSphere.fromRectangleWithHeights2D(rectangle, projection: projection, minimumHeight: 0.0, maximumHeight: 0.0)
     }
 
     /**
@@ -204,8 +204,8 @@ struct BoundingSphere: Intersectable {
         projection: Projection = GeographicProjection(),
         minimumHeight: Double = 0.0,
         maximumHeight: Double = 0.0) -> BoundingSphere {
-            
-            var fromRectangle2DLowerLeft = Cartesian3()
+            // FIXME FromRectangleWithHeights2D
+            /*var fromRectangle2DLowerLeft = Cartesian3()
             var fromRectangle2DUpperRight = Cartesian3()
             var fromRectangle2DSouthwest = Cartographic()
             var fromRectangle2DNortheast = Cartographic()
@@ -214,15 +214,13 @@ struct BoundingSphere: Intersectable {
                 return BoundingSphere()
             }
             
-            projection = defaultValue(projection, defaultProjection);
+            Rectangle.getSouthwest(rectangle, fromRectangle2DSouthwest)
+            fromRectangle2DSouthwest.height = minimumHeight
+            Rectangle.getNortheast(rectangle, fromRectangle2DNortheast)
+            fromRectangle2DNortheast.height = maximumHeight
             
-            Rectangle.getSouthwest(rectangle, fromRectangle2DSouthwest);
-            fromRectangle2DSouthwest.height = minimumHeight;
-            Rectangle.getNortheast(rectangle, fromRectangle2DNortheast);
-            fromRectangle2DNortheast.height = maximumHeight;
-            
-            var lowerLeft = projection.project(fromRectangle2DSouthwest, fromRectangle2DLowerLeft);
-            var upperRight = projection.project(fromRectangle2DNortheast, fromRectangle2DUpperRight);
+            var lowerLeft = projection.project(fromRectangle2DSouthwest, fromRectangle2DLowerLeft)
+            var upperRight = projection.project(fromRectangle2DNortheast, fromRectangle2DUpperRight)
             
             var width = upperRight.x - lowerLeft.x;
             var height = upperRight.y - lowerLeft.y;
@@ -233,7 +231,7 @@ struct BoundingSphere: Intersectable {
             center.x = lowerLeft.x + width * 0.5;
             center.y = lowerLeft.y + height * 0.5;
             center.z = lowerLeft.z + elevation * 0.5;
-            return result;
+            return result;*/return BoundingSphere()
     }
 
 /**
@@ -667,7 +665,9 @@ BoundingSphere.expand = function(sphere, point, result) {
 *                      intersects the plane.
 */
     func intersect(plane: Cartesian4) -> Intersect {
+        // FIXME Intersect
         
+        /*
         var distanceToPlane = plane.dot(center) + plane.w
         
         if (distanceToPlane < -radius) {
@@ -676,7 +676,7 @@ BoundingSphere.expand = function(sphere, point, result) {
         } else if (distanceToPlane < radius) {
             // The center point is positive side of the plane, but radius extends beyond it; partial overlap
             return Intersect.Intersecting
-        }
+        }*/
         return Intersect.Inside
     }
 /*
@@ -725,7 +725,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
 */
     func distanceSquaredTo(cartesian: Cartesian3) -> Double {
         var diff = center.subtract(cartesian)
-        return diff.magnitudeSquared(diff) - radius * radius
+        return diff.magnitudeSquared() - radius * radius
     }
 /*
 /**

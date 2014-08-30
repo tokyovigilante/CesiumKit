@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class JulianDate {
+struct JulianDate {
    /* /*global define*/
     define([
     '../ThirdParty/sprintf',

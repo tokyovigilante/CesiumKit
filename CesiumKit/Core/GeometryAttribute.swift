@@ -72,9 +72,9 @@ struct GeometryAttribute {
     * ]);
     */
     var componentsPerAttribute: Int {
-    didSet {
-        assert(componentsPerAttribute >= 1 && componentsPerAttribute =< 4,"options.componentsPerAttribute must be between 1 and 4")
-    }
+        didSet {
+            assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
+        }
     }
     
     /**

@@ -72,7 +72,8 @@ import OpenGLES
 
 public class Scene {
     
-    private var context: Context = Context()// = new Context(canvas, contextOptions);
+    private var context: Context
+    
     /*
     if (!defined(creditContainer)) {
         creditContainer = document.createElement('div');
@@ -85,14 +86,14 @@ public class Scene {
         canvas.parentNode.appendChild(creditContainer);
     }*/
     
-    var passState: PassState = PassState(context: context)
+    lazy var passState: PassState = { return PassState(context: self.context) }()
     
     /**
     * Gets or sets the depth-test ellipsoid.
     * @memberof Scene.prototype
     * @type {Globe}
     */
-    var globe: Globe?
+    var globe: Globe
     
     /**
     * Gets the collection of primitives.
@@ -112,14 +113,17 @@ public class Scene {
     * @type {Camera}
     */
     // TODO: setCamera
-    public var camera: Camera
+    lazy public var camera: Camera = { return Camera(scene: self) }()
+
     
     /**
     * Gets the controller for camera input handling.
     * @memberof Scene.prototype
     * @type {ScreenSpaceCameraController}
     */
-    public var screenSpaceCameraController: ScreenSpaceCameraController
+    lazy public var screenSpaceCameraController: ScreenSpaceCameraController = {
+        ScreenSpaceCameraController(scene: self)
+        }()
     
     
     /**
@@ -157,11 +161,15 @@ public class Scene {
     this._fxaa = new FXAA();
     */
     
-    var clearColorCommand: ClearCommand
+    lazy var clearColorCommand: ClearCommand = {
+        return ClearCommand(color: Cartesian4.zero(), owner: self)
+    }()
     
-    var depthClearCommand: ClearCommand
+    lazy var depthClearCommand: ClearCommand = {
+        return ClearCommand(depth: 1.0, owner: self)
+    }()
     
-    //var transitioner: SceneTransitioner(owner: Scene)
+    lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self) }()
     
     /**
     * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
@@ -465,7 +473,7 @@ public class Scene {
     */
     var imageryLayers: ImageryLayerCollection {
         get {
-            return globe.imageryLayers
+            return globe.imageryLayerCollection
         }
     }
 
@@ -476,33 +484,30 @@ public class Scene {
     */
     var terrainProvider: TerrainProvider {
         get {
-            return this.globe.terrainProvider
+            return globe.terrainProvider
         }
         set (newTerrainProvider) {
             globe.terrainProvider = newTerrainProvider
         }
     }
 
-    init (scene3DOnly: Bool?) {
+    init (glContext: EAGLContext, globe: Globe, scene3DOnly: Bool?) {
+        
+        context = Context(glContext: glContext)
+        self.globe = globe
+        
         frameState = FrameState(/*new CreditDisplay(creditContainer*/)
         frameState.scene3DOnly = scene3DOnly ?? false
-        camera = Camera(self)
-        screenSpaceCameraController = ScreenSpaceCameraController(self.camera)
-        
-        clearColorCommand = ClearCommand(color: Cartesian4.zero(), owner: self)
-        depthClearCommand = ClearCommand(depth: 1.0, owner: self)
-        
-        //transitioner = SceneTransitioner(self)
         
         // initial guess at frustums.
         var near = camera.frustum.near
         var far = camera.frustum.far
-        var numFrustums = ceil(log(far / near) / log(this.farToNearRatio))
-        updateFrustums(near, far, this.farToNearRatio, numFrustums, frustumCommandsList)
+        var numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
+        updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums, frustumCommandsList: frustumCommandsList)
         
         // give frameState, camera, and screen space camera controller initial state before rendering
-        updateFrameState(this, 0.0, JulianDate())
-        this.initializeFrame()
+        updateFrameState(0, time: JulianDate())
+        initializeFrame()
     }
     /*
 var scratchOccluderBoundingSphere = new BoundingSphere();
@@ -521,30 +526,31 @@ function getOccluder(scene) {
     
     return undefined;
 }
+*/
+    func clearPasses(passes: FrameState.Passes ) {
+        // FIXME: Clearpasses
+        //passes.render = false
+        //passes.pick = false
+    }
 
-function clearPasses(passes) {
-    passes.render = false;
-    passes.pick = false;
+    func updateFrameState(frameNumber: Int, time: JulianDate) {
+    // FIXME: UpdateFrameState
+    /*frameState.mode = mode
+    frameState.morphTime = morphTime
+    frameState.scene2D = scene2D
+    frameState.frameNumber = frameNumber
+    frameState.time = time
+    frameState.camera = camera
+    frameState.cullingVolume = camera.frustum.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC)
+    frameState.occluder = getOccluder(scene)
+    frameState.afterRender.length = 0
+    */
+    clearPasses(frameState.passes)
 }
-
-function updateFrameState(scene, frameNumber, time) {
-    var camera = scene._camera;
     
-    var frameState = scene._frameState;
-    frameState.mode = scene.mode;
-    frameState.morphTime = scene.morphTime;
-    frameState.scene2D = scene.scene2D;
-    frameState.frameNumber = frameNumber;
-    frameState.time = JulianDate.clone(time, frameState.time);
-    frameState.camera = camera;
-    frameState.cullingVolume = camera.frustum.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC);
-    frameState.occluder = getOccluder(scene);
-    frameState.afterRender.length = 0;
-    
-    clearPasses(frameState.passes);
-}
-
-function updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList) {
+    func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int, frustumCommandsList: [FrustumCommands]) {
+        //Fixme: updateFrustums
+        /*
     frustumCommandsList.length = numFrustums;
     for (var m = 0; m < numFrustums; ++m) {
         var curNear = Math.max(near, Math.pow(farToNearRatio, m) * near);
@@ -557,9 +563,9 @@ function updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsL
             frustumCommands.near = curNear;
             frustumCommands.far = curFar;
         }
-    }
+    }*/
 }
-
+/*
 function insertIntoBin(scene, command, distance) {
     if (scene.debugShowFrustums) {
         command.debugOverlappingFrustums = 0;
@@ -716,7 +722,7 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
     var context = scene.context;
     var sp = defaultValue(shaderProgram, command.shaderProgram);
     var fragmentShaderSource = sp.fragmentShaderSource;
-    var renamedFS = fragmentShaderSource.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, 'void czm_Debug_main()');
+    var renamedFS = fragmentShaderSource.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, "void czm_Debug_main()")
     
     var newMain =
     'void main() \n' +
@@ -1060,15 +1066,16 @@ function callAfterRenderFunctions(frameState) {
     * @private
     */
     func initializeFrame() {
+        // FIXME - initializeframe
         // Destroy released shaders once every 120 frames to avoid thrashing the cache
-        if (shaderFrameCount++ === 120) {
+        /*if (shaderFrameCount++ === 120) {
             shaderFrameCount = 0
             context.shaderCache.destroyReleasedShaderPrograms()
         }
         
         animations.update()
-        camera.update(this.mode, this.scene2D)
-        screenSpaceCameraController.update(this.mode)
+        camera.update(mode, scene2D)
+        screenSpaceCameraController.update(mode)*/
     }
 
     

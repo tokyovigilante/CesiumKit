@@ -9,35 +9,48 @@
 import Foundation
 
 enum ImageFormat {
-case JPEG, PNG, Raw
+    case JPEG, PNG, Raw
 }
 
 /// HTML5-equivalent image wrapper
 class Image {
     
-let format: ImageFormat
-
-let height: Int?
-
-let width: Int?
-
-var pixelData: NSData? {
-get {
-    if format == .Raw {
-    return _compressedData
-}
-if _pixelData == nil {
-    return decompress() ? _compressedData! : nil
-}
-return _pixelData!
-}
-}
-
-var _pixelData: NSData?
-
-let compressedData: NSData
-
-private func decompress () -> Bool {
- //   case
-}
+    let format: ImageFormat
+    
+    let height: Int?
+    
+    let width: Int?
+    
+    var pixelData: [UInt8]? {
+        get {
+            if _pixelData == nil {
+                return decompress() ? _pixelData! : nil
+            }
+            return _pixelData!
+        }
+    }
+    
+    var _pixelData: [UInt8]? = nil
+    
+    let _compressedData: [UInt8]? = nil
+    
+    init (format: ImageFormat, height: Int? = nil, width: Int? = nil, data: [UInt8]) {
+        
+        self.format = format
+        
+        self.height = height
+        self.width = width
+        
+        if self.format == .Raw {
+            _pixelData = data
+        }
+        else {
+            _compressedData = data
+        }
+    }
+    
+    private func decompress () -> Bool {
+        //   case
+        return false
+    }
 }

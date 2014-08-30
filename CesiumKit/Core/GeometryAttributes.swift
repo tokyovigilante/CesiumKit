@@ -91,12 +91,13 @@ struct GeometryAttributes  {
     var color: GeometryAttribute? = nil
     
     func vertexCount() -> Int {
-        var vertexCount = position.vertexCount
+        // FIXME: VertexCount
+        /*var vertexCount = position?.vertexCount
         vertexCount == normal.vertexCount ? vertexCount = normal.vertexCount : assert("unequal vertex count")
         vertexCount == st.vertexCount ? vertexCount = st.vertexCount : assert("unequal vertex count")
         vertexCount == binormal.vertexCount ? vertexCount = binormal.vertexCount : assert("unequal vertex count")
         vertexCount == tangent.vertexCount ? vertexCount = tangent.vertexCount : assert("unequal vertex count")
-        vertexCount == color.vertexCount ? vertexCount = color.vertexCount : assert("unequal vertex count")
-        return vertexCount
+        vertexCount == color.vertexCount ? vertexCount = color.vertexCount : assert("unequal vertex count")*/
+        return position!.vertexCount
     }
 }

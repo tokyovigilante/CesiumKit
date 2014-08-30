@@ -227,24 +227,24 @@ public class Cesium {
         self.clock = options.clock
         lastFrameTime = nil
         
-        self.scene = Scene(/*{
-            canvas : canvas,
+        self.globe = Globe(ellipsoid: ellipsoid)
+        self.scene = Scene(
+            glContext: context,
+            globe: self.globe,
+            /*canvas : canvas,
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,
             mapProjection : options.mapProjection,*/
             scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
-/*            }*/)
-        
+            /*            }*/)
+        self.scene.globe = globe
         self.scene.camera.constrainedAxis = Cartesian3.unitZ()
         
         /*var creditDisplay = scene.frameState.creditDisplay;
         
         var cesiumCredit = new Credit('Cesium', cesiumLogoData, 'http://cesiumjs.org/');
         creditDisplay.addDefaultCredit(cesiumCredit);*/
-        
-        let globe = Globe(ellipsoid: ellipsoid)
-        self.globe = globe
-        self.scene.globe = globe
+
         
         // FIXME: Skybox disabled
         /*(var skyBox = options.skyBox;

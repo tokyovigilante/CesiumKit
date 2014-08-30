@@ -13,7 +13,7 @@
 *
 * @param {Scene} scene The scene.
 */
-class ScreenSpaceCameraController {
+public class ScreenSpaceCameraController {
     
     weak var scene: Scene?
 

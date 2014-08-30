@@ -87,25 +87,18 @@ class PerspectiveOffCenterFrustum/*: Frustum*/ {
 
     /*mutating*/ func update () {
         
-        var t = top
-        var b = bottom
-        var r = right
-        var l = left
-        var n = near
-        var f = far
-        
-        if t != _top || b != _bottom || l != _left ||
-            r != _right || n != _near || f != _far {
+        if top != _top || bottom != _bottom || left != _left ||
+            right != _right || near != _near || far != _far {
                 assert(near > 0 && near < far, "near must be greater than zero and less than far")
                 
-                _left = l
-                _right = r
-                _top = t
-                _bottom = b
-                _near = n
-                _far = f
-                _perspectiveMatrix = Matrix4.computePerspectiveOffCenter(left: l, right: r, bottom: b, top: t, near: n, far: f)
-                _infinitePerspective = Matrix4.computeInfinitePerspectiveOffCenter(left: l, right: r, bottom: b, top: t, near: n)
+                _left = left
+                _right = right
+                _top = top
+                _bottom = bottom
+                _near = near
+                _far = far
+                _perspectiveMatrix = Matrix4.computePerspectiveOffCenter(left: left, right: right, bottom: bottom, top: top, near: near, far: far)
+                _infinitePerspective = Matrix4.computeInfinitePerspectiveOffCenter(left: left, right: right, bottom: bottom, top: top, near: near)
         }
     }
     
@@ -152,35 +145,28 @@ class PerspectiveOffCenterFrustum/*: Frustum*/ {
     */
     func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
-        var t = this.top
-        var b = this.bottom
-        var r = this.right
-        var l = this.left
-        var n = this.near
-        var f = this.far
+        var right2 = direction.cross(up)
         
-        var right = direction.cross(up)
+        var nearCenter = direction.multiplyByScalar(near).add(position)
         
-        var nearCenter = direction.multiplyByScalar(n).add(position)
-        
-        var farCenter = direction.multiplyByScalar(f).add(position)
+        var farCenter = direction.multiplyByScalar(far).add(position)
         
         var planes = [Cartesian4]()
         
         //Left plane computation
-        var leftPlane = right.multiplyByScalar(l).add(nearCenter).subtract(position).normalize().cross(up)
+        var leftPlane = right2.multiplyByScalar(left).add(nearCenter).subtract(position).normalize().cross(up)
         planes.append(Cartesian4(x: leftPlane.x, y: leftPlane.y, z: leftPlane.z, w: leftPlane.dot(position)))
         
         //Right plane computation
-        var rightPlane = right.multiplyByScalar(r).add(nearCenter).subtract(position).normalize().cross(up)
-        planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, leftPlane.z, w: leftPlane.dot(position)))
+        var rightPlane = right2.multiplyByScalar(right).add(nearCenter).subtract(position).normalize().cross(up)
+        planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: leftPlane.z, w: leftPlane.dot(position)))
         
         //Bottom plane computation
-        var bottomPlane = up.multiplyByScalar(b).add(nearCenter).subtract(position).normalize().cross(right)
+        var bottomPlane = up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize().cross(right2)
         planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: bottomPlane.dot(position)))
         
         //Top plane computation
-        var topPlane = up.multiplyByScalar(t).add(nearCenter).subtract(position).normalize().cross(right)
+        var topPlane = up.multiplyByScalar(top).add(nearCenter).subtract(position).normalize().cross(right2)
         planes.append(Cartesian4(x: topPlane.x, y: topPlane.y, z: topPlane.z, w: -topPlane.dot(position)))
         
         //Near plane computation
@@ -189,10 +175,10 @@ class PerspectiveOffCenterFrustum/*: Frustum*/ {
         
         //Far plane computation
         var farPlane = direction.negate()
-        planes.append(Cartesian4(x: farPlane.x, y: farPlane.y, z: farPlane, w: -farPlane.dot(farCenter)))
+        planes.append(Cartesian4(x: farPlane.x, y: farPlane.y, z: farPlane.z, w: -farPlane.dot(farCenter)))
         
         _cullingVolume = CullingVolume(planes: planes)
-        return this._cullingVolume
+        return _cullingVolume
     }
 
     /**
@@ -230,13 +216,13 @@ class PerspectiveOffCenterFrustum/*: Frustum*/ {
         
         assert(width > 0 && height > 0, "drawingBufferDimensions.y must be greater than zero")
         
-        distance = distance ?? this.near
+        let localDistance = distance ?? near
         
         var inverseNear = 1.0 / near
         var tanTheta = top * inverseNear
-        var pixelHeight = 2.0 * distance * tanTheta / height;
+        var pixelHeight = 2.0 * localDistance * tanTheta / height;
         tanTheta = right * inverseNear
-        var pixelWidth = 2.0 * distance * tanTheta / width
+        var pixelWidth = 2.0 * localDistance * tanTheta / width
         
         return Cartesian2(x: pixelWidth, y: pixelHeight);
     }

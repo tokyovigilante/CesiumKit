@@ -41,7 +41,7 @@ struct Cartesian2: Packable, Equatable {
     */
     //static let packedLength: Int = 2
     
-    init(x: Double, y: Double) {
+    init(x: Double = 0.0, y: Double = 0.0) {
         self.x = x
         self.y = y
     }

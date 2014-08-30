@@ -24,7 +24,7 @@ protocol TileDiscardPolicy {
     *
     * @returns {Boolean} True if the discard policy is ready to process images; otherwise, false.
     */
-    var isReady: Bool
+    var isReady: Bool { get }
     
     /**
     * Given a tile image, decide whether to discard that image.

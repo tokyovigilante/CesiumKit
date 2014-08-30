@@ -275,7 +275,7 @@ struct Rectangle: Packable {
     */
     func subsample(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
         
-        var result = Cartesian3[]()
+        var result = [Cartesian3]()
         
         var lla = Cartographic()
         lla.height = surfaceHeight
@@ -301,7 +301,7 @@ struct Rectangle: Packable {
             lla.latitude = 0.0;
         }
         
-        for i in 1..8 {
+        for i in 1..<8 {
             var temp = -M_PI + Double(i) * M_PI_2;
             if (west < temp && temp < east) {
                 lla.longitude = temp;

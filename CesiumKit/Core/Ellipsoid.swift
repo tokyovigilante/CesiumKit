@@ -64,8 +64,8 @@ struct Ellipsoid {
             z: z == 0 ? 0.0 : 1.0 / (z * z))
         
         
-        minimumRadius = min(x, y, z);
-        maximumRadius = max(x, y, z);
+        minimumRadius = min(x, y, z)
+        maximumRadius = max(x, y, z)
     }
     
     /**
@@ -249,7 +249,7 @@ struct Ellipsoid {
         
         for cartesian in cartesians {
             if let cartographic = cartesianToCartographic(cartesian) {
-                cartographics.append(cartographic!)
+                cartographics.append(cartographic)
             }
         }
         return cartographics
@@ -356,13 +356,14 @@ struct Ellipsoid {
     */
     func scaleToGeocentricSurface(cartesian: Cartesian3) ->Cartesian3 {
         
-        var positionX = cartesian.x
-        var positionY = cartesian.y
-        var positionZ = cartesian.z
+        let positionX = cartesian.x
+        let positionY = cartesian.y
+        let positionZ = cartesian.z
         
-        var beta = 1.0 / sqrt((positionX * positionX) * oneOverRadiiSquared.x +
-            (positionY * positionY) * oneOverRadiiSquared.y +
-            (positionZ * positionZ) * oneOverRadiiSquared.z)
+        var betaSquared = positionX * positionX * oneOverRadiiSquared.x +
+            positionY * positionY * oneOverRadiiSquared.y +
+            positionZ * positionZ * oneOverRadiiSquared.z
+        var beta = 1.0 / sqrt(betaSquared)
         
         return cartesian.multiplyByScalar(beta)
     }

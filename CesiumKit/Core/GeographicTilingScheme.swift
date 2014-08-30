@@ -102,9 +102,9 @@ self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
         var south = Math.toDegrees(rectangle.south)
         var east = Math.toDegrees(rectangle.east)
         var north = Math.toDegrees(rectangle.north)
-
-            return Rectangle(west, south, east, north);
-        }
+        
+        return Rectangle(west: west, south: south, east: east, north: north)
+    }
 
 
     /**
@@ -141,18 +141,18 @@ self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
      */
     func tileXYToRectangle(#x: Int, y: Int, level: Int) -> Rectangle {
 
-        var xTiles = getNumberOfXTilesAtLevel(level)
-        var yTiles = getNumberOfYTilesAtLevel(level)
+        var xTiles = numberOfXTilesAtLevel(level)
+        var yTiles = numberOfYTilesAtLevel(level)
 
-        var xTileWidth = (rectangle.east - rectangle.west) / xTiles
-        var west = x * xTileWidth + rectangle.west
-        var east = (x + 1) * xTileWidth + rectangle.west
+        var xTileWidth = (rectangle.east - rectangle.west) / Double(xTiles)
+        var west = Double(x) * xTileWidth + rectangle.west
+        var east = Double(x + 1) * xTileWidth + rectangle.west
 
-        var yTileHeight = (rectangle.north - rectangle.south) / yTiles
-        var north = rectangle.north - y * yTileHeight
-        var south = rectangle.north - (y + 1) * yTileHeight
+        var yTileHeight = (rectangle.north - rectangle.south) / Double(yTiles)
+        var north = rectangle.north - Double(y) * yTileHeight
+        var south = rectangle.north - Double(y + 1) * yTileHeight
 
-            return Rectangle(west, south, east, north)
+            return Rectangle(west: west, south: south, east: east, north: north)
 
     }
 
@@ -176,23 +176,24 @@ self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
             return nil
         }
 
-        var xTiles = getNumberOfXTilesAtLevel(level)
-        var yTiles = getNumberOfYTilesAtLevel(level)
+        var xTiles = numberOfXTilesAtLevel(level)
+        var yTiles = numberOfYTilesAtLevel(level)
 
-        var xTileWidth = (rectangle.east - rectangle.west) / xTiles
-        var yTileHeight = (rectangle.north - rectangle.south) / yTiles
-
-        var xTileCoordinate = (position.longitude - rectangle.west) / xTileWidth | 0
+        var xTileWidth = (rectangle.east - rectangle.west) / Double(xTiles)
+        var yTileHeight = (rectangle.north - rectangle.south) / Double(yTiles)
+// FIXME: Tile coordinate bitwise operator
+        /*var xTileCoordinate = position.longitude - rectangle.west) / xTileWidth | 0
         if (xTileCoordinate >= xTiles) {
             xTileCoordinate = xTiles - 1
         }
-
-        var yTileCoordinate = (rectangle.north - position.latitude) / yTileHeight | 0
+        //var
+        var yTileCoordinate = rectangle.north - position.latitude
+        yTileCoordinate /= Double(yTileHeight) | 0.0
         if (yTileCoordinate >= yTiles) {
             yTileCoordinate = yTiles - 1
         }
-
-        return Cartesian2(x: xTileCoordinate, y: yTileCoordinate)
+*/
+        return Cartesian2()//x: xTileCoordinate, y: yTileCoordinate)
     }
 
 }
