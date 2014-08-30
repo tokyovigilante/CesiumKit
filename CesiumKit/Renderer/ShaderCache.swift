@@ -8,39 +8,43 @@
 
 import Foundation
 
+/**
+* Returns a shader program from the cache, or creates and caches a new shader program,
+* given the GLSL vertex and fragment shader source and attribute locations.
+* <p>
+* The difference between this and {@link ShaderCache#getShaderProgram}, is this is used to
+* replace an existing reference to a shader program, which is passed as the first argument.
+* </p>
+*
+* @param {ShaderProgram} shaderProgram The shader program that is being reassigned.  This can be <code>undefined</code>.
+* @param {String} vertexShaderSource The GLSL source for the vertex shader.
+* @param {String} fragmentShaderSource The GLSL source for the fragment shader.
+* @param {Object} attributeLocations Indices for the attribute inputs to the vertex shader.
+* @returns {ShaderProgram} The cached or newly created shader program.
+*
+* @see ShaderCache#getShaderProgram
+*
+* @example
+* this._shaderProgram = context.shaderCache.replaceShaderProgram(
+*     this._shaderProgram, vs, fs, attributeLocations);
+*/
+
 class ShaderCache {
 
-/*
     /**
-     * @private
-     */
-    var ShaderCache = function(context) {
-        this._context = context;
-        this._shaders = {};
-        this._shadersToRelease = {};
-    };
+    * @private
+    */
+    weak var context: Context?
+    
+    var shaders = [String: ShaderProgram]()
+    
+    var shadersToRelease = [String: ShaderProgram]()
 
-    /**
-     * Returns a shader program from the cache, or creates and caches a new shader program,
-     * given the GLSL vertex and fragment shader source and attribute locations.
-     * <p>
-     * The difference between this and {@link ShaderCache#getShaderProgram}, is this is used to
-     * replace an existing reference to a shader program, which is passed as the first argument.
-     * </p>
-     *
-     * @param {ShaderProgram} shaderProgram The shader program that is being reassigned.  This can be <code>undefined</code>.
-     * @param {String} vertexShaderSource The GLSL source for the vertex shader.
-     * @param {String} fragmentShaderSource The GLSL source for the fragment shader.
-     * @param {Object} attributeLocations Indices for the attribute inputs to the vertex shader.
-     * @returns {ShaderProgram} The cached or newly created shader program.
-     *
-     * @see ShaderCache#getShaderProgram
-     *
-     * @example
-     * this._shaderProgram = context.shaderCache.replaceShaderProgram(
-     *     this._shaderProgram, vs, fs, attributeLocations);
-     */
-    ShaderCache.prototype.replaceShaderProgram = function(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations) {
+    init (context: Context) {
+        self.context = context
+    }
+/*
+        ShaderCache.prototype.replaceShaderProgram = function(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations) {
         if (defined(shaderProgram)) {
             shaderProgram.destroy();
         }
@@ -76,9 +80,10 @@ class ShaderCache {
         ++cachedShader.count;
         return cachedShader.shaderProgram;
     };
-
-    ShaderCache.prototype.destroyReleasedShaderPrograms = function() {
-        var shadersToRelease = this._shadersToRelease;
+    */
+    func destroyReleasedShaderPrograms() {
+        //FIXME: destroyReleasedShaderPrograms
+        /*var shadersToRelease = this._shadersToRelease;
 
         for ( var keyword in shadersToRelease) {
             if (shadersToRelease.hasOwnProperty(keyword)) {
@@ -88,9 +93,9 @@ class ShaderCache {
             }
         }
 
-        this._shadersToRelease = {};
-    };
-
+        this._shadersToRelease = {};*/
+    }
+    /*
     ShaderCache.prototype.releaseShaderProgram = function(shaderProgram) {
         if (shaderProgram) {
             var cachedShader = shaderProgram._cachedShader;

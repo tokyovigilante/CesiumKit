@@ -143,7 +143,7 @@ class Context {
     var validateShaderProgram = false
     var logShaderCompilation = false
     
-    var shaderCache: ShaderCache
+    lazy var shaderCache: ShaderCache = { return ShaderCache(context: self) }()
     
     /**
     * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
@@ -500,8 +500,9 @@ class Context {
     var maximumColorAttachments: GLint = 0
     
     var clearColor = Cartesian4()
-    var clearDepth: GLfloat = 0.0
-    var clearStencil: GLint = 0
+    
+    var clearDepth: Double = 0.0
+    var clearStencil: Int = 0
     
     var uniformState: UniformState
     lazy var passState: PassState = { return self.defaultPassState }()
@@ -610,8 +611,6 @@ class Context {
         
         self.glContext = glContext
         
-        shaderCache = ShaderCache()
-        
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
         vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR)))) ?? "Unknown GL vendor"
@@ -687,8 +686,13 @@ class Context {
         var cc = [GLfloat](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
         clearColor = Cartesian4.fromColor(red: Double(cc[0]), green: Double(cc[1]), blue: Double(cc[2]), alpha: Double(cc[3]))
-        glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepth)
-        glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &clearStencil)
+        
+        var clearDepthTemp: GLfloat = 0.0
+        glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepthTemp)
+        clearDepth = Double(clearDepthTemp)
+        
+        glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &GLIntTemp)
+        clearStencil = Int(GLIntTemp)
     
         uniformState = UniformState()
    

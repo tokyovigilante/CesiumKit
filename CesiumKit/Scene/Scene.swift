@@ -1074,8 +1074,8 @@ function callAfterRenderFunctions(frameState) {
         }
         
         //animations.update()
-        camera.update(mode, scene2D)
-        screenSpaceCameraController.update(mode)
+        //camera.update(mode, scene2D)
+        //screenSpaceCameraController.update(mode)
     }
 
     
