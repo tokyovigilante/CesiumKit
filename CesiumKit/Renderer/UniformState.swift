@@ -9,116 +9,121 @@
 import Foundation
 
 class UniformState {
- /*
+ 
    /**
      * @private
      */
+    private var _viewport = BoundingRectangle()
+    private var _viewportCartesian4 = Cartesian4()
+    private var _viewportDirty = false
+    private var _viewportOrthographicMatrix = Matrix4.identity()
+    private var _viewportTransformation = Matrix4.identity()
+    
+    private var _model = Matrix4.identity()
+    private var _view = Matrix4.identity()
+    private var _inverseView = Matrix4.identity()
+    private var _projection = Matrix4.identity()
+    private var _infiniteProjection = Matrix4.identity()
+    
+    private var _entireFrustum = Cartesian2()
+    private var _currentFrustum = Cartesian2()
+    
+    private var _frameState? = nil
+    
+    // FIXME: Matrix3
+    //private var _temeToPseudoFixed = Matrix4.identity()
+    
+    // Derived members
+    private var _view3DDirty = true
+    private var _view3D = Matrix4()
+    
+    
     var UniformState = function() {
-        this._viewport = new BoundingRectangle();
-        this._viewportCartesian4 = new Cartesian4();
-        this._viewportDirty = false;
-        this._viewportOrthographicMatrix = Matrix4.clone(Matrix4.IDENTITY);
-        this._viewportTransformation = Matrix4.clone(Matrix4.IDENTITY);
 
-        this._model = Matrix4.clone(Matrix4.IDENTITY);
-        this._view = Matrix4.clone(Matrix4.IDENTITY);
-        this._inverseView = Matrix4.clone(Matrix4.IDENTITY);
-        this._projection = Matrix4.clone(Matrix4.IDENTITY);
-        this._infiniteProjection = Matrix4.clone(Matrix4.IDENTITY);
-        this._entireFrustum = new Cartesian2();
-        this._currentFrustum = new Cartesian2();
-
-        this._frameState = undefined;
-        this._temeToPseudoFixed = Matrix3.clone(Matrix4.IDENTITY);
-
-        // Derived members
-        this._view3DDirty = true;
-        this._view3D = new Matrix4();
-
-        this._inverseView3DDirty = true;
-        this._inverseView3D = new Matrix4();
-
-        this._inverseModelDirty = true;
-        this._inverseModel = new Matrix4();
-
-        this._inverseTransposeModelDirty = true;
-        this._inverseTransposeModel = new Matrix3();
-
-        this._viewRotation = new Matrix3();
-        this._inverseViewRotation = new Matrix3();
-
-        this._viewRotation3D = new Matrix3();
-        this._inverseViewRotation3D = new Matrix3();
-
-        this._inverseProjectionDirty = true;
-        this._inverseProjection = new Matrix4();
-
-        this._inverseProjectionOITDirty = true;
-        this._inverseProjectionOIT = new Matrix4();
-
-        this._modelViewDirty = true;
-        this._modelView = new Matrix4();
-
-        this._modelView3DDirty = true;
-        this._modelView3D = new Matrix4();
-
-        this._modelViewRelativeToEyeDirty = true;
-        this._modelViewRelativeToEye = new Matrix4();
-
-        this._inverseModelViewDirty = true;
-        this._inverseModelView = new Matrix4();
-
-        this._inverseModelView3DDirty = true;
-        this._inverseModelView3D = new Matrix4();
-
-        this._viewProjectionDirty = true;
-        this._viewProjection = new Matrix4();
-
-        this._inverseViewProjectionDirty = true;
-        this._inverseViewProjection = new Matrix4();
-
-        this._modelViewProjectionDirty = true;
-        this._modelViewProjection = new Matrix4();
-
-        this._inverseModelViewProjectionDirty = true;
-        this._inverseModelViewProjection = new Matrix4();
-
-        this._modelViewProjectionRelativeToEyeDirty = true;
-        this._modelViewProjectionRelativeToEye = new Matrix4();
-
-        this._modelViewInfiniteProjectionDirty = true;
-        this._modelViewInfiniteProjection = new Matrix4();
-
-        this._normalDirty = true;
-        this._normal = new Matrix3();
-
-        this._normal3DDirty = true;
-        this._normal3D = new Matrix3();
-
-        this._inverseNormalDirty = true;
-        this._inverseNormal = new Matrix3();
-
-        this._inverseNormal3DDirty = true;
-        this._inverseNormal3D = new Matrix3();
-
-        this._encodedCameraPositionMCDirty = true;
-        this._encodedCameraPositionMC = new EncodedCartesian3();
-        this._cameraPosition = new Cartesian3();
-
-        this._sunPositionWC = new Cartesian3();
-        this._sunPositionColumbusView = new Cartesian3();
-        this._sunDirectionWC = new Cartesian3();
-        this._sunDirectionEC = new Cartesian3();
-        this._moonDirectionEC = new Cartesian3();
-
-        this._mode = undefined;
-        this._mapProjection = undefined;
-        this._cameraDirection = new Cartesian3();
-        this._cameraRight = new Cartesian3();
-        this._cameraUp = new Cartesian3();
-        this._frustum2DWidth = 0.0;
-        this._eyeHeight2D = new Cartesian2();
-        this._resolutionScale = 1.0;
+        private var _inverseView3DDirty = true
+        private var _inverseView3D = Matrix4()
+        
+        private var _inverseModelDirty = true
+        private var _inverseModel = Matrix4()
+        
+        private var _inverseTransposeModelDirty = true
+        private var _inverseTransposeModel = Matrix3()
+        
+        private var _viewRotation = Matrix3()
+        private var _inverseViewRotation = Matrix3()
+        
+        private var _viewRotation3D = Matrix3()
+        private var _inverseViewRotation3D = Matrix3()
+        
+        private var _inverseProjectionDirty = true
+        private var _inverseProjection = Matrix4()
+        
+        private var _inverseProjectionOITDirty = true
+        private var _inverseProjectionOIT = Matrix4()
+        
+        private var _modelViewDirty = true
+        private var _modelView = Matrix4()
+        
+        private var _modelView3DDirty = true
+        private var _modelView3D = Matrix4()
+        
+        private var _modelViewRelativeToEyeDirty = true
+        private var _modelViewRelativeToEye = Matrix4()
+        
+        private var _inverseModelViewDirty = true
+        private var _inverseModelView = Matrix4()
+        
+        private var _inverseModelView3DDirty = true
+        private var _inverseModelView3D = Matrix4()
+        
+        private var _viewProjectionDirty = true
+        private var _viewProjection = Matrix4()
+        
+        private var _inverseViewProjectionDirty = true
+        private var _inverseViewProjection = Matrix4()
+        
+        private var _modelViewProjectionDirty = true
+        private var _modelViewProjection = Matrix4()
+        
+        private var _inverseModelViewProjectionDirty = true
+        private var _inverseModelViewProjection = Matrix4()
+        
+        private var _modelViewProjectionRelativeToEyeDirty = true
+        private var _modelViewProjectionRelativeToEye = Matrix4()
+        
+        private var _modelViewInfiniteProjectionDirty = true
+        private var _modelViewInfiniteProjection = Matrix4()
+        
+        private var _normalDirty = true
+        private var _normal = Matrix3()
+        
+        private var _normal3DDirty = true
+        private var _normal3D = Matrix3()
+        
+        private var _inverseNormalDirty = true
+        private var _inverseNormal = Matrix3()
+        
+        private var _inverseNormal3DDirty = true
+        private var _inverseNormal3D = Matrix3()
+        
+        private var _encodedCameraPositionMCDirty = true
+        private var _encodedCameraPositionMC = EncodedCartesian3()
+        private var _cameraPosition = Cartesian3()
+        
+        private var _sunPositionWC = Cartesian3()
+        private var _sunPositionColumbusView = Cartesian3()
+        private var _sunDirectionWC = Cartesian3()
+        private var _sunDirectionEC = Cartesian3()
+        private var _moonDirectionEC = Cartesian3()
+        
+        private var _mode = undefined
+        private var _mapProjection: Projection? = nil
+        private var _cameraDirection = Cartesian3()
+        private var _cameraRight = Cartesian3()
+        private var _cameraUp = Cartesian3()
+        private var _frustum2DWidth = 0.0
+        private var _eyeHeight2D = Cartesian2()
+        private var _resolutionScale = 1.0
     };
 
     defineProperties(UniformState.prototype, {
@@ -155,7 +160,7 @@ class UniformState {
                     this._viewportDirty = true;
                 }
             }
-        },
+        },*/
 /*
         /**
          * @memberof UniformState.prototype
@@ -820,7 +825,7 @@ class UniformState {
         this._currentFrustum.x = frustum.near;
         this._currentFrustum.y = frustum.far;
     };
-
+*/
     /**
      * Synchronizes frame state with the uniform state.  This is called
      * by the {@link Scene} when rendering to ensure that automatic GLSL uniforms
@@ -828,7 +833,8 @@ class UniformState {
      *
      * @param {FrameState} frameState The frameState to synchronize with.
      */
-    UniformState.prototype.update = function(context, frameState) {
+    func update(context: Context, frameState: frameState {
+
         this._mode = frameState.mode;
         this._mapProjection = frameState.mapProjection;
 

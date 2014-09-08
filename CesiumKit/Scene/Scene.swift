@@ -518,7 +518,7 @@ public class Scene {
     }
 
     func updateFrameState(frameNumber: Int, time: JulianDate) {
-        // FIXME: UpdateFrameState
+
         frameState.mode = mode
         frameState.morphTime = morphTime
         frameState.projection = scene2D.projection
@@ -536,8 +536,6 @@ public class Scene {
     }
     
     func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
-        
-        //frustumCommandsList.count = numFrustums
         
         for (var m = 0; m < numFrustums; ++m) {
             
@@ -1073,17 +1071,18 @@ function callAfterRenderFunctions(frameState) {
     
     func render(time: JulianDate) {
     
+        // FIXME: Events
         //preRender.raiseEvent(self, time)
         
         var us = context.uniformState
         
-        var frameNumber = Math.incrementWrap(frameState.frameNumber, 15000000, 1)
-        updateFrameState(scene, frameNumber, time);
-        frameState.passes.render = true;
-        frameState.creditDisplay.beginFrame();
+        var frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
+        updateFrameState(frameNumber, time: time)
+        frameState.passes.render = true
+        // FIXME: Creditdisplay
+        //frameState.creditDisplay.beginFrame();
         
-/*        var context = scene.context;
-        us.update(context, frameState);
+        us.update(context, frameState)
         
         scene._commandList.length = 0;
         scene._overlayCommandList.length = 0;

@@ -531,7 +531,7 @@ CesiumMath.factorial = function(n) {
 * var n = Cesium.Math.incrementWrap(5, 10, 0); // returns 6
 * var n = Cesium.Math.incrementWrap(10, 10, 0); // returns 0
 */
-    func incrementWrap (n: Int, maximumValue: Int, minimumValue: Int) -> Int {
+    static func incrementWrap (n: Int, maximumValue: Int, minimumValue: Int) -> Int {
         
         var result = n
         assert(maximumValue > minimumValue, "maximumValue must be greater than minimumValue")
