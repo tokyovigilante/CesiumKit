@@ -196,14 +196,15 @@ var transform2DInverse: Matrix4
         
         transform = Matrix4.identity()
         invTransform = Matrix4.identity()
-        actualTransform = Matrix4.identity()
-        actualInvTransform = Matrix4.identity()
+        _actualTransform = Matrix4.identity()
+        _actualInvTransform = Matrix4.identity()
        
         transform2DInverse = transform2D.inverseTransformation()
 
         //frustum = PerspectiveFrustum()
         frustum.fovy = Math.toRadians(60.0)
-        frustum.aspectRatio = Double(scene.drawingBufferWidth) / Double(scene.drawingBufferHeight)
+
+        frustum.aspectRatio = Double(scene.context.view.frame.size.width) / Double(scene.context.view.frame.size.height)
 
         
         updateViewMatrix()

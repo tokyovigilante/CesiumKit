@@ -7,6 +7,7 @@
 //
 
 import OpenGLES
+import GLKit
 
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -72,7 +73,7 @@ import OpenGLES
 
 public class Scene {
     
-    private var context: Context
+    var context: Context
     
     /*
     if (!defined(creditContainer)) {
@@ -443,7 +444,7 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
     */
-    var drawingBufferHeight: Int = 0
+    var drawingBufferHeight: Int { get { return self.context.view.drawableHeight } }
     
     /**
     * The drawingBufferHeight of the underlying GL context.
@@ -451,30 +452,22 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
     */
-    var drawingBufferWidth: Int = 0
-    
+    var drawingBufferWidth: Int { get { return self.context.view.drawableHeight } }
+
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
     * @memberof Scene.prototype
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var maximumAliasedLineWidth: Int {
-        get {
-            return context.maximumAliasedLineWidth
-        }
-    }
+    var maximumAliasedLineWidth: Int { get { return context.maximumAliasedLineWidth } }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
     * @memberof Scene.prototype
     * @type {ImageryLayerCollection}
     */
-    var imageryLayers: ImageryLayerCollection {
-        get {
-            return globe.imageryLayerCollection
-        }
-    }
+    var imageryLayers: ImageryLayerCollection { get { return globe.imageryLayerCollection } }
 
     /**
     * The terrain provider providing surface geometry for the globe.
@@ -490,18 +483,15 @@ public class Scene {
         }
     }
 
-    init (glContext: EAGLContext, globe: Globe, rect: (x: Int, y: Int, scale: Double), scene3DOnly: Bool?) {
+    init (view: GLKView, globe: Globe, scene3DOnly: Bool?) {
         
-        context = Context(glContext: glContext)
+        context = Context(view: view)
         self.globe = globe
         
         frameState = FrameState(/*new CreditDisplay(creditContainer*/)
         frameState.scene3DOnly = scene3DOnly ?? false
         
         // initial guess at frustums.
-        drawingBufferWidth = rect.x
-        drawingBufferHeight = rect.y
-        
         var near = camera.frustum.near
         var far = camera.frustum.far
         var numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
@@ -1082,21 +1072,17 @@ function callAfterRenderFunctions(frameState) {
 
     
     func render(time: JulianDate) {
-    /*
-        drawingBufferWidth = width
-        drawingBufferHeight = height
+    
+        //preRender.raiseEvent(self, time)
         
-        scene.preRender.raiseEvent(scene, time)
+        var us = context.uniformState
         
-        var us = scene.context.uniformState;
-        var frameState = scene._frameState;
-        
-        var frameNumber = CesiumMath.incrementWrap(frameState.frameNumber, 15000000.0, 1.0);
+        var frameNumber = Math.incrementWrap(frameState.frameNumber, 15000000, 1)
         updateFrameState(scene, frameNumber, time);
         frameState.passes.render = true;
         frameState.creditDisplay.beginFrame();
         
-        var context = scene.context;
+/*        var context = scene.context;
         us.update(context, frameState);
         
         scene._commandList.length = 0;
@@ -1135,7 +1121,7 @@ function callAfterRenderFunctions(frameState) {
         context.endFrame();
         callAfterRenderFunctions(frameState);
         
-        scene._postRender.raiseEvent(scene, time);*/
+        scene._postRender.raiseEvent(scene, time)*/
         
 }
 

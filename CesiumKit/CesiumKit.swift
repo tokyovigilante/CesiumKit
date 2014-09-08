@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import UIKit.UIScreen
 import Foundation
 import OpenGLES
+import GLKit
 
 /**
 Describes Globe object options
@@ -35,7 +37,7 @@ public struct CesiumOptions {
     public var useDefaultRenderLoop = true
     public var targetFrameRate = 60
     public var showRenderLoopErrors = true
-    public var initialRect: (x: Int, y: Int, scale: Double)
+    public var resolutionScale = 0.5 // will render at 1/2 native - ie Retina iPad @ 1024x768
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
     let contextOptions = ContextOptions()*/
@@ -50,7 +52,7 @@ public struct CesiumOptions {
         mapProjection: Projection = GeographicProjection(),
         targetFrameRate: Int = 60,
         showRenderLoopErrors: Bool = true,
-        initialRect: (x: Int, y: Int, scale: Double)) {
+        resolutionScale: Double = 0.5) {
             self.clock = clock
             self.imageryProvider = imageryProvider
             self.sceneMode = sceneMode
@@ -58,7 +60,7 @@ public struct CesiumOptions {
             self.mapProjection = mapProjection
             self.targetFrameRate = targetFrameRate
             self.showRenderLoopErrors = showRenderLoopErrors
-            self.initialRect = initialRect
+            self.resolutionScale = resolutionScale
     }
 }
 
@@ -120,7 +122,8 @@ public struct CesiumOptions {
 */
 public class CesiumGlobe {
 
-    var canRender = false
+    private var _canRender = false
+    
     var renderLoopRunning = false
     var showRenderLoopErrors = false
     var forceResize = false
@@ -161,7 +164,7 @@ public class CesiumGlobe {
     */
     var targetFrameRate: Int? = nil
     
-    let context: EAGLContext
+    let view: GLKView
     
     /**
     * Gets the scene.
@@ -198,12 +201,13 @@ public class CesiumGlobe {
     */
     var resolutionScale: Double {
         didSet {
-            if self.resolutionScale != 1.0 {
-                self.forceResize = true
+            assert(resolutionScale > 0, "resolutionScale must be greater than 0")
+            if resolutionScale != 1.0 {
+                forceResize = true
             }
         }
     }
-    
+
     /**
     * Gets the credit container.
     * @memberof CesiumWidget.prototype
@@ -228,9 +232,9 @@ public class CesiumGlobe {
     */
     public let clock: Clock
     
-    public init (context: EAGLContext, options: CesiumOptions) {
+    public init (view: GLKView, options: CesiumOptions) {
         
-        self.context = context
+        self.view = view
         /*
         var creditContainer = document.createElement('div');
         creditContainer.className = 'cesium-widget-credits';
@@ -238,19 +242,17 @@ public class CesiumGlobe {
         var creditContainerContainer = defined(options.creditContainer) ? getElement(options.creditContainer) : element;
         creditContainerContainer.appendChild(creditContainer);*/
         
-        self.canRender = false
+        self._canRender = false
         self.renderLoopRunning = false
         self.useDefaultRenderLoop = options.useDefaultRenderLoop
         self.showRenderLoopErrors = options.showRenderLoopErrors
-        self.resolutionScale = options.initialRect.scale
         self.clock = options.clock
         lastFrameTime = nil
         
         self.globe = Globe(ellipsoid: ellipsoid)
         self.scene = Scene(
-            glContext: context,
+            view: view,
             globe: self.globe,
-            rect: options.initialRect,
             /*canvas : canvas,
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,
@@ -306,6 +308,7 @@ public class CesiumGlobe {
         useDefaultRenderLoop = options.useDefaultRenderLoop
         
         self.targetFrameRate = options.targetFrameRate
+        self.resolutionScale = options.resolutionScale
         
         configureCanvasSize()
         configureCameraFrustum()
@@ -365,23 +368,13 @@ public class CesiumGlobe {
     }
 
     func configureCanvasSize() {
-        //FIXME: Fix width
-    /*var canvas = widget._canvas;
-    var width = canvas.clientWidth;
-    var height = canvas.clientHeight;
-    var zoomFactor = defaultValue(window.devicePixelRatio, 1.0) * widget._resolutionScale;
-    
-    widget._canvasWidth = width;
-    widget._canvasHeight = height;
-    
-    width *= zoomFactor;
-    height *= zoomFactor;
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    widget._canRender = width !== 0 && height !== 0;*/
-}
+        
+        var width = view.drawableWidth
+        var height = view.drawableHeight
+        //let zoomFactor = Double(UIScreen.mainScreen().scale) * resolutionScale
+        
+        _canRender = view.drawableWidth != 0 && view.drawableHeight != 0
+    }
 
 func configureCameraFrustum() {
     // FIXME: Fix cameraFrustum
@@ -505,26 +498,27 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     
     func resize() {
 // FIXME: Resize
-/*
+
 //        var canvas = this._canvas;
 //        var width = canvas.clientWidth;
 //        var height = canvas.clientHeight;
-        if (!this._forceResize && this._canvasWidth === width && this._canvasHeight === height) {
+        /*if (!this._forceResize && this._canvasWidth === width && this._canvasHeight === height) {
             return;
-        }
-        this._forceResize = false;
+        }*/
+        //this._forceResize = false;
         
-        configureCanvasSize(this);
-        configureCameraFrustum(this);*/
+        configureCanvasSize()
+        //configureCameraFrustum()
     }
     /**
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
     public func render() {
+        resize()
         scene.initializeFrame()
         var currentTime = clock.tick()
-        if canRender {
+        if _canRender {
             scene.render(currentTime)
         }
     }

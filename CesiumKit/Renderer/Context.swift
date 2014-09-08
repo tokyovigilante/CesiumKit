@@ -8,6 +8,7 @@
 
 import Foundation
 import OpenGLES
+import GLKit
 
 /*
 function _errorToString(gl, error) {
@@ -124,7 +125,7 @@ return undefined;
 class Context {
     
     
-    weak var glContext: EAGLContext?
+    var view: GLKView
     
     var allowTextureFilterAnisotropic = true
     
@@ -394,7 +395,7 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/'>OES_element_index_uint</a>
     */
     var elementIndexUint: Bool {
-    get { return glContext!.API == EAGLRenderingAPI.OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
+    get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
     }
     
     /**
@@ -405,7 +406,7 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/'>WEBGL_depth_texture</a>
     */
     var depthTexture: Bool {
-    get { return glContext!.API == EAGLRenderingAPI.OpenGLES3 || checkGLExtension("GL_OES_depth_texture") }
+    get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_depth_texture") }
     }
     
     /**
@@ -564,13 +565,10 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth'>drawingBufferWidth</a>
     */
-    var drawingBufferHeight: GLint {
+    var drawingBufferHeight: Int {
     get
     {
-        var width: GLint = 0
-        //GLint height;
-        glGetRenderbufferParameteriv(GLenum(GL_RENDERBUFFER), GLenum(GL_RENDERBUFFER_WIDTH_OES), &width)
-        return width
+        return Int(self.view.drawableHeight)
     }
     }
     
@@ -580,13 +578,11 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight'>drawingBufferHeight</a>
     */
-    var drawingBufferWidth: GLint {
-    get
-    {
-        var height: GLint = 0
-        glGetRenderbufferParameteriv(GLenum(GL_RENDERBUFFER), GLenum(GL_RENDERBUFFER_HEIGHT_OES), &height)
-        return height
-    }
+    var drawingBufferWidth: Int {
+        get
+        {
+            return Int(self.view.drawableWidth)
+        }
     }
     
     var cachedGLESExtensions: [String]?
@@ -607,9 +603,9 @@ class Context {
     */
     var defaultFramebuffer: Framebuffer? = nil
 
-    init (glContext: EAGLContext) {
+    init (view: GLKView) {
         
-        self.glContext = glContext
+        self.view = view
         
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
@@ -679,7 +675,6 @@ class Context {
         glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
         maximumViewportWidth = Int(maximumViewportDimensions[0])
         maximumViewportHeight = Int(maximumViewportDimensions[1])
-        //maximumViewportDimensions = Int(GLIntTemp)
         
         antialias = true
     

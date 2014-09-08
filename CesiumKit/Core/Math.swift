@@ -516,7 +516,7 @@ CesiumMath.factorial = function(n) {
     }
     return factorials[n];
 };
-
+*/
 /**
 * Increments a number with a wrapping to a minimum value if the number exceeds the maximum value.
 *
@@ -531,25 +531,17 @@ CesiumMath.factorial = function(n) {
 * var n = Cesium.Math.incrementWrap(5, 10, 0); // returns 6
 * var n = Cesium.Math.incrementWrap(10, 10, 0); // returns 0
 */
-CesiumMath.incrementWrap = function(n, maximumValue, minimumValue) {
-    minimumValue = defaultValue(minimumValue, 0.0);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(n)) {
-        throw new DeveloperError('n is required.');
+    func incrementWrap (n: Int, maximumValue: Int, minimumValue: Int) -> Int {
+        
+        var result = n
+        assert(maximumValue > minimumValue, "maximumValue must be greater than minimumValue")
+        ++result
+        if (result > maximumValue) {
+            result = minimumValue
+        }
+        return result
     }
-    if (maximumValue <= minimumValue) {
-        throw new DeveloperError('maximumValue must be greater than minimumValue.');
-    }
-    //>>includeEnd('debug');
-    
-    ++n;
-    if (n > maximumValue) {
-        n = minimumValue;
-    }
-    return n;
-};
-
+/*
 /**
 * Determines if a positive integer is a power of two.
 *
@@ -671,6 +663,5 @@ CesiumMath.asinClamped = function(value) {
 };*/
 
 }
-
 
 
