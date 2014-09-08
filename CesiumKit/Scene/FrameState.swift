@@ -31,7 +31,7 @@ struct FrameState {
     *
     * @type {Number}
     */
-    var morphTime: Double? { get { return mode.morphTime() } }
+    var morphTime: Double = SceneMode.Scene3D.morphTime()!
     
     /**
     * The current frame number.
@@ -47,7 +47,7 @@ struct FrameState {
     * @type {JulianDate}
     * @default undefined
     */
-    var time: NSDate? = nil
+    var time: JulianDate? = nil
     
     /**
     * The map projection to use in 2D and Columbus View modes.

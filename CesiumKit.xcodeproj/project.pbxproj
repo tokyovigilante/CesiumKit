@@ -381,15 +381,15 @@
 				94540428199F4CD900012DC4 /* QuadTreeTile.swift */,
 				9454042A199F4FD900012DC4 /* QuadTreeTileLoadState.swift */,
 				94B87DC0194D678D00012DC4 /* Scene.swift */,
-				940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */,
 				94B87DC8194D6B0A00012DC4 /* SceneMode.swift */,
+				940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */,
 				94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */,
 				942CEED2199E063E00012DC4 /* SkyBox.swift */,
 				9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */,
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
+				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
-				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";

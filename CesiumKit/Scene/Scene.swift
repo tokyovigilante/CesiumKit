@@ -293,7 +293,7 @@ public class Scene {
     * @type {SceneMode}
     * @default {@link SceneMode.SCENE3D}
     */
-    var mode = SceneMode.Scene3D
+    var mode: SceneMode = .Scene3D
     
     /**
     * DOC_TBA
@@ -452,7 +452,6 @@ public class Scene {
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
     */
     var drawingBufferWidth: Int = 0
-
     
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
@@ -491,7 +490,7 @@ public class Scene {
         }
     }
 
-    init (glContext: EAGLContext, globe: Globe, scene3DOnly: Bool?) {
+    init (glContext: EAGLContext, globe: Globe, rect: (x: Int, y: Int, scale: Double), scene3DOnly: Bool?) {
         
         context = Context(glContext: glContext)
         self.globe = globe
@@ -500,71 +499,74 @@ public class Scene {
         frameState.scene3DOnly = scene3DOnly ?? false
         
         // initial guess at frustums.
+        drawingBufferWidth = rect.x
+        drawingBufferHeight = rect.y
+        
         var near = camera.frustum.near
         var far = camera.frustum.far
         var numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
-        updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums, frustumCommandsList: frustumCommandsList)
+        updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
         
         // give frameState, camera, and screen space camera controller initial state before rendering
         updateFrameState(0, time: JulianDate())
         initializeFrame()
     }
-    /*
-var scratchOccluderBoundingSphere = new BoundingSphere();
-var scratchOccluder;
 
-function getOccluder(scene) {
-    // TODO: The occluder is the top-level globe. When we add
-    //       support for multiple central bodies, this should be the closest one.
-    var globe = scene.globe;
-    if (scene.mode === SceneMode.SCENE3D && defined(globe)) {
-        var ellipsoid = globe.ellipsoid;
-        scratchOccluderBoundingSphere.radius = ellipsoid.minimumRadius;
-        scratchOccluder = Occluder.fromBoundingSphere(scratchOccluderBoundingSphere, scene._camera.positionWC, scratchOccluder);
-        return scratchOccluder;
+    func getOccluder() -> Occluder? {
+        // TODO: The occluder is the top-level globe. When we add
+        //       support for multiple central bodies, this should be the closest one.
+        if mode == SceneMode.Scene3D {//&& globe != nil {
+            return Occluder(occluderBoundingSphere: BoundingSphere(radius: globe.ellipsoid.minimumRadius), cameraPosition: camera.positionWC)
+        }
+        return nil
     }
-    
-    return undefined;
-}
-*/
-    func clearPasses(passes: FrameState.Passes ) {
+
+    func clearPasses(inout passes: FrameState.Passes ) {
         // FIXME: Clearpasses
-        //passes.render = false
-        //passes.pick = false
+        passes.render = false
+        passes.pick = false
     }
 
     func updateFrameState(frameNumber: Int, time: JulianDate) {
-    // FIXME: UpdateFrameState
-    /*frameState.mode = mode
-    frameState.morphTime = morphTime
-    frameState.scene2D = scene2D
-    frameState.frameNumber = frameNumber
-    frameState.time = time
-    frameState.camera = camera
-    frameState.cullingVolume = camera.frustum.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC)
-    frameState.occluder = getOccluder(scene)
-    frameState.afterRender.length = 0
-    */
-    clearPasses(frameState.passes)
-}
-    
-    func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int, frustumCommandsList: [FrustumCommands]) {
-        //Fixme: updateFrustums
-        /*
-    frustumCommandsList.length = numFrustums;
-    for (var m = 0; m < numFrustums; ++m) {
-        var curNear = Math.max(near, Math.pow(farToNearRatio, m) * near);
-        var curFar = Math.min(far, farToNearRatio * curNear);
+        // FIXME: UpdateFrameState
+        frameState.mode = mode
+        frameState.morphTime = morphTime
+        frameState.projection = scene2D.projection
+        frameState.frameNumber = frameNumber
+        frameState.time = time
+        frameState.camera = camera
+        frameState.cullingVolume = camera.frustum.computeCullingVolume(
+            position: camera.positionWC,
+            direction: camera.directionWC,
+            up: camera.upWC)
+        frameState.occluder = getOccluder()
+        frameState.afterRender.removeAll()
         
-        var frustumCommands = frustumCommandsList[m];
-        if (!defined(frustumCommands)) {
-            frustumCommands = frustumCommandsList[m] = new FrustumCommands(curNear, curFar);
-        } else {
-            frustumCommands.near = curNear;
-            frustumCommands.far = curFar;
+        clearPasses(&frameState.passes)
+    }
+    
+    func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
+        
+        //frustumCommandsList.count = numFrustums
+        
+        for (var m = 0; m < numFrustums; ++m) {
+            
+            let curNear = max(near, pow(farToNearRatio, Double(m)) * near)
+            let curFar = min(far, farToNearRatio * curNear)
+            
+            if frustumCommandsList.count > m {
+                frustumCommandsList[m].near = curNear
+                frustumCommandsList[m].far = curFar
+            }
+            else {
+                frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar))
+            }
         }
-    }*/
-}
+        if frustumCommandsList.count > numFrustums {
+            frustumCommandsList.removeRange(Range(numFrustums..<frustumCommandsList.count))
+        }
+    }
+
 /*
 function insertIntoBin(scene, command, distance) {
     if (scene.debugShowFrustums) {

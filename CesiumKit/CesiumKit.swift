@@ -35,6 +35,7 @@ public struct CesiumOptions {
     public var useDefaultRenderLoop = true
     public var targetFrameRate = 60
     public var showRenderLoopErrors = true
+    public var initialRect: (x: Int, y: Int, scale: Double)
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
     let contextOptions = ContextOptions()*/
@@ -48,7 +49,8 @@ public struct CesiumOptions {
         scene3DOnly: Bool = false,
         mapProjection: Projection = GeographicProjection(),
         targetFrameRate: Int = 60,
-        showRenderLoopErrors: Bool = true) {
+        showRenderLoopErrors: Bool = true,
+        initialRect: (x: Int, y: Int, scale: Double)) {
             self.clock = clock
             self.imageryProvider = imageryProvider
             self.sceneMode = sceneMode
@@ -56,6 +58,7 @@ public struct CesiumOptions {
             self.mapProjection = mapProjection
             self.targetFrameRate = targetFrameRate
             self.showRenderLoopErrors = showRenderLoopErrors
+            self.initialRect = initialRect
     }
 }
 
@@ -239,8 +242,7 @@ public class CesiumGlobe {
         self.renderLoopRunning = false
         self.useDefaultRenderLoop = options.useDefaultRenderLoop
         self.showRenderLoopErrors = options.showRenderLoopErrors
-        self.resolutionScale = 1.0
-        self.forceResize = false
+        self.resolutionScale = options.initialRect.scale
         self.clock = options.clock
         lastFrameTime = nil
         
@@ -248,6 +250,7 @@ public class CesiumGlobe {
         self.scene = Scene(
             glContext: context,
             globe: self.globe,
+            rect: options.initialRect,
             /*canvas : canvas,
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,

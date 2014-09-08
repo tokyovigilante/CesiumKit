@@ -85,8 +85,8 @@ public class Camera {
     */
     var transform: Matrix4
     var invTransform: Matrix4
-    var actualTransform: Matrix4
-    var actualInvTransform: Matrix4
+    private var _actualTransform: Matrix4
+    private var _actualInvTransform: Matrix4
     
     /**
     * The region of space in view.
@@ -102,76 +102,76 @@ public class Camera {
     // FIXME: Frustum protocol
     var frustum/*: Frustum*/ = PerspectiveFrustum()
 
-        /**
-        * The default amount to move the camera when an argument is not
-        * provided to the move methods.
-        * @type {Number}
-        * @default 100000.0;
-        */
-        var defaultMoveAmount = 100000.0
-
-        /**
-        * The default amount to rotate the camera when an argument is not
-        * provided to the look methods.
-        * @type {Number}
-        * @default Math.PI / 60.0
-        */
-        var defaultLookAmount: Double = M_PI / 60.0
-
-        /**
-        * The default amount to rotate the camera when an argument is not
-        * provided to the rotate methods.
-        * @type {Number}
-        * @default Math.PI / 3600.0
-        */
-        var defaultRotateAmount = M_PI / 3600.0
-        /**
-        * The default amount to move the camera when an argument is not
-        * provided to the zoom methods.
-        * @type {Number}
-        * @default 100000.0;
-        */
-        var defaultZoomAmount = 100000.0
-
-        /**
-        * If set, the camera will not be able to rotate past this axis in either direction.
-        * @type {Cartesian3}
-        * @default undefined
-        */
-        var constrainedAxis: Cartesian3? = nil
-        /**
-        * The factor multiplied by the the map size used to determine where to clamp the camera position
-        * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
-        * @type {Number}
-        * @default 1.5
-        */
-        var maximumTranslateFactor = 1.5
-        /**
-        * The factor multiplied by the the map size used to determine where to clamp the camera position
-        * when zooming out from the surface. The default is 2.5. Only valid for 2D.
-        * @type {Number}
-        * @default 2.5
-        */
-        var maximumZoomFactor = 2.5
+    /**
+    * The default amount to move the camera when an argument is not
+    * provided to the move methods.
+    * @type {Number}
+    * @default 100000.0;
+    */
+    var defaultMoveAmount = 100000.0
+    
+    /**
+    * The default amount to rotate the camera when an argument is not
+    * provided to the look methods.
+    * @type {Number}
+    * @default Math.PI / 60.0
+    */
+    var defaultLookAmount: Double = M_PI / 60.0
+    
+    /**
+    * The default amount to rotate the camera when an argument is not
+    * provided to the rotate methods.
+    * @type {Number}
+    * @default Math.PI / 3600.0
+    */
+    var defaultRotateAmount = M_PI / 3600.0
+    /**
+    * The default amount to move the camera when an argument is not
+    * provided to the zoom methods.
+    * @type {Number}
+    * @default 100000.0;
+    */
+    var defaultZoomAmount = 100000.0
+    
+    /**
+    * If set, the camera will not be able to rotate past this axis in either direction.
+    * @type {Cartesian3}
+    * @default undefined
+    */
+    var constrainedAxis: Cartesian3? = nil
+    /**
+    * The factor multiplied by the the map size used to determine where to clamp the camera position
+    * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
+    * @type {Number}
+    * @default 1.5
+    */
+    var maximumTranslateFactor = 1.5
+    /**
+    * The factor multiplied by the the map size used to determine where to clamp the camera position
+    * when zooming out from the surface. The default is 2.5. Only valid for 2D.
+    * @type {Number}
+    * @default 2.5
+    */
+    var maximumZoomFactor = 2.5
 
     private var _viewMatrix = Matrix4()
     private var _invViewMatrix = Matrix4()
 
-var mode: SceneMode = .Scene3D
+    var mode: SceneMode = .Scene3D
+    
+    private var _modeChanged = true
+    
+    private var _projection = GeographicProjection()
+    
+    private var _maxCoord = Cartesian3()
+    
+    private var _max2Dfrustum: OrthographicFrustum? = nil
 
-private var _modeChanged = true
-
-private var _projection = GeographicProjection()
-
-private var _maxCoord = Cartesian3()
-
-private var _max2Dfrustum: OrthographicFrustum? = nil
-
-var transform2D = Matrix4(
-column0Row0: 0.0, column1Row0: 0.0, column2Row0: 1.0, column3Row0: 0.0,
-column0Row1: 1.0, column1Row1: 0.0, column2Row1: 0.0, column3Row1: 0.0,
-column0Row2: 0.0, column1Row2: 1.0, column2Row2: 0.0, column3Row2: 0.0,
-column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
+    var transform2D = Matrix4(
+        column0Row0: 0.0, column1Row0: 0.0, column2Row0: 1.0, column3Row0: 0.0,
+        column0Row1: 1.0, column1Row1: 0.0, column2Row1: 0.0, column3Row1: 0.0,
+        column0Row2: 0.0, column1Row2: 1.0, column2Row2: 0.0, column3Row2: 0.0,
+        column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
 
 var transform2DInverse: Matrix4
 
@@ -211,31 +211,27 @@ var transform2DInverse: Matrix4
 
     
     func updateViewMatrix() {
-    /*var r = _right
-    var u = _up
-    var d = _direction
-    var e = _position
-    
-    //var viewMatrix = camera._viewMatrix;
-    viewMatrix[0] = r.x;
-    viewMatrix[1] = u.x;
-    viewMatrix[2] = -d.x;
-    viewMatrix[3] = 0.0;
-    viewMatrix[4] = r.y;
-    viewMatrix[5] = u.y;
-    viewMatrix[6] = -d.y;
-    viewMatrix[7] = 0.0;
-    viewMatrix[8] = r.z;
-    viewMatrix[9] = u.z;
-    viewMatrix[10] = -d.z;
-    viewMatrix[11] = 0.0;
-    viewMatrix[12] = -Cartesian3.dot(r, e);
-    viewMatrix[13] = -Cartesian3.dot(u, e);
-    viewMatrix[14] = Cartesian3.dot(d, e);
-    viewMatrix[15] = 1.0;
-    
-    Matrix4.multiply(viewMatrix, camera._actualInvTransform, camera._viewMatrix);
-    Matrix4.inverseTransformation(camera._viewMatrix, camera._invViewMatrix);*/
+        
+        var newViewMatrix = Matrix4()
+        
+        newViewMatrix[0] = right.x
+        newViewMatrix[1] = up.x
+        newViewMatrix[2] = -direction.x
+        newViewMatrix[3] = 0.0
+        newViewMatrix[4] = right.y
+        newViewMatrix[5] = up.y
+        newViewMatrix[6] = -direction.y
+        newViewMatrix[7] = 0.0
+        newViewMatrix[8] = right.z
+        newViewMatrix[9] = up.z
+        newViewMatrix[10] = -direction.z
+        newViewMatrix[11] = 0.0
+        newViewMatrix[12] = -right.dot(position)
+        newViewMatrix[13] = -up.dot(position)
+        newViewMatrix[14] = direction.dot(position)
+        newViewMatrix[15] = 1.0
+        
+        _viewMatrix = newViewMatrix.multiply(_actualInvTransform).inverseTransformation()
     }
     /*
     var scratchCartographic = new Cartographic();

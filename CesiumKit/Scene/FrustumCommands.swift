@@ -22,4 +22,10 @@ class FrustumCommands {
     var far = 0.0
     var opaqueCommands = [DrawCommand]()
     var translucentCommands = [DrawCommand]()
+    
+    init (near: Double = 0.0, far: Double = 0.0) {
+        self.near = near
+        self.far = far
+    }
+    
 }

@@ -46,6 +46,11 @@ struct BoundingSphere: Intersectable {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
+    
+    init (center: Cartesian3 = Cartesian3.zero(), radius: Double = 0.0) {
+        self.center = center
+        self.radius = radius
+    }
 
     static func fromPoints (points: [Cartesian3]) -> BoundingSphere {
         

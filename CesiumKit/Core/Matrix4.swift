@@ -1194,7 +1194,7 @@ Matrix4.getMaximumScale = function(matrix) {
     Matrix4.getScale(matrix, scratchScale);
     return Cartesian3.maximumComponent(scratchScale);
 };
-
+*/
 /**
 * Computes the product of two matrices.
 *
@@ -1203,91 +1203,64 @@ Matrix4.getMaximumScale = function(matrix) {
 * @param {Matrix4} result The object onto which to store the result.
 * @returns {Matrix4} The modified result parameter.
 */
-Matrix4.multiply = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required');
+    func multiply (other: Matrix4) -> Matrix4 {
+        
+        var left0 = grid[0]
+        var left1 = grid[1]
+        var left2 = grid[2]
+        var left3 = grid[3]
+        var left4 = grid[4]
+        var left5 = grid[5]
+        var left6 = grid[6]
+        var left7 = grid[7]
+        var left8 = grid[8]
+        var left9 = grid[9]
+        var left10 = grid[10]
+        var left11 = grid[11]
+        var left12 = grid[12]
+        var left13 = grid[13]
+        var left14 = grid[14]
+        var left15 = grid[15]
+        
+        var right0 = other[0]
+        var right1 = other[1]
+        var right2 = other[2]
+        var right3 = other[3]
+        var right4 = other[4]
+        var right5 = other[5]
+        var right6 = other[6]
+        var right7 = other[7]
+        var right8 = other[8]
+        var right9 = other[9]
+        var right10 = other[10]
+        var right11 = other[11]
+        var right12 = other[12]
+        var right13 = other[13]
+        var right14 = other[14]
+        var right15 = other[15]
+        
+        var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
+        var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
+        var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
+        var column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
+        
+        var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
+        var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
+        var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
+        var column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
+        
+        var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
+        var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
+        var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
+        var column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
+        
+        var column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
+        var column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
+        var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
+        var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
+        
+        return Matrix4(column0Row0: column0Row0, column1Row0: column0Row1, column2Row0: column0Row2, column3Row0: column0Row3, column0Row1: column1Row0, column1Row1: column1Row1, column2Row1: column1Row2, column3Row1: column1Row3, column0Row2: column2Row0, column1Row2: column2Row1, column2Row2: column2Row2, column3Row2: column2Row3, column0Row3: column3Row0, column1Row3: column3Row1, column2Row3: column3Row2, column3Row3: column3Row3)
     }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var left0 = left[0];
-    var left1 = left[1];
-    var left2 = left[2];
-    var left3 = left[3];
-    var left4 = left[4];
-    var left5 = left[5];
-    var left6 = left[6];
-    var left7 = left[7];
-    var left8 = left[8];
-    var left9 = left[9];
-    var left10 = left[10];
-    var left11 = left[11];
-    var left12 = left[12];
-    var left13 = left[13];
-    var left14 = left[14];
-    var left15 = left[15];
-    
-    var right0 = right[0];
-    var right1 = right[1];
-    var right2 = right[2];
-    var right3 = right[3];
-    var right4 = right[4];
-    var right5 = right[5];
-    var right6 = right[6];
-    var right7 = right[7];
-    var right8 = right[8];
-    var right9 = right[9];
-    var right10 = right[10];
-    var right11 = right[11];
-    var right12 = right[12];
-    var right13 = right[13];
-    var right14 = right[14];
-    var right15 = right[15];
-    
-    var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3;
-    var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3;
-    var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3;
-    var column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3;
-    
-    var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7;
-    var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7;
-    var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7;
-    var column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7;
-    
-    var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11;
-    var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11;
-    var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11;
-    var column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11;
-    
-    var column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15;
-    var column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15;
-    var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15;
-    var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15;
-    
-    result[0] = column0Row0;
-    result[1] = column0Row1;
-    result[2] = column0Row2;
-    result[3] = column0Row3;
-    result[4] = column1Row0;
-    result[5] = column1Row1;
-    result[6] = column1Row2;
-    result[7] = column1Row3;
-    result[8] = column2Row0;
-    result[9] = column2Row1;
-    result[10] = column2Row2;
-    result[11] = column2Row3;
-    result[12] = column3Row0;
-    result[13] = column3Row1;
-    result[14] = column3Row2;
-    result[15] = column3Row3;
-    return result;
-};
 
 /**
 * Computes the product of two matrices assuming the matrices are
@@ -1308,7 +1281,7 @@ Matrix4.multiply = function(left, right, result) {
 * var m2 = Cesium.Transforms.eastNorthUpToFixedFrame(new Cesium.Cartesian3(1.0, 1.0, 1.0));
 * var m3 = Cesium.Matrix4.multiplyTransformation(m1, m2);
 */
-Matrix4.multiplyTransformation = function(left, right, result) {
+/*Matrix4.multiplyTransformation = function(left, right, result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(left)) {
         throw new DeveloperError('left is required');
