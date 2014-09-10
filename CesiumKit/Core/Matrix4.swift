@@ -135,7 +135,7 @@ struct Matrix4 : Packable {
             result[index] = Double(array[index])
         }
         return result
-}
+    }
 /*
 /**
 * Duplicates a Matrix4 instance.
@@ -1950,7 +1950,7 @@ Matrix4.getTranslation = function(matrix, result) {
     result.z = matrix[14];
     return result;
 };
-
+*/
 /**
 * Gets the upper left 3x3 rotation matrix of the provided matrix, assuming the matrix is a affine transformation matrix.
 *
@@ -1973,28 +1973,14 @@ Matrix4.getTranslation = function(matrix, result) {
 * //     [11.0, 15.0, 19.0]
 * //     [12.0, 16.0, 20.0]
 */
-Matrix4.getRotation = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    func rotation() -> Matrix3 {
+        
+        return Matrix3(
+            column0Row0: grid[0], column1Row0: grid[1], column2Row0: grid[2],
+            column0Row1: grid[4], column1Row1: grid[5], column2Row1: grid[6],
+            column0Row2: grid[8], column1Row2: grid[9], column2Row2: grid[10])
     }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = matrix[0];
-    result[1] = matrix[1];
-    result[2] = matrix[2];
-    result[3] = matrix[4];
-    result[4] = matrix[5];
-    result[5] = matrix[6];
-    result[6] = matrix[8];
-    result[7] = matrix[9];
-    result[8] = matrix[10];
-    return result;
-};
-
+/*
 /**
 * Computes the inverse of the provided matrix using Cramers Rule.
 * If the determinant is zero, the matrix can not be inverted, and an exception is thrown.

@@ -98,9 +98,7 @@ public class Camera {
     * @see PerspectiveOffCenterFrustum
     * @see OrthographicFrustum
     */
-
-    // FIXME: Frustum protocol
-    var frustum/*: Frustum*/ = PerspectiveFrustum()
+    var frustum: Frustum = PerspectiveFrustum()
 
     /**
     * The default amount to move the camera when an argument is not
@@ -154,7 +152,40 @@ public class Camera {
     */
     var maximumZoomFactor = 2.5
 
+    /**
+    * Gets the view matrix.
+    * @memberof Camera.prototype
+    *
+    * @type {Matrix4}
+    *
+    * @see czm_view
+    * @see Camera#inverseViewMatrix
+    */
+    var viewMatrix: Matrix4 {
+        get {
+            updateMembers()
+            return _viewMatrix
+        }
+    }
+    
     private var _viewMatrix = Matrix4()
+    
+    /**
+    * Gets the inverse view matrix.
+    * @memberof Camera.prototype
+    *
+    * @type {Matrix4}
+    *
+    * @see czm_inverseView
+    * @see Camera#viewMatrix
+    */
+    var inverseViewMatrix: Matrix4 {
+        get {
+            updateMembers()
+            return _invViewMatrix
+        }
+    }
+    
     private var _invViewMatrix = Matrix4()
 
     var mode: SceneMode = .Scene3D
@@ -201,7 +232,7 @@ var transform2DInverse: Matrix4
        
         transform2DInverse = transform2D.inverseTransformation()
 
-        //frustum = PerspectiveFrustum()
+        frustum = PerspectiveFrustum()
         frustum.fovy = Math.toRadians(60.0)
 
         frustum.aspectRatio = Double(scene.context.view.frame.size.width) / Double(scene.context.view.frame.size.height)
@@ -358,96 +389,98 @@ var transform2DInverse: Matrix4
     Matrix4.setColumn(camera._actualTransform, 3, newOrigin, camera._actualTransform);
     }
     
-    var scratchCartesian = new Cartesian3();
-    
-    function updateMembers(camera) {
-    var position = camera._position;
-    var positionChanged = !Cartesian3.equals(position, camera.position);
-    if (positionChanged) {
-    position = Cartesian3.clone(camera.position, camera._position);
+    */
+    func updateMembers() {
+        //FIXME: Updatemembers
+        /*var scratchCartesian = new Cartesian3();
+        
+        var position = camera._position;
+        var positionChanged = !Cartesian3.equals(position, camera.position);
+        if (positionChanged) {
+            position = Cartesian3.clone(camera.position, camera._position);
+        }
+        
+        var direction = camera._direction;
+        var directionChanged = !Cartesian3.equals(direction, camera.direction);
+        if (directionChanged) {
+            direction = Cartesian3.clone(camera.direction, camera._direction);
+        }
+        
+        var up = camera._up;
+        var upChanged = !Cartesian3.equals(up, camera.up);
+        if (upChanged) {
+            up = Cartesian3.clone(camera.up, camera._up);
+        }
+        
+        var right = camera._right;
+        var rightChanged = !Cartesian3.equals(right, camera.right);
+        if (rightChanged) {
+            right = Cartesian3.clone(camera.right, camera._right);
+        }
+        
+        var transformChanged = !Matrix4.equals(camera._transform, camera.transform) || camera._modeChanged;
+        if (transformChanged) {
+            Matrix4.clone(camera.transform, camera._transform);
+            Matrix4.inverseTransformation(camera._transform, camera._invTransform);
+            
+            if (camera._mode === SceneMode.COLUMBUS_VIEW || camera._mode === SceneMode.SCENE2D) {
+                if (Matrix4.equals(Matrix4.IDENTITY, camera._transform)) {
+                    Matrix4.clone(Camera.TRANSFORM_2D, camera._actualTransform);
+                } else if (camera._mode === SceneMode.COLUMBUS_VIEW) {
+                    convertTransformForColumbusView(camera);
+                } else {
+                    convertTransformFor2D(camera);
+                }
+            } else {
+                Matrix4.clone(camera._transform, camera._actualTransform);
+            }
+            
+            Matrix4.inverseTransformation(camera._actualTransform, camera._actualInvTransform);
+            
+            camera._modeChanged = false;
+        }
+        
+        var transform = camera._actualTransform;
+        
+        if (positionChanged || transformChanged) {
+            camera._positionWC = Matrix4.multiplyByPoint(transform, position, camera._positionWC);
+        }
+        
+        if (directionChanged || upChanged || rightChanged) {
+            var det = Cartesian3.dot(direction, Cartesian3.cross(up, right, scratchCartesian));
+            if (Math.abs(1.0 - det) > CesiumMath.EPSILON2) {
+                //orthonormalize axes
+                direction = Cartesian3.normalize(direction, camera._direction);
+                Cartesian3.clone(direction, camera.direction);
+                
+                var invUpMag = 1.0 / Cartesian3.magnitudeSquared(up);
+                var scalar = Cartesian3.dot(up, direction) * invUpMag;
+                var w0 = Cartesian3.multiplyByScalar(direction, scalar, scratchCartesian);
+                up = Cartesian3.normalize(Cartesian3.subtract(up, w0, camera._up), camera._up);
+                Cartesian3.clone(up, camera.up);
+                
+                right = Cartesian3.cross(direction, up, camera._right);
+                Cartesian3.clone(right, camera.right);
+            }
+        }
+        
+        if (directionChanged || transformChanged) {
+            camera._directionWC = Matrix4.multiplyByPointAsVector(transform, direction, camera._directionWC);
+        }
+        
+        if (upChanged || transformChanged) {
+            camera._upWC = Matrix4.multiplyByPointAsVector(transform, up, camera._upWC);
+        }
+        
+        if (rightChanged || transformChanged) {
+            camera._rightWC = Matrix4.multiplyByPointAsVector(transform, right, camera._rightWC);
+        }
+        
+        if (positionChanged || directionChanged || upChanged || rightChanged || transformChanged) {
+            updateViewMatrix(camera);
+        }*/
     }
-    
-    var direction = camera._direction;
-    var directionChanged = !Cartesian3.equals(direction, camera.direction);
-    if (directionChanged) {
-    direction = Cartesian3.clone(camera.direction, camera._direction);
-    }
-    
-    var up = camera._up;
-    var upChanged = !Cartesian3.equals(up, camera.up);
-    if (upChanged) {
-    up = Cartesian3.clone(camera.up, camera._up);
-    }
-    
-    var right = camera._right;
-    var rightChanged = !Cartesian3.equals(right, camera.right);
-    if (rightChanged) {
-    right = Cartesian3.clone(camera.right, camera._right);
-    }
-    
-    var transformChanged = !Matrix4.equals(camera._transform, camera.transform) || camera._modeChanged;
-    if (transformChanged) {
-    Matrix4.clone(camera.transform, camera._transform);
-    Matrix4.inverseTransformation(camera._transform, camera._invTransform);
-    
-    if (camera._mode === SceneMode.COLUMBUS_VIEW || camera._mode === SceneMode.SCENE2D) {
-    if (Matrix4.equals(Matrix4.IDENTITY, camera._transform)) {
-    Matrix4.clone(Camera.TRANSFORM_2D, camera._actualTransform);
-    } else if (camera._mode === SceneMode.COLUMBUS_VIEW) {
-    convertTransformForColumbusView(camera);
-    } else {
-    convertTransformFor2D(camera);
-    }
-    } else {
-    Matrix4.clone(camera._transform, camera._actualTransform);
-    }
-    
-    Matrix4.inverseTransformation(camera._actualTransform, camera._actualInvTransform);
-    
-    camera._modeChanged = false;
-    }
-    
-    var transform = camera._actualTransform;
-    
-    if (positionChanged || transformChanged) {
-    camera._positionWC = Matrix4.multiplyByPoint(transform, position, camera._positionWC);
-    }
-    
-    if (directionChanged || upChanged || rightChanged) {
-    var det = Cartesian3.dot(direction, Cartesian3.cross(up, right, scratchCartesian));
-    if (Math.abs(1.0 - det) > CesiumMath.EPSILON2) {
-    //orthonormalize axes
-    direction = Cartesian3.normalize(direction, camera._direction);
-    Cartesian3.clone(direction, camera.direction);
-    
-    var invUpMag = 1.0 / Cartesian3.magnitudeSquared(up);
-    var scalar = Cartesian3.dot(up, direction) * invUpMag;
-    var w0 = Cartesian3.multiplyByScalar(direction, scalar, scratchCartesian);
-    up = Cartesian3.normalize(Cartesian3.subtract(up, w0, camera._up), camera._up);
-    Cartesian3.clone(up, camera.up);
-    
-    right = Cartesian3.cross(direction, up, camera._right);
-    Cartesian3.clone(right, camera.right);
-    }
-    }
-    
-    if (directionChanged || transformChanged) {
-    camera._directionWC = Matrix4.multiplyByPointAsVector(transform, direction, camera._directionWC);
-    }
-    
-    if (upChanged || transformChanged) {
-    camera._upWC = Matrix4.multiplyByPointAsVector(transform, up, camera._upWC);
-    }
-    
-    if (rightChanged || transformChanged) {
-    camera._rightWC = Matrix4.multiplyByPointAsVector(transform, right, camera._rightWC);
-    }
-    
-    if (positionChanged || directionChanged || upChanged || rightChanged || transformChanged) {
-    updateViewMatrix(camera);
-    }
-    }
-    
+    /*
     function getHeading2D(camera) {
     return Math.atan2(camera.right.y, camera.right.x);
     }
@@ -507,38 +540,6 @@ var transform2DInverse: Matrix4
     get : function() {
     updateMembers(this);
     return this._invTransform;
-    }
-    },
-    
-    /**
-    * Gets the view matrix.
-    * @memberof Camera.prototype
-    *
-    * @type {Matrix4}
-    *
-    * @see czm_view
-    * @see Camera#inverseViewMatrix
-    */
-    viewMatrix : {
-    get : function() {
-    updateMembers(this);
-    return this._viewMatrix;
-    }
-    },
-    
-    /**
-    * Gets the inverse view matrix.
-    * @memberof Camera.prototype
-    *
-    * @type {Matrix4}
-    *
-    * @see czm_inverseView
-    * @see Camera#viewMatrix
-    */
-    inverseViewMatrix : {
-    get : function() {
-    updateMembers(this);
-    return this._invViewMatrix;
     }
     },
     

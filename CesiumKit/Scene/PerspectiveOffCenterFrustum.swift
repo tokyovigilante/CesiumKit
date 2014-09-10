@@ -28,8 +28,12 @@
 */
 // FIXME: Frustum protocol
 // FIXME: Struct
-class PerspectiveOffCenterFrustum/*: Frustum*/ {
+class PerspectiveOffCenterFrustum: Frustum {
     
+    var fov = Double.NaN
+    var fovy = Double.NaN
+
+    var aspectRatio = Double.NaN
 
     /**
     * Defines the left clipping plane.
@@ -208,7 +212,7 @@ class PerspectiveOffCenterFrustum/*: Frustum*/ {
     * var distance = Cesium.Cartesian3.magnitude(toCenterProj);
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight), distance);
     */
-    func pixelSize (drawingBufferDimensions: Cartesian2, distance: Double?) -> Cartesian2 {
+    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
         update()
         
         var width = drawingBufferDimensions.x

@@ -219,14 +219,8 @@ struct Transforms {
         result[15] = 1.0;
         return result;
     };
+*/
 
-    var gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841;
-    var gmstConstant1 = 8640184.812866;
-    var gmstConstant2 = 0.093104;
-    var gmstConstant3 = -6.2E-6;
-    var rateCoef = 1.1772758384668e-19;
-    var wgs84WRPrecessing = 7.2921158553E-5;
-    var twoPiOverSecondsInDay = CesiumMath.TWO_PI / 86400.0;
 
     /**
      * Computes a rotation matrix to transform a point or vector from True Equator Mean Equinox (TEME) axes to the
@@ -243,18 +237,23 @@ struct Transforms {
      *   scene.camera.transform = Cesium.Matrix4.fromRotationTranslation(Cesium.Transforms.computeTemeToPseudoFixedMatrix(now), Cesium.Cartesian3.ZERO);
      * });
      */
-    Transforms.computeTemeToPseudoFixedMatrix = function (date, result) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(date)) {
-            throw new DeveloperError('date is required.');
-        }
-        //>>includeEnd('debug');
-
+    static func computeTemeToPseudoFixedMatrix (date: JulianDate) -> Matrix3 {
+        
+        // FIXME: Constants
+        /*var gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841;
+        var gmstConstant1 = 8640184.812866;
+        var gmstConstant2 = 0.093104;
+        var gmstConstant3 = -6.2E-6;
+        var rateCoef = 1.1772758384668e-19;
+        var wgs84WRPrecessing = 7.2921158553E-5;
+        var twoPiOverSecondsInDay = CesiumMath.TWO_PI / 86400.0;*/
+        
+        // FIXME: computeTemeToPseudoFixedMatrix
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
 
-        var dateInUtc = JulianDate.addSeconds(date, -JulianDate.getTaiMinusUtc(date));
+        /*var dateInUtc = date.addSeconds(-JulianDate.getTaiMinusUtc(date))
         var utcDayNumber = dateInUtc.dayNumber;
         var utcSecondsIntoDay = dateInUtc.secondsOfDay;
 
@@ -273,24 +272,12 @@ struct Transforms {
         var gha = angle + (ratio * secondsSinceMidnight);
         var cosGha = Math.cos(gha);
         var sinGha = Math.sin(gha);
-
-        if (!defined(result)) {
-            return new Matrix3(cosGha, sinGha, 0.0,
+*/
+            return Matrix3()/*cosGha, sinGha, 0.0,
                               -sinGha, cosGha, 0.0,
-                                  0.0,    0.0, 1.0);
-        }
-        result[0] = cosGha;
-        result[1] = -sinGha;
-        result[2] = 0.0;
-        result[3] = sinGha;
-        result[4] = cosGha;
-        result[5] = 0.0;
-        result[6] = 0.0;
-        result[7] = 0.0;
-        result[8] = 1.0;
-        return result;
-    };
-
+                                  0.0,    0.0, 1.0);*/
+    }
+/*
     /**
      * The source of IAU 2006 XYS data, used for computing the transformation between the
      * Fixed and ICRF axes.

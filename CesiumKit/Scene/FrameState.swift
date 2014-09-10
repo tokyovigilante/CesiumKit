@@ -55,7 +55,7 @@ struct FrameState {
     * @type {MapProjection}
     * @default undefined
     */
-    var projection: Projection? = nil
+    var mapProjection: Projection? = nil
     
     /**
     * The current camera.

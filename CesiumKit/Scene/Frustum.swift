@@ -34,36 +34,59 @@ protocol Frustum {
     * @type {Number}
     * @default undefined
     */
-    var fov: Double
-    private var _fov: Double
+    var fov: Double { get set }
     
     var fovy: Double { get set }
-    private var _fovy: Double
 
     /**
     * The aspect ratio of the frustum's width to it's height.
     * @type {Number}
     * @default undefined
     */
-    var aspectRatio: Double
-    private var _aspectRatio: Double
+    var aspectRatio: Double { get set }
     
+    /**
+    * Defines the left clipping plane.
+    * @type {Number}
+    * @default undefined
+    */
+    var left: Double { get set }
+    
+    /**
+    * Defines the right clipping plane.
+    * @type {Number}
+    * @default undefined
+    */
+    var right: Double { get set }
+    
+    /**
+    * Defines the top clipping plane.
+    * @type {Number}
+    * @default undefined
+    */
+    var top: Double { get set }
+    
+    /**
+    * Defines the bottom clipping plane.
+    * @type {Number}
+    * @default undefined
+    */
+    var bottom: Double { get set }
+
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
-    var near: Double
-    private var _near: Double
+    var near: Double { get set }
     
     /**
     * The distance of the far plane.
     * @type {Number}
     * @default 500000000.0
     */
-    var far: Double
-    private var _far: Double
-        
+    var far: Double { get set }
+    
     mutating func update ()
         
     /**
@@ -97,7 +120,7 @@ protocol Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
+    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
     
     /**
     * Returns the pixel's width and height in meters.
@@ -132,7 +155,7 @@ protocol Frustum {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
+    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
     
     /**
     * Returns a duplicate of a PerspectiveFrustum instance.

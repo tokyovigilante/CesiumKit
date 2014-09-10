@@ -27,7 +27,7 @@ import Foundation
 * frustum.far = 2.0;
 */
 // FIXME: Frustum protocol
-class PerspectiveFrustum/*: Frustum*/ {
+class PerspectiveFrustum: Frustum {
     /**
     * The angle of the field of view (FOV), in radians.  This angle will be used
     * as the horizontal FOV if the width is greater than the height, otherwise
@@ -35,16 +35,8 @@ class PerspectiveFrustum/*: Frustum*/ {
     * @type {Number}
     * @default undefined
     */
-    var fov: Double {
-        get  {
-            return _fov
-        }
-        set (newFov) {
-            _fov = newFov
-            update()
-        }
-    }
-    private var _fov: Double = 0.0
+    var fov = Double.NaN
+    private var _fov: Double = Double.NaN
     
     /**
     * Gets the angle of the vertical field of view, in radians.
@@ -54,86 +46,70 @@ class PerspectiveFrustum/*: Frustum*/ {
     */
     var fovy: Double {
         get  {
+            update()
             return _fovy
         }
         set (newFovy) {
             _fovy = newFovy
-            update()
         }
     }
-    private var _fovy: Double = 0.0
+    private var _fovy: Double = Double.NaN
     
     /**
     * The aspect ratio of the frustum's width to it's height.
     * @type {Number}
     * @default undefined
     */
-    var aspectRatio: Double {
-        get  {
-            return _aspectRatio
-        }
-        set (newAspectRatio) {
-            _aspectRatio = newAspectRatio
-            update()
-        }
-    }
-    private var _aspectRatio: Double = 1.0
+    var aspectRatio = Double.NaN
+    private var _aspectRatio = Double.NaN
+    
+    var left = Double.NaN
+    var right = Double.NaN
+    var top = Double.NaN
+    var bottom = Double.NaN
     
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
-    var near: Double {
-        get  {
-            return _near
-        }
-        set (newNear) {
-            _near = near
-            update()
-        }
-    }
-    private var _near: Double = 1.0
+    var near = 1.0
+    private var _near = 1.0
     
     /**
     * The distance of the far plane.
     * @type {Number}
     * @default 500000000.0
     */
-    var far: Double {
-        get  {
-            return _far
-        }
-        set (newNear) {
-            _far = far
-            update()
-        }
-    }
-    private var _far: Double = 500000000.0
+    var far = 500000000.0
+    private var _far = 500000000.0
     
     private var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
-        //assert(_fov != nil && aspectRatio != nil, "fov, aspectRatio, near, or far parameters are not set")
-        
-        
-            assert(_fov >= 0 && _fov <= M_PI, "fov must be in the range [0, PI]")
-            assert(_aspectRatio > 0, "aspectRatio must be positive")
-            assert(_near > 0 && _near < _far, "near must be greater than zero and less than far")
-            
-            //_aspectRatio = aspectRatio
-            //_fov = fov
-            _fovy = aspectRatio <= 1.0 ? _fov : atan(tan(_fov * 0.5) / _aspectRatio) * 2.0
-            //_near = near
-            //_far = far
-            
-            _offCenterFrustum.top = _near * tan(0.5 * _fovy)
-            _offCenterFrustum.bottom = -_offCenterFrustum.top
-            _offCenterFrustum.right = _aspectRatio * _offCenterFrustum.top
-            _offCenterFrustum.left = -_offCenterFrustum.right
-            _offCenterFrustum.near = _near
-            _offCenterFrustum.far = _far
-        //}
+        assert(fov != Double.NaN && aspectRatio != Double.NaN && near != Double.NaN && far != Double.NaN, "fov, aspectRatio, near, or far parameters are not set")
+        if (fov != _fov ||
+            aspectRatio != _aspectRatio ||
+            near != _near ||
+            far != _far) {
+                assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
+                
+                assert(aspectRatio > 0, "aspectRatio must be positive")
+                assert(near > 0 && near < far, "near must be greater than zero and less than far")
+                
+                _aspectRatio = aspectRatio
+                _fov = fov
+                _fovy = aspectRatio <= 1.0 ? _fov : atan(tan(_fov * 0.5) / _aspectRatio) * 2.0
+                _near = near
+                _far = far
+                
+                _offCenterFrustum.top = _near * tan(0.5 * _fovy)
+                _offCenterFrustum.bottom = -_offCenterFrustum.top
+                _offCenterFrustum.right = _aspectRatio * _offCenterFrustum.top
+                _offCenterFrustum.left = -_offCenterFrustum.right
+                _offCenterFrustum.near = _near
+                _offCenterFrustum.far = _far
+        }
     }
     
     /**
@@ -145,7 +121,7 @@ class PerspectiveFrustum/*: Frustum*/ {
     */
     var projectionMatrix: Matrix4 {
         get {
-            //update()
+            update()
             return _offCenterFrustum.projectionMatrix
         }
     }
@@ -159,7 +135,7 @@ class PerspectiveFrustum/*: Frustum*/ {
     */
     var infiniteProjectionMatrix: Matrix4 {
         get {
-            //update()
+            update()
             return _offCenterFrustum.infiniteProjectionMatrix
         }
     }
@@ -178,7 +154,7 @@ class PerspectiveFrustum/*: Frustum*/ {
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
     func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
-        //update()
+        update()
         return _offCenterFrustum.computeCullingVolume(position: position, direction: direction, up: up)
     }
     
@@ -216,8 +192,8 @@ class PerspectiveFrustum/*: Frustum*/ {
     * }, distance);
     */
     func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
-        //update()
-        return _offCenterFrustum.pixelSize(drawingBufferDimensions, distance: distance)
+        update()
+        return _offCenterFrustum.pixelSize(drawingBufferDimensions: drawingBufferDimensions, distance: distance)
     }
     
     /**

@@ -64,14 +64,14 @@ class Texture {
     var dimensions: Cartesian2
     
     init(context: Context, options: TextureOptions) {
-        
+    
         self.options = options
         
         var source = options.source
         
         // FIXME: Textureoptions
-        width = 1//options.source != nil ? options.source!.width : options.width!
-        height = 1//options.source != nil ? options.source!.width : options.width!
+        width = 0//source == nil ? options.width! : options.source?.width
+        height = 0//source != nil ? options.source!.width : options.width!
         
         self.pixelFormat = options.pixelFormat
         
@@ -79,8 +79,8 @@ class Texture {
         
         self.premultiplyAlpha = options.premultiplyAlpha
         
-        assert(self.width > 0, "Width must be greater than zero.")
-        assert(self.width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
+        /*assert(width > 0, "Width must be greater than zero.")
+        assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         
@@ -101,7 +101,7 @@ class Texture {
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance*/
         var flipY = options.flipY
         
         var textureName: GLuint = 0
@@ -144,7 +144,6 @@ class Texture {
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
         self.textureName = Int(textureName)
         self.dimensions = Cartesian2(x: Double(width), y: Double(height))
-        
     }
     /*
     defineProperties(Texture.prototype, {

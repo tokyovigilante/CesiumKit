@@ -521,7 +521,7 @@ public class Scene {
 
         frameState.mode = mode
         frameState.morphTime = morphTime
-        frameState.projection = scene2D.projection
+        frameState.mapProjection = scene2D.projection
         frameState.frameNumber = frameNumber
         frameState.time = time
         frameState.camera = camera
@@ -1082,9 +1082,9 @@ function callAfterRenderFunctions(frameState) {
         // FIXME: Creditdisplay
         //frameState.creditDisplay.beginFrame();
         
-        us.update(context, frameState)
+        us.update(context, frameState: frameState)
         
-        scene._commandList.length = 0;
+        /*scene._commandList.length = 0;
         scene._overlayCommandList.length = 0;
         
         updatePrimitives(scene);
@@ -1120,7 +1120,8 @@ function callAfterRenderFunctions(frameState) {
         context.endFrame();
         callAfterRenderFunctions(frameState);
         
-        scene._postRender.raiseEvent(scene, time)*/
+        // FIXME: events
+        //scene._postRender.raiseEvent(scene, time)*/
         
 }
 
