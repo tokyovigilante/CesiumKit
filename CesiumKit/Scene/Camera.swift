@@ -233,11 +233,9 @@ var transform2DInverse: Matrix4
         transform2DInverse = transform2D.inverseTransformation()
 
         frustum = PerspectiveFrustum()
-        frustum.fovy = Math.toRadians(60.0)
-
         frustum.aspectRatio = Double(scene.context.view.frame.size.width) / Double(scene.context.view.frame.size.height)
+        frustum.fov = Math.toRadians(60.0)
 
-        
         updateViewMatrix()
     }
 
