@@ -149,9 +149,9 @@ public class Scene {
     //this._sunPostProcess = undefined;
     
     
-    var commandList = [DrawCommand]()
-    var frustumCommandsList = [FrustumCommands]()
-    var overlayCommandList = [DrawCommand]()
+    private var _commandList = [DrawCommand]()
+    private var _frustumCommandsList = [FrustumCommands]()
+    private var _overlayCommandList = [DrawCommand]()
     
     
     /*
@@ -542,16 +542,16 @@ public class Scene {
             let curNear = max(near, pow(farToNearRatio, Double(m)) * near)
             let curFar = min(far, farToNearRatio * curNear)
             
-            if frustumCommandsList.count > m {
-                frustumCommandsList[m].near = curNear
-                frustumCommandsList[m].far = curFar
+            if _frustumCommandsList.count > m {
+                _frustumCommandsList[m].near = curNear
+                _frustumCommandsList[m].far = curFar
             }
             else {
-                frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar))
+                _frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar))
             }
         }
-        if frustumCommandsList.count > numFrustums {
-            frustumCommandsList.removeRange(Range(numFrustums..<frustumCommandsList.count))
+        if _frustumCommandsList.count > numFrustums {
+            _frustumCommandsList.removeRange(Range(numFrustums..<_frustumCommandsList.count))
         }
     }
 
@@ -1025,23 +1025,19 @@ function executeOverlayCommands(scene, passState) {
         commandList[i].execute(context, passState);
     }
 }
-
-function updatePrimitives(scene) {
-    var context = scene.context;
-    var frameState = scene._frameState;
-    var commandList = scene._commandList;
-    
-    if (scene._globe) {
-        scene._globe.update(context, frameState, commandList);
+*/
+    func updatePrimitives() {
+        
+        globe.update(context, frameState, _commandList)
+        //FIXME: primitives
+        //scene._primitives.update(context, frameState, commandList);
+        //FIXME: moon
+        /*
+        if (defined(scene.moon)) {
+            scene.moon.update(context, frameState, commandList);
+        }*/
     }
-    
-    scene._primitives.update(context, frameState, commandList);
-    
-    if (defined(scene.moon)) {
-        scene.moon.update(context, frameState, commandList);
-    }
-}
-
+/*
 function callAfterRenderFunctions(frameState) {
     // Functions are queued up during primitive update and executed here in case
     // the function modifies scene state that should remain constant over the frame.
@@ -1084,18 +1080,18 @@ function callAfterRenderFunctions(frameState) {
         
         us.update(context, frameState: frameState)
         
-        /*scene._commandList.length = 0;
-        scene._overlayCommandList.length = 0;
-        
-        updatePrimitives(scene);
-        createPotentiallyVisibleSet(scene);
+        _commandList.removeAll(keepCapacity: true)
+        _overlayCommandList.removeAll(keepCapacity: true)
+    
+        updatePrimitives()
+        /*createPotentiallyVisibleSet()
         
         var passState = scene._passState;
         
         executeCommands(scene, passState, defaultValue(scene.backgroundColor, Color.BLACK));
-        executeOverlayCommands(scene, passState);
+        executeOverlayCommands(scene, passState);*/
         
-        frameState.creditDisplay.endFrame();
+        /*frameState.creditDisplay.endFrame();
         
         if (scene.debugShowFramesPerSecond) {
             // TODO: Performance display
@@ -1397,7 +1393,7 @@ func morphToColumbusView (duration: Double = 2000) {
 Scene.prototype.isDestroyed = function() {
     return false;
 };
-
+*/
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
 * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
@@ -1416,7 +1412,7 @@ Scene.prototype.isDestroyed = function() {
 *
 * @example
 * scene = scene && scene.destroy();
-*/*/
+*/
     deinit {
         /*    this._animations.removeAll();
         this._screenSpaceCameraController = this._screenSpaceCameraController && this._screenSpaceCameraController.destroy();

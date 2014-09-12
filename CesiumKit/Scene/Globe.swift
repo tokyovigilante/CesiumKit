@@ -94,7 +94,7 @@ class Globe {
     */
     var show = true
     
-    var mode = SceneMode.Scene3D
+    var _mode = SceneMode.Scene3D
     
     /**
     * The normal map to use for rendering waves in the ocean.  Setting this property will
@@ -554,267 +554,267 @@ class Globe {
             southPoleCommand.uniformMap += drawUniforms
         }*/
     }
-/*
+
 /**
 * @private
 */
-func update(context: Context, frameState: FrameState, commandList: Array<String, () -> ()>) {
-if (!this.show) {
-return;
+    func update(context: Context, frameState: FrameState, commandList: [DrawCommand]) {
+        if !show {
+            return
+        }
+        
+        var width = context.drawingBufferWidth
+        var height = context.drawingBufferHeight
+        
+        if (width == 0 || height == 0) {
+            return
+        }
+        
+        var mode = frameState.mode
+        var projection = frameState.mapProjection
+        var modeChanged = false
+        
+        if _mode != mode || _rsColor == nil {
+            modeChanged = true
+            if (mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView) {
+                _rsColor = context.createRenderState({ // Write color and depth
+                    cull : {
+                        enabled : true
+                    },
+                    depthTest : {
+                        enabled : true
+                    }
+                });
+                this._rsColorWithoutDepthTest = context.createRenderState({ // Write color, not depth
+                    cull : {
+                        enabled : true
+                    }
+                });
+                this._depthCommand.renderState = context.createRenderState({ // Write depth, not color
+                    cull : {
+                        enabled : true
+                    },
+                    depthTest : {
+                        enabled : true,
+                        func : DepthFunction.ALWAYS
+                    },
+                    colorMask : {
+                        red : false,
+                        green : false,
+                        blue : false,
+                        alpha : false
+                    }
+                });
+            } else {
+                this._rsColor = context.createRenderState({
+                    cull : {
+                        enabled : true
+                    }
+                });
+                this._rsColorWithoutDepthTest = context.createRenderState({
+                    cull : {
+                        enabled : true
+                    }
+                });
+                this._depthCommand.renderState = context.createRenderState({
+                    cull : {
+                        enabled : true
+                    }
+                });
+            }
+        }
+        
+        this._northPoleCommand.renderState = this._rsColorWithoutDepthTest;
+        this._southPoleCommand.renderState = this._rsColorWithoutDepthTest;
+        
+        // update depth plane
+        var depthQuad = computeDepthQuad(this, frameState);
+        
+        // depth plane
+        if (!this._depthCommand.vertexArray) {
+            var geometry = new Geometry({
+            attributes : {
+            position : new GeometryAttribute({
+            componentDatatype : ComponentDatatype.FLOAT,
+            componentsPerAttribute : 3,
+            values : depthQuad
+            })
+            },
+            indices : [0, 1, 2, 2, 1, 3],
+            primitiveType : PrimitiveType.TRIANGLES
+            });
+            this._depthCommand.vertexArray = context.createVertexArrayFromGeometry({
+            geometry : geometry,
+            attributeLocations : {
+            position : 0
+            },
+            bufferUsage : BufferUsage.DYNAMIC_DRAW
+            });
+        } else {
+            this._depthCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
+        }
+        
+        if (!defined(this._depthCommand.shaderProgram)) {
+            this._depthCommand.shaderProgram = context.createShaderProgram(
+                GlobeVSDepth,
+                GlobeFSDepth, {
+                    position : 0
+            });
+        }
+        
+        if (this._surface._terrainProvider.ready &&
+            this._surface._terrainProvider.hasWaterMask() &&
+            this.oceanNormalMapUrl !== this._lastOceanNormalMapUrl) {
+                
+                this._lastOceanNormalMapUrl = this.oceanNormalMapUrl;
+                
+                var that = this;
+                when(loadImage(this.oceanNormalMapUrl), function(image) {
+                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
+                    that._oceanNormalMap = context.createTexture2D({
+                        source : image
+                    });
+                    });
+        }
+        
+        // Initial compile or re-compile if uber-shader parameters changed
+        var hasWaterMask = this._surface._terrainProvider.ready && this._surface._terrainProvider.hasWaterMask();
+        var hasWaterMaskChanged = this._hasWaterMask !== hasWaterMask;
+        var hasEnableLightingChanged = this._enableLighting !== this.enableLighting;
+        
+        if (!defined(this._surfaceShaderSet) ||
+            !defined(this._northPoleCommand.shaderProgram) ||
+            !defined(this._southPoleCommand.shaderProgram) ||
+            modeChanged ||
+            hasWaterMaskChanged ||
+            hasEnableLightingChanged ||
+            (defined(this._oceanNormalMap)) !== this._showingPrettyOcean) {
+                
+                var getPosition3DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }';
+                var getPosition2DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }';
+                var getPositionColumbusViewMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }';
+                var getPositionMorphingMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }';
+                
+                var getPositionMode;
+                
+                switch (mode) {
+                case SceneMode.SCENE3D:
+                    getPositionMode = getPosition3DMode;
+                    break;
+                case SceneMode.SCENE2D:
+                    getPositionMode = getPosition2DMode;
+                    break;
+                case SceneMode.COLUMBUS_VIEW:
+                    getPositionMode = getPositionColumbusViewMode;
+                    break;
+                case SceneMode.MORPHING:
+                    getPositionMode = getPositionMorphingMode;
+                    break;
+                }
+                
+                var get2DYPositionFractionGeographicProjection = 'float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }';
+                var get2DYPositionFractionMercatorProjection = 'float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }';
+                
+                var get2DYPositionFraction;
+                
+                if (projection instanceof GeographicProjection) {
+                    get2DYPositionFraction = get2DYPositionFractionGeographicProjection;
+                } else {
+                    get2DYPositionFraction = get2DYPositionFractionMercatorProjection;
+                }
+                
+                this._surfaceShaderSet.baseVertexShaderString = createShaderSource({
+                    defines : [
+                    (hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
+                    (this.enableLighting ? 'ENABLE_LIGHTING' : '')
+                    ],
+                    sources : [GlobeVS, getPositionMode, get2DYPositionFraction]
+                });
+                
+                var showPrettyOcean = hasWaterMask && defined(this._oceanNormalMap);
+                
+                this._surfaceShaderSet.baseFragmentShaderString = createShaderSource({
+                    defines : [
+                    (hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
+                    (showPrettyOcean ? 'SHOW_OCEAN_WAVES' : ''),
+                    (this.enableLighting ? 'ENABLE_LIGHTING' : '')
+                    ],
+                    sources : [GlobeFS]
+                });
+                this._surfaceShaderSet.invalidateShaders();
+                
+                var poleShaderProgram = context.replaceShaderProgram(this._northPoleCommand.shaderProgram,
+                    GlobeVSPole, GlobeFSPole, terrainAttributeLocations);
+                
+                this._northPoleCommand.shaderProgram = poleShaderProgram;
+                this._southPoleCommand.shaderProgram = poleShaderProgram;
+                
+                this._showingPrettyOcean = defined(this._oceanNormalMap);
+                this._hasWaterMask = hasWaterMask;
+                this._enableLighting = this.enableLighting;
+        }
+        
+        var cameraPosition = frameState.camera.positionWC;
+        
+        this._occluder.cameraPosition = cameraPosition;
+        
+        fillPoles(this, context, frameState);
+        
+        this._mode = mode;
+        
+        var pass = frameState.passes;
+        if (pass.render) {
+            // render quads to fill the poles
+            if (mode === SceneMode.SCENE3D) {
+                if (this._drawNorthPole) {
+                    commandList.push(this._northPoleCommand);
+                }
+                
+                if (this._drawSouthPole) {
+                    commandList.push(this._southPoleCommand);
+                }
+            }
+            
+            // Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
+            if (mode === SceneMode.SCENE3D) {
+                this._zoomedOutOceanSpecularIntensity = 0.5;
+            } else {
+                this._zoomedOutOceanSpecularIntensity = 0.0;
+            }
+            
+            this._lightingFadeDistance.x = this.lightingFadeOutDistance;
+            this._lightingFadeDistance.y = this.lightingFadeInDistance;
+            
+            this._surface._maximumScreenSpaceError = this.maximumScreenSpaceError;
+            this._surface._tileCacheSize = this.tileCacheSize;
+            this._surface.terrainProvider = this.terrainProvider;
+            this._surface.update(context,
+                frameState,
+                commandList,
+                this._drawUniforms,
+                this._surfaceShaderSet,
+                this._rsColor,
+                projection);
+            
+            // render depth plane
+            if (mode === SceneMode.SCENE3D || mode === SceneMode.COLUMBUS_VIEW) {
+                if (!this.depthTestAgainstTerrain) {
+                    commandList.push(this._clearDepthCommand);
+                    if (mode === SceneMode.SCENE3D) {
+                        commandList.push(this._depthCommand);
+                    }
+                }
+            }
+        }
+        
+        if (pass.pick) {
+            // Not actually pickable, but render depth-only so primitives on the backface
+            // of the globe are not picked.
+            commandList.push(this._depthCommand);
+        }
 }
+
 /*
-var width = context.drawingBufferWidth;
-var height = context.drawingBufferHeight;
-
-if (width === 0 || height === 0) {
-return;
-}
-
-var mode = frameState.mode;
-var projection = frameState.mapProjection;
-var modeChanged = false;
-
-if (this._mode !== mode || !defined(this._rsColor)) {
-modeChanged = true;
-if (mode === SceneMode.SCENE3D || mode === SceneMode.COLUMBUS_VIEW) {
-this._rsColor = context.createRenderState({ // Write color and depth
-cull : {
-enabled : true
-},
-depthTest : {
-enabled : true
-}
-});
-this._rsColorWithoutDepthTest = context.createRenderState({ // Write color, not depth
-cull : {
-enabled : true
-}
-});
-this._depthCommand.renderState = context.createRenderState({ // Write depth, not color
-cull : {
-enabled : true
-},
-depthTest : {
-enabled : true,
-func : DepthFunction.ALWAYS
-},
-colorMask : {
-red : false,
-green : false,
-blue : false,
-alpha : false
-}
-});
-} else {
-this._rsColor = context.createRenderState({
-cull : {
-enabled : true
-}
-});
-this._rsColorWithoutDepthTest = context.createRenderState({
-cull : {
-enabled : true
-}
-});
-this._depthCommand.renderState = context.createRenderState({
-cull : {
-enabled : true
-}
-});
-}
-}
-
-this._northPoleCommand.renderState = this._rsColorWithoutDepthTest;
-this._southPoleCommand.renderState = this._rsColorWithoutDepthTest;
-
-// update depth plane
-var depthQuad = computeDepthQuad(this, frameState);
-
-// depth plane
-if (!this._depthCommand.vertexArray) {
-var geometry = new Geometry({
-attributes : {
-position : new GeometryAttribute({
-componentDatatype : ComponentDatatype.FLOAT,
-componentsPerAttribute : 3,
-values : depthQuad
-})
-},
-indices : [0, 1, 2, 2, 1, 3],
-primitiveType : PrimitiveType.TRIANGLES
-});
-this._depthCommand.vertexArray = context.createVertexArrayFromGeometry({
-geometry : geometry,
-attributeLocations : {
-position : 0
-},
-bufferUsage : BufferUsage.DYNAMIC_DRAW
-});
-} else {
-this._depthCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
-}
-
-if (!defined(this._depthCommand.shaderProgram)) {
-this._depthCommand.shaderProgram = context.createShaderProgram(
-GlobeVSDepth,
-GlobeFSDepth, {
-position : 0
-});
-}
-
-if (this._surface._terrainProvider.ready &&
-this._surface._terrainProvider.hasWaterMask() &&
-this.oceanNormalMapUrl !== this._lastOceanNormalMapUrl) {
-
-this._lastOceanNormalMapUrl = this.oceanNormalMapUrl;
-
-var that = this;
-when(loadImage(this.oceanNormalMapUrl), function(image) {
-that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
-that._oceanNormalMap = context.createTexture2D({
-source : image
-});
-});
-}
-
-// Initial compile or re-compile if uber-shader parameters changed
-var hasWaterMask = this._surface._terrainProvider.ready && this._surface._terrainProvider.hasWaterMask();
-var hasWaterMaskChanged = this._hasWaterMask !== hasWaterMask;
-var hasEnableLightingChanged = this._enableLighting !== this.enableLighting;
-
-if (!defined(this._surfaceShaderSet) ||
-!defined(this._northPoleCommand.shaderProgram) ||
-!defined(this._southPoleCommand.shaderProgram) ||
-modeChanged ||
-hasWaterMaskChanged ||
-hasEnableLightingChanged ||
-(defined(this._oceanNormalMap)) !== this._showingPrettyOcean) {
-
-var getPosition3DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }';
-var getPosition2DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }';
-var getPositionColumbusViewMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }';
-var getPositionMorphingMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }';
-
-var getPositionMode;
-
-switch (mode) {
-case SceneMode.SCENE3D:
-getPositionMode = getPosition3DMode;
-break;
-case SceneMode.SCENE2D:
-getPositionMode = getPosition2DMode;
-break;
-case SceneMode.COLUMBUS_VIEW:
-getPositionMode = getPositionColumbusViewMode;
-break;
-case SceneMode.MORPHING:
-getPositionMode = getPositionMorphingMode;
-break;
-}
-
-var get2DYPositionFractionGeographicProjection = 'float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }';
-var get2DYPositionFractionMercatorProjection = 'float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }';
-
-var get2DYPositionFraction;
-
-if (projection instanceof GeographicProjection) {
-get2DYPositionFraction = get2DYPositionFractionGeographicProjection;
-} else {
-get2DYPositionFraction = get2DYPositionFractionMercatorProjection;
-}
-
-this._surfaceShaderSet.baseVertexShaderString = createShaderSource({
-defines : [
-(hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
-(this.enableLighting ? 'ENABLE_LIGHTING' : '')
-],
-sources : [GlobeVS, getPositionMode, get2DYPositionFraction]
-});
-
-var showPrettyOcean = hasWaterMask && defined(this._oceanNormalMap);
-
-this._surfaceShaderSet.baseFragmentShaderString = createShaderSource({
-defines : [
-(hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
-(showPrettyOcean ? 'SHOW_OCEAN_WAVES' : ''),
-(this.enableLighting ? 'ENABLE_LIGHTING' : '')
-],
-sources : [GlobeFS]
-});
-this._surfaceShaderSet.invalidateShaders();
-
-var poleShaderProgram = context.replaceShaderProgram(this._northPoleCommand.shaderProgram,
-GlobeVSPole, GlobeFSPole, terrainAttributeLocations);
-
-this._northPoleCommand.shaderProgram = poleShaderProgram;
-this._southPoleCommand.shaderProgram = poleShaderProgram;
-
-this._showingPrettyOcean = defined(this._oceanNormalMap);
-this._hasWaterMask = hasWaterMask;
-this._enableLighting = this.enableLighting;
-}
-
-var cameraPosition = frameState.camera.positionWC;
-
-this._occluder.cameraPosition = cameraPosition;
-
-fillPoles(this, context, frameState);
-
-this._mode = mode;
-
-var pass = frameState.passes;
-if (pass.render) {
-// render quads to fill the poles
-if (mode === SceneMode.SCENE3D) {
-if (this._drawNorthPole) {
-commandList.push(this._northPoleCommand);
-}
-
-if (this._drawSouthPole) {
-commandList.push(this._southPoleCommand);
-}
-}
-
-// Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
-if (mode === SceneMode.SCENE3D) {
-this._zoomedOutOceanSpecularIntensity = 0.5;
-} else {
-this._zoomedOutOceanSpecularIntensity = 0.0;
-}
-
-this._lightingFadeDistance.x = this.lightingFadeOutDistance;
-this._lightingFadeDistance.y = this.lightingFadeInDistance;
-
-this._surface._maximumScreenSpaceError = this.maximumScreenSpaceError;
-this._surface._tileCacheSize = this.tileCacheSize;
-this._surface.terrainProvider = this.terrainProvider;
-this._surface.update(context,
-frameState,
-commandList,
-this._drawUniforms,
-this._surfaceShaderSet,
-this._rsColor,
-projection);
-
-// render depth plane
-if (mode === SceneMode.SCENE3D || mode === SceneMode.COLUMBUS_VIEW) {
-if (!this.depthTestAgainstTerrain) {
-commandList.push(this._clearDepthCommand);
-if (mode === SceneMode.SCENE3D) {
-commandList.push(this._depthCommand);
-}
-}
-}
-}
-
-if (pass.pick) {
-// Not actually pickable, but render depth-only so primitives on the backface
-// of the globe are not picked.
-commandList.push(this._depthCommand);
-}
-};
-
-*/*/
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
 * release of WebGL resources, instead of relying on the garbage collector to destroy this object.

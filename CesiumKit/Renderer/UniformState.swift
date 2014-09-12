@@ -833,10 +833,9 @@ class UniformState {
         setCamera(camera)
 
         if frameState.mode == SceneMode.Scene2D {
-            // FIXME: Needs orthographic frustum
-            /*_frustum2DWidth = camera.frustum.right - camera.frustum.left
-            _eyeHeight2D.x = this._frustum2DWidth * 0.5
-            _eyeHeight2D.y = this._eyeHeight2D.x * this._eyeHeight2D.x*/
+            _frustum2DWidth = camera.frustum.right - camera.frustum.left
+            _eyeHeight2D.x = _frustum2DWidth * 0.5
+            _eyeHeight2D.y = _eyeHeight2D.x * _eyeHeight2D.x
         } else {
             _frustum2DWidth = 0.0
             _eyeHeight2D.x = 0.0
