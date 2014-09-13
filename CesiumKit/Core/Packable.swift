@@ -31,7 +31,7 @@ protocol Packable {
     * @param {Object} value The value to pack.
     * @param {Number[]} array The array to pack into.
     */
-    func pack(inout array: [Float], startingIndex: Int)
+    func pack(inout array: [ComponentDatatype], startingIndex: Int)
    
     /**
     * Retrieves an instance from a packed array.
@@ -41,7 +41,7 @@ protocol Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Object} [result] The object into which to store the result.
     */
-    class func unpack(array: [Float], startingIndex: Int) -> Self
+    class func unpack(array: [ComponentDatatype], startingIndex: Int) -> Self
 }
 
 

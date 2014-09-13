@@ -30,7 +30,8 @@
 * @see Matrix2
 * @see Matrix4
 */
-struct Matrix3: Packable {
+// FIXME: Packable
+struct Matrix3/*: Packable*/ {
     
     /**
     * The number of elements used to pack the object into an array.

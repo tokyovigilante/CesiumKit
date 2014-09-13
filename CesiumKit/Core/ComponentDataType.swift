@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
 
 /**
 * WebGL component datatypes.  Components are intrinsics,
@@ -14,17 +14,7 @@ import Foundation
 *
 * @alias ComponentDatatype
 */
-
-enum PListNode {
-    case PLN_String(String)
-    case PLN_Integer(Int)
-    case PLN_Float(Double)
-    case PLN_Bool(Bool)
-    case PLN_Date(CFDate)
-    case PLN_Data(CFData)
-}
-
-enum ComponentDatatype: Int {
+enum ComponentDatatype {
     /**
     * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type
     * of an element in <code>Int8Array</code>.
@@ -33,7 +23,7 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x1400
     */
-    case Byte = 0x1400,
+    case Byte(Int8)
     
     /**
     * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
@@ -43,7 +33,7 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x1401
     */
-    UnsignedByte = 0x1401,
+    case UnsignedByte(UInt8)
     
     /**
     * 16-bit signed short corresponding to <code>SHORT</code> and the type
@@ -53,7 +43,7 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x1402
     */
-    Short = 0x1402,
+    case Short(Int16)
     
     /**
     * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
@@ -63,7 +53,7 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x1403
     */
-    UnsignedShort = 0x1403,
+    case UnsignedShort(UInt16)
     
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
@@ -73,7 +63,7 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x1406
     */
-    Float = 0x1406,
+    case Float(Float32)
     
     /**
     * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
@@ -86,7 +76,26 @@ enum ComponentDatatype: Int {
     * @constant
     * @default 0x140A
     */
-    Double = 0x140A
+    case Float64(Double)
+    
+    func toGL() -> GLenum {
+        switch (self) {
+        case ComponentDatatype.Byte:
+            return 0x1400
+        case ComponentDatatype.UnsignedByte:
+            return 0x1401
+        case ComponentDatatype.Short:
+            return 0x1402
+        case ComponentDatatype.UnsignedShort:
+            return 0x1403
+        case ComponentDatatype.Float:
+            return 0x1406
+        case ComponentDatatype.Float64:
+            return 0x140A
+        default:
+            assert(true, "Invalid componentDataType")
+        }
+    }
     
     
     /**
@@ -114,7 +123,7 @@ enum ComponentDatatype: Int {
             return 2//sizeof(UInt16)
         case ComponentDatatype.Float:
             return 4//sizeof(Float32)
-        case ComponentDatatype.Double:
+        case ComponentDatatype.Float64:
             return 8//sizeof(Double)
         default:
             assert(true, "Invalid componentDataType")
@@ -129,25 +138,25 @@ enum ComponentDatatype: Int {
     */
     static func fromTypedArray<T>(array: Array<Any>) -> ComponentDatatype {
         if array is [Int8] {
-            return ComponentDatatype.Byte
+            return ComponentDatatype.Byte(0)
         }
         if array is [UInt8] {
-            return ComponentDatatype.UnsignedByte
+            return ComponentDatatype.UnsignedByte(0)
         }
         if array is [Int16] {
-            return ComponentDatatype.Short
+            return ComponentDatatype.Short(0)
         }
         if array is [UInt16] {
-            return ComponentDatatype.UnsignedShort
+            return ComponentDatatype.UnsignedShort(0)
         }
         if array is [Float32] {
-            return ComponentDatatype.Float
+            return ComponentDatatype.Float(0.0)
         }
-        if array is [Float64] {
-            return ComponentDatatype.Double
+        if array is [Double] {
+            return ComponentDatatype.Float64(0.0)
         }
         assert(true, "invalid componentDatatype")
-        return ComponentDatatype.Float
+        return ComponentDatatype.Float(0.0)
     }
     /*
     func getType() -> String {

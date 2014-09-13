@@ -21,7 +21,8 @@ import Foundation
 *
 * @see Packable
 */
-struct Rectangle: Packable {
+// FIXME: Packable
+struct Rectangle/*: Packable*/ {
     var west: Double = 0.0
     var south: Double = 0.0
     var east: Double = 0.0

@@ -120,7 +120,7 @@ struct GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: Array<Any>
+    var values: [ComponentDatatype]
     
     var vertexCount: Int {
         get {
@@ -128,7 +128,7 @@ struct GeometryAttribute {
         }
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: Array<Any>) {
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: [ComponentDatatype]) {
         self.componentDatatype = componentDatatype
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
         self.componentsPerAttribute = componentsPerAttribute

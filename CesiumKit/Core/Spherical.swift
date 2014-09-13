@@ -18,7 +18,8 @@ import Foundation
 * @param {Number} [cone=0.0] The angular coordinate measured from the positive z-axis and toward the negative z-axis.
 * @param {Number} [magnitude=1.0] The linear coordinate measured from the origin.
 */
-struct Spherical: Packable {
+// FIXME: Packable
+struct Spherical/*: Packable*/ {
     var clock: Double = 0.0
     var cone: Double = 0.0
     var magnitude: Double = 1.0

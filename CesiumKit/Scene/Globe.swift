@@ -356,9 +356,9 @@ class Globe {
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
 
-    func computeDepthQuad(#frameState: FrameState) -> [Float32] {
+    func computeDepthQuad(#frameState: FrameState) -> [ComponentDatatype] {
         
-        var depthQuad = [Float32](count: 12, repeatedValue: 0.0)
+        var depthQuad = [ComponentDatatype]()//(count: 12, repeatedValue: 0.0)
         
         var radii = ellipsoid.radii
         

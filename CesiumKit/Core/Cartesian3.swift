@@ -103,16 +103,16 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [Float], startingIndex: Int) {
+    func pack(inout array: [ComponentDatatype], startingIndex: Int) {
         if array.count < startingIndex - 3 { //Int(Cartesian3.packedLength) {
-            array.append(Float(x))
-            array.append(Float(y))
-            array.append(Float(z))
+            array.append(ComponentDatatype.Float(Float(x)))
+            array.append(ComponentDatatype.Float(Float(y)))
+            array.append(ComponentDatatype.Float(Float(z)))
         }
         else {
-            array[startingIndex] = Float(x)
-            array[startingIndex+1] = Float(y)
-            array[startingIndex+2] = Float(z)
+            array[startingIndex] = ComponentDatatype.Float(Float(x))
+            array[startingIndex+1] = ComponentDatatype.Float(Float(y))
+            array[startingIndex+2] = ComponentDatatype.Float(Float(z))
         }
     }
     
@@ -123,10 +123,29 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
+    static func unpack(array: [ComponentDatatype], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
 
-        return Cartesian3(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]), z: Double(array[startingIndex+2]))
+        var x = 0.0, y = 0.0, z = 0.0
+        switch array[startingIndex] {
+        case .Float(let component):
+            x = Double(component)
+        default:
+            assert(false, "Invalid type")
+        }
+        switch array[startingIndex+1] {
+        case .Float(let component):
+            y = Double(component)
+        default:
+            assert(false, "Invalid type")
+        }
+        switch array[startingIndex+2] {
+        case .Float(let component):
+            z = Double(component)
+        default:
+            assert(false, "Invalid type")
+        }
+        return Cartesian3(x: x, y: y, z: z)
     }
     
     
