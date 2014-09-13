@@ -14,6 +14,7 @@
 		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
 		940D794519C3E9C400012DC4 /* DepthFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794419C3E9C400012DC4 /* DepthFunction.swift */; };
 		940D794719C3F66900012DC4 /* GeometryPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794619C3F66900012DC4 /* GeometryPipeline.swift */; };
+		940D794919C3F7FE00012DC4 /* BufferUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794819C3F7FE00012DC4 /* BufferUsage.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
@@ -148,6 +149,7 @@
 		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		940D794419C3E9C400012DC4 /* DepthFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthFunction.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
+		940D794819C3F7FE00012DC4 /* BufferUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferUsage.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
@@ -363,6 +365,7 @@
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				94540426199F478F00012DC4 /* Sampler.swift */,
+				940D794819C3F7FE00012DC4 /* BufferUsage.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -607,6 +610,7 @@
 				94540421199F03C300012DC4 /* JulianDate.swift in Sources */,
 				94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */,
 				94540437199F63A700012DC4 /* Imagery.swift in Sources */,
+				940D794919C3F7FE00012DC4 /* BufferUsage.swift in Sources */,
 				948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */,
 				94E61B3C194ACC2000415870 /* WebMercatorTilingScheme.swift in Sources */,
 				942CEED3199E063E00012DC4 /* SkyBox.swift in Sources */,

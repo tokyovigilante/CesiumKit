@@ -604,7 +604,7 @@ class Globe {
         var depthQuad = computeDepthQuad(frameState: frameState)
         
         // depth plane
-        if _depthCommand.vertexArray == nil {
+        /*if _depthCommand.vertexArray == nil {
             var geometry = Geometry(
                 attributes: GeometryAttributes(position: GeometryAttribute(componentDatatype: .Float, componentsPerAttribute: 3, values: depthQuad)),
                 indices : [0, 1, 2, 2, 1, 3],
@@ -612,13 +612,10 @@ class Globe {
             )
             _depthCommand.vertexArray = context.createVertexArrayFromGeometry(
                 geometry: geometry,
-                attributeLocations : {
-            position : 0
-            },
-            bufferUsage : BufferUsage.DYNAMIC_DRAW
-            });
+                attributeLocations: ["position": 0],
+                bufferUsage: .DynamicDraw)
         } else {
-            this._depthCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
+            _depthCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
         }
         
         if (!defined(this._depthCommand.shaderProgram)) {
@@ -627,7 +624,7 @@ class Globe {
                 GlobeFSDepth, {
                     position : 0
             });
-        }
+        }*/
         /*
         if (this._surface._terrainProvider.ready &&
             this._surface._terrainProvider.hasWaterMask() &&

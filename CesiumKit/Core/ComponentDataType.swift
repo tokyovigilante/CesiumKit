@@ -14,6 +14,16 @@ import Foundation
 *
 * @alias ComponentDatatype
 */
+
+enum PListNode {
+    case PLN_String(String)
+    case PLN_Integer(Int)
+    case PLN_Float(Double)
+    case PLN_Bool(Bool)
+    case PLN_Date(CFDate)
+    case PLN_Data(CFData)
+}
+
 enum ComponentDatatype: Int {
     /**
     * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type

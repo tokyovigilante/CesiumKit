@@ -1846,7 +1846,11 @@ function interleaveAttributes(attributes) {
 * // attached vertex buffer(s) and index buffer.
 * va = va.destroy();
 */
-    func createVertexArrayFromGeometry (geometry: Geometry, attributeLocations: ) -> VertexArray {
+    func createVertexArrayFromGeometry (
+        geometry: Geometry,
+        attributeLocations: [String: Int],
+        bufferUsage: BufferUsage = .DynamicDraw,
+        interleave: Bool = false) -> VertexArray {
     /*options = defaultValue(options, defaultValue.EMPTY_OBJECT);
     var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
     
@@ -1936,6 +1940,7 @@ function interleaveAttributes(attributes) {
     }
     
     return this.createVertexArray(vaAttributes, indexBuffer);*/
+    return VertexArray()
 }
 /*
 var viewportQuadAttributeLocations = {

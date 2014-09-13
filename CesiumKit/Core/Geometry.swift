@@ -113,7 +113,7 @@ struct Geometry {
     *
     * @default undefined
     */
-    var indices: [Int32]
+    var indices: [Int32]?
     
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},
@@ -154,6 +154,13 @@ struct Geometry {
     */
     func getVertexCount() -> Int {
         return attributes.vertexCount()
+    }
+    
+    init(attributes: GeometryAttributes, indices: [Int32]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
+        self.attributes = attributes
+        self.indices = indices
+        self.primitiveType = primitiveType
+        self.boundingSphere = boundingSphere
     }
     
     

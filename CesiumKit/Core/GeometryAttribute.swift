@@ -100,7 +100,7 @@ struct GeometryAttribute {
     *   Cesium.Color.floatToByte(color.alpha)
     * ]);
     */
-    var normalize: Bool? = false
+    var normalize: Bool = false
     
     /**
     * The values for the attributes stored in a typed array.  In the code example,
@@ -123,8 +123,17 @@ struct GeometryAttribute {
     var values: Array<Any>
     
     var vertexCount: Int {
-    get {
-        return values.count / componentsPerAttribute
+        get {
+            return values.count / componentsPerAttribute
+        }
     }
+    
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: Array<Any>) {
+        self.componentDatatype = componentDatatype
+        assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
+        self.componentsPerAttribute = componentsPerAttribute
+        self.normalize = normalize
+        self.values = values
     }
 }
+
