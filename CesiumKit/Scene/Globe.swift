@@ -42,26 +42,26 @@ class Globe {
     
     var occluder: Occluder
     
-    var rsColor: RenderState? = nil
-    var rsColorWithoutDepthTest: RenderState? = nil
+    var _rsColor: RenderState? = nil
+    var _rsColorWithoutDepthTest: RenderState? = nil
     
-    lazy var clearDepthCommand: ClearCommand = {
+    lazy var _clearDepthCommand: ClearCommand = {
         return ClearCommand(depth: 1.0, stencil: 0, owner: self)
     }()
     
-    lazy var depthCommand: DrawCommand = {
+    lazy var _depthCommand: DrawCommand = {
         DrawCommand(
             boundingVolume:  BoundingSphere(center: Cartesian3.zero(), radius: self.ellipsoid.maximumRadius),
             pass: Pass.Opaque,
             owner: self)
         }()
     
-    lazy var northPoleCommand: DrawCommand = {
+    lazy var _northPoleCommand: DrawCommand = {
         DrawCommand(pass: Pass.Opaque, owner: self)
         
         }()
     
-    lazy var SouthPoleCommand: DrawCommand = {
+    lazy var _southPoleCommand: DrawCommand = {
         DrawCommand(pass: Pass.Opaque, owner: self)
         }()
     
@@ -576,76 +576,43 @@ class Globe {
         
         if _mode != mode || _rsColor == nil {
             modeChanged = true
+            
+            _rsColor = context.createRenderState() // Write color and depth
+            _rsColor?.cull.enabled = true
+            _rsColor?.depthTest.enabled = true
+            
+            _rsColorWithoutDepthTest = context.createRenderState()
+            _rsColorWithoutDepthTest?.cull.enabled = true
+            
             if (mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView) {
-                _rsColor = context.createRenderState({ // Write color and depth
-                    cull : {
-                        enabled : true
-                    },
-                    depthTest : {
-                        enabled : true
-                    }
-                });
-                this._rsColorWithoutDepthTest = context.createRenderState({ // Write color, not depth
-                    cull : {
-                        enabled : true
-                    }
-                });
-                this._depthCommand.renderState = context.createRenderState({ // Write depth, not color
-                    cull : {
-                        enabled : true
-                    },
-                    depthTest : {
-                        enabled : true,
-                        func : DepthFunction.ALWAYS
-                    },
-                    colorMask : {
-                        red : false,
-                        green : false,
-                        blue : false,
-                        alpha : false
-                    }
-                });
+                _depthCommand.renderState = context.createRenderState()
+                _depthCommand.renderState?.cull.enabled = true
+                _depthCommand.renderState?.depthTest.enabled = true
+                _depthCommand.renderState?.depthTest.function = .Less
+                _depthCommand.renderState?.colorMask = RenderState.ColorMask(red: false, green: false, blue: false, alpha: false)
+                
             } else {
-                this._rsColor = context.createRenderState({
-                    cull : {
-                        enabled : true
-                    }
-                });
-                this._rsColorWithoutDepthTest = context.createRenderState({
-                    cull : {
-                        enabled : true
-                    }
-                });
-                this._depthCommand.renderState = context.createRenderState({
-                    cull : {
-                        enabled : true
-                    }
-                });
+                _depthCommand.renderState = context.createRenderState()
+                _depthCommand.renderState?.cull.enabled = true
             }
         }
         
-        this._northPoleCommand.renderState = this._rsColorWithoutDepthTest;
-        this._southPoleCommand.renderState = this._rsColorWithoutDepthTest;
+        _northPoleCommand.renderState = _rsColorWithoutDepthTest
+        _southPoleCommand.renderState = _rsColorWithoutDepthTest
         
         // update depth plane
-        var depthQuad = computeDepthQuad(this, frameState);
+        var depthQuad = computeDepthQuad(frameState: frameState)
         
         // depth plane
-        if (!this._depthCommand.vertexArray) {
-            var geometry = new Geometry({
-            attributes : {
-            position : new GeometryAttribute({
-            componentDatatype : ComponentDatatype.FLOAT,
-            componentsPerAttribute : 3,
-            values : depthQuad
-            })
-            },
-            indices : [0, 1, 2, 2, 1, 3],
-            primitiveType : PrimitiveType.TRIANGLES
-            });
-            this._depthCommand.vertexArray = context.createVertexArrayFromGeometry({
-            geometry : geometry,
-            attributeLocations : {
+        if _depthCommand.vertexArray == nil {
+            var geometry = Geometry(
+                attributes: GeometryAttributes(position: GeometryAttribute(componentDatatype: .Float, componentsPerAttribute: 3, values: depthQuad)),
+                indices : [0, 1, 2, 2, 1, 3],
+                primitiveType : .Triangles
+            )
+            _depthCommand.vertexArray = context.createVertexArrayFromGeometry(
+                geometry: geometry,
+                attributeLocations : {
             position : 0
             },
             bufferUsage : BufferUsage.DYNAMIC_DRAW
@@ -661,7 +628,7 @@ class Globe {
                     position : 0
             });
         }
-        
+        /*
         if (this._surface._terrainProvider.ready &&
             this._surface._terrainProvider.hasWaterMask() &&
             this.oceanNormalMapUrl !== this._lastOceanNormalMapUrl) {
@@ -811,10 +778,9 @@ class Globe {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
             commandList.push(this._depthCommand);
+        }*/
         }
-}
 
-/*
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
 * release of WebGL resources, instead of relying on the garbage collector to destroy this object.

@@ -113,7 +113,7 @@ struct Geometry {
     *
     * @default undefined
     */
-    var indices: Array<Any>?
+    var indices: [Int32]
     
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},

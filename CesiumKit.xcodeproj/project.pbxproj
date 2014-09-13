@@ -12,6 +12,7 @@
 		940AE981197B75CE00A33FF4 /* PixelDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940AE980197B75CE00A33FF4 /* PixelDatatype.swift */; };
 		940CA70C19B1957A00A6E482 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
 		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
+		940D794519C3E9C400012DC4 /* DepthFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794419C3E9C400012DC4 /* DepthFunction.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
@@ -144,6 +145,7 @@
 		940AE980197B75CE00A33FF4 /* PixelDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelDatatype.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		940D794419C3E9C400012DC4 /* DepthFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthFunction.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
 				94A25E64196E711000012DC4 /* WindingOrder.swift */,
+				940D794419C3E9C400012DC4 /* DepthFunction.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -585,6 +588,7 @@
 				94B87DC7194D6ADF00012DC4 /* FrameState.swift in Sources */,
 				94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */,
 				942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */,
+				940D794519C3E9C400012DC4 /* DepthFunction.swift in Sources */,
 				94CD3FAB199B5A1B00012DC4 /* CubeMapFace.swift in Sources */,
 				94C57E1419722AB90046791A /* Matrix4.swift in Sources */,
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,

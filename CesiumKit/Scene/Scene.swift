@@ -1028,7 +1028,7 @@ function executeOverlayCommands(scene, passState) {
 */
     func updatePrimitives() {
         
-        globe.update(context, frameState, _commandList)
+        globe.update(context, frameState: frameState, commandList: _commandList)
         //FIXME: primitives
         //scene._primitives.update(context, frameState, commandList);
         //FIXME: moon
@@ -1080,8 +1080,8 @@ function callAfterRenderFunctions(frameState) {
         
         us.update(context, frameState: frameState)
         
-        _commandList.removeAll(keepCapacity: true)
-        _overlayCommandList.removeAll(keepCapacity: true)
+        _commandList.removeAll()
+        _overlayCommandList.removeAll()
     
         updatePrimitives()
         /*createPotentiallyVisibleSet()

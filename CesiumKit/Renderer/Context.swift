@@ -1419,31 +1419,7 @@ var renderStateCache = {};
 */
     func createRenderState() -> RenderState {
         return RenderState(context: self)
-        /*
-    var partialKey = JSON.stringify(renderState);
-    var cachedState = renderStateCache[partialKey];
-    if (defined(cachedState)) {
-        return cachedState;
     }
-
-    // Cache miss.  Fully define render state and try again.
-    var states = RenderState(this)
-    var fullKey = JSON.stringify(states);
-    cachedState = renderStateCache[fullKey];
-    if (!defined(cachedState)) {
-        states.id = nextRenderStateId++;
-        
-        cachedState = states;
-        
-        // Cache full render state.  Multiple partially defined render states may map to this.
-        renderStateCache[fullKey] = cachedState;
-    }
-    
-    // Cache partial render state so we can skip validation on a cache hit for a partially defined render state
-    renderStateCache[partialKey] = cachedState;
-    
-    return cachedState;*/
-}
 
 /*
 function validateFramebuffer(context, framebuffer) {
@@ -1811,7 +1787,7 @@ function interleaveAttributes(attributes) {
     // No attributes to interleave.
     return undefined;
 }
-
+*/
 /**
 * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
 * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
@@ -1870,8 +1846,8 @@ function interleaveAttributes(attributes) {
 * // attached vertex buffer(s) and index buffer.
 * va = va.destroy();
 */
-Context.prototype.createVertexArrayFromGeometry = function(options) {
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    func createVertexArrayFromGeometry (geometry: Geometry, attributeLocations: ) -> VertexArray {
+    /*options = defaultValue(options, defaultValue.EMPTY_OBJECT);
     var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
     
     var bufferUsage = defaultValue(options.bufferUsage, BufferUsage.DYNAMIC_DRAW);
@@ -1959,9 +1935,9 @@ Context.prototype.createVertexArrayFromGeometry = function(options) {
         }
     }
     
-    return this.createVertexArray(vaAttributes, indexBuffer);
-};
-
+    return this.createVertexArray(vaAttributes, indexBuffer);*/
+}
+/*
 var viewportQuadAttributeLocations = {
     position : 0,
     textureCoordinates : 1

@@ -75,7 +75,7 @@ return ((stencilOperation === WebGLRenderingContext.ZERO) ||
 }
 
 */
-struct RenderState {
+struct RenderState/*: Printable*/ {
     
     var frontFace = WindingOrder.CounterClockwise
     
@@ -108,19 +108,19 @@ struct RenderState {
     
     struct DepthTest {
         var enabled: Bool = false
-        var function: GLenum = GLenum(GL_LESS)  // function, because func is a Swift keyword ;)
+        var function: DepthFunction = .Less  // function, because func is a Swift keyword ;)
     }
     var depthTest = DepthTest()
     
     struct ColorMask {
-        var red: GLboolean = GLboolean(GL_TRUE)
-        var green: GLboolean = GLboolean(GL_TRUE)
-        var blue: GLboolean = GLboolean(GL_TRUE)
-        var alpha: GLboolean = GLboolean(GL_TRUE)
+        var red = true
+        var green = true
+        var blue = true
+        var alpha = true
     }
     var colorMask = ColorMask()
     
-    var depthMask = GLboolean(GL_TRUE)
+    var depthMask = true
     
     var stencilMask: GLuint = ~0
     
@@ -174,14 +174,27 @@ struct RenderState {
     
     init(context: Context) {
         
-    }
     /*
     view
+
     
     this.viewport = (defined(viewport)) ? new BoundingRectangle(viewport.x, viewport.y,
     (!defined(viewport.width)) ? context.drawingBufferWidth : viewport.width,
     (!defined(viewport.height)) ? context.drawingBufferHeight : viewport.height) : undefined;
     */
+    }
+    
+    /*var description: String {
+        get {
+            let address: Pointer = Pointer(address: unsafeBitCast(self, UInt.self))
+            if let memory: Memory = Memory.read(address, knownSize: nil) {
+                return memory.hex()
+            }
+            return address.description
+            return "renderState"
+        }
+    }*/
+    
     func validate() {
         /*
         if ((this.lineWidth < context.minimumAliasedLineWidth) ||
@@ -340,16 +353,20 @@ struct RenderState {
         enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
         
         if (depthTest.enabled) {
-            glDepthFunc(depthTest.function)
+            glDepthFunc(depthTest.function.toRaw())
         }
     }
     
     func applyColorMask() {
-        glColorMask(GLboolean(colorMask.red), GLboolean(colorMask.green), GLboolean(colorMask.blue), GLboolean(colorMask.alpha))
+        glColorMask(
+            GLboolean(Int(colorMask.red)),
+            GLboolean(Int(colorMask.green)),
+            GLboolean(Int(colorMask.blue)),
+            GLboolean(Int(colorMask.alpha)))
     }
     
     func applyDepthMask() {
-        glDepthMask(depthMask)
+        glDepthMask(GLboolean(Int(depthMask)))
     }
     
     func applyStencilMask() {
