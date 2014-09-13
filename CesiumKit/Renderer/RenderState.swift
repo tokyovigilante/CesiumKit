@@ -81,7 +81,7 @@ struct RenderState/*: Printable*/ {
     
     struct Cull {
         var enabled: Bool = false
-        var face: GLenum = GLenum(GL_BACK)
+        var face = CullFace.Back
     }
     var cull = Cull()
     
@@ -316,7 +316,7 @@ struct RenderState/*: Printable*/ {
         enableOrDisable(GLenum(GL_CULL_FACE), enable: cull.enabled)
         
         if (cull.enabled) {
-            glCullFace(cull.face)
+            glCullFace(cull.face.toGL())
         }
     }
     

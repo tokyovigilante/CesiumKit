@@ -8,10 +8,21 @@
 
 import OpenGLES
 
-enum CullFace: GLenum {
-    case GLFront,
-    GLBack,
-    GLFrontAndBack
+enum CullFace {
+    case Front,
+    Back,
+    FrontAndBack
+    
+    func toGL() -> GLenum {
+        switch self {
+        case .Front:
+            return GLenum(GL_FRONT)
+        case .Back:
+            return GLenum(GL_BACK)
+        case .FrontAndBack:
+            return GLenum(GL_FRONT_AND_BACK)
+        }
+    }
 }
 
 enum BufferUsage: GLenum {
