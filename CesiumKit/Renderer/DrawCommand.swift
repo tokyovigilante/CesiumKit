@@ -11,7 +11,7 @@
 *
 * @private
 */
-struct DrawCommand {
+class DrawCommand {
     
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
@@ -170,21 +170,37 @@ struct DrawCommand {
     */
     //var oit = undefined;
     
-    init(boundingVolume: Intersectable? = nil, cull: Bool = true, modelMatrix: Matrix4? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, vertexArray: VertexArray? = nil, count: Int? = nil, offset: Int = 0, shaderProgram: ShaderProgram? = nil, uniformMap: Dictionary<String, ()->()>? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, pass: Pass? = nil, executeInClosestFrustum: Bool = false, owner: AnyObject? = nil, debugShowBoundingVolume: Bool = false, debugOverlappingFrustums: Int = 0) {
-        self.boundingVolume = boundingVolume
-        self.cull = cull
-        self.primitiveType = primitiveType
-        self.vertexArray = vertexArray
-        self.count = count
-        self.offset = offset
-        self.shaderProgram = shaderProgram
-        self.renderState = renderState
-        self.framebuffer = framebuffer
-        self.pass = pass
-        self.executeInClosestFrustum = executeInClosestFrustum
-        self.owner = owner
-        self.debugShowBoundingVolume = debugShowBoundingVolume
-        self.debugOverlappingFrustums = debugOverlappingFrustums
+    init(
+        boundingVolume: Intersectable? = nil,
+        cull: Bool = true,
+        modelMatrix: Matrix4? = nil,
+        primitiveType: PrimitiveType = PrimitiveType.Triangles,
+        vertexArray: VertexArray? = nil,
+        count: Int? = nil,
+        offset: Int = 0,
+        shaderProgram: ShaderProgram? = nil,
+        uniformMap: Dictionary<String, ()->()>? = nil,
+        renderState: RenderState? = nil,
+        framebuffer: Framebuffer? = nil,
+        pass: Pass? = nil,
+        executeInClosestFrustum: Bool = false,
+        owner: AnyObject? = nil,
+        debugShowBoundingVolume: Bool = false,
+        debugOverlappingFrustums: Int = 0) {
+            self.boundingVolume = boundingVolume
+            self.cull = cull
+            self.primitiveType = primitiveType
+            self.vertexArray = vertexArray
+            self.count = count
+            self.offset = offset
+            self.shaderProgram = shaderProgram
+            self.renderState = renderState
+            self.framebuffer = framebuffer
+            self.pass = pass
+            self.executeInClosestFrustum = executeInClosestFrustum
+            self.owner = owner
+            self.debugShowBoundingVolume = debugShowBoundingVolume
+            self.debugOverlappingFrustums = debugOverlappingFrustums
     }
     
     /**

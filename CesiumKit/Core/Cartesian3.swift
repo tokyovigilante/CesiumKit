@@ -47,7 +47,7 @@ public struct Cartesian3: Packable, Equatable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //static let packedLength: Int = 4
+    static let packedLength: Int = 3
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -104,7 +104,7 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [ComponentDatatype], startingIndex: Int) {
-        if array.count < startingIndex - 3 { //Int(Cartesian3.packedLength) {
+        if array.count < startingIndex + Int(Cartesian3.packedLength) {
             array.append(ComponentDatatype.Float(Float(x)))
             array.append(ComponentDatatype.Float(Float(y)))
             array.append(ComponentDatatype.Float(Float(z)))

@@ -50,20 +50,16 @@ class Globe {
     }()
     
     lazy var _depthCommand: DrawCommand = {
-        DrawCommand(
-            boundingVolume:  BoundingSphere(center: Cartesian3.zero(), radius: self.ellipsoid.maximumRadius),
+        [unowned self] in
+        return DrawCommand(
+            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84Ellipsoid().maximumRadius),
             pass: Pass.Opaque,
             owner: self)
         }()
     
-    lazy var _northPoleCommand: DrawCommand = {
-        DrawCommand(pass: Pass.Opaque, owner: self)
-        
-        }()
+    lazy var _northPoleCommand: DrawCommand = { DrawCommand(pass: Pass.Opaque, owner: self) }()
     
-    lazy var _southPoleCommand: DrawCommand = {
-        DrawCommand(pass: Pass.Opaque, owner: self)
-        }()
+    lazy var _southPoleCommand: DrawCommand = { DrawCommand(pass: Pass.Opaque, owner: self) }()
     
     var drawNorthPole = false
     var drawSouthPole = false
@@ -583,17 +579,13 @@ class Globe {
             
             _rsColorWithoutDepthTest = context.createRenderState()
             _rsColorWithoutDepthTest?.cull.enabled = true
+            _depthCommand.renderState = context.createRenderState()
+            _depthCommand.renderState?.cull.enabled = true
             
             if (mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView) {
-                _depthCommand.renderState = context.createRenderState()
-                _depthCommand.renderState?.cull.enabled = true
                 _depthCommand.renderState?.depthTest.enabled = true
                 _depthCommand.renderState?.depthTest.function = .Less
                 _depthCommand.renderState?.colorMask = RenderState.ColorMask(red: false, green: false, blue: false, alpha: false)
-                
-            } else {
-                _depthCommand.renderState = context.createRenderState()
-                _depthCommand.renderState?.cull.enabled = true
             }
         }
         
