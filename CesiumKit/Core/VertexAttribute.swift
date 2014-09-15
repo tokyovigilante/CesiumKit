@@ -12,7 +12,7 @@ struct VertexAttribute {
     
     var enabled: Bool
     
-    var vertexBuffer: VertexBuffer
+    var vertexBuffer: Buffer
     
     var componentsPerAttribute: Int
     
@@ -27,7 +27,7 @@ struct VertexAttribute {
     init (
         index: Int,
         enabled: Bool = true,
-        vertexBuffer: VertexBuffer,
+        vertexBuffer: Buffer,
         componentsPerAttribute: Int,
         componentDatatype: ComponentDatatype = ComponentDatatype.Float32(0),
         normalize: Bool = false,
@@ -38,6 +38,7 @@ struct VertexAttribute {
             self.vertexBuffer = vertexBuffer
             self.componentsPerAttribute = componentsPerAttribute
             self.componentDatatype = componentDatatype
+            self.normalize = normalize
             self.offsetInBytes = offsetInBytes
             self.strideInBytes = strideInBytes
     }

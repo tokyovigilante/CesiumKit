@@ -613,11 +613,11 @@ class Globe {
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
-            _depthCommand.vertexArray!.attribute(0).vertexB uffer.copyFromArrayView(depthQuad)
+            //_depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
         }
         
         if _depthCommand.shaderProgram == nil {
-            _depthCommand.shaderProgram = context.createShaderProgram(GlobeVSDepth, GlobeFSDepth, ["position" : 0])
+            //_depthCommand.shaderProgram = context.createShaderProgram(GlobeVSDepth, GlobeFSDepth, ["position" : 0])
         }
         /*
         if (this._surface._terrainProvider.ready &&

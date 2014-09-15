@@ -109,6 +109,12 @@ public struct Cartesian3: Packable, Equatable {
             array.append(packX)//ComponentDatatype.Float(Float(x)))
             array.append(ComponentDatatype.Float32(Float(y)))
             array.append(ComponentDatatype.Float32(Float(z)))
+            switch packX {
+            case let .Float32(number):
+                println("\(number)")
+            default:
+                println("Jeezus")
+            }
         }
         else {
             array[startingIndex] = ComponentDatatype.Float32(Float(x))

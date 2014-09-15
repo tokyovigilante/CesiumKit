@@ -19,7 +19,7 @@
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
 		941E2134199ED26A00012DC4 /* GLSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2133199ED26A00012DC4 /* GLSupport.swift */; };
 		941E2163199EDC3600012DC4 /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
-		942AEB1B1955286F00CD0858 /* ComponentDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942AEB1A1955286F00CD0858 /* ComponentDataType.swift */; };
+		942AEB1B1955286F00CD0858 /* ComponentDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */; };
 		942CD41819553F9E00012DC4 /* GeometryAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942CD41719553F9E00012DC4 /* GeometryAttributes.swift */; };
 		942CEED3199E063E00012DC4 /* SkyBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942CEED2199E063E00012DC4 /* SkyBox.swift */; };
 		942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
@@ -153,7 +153,7 @@
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941E2133199ED26A00012DC4 /* GLSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GLSupport.swift; sourceTree = "<group>"; };
 		941E2162199EDC3600012DC4 /* ImageBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBuffer.swift; sourceTree = "<group>"; };
-		942AEB1A1955286F00CD0858 /* ComponentDataType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentDataType.swift; sourceTree = "<group>"; };
+		942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentDatatype.swift; sourceTree = "<group>"; };
 		942CD41719553F9E00012DC4 /* GeometryAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttributes.swift; sourceTree = "<group>"; };
 		942CEED2199E063E00012DC4 /* SkyBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyBox.swift; sourceTree = "<group>"; };
 		942D02EB194DBC1E00012DC4 /* DrawCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawCommand.swift; sourceTree = "<group>"; };
@@ -289,7 +289,7 @@
 				948D03E01944F1E200DC0E52 /* Cartesian4.swift */,
 				943744F51945D09F0017FE14 /* Cartographic.swift */,
 				94CD3FAE199B6F8A00012DC4 /* Clock.swift */,
-				942AEB1A1955286F00CD0858 /* ComponentDataType.swift */,
+				942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */,
 				9491BBB11949D156007C1C4C /* Credit.swift */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
@@ -587,7 +587,7 @@
 				9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */,
 				942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */,
 				94D45B2B19BDC7DD00FFE1CB /* EncodedCartesian3.swift in Sources */,
-				942AEB1B1955286F00CD0858 /* ComponentDataType.swift in Sources */,
+				942AEB1B1955286F00CD0858 /* ComponentDatatype.swift in Sources */,
 				94B87DC7194D6ADF00012DC4 /* FrameState.swift in Sources */,
 				94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */,
 				942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */,

@@ -14,24 +14,20 @@ class Buffer {
     
     var sizeInBytes: Int = 0
     
-    var usage: BufferUsage
+    var usage: BufferUsage = BufferUsage.StaticDraw
     
     var buffer: GLuint = 0
     
     var vertexArrayDestroyable = true
 
-    func copyFromArrayView (arrayView:, offsetInBytes: Int = 0) {
+    func copyFromArrayView (arrayView: [ComponentDatatype], offsetInBytes: Int = 0) {
+        /*
+        assert(offsetInBytes + arrayView.byteLength <= sizeInBytes, "This buffer is not large enough")
         
-        assert(offsetInBytes + arrayView.byteLength <= _sizeInBytes) {
-            throw new DeveloperError('This buffer is not large enough.');
-        }
-        //>>includeEnd('debug');
-        
-        var target = this._bufferTarget;
         glBindBuffer(bufferTarget, buffer)
-        glBufferSubData(<#target: GLenum#>, <#offset: GLintptr#>, <#size: GLsizeiptr#>, <#data: UnsafePointer<Void>#>)
-        gl.bufferSubData(target, offsetInBytes, arrayView);
-        gl.bindBuffer(target, null);
+        glBufferSubData(bufferTarget, GLint(offsetInBytes), GLsizeiptr(sizeInBytes), &arrayView)
+        gl.bufferSubData(bufferTarget, offsetInBytes, arrayView);
+        gl.bindBuffer(target, null);*/
     }
     
     deinit {

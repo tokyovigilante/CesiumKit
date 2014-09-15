@@ -97,7 +97,6 @@ enum ComponentDatatype {
         }
     }
     
-    
     /**
     * Returns the size, in bytes, of the corresponding datatype.
     *
@@ -158,6 +157,28 @@ enum ComponentDatatype {
         assert(true, "invalid componentDatatype")
         return ComponentDatatype.Float32(0.0)
     }
+    
+    /*static func assocValue<T>() -> T {
+        switch (self) {
+        case ComponentDatatype.Byte:
+            return Int8(
+        case ComponentDatatype.UnsignedByte:
+            return UInt8.self.bridgeToObjectiveC().className
+        case ComponentDatatype.Short:
+            return Int16.self.bridgeToObjectiveC().className
+        case ComponentDatatype.UnsignedShort:
+            return UInt16.self.bridgeToObjectiveC().className
+        case ComponentDatatype.Float:
+            return Float32.self.bridgeToObjectiveC().className
+        case ComponentDatatype.Double:
+            return Double.self.bridgeToObjectiveC().className
+    }*/
+    
+/*    static func rawArray(source: [ComponentDatatype]) -> Array<Any> {
+        //self.toRaw()
+        //map(source, { $0.
+        })
+    }*/
     /*
     func getType() -> String {
         switch (self) {
@@ -235,3 +256,4 @@ enum ComponentDatatype {
     }
     }*/
 }
+
