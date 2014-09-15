@@ -84,12 +84,12 @@ struct Cartesian2: Packable, Equatable {
     func pack(inout array: [ComponentDatatype], startingIndex: Int = 0) {
         
         if array.count < startingIndex - 2 {//Int(Cartesian2.packedLength) {
-            array.append(ComponentDatatype.Float(Float(x)))
-            array.append(ComponentDatatype.Float(Float(y)))
+            array.append(ComponentDatatype.Float32(Float(x)))
+            array.append(ComponentDatatype.Float32(Float(y)))
         }
         else {
-            array[startingIndex] = ComponentDatatype.Float(Float(x))
-            array[startingIndex+1] = ComponentDatatype.Float(Float(y))
+            array[startingIndex] = ComponentDatatype.Float32(Float(x))
+            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))
 
         }
     }
@@ -107,13 +107,13 @@ struct Cartesian2: Packable, Equatable {
         assert((startingIndex + /*Cartesian2.packedLength*/2 <= array.count), "Invalid starting index")
         var x = 0.0, y = 0.0
         switch array[startingIndex] {
-        case .Float(let component):
+        case .Float32(let component):
             x = Double(component)
         default:
             assert(false, "Invalid type")
         }
         switch array[startingIndex+1] {
-        case .Float(let component):
+        case .Float32(let component):
             y = Double(component)
         default:
             assert(false, "Invalid type")

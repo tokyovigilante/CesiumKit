@@ -9,6 +9,8 @@
 import Foundation
 
 class VertexArray {
+    
+    var _attributes = [VertexAttribute]()
     /*
 function addAttribute(attributes, attribute, index) {
 var hasVertexBuffer = defined(attribute.vertexBuffer);
@@ -113,6 +115,7 @@ gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer._getBuffer());
 /**
 * @private
 */
+    
 var VertexArray = function(gl, vertexArrayObject, attributes, indexBuffer) {
 //>>includeStart('debug', pragmas.debug
 if (!defined(attributes)) {
@@ -185,20 +188,14 @@ return this._indexBuffer;
 }
 }
 });
-
+*/
 /**
 * index is the location in the array of attributes, not the index property of an attribute.
 */
-VertexArray.prototype.getAttribute = function(index) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(index)) {
-throw new DeveloperError('index is required.');
-}
-//>>includeEnd('debug');
-
-return this._attributes[index];
-};
-
+    func attribute(index: Int) -> VertexAttribute {
+        return _attributes[index]
+    }
+/*
 VertexArray.prototype._bind = function() {
 if (defined(this._vao)) {
 this._vaoExtension.bindVertexArrayOES(this._vao);

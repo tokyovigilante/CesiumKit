@@ -23,7 +23,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1400
     */
-    case Byte(Int8)
+    case Byte(Int8),
     
     /**
     * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
@@ -33,7 +33,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1401
     */
-    case UnsignedByte(UInt8)
+    UnsignedByte(UInt8),
     
     /**
     * 16-bit signed short corresponding to <code>SHORT</code> and the type
@@ -43,7 +43,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1402
     */
-    case Short(Int16)
+    Short(Int16),
     
     /**
     * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
@@ -53,7 +53,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1403
     */
-    case UnsignedShort(UInt16)
+    UnsignedShort(UInt16),
     
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
@@ -63,7 +63,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1406
     */
-    case Float(Float32)
+    Float32(Float),
     
     /**
     * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
@@ -76,7 +76,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x140A
     */
-    case Float64(Double)
+    Float64(Double)
     
     func toGL() -> GLenum {
         switch (self) {
@@ -88,7 +88,7 @@ enum ComponentDatatype {
             return 0x1402
         case ComponentDatatype.UnsignedShort:
             return 0x1403
-        case ComponentDatatype.Float:
+        case ComponentDatatype.Float32:
             return 0x1406
         case ComponentDatatype.Float64:
             return 0x140A
@@ -121,8 +121,8 @@ enum ComponentDatatype {
             return 2//sizeof(Int16)
         case ComponentDatatype.UnsignedShort:
             return 2//sizeof(UInt16)
-        case ComponentDatatype.Float:
-            return 4//sizeof(Float32)
+        case ComponentDatatype.Float32:
+            return 4//sizeof(Float)
         case ComponentDatatype.Float64:
             return 8//sizeof(Double)
         default:
@@ -149,14 +149,14 @@ enum ComponentDatatype {
         if array is [UInt16] {
             return ComponentDatatype.UnsignedShort(0)
         }
-        if array is [Float32] {
-            return ComponentDatatype.Float(0.0)
+        if array is [Float] {
+            return ComponentDatatype.Float32(0.0)
         }
         if array is [Double] {
             return ComponentDatatype.Float64(0.0)
         }
         assert(true, "invalid componentDatatype")
-        return ComponentDatatype.Float(0.0)
+        return ComponentDatatype.Float32(0.0)
     }
     /*
     func getType() -> String {

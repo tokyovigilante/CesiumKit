@@ -105,14 +105,15 @@ public struct Cartesian3: Packable, Equatable {
     */
     func pack(inout array: [ComponentDatatype], startingIndex: Int) {
         if array.count < startingIndex + Int(Cartesian3.packedLength) {
-            array.append(ComponentDatatype.Float(Float(x)))
-            array.append(ComponentDatatype.Float(Float(y)))
-            array.append(ComponentDatatype.Float(Float(z)))
+            let packX = ComponentDatatype.Float32(Float(x))
+            array.append(packX)//ComponentDatatype.Float(Float(x)))
+            array.append(ComponentDatatype.Float32(Float(y)))
+            array.append(ComponentDatatype.Float32(Float(z)))
         }
         else {
-            array[startingIndex] = ComponentDatatype.Float(Float(x))
-            array[startingIndex+1] = ComponentDatatype.Float(Float(y))
-            array[startingIndex+2] = ComponentDatatype.Float(Float(z))
+            array[startingIndex] = ComponentDatatype.Float32(Float(x))
+            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))
+            array[startingIndex+2] = ComponentDatatype.Float32(Float(z))
         }
     }
     
@@ -128,19 +129,19 @@ public struct Cartesian3: Packable, Equatable {
 
         var x = 0.0, y = 0.0, z = 0.0
         switch array[startingIndex] {
-        case .Float(let component):
+        case .Float32(let component):
             x = Double(component)
         default:
             assert(false, "Invalid type")
         }
         switch array[startingIndex+1] {
-        case .Float(let component):
+        case .Float32(let component):
             y = Double(component)
         default:
             assert(false, "Invalid type")
         }
         switch array[startingIndex+2] {
-        case .Float(let component):
+        case .Float32(let component):
             z = Double(component)
         default:
             assert(false, "Invalid type")

@@ -330,11 +330,11 @@ class UniformArray {
     */
 
 }
-struct VertexAttribute {
+/*struct VertexAttribute {
     let name: String
     let type: Int
     let index: Int
-}
+}*/
 
 class ShaderProgram {
 

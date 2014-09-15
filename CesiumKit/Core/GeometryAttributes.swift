@@ -90,6 +90,21 @@ struct GeometryAttributes  {
     */
     var color: GeometryAttribute? = nil
     
+    init(
+        position: GeometryAttribute? = nil,
+        normal: GeometryAttribute? = nil,
+        st: GeometryAttribute? = nil,
+        binormal: GeometryAttribute? = nil,
+        tangent: GeometryAttribute? = nil,
+        color: GeometryAttribute? = nil) {
+            self.position = position
+            self.normal = normal
+            self.st = st
+            self.binormal = binormal
+            self.tangent = tangent
+            self.color = color
+    }
+    
     func vertexCount() -> Int {
         // FIXME: VertexCount
         /*var vertexCount = position?.vertexCount

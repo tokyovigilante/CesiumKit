@@ -25,12 +25,6 @@ enum CullFace {
     }
 }
 
-enum BufferUsage: GLenum {
-    case StreamDraw = 0x88E0,
-    StaticDraw = 0x88E4,
-    DynamicDraw = 0x88E8
-}
-
 enum PixelDatatype: GLenum {
     case UnsignedByte = 0x1401,
     UnsignedShort = 0x1403,

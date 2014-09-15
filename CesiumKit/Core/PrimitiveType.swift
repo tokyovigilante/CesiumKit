@@ -6,14 +6,14 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
 
 /**
 * The type of a geometric primitive, i.e., points, lines, and triangles.
 *
 * @exports PrimitiveType
 */
-enum PrimitiveType: Int {
+enum PrimitiveType: GLenum {
     /**
     * 0x0000.  Points primitive where each vertex (or index) is a separate point.
     *
