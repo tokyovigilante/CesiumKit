@@ -103,17 +103,16 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [ComponentDatatype], startingIndex: Int) {
+    func pack(inout array: [Float], startingIndex: Int) {
         if array.count < startingIndex + Int(Cartesian3.packedLength) {
-            let packX = ComponentDatatype.Float32(Float(x))
-            array.append(packX)//ComponentDatatype.Float(Float(x)))
-            array.append(ComponentDatatype.Float32(Float(y)))
-            array.append(ComponentDatatype.Float32(Float(z)))
+            array.append(Float(x))
+            array.append(Float(y))
+            array.append(Float(z))
         }
         else {
-            array[startingIndex] = ComponentDatatype.Float32(Float(x))
-            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))
-            array[startingIndex+2] = ComponentDatatype.Float32(Float(z))
+            array[startingIndex] = Float(x)
+            array[startingIndex+1] = Float(y)
+            array[startingIndex+2] = Float(z)
         }
     }
     
@@ -124,11 +123,11 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: [ComponentDatatype], startingIndex: Int = 0) -> Cartesian3 {
+    static func unpack(array: [Serializable], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
-
+//FIXME: Unpack
         var x = 0.0, y = 0.0, z = 0.0
-        switch array[startingIndex] {
+        /*switch array[startingIndex] {
         case .Float32(let component):
             x = Double(component)
         default:
@@ -145,8 +144,8 @@ public struct Cartesian3: Packable, Equatable {
             z = Double(component)
         default:
             assert(false, "Invalid type")
-        }
-        return Cartesian3(x: x, y: y, z: z)
+        }*/
+        return Cartesian3()//x: x, y: y, z: z)
     }
     
     
