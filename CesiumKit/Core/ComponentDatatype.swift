@@ -23,7 +23,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1400
     */
-    case Byte(Int8),
+    case Byte,
     
     /**
     * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
@@ -33,7 +33,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1401
     */
-    UnsignedByte(UInt8),
+    UnsignedByte,
     
     /**
     * 16-bit signed short corresponding to <code>SHORT</code> and the type
@@ -43,7 +43,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1402
     */
-    Short(Int16),
+    Short,
     
     /**
     * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
@@ -53,7 +53,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1403
     */
-    UnsignedShort(UInt16),
+    UnsignedShort,
     
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
@@ -63,7 +63,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1406
     */
-    Float32(Float),
+    Float32,
     
     /**
     * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
@@ -76,7 +76,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x140A
     */
-    Float64(Double)
+    Float64
     
     func toGL() -> GLenum {
         switch (self) {
@@ -109,21 +109,21 @@ enum ComponentDatatype {
     * // Returns Int8Array.BYTES_PER_ELEMENT
     * var size = Cesium.ComponentDatatype.getSizeInBytes(Cesium.ComponentDatatype.BYTE);
     */
-    func getSizeInBytes() -> Int {
+    func elementSize() -> Int {
         
         switch (self) {
         case ComponentDatatype.Byte:
-            return 1//sizeof(Int8)
+            return sizeof(Int8)
         case ComponentDatatype.UnsignedByte:
-            return 1//sizeof(UInt8)
+            return sizeof(UInt8)
         case ComponentDatatype.Short:
-            return 2//sizeof(Int16)
+            return sizeof(Int16)
         case ComponentDatatype.UnsignedShort:
-            return 2//sizeof(UInt16)
+            return sizeof(UInt16)
         case ComponentDatatype.Float32:
-            return 4//sizeof(Float)
+            return sizeof(Float)
         case ComponentDatatype.Float64:
-            return 8//sizeof(Double)
+            return sizeof(Double)
         default:
             assert(true, "Invalid componentDataType")
         }
@@ -135,27 +135,39 @@ enum ComponentDatatype {
     * @param {TypedArray} array The typed array.
     * @returns {ComponentDatatype} The ComponentDatatype for the provided array, or undefined if the array is not a TypedArray.
     */
-    static func fromTypedArray<T>(array: Array<Any>) -> ComponentDatatype {
-        if array is [Int8] {
-            return ComponentDatatype.Byte(0)
+    
+    static func fromType<T>(value: T) -> ComponentDatatype {
+        if value is UInt8 {
+            return ComponentDatatype.Byte
         }
-        if array is [UInt8] {
-            return ComponentDatatype.UnsignedByte(0)
-        }
-        if array is [Int16] {
-            return ComponentDatatype.Short(0)
-        }
-        if array is [UInt16] {
-            return ComponentDatatype.UnsignedShort(0)
-        }
-        if array is [Float] {
-            return ComponentDatatype.Float32(0.0)
-        }
-        if array is [Double] {
-            return ComponentDatatype.Float64(0.0)
+        if value is Float {
+            return ComponentDatatype.Float32
         }
         assert(true, "invalid componentDatatype")
-        return ComponentDatatype.Float32(0.0)
+        return ComponentDatatype.Float32
+    }
+    
+    static func fromTypedArray<T>(array: Array<Any>) -> ComponentDatatype {
+        if array is [Int8] {
+            return ComponentDatatype.Byte
+        }
+        if array is [UInt8] {
+            return ComponentDatatype.UnsignedByte
+        }
+        if array is [Int16] {
+            return ComponentDatatype.Short
+        }
+        if array is [UInt16] {
+            return ComponentDatatype.UnsignedShort
+        }
+        if array is [Float] {
+            return ComponentDatatype.Float32
+        }
+        if array is [Double] {
+            return ComponentDatatype.Float64
+        }
+        assert(true, "invalid componentDatatype")
+        return ComponentDatatype.Float32
     }
     
     /*static func assocValue<T>() -> T {

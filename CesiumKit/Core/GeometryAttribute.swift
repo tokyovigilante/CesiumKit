@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * Values and type information for geometry attributes.  A {@link Geometry}
 * generally contains one or more attributes.  All attributes together form
@@ -120,17 +122,17 @@ struct GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: [ComponentDatatype]
+    var values: NSData
     
     var vertexCount: Int {
         get {
-            return values.count / componentsPerAttribute
+            return values.length / componentsPerAttribute / componentDatatype.elementSize()
         }
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: [ComponentDatatype]) {
-        self.componentDatatype = componentDatatype
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: NSData) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
+        self.componentDatatype = componentDatatype
         self.componentsPerAttribute = componentsPerAttribute
         self.normalize = normalize
         self.values = values

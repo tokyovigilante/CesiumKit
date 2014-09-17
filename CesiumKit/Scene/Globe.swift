@@ -352,9 +352,9 @@ class Globe {
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
 
-    func computeDepthQuad(#frameState: FrameState) -> [ComponentDatatype] {
+    func computeDepthQuad(#frameState: FrameState) -> [Float] {
         
-        var depthQuad = [ComponentDatatype]()//(count: 12, repeatedValue: 0.0)
+        var depthQuad = [Float](count: 12, repeatedValue: 0.0)//(count: 12, repeatedValue: 0.0)
         
         var radii = ellipsoid.radii
         
@@ -601,9 +601,9 @@ class Globe {
             var geometry = Geometry(
                     attributes: GeometryAttributes(
                         position: GeometryAttribute(
-                            componentDatatype: ComponentDatatype.Float32(0),
+                            componentDatatype: ComponentDatatype.Float32,
                             componentsPerAttribute: 3,
-                            values: depthQuad)
+                            values: NSData.serializeArray(depthQuad))
                         ),
                     indices : depthIndices,
                     primitiveType : PrimitiveType.Triangles
@@ -613,7 +613,7 @@ class Globe {
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
-            //_depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
+            _depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
         }
         
         if _depthCommand.shaderProgram == nil {

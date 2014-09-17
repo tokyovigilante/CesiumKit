@@ -128,7 +128,7 @@ public class CesiumGlobe {
     var showRenderLoopErrors = false
     var forceResize = false
     
-    var lastFrameTime: Double?
+    var _lastFrameTime: NSDate?
     
     /**
     * Gets or sets whether or not this widget should control the render loop.
@@ -247,7 +247,7 @@ public class CesiumGlobe {
         self.useDefaultRenderLoop = options.useDefaultRenderLoop
         self.showRenderLoopErrors = options.showRenderLoopErrors
         self.clock = options.clock
-        lastFrameTime = nil
+        _lastFrameTime = nil
         
         self.globe = Globe(ellipsoid: ellipsoid)
         self.scene = Scene(
@@ -335,7 +335,7 @@ public class CesiumGlobe {
     func startRenderLoop() {
         
         renderLoopRunning = true
-        lastFrameTime = NSDate.timeIntervalSinceReferenceDate() + NSTimeIntervalSince1970
+        _lastFrameTime = nil
         /*
         func render() {
             //if (widget.isDestroyed()) {
@@ -515,11 +515,23 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
     public func render() {
+        
+        /*if _lastFrameTime != nil {
+            let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
+            let frameTime = 1/delta
+            let performanceString = String(format: "%.02f fps (%.02f ms)", frameTime, delta)
+            println(performanceString)
+        }*/
+
         resize()
         scene.initializeFrame()
         var currentTime = clock.tick()
         if _canRender {
             scene.render(currentTime)
+            //_lastFrameTime = NSDate()
         }
+        /*else {
+            _lastFrameTime = nil
+        }*/
     }
 }

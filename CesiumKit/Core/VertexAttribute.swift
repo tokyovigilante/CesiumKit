@@ -29,7 +29,7 @@ struct VertexAttribute {
         enabled: Bool = true,
         vertexBuffer: Buffer,
         componentsPerAttribute: Int,
-        componentDatatype: ComponentDatatype = ComponentDatatype.Float32(0),
+        componentDatatype: ComponentDatatype = .Float32,
         normalize: Bool = false,
         offsetInBytes: Int = 0,
         strideInBytes: Int = 0) {

@@ -20,7 +20,9 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-struct Cartesian2: Packable, Equatable {
+// FIXME: Pack
+
+struct Cartesian2 {//: Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
@@ -81,15 +83,15 @@ struct Cartesian2: Packable, Equatable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [ComponentDatatype], startingIndex: Int = 0) {
-        
+    func pack(inout array: [Float], startingIndex: Int = 0) {
+        // FIXME: Pack
         if array.count < startingIndex - 2 {//Int(Cartesian2.packedLength) {
-            array.append(ComponentDatatype.Float32(Float(x)))
-            array.append(ComponentDatatype.Float32(Float(y)))
+            /*array.append(ComponentDatatype.Float32(Float(x)))
+            array.append(ComponentDatatype.Float32(Float(y)))*/
         }
         else {
-            array[startingIndex] = ComponentDatatype.Float32(Float(x))
-            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))
+            /*array[startingIndex] = ComponentDatatype.Float32(Float(x))
+            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))*/
 
         }
     }
@@ -139,9 +141,10 @@ struct Cartesian2: Packable, Equatable {
     * var v2 = [0.0, 0.0, 1.0, 2.0];
     * var p2 = Cesium.Cartesian2.fromArray(v2, 2);
     */
-    static func fromArray(array: [ComponentDatatype]) -> Packable {
+    // FIXME: Pack
+    /*static func fromArray(array: [ComponentDatatype]) -> Packable {
         return Cartesian2.unpack(array)
-    }
+    }*/
     
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
