@@ -43,7 +43,7 @@ import Foundation
 * });
 */
 
-struct GeometryAttribute {
+class GeometryAttribute {
     
     /**
     * The datatype of each component in the attribute, e.g., individual elements in
@@ -122,15 +122,15 @@ struct GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: NSData
+    var values: SerializedArray
     
     var vertexCount: Int {
         get {
-            return values.length / componentsPerAttribute / componentDatatype.elementSize()
+            return values.count / componentsPerAttribute
         }
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: NSData) {
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: SerializedArray) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
         self.componentDatatype = componentDatatype
         self.componentsPerAttribute = componentsPerAttribute

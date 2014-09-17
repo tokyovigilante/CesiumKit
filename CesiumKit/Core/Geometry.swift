@@ -134,13 +134,14 @@ struct Geometry {
     * @default undefined
     */
     var boundingSphere: BoundingSphere? = nil
-    /*
-    init (attributes: GeometryAttributes, indices: Array<Any>? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil) {
+    
+
+    init(attributes: GeometryAttributes, indices: [Int32]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
         self.attributes = attributes
         self.indices = indices
         self.primitiveType = primitiveType
         self.boundingSphere = boundingSphere
-    }*/
+    }
     
     /**
     * Computes the number of vertices in a geometry.  The runtime is linear with
@@ -152,16 +153,30 @@ struct Geometry {
     * @example
     * var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
     */
-    func getVertexCount() -> Int {
-        return attributes.vertexCount()
+    /*
+    Geometry.computeNumberOfVertices = function(geometry) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(geometry)) {
+    throw new DeveloperError('geometry is required.');
+    }
+    //>>includeEnd('debug');
+    
+    var numberOfVertices = -1;
+    for ( var property in geometry.attributes) {
+    if (geometry.attributes.hasOwnProperty(property) &&
+    defined(geometry.attributes[property]) &&
+    defined(geometry.attributes[property].values)) {
+    
+    var attribute = geometry.attributes[property];
+    var num = attribute.values.length / attribute.componentsPerAttribute;
+    if ((numberOfVertices !== num) && (numberOfVertices !== -1)) {
+    throw new DeveloperError('All attribute lists must have the same number of attributes.');
+    }
+    numberOfVertices = num;
+    }
     }
     
-    init(attributes: GeometryAttributes, indices: [Int32]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
-        self.attributes = attributes
-        self.indices = indices
-        self.primitiveType = primitiveType
-        self.boundingSphere = boundingSphere
-    }
-    
+    return numberOfVertices;
+    };*/
     
 }

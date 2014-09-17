@@ -123,29 +123,13 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian3} [result] The object into which to store the result.
     */
-    static func unpack(array: [Serializable], startingIndex: Int = 0) -> Cartesian3 {
-        assert((startingIndex + 3/*Cartesian3.packedLength*/ <= array.count), "Invalid starting index")
-//FIXME: Unpack
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
+        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
         var x = 0.0, y = 0.0, z = 0.0
-        /*switch array[startingIndex] {
-        case .Float32(let component):
-            x = Double(component)
-        default:
-            assert(false, "Invalid type")
-        }
-        switch array[startingIndex+1] {
-        case .Float32(let component):
-            y = Double(component)
-        default:
-            assert(false, "Invalid type")
-        }
-        switch array[startingIndex+2] {
-        case .Float32(let component):
-            z = Double(component)
-        default:
-            assert(false, "Invalid type")
-        }*/
-        return Cartesian3()//x: x, y: y, z: z)
+        x = Double(array[startingIndex])
+        y = Double(array[startingIndex+1])
+        z = Double(array[startingIndex+2])
+        return Cartesian3(x: x, y: y, z: z)
     }
     
     

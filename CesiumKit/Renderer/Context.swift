@@ -728,34 +728,25 @@ class Context {
         //return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
         return nil
     }
-/*
-function createBuffer(gl, bufferTarget, typedArrayOrSizeInBytes, usage) {
-    var sizeInBytes;
+
+    func createBuffer(bufferTarget: GLenum, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
     
-    if (typeof typedArrayOrSizeInBytes === 'number') {
-        sizeInBytes = typedArrayOrSizeInBytes;
-    } else if (typeof typedArrayOrSizeInBytes === 'object' && typeof typedArrayOrSizeInBytes.byteLength === 'number') {
-        sizeInBytes = typedArrayOrSizeInBytes.byteLength;
-    } else {
-        //>>includeStart('debug', pragmas.debug);
-        throw new DeveloperError('typedArrayOrSizeInBytes must be either a typed array or a number.');
-        //>>includeEnd('debug');
-    }
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (sizeInBytes <= 0) {
-        throw new DeveloperError('typedArrayOrSizeInBytes must be greater than zero.');
-    }
-    
-    if (!BufferUsage.validate(usage)) {
-        throw new DeveloperError('usage is invalid.');
-    }
-    //>>includeEnd('debug');
-    
-    var buffer = gl.createBuffer();
-    gl.bindBuffer(bufferTarget, buffer);
-    gl.bufferData(bufferTarget, typedArrayOrSizeInBytes, usage);
-    gl.bindBuffer(bufferTarget, null);
+        assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
+
+        var bufferSize: Int
+        if array != nil {
+            bufferSize = array!.byteLength
+        } else {
+            bufferSize = sizeInBytes
+        }
+        assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
+        
+        var buffer: GLuint = 0
+        glGenBuffers(1, &buffer)
+        glBindBuffer(bufferTarget, buffer)
+//        gl.bufferData(bufferTarget, typedArrayOrSizeInBytes, usage);
+        glBufferData(bufferTarget, GLsizeiptr(bufferSize), array?.bytes(), usage.rawValue)
+        glBindBuffer(bufferTarget, 0)
     
     return new Buffer(gl, bufferTarget, sizeInBytes, usage, buffer);
 }
@@ -794,10 +785,10 @@ function createBuffer(gl, bufferTarget, typedArrayOrSizeInBytes, usage) {
 * var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
 *     BufferUsage.STATIC_DRAW);
 */
-Context.prototype.createVertexBuffer = function(typedArrayOrSizeInBytes, usage) {
-    return createBuffer(this._gl, this._gl.ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
-};
-
+    func createVertexBuffer(array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
+        return createBuffer(this._gl, this._gl.ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
+    }
+/*
 /**
 * Creates an index buffer, which contains typed indices in GPU-controlled memory.
 * <br /><br />
@@ -1851,97 +1842,93 @@ function interleaveAttributes(attributes) {
         attributeLocations: [String: Int],
         bufferUsage: BufferUsage = .DynamicDraw,
         interleave: Bool = false) -> VertexArray {
-    /*options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
-    
-    var bufferUsage = defaultValue(options.bufferUsage, BufferUsage.DYNAMIC_DRAW);
-    
-    var attributeLocations = defaultValue(options.attributeLocations, defaultValue.EMPTY_OBJECT);
-    var interleave = defaultValue(options.interleave, false);
-    var createdVAAttributes = options.vertexArrayAttributes;
-    
-    var name;
-    var attribute;
-    var vertexBuffer;
-    var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];
-    var attributes = geometry.attributes;
-    
-    if (interleave) {
-        // Use a single vertex buffer with interleaved vertices.
-        var interleavedAttributes = interleaveAttributes(attributes);
-        if (defined(interleavedAttributes)) {
-            vertexBuffer = this.createVertexBuffer(interleavedAttributes.buffer, bufferUsage);
-            var offsetsInBytes = interleavedAttributes.offsetsInBytes;
-            var strideInBytes = interleavedAttributes.vertexSizeInBytes;
             
-            for (name in attributes) {
+            
+            
+            //var createdVAAttributes = options.vertexArrayAttributes;
+            
+            var name: String
+            var attribute: GeometryAttribute
+            var vertexBuffer: Buffer? = nil
+            var vaAttributes = //var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];
+            var attributes = geometry.attributes
+            
+            if interleave {
+                // Use a single vertex buffer with interleaved vertices.
+                /*var interleavedAttributes = interleaveAttributes(attributes)
+                if (defined(interleavedAttributes)) {
+                vertexBuffer = this.createVertexBuffer(interleavedAttributes.buffer, bufferUsage);
+                var offsetsInBytes = interleavedAttributes.offsetsInBytes;
+                var strideInBytes = interleavedAttributes.vertexSizeInBytes;
+                
+                for (name in attributes) {
                 if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-                    attribute = attributes[name];
-                    
-                    if (defined(attribute.values)) {
-                        // Common case: per-vertex attributes
+                attribute = attributes[name];
+                
+                if (defined(attribute.values)) {
+                // Common case: per-vertex attributes
+                vaAttributes.push({
+                index : attributeLocations[name],
+                vertexBuffer : vertexBuffer,
+                componentDatatype : attribute.componentDatatype,
+                componentsPerAttribute : attribute.componentsPerAttribute,
+                normalize : attribute.normalize,
+                offsetInBytes : offsetsInBytes[name],
+                strideInBytes : strideInBytes
+                });
+                } else {
+                // Constant attribute for all vertices
+                vaAttributes.push({
+                index : attributeLocations[name],
+                value : attribute.value,
+                componentDatatype : attribute.componentDatatype,
+                normalize : attribute.normalize
+                });
+                }
+                }
+                }
+                }*/
+            } else {
+                // One vertex buffer per attribute.
+                for i in 0...5 {
+                    if let attribute = attributes[i] {
+
+                        
+                        var componentDatatype = attribute.componentDatatype
+                        if (componentDatatype === ComponentDatatype.Float64) {
+                            componentDatatype = ComponentDatatype.Float32
+                        }
+                        
+                        vertexBuffer = nil
+                        if attribute.values != nil {
+                            vertexBuffer = createVertexBuffer(ComponentDatatype.createTypedArray(componentDatatype, attribute.values), bufferUsage);
+                        }
+                        
                         vaAttributes.push({
                             index : attributeLocations[name],
                             vertexBuffer : vertexBuffer,
-                            componentDatatype : attribute.componentDatatype,
-                            componentsPerAttribute : attribute.componentsPerAttribute,
-                            normalize : attribute.normalize,
-                            offsetInBytes : offsetsInBytes[name],
-                            strideInBytes : strideInBytes
-                            });
-                    } else {
-                        // Constant attribute for all vertices
-                        vaAttributes.push({
-                            index : attributeLocations[name],
                             value : attribute.value,
-                            componentDatatype : attribute.componentDatatype,
+                            componentDatatype : componentDatatype,
+                            componentsPerAttribute : attribute.componentsPerAttribute,
                             normalize : attribute.normalize
-                            });
+                        });
                     }
                 }
             }
-        }
-    } else {
-        // One vertex buffer per attribute.
-        for (name in attributes) {
-            if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-                attribute = attributes[name];
-                
-                var componentDatatype = attribute.componentDatatype;
-                if (componentDatatype === ComponentDatatype.DOUBLE) {
-                    componentDatatype = ComponentDatatype.FLOAT;
+            
+            var indexBuffer;
+            var indices = geometry.indices;
+            if (defined(indices)) {
+                if ((Geometry.computeNumberOfVertices(geometry) > CesiumMath.SIXTY_FOUR_KILOBYTES) && this.elementIndexUint) {
+                    indexBuffer = this.createIndexBuffer(new Uint32Array(indices), bufferUsage, IndexDatatype.UNSIGNED_INT);
+                } else{
+                    indexBuffer = this.createIndexBuffer(new Uint16Array(indices), bufferUsage, IndexDatatype.UNSIGNED_SHORT);
                 }
-                
-                vertexBuffer = undefined;
-                if (defined(attribute.values)) {
-                    vertexBuffer = this.createVertexBuffer(ComponentDatatype.createTypedArray(componentDatatype, attribute.values), bufferUsage);
-                }
-                
-                vaAttributes.push({
-                    index : attributeLocations[name],
-                    vertexBuffer : vertexBuffer,
-                    value : attribute.value,
-                    componentDatatype : componentDatatype,
-                    componentsPerAttribute : attribute.componentsPerAttribute,
-                    normalize : attribute.normalize
-                    });
             }
-        }
+            
+            return this.createVertexArray(vaAttributes, indexBuffer);*/
+            return VertexArray()
     }
-    
-    var indexBuffer;
-    var indices = geometry.indices;
-    if (defined(indices)) {
-        if ((Geometry.computeNumberOfVertices(geometry) > CesiumMath.SIXTY_FOUR_KILOBYTES) && this.elementIndexUint) {
-            indexBuffer = this.createIndexBuffer(new Uint32Array(indices), bufferUsage, IndexDatatype.UNSIGNED_INT);
-        } else{
-            indexBuffer = this.createIndexBuffer(new Uint16Array(indices), bufferUsage, IndexDatatype.UNSIGNED_SHORT);
-        }
-    }
-    
-    return this.createVertexArray(vaAttributes, indexBuffer);*/
-    return VertexArray()
-}
 /*
 var viewportQuadAttributeLocations = {
     position : 0,

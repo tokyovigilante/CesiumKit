@@ -21,7 +21,7 @@ class Buffer {
     var vertexArrayDestroyable = true
 
 
-    func copyFromArrayView (arrayView: [Serializable], offsetInBytes: Int = 0) {
+    func copyFromArrayView (arrayView: SerializedArray, offsetInBytes: Int = 0) {
         
         /*assert(offsetInBytes + arrayView.byteLength <= _sizeInBytes, "This buffer is not large enough."
         

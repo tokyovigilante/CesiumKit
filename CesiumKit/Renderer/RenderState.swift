@@ -309,7 +309,7 @@ struct RenderState/*: Printable*/ {
     }
     
     func applyFrontFace() {
-        glFrontFace(GLenum(frontFace.toRaw()))
+        glFrontFace(frontFace.rawValue)
     }
     
     func applyCull() {
@@ -353,7 +353,7 @@ struct RenderState/*: Printable*/ {
         enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
         
         if (depthTest.enabled) {
-            glDepthFunc(depthTest.function.toRaw())
+            glDepthFunc(depthTest.function.rawValue)
         }
     }
     

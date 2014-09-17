@@ -53,38 +53,37 @@ class SerializedArray {
     }
 }
 
-/*
 protocol Serializable {
-
-class func serialize<SerializedType>(value:SerializedType) -> NSData
-class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData
-func hexStringValue() -> String
+    
+    class func serialize<SerializedType>(value:SerializedType) -> NSData
+    class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData
+    func hexStringValue() -> String
 }
 
 extension NSData: Serializable {
+    
+    public class func serialize<SerializedType>(value:SerializedType) -> NSData {
+        let values = [value]
+        return NSData(bytes:values, length:sizeof(SerializedType))
+    }
+    
+    public class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData {
+        return NSData(bytes:values, length:values.count*sizeof(SerializedType))
+    }
 
-public class func serialize<SerializedType>(value:SerializedType) -> NSData {
-let values = [value]
-return NSData(bytes:values, length:sizeof(SerializedType))
+    
+    public func hexStringValue() -> String {
+        var dataBytes = Array<Byte>(count:self.length, repeatedValue:0x0)
+        self.getBytes(&dataBytes, length:self.length)
+        var hexString = dataBytes.reduce(""){(out:String, dataByte:Byte) in
+            out +  NSString(format:"%02lx", dataByte)
+        }
+        return hexString
+    }
 }
 
-public class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData {
-return NSData(bytes:values, length:values.count*sizeof(SerializedType))
-}
-
-
-public func hexStringValue() -> String {
-var dataBytes = Array<Byte>(count:self.length, repeatedValue:0x0)
-self.getBytes(&dataBytes, length:self.length)
-var hexString = dataBytes.reduce(""){(out:String, dataByte:Byte) in
-out +  NSString(format:"%02lx", dataByte)
-}
-return hexString
-}
-}
-*/
 // MARK: - Serializable Protocol
-
+/*
 protocol Serializable {}
 typealias SelfType
 class func fromString(data:String) -> SelfType?
@@ -180,4 +179,4 @@ extension UInt8 : Deserializable {
 /*extension Int16: Serializable {} // Short
 extension UInt16: Serializable {} // UnsignedShort
 extension Float: Serializable {} // Float32
-extension Double: Serializable {} // Float64*/
+extension Double: Serializable {} // Float64*/*/

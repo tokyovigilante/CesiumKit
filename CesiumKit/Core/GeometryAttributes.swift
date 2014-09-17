@@ -16,7 +16,7 @@
 * @alias GeometryAttributes
 * @constructor
 */
-struct GeometryAttributes  {
+class GeometryAttributes  {
     
     /**
     * The 3D position attribute.
@@ -105,14 +105,22 @@ struct GeometryAttributes  {
             self.color = color
     }
     
-    func vertexCount() -> Int {
-        // FIXME: VertexCount
-        /*var vertexCount = position?.vertexCount
-        vertexCount == normal.vertexCount ? vertexCount = normal.vertexCount : assert("unequal vertex count")
-        vertexCount == st.vertexCount ? vertexCount = st.vertexCount : assert("unequal vertex count")
-        vertexCount == binormal.vertexCount ? vertexCount = binormal.vertexCount : assert("unequal vertex count")
-        vertexCount == tangent.vertexCount ? vertexCount = tangent.vertexCount : assert("unequal vertex count")
-        vertexCount == color.vertexCount ? vertexCount = color.vertexCount : assert("unequal vertex count")*/
-        return position!.vertexCount
+    subscript(index: Int) -> GeometryAttribute? {
+        switch index {
+        case 0:
+            return position
+        case 1:
+            return normal
+        case 2:
+            return st
+        case 3:
+            return binormal
+        case 4:
+            return tangent
+        case 5:
+            return color
+        default:
+            return nil
     }
+
 }

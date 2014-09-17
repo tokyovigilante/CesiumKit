@@ -603,7 +603,7 @@ class Globe {
                         position: GeometryAttribute(
                             componentDatatype: ComponentDatatype.Float32,
                             componentsPerAttribute: 3,
-                            values: NSData.serializeArray(depthQuad))
+                            values: SerializedArray(data: NSData.serializeArray(depthQuad), type: .Float32))
                         ),
                     indices : depthIndices,
                     primitiveType : PrimitiveType.Triangles
@@ -613,7 +613,7 @@ class Globe {
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
-            _depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
+            _depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(SerializedArray(data: NSData.serializeArray(depthQuad), type: .Float32))
         }
         
         if _depthCommand.shaderProgram == nil {
