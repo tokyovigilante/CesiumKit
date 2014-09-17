@@ -729,7 +729,7 @@ class Context {
         return nil
     }
 
-    func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
+    func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
     
         assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
 
@@ -744,7 +744,13 @@ class Context {
         var buffer: GLuint = 0
         glGenBuffers(1, &buffer)
         glBindBuffer(target.toGL(), buffer)
-        glBufferData(target.toGL(), GLsizeiptr(bufferSize), array == nil ? 0 : array!.bytes(), usage.toGL())
+        var data: UnsafePointer<Void>
+        if array != nil {
+            data = array!.bytes()
+        } else {
+            data = nil
+        }
+        glBufferData(target.toGL(), GLsizeiptr(bufferSize), data, usage.toGL())
         glBindBuffer(target.toGL(), 0)
     
         return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)
@@ -784,8 +790,8 @@ class Context {
 * var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
 *     BufferUsage.STATIC_DRAW);
 */
-    func createVertexBuffer(array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
-        return createBuffer(this._gl, this._gl.ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
+    func createVertexBuffer(array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
+        return createBuffer(.ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
 /*
 /**
@@ -1849,7 +1855,7 @@ function interleaveAttributes(attributes) {
             var name: String
             var attribute: GeometryAttribute
             var vertexBuffer: Buffer? = nil
-            var vaAttributes = //var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];
+            var vaAttributes = [VertexAttributes]()//var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];
             var attributes = geometry.attributes
             
             if interleave {
@@ -1900,10 +1906,10 @@ function interleaveAttributes(attributes) {
                         
                         vertexBuffer = nil
                         if attribute.values != nil {
-                            vertexBuffer = createVertexBuffer(ComponentDatatype.createTypedArray(componentDatatype, attribute.values), bufferUsage);
+                            vertexBuffer = createVertexBuffer(array: attribute.values, usage: bufferUsage)
                         }
                         
-                        vaAttributes.push({
+                        vaAttributes.append({
                             index : attributeLocations[name],
                             vertexBuffer : vertexBuffer,
                             value : attribute.value,

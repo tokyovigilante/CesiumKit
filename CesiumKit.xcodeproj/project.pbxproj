@@ -68,6 +68,7 @@
 		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
 		947A240B19C98B2E0040042F /* BufferTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240A19C98B2E0040042F /* BufferTarget.swift */; };
+		947A240D19C9911D0040042F /* VertexAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240C19C9911D0040042F /* VertexAttributes.swift */; };
 		947BD5A9199DB1D80042D9BF /* PrimitiveCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */; };
 		948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802D194D3BD900012DC4 /* VertexFormat.swift */; };
 		948B8030194D462F00012DC4 /* Quarternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quarternion.swift */; };
@@ -204,6 +205,7 @@
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
 		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
 		947A240A19C98B2E0040042F /* BufferTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferTarget.swift; sourceTree = "<group>"; };
+		947A240C19C9911D0040042F /* VertexAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexAttributes.swift; sourceTree = "<group>"; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948B802F194D462F00012DC4 /* Quarternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quarternion.swift; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				9465B0251956F5DE00355D2C /* Texture.swift */,
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
+				947A240C19C9911D0040042F /* VertexAttributes.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -620,6 +623,7 @@
 				94540439199F649000012DC4 /* ImageryLayer.swift in Sources */,
 				94540423199F045600012DC4 /* Event.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,
+				947A240D19C9911D0040042F /* VertexAttributes.swift in Sources */,
 				94E7A863199DD71600012DC4 /* ScreenSpaceEventHandler.swift in Sources */,
 				943744F61945D09F0017FE14 /* Cartographic.swift in Sources */,
 				946D25AA19592BFD0080379D /* Ray.swift in Sources */,
