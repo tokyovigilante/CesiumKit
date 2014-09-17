@@ -14,7 +14,7 @@ class SerializedArray {
     
     let datatype: ComponentDatatype
     
-    var byteLength: Int {
+    var sizeInBytes: Int {
         get {
             return _storageBuffer.length
         }

@@ -121,6 +121,7 @@ class GeometryAttributes  {
             return color
         default:
             return nil
+            }
     }
 
 }

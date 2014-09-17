@@ -729,26 +729,25 @@ class Context {
         return nil
     }
 
-    func createBuffer(bufferTarget: GLenum, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
+    func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) {
     
         assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
 
         var bufferSize: Int
         if array != nil {
-            bufferSize = array!.byteLength
+            bufferSize = array!.sizeInBytes
         } else {
-            bufferSize = sizeInBytes
+            bufferSize = sizeInBytes!
         }
         assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
         
         var buffer: GLuint = 0
         glGenBuffers(1, &buffer)
-        glBindBuffer(bufferTarget, buffer)
-//        gl.bufferData(bufferTarget, typedArrayOrSizeInBytes, usage);
-        glBufferData(bufferTarget, GLsizeiptr(bufferSize), array?.bytes(), usage.rawValue)
-        glBindBuffer(bufferTarget, 0)
+        glBindBuffer(target.toGL(), buffer)
+        glBufferData(target.toGL(), GLsizeiptr(bufferSize), array == nil ? 0 : array!.bytes(), usage.toGL())
+        glBindBuffer(target.toGL(), 0)
     
-    return new Buffer(gl, bufferTarget, sizeInBytes, usage, buffer);
+        return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)
 }
 
 /**

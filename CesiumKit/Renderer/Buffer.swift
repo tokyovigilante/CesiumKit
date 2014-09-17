@@ -10,26 +10,30 @@ import OpenGLES
 
 class Buffer {
     
-    var bufferTarget: GLenum = 0
+    var target: BufferTarget
     
-    var sizeInBytes: Int = 0
+    var sizeInBytes: Int
     
-    var usage: BufferUsage = BufferUsage.StaticDraw
+    var usage: BufferUsage
     
-    var buffer: GLuint = 0
+    var buffer: GLuint
     
     var vertexArrayDestroyable = true
 
+    init(target: BufferTarget, sizeInBytes: Int, buffer: GLuint, usage: BufferUsage = .StaticDraw) {
+        self.target = target
+        self.sizeInBytes = sizeInBytes
+        self.buffer = buffer
+        self.usage = usage
+    }
 
     func copyFromArrayView (arrayView: SerializedArray, offsetInBytes: Int = 0) {
         
-        /*assert(offsetInBytes + arrayView.byteLength <= _sizeInBytes, "This buffer is not large enough."
+        assert(offsetInBytes + arrayView.byteLength <= sizeInBytes, "This buffer is not large enough.")
         
-        var target = this._bufferTarget;
-        glBindBuffer(bufferTarget, buffer)
-        glBufferSubData(<#target: GLenum#>, <#offset: GLintptr#>, <#size: GLsizeiptr#>, <#data: UnsafePointer<Void>#>)
-        gl.bufferSubData(target, offsetInBytes, arrayView);
-        gl.bindBuffer(target, null);*/
+        glBindBuffer(target.toGL(), buffer)
+        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, SerializedArray.bytes())
+        glBindBuffer(target, 0)
     }
     
     deinit {

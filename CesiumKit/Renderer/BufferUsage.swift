@@ -8,8 +8,20 @@
 
 import OpenGLES
 
-enum BufferUsage: GLenum {
-    case StreamDraw = 0x88E0,
-    StaticDraw = 0x88E4,
-    DynamicDraw = 0x88E8
+enum BufferUsage {
+    case StreamDraw,
+    StaticDraw,
+    DynamicDraw
+    
+    func toGL() -> GLenum {
+        switch self {
+        case .StreamDraw:
+            return GL_STREAM_DRAW
+        case .StaticDraw:
+            return GL_STATIC_DRAW
+        case .DynamicDraw:
+            return GL_DYNAMIC_DRAW
+        }
+    }
+    
 }
