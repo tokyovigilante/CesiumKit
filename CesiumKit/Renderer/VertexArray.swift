@@ -10,7 +10,7 @@ import Foundation
 
 class VertexArray {
     
-    var _attributes = [VertexAttribute]()
+    var _attributes = [VertexAttributes]()
     /*
 function addAttribute(attributes, attribute, index) {
 var hasVertexBuffer = defined(attribute.vertexBuffer);
@@ -192,7 +192,7 @@ return this._indexBuffer;
 /**
 * index is the location in the array of attributes, not the index property of an attribute.
 */
-    func attribute(index: Int) -> VertexAttribute {
+    func attribute(index: Int) -> VertexAttributes {
         return _attributes[index]
     }
 /*

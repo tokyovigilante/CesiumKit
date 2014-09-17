@@ -1897,10 +1897,9 @@ function interleaveAttributes(attributes) {
                 // One vertex buffer per attribute.
                 for i in 0...5 {
                     if let attribute = attributes[i] {
-
                         
                         var componentDatatype = attribute.componentDatatype
-                        if (componentDatatype === ComponentDatatype.Float64) {
+                        if (componentDatatype == ComponentDatatype.Float64) {
                             componentDatatype = ComponentDatatype.Float32
                         }
                         
@@ -1909,29 +1908,26 @@ function interleaveAttributes(attributes) {
                             vertexBuffer = createVertexBuffer(array: attribute.values, usage: bufferUsage)
                         }
                         
-                        vaAttributes.append({
-                            index : attributeLocations[name],
-                            vertexBuffer : vertexBuffer,
-                            value : attribute.value,
-                            componentDatatype : componentDatatype,
-                            componentsPerAttribute : attribute.componentsPerAttribute,
-                            normalize : attribute.normalize
-                        });
+                        vaAttributes.append(VertexAttributes(
+                            index: attributeLocations[attributes.name(i)]!,
+                            vertexBuffer: vertexBuffer!,
+                            componentsPerAttribute: attribute.componentsPerAttribute,
+                            componentDatatype: componentDatatype,
+                            normalize: attribute.normalize))
                     }
                 }
             }
             
-            var indexBuffer;
-            var indices = geometry.indices;
-            if (defined(indices)) {
-                if ((Geometry.computeNumberOfVertices(geometry) > CesiumMath.SIXTY_FOUR_KILOBYTES) && this.elementIndexUint) {
-                    indexBuffer = this.createIndexBuffer(new Uint32Array(indices), bufferUsage, IndexDatatype.UNSIGNED_INT);
+            var indexBuffer: Buffer
+            /*if geometry.indices != nil {
+                if ((geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes) && elementIndexUint == true) {
+                    indexBuffer = createIndexBuffer(new Uint32Array(indices), bufferUsage, IndexDatatype.UNSIGNED_INT);
                 } else{
-                    indexBuffer = this.createIndexBuffer(new Uint16Array(indices), bufferUsage, IndexDatatype.UNSIGNED_SHORT);
+                    indexBuffer = createIndexBuffer(new Uint16Array(indices), bufferUsage, IndexDatatype.UNSIGNED_SHORT);
                 }
             }
             
-            return this.createVertexArray(vaAttributes, indexBuffer);*/
+            return createVertexArray(vaAttributes, indexBuffer)*/
             return VertexArray()
     }
 /*

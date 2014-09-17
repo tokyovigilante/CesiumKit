@@ -29,11 +29,11 @@ class Buffer {
 
     func copyFromArrayView (arrayView: SerializedArray, offsetInBytes: Int = 0) {
         
-        assert(offsetInBytes + arrayView.byteLength <= sizeInBytes, "This buffer is not large enough.")
+        assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
         
         glBindBuffer(target.toGL(), buffer)
-        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, SerializedArray.bytes())
-        glBindBuffer(target, 0)
+        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.bytes())
+        glBindBuffer(target.toGL(), 0)
     }
     
     deinit {

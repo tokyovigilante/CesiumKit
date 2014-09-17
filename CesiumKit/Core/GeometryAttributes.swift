@@ -120,8 +120,29 @@ class GeometryAttributes  {
         case 5:
             return color
         default:
+            assert(false, "invalid attribute")
             return nil
             }
+    }
+    
+    func name(index: Int) -> String {
+        switch index {
+        case 0:
+            return "position"
+        case 1:
+            return "normal"
+        case 2:
+            return "st"
+        case 3:
+            return "binormal"
+        case 4:
+            return "tangent"
+        case 5:
+            return "color"
+        default:
+            assert(false, "invalid name")
+            return ""
+        }
     }
 
 }

@@ -16,11 +16,11 @@ enum BufferUsage {
     func toGL() -> GLenum {
         switch self {
         case .StreamDraw:
-            return GL_STREAM_DRAW
+            return GLenum(GL_STREAM_DRAW)
         case .StaticDraw:
-            return GL_STATIC_DRAW
+            return GLenum(GL_STATIC_DRAW)
         case .DynamicDraw:
-            return GL_DYNAMIC_DRAW
+            return GLenum(GL_DYNAMIC_DRAW)
         }
     }
     

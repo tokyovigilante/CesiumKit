@@ -8,23 +8,6 @@
 
 import OpenGLES
 
-enum CullFace {
-    case Front,
-    Back,
-    FrontAndBack
-    
-    func toGL() -> GLenum {
-        switch self {
-        case .Front:
-            return GLenum(GL_FRONT)
-        case .Back:
-            return GLenum(GL_BACK)
-        case .FrontAndBack:
-            return GLenum(GL_FRONT_AND_BACK)
-        }
-    }
-}
-
 enum PixelDatatype: GLenum {
     case UnsignedByte = 0x1401,
     UnsignedShort = 0x1403,
@@ -36,101 +19,7 @@ enum PixelDatatype: GLenum {
     UnsignedShort565 = 0x8363
 }
 
-/**
-* Winding order defines the order of vertices for a triangle to be considered front-facing.
-*
-* @namespace
-* @alias WindingOrder
-*/
-enum WindingOrder: GLenum {
-    /**
-    * 0x0900. Vertices are in clockwise order.
-    *
-    * @type {Number}
-    * @constant
-    */
-    case Clockwise = 0x0900, // WebGL: CW
-    
-    /**
-    * 0x0901. Vertices are in counter-clockwise order.
-    *
-    * @type {Number}
-    * @constant
-    */
-    CounterClockwise = 0x0901 // WebGL: CCW
-}
 
-/**
-* Determines the function used to compare two depths for the depth test.
-*
-* @namespace
-* @alias DepthFunction
-*/
-enum DepthFunction: GLenum {
-    /**
-    * 0x200.  The depth test never passes.
-    *
-    * @type {Number}
-    * @constant
-    */
-    case Never = 0x0200,
-    
-    /**
-    * 0x201.  The depth test passes if the incoming depth is less than the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Less = 0x201,
-    
-    /**
-    * 0x202.  The depth test passes if the incoming depth is equal to the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Equal = 0x0202,
-    
-    /**
-    * 0x203.  The depth test passes if the incoming depth is less than or equal to the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    LessOrEqual = 0x203, // LEQUAL
-    
-    /**
-    * 0x204.  The depth test passes if the incoming depth is greater than the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Greater = 0x0204,
-    
-    /**
-    * 0x0205.  The depth test passes if the incoming depth is not equal to the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    NotEqual = 0x0205, // NOTEQUAL
-    
-    /**
-    * 0x206.  The depth test passes if the incoming depth is greater than or equal to the stored depth.
-    *
-    * @type {Number}
-    * @constant
-    */
-    GreaterOrAlways = 0x0206, // GEQUAL
-    
-    /**
-    * 0x207.  The depth test always passes.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Always = 0x0207
-}
 
 enum PixelFormat: GLenum {
     /**

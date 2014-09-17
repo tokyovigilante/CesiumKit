@@ -122,11 +122,12 @@ class GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: SerializedArray
+    var values: SerializedArray?
     
     var vertexCount: Int {
         get {
-            return values.count / componentsPerAttribute
+            if values == nil { return 0 }
+            return values!.count / componentsPerAttribute
         }
     }
     

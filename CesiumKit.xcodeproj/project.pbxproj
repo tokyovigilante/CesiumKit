@@ -69,6 +69,8 @@
 		947A240B19C98B2E0040042F /* BufferTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240A19C98B2E0040042F /* BufferTarget.swift */; };
 		947A240D19C9911D0040042F /* VertexAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240C19C9911D0040042F /* VertexAttributes.swift */; };
 		947A240F19C9919D0040042F /* CullFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240E19C9919D0040042F /* CullFace.swift */; };
+		947A241119C99C860040042F /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
+		947A241319C99DDB0040042F /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		947BD5A9199DB1D80042D9BF /* PrimitiveCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */; };
 		948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802D194D3BD900012DC4 /* VertexFormat.swift */; };
 		948B8030194D462F00012DC4 /* Quarternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quarternion.swift */; };
@@ -206,6 +208,8 @@
 		947A240A19C98B2E0040042F /* BufferTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferTarget.swift; sourceTree = "<group>"; };
 		947A240C19C9911D0040042F /* VertexAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexAttributes.swift; sourceTree = "<group>"; };
 		947A240E19C9919D0040042F /* CullFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CullFace.swift; sourceTree = "<group>"; };
+		947A241019C99C860040042F /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
+		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948B802F194D462F00012DC4 /* Quarternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quarternion.swift; sourceTree = "<group>"; };
@@ -361,6 +365,7 @@
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				9446BEAC19C5040400F0B6E8 /* GLEnumerations.swift */,
+				947A241019C99C860040042F /* WindingOrder.swift */,
 				941E2133199ED26A00012DC4 /* GLSupport.swift */,
 				941E2162199EDC3600012DC4 /* ImageBuffer.swift */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
@@ -372,6 +377,7 @@
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				947A240C19C9911D0040042F /* VertexAttributes.swift */,
+				947A241219C99DDB0040042F /* DepthTest.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -660,10 +666,12 @@
 				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
 				94B6C5B41970A07C008792D9 /* Credit.swift in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
+				947A241119C99C860040042F /* WindingOrder.swift in Sources */,
 				948D03DF1944EC1B00DC0E52 /* Spherical.swift in Sources */,
 				9460F815194DAF7000012DC4 /* TerrainAttributeLocations.swift in Sources */,
 				94540427199F478F00012DC4 /* Sampler.swift in Sources */,
 				945D2DBC193D7FA900012DC4 /* EllipsoidalOccluder.swift in Sources */,
+				947A241319C99DDB0040042F /* DepthTest.swift in Sources */,
 				9460F817194DB0ED00012DC4 /* ShaderProgram.swift in Sources */,
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
 				94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */,
