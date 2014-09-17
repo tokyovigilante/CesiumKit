@@ -793,7 +793,7 @@ class Context {
     func createVertexBuffer(array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return createBuffer(.ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
-/*
+
 /**
 * Creates an index buffer, which contains typed indices in GPU-controlled memory.
 * <br /><br />
@@ -834,6 +834,7 @@ class Context {
 * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
 *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
 */
+    func
 Context.prototype.createIndexBuffer = function(typedArrayOrSizeInBytes, usage, indexDatatype) {
     //>>includeStart('debug', pragmas.debug);
     if (!IndexDatatype.validate(indexDatatype)) {
@@ -870,7 +871,7 @@ Context.prototype.createIndexBuffer = function(typedArrayOrSizeInBytes, usage, i
         });
     
     return buffer;
-};
+}
 
 /**
 * Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
@@ -958,6 +959,7 @@ Context.prototype.createIndexBuffer = function(typedArrayOrSizeInBytes, usage, i
 * ];
 * var va = context.createVertexArray(attributes);
 */
+/*
 Context.prototype.createVertexArray = function(attributes, indexBuffer) {
     return new VertexArray(this._gl, this._vertexArrayObject, attributes, indexBuffer);
 };
