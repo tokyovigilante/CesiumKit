@@ -12,7 +12,6 @@
 		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
 		940D794719C3F66900012DC4 /* GeometryPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794619C3F66900012DC4 /* GeometryPipeline.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
-		940F448519C59DFD00A3BB00 /* VertexAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448419C59DFD00A3BB00 /* VertexAttribute.swift */; };
 		940F448719C59EF400A3BB00 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448619C59EF400A3BB00 /* Buffer.swift */; };
 		940F448919C5A2C400A3BB00 /* BufferUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448819C5A2C400A3BB00 /* BufferUsage.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
@@ -150,7 +149,6 @@
 		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
-		940F448419C59DFD00A3BB00 /* VertexAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexAttribute.swift; sourceTree = "<group>"; };
 		940F448619C59EF400A3BB00 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
 		940F448819C5A2C400A3BB00 /* BufferUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferUsage.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
@@ -334,7 +332,6 @@
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
 				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
 				94327176195468EA0011D8FC /* Transforms.swift */,
-				940F448419C59DFD00A3BB00 /* VertexAttribute.swift */,
 				948B802D194D3BD900012DC4 /* VertexFormat.swift */,
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
@@ -660,7 +657,6 @@
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
 				94540435199F62C900012DC4 /* ImageryState.swift in Sources */,
-				940F448519C59DFD00A3BB00 /* VertexAttribute.swift in Sources */,
 				9465B0281956F61400355D2C /* CubeMap.swift in Sources */,
 				94B6C5B41970A07C008792D9 /* Credit.swift in Sources */,
 				9460F813194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift in Sources */,
