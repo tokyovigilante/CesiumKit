@@ -126,7 +126,7 @@ struct GeometryAttribute {
     
     var vertexCount: Int {
         get {
-            return values.length / componentsPerAttribute
+            return values.length / componentsPerAttribute / componentDatatype.elementSize()
         }
     }
     

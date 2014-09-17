@@ -613,7 +613,7 @@ class Globe {
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
-            //_depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
+            _depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(depthQuad)
         }
         
         if _depthCommand.shaderProgram == nil {
