@@ -28,6 +28,7 @@
 		943744F61945D09F0017FE14 /* Cartographic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F51945D09F0017FE14 /* Cartographic.swift */; };
 		943744F81945D5320017FE14 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9438BD7619C7B0D70026A0F0 /* SerializedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */; };
+		943BD2AE19CCD22F0070FC5D /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */; };
 		943D25B11947128A00263D91 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
 		9444499E1948326C009D1703 /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
 		944449A01948331C009D1703 /* GeographicProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499F1948331C009D1703 /* GeographicProjection.swift */; };
@@ -167,6 +168,7 @@
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
 		9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializedArray.swift; sourceTree = "<group>"; };
+		943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* Projection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 				943744F51945D09F0017FE14 /* Cartographic.swift */,
 				94CD3FAE199B6F8A00012DC4 /* Clock.swift */,
 				942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */,
+				943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */,
 				9491BBB11949D156007C1C4C /* Credit.swift */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
@@ -597,6 +600,7 @@
 				9465B0221956F53700355D2C /* ShaderCache.swift in Sources */,
 				94540429199F4CD900012DC4 /* QuadTreeTile.swift in Sources */,
 				94CD3FAF199B6F8A00012DC4 /* Clock.swift in Sources */,
+				943BD2AE19CCD22F0070FC5D /* IndexDatatype.swift in Sources */,
 				94E05AB519C06D98007E6710 /* Frustum.swift in Sources */,
 				949AABAD199F730700037973 /* QuadTreePrimitive.swift in Sources */,
 				9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */,

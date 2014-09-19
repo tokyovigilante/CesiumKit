@@ -80,20 +80,18 @@ enum ComponentDatatype {
     
     func toGL() -> GLenum {
         switch (self) {
-        case ComponentDatatype.Byte:
+        case .Byte:
             return 0x1400
-        case ComponentDatatype.UnsignedByte:
+        case .UnsignedByte:
             return 0x1401
-        case ComponentDatatype.Short:
+        case .Short:
             return 0x1402
-        case ComponentDatatype.UnsignedShort:
+        case .UnsignedShort:
             return 0x1403
-        case ComponentDatatype.Float32:
+        case .Float32:
             return 0x1406
-        case ComponentDatatype.Float64:
+        case .Float64:
             return 0x140A
-        default:
-            assert(true, "Invalid componentDataType")
         }
     }
     
@@ -112,17 +110,17 @@ enum ComponentDatatype {
     func elementSize() -> Int {
         
         switch (self) {
-        case ComponentDatatype.Byte:
+        case .Byte:
             return sizeof(Int8)
-        case ComponentDatatype.UnsignedByte:
+        case .UnsignedByte:
             return sizeof(UInt8)
-        case ComponentDatatype.Short:
+        case .Short:
             return sizeof(Int16)
-        case ComponentDatatype.UnsignedShort:
+        case .UnsignedShort:
             return sizeof(UInt16)
-        case ComponentDatatype.Float32:
+        case .Float32:
             return sizeof(Float)
-        case ComponentDatatype.Float64:
+        case .Float64:
             return sizeof(Double)
         default:
             assert(true, "Invalid componentDataType")

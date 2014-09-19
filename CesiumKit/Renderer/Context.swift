@@ -834,44 +834,38 @@ class Context {
 * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
 *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
 */
-    func
-Context.prototype.createIndexBuffer = function(typedArrayOrSizeInBytes, usage, indexDatatype) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!IndexDatatype.validate(indexDatatype)) {
-        throw new DeveloperError('Invalid indexDatatype.');
-    }
-    //>>includeEnd('debug');
+    func createIndexBuffer (array: SerializedArray?, sizeInBytes: Int?, usage: BufferUsage, indexDatatype: IndexDatatype) {
     
-    if ((indexDatatype === IndexDatatype.UNSIGNED_INT) && !this.elementIndexUint) {
-        throw new RuntimeError('IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.');
-    }
-    
-    var bytesPerIndex = IndexDatatype.getSizeInBytes(indexDatatype);
-    
-    var gl = this._gl;
-    var buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
-    var numberOfIndices = buffer.sizeInBytes / bytesPerIndex;
-    
-    defineProperties(buffer, {
-        indexDatatype: {
-            get : function() {
-                return indexDatatype;
-            }
-        },
-        bytesPerIndex : {
-            get : function() {
-                return bytesPerIndex;
-            }
-        },
-        numberOfIndices : {
-            get : function() {
-                return numberOfIndices;
-            }
+        if indexDatatype == .UnsignedInt {
+            assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
         }
-        });
     
-    return buffer;
-}
+        let bytesPerIndex = indexDatatype.elementSize()
+        
+        var gl = this._gl;
+        var buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
+        var numberOfIndices = buffer.sizeInBytes / bytesPerIndex;
+        
+        defineProperties(buffer, {
+            indexDatatype: {
+                get : function() {
+                    return indexDatatype;
+                }
+            },
+            bytesPerIndex : {
+                get : function() {
+                    return bytesPerIndex;
+                }
+            },
+            numberOfIndices : {
+                get : function() {
+                    return numberOfIndices;
+                }
+            }
+        });
+        
+        return buffer;
+    }
 
 /**
 * Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
