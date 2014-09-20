@@ -55,6 +55,8 @@ enum ComponentDatatype {
     */
     UnsignedShort,
     
+    UnsignedInt,
+    
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
     * of an element in <code>Float32Array</code>.
@@ -88,6 +90,8 @@ enum ComponentDatatype {
             return 0x1402
         case .UnsignedShort:
             return 0x1403
+        case .UnsignedInt:
+            return GLenum(GL_UNSIGNED_INT)
         case .Float32:
             return 0x1406
         case .Float64:
@@ -118,12 +122,12 @@ enum ComponentDatatype {
             return sizeof(Int16)
         case .UnsignedShort:
             return sizeof(UInt16)
+        case .UnsignedInt:
+            return sizeof(UInt32)
         case .Float32:
             return sizeof(Float)
         case .Float64:
             return sizeof(Double)
-        default:
-            assert(true, "Invalid componentDataType")
         }
     }
     

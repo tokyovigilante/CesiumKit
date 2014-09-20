@@ -177,7 +177,7 @@ struct Math {
     * @type {Number}
     * @constant
     */
-    static let SixtyFourKilobytes: Double = 64 * 1024
+    static let SixtyFourKilobytes: Int = 64 * 1024
     
     /**
     * Returns the sign of the value; 1 if the value is positive, -1 if the value is

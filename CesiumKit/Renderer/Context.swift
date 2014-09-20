@@ -730,8 +730,10 @@ class Context {
     }
 
     func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
-    
-        assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
+        
+        return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
+        //return Buffer(target: target, sizeInBytes: sizeInBytes, buffer: <#GLuint#>, usage: <#BufferUsage#>)
+        /*assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
 
         var bufferSize: Int
         if array != nil {
@@ -753,7 +755,7 @@ class Context {
         glBufferData(target.toGL(), GLsizeiptr(bufferSize), data, usage.toGL())
         glBindBuffer(target.toGL(), 0)
     
-        return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)
+        return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)*/
 }
 
 /**
@@ -834,15 +836,17 @@ class Context {
 * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
 *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
 */
-    func createIndexBuffer (array: SerializedArray?, sizeInBytes: Int?, usage: BufferUsage, indexDatatype: IndexDatatype) {
+    func createIndexBuffer (array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
     
         if indexDatatype == .UnsignedInt {
             assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
         }
-    
+        return IndexBuffer(array: array, sizeInBytes: sizeInBytes, usage: usage, indexDatatype: indexDatatype)
+
+    /*
         let bytesPerIndex = indexDatatype.elementSize()
         
-        var gl = this._gl;
+        var buffer
         var buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
         var numberOfIndices = buffer.sizeInBytes / bytesPerIndex;
         
@@ -864,7 +868,7 @@ class Context {
             }
         });
         
-        return buffer;
+        return buffer;*/
     }
 
 /**
@@ -1914,16 +1918,21 @@ function interleaveAttributes(attributes) {
                 }
             }
             
-            var indexBuffer: Buffer
-            /*if geometry.indices != nil {
-                if ((geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes) && elementIndexUint == true) {
-                    indexBuffer = createIndexBuffer(new Uint32Array(indices), bufferUsage, IndexDatatype.UNSIGNED_INT);
-                } else{
-                    indexBuffer = createIndexBuffer(new Uint16Array(indices), bufferUsage, IndexDatatype.UNSIGNED_SHORT);
+            var indexBuffer: IndexBuffer
+            if geometry.indices != nil {
+                if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
+                    
+                    indexBuffer = createIndexBuffer(
+                        array: SerializedArray(data: NSData.serializeArray(geometry.indices!.map( { UInt32($0) } )), type: ComponentDatatype.UnsignedInt),
+                        indexDatatype: IndexDatatype.UnsignedInt)
+                } else {
+                    indexBuffer = createIndexBuffer(
+                        array: SerializedArray(data: NSData.serializeArray(geometry.indices!.map( { UInt16($0) } )), type: ComponentDatatype.UnsignedShort),
+                        indexDatatype: IndexDatatype.UnsignedShort)
                 }
             }
             
-            return createVertexArray(vaAttributes, indexBuffer)*/
+            //return createVertexArray(vaAttributes, indexBuffer)
             return VertexArray()
     }
 /*

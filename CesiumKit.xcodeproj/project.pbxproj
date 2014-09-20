@@ -122,6 +122,7 @@
 		94E8511619A81461006B7780 /* PerspectiveOffCenterFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */; };
 		94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1A19550A9600012DC4 /* Geometry.swift */; };
 		94E9BA1D19550B5E00012DC4 /* GeometryAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */; };
+		94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -265,6 +266,7 @@
 		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
+		94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexBuffer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -358,6 +360,7 @@
 			isa = PBXGroup;
 			children = (
 				940F448619C59EF400A3BB00 /* Buffer.swift */,
+				94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */,
 				947A240A19C98B2E0040042F /* BufferTarget.swift */,
 				940F448819C5A2C400A3BB00 /* BufferUsage.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
@@ -663,6 +666,7 @@
 				9454042F199F5C7D00012DC4 /* TileTerrain.swift in Sources */,
 				94E7A865199E02AB00012DC4 /* BingMapsImageryProvider.swift in Sources */,
 				9465B0241956F5A400355D2C /* UniformState.swift in Sources */,
+				94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */,
 				940CA70E19B19D6E00A6E482 /* Image.swift in Sources */,
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,

@@ -87,7 +87,7 @@ enum IndexDatatype {
     * @example
     * this.indices = Cesium.IndexDatatype.createTypedArray(positions.length / 3, numberOfIndices);
     */
-    func typedArray(numberOfVertices: Int, indicesLength: Int?, array: SerializedArray?) -> SerializedArray {
+    /*func typedArray(numberOfVertices: Int, indicesLength: Int?, array: SerializedArray?) -> SerializedArray {
         
     /*if (numberOfVertices > Math.SixtyFourKilobytes) {
     return new Uint32Array(indicesLengthOrArray);
@@ -98,6 +98,6 @@ enum IndexDatatype {
     
     return freezeObject(IndexDatatype);
     });*/return SerializedArray()
-    }
+    }*/
 
 }

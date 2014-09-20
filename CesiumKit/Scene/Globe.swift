@@ -50,7 +50,7 @@ class Globe {
     }()
     
     lazy var _depthCommand: DrawCommand = {
-        [unowned self] in
+        //[unowned self] in
         return DrawCommand(
             boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84Ellipsoid().maximumRadius),
             pass: Pass.Opaque,
@@ -594,7 +594,7 @@ class Globe {
         
         // update depth plane
         var depthQuad = computeDepthQuad(frameState: frameState)
-        var depthIndices: [Int32] = [0, 1, 2, 2, 1, 3]
+        var depthIndices = [0, 1, 2, 2, 1, 3]
         
         // depth plane
         if _depthCommand.vertexArray == nil {

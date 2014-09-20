@@ -113,7 +113,7 @@ struct Geometry {
     *
     * @default undefined
     */
-    var indices: [Int32]?
+    var indices: [Int]?
     
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},
@@ -136,7 +136,7 @@ struct Geometry {
     var boundingSphere: BoundingSphere? = nil
     
 
-    init(attributes: GeometryAttributes, indices: [Int32]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
+    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
         self.attributes = attributes
         self.indices = indices
         self.primitiveType = primitiveType
@@ -153,30 +153,16 @@ struct Geometry {
     * @example
     * var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
     */
-    /*
-    Geometry.computeNumberOfVertices = function(geometry) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(geometry)) {
-    throw new DeveloperError('geometry is required.');
+    func computeNumberOfVertices() -> Int {
+        var numberOfVertices = -1
+        
+        for i in 0...5 {
+            if let num = attributes[i]?.values?.count {
+                assert(numberOfVertices == num || numberOfVertices == -1, "All attribute lists must have the same number of attributes")
+                numberOfVertices = num
+            }
+        }
+        return numberOfVertices
     }
-    //>>includeEnd('debug');
-    
-    var numberOfVertices = -1;
-    for ( var property in geometry.attributes) {
-    if (geometry.attributes.hasOwnProperty(property) &&
-    defined(geometry.attributes[property]) &&
-    defined(geometry.attributes[property].values)) {
-    
-    var attribute = geometry.attributes[property];
-    var num = attribute.values.length / attribute.componentsPerAttribute;
-    if ((numberOfVertices !== num) && (numberOfVertices !== -1)) {
-    throw new DeveloperError('All attribute lists must have the same number of attributes.');
-    }
-    numberOfVertices = num;
-    }
-    }
-    
-    return numberOfVertices;
-    };*/
     
 }
