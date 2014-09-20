@@ -29,7 +29,7 @@ public struct CesiumOptions {
     
     public var clock = Clock()
     public var imageryProvider: BingMapsImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
-    public var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
+    var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
     //public var skyBox: SkyBox? = nil
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false

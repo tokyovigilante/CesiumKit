@@ -32,15 +32,7 @@ class Globe {
     
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
-    
-    // FIXME Can't be computed
-    lazy var surface: QuadTreePrimitive = {
-        return QuadTreePrimitive(
-            tileProvider: GlobeSurfaceTileProvider(
-                terrainProvider: self.terrainProvider,
-                imageryLayers: self.imageryLayerCollection,
-                surfaceShaderSet: self.surfaceShaderSet))
-    }()
+    var surface: QuadtreePrimitive
     
     var occluder: Occluder
     
@@ -84,7 +76,7 @@ class Globe {
     */
     var show = true
     
-    var _mode = SceneMode.Scene3D
+    private var _mode = SceneMode.Scene3D
     
     /**
     * The normal map to use for rendering waves in the ocean.  Setting this property will
@@ -93,7 +85,9 @@ class Globe {
     * @type {String}
     * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
     */
-    //var oceanNormalMapUrl = buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg');
+    var oceanNormalMapUrl: String = /*buildModuleUrl*/("Assets/Textures/waterNormalsSmall.jpg")
+    
+    private var lastOceanNormalMapUrl: String = ""
     
     /**
     * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
@@ -153,12 +147,17 @@ class Globe {
     */
     var lightingFadeInDistance = 9000000.0
     
-    /*this._lastOceanNormalMapUrl = undefined;
-    this._oceanNormalMap = undefined;
-    this._zoomedOutOceanSpecularIntensity = 0.5;
-    this._showingPrettyOcean = false;
-    this._hasWaterMask = false;*/
-    var lightingFadeDistance: Cartesian2
+    //this._oceanNormalMap = undefined;
+    
+    var _zoomedOutOceanSpecularIntensity = 0.5
+    
+    private var _showingPrettyOcean = false
+    
+    private var _hasWaterMask = false
+    
+    private var _hasVertexNormals = false
+
+    private var _lightingFadeDistance: Cartesian2
     
     lazy var drawUniforms: Dictionary<String, ()->Any> = {
         
@@ -166,7 +165,7 @@ class Globe {
         return [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
             "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
-            "u_lightingFadeDistance" :  { return weakSelf!.lightingFadeDistance }
+            "u_lightingFadeDistance" :  { return weakSelf!._lightingFadeDistance }
         ]
         }()
     
@@ -178,9 +177,16 @@ class Globe {
         
         occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         
-        surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: TerrainAttributeLocations())
+        surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: ["position3DAndHeight": 0, "textureCoordinates": 1])
         
-        lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
+        surface = QuadtreePrimitive(
+            tileProvider: GlobeSurfaceTileProvider(
+                terrainProvider: terrainProvider,
+                imageryLayers: imageryLayerCollection,
+                surfaceShaderSet: surfaceShaderSet
+            )
+        )
+        _lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
         
         _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
         _depthCommand = DrawCommand(
@@ -616,11 +622,17 @@ class Globe {
         }
         
         if _depthCommand.shaderProgram == nil {
-             _depthCommand.shaderProgram = context.createShaderProgram(GlobeVSDepth, GlobeFSDepth, ["position" : 0])
+             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: "GlobeVSDepth", fragmentShaderSource: "GlobeFSDepth", attributeLocations: ["position" : 0])
         }
-        /*
-        if (this._surface._terrainProvider.ready &&
-            this._surface._terrainProvider.hasWaterMask() &&
+        
+        var hasWaterMask = surface.tileProvider.ready && surface.tileProvider.terrainProvider.hasWaterMask()
+        var hasWaterMaskChanged = _hasWaterMask != hasWaterMask
+        var hasVertexNormals = surface.tileProvider.ready && surface.tileProvider.terrainProvider.hasVertexNormals()
+        var hasVertexNormalsChanged = _hasVertexNormals != hasVertexNormals
+        //var hasEnableLightingChanged = _enableLighting != enableLighting
+        
+        /*if (this._surface.tileProvider.ready &&
+            this._surface.tileProvider.terrainProvider.hasWaterMask &&
             this.oceanNormalMapUrl !== this._lastOceanNormalMapUrl) {
                 
                 this._lastOceanNormalMapUrl = this.oceanNormalMapUrl;
@@ -635,15 +647,16 @@ class Globe {
         }
         
         // Initial compile or re-compile if uber-shader parameters changed
-        var hasWaterMask = this._surface._terrainProvider.ready && this._surface._terrainProvider.hasWaterMask();
+        var hasVertexNormals = this._surface.tileProvider.ready && this._surface.tileProvider.terrainProvider.hasVertexNormals;
         var hasWaterMaskChanged = this._hasWaterMask !== hasWaterMask;
+        var hasVertexNormalsChanged = this._hasVertexNormals !== hasVertexNormals;
         var hasEnableLightingChanged = this._enableLighting !== this.enableLighting;
         
-        if (!defined(this._surfaceShaderSet) ||
-            !defined(this._northPoleCommand.shaderProgram) ||
+        if (!defined(this._northPoleCommand.shaderProgram) ||
             !defined(this._southPoleCommand.shaderProgram) ||
             modeChanged ||
             hasWaterMaskChanged ||
+            hasVertexNormalsChanged ||
             hasEnableLightingChanged ||
             (defined(this._oceanNormalMap)) !== this._showingPrettyOcean) {
                 
@@ -683,7 +696,8 @@ class Globe {
                 this._surfaceShaderSet.baseVertexShaderString = createShaderSource({
                     defines : [
                     (hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
-                    (this.enableLighting ? 'ENABLE_LIGHTING' : '')
+                    (this.enableLighting && !hasVertexNormals ? 'ENABLE_DAYNIGHT_SHADING' : ''),
+                    (this.enableLighting && hasVertexNormals ? 'ENABLE_VERTEX_LIGHTING' : '')
                     ],
                     sources : [GlobeVS, getPositionMode, get2DYPositionFraction]
                 });
@@ -694,7 +708,8 @@ class Globe {
                     defines : [
                     (hasWaterMask ? 'SHOW_REFLECTIVE_OCEAN' : ''),
                     (showPrettyOcean ? 'SHOW_OCEAN_WAVES' : ''),
-                    (this.enableLighting ? 'ENABLE_LIGHTING' : '')
+                    (this.enableLighting && !hasVertexNormals ? 'ENABLE_DAYNIGHT_SHADING' : ''),
+                    (this.enableLighting && hasVertexNormals ? 'ENABLE_VERTEX_LIGHTING' : '')
                     ],
                     sources : [GlobeFS]
                 });
@@ -708,6 +723,7 @@ class Globe {
                 
                 this._showingPrettyOcean = defined(this._oceanNormalMap);
                 this._hasWaterMask = hasWaterMask;
+                this._hasVertexNormals = hasVertexNormals;
                 this._enableLighting = this.enableLighting;
         }
         
@@ -739,19 +755,18 @@ class Globe {
                 this._zoomedOutOceanSpecularIntensity = 0.0;
             }
             
-            this._lightingFadeDistance.x = this.lightingFadeOutDistance;
-            this._lightingFadeDistance.y = this.lightingFadeInDistance;
+            var surface = this._surface;
+            surface.maximumScreenSpaceError = this.maximumScreenSpaceError;
+            surface.tileCacheSize = this.tileCacheSize;
             
-            this._surface._maximumScreenSpaceError = this.maximumScreenSpaceError;
-            this._surface._tileCacheSize = this.tileCacheSize;
-            this._surface.terrainProvider = this.terrainProvider;
-            this._surface.update(context,
-                frameState,
-                commandList,
-                this._drawUniforms,
-                this._surfaceShaderSet,
-                this._rsColor,
-                projection);
+            var tileProvider = surface.tileProvider;
+            tileProvider.terrainProvider = this.terrainProvider;
+            tileProvider.lightingFadeOutDistance = this.lightingFadeOutDistance;
+            tileProvider.lightingFadeInDistance = this.lightingFadeInDistance;
+            tileProvider.zoomedOutOceanSpecularIntensity = this._zoomedOutOceanSpecularIntensity;
+            tileProvider.oceanNormalMap = this._oceanNormalMap;
+            
+            this._surface.update(context, frameState, commandList);
             
             // render depth plane
             if (mode === SceneMode.SCENE3D || mode === SceneMode.COLUMBUS_VIEW) {
@@ -769,7 +784,7 @@ class Globe {
             // of the globe are not picked.
             commandList.push(this._depthCommand);
         }*/
-        }
+    }
 
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic

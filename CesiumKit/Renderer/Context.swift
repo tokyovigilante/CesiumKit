@@ -141,10 +141,10 @@ class Context {
     
     // Validation and logging disabled by default for speed.
     var validateFramebuffer = false
-    var validateShaderProgram = false
-    var logShaderCompilation = false
+    var _validateShaderProgram = false
+    var _logShaderCompilation = false
     
-    lazy var shaderCache: ShaderCache = { return ShaderCache(context: self) }()
+    var shaderCache: ShaderCache? = nil
     
     /**
     * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
@@ -724,38 +724,15 @@ class Context {
         return nil
     }
 
-    func createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram? {
-        //return this.shaderCache.getShaderProgram(vertexShaderSource, fragmentShaderSource, attributeLocations);
-        return nil
+    func createShaderProgram(#vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> ShaderProgram? {
+        if shaderCache == nil {
+            shaderCache = ShaderCache(context: self)
+        }
+        return shaderCache!.getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
     }
 
     func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
-        
         return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
-        //return Buffer(target: target, sizeInBytes: sizeInBytes, buffer: <#GLuint#>, usage: <#BufferUsage#>)
-        /*assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
-
-        var bufferSize: Int
-        if array != nil {
-            bufferSize = array!.sizeInBytes
-        } else {
-            bufferSize = sizeInBytes!
-        }
-        assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
-        
-        var buffer: GLuint = 0
-        glGenBuffers(1, &buffer)
-        glBindBuffer(target.toGL(), buffer)
-        var data: UnsafePointer<Void>
-        if array != nil {
-            data = array!.bytes()
-        } else {
-            data = nil
-        }
-        glBufferData(target.toGL(), GLsizeiptr(bufferSize), data, usage.toGL())
-        glBindBuffer(target.toGL(), 0)
-    
-        return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)*/
 }
 
 /**

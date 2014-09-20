@@ -1,5 +1,5 @@
 //
-//  QuadTreeTile.swift
+//  QuadtreeTile.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 16/08/14.
@@ -19,13 +19,13 @@
 * @param tilingScheme The tiling scheme in which this tile exists.
 * @param  This tile's parent, or undefined if this is a root tile.
 */
-class QuadTreeTile {
+class QuadtreeTile {
     
     let level: Int
     let x: Int
     let y: Int
     let tilingScheme: TilingScheme
-    let parent: QuadTreeTile?
+    let parent: QuadtreeTile?
     
     /**
     * Gets the cartographic rectangle of the tile, with north, south, east and
@@ -40,7 +40,7 @@ class QuadTreeTile {
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
-    var state: QuadTreeTileLoadState = .Start
+    var state: QuadtreeTileLoadState = .Start
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.
     * @type {Boolean}
@@ -77,7 +77,7 @@ class QuadTreeTile {
     */
     var needsLoading: Bool {
         get {
-            return state == QuadTreeTileLoadState.Start || state == QuadTreeTileLoadState.Loading
+            return state == QuadtreeTileLoadState.Start || state == QuadtreeTileLoadState.Loading
         }
     }
     
@@ -113,24 +113,24 @@ class QuadTreeTile {
     * @memberof QuadtreeTile.prototype
     * @type {QuadtreeTile[]}
     */
-    var children: [QuadTreeTile] {
+    var children: [QuadtreeTile] {
         get {
             if _children == nil {
                 var nextlevel = level + 1
                 var nextX = x * 2
                 var nextY = y * 2
                 _children = [
-                    QuadTreeTile(level: nextlevel, x: nextX, y: nextY, tilingScheme: tilingScheme, parent: self),
-                    QuadTreeTile(level: nextlevel, x: nextX + 1, y: nextY, tilingScheme: tilingScheme, parent: self),
-                    QuadTreeTile(level: nextlevel, x: nextX, y: nextY + 1, tilingScheme: tilingScheme, parent: self),
-                    QuadTreeTile(level: nextlevel, x: nextX + 1, y: nextY + 1, tilingScheme: tilingScheme, parent: self)
+                    QuadtreeTile(level: nextlevel, x: nextX, y: nextY, tilingScheme: tilingScheme, parent: self),
+                    QuadtreeTile(level: nextlevel, x: nextX + 1, y: nextY, tilingScheme: tilingScheme, parent: self),
+                    QuadtreeTile(level: nextlevel, x: nextX, y: nextY + 1, tilingScheme: tilingScheme, parent: self),
+                    QuadtreeTile(level: nextlevel, x: nextX + 1, y: nextY + 1, tilingScheme: tilingScheme, parent: self)
                 ]
             }
             return _children!
         }
     }
     
-    var _children: [QuadTreeTile]?
+    var _children: [QuadtreeTile]?
     
     /**
     * Gets or sets the additional data associated with this tile.  The exact content is specific to the
@@ -140,7 +140,7 @@ class QuadTreeTile {
     */
     var data: GlobeSurfaceTile? = nil
     
-    init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadTreeTile?) {
+    init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
         
         assert(x >= 0 && y >= 0, "x and y must be greater than or equal to zero")
         assert(level >= 0, "level must be greater than or equal to zero.")
@@ -162,17 +162,17 @@ class QuadTreeTile {
     * @returns {QuadtreeTile[]} An array containing the tiles at level of detail zero, starting with the
     * tile in the northwest corner and followed by the tile (if any) to its east.
     */
-    class func createLevelZeroTiles (tilingScheme: TilingScheme) -> [QuadTreeTile] {
+    class func createLevelZeroTiles (tilingScheme: TilingScheme) -> [QuadtreeTile] {
         
         var numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAtLevel(0)
         var numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAtLevel(0)
         
-        var result = [QuadTreeTile]()
+        var result = [QuadtreeTile]()
         
         var index = 0
         for var y = 0; y < numberOfLevelZeroTilesY; ++y {
             for var x = 0; x < numberOfLevelZeroTilesX; ++x {
-                result.append(QuadTreeTile(level: 0, x: x, y: y, tilingScheme: tilingScheme, parent: nil))
+                result.append(QuadtreeTile(level: 0, x: x, y: y, tilingScheme: tilingScheme, parent: nil))
             }
         }
         return result

@@ -16,16 +16,17 @@ import Foundation
 */
 class GlobeSurfaceShaderSet {
     
-    var baseVertexShaderString: String? = nil
-    var baseFragmentShaderString: String? = nil
-    var attributeLocations: TerrainAttributeLocations
-    var shaders: Dictionary<String, ShaderProgram>
+    let baseVertexShaderString: String? = nil
+    let baseFragmentShaderString: String? = nil
     
-    init (attributeLocations: TerrainAttributeLocations) {
+    let attributeLocations: [String: Int]
+    
+    var shaders = [String: ShaderProgram]()
+    
+    init (attributeLocations: [String: Int]) {
         self.baseVertexShaderString = nil
         self.baseFragmentShaderString = nil
         self.attributeLocations = attributeLocations
-        self.shaders = Dictionary<String, ShaderProgram>()
     }
     
     func invalidateShaders() {

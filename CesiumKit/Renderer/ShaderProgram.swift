@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import OpenGLES
+
 /*
     /*
     var scratchUniformMatrix2;
@@ -323,7 +324,6 @@ class UniformArray {
     return textureUnitIndex;
     }*/
 
-    var nextShaderProgramId = 0;
     
     /**
     * @private
@@ -364,28 +364,36 @@ class ShaderProgram {
     */
     let fragmentShaderSource: String
     
-    let attributeLocations: TerrainAttributeLocations
+    let attributeLocations: [String: Int]
     
-    var program: Int? = nil
+    var program: GLuint? = nil
+    
+    var keyword: String {
+        get {
+            return vertexShaderSource + fragmentShaderSource + attributeLocations.description
+        }
+    }
     
     //FIXME: Uniform in ShaderProgram
-    /*
+    
     var numberOfVertexAttributes: Int {
-    get {
-        initialize()
-        return self.numberOfVertexAttributes
-
+        get {
+            initialize()
+            return _numberOfVertexAttributes
+        }
+        
     }
-    }
+    private var _numberOfVertexAttributes: Int = 0
 
-    var vertexAttributes: Array<VertexAttribute>? {
-    get {
-        initialize()
-        return self.vertexAttributes
-
+    var vertexAttributes: [VertexAttributes] {
+        get {
+            initialize()
+            return _vertexAttributes
+        }
     }
-    }
+    private var _vertexAttributes = [VertexAttributes]()
 
+/*
     var uniformsByName: [String: Uniform]? {
         get {
             initialize()
@@ -403,24 +411,29 @@ class ShaderProgram {
         return self.manualUniforms
     }
     }*/
-
-    var cachedShader: Int? = nil // Used by ShaderCache
     
     var maximumTextureUnitIndex: Int? = nil
     
-    var id: Int
+    var count: Int = 0
     
-    init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) {
-        
+    let id: Int
+    
+    init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int], id: Int) {
         
         self.logShaderCompilation = logShaderCompilation
         self.attributeLocations = attributeLocations
         self.vertexShaderSource = vertexShaderSource
         self.fragmentShaderSource = fragmentShaderSource
+        self.id = id
+        count = 0
         
         
-        id = 1
+/*        this._uniformsByName = undefined;
+        this._uniforms = undefined;
+        this._automaticUniforms = undefined;
+        this._manualUniforms = undefined;*/
     }
+    
     /*
     /**
     * For ShaderProgram testing
@@ -548,7 +561,7 @@ class ShaderProgram {
     }
     });
     }*/
-}
+
 /*
 function sortDependencies(dependencyNodes) {
     var nodesWithoutIncomingEdges = [];
@@ -908,15 +921,11 @@ ShaderProgram.prototype._setUniforms = function(uniformMap, uniformState, valida
 ShaderProgram.prototype.isDestroyed = function() {
     return false;
 };
+*/
+    deinit {
+        if program != nil {
+            glDeleteProgram(program!)
+        }
+    }
 
-ShaderProgram.prototype.destroy = function() {
-    this._cachedShader.cache.releaseShaderProgram(this);
-    return undefined;
-};
-
-ShaderProgram.prototype.finalDestroy = function() {
-    this._gl.deleteProgram(this._program);
-    return destroyObject(this);
-};*/
-
-
+}

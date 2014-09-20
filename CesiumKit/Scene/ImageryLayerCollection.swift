@@ -186,7 +186,7 @@ ImageryLayerCollection.prototype.contains = function(layer) {
 ImageryLayerCollection.prototype.indexOf = function(layer) {
     return this._layers.indexOf(layer);
 };
-
+*/
 /**
 * Gets a layer by index from the collection.
 *
@@ -194,16 +194,13 @@ ImageryLayerCollection.prototype.indexOf = function(layer) {
 *
 * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
 */
-ImageryLayerCollection.prototype.get = function(index) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(index)) {
-        throw new DeveloperError('index is required.', 'index');
+    subscript(index: Int) -> ImageryLayer? {
+        //FIXME: Unimplemented
+        //rangecheck
+        return nil
     }
-    //>>includeEnd('debug');
-    
-    return this._layers[index];
-};
 
+/*
 function getLayerIndex(layers, layer) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(layer)) {

@@ -28,22 +28,26 @@
 *        this property will not affect visual quality.
 */
 
-class QuadTreePrimitive {
+class QuadtreePrimitive {
+
+    
+    var tileProvider: QuadtreeTileProvider
+    
+    var maximumScreenSpaceError: Int
+    
+    var tileCacheSize: Int
+    
+    init (tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Int = 2, tileCacheSize: Int = 100) {
+        
+        self.maximumScreenSpaceError = maximumScreenSpaceError
+        self.tileCacheSize = tileCacheSize
+        
+        assert(tileProvider.quadtree == nil, "A QuadtreeTileProvider can only be used with a single QuadtreePrimitive")
+        
+        self.tileProvider = tileProvider
+        self.tileProvider.quadtree = self
 
     /*
-        var QuadtreePrimitive = function QuadtreePrimitive(options) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(options) || !defined(options.tileProvider)) {
-    throw new DeveloperError('options.tileProvider is required.');
-    }
-    if (defined(options.tileProvider.quadtree)) {
-    throw new DeveloperError('A QuadtreeTileProvider can only be used with a single QuadtreePrimitive');
-    }
-    //>>includeEnd('debug');
-    
-    this._tileProvider = options.tileProvider;
-    this._tileProvider.quadtree = this;
-    
     this._debug = {
     enableDebugOutput : false,
     
@@ -94,9 +98,10 @@ class QuadTreePrimitive {
     this._occluders = new QuadtreeOccluders({
     ellipsoid : ellipsoid
     });
-    };
+    };*/
+    }
     
-    defineProperties(QuadtreePrimitive.prototype, {
+   /* defineProperties(QuadtreePrimitive.prototype, {
     /**
     * Gets the provider of {@link QuadtreeTile} instances for this quadtree.
     * @type {QuadtreeTile}
@@ -109,9 +114,7 @@ class QuadTreePrimitive {
     }
     });
     */
-    init(tileProvider: GlobeSurfaceTileProvider) {
-        
-    }
+
     /**
     * Invalidates and frees all the tiles in the quadtree.  The tiles must be reloaded
     * before they can be displayed.

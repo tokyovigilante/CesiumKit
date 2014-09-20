@@ -1,25 +1,12 @@
 //
-//  TerrainData.swift
+//  HeightMapTerrainData.swift
 //  CesiumKit
 //
-//  Created by Ryan Walklin on 13/06/14.
+//  Created by Ryan Walklin on 20/09/14.
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
-/**
-* Terrain data for a single {@link Tile}.  This type describes an
-* interface and is not intended to be instantiated directly.
-*
-* @alias TerrainData
-* @constructor
-*
-* @see HeightmapTerrainData
-* @see QuantizedMeshTerrainData
-*/
-protocol TerrainData {
-    
+class HeightmapTerrainData: TerrainData {
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
     * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
@@ -27,7 +14,7 @@ protocol TerrainData {
     * @memberof TerrainData.prototype
     * @type {Uint8Array|Image|Canvas}
     */
-    var waterMask: Array<UInt16>? { get }
+    var waterMask: Array<UInt16>? = nil
     
     /**
     * Computes the terrain height at a specified longitude and latitude.
@@ -40,7 +27,9 @@ protocol TerrainData {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
+    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
+        return 0.0
+    }
     
     /**
     * Determines if a given child tile is available, based on the
@@ -55,7 +44,9 @@ protocol TerrainData {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
+    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
+        return false
+    }
     
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
@@ -69,7 +60,9 @@ protocol TerrainData {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int, resolve: (TerrainMesh?) -> ())
+    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int, resolve: (TerrainMesh?) -> ()) {
+        
+    }
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -86,7 +79,9 @@ protocol TerrainData {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, resolve: (TerrainData) -> ())
+    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, resolve: (TerrainData) -> ()) {
+        
+    }
     
     /**
     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
@@ -97,5 +92,9 @@ protocol TerrainData {
     *
     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
     */
-    var wasCreatedByUpsampling: Bool { get }
+    var wasCreatedByUpsampling: Bool {
+        get {
+            return false
+        }
+    }
 }

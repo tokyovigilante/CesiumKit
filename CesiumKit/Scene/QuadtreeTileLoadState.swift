@@ -1,5 +1,5 @@
 //
-//  QuadTreeTileLoadState.swift
+//  QuadtreeTileLoadState.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 16/08/14.
@@ -10,7 +10,7 @@
 * @exports QuadtreeTileLoadState
 * @private
 */
-enum QuadTreeTileLoadState {
+enum QuadtreeTileLoadState {
     /**
     * The tile is new and loading has not yet begun.
     * @type QuadtreeTileLoadState

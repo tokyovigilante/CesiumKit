@@ -27,76 +27,118 @@ import Foundation
      */
 class EllipsoidTerrainProvider: TerrainProvider {
 
+    /**
+    * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
+    * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
+    * are passed an instance of {@link TileProviderError}.
+    * @memberof EllipsoidTerrainProvider.prototype
+    * @type {Event}
+    */
+    var errorEvent: Event
+    
+    /**
+    * Gets the tiling scheme used by the provider.  This function should
+    * not be called before {@link TerrainProvider#ready} returns true.
+    * @memberof TerrainProvider.prototype
+    * @type {TilingScheme}
+    */
+    var tilingScheme: TilingScheme
+    
     var ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+    
+    /**
+    * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
+    * the source of the terrain. This function should
+    * not be called before {@link TerrainProvider#ready} returns true.
+    * @memberof TerrainProvider.prototype
+    * @type {Credit}
+    */
+    var credit: Credit
+    
+    /**
+    * Gets a value indicating whether or not the provider is ready for use.
+    * @memberof TerrainProvider.prototype
+    * @type {Boolean}
+    */
+    var ready = true
 
-    var levelZeroMaximumGeometricError: Double = 0.0
+    private var _levelZeroMaximumGeometricError: Double = 0.0
+    
+    private let terrainData: HeightmapTerrainData
+    
+    var heightmapTerrainQuality = 0.25
 
-    init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
-        super.init(tilingScheme: tilingScheme)
+    var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]
+    
+    required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
+        
+        self.tilingScheme = tilingScheme
         self.ellipsoid = ellipsoid
+        
+        credit = Credit(text: "CesiumKit", imageUrl: nil, link: nil)
+        
+        errorEvent = Event()
 
         // Note: the 64 below does NOT need to match the actual vertex dimensions, because
         // the ellipsoid is significantly smoother than actual terrain.
-        self.levelZeroMaximumGeometricError = TerrainProvider.getEstimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: 64, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
+        _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: 64, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
 
-       /* self.terrainData = HeightmapTerrainData(
+        // FIXME: terraindata
+       self.terrainData = HeightmapTerrainData()/*
             buffer = Array<UInt16>(16 * 16, 0),
             width : 16,
             height : 16)*/
-
-        self.errorEvent = nil
     }
-/*
-    defineProperties(EllipsoidTerrainProvider.prototype, {
-        /**
-         * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
-         * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
-         * are passed an instance of {@link TileProviderError}.
-         * @memberof EllipsoidTerrainProvider.prototype
-         * @type {Event}
-         */
-        errorEvent : {
-            get : function() {
-                return this._errorEvent;
-            }
-        },
 
-        /**
-         * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
-         * the source of the terrain.  This function should not be called before {@link EllipsoidTerrainProvider#ready} returns true.
-         * @memberof EllipsoidTerrainProvider.prototype
-         * @type {Credit}
-         */
-        credit : {
-            get : function() {
-                return undefined;
-            }
-        },
-
-        /**
-         * Gets the tiling scheme used by this provider.  This function should
-         * not be called before {@link EllipsoidTerrainProvider#ready} returns true.
-         * @memberof EllipsoidTerrainProvider.prototype
-         * @type {GeographicTilingScheme}
-         */
-        tilingScheme : {
-            get : function() {
-                return this._tilingScheme;
-            }
-        },
-
-        /**
-         * Gets a value indicating whether or not the provider is ready for use.
-         * @memberof EllipsoidTerrainProvider.prototype
-         * @type {Boolean}
-         */
-        ready : {
-            get : function() {
-                return true;
-            }
+    func getRegularGridIndices(width: Int, height: Int) -> [UInt16] {
+        assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
+        
+        var byWidth = regularGridIndexArrays[width]
+        if byWidth == nil {
+            byWidth = [:]
+            regularGridIndexArrays[width] = byWidth
         }
-    });
-
+        var indices = byWidth![height]
+        if indices == nil {
+            var unwrappedIndices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            
+            var index: UInt16 = 0
+            var indicesIndex = 0
+            for i in 0..<height-1 {
+                for j in 0..<width-1 {
+                    var upperLeft: UInt16 = index
+                    var lowerLeft: UInt16 = upperLeft + UInt16(width)
+                    var lowerRight: UInt16 = lowerLeft + 1
+                    var upperRight: UInt16 = upperLeft + 1
+                    
+                    unwrappedIndices[indicesIndex++] = upperLeft
+                    unwrappedIndices[indicesIndex++] = lowerLeft
+                    unwrappedIndices[indicesIndex++] = upperRight
+                    unwrappedIndices[indicesIndex++] = upperRight
+                    unwrappedIndices[indicesIndex++] = lowerLeft
+                    unwrappedIndices[indicesIndex++] = lowerRight
+                    
+                    ++index
+                }
+                ++index
+            }
+            var unWrappedByWidth = byWidth!
+            
+            unWrappedByWidth[height] = unwrappedIndices
+            regularGridIndexArrays[width] = unWrappedByWidth
+        }
+        
+        return indices!
+    }
+    
+    class func estimatedLevelZeroGeometricErrorForAHeightmap(
+        #ellipsoid: Ellipsoid,
+        tileImageWidth: Int,
+        numberOfTilesAtLevelZero: Int) -> Double {
+            
+            return ellipsoid.maximumRadius * 2 * M_PI * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
+    }
+    
     /**
      * Requests the geometry for a given tile.  This function should not be called before
      * {@link TerrainProvider#ready} returns true.  The result includes terrain
@@ -112,9 +154,16 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          returns undefined instead of a promise, it is an indication that too many requests are already
      *          pending and the request will be retried later.
      */
-    EllipsoidTerrainProvider.prototype.requestTileGeometry = function(x, y, level, throttleRequests) {
-        return this._terrainData;
-    };
+    
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, resolve: (TerrainData?) -> () )  {
+        resolve(terrainData)
+        /*dispatch_async(terrainProcessorQueue, {
+            // FIXME: Do expensive work to make terrainData
+            dispatch_async(dispatch_get_main_queue(),  {
+                resolve(nil)
+            })
+        })*/
+    }
 
     /**
      * Gets the maximum geometric error allowed in a tile at a given level.
@@ -122,9 +171,9 @@ class EllipsoidTerrainProvider: TerrainProvider {
      * @param {Number} level The tile level for which to get the maximum geometric error.
      * @returns {Number} The maximum geometric error.
      */
-    EllipsoidTerrainProvider.prototype.getLevelMaximumGeometricError = function(level) {
-        return this._levelZeroMaximumGeometricError / (1 << level);
-    };
+    func levelMaximumGeometricError(level: Int) -> Double {
+        return _levelZeroMaximumGeometricError / Double(1 << level)
+    }
 
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
@@ -133,8 +182,12 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *
      * @returns {Boolean} True if the provider has a water mask; otherwise, false.
      */
-    EllipsoidTerrainProvider.prototype.hasWaterMask = function() {
-        return false;
-    };
-*/
+    func hasWaterMask() -> Bool {
+        return false
+    }
+    
+    func hasVertexNormals() -> Bool {
+        return false
+    }
+    
 }

@@ -1050,10 +1050,10 @@ function callAfterRenderFunctions(frameState) {
     func initializeFrame() {
         // FIXME - initializeframe
         // Destroy released shaders once every 120 frames to avoid thrashing the cache
-        if (shaderFrameCount++ == 120) {
+/*        if (shaderFrameCount++ == 120) {
             shaderFrameCount = 0
             context.shaderCache.destroyReleasedShaderPrograms()
-        }
+        }*/
         
         //animations.update()
         //camera.update(mode, scene2D)

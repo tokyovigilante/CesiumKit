@@ -20,8 +20,7 @@ import Foundation
 * @see CesiumTerrainProvider
 * @see ArcGisImageServerTerrainProvider
 */
-// FIXME turn into protocol
-public class TerrainProvider {
+protocol TerrainProvider {
     
     /**
     * Gets an event that is raised when the terrain provider encounters an asynchronous error..  By subscribing
@@ -30,7 +29,7 @@ public class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Event}
     */
-    var errorEvent: (() -> ())?
+    var errorEvent: Event { get }
     
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
@@ -39,7 +38,7 @@ public class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Credit}
     */
-    var credit : Credit
+    var credit : Credit { get }
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -47,16 +46,22 @@ public class TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {TilingScheme}
     */
-    var tilingScheme: TilingScheme
+    var tilingScheme: TilingScheme { get }
+    
+    /** 
+    * Gets the ellipsoid used by the provider. Default is WGS84.
+    */
+    var ellipsoid: Ellipsoid { get }
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
-    var ready: Bool = false
+    var ready: Bool { get }
     
-    let terrainProcessorQueue = dispatch_queue_create("terrainProcessorQueue", DISPATCH_QUEUE_SERIAL)
+    //FIXME: terrain Queue
+    //var terrainProcessorQueue: dispatch_queue_t { get }
     
     /**
     * Specifies the quality of terrain created from heightmaps.  A value of 1.0 will
@@ -65,9 +70,7 @@ public class TerrainProvider {
     * A value of 0.5 will cut the estimated level zero geometric error in half, allowing twice the
     * screen pixels between adjacent heightmap vertices and thus rendering more quickly.
     */
-    //class var heightmapTerrainQuality = 0.25;
-    
-    var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]//Dictionary<Int, Dictionary<Int, Array<UInt16>>> = [:]
+    var heightmapTerrainQuality: Double { get set }
     
     /**
     * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
@@ -80,51 +83,9 @@ public class TerrainProvider {
     * @returns {Uint16Array} The list of indices.
     */
     
-    init(tilingScheme: TilingScheme) {
-        self.tilingScheme = tilingScheme
-        credit = Credit(text: "base class", imageUrl: nil, link: nil)
-    }
+    init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    func getRegularGridIndices(width: Int, height: Int) -> [UInt16] {
-        assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
-        
-        var byWidth = regularGridIndexArrays[width]
-        if byWidth == nil {
-            byWidth = [:]
-            regularGridIndexArrays[width] = byWidth
-        }
-        var indices = byWidth![height]
-        if indices == nil {
-            var unwrappedIndices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
-            
-            var index: UInt16 = 0
-            var indicesIndex = 0
-            for i in 0..<height-1 {
-                for j in 0..<width-1 {
-                    var upperLeft: UInt16 = index
-                    var lowerLeft: UInt16 = upperLeft + UInt16(width)
-                    var lowerRight: UInt16 = lowerLeft + 1
-                    var upperRight: UInt16 = upperLeft + 1
-                    
-                    unwrappedIndices[indicesIndex++] = upperLeft
-                    unwrappedIndices[indicesIndex++] = lowerLeft
-                    unwrappedIndices[indicesIndex++] = upperRight
-                    unwrappedIndices[indicesIndex++] = upperRight
-                    unwrappedIndices[indicesIndex++] = lowerLeft
-                    unwrappedIndices[indicesIndex++] = lowerRight
-                    
-                    ++index
-                }
-                ++index
-            }
-            var unWrappedByWidth = byWidth!
-            
-            unWrappedByWidth[height] = unwrappedIndices
-            regularGridIndexArrays[width] = unWrappedByWidth
-        }
-        
-        return indices!
-    }
+    func getRegularGridIndices(width: Int, height: Int) -> [UInt16]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -134,13 +95,7 @@ public class TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    class func getEstimatedLevelZeroGeometricErrorForAHeightmap(
-        #ellipsoid: Ellipsoid,
-        tileImageWidth: Int,
-        numberOfTilesAtLevelZero: Int) -> Double {
-            
-            return ellipsoid.maximumRadius * 2 * M_PI * 0.25/*TerrainProvider.heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
-    }
+    class func estimatedLevelZeroGeometricErrorForAHeightmap(#ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before
@@ -158,14 +113,7 @@ public class TerrainProvider {
     *          returns undefined instead of a promise, it is an indication that too many requests are already
     *          pending and the request will be retried later.
     */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, resolve: (TerrainData?) -> () )  {
-        dispatch_async(terrainProcessorQueue, {
-            // FIXME: Do expensive work to make terrainData
-            dispatch_async(dispatch_get_main_queue(),  {
-                resolve(nil)
-                })
-            })
-    }
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, resolve: (TerrainData?) -> () )
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
@@ -175,9 +123,7 @@ public class TerrainProvider {
     * @param {Number} level The tile level for which to get the maximum geometric error.
     * @returns {Number} The maximum geometric error.
     */
-    func getLevelMaximumGeometricError(level: Int) -> Double {
-        return 0.0
-    }
+    func levelMaximumGeometricError(level: Int) -> Double
     
     /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
@@ -188,7 +134,14 @@ public class TerrainProvider {
     *
     * @returns {Boolean} True if the provider has a water mask; otherwise, false.
     */
-    func hasWaterMask() -> Bool {
-        return false
-    }
+    func hasWaterMask() -> Bool
+    
+    /**
+    * Gets a value indicating whether or not the requested tiles include vertex normals.
+    * This function should not be called before {@link TerrainProvider#ready} returns true.
+    * @memberof TerrainProvider.prototype
+    * @type {Boolean}
+    */
+    func hasVertexNormals() -> Bool
 }
+
