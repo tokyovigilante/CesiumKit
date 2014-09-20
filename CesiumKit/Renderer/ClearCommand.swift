@@ -76,7 +76,8 @@ struct ClearCommand {
     *
     * @see Scene#debugCommandFilter
     */
-    weak var owner: AnyObject?
+    // FIXME: Owner
+    //unowned var owner: AnyObject
     
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
@@ -85,17 +86,17 @@ struct ClearCommand {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Double? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, owner: AnyObject? = nil) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Double? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
         self.color = color
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
         self.framebuffer = framebuffer
-        self.owner = owner
+        //self.owner = owner
     }
     
     static func all() -> ClearCommand {
-        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1.0, renderState: nil, framebuffer: nil, owner: nil)
+        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1.0, renderState: nil, framebuffer: nil/*, owner: unowned*/)
     }
     
     func execute(context: Context, passState: PassState) {

@@ -56,7 +56,7 @@
 *   boundingSphere : Cesium.BoundingSphere.fromVertices(positions)
 * });
 */
-struct Geometry {
+class Geometry {
     
     /**
     * Attributes, which make up the geometry's vertices.  Each property in this object corresponds to a

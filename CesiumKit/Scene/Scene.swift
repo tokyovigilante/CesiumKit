@@ -162,13 +162,9 @@ public class Scene {
     this._fxaa = new FXAA();
     */
     
-    lazy var clearColorCommand: ClearCommand = {
-        return ClearCommand(color: Cartesian4.zero(), owner: self)
-    }()
+    var clearColorCommand = ClearCommand(color: Cartesian4.zero()/*, owner: self*/)
     
-    lazy var depthClearCommand: ClearCommand = {
-        return ClearCommand(depth: 1.0, owner: self)
-    }()
+    var depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
     
     lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self) }()
     

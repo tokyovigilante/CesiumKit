@@ -448,7 +448,7 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/'>OES_vertex_array_object</a>
     */
     var vertexArrayObject: Bool {
-    get { return checkGLExtension("OES_vertex_array_object") }
+        get { return self.view.context.API == .OpenGLES3 || checkGLExtension("OES_vertex_array_object") }
     }
     
     
@@ -871,97 +871,97 @@ class Context {
         return buffer;*/
     }
 
-/**
-* Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
-* to select vertices for rendering.  Attributes are defined using object literals as shown in Example 1 below.
-*
-* @memberof Context
-*
-* @param {Object[]} [attributes] An optional array of attributes.
-* @param {IndexBuffer} [indexBuffer] An optional index buffer.
-*
-* @returns {VertexArray} The vertex array, ready for use with drawing.
-*
-* @exception {DeveloperError} Attribute must have a <code>vertexBuffer</code>.
-* @exception {DeveloperError} Attribute must have a <code>componentsPerAttribute</code>.
-* @exception {DeveloperError} Attribute must have a valid <code>componentDatatype</code> or not specify it.
-* @exception {DeveloperError} Attribute must have a <code>strideInBytes</code> less than or equal to 255 or not specify it.
-* @exception {DeveloperError} Index n is used by more than one attribute.
-*
-* @see Context#createVertexArrayFromGeometry
-* @see Context#createVertexBuffer
-* @see Context#createIndexBuffer
-* @see Context#draw
-*
-* @example
-* // Example 1. Create a vertex array with vertices made up of three floating point
-* // values, e.g., a position, from a single vertex buffer.  No index buffer is used.
-* var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-* var attributes = [
-*     {
-*         index                  : 0,
-*         enabled                : true,
-*         vertexBuffer           : positionBuffer,
-*         componentsPerAttribute : 3,
-*         componentDatatype      : ComponentDatatype.FLOAT,
-*         normalize              : false,
-*         offsetInBytes          : 0,
-*         strideInBytes          : 0 // tightly packed
-*     }
-* ];
-* var va = context.createVertexArray(attributes);
-*
-* ////////////////////////////////////////////////////////////////////////////////
-*
-* // Example 2. Create a vertex array with vertices from two different vertex buffers.
-* // Each vertex has a three-component position and three-component normal.
-* var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-* var normalBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-* var attributes = [
-*     {
-*         index                  : 0,
-*         vertexBuffer           : positionBuffer,
-*         componentsPerAttribute : 3,
-*         componentDatatype      : ComponentDatatype.FLOAT
-*     },
-*     {
-*         index                  : 1,
-*         vertexBuffer           : normalBuffer,
-*         componentsPerAttribute : 3,
-*         componentDatatype      : ComponentDatatype.FLOAT
-*     }
-* ];
-* var va = context.createVertexArray(attributes);
-*
-* ////////////////////////////////////////////////////////////////////////////////
-*
-* // Example 3. Creates the same vertex layout as Example 2 using a single
-* // vertex buffer, instead of two.
-* var buffer = context.createVertexBuffer(24, BufferUsage.STATIC_DRAW);
-* var attributes = [
-*     {
-*         vertexBuffer           : buffer,
-*         componentsPerAttribute : 3,
-*         componentDatatype      : ComponentDatatype.FLOAT,
-*         offsetInBytes          : 0,
-*         strideInBytes          : 24
-*     },
-*     {
-*         vertexBuffer           : buffer,
-*         componentsPerAttribute : 3,
-*         componentDatatype      : ComponentDatatype.FLOAT,
-*         normalize              : true,
-*         offsetInBytes          : 12,
-*         strideInBytes          : 24
-*     }
-* ];
-* var va = context.createVertexArray(attributes);
-*/
-/*
-Context.prototype.createVertexArray = function(attributes, indexBuffer) {
-    return new VertexArray(this._gl, this._vertexArrayObject, attributes, indexBuffer);
-};
-*/
+    /**
+    * Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
+    * to select vertices for rendering.  Attributes are defined using object literals as shown in Example 1 below.
+    *
+    * @memberof Context
+    *
+    * @param {Object[]} [attributes] An optional array of attributes.
+    * @param {IndexBuffer} [indexBuffer] An optional index buffer.
+    *
+    * @returns {VertexArray} The vertex array, ready for use with drawing.
+    *
+    * @exception {DeveloperError} Attribute must have a <code>vertexBuffer</code>.
+    * @exception {DeveloperError} Attribute must have a <code>componentsPerAttribute</code>.
+    * @exception {DeveloperError} Attribute must have a valid <code>componentDatatype</code> or not specify it.
+    * @exception {DeveloperError} Attribute must have a <code>strideInBytes</code> less than or equal to 255 or not specify it.
+    * @exception {DeveloperError} Index n is used by more than one attribute.
+    *
+    * @see Context#createVertexArrayFromGeometry
+    * @see Context#createVertexBuffer
+    * @see Context#createIndexBuffer
+    * @see Context#draw
+    *
+    * @example
+    * // Example 1. Create a vertex array with vertices made up of three floating point
+    * // values, e.g., a position, from a single vertex buffer.  No index buffer is used.
+    * var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
+    * var attributes = [
+    *     {
+    *         index                  : 0,
+    *         enabled                : true,
+    *         vertexBuffer           : positionBuffer,
+    *         componentsPerAttribute : 3,
+    *         componentDatatype      : ComponentDatatype.FLOAT,
+    *         normalize              : false,
+    *         offsetInBytes          : 0,
+    *         strideInBytes          : 0 // tightly packed
+    *     }
+    * ];
+    * var va = context.createVertexArray(attributes);
+    *
+    * ////////////////////////////////////////////////////////////////////////////////
+    *
+    * // Example 2. Create a vertex array with vertices from two different vertex buffers.
+    * // Each vertex has a three-component position and three-component normal.
+    * var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
+    * var normalBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
+    * var attributes = [
+    *     {
+    *         index                  : 0,
+    *         vertexBuffer           : positionBuffer,
+    *         componentsPerAttribute : 3,
+    *         componentDatatype      : ComponentDatatype.FLOAT
+    *     },
+    *     {
+    *         index                  : 1,
+    *         vertexBuffer           : normalBuffer,
+    *         componentsPerAttribute : 3,
+    *         componentDatatype      : ComponentDatatype.FLOAT
+    *     }
+    * ];
+    * var va = context.createVertexArray(attributes);
+    *
+    * ////////////////////////////////////////////////////////////////////////////////
+    *
+    * // Example 3. Creates the same vertex layout as Example 2 using a single
+    * // vertex buffer, instead of two.
+    * var buffer = context.createVertexBuffer(24, BufferUsage.STATIC_DRAW);
+    * var attributes = [
+    *     {
+    *         vertexBuffer           : buffer,
+    *         componentsPerAttribute : 3,
+    *         componentDatatype      : ComponentDatatype.FLOAT,
+    *         offsetInBytes          : 0,
+    *         strideInBytes          : 24
+    *     },
+    *     {
+    *         vertexBuffer           : buffer,
+    *         componentsPerAttribute : 3,
+    *         componentDatatype      : ComponentDatatype.FLOAT,
+    *         normalize              : true,
+    *         offsetInBytes          : 12,
+    *         strideInBytes          : 24
+    *     }
+    * ];
+    * var va = context.createVertexArray(attributes);
+    */
+    
+    func createVertexArray (attributes: [VertexAttributes], indexBuffer: IndexBuffer?) -> VertexArray {
+        return VertexArray(vertexArrayObject: vertexArrayObject, attributes: attributes, indexBuffer: indexBuffer)
+        
+    }
 /**
 * options.source can be {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
 *
@@ -1849,7 +1849,7 @@ function interleaveAttributes(attributes) {
         interleave: Bool = false) -> VertexArray {
             
             
-            
+            // fIXME: CreatedVAAtributes
             //var createdVAAttributes = options.vertexArrayAttributes;
             
             var name: String
@@ -1918,7 +1918,7 @@ function interleaveAttributes(attributes) {
                 }
             }
             
-            var indexBuffer: IndexBuffer
+            var indexBuffer: IndexBuffer? = nil
             if geometry.indices != nil {
                 if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
                     
@@ -1931,9 +1931,7 @@ function interleaveAttributes(attributes) {
                         indexDatatype: IndexDatatype.UnsignedShort)
                 }
             }
-            
-            //return createVertexArray(vaAttributes, indexBuffer)
-            return VertexArray()
+            return createVertexArray(vaAttributes, indexBuffer: indexBuffer)
     }
 /*
 var viewportQuadAttributeLocations = {

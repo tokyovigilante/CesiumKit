@@ -6,13 +6,17 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-struct VertexAttributes {
+import Foundation
+
+class VertexAttributes {
     
     var index: Int
     
     var enabled: Bool
     
-    var vertexBuffer: Buffer
+    var vertexBuffer: Buffer?
+    
+    var value: NSData? = nil
     
     var componentsPerAttribute: Int
     
@@ -24,10 +28,15 @@ struct VertexAttributes {
     
     var strideInBytes: Int
     
+    var vertexAttrib: () -> ()
+    
+    var disableVertexAttribArray: () -> ()
+    
     init (
         index: Int,
         enabled: Bool = true,
-        vertexBuffer: Buffer,
+        vertexBuffer: Buffer? = nil,
+        value: NSData? = nil,
         componentsPerAttribute: Int,
         componentDatatype: ComponentDatatype = .Float32,
         normalize: Bool = false,
@@ -41,6 +50,22 @@ struct VertexAttributes {
             self.normalize = normalize
             self.offsetInBytes = offsetInBytes
             self.strideInBytes = strideInBytes
+            
+            vertexAttrib = {}
+            disableVertexAttribArray = {}
+    }
+    
+    func copy() -> VertexAttributes {
+        return VertexAttributes(
+            index: self.index,
+            enabled: self.enabled,
+            vertexBuffer: self.vertexBuffer,
+            value: self.value,
+            componentsPerAttribute: self.componentsPerAttribute,
+            componentDatatype: self.componentDatatype,
+            normalize: self.normalize,
+            offsetInBytes: self.offsetInBytes,
+            strideInBytes: self.strideInBytes)
     }
     
 }

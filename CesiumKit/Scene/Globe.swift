@@ -32,6 +32,8 @@ class Globe {
     
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
+    
+    // FIXME Can't be computed
     lazy var surface: QuadTreePrimitive = {
         return QuadTreePrimitive(
             tileProvider: GlobeSurfaceTileProvider(
@@ -45,21 +47,13 @@ class Globe {
     var _rsColor: RenderState? = nil
     var _rsColorWithoutDepthTest: RenderState? = nil
     
-    lazy var _clearDepthCommand: ClearCommand = {
-        return ClearCommand(depth: 1.0, stencil: 0, owner: self)
-    }()
+    var _clearDepthCommand: ClearCommand
     
-    lazy var _depthCommand: DrawCommand = {
-        //[unowned self] in
-        return DrawCommand(
-            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84Ellipsoid().maximumRadius),
-            pass: Pass.Opaque,
-            owner: self)
-        }()
+    var _depthCommand: DrawCommand
     
-    lazy var _northPoleCommand: DrawCommand = { DrawCommand(pass: Pass.Opaque, owner: self) }()
+    var _northPoleCommand: DrawCommand
     
-    lazy var _southPoleCommand: DrawCommand = { DrawCommand(pass: Pass.Opaque, owner: self) }()
+    var _southPoleCommand: DrawCommand
     
     var drawNorthPole = false
     var drawSouthPole = false
@@ -186,10 +180,15 @@ class Globe {
         
         surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: TerrainAttributeLocations())
         
-        
-        
         lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
         
+        _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
+        _depthCommand = DrawCommand(
+            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84Ellipsoid().maximumRadius),
+            pass: Pass.Opaque//,
+            /*owner: self*/)
+        _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
+        _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
     
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Double) {
@@ -558,7 +557,7 @@ class Globe {
         if !show {
             return
         }
-        
+
         var width = context.drawingBufferWidth
         var height = context.drawingBufferHeight
         
@@ -613,11 +612,11 @@ class Globe {
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
-            _depthCommand.vertexArray!.attribute(0).vertexBuffer.copyFromArrayView(SerializedArray(data: NSData.serializeArray(depthQuad), type: .Float32))
+            _depthCommand.vertexArray?.attribute(0).vertexBuffer?.copyFromArrayView(SerializedArray(data: NSData.serializeArray(depthQuad), type: .Float32))
         }
         
         if _depthCommand.shaderProgram == nil {
-            //_depthCommand.shaderProgram = context.createShaderProgram(GlobeVSDepth, GlobeFSDepth, ["position" : 0])
+             _depthCommand.shaderProgram = context.createShaderProgram(GlobeVSDepth, GlobeFSDepth, ["position" : 0])
         }
         /*
         if (this._surface._terrainProvider.ready &&

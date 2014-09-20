@@ -47,15 +47,7 @@ class Buffer {
         self.sizeInBytes = bufferSize
         self.buffer = buffer
         self.usage = usage
-        //return Buffer(target: target, sizeInBytes: bufferSize, buffer: buffer, usage: usage)
     }
-
-    /*init(target: BufferTarget, sizeInBytes: Int, buffer: GLuint, usage: BufferUsage = .StaticDraw) {
-        self.target = target
-        self.sizeInBytes = sizeInBytes
-        self.buffer = buffer
-        self.usage = usage
-    }*/
 
     func copyFromArrayView (arrayView: SerializedArray, offsetInBytes: Int = 0) {
         

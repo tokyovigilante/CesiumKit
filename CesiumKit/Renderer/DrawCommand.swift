@@ -63,7 +63,7 @@ class DrawCommand {
     * @type {VertexArray}
     * @default undefined
     */
-    weak var vertexArray: VertexArray?
+    var vertexArray: VertexArray?
     
     /**
     * The number of vertices to draw in the vertex array.
