@@ -73,7 +73,32 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     */
     let errorEvent: Event
     
+    /**
+    * The distance where everything becomes lit. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 6500000.0
+    */
+    var lightingFadeOutDistance = 6500000.0
+    
+    /**
+    * The distance where lighting resumes. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 9000000.0
+    */
+    var lightingFadeInDistance = 9000000.0
+    
+    var oceanNormalMap: Texture? = nil
+    
+    var zoomedOutOceanSpecularIntensity = 0.5
+    
     var surfaceShaderSet: GlobeSurfaceShaderSet
+    
+    private var _layerOrderChanged = false
+
     
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
@@ -114,9 +139,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         this._imageryLayers.layerRemoved.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerRemoved, this);
         this._imageryLayers.layerMoved.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerMoved, this);
         this._imageryLayers.layerShownOrHidden.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerShownOrHidden, this);
-        
-        this._layerOrderChanged = false;
-        
+        */
+        /*
         this._tilesToRenderByTextureCount = [];
         this._drawCommands = [];
         this._uniformMaps = [];
@@ -125,7 +149,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         this._debug = {
         wireframe : false,
         boundingSphereTile : undefined
-        };
+        }
         
         
         if (defined(this._quadtree)) {
@@ -137,8 +161,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         return tilingScheme.ellipsoid.maximumRadius * 2.0 * M_PI * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
     }
     
-    
-    
     /**
     * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
     * or any other functions.
@@ -149,32 +171,38 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     
-    func beginUpdate (context: Context, frameState: FrameState, inout [DrawCommand]) {
-        /*function sortTileImageryByLayerIndex(a, b) {
-        var aImagery = a.loadingImagery;
-        if (!defined(aImagery)) {
-        aImagery = a.readyImagery;
+    func beginUpdate (#context: Context, frameState: FrameState, commandList: inout [Command]) {
+        
+        func sortTileImageryByLayerIndex(a: TileImagery, b: TileImagery) -> Int {
+            
+            var aImagery: Imagery
+            if (a.loadingImagery == nil) {
+                aImagery = a.readyImagery!
+            } else {
+                aImagery = a.loadingImagery!
+            }
+            
+            var bImagery: Imagery
+            if (b.loadingImagery == nil) {
+                bImagery = b.readyImagery!
+            } else {
+                bImagery = b.loadingImagery!
+            }
+            
+            return aImagery.imageryLayer.layerIndex - bImagery.imageryLayer.layerIndex
         }
         
-        var bImagery = b.loadingImagery;
-        if (!defined(bImagery)) {
-        bImagery = b.readyImagery;
-        }
+        imageryLayers.update()
         
-        return aImagery.imageryLayer._layerIndex - bImagery.imageryLayer._layerIndex;
-        }
-        
-        this._imageryLayers._update();
-        
-        if (this._layerOrderChanged) {
-        this._layerOrderChanged = false;
+        if (_layerOrderChanged) {
+            _layerOrderChanged = false
         
         // Sort the TileImagery instances in each tile by the layer index.
-        this._quadtree.forEachLoadedTile(function(tile) {
-        tile.data.imagery.sort(sortTileImageryByLayerIndex);
-        });
+        //    quadtree.forEachLoadedTile(func (tile:) {
+        //    tile.data.imagery.sort(sortTileImageryByLayerIndex)
         }
         
+        /*
         var i;
         var len;
         
@@ -195,7 +223,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         creditDisplay.addCredit(this._terrainProvider.credit);
         }
         
-        var imageryLayers = this._imageryLayers;
         for (i = 0, len = imageryLayers.length; i < len; ++i) {
         var imageryProvider = imageryLayers.get(i).imageryProvider;
         if (imageryProvider.ready && defined(imageryProvider.credit)) {
@@ -213,7 +240,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (context: Context, frameState: FrameState, inout [DrawCommand]) {
+    func endUpdate (#context: Context, frameState: FrameState, commandList: inout [Command]) {
         /*if (!defined(this._renderState)) {
         this._renderState = context.createRenderState({ // Write color and depth
         cull : {

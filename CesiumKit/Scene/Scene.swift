@@ -149,7 +149,7 @@ public class Scene {
     //this._sunPostProcess = undefined;
     
     
-    private var _commandList = [DrawCommand]()
+    private var _commandList = [Command]()
     private var _frustumCommandsList = [FrustumCommands]()
     private var _overlayCommandList = [DrawCommand]()
     
@@ -1024,7 +1024,7 @@ function executeOverlayCommands(scene, passState) {
 */
     func updatePrimitives() {
         
-        globe.update(context, frameState: frameState, commandList: _commandList)
+        globe.update(context: context, frameState: frameState, commandList: &_commandList)
         //FIXME: primitives
         //scene._primitives.update(context, frameState, commandList);
         //FIXME: moon

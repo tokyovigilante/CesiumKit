@@ -168,7 +168,7 @@ class QuadtreePrimitive {
     tileFunction(tilesRendered[i]);
     }
     };
-    
+    */
     /**
     * Updates the primitive.
     *
@@ -177,16 +177,18 @@ class QuadtreePrimitive {
     * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
     *        commands to this array during the update call.
     */
-    QuadtreePrimitive.prototype.update = function(context, frameState, commandList) {
-    this._tileProvider.beginUpdate(context, frameState, commandList);
+    func update (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+  
+        tileProvider.beginUpdate(context: context, frameState: frameState, commandList: commandList)
+        
+        /*selectTilesForRendering(this, context, frameState);
+        processTileLoadQueue(this, context, frameState);
+        createRenderCommandsForSelectedTiles(this, context, frameState, commandList);
+        
+        this._tileProvider.endUpdate(context, frameState, commandList);*/
+    }
     
-    selectTilesForRendering(this, context, frameState);
-    processTileLoadQueue(this, context, frameState);
-    createRenderCommandsForSelectedTiles(this, context, frameState, commandList);
-    
-    this._tileProvider.endUpdate(context, frameState, commandList);
-    };
-    
+    /*
     /**
     * Returns true if this object was destroyed; otherwise, false.
     * <br /><br />

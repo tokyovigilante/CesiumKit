@@ -78,6 +78,68 @@ struct ImageryLayerOptions {
     * @param {ImageryProvider} imageryProvider The imagery provider to use.
     */
 class ImageryLayer {
+/*
+    /**
+    * The alpha blending value of this layer, with 0.0 representing fully transparent and
+    * 1.0 representing fully opaque.
+    *
+    * @type {Number}
+    * @default 1.0
+    */
+    this.alpha = defaultValue(options.alpha, defaultValue(imageryProvider.defaultAlpha, 1.0));
+    
+    /**
+    * The brightness of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0
+    * makes the imagery darker while greater than 1.0 makes it brighter.
+    *
+    * @type {Number}
+    * @default {@link ImageryLayer.DEFAULT_BRIGHTNESS}
+    */
+    this.brightness = defaultValue(options.brightness, defaultValue(imageryProvider.defaultBrightness, ImageryLayer.DEFAULT_BRIGHTNESS));
+    
+    /**
+    * The contrast of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
+    * the contrast while greater than 1.0 increases it.
+    *
+    * @type {Number}
+    * @default {@link ImageryLayer.DEFAULT_CONTRAST}
+    */
+    this.contrast = defaultValue(options.contrast, defaultValue(imageryProvider.defaultContrast, ImageryLayer.DEFAULT_CONTRAST));
+    
+    /**
+    * The hue of this layer in radians. 0.0 uses the unmodified imagery color.
+    *
+    * @type {Number}
+    * @default {@link ImageryLayer.DEFAULT_HUE}
+    */
+    this.hue = defaultValue(options.hue, defaultValue(imageryProvider.defaultHue, ImageryLayer.DEFAULT_HUE));
+    
+    /**
+    * The saturation of this layer. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
+    * saturation while greater than 1.0 increases it.
+    *
+    * @type {Number}
+    * @default {@link ImageryLayer.DEFAULT_SATURATION}
+    */
+    this.saturation = defaultValue(options.saturation, defaultValue(imageryProvider.defaultSaturation, ImageryLayer.DEFAULT_SATURATION));
+    
+    /**
+    * The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
+    *
+    * @type {Number}
+    * @default {@link ImageryLayer.DEFAULT_GAMMA}
+    */
+    this.gamma = defaultValue(options.gamma, defaultValue(imageryProvider.defaultGamma, ImageryLayer.DEFAULT_GAMMA));
+    
+    /**
+    * Determines if this layer is shown.
+    *
+    * @type {Boolean}
+    * @default true
+    */
+    this.show = defaultValue(options.show, true);*/
+
+    var layerIndex: Int = -1
 
     var imageryProvider: BingMapsImageryProvider
 

@@ -138,7 +138,7 @@ class Globe {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance = 6500000.0
+    var _lightingFadeOutDistance = 6500000.0
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -147,9 +147,9 @@ class Globe {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance = 9000000.0
+    var _lightingFadeInDistance = 9000000.0
     
-    //this._oceanNormalMap = undefined;
+    var _oceanNormalMap: Texture? = nil
     
     var _zoomedOutOceanSpecularIntensity = 0.5
     
@@ -165,8 +165,8 @@ class Globe {
         
         weak var weakSelf = self
         return [
-            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },
-            "u_oceanNormalMap" : { return weakSelf.oceanNormalMap },*/
+            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
+            "u_oceanNormalMap" : { return weakSelf!._oceanNormalMap },
             "u_lightingFadeDistance" :  { return weakSelf!._lightingFadeDistance }
         ]
         }()
@@ -188,7 +188,7 @@ class Globe {
                 surfaceShaderSet: surfaceShaderSet
             )
         )
-        _lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
+        _lightingFadeDistance = Cartesian2(x: _lightingFadeOutDistance, y: _lightingFadeInDistance)
         
         _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
         _depthCommand = DrawCommand(
@@ -561,7 +561,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func update(#context: Context, frameState: FrameState, inout commandList: [Command]) {
         if !show {
             return
         }
@@ -753,19 +753,19 @@ class Globe {
             
             var tileProvider = surface.tileProvider
             tileProvider.terrainProvider = terrainProvider
-            tileProvider.lightingFadeOutDistance = lightingFadeOutDistance
-            tileProvider.lightingFadeInDistance = lightingFadeInDistance
+            tileProvider.lightingFadeOutDistance = _lightingFadeOutDistance
+            tileProvider.lightingFadeInDistance = _lightingFadeInDistance
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.oceanNormalMap = _oceanNormalMap
             
-            this._surface.update(context, frameState, commandList);
+            surface.update(context: context, frameState: frameState, commandList: &commandList)
             
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
-                if (!this.depthTestAgainstTerrain) {
-                    commandList.push(_clearDepthCommand);
-                    if (mode === SceneMode.SCENE3D) {
-                        commandList.push(_depthCommand)
+                if (!depthTestAgainstTerrain) {
+                    commandList.append(_clearDepthCommand)
+                    if (mode == .Scene3D) {
+                        commandList.append(_depthCommand)
                     }
                 }
             }
@@ -774,7 +774,7 @@ class Globe {
         if (frameState.passes.pick) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            commandList.push(_depthCommand)
+            commandList.append(_depthCommand)
         }
     }
 

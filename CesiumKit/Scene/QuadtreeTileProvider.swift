@@ -47,6 +47,28 @@ protocol QuadtreeTileProvider {
     var terrainProvider: TerrainProvider { get set }
     
     /**
+    * The distance where everything becomes lit. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 6500000.0
+    */
+    var lightingFadeOutDistance: Double { get set }
+    
+    /**
+    * The distance where lighting resumes. This only takes effect
+    * when <code>enableLighting</code> is <code>true</code>.
+    *
+    * @type {Number}
+    * @default 9000000.0
+    */
+    var lightingFadeInDistance: Double { get set }
+    
+    var oceanNormalMap: Texture? { get set }
+    
+    var zoomedOutOceanSpecularIntensity: Double { get set }
+    
+    /**
     * Gets an event that is raised when the geometry provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
     * are passed an instance of {@link TileProviderError}.
@@ -80,7 +102,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func beginUpdate (context: Context, frameState: FrameState, inout [DrawCommand])
+    func beginUpdate (#context: Context, frameState: FrameState, commandList: inout [Command])
     
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
@@ -93,7 +115,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (context: Context, frameState: FrameState, inout [DrawCommand])
+    func endUpdate (#context: Context, frameState: FrameState, commandList: inout [Command])
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be

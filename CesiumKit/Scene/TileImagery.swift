@@ -6,33 +6,32 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+/**
+* The assocation between a terrain tile and an imagery tile.
+*
+* @alias TileImagery
+* @private
+*
+* @param {Imagery} imagery The imagery tile.
+* @param {Cartesian4} textureCoordinateRectangle The texture rectangle of the tile that is covered
+*        by the imagery, where X=west, Y=south, Z=east, W=north.
+*/
 class TileImagery {
-    /* /*global define*/
-    define([
-    '../Core/defined',
-    './ImageryState'
-    ], function(
-    defined,
-    ImageryState) {
-    "use strict";
+
+    var readyImagery: Imagery? = nil
     
-    /**
-    * The assocation between a terrain tile and an imagery tile.
-    *
-    * @alias TileImagery
-    * @private
-    *
-    * @param {Imagery} imagery The imagery tile.
-    * @param {Cartesian4} textureCoordinateRectangle The texture rectangle of the tile that is covered
-    *        by the imagery, where X=west, Y=south, Z=east, W=north.
-    */
-    var TileImagery = function(imagery, textureCoordinateRectangle) {
-    this.readyImagery = undefined;
-    this.loadingImagery = imagery;
-    this.textureCoordinateRectangle = textureCoordinateRectangle;
-    this.textureTranslationAndScale = undefined;
-    };
+    var loadingImagery: Imagery? = nil
     
+    var textureCoordinateRectangle: Cartesian4
+    
+    var textureTranslationAndScale: Cartesian4? = nil
+    
+    init(imagery: Imagery, textureCoordinateRectangle: Cartesian4) {
+        loadingImagery = imagery
+        self.textureCoordinateRectangle = textureCoordinateRectangle
+        textureTranslationAndScale = nil
+    }
+    /*
     /**
     * Frees the resources held by this instance.
     */
@@ -112,5 +111,5 @@ class TileImagery {
     };
     
     return TileImagery;
-    });*/
+    }*/
 }

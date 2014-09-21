@@ -341,41 +341,41 @@ ImageryLayerCollection.prototype.destroy = function() {
     this.removeAll(true);
     return destroyObject(this);
 };
-
-ImageryLayerCollection.prototype._update = function() {
-    var isBaseLayer = true;
-    var layers = this._layers;
-    var layersShownOrHidden;
-    var layer;
-    for (var i = 0, len = layers.length; i < len; ++i) {
+*/
+    func update() {
+        /*    var isBaseLayer = true;
+        var layers = this._layers;
+        var layersShownOrHidden;
+        var layer;
+        for (var i = 0, len = layers.length; i < len; ++i) {
         layer = layers[i];
         
         layer._layerIndex = i;
         
         if (layer.show) {
-            layer._isBaseLayer = isBaseLayer;
-            isBaseLayer = false;
+        layer._isBaseLayer = isBaseLayer;
+        isBaseLayer = false;
         } else {
-            layer._isBaseLayer = false;
+        layer._isBaseLayer = false;
         }
         
         if (layer.show !== layer._show) {
-            if (defined(layer._show)) {
-                if (!defined(layersShownOrHidden)) {
-                    layersShownOrHidden = [];
-                }
-                layersShownOrHidden.push(layer);
-            }
-            layer._show = layer.show;
+        if (defined(layer._show)) {
+        if (!defined(layersShownOrHidden)) {
+        layersShownOrHidden = [];
         }
-    }
-    
-    if (defined(layersShownOrHidden)) {
+        layersShownOrHidden.push(layer);
+        }
+        layer._show = layer.show;
+        }
+        }
+        
+        if (defined(layersShownOrHidden)) {
         for (i = 0, len = layersShownOrHidden.length; i < len; ++i) {
-            layer = layersShownOrHidden[i];
-            this.layerShownOrHidden.raiseEvent(layer, layer._layerIndex, layer.show);
+        layer = layersShownOrHidden[i];
+        this.layerShownOrHidden.raiseEvent(layer, layer._layerIndex, layer.show);
         }
+        }*/
     }
-};
-*/
+
 }

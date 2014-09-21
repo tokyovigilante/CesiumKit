@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		940899F119CE6C3600012DC4 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940899F019CE6C3600012DC4 /* Command.swift */; };
 		9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
 		940CA70C19B1957A00A6E482 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
 		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
@@ -150,6 +151,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		940899F019CE6C3600012DC4 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
@@ -367,20 +369,21 @@
 			isa = PBXGroup;
 			children = (
 				940F448619C59EF400A3BB00 /* Buffer.swift */,
-				94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */,
 				947A240A19C98B2E0040042F /* BufferTarget.swift */,
 				940F448819C5A2C400A3BB00 /* BufferUsage.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
+				940899F019CE6C3600012DC4 /* Command.swift */,
 				94B87DC4194D699400012DC4 /* Context.swift */,
 				9465B0271956F61400355D2C /* CubeMap.swift */,
 				94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */,
 				947A240E19C9919D0040042F /* CullFace.swift */,
+				947A241219C99DDB0040042F /* DepthTest.swift */,
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				9446BEAC19C5040400F0B6E8 /* GLEnumerations.swift */,
-				947A241019C99C860040042F /* WindingOrder.swift */,
 				941E2133199ED26A00012DC4 /* GLSupport.swift */,
 				941E2162199EDC3600012DC4 /* ImageBuffer.swift */,
+				94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
 				94540426199F478F00012DC4 /* Sampler.swift */,
@@ -390,7 +393,7 @@
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				947A240C19C9911D0040042F /* VertexAttributes.swift */,
-				947A241219C99DDB0040042F /* DepthTest.swift */,
+				947A241019C99C860040042F /* WindingOrder.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				9438BD7619C7B0D70026A0F0 /* SerializedArray.swift in Sources */,
 				947BD5A9199DB1D80042D9BF /* PrimitiveCollection.swift in Sources */,
 				9446BEAD19C5040400F0B6E8 /* GLEnumerations.swift in Sources */,
+				940899F119CE6C3600012DC4 /* Command.swift in Sources */,
 				942D02EE194DBD0800012DC4 /* PrimitiveType.swift in Sources */,
 				941E2134199ED26A00012DC4 /* GLSupport.swift in Sources */,
 				94540431199F5D0900012DC4 /* TerrainState.swift in Sources */,

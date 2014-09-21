@@ -16,7 +16,7 @@ import UIKit
 */
 class Imagery {
     
-    var imageryLayer: ImageryLayer
+    unowned var imageryLayer: ImageryLayer
 
     var level: Int
     
