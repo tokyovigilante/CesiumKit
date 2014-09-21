@@ -815,37 +815,10 @@ class Context {
 */
     func createIndexBuffer (array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
     
-        if indexDatatype == .UnsignedInt {
+        if indexDatatype == IndexDatatype.UnsignedInt {
             assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
         }
         return IndexBuffer(array: array, sizeInBytes: sizeInBytes, usage: usage, indexDatatype: indexDatatype)
-
-    /*
-        let bytesPerIndex = indexDatatype.elementSize()
-        
-        var buffer
-        var buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
-        var numberOfIndices = buffer.sizeInBytes / bytesPerIndex;
-        
-        defineProperties(buffer, {
-            indexDatatype: {
-                get : function() {
-                    return indexDatatype;
-                }
-            },
-            bytesPerIndex : {
-                get : function() {
-                    return bytesPerIndex;
-                }
-            },
-            numberOfIndices : {
-                get : function() {
-                    return numberOfIndices;
-                }
-            }
-        });
-        
-        return buffer;*/
     }
 
     /**

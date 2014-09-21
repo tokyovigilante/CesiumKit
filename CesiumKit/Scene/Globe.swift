@@ -34,7 +34,7 @@ class Globe {
     
     var surface: QuadtreePrimitive
     
-    var occluder: Occluder
+    private var _occluder: Occluder
     
     var _rsColor: RenderState? = nil
     var _rsColorWithoutDepthTest: RenderState? = nil
@@ -87,7 +87,7 @@ class Globe {
     */
     var oceanNormalMapUrl: String = /*buildModuleUrl*/("Assets/Textures/waterNormalsSmall.jpg")
     
-    private var lastOceanNormalMapUrl: String = ""
+    private var _lastOceanNormalMapUrl: String = ""
     
     /**
     * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
@@ -128,6 +128,8 @@ class Globe {
     * @default false
     */
     var enableLighting = false
+    
+    private var _enableLighting = false
     
     /**
     * The distance where everything becomes lit. This only takes effect
@@ -175,7 +177,7 @@ class Globe {
         terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
         imageryLayerCollection = ImageryLayerCollection()
         
-        occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
+        _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         
         surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: ["position3DAndHeight": 0, "textureCoordinates": 1])
         
@@ -559,7 +561,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context: Context, frameState: FrameState, commandList: [DrawCommand]) {
+    func update(context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         if !show {
             return
         }
@@ -629,13 +631,11 @@ class Globe {
         var hasWaterMaskChanged = _hasWaterMask != hasWaterMask
         var hasVertexNormals = surface.tileProvider.ready && surface.tileProvider.terrainProvider.hasVertexNormals()
         var hasVertexNormalsChanged = _hasVertexNormals != hasVertexNormals
-        //var hasEnableLightingChanged = _enableLighting != enableLighting
+        var hasEnableLightingChanged = _enableLighting != enableLighting
         
-        /*if (this._surface.tileProvider.ready &&
-            this._surface.tileProvider.terrainProvider.hasWaterMask &&
-            this.oceanNormalMapUrl !== this._lastOceanNormalMapUrl) {
+        if (hasWaterMask && oceanNormalMapUrl != _lastOceanNormalMapUrl) {
                 
-                this._lastOceanNormalMapUrl = this.oceanNormalMapUrl;
+                /*this._lastOceanNormalMapUrl = this.oceanNormalMapUrl;
                 
                 var that = this;
                 when(loadImage(this.oceanNormalMapUrl), function(image) {
@@ -643,22 +643,18 @@ class Globe {
                     that._oceanNormalMap = context.createTexture2D({
                         source : image
                     });
-                    });
+                    });*/
         }
         
         // Initial compile or re-compile if uber-shader parameters changed
-        var hasVertexNormals = this._surface.tileProvider.ready && this._surface.tileProvider.terrainProvider.hasVertexNormals;
-        var hasWaterMaskChanged = this._hasWaterMask !== hasWaterMask;
-        var hasVertexNormalsChanged = this._hasVertexNormals !== hasVertexNormals;
-        var hasEnableLightingChanged = this._enableLighting !== this.enableLighting;
         
-        if (!defined(this._northPoleCommand.shaderProgram) ||
-            !defined(this._southPoleCommand.shaderProgram) ||
+        /*if _northPoleCommand.shaderProgram == nil ||
+            _southPoleCommand.shaderProgram == nil) ||
             modeChanged ||
             hasWaterMaskChanged ||
             hasVertexNormalsChanged ||
             hasEnableLightingChanged ||
-            (defined(this._oceanNormalMap)) !== this._showingPrettyOcean) {
+            /*_oceanNormalMap != nil !== this._showingPrettyOcean*/) {
                 
                 var getPosition3DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }';
                 var getPosition2DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }';
@@ -725,65 +721,61 @@ class Globe {
                 this._hasWaterMask = hasWaterMask;
                 this._hasVertexNormals = hasVertexNormals;
                 this._enableLighting = this.enableLighting;
-        }
+        }*/
         
-        var cameraPosition = frameState.camera.positionWC;
+        _occluder.cameraPosition = frameState.camera!.positionWC
         
-        this._occluder.cameraPosition = cameraPosition;
+        fillPoles(context: context, frameState: frameState)
         
-        fillPoles(this, context, frameState);
+        _mode = mode
         
-        this._mode = mode;
-        
-        var pass = frameState.passes;
-        if (pass.render) {
+        if (frameState.passes.render) {
             // render quads to fill the poles
-            if (mode === SceneMode.SCENE3D) {
-                if (this._drawNorthPole) {
-                    commandList.push(this._northPoleCommand);
+            if (mode == SceneMode.Scene3D) {
+                if drawNorthPole {
+                    commandList.append(_northPoleCommand)
                 }
                 
-                if (this._drawSouthPole) {
-                    commandList.push(this._southPoleCommand);
+                if drawSouthPole {
+                    commandList.append(_southPoleCommand)
                 }
             }
             
             // Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
-            if (mode === SceneMode.SCENE3D) {
-                this._zoomedOutOceanSpecularIntensity = 0.5;
+            if (mode == .Scene3D) {
+                _zoomedOutOceanSpecularIntensity = 0.5
             } else {
-                this._zoomedOutOceanSpecularIntensity = 0.0;
+                _zoomedOutOceanSpecularIntensity = 0.0
             }
             
-            var surface = this._surface;
-            surface.maximumScreenSpaceError = this.maximumScreenSpaceError;
-            surface.tileCacheSize = this.tileCacheSize;
+            surface.maximumScreenSpaceError = maximumScreenSpaceError
+            surface.tileCacheSize = tileCacheSize
             
-            var tileProvider = surface.tileProvider;
-            tileProvider.terrainProvider = this.terrainProvider;
-            tileProvider.lightingFadeOutDistance = this.lightingFadeOutDistance;
-            tileProvider.lightingFadeInDistance = this.lightingFadeInDistance;
-            tileProvider.zoomedOutOceanSpecularIntensity = this._zoomedOutOceanSpecularIntensity;
-            tileProvider.oceanNormalMap = this._oceanNormalMap;
+            var tileProvider = surface.tileProvider
+            tileProvider.terrainProvider = terrainProvider
+            tileProvider.lightingFadeOutDistance = lightingFadeOutDistance
+            tileProvider.lightingFadeInDistance = lightingFadeInDistance
+            tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
+            tileProvider.oceanNormalMap = _oceanNormalMap
             
             this._surface.update(context, frameState, commandList);
             
             // render depth plane
-            if (mode === SceneMode.SCENE3D || mode === SceneMode.COLUMBUS_VIEW) {
+            if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!this.depthTestAgainstTerrain) {
-                    commandList.push(this._clearDepthCommand);
+                    commandList.push(_clearDepthCommand);
                     if (mode === SceneMode.SCENE3D) {
-                        commandList.push(this._depthCommand);
+                        commandList.push(_depthCommand)
                     }
                 }
             }
         }
         
-        if (pass.pick) {
+        if (frameState.passes.pick) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            commandList.push(this._depthCommand);
-        }*/
+            commandList.push(_depthCommand)
+        }
     }
 
 /**
