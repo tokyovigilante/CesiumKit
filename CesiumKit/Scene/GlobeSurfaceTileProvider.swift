@@ -99,6 +99,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     private var _layerOrderChanged = false
 
+    var baseColor = Cartesian4.fromColor(red: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
     
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
@@ -558,10 +559,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     if (startIndex !== -1) {
     tileImageryCollection.splice(startIndex, numDestroyed);
     }
-    // If the base layer has been removed, mark the tile as non-renderable.
-    if (layer.isBaseLayer()) {
-    tile.isRenderable = false;
-    }
     });
     };
     
@@ -724,7 +721,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     return context.createVertexArray(vertexArray._attributes, wireframeIndexBuffer);
     }
     
-    var firstPassInitialColor = new Cartesian4(0.0, 0.0, 0.5, 1.0);
     var otherPassesInitialColor = new Cartesian4(0.0, 0.0, 0.0, 0.0);
     
     function addDrawCommandsForTile(tileProvider, tile, context, frameState, commandList) {
@@ -806,7 +802,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     var otherPassesRenderState = tileProvider._blendRenderState;
     var renderState = firstPassRenderState;
     
-    var initialColor = firstPassInitialColor;
+    var initialColor = tileProvider._firstPassInitialColor
     
     do {
     var numberOfDayTextures = 0;
