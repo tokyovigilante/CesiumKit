@@ -53,6 +53,10 @@ class QuadtreePrimitive {
         
         suspendLodUpdate: false
     )
+    
+    var _tilesToRender = [QuadtreeTile]()
+    
+    var _tileTraversalQueue = Queue<QuadtreeTile>()
 
     
     init (tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Int = 2, tileCacheSize: Int = 100) {
@@ -67,12 +71,10 @@ class QuadtreePrimitive {
 
     
         
-        var tilingScheme = this._tileProvider.tilingScheme;
-        var ellipsoid = tilingScheme.ellipsoid;
-    
-        this._tilesToRender = [QuadtreeTile]()
-    this._tileTraversalQueue = new Queue();
-    this._tileLoadQueue = [];
+        var tilingScheme = tileProvider.tilingScheme
+        var ellipsoid = tilingScheme.ellipsoid
+
+/*this._tileLoadQueue = [];
     this._tileReplacementQueue = new TileReplacementQueue();
     this._levelZeroTiles = undefined;
     this._levelZeroTilesReady = false;
@@ -122,7 +124,7 @@ class QuadtreePrimitive {
     *
     * @memberof QuadtreePrimitive
     */
-        /*
+        
     QuadtreePrimitive.prototype.invalidateAllTiles = function() {
     // Clear the replacement queue
     var replacementQueue = this._tileReplacementQueue;
@@ -156,8 +158,8 @@ class QuadtreePrimitive {
                     tileFunction(tile);
                 }    tile = tile.replacementNext;
     }
-    };*/
-    /*
+    };
+    
     /**
     * Invokes a specified function for each {@link QuadtreeTile} that was rendered
     * in the most recent frame.
@@ -169,9 +171,9 @@ class QuadtreePrimitive {
     var tilesRendered = this._tilesToRender;
     for (var i = 0, len = tilesRendered.length; i < len; ++i) {
     tileFunction(tilesRendered[i]);
+    }*/
     }
-    };
-    */
+    
     /**
     * Updates the primitive.
     *
@@ -184,11 +186,11 @@ class QuadtreePrimitive {
   
         tileProvider.beginUpdate(context: context, frameState: frameState, commandList: commandList)
         
-        selectTilesForRendering(context, frameState)
-        processTileLoadQueue(context, frameState)
-        createRenderCommandsForSelectedTiles(context, frameState, commandList)
+        selectTilesForRendering(context: context, frameState: frameState)
+        //processTileLoadQueue(context, frameState)
+        //createRenderCommandsForSelectedTiles(context, frameState, commandList)
         
-        this._tileProvider.endUpdate(context, frameState, commandList);*/
+        //this._tileProvider.endUpdate(context, frameState, commandList);*/
     }
     
     /*
@@ -239,7 +241,7 @@ class QuadtreePrimitive {
         
         var i: Int
         var len: Int
-        
+        /*
         // Clear the render list.
         var tilesToRender = primitive._tilesToRender;
         tilesToRender.length = 0;
@@ -453,7 +455,7 @@ class QuadtreePrimitive {
     
     for (var i = 0, len = tilesToRender.length; i < len; ++i) {
     tileProvider.showTileThisFrame(tilesToRender[i], context, frameState, commandList);
-    }
+    }*/
     }
 
 }

@@ -89,6 +89,7 @@
 		949AABAD199F730700037973 /* QuadtreePrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949AABAC199F730700037973 /* QuadtreePrimitive.swift */; };
 		949AABAF199F73C600037973 /* GlobeSurfaceTileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */; };
 		949ABA8119410120009B1183 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
+		949E67A519D6BCB200012DC4 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E67A419D6BCB200012DC4 /* Queue.swift */; };
 		94B6C5B41970A07C008792D9 /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBB11949D156007C1C4C /* Credit.swift */; };
 		94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DBE194D620E00012DC4 /* Matrix.swift */; };
 		94B87DC1194D678D00012DC4 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC0194D678D00012DC4 /* Scene.swift */; };
@@ -236,6 +237,7 @@
 		949AABAC199F730700037973 /* QuadtreePrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreePrimitive.swift; sourceTree = "<group>"; };
 		949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeSurfaceTileProvider.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
+		949E67A419D6BCB200012DC4 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		94B87DBE194D620E00012DC4 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		94B87DC0194D678D00012DC4 /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		94B87DC4194D699400012DC4 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				949E67A419D6BCB200012DC4 /* Queue.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -631,6 +634,7 @@
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
 				948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */,
+				949E67A519D6BCB200012DC4 /* Queue.swift in Sources */,
 				94540425199F05D300012DC4 /* FrustumCommands.swift in Sources */,
 				940F448719C59EF400A3BB00 /* Buffer.swift in Sources */,
 				948D03E11944F1E200DC0E52 /* Cartesian4.swift in Sources */,
