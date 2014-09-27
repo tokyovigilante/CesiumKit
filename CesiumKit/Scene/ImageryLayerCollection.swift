@@ -343,38 +343,39 @@ ImageryLayerCollection.prototype.destroy = function() {
 };
 */
     func update() {
-        /*    var isBaseLayer = true;
-        var layers = this._layers;
-        var layersShownOrHidden;
-        var layer;
-        for (var i = 0, len = layers.length; i < len; ++i) {
-        layer = layers[i];
+        var isBaseLayer = true
+        var layersShownOrHidden = [ImageryLayer]()
+        var layer: ImageryLayer
         
-        layer._layerIndex = i;
-        
-        if (layer.show) {
-        layer._isBaseLayer = isBaseLayer;
-        isBaseLayer = false;
-        } else {
-        layer._isBaseLayer = false;
+        // for layer in _layers {
+        for (var i = 0, len = _layers.count; i < len; ++i) {
+            layer = _layers[i]
+            
+            layer.layerIndex = i
+            
+            if (layer.show) {
+                layer.isBaseLayer = isBaseLayer
+                isBaseLayer = false
+            } else {
+                layer.isBaseLayer = false
+            }
+            /*
+            if (layer.show !== layer._show) {
+                if (defined(layer._show)) {
+                    if (!defined(layersShownOrHidden)) {
+                        layersShownOrHidden = [];
+                    }
+                    layersShownOrHidden.push(layer);
+                }
+                layer._show = layer.show;
+            }*/
         }
-        
-        if (layer.show !== layer._show) {
-        if (defined(layer._show)) {
-        if (!defined(layersShownOrHidden)) {
-        layersShownOrHidden = [];
-        }
-        layersShownOrHidden.push(layer);
-        }
-        layer._show = layer.show;
-        }
-        }
-        
+        /*
         if (defined(layersShownOrHidden)) {
-        for (i = 0, len = layersShownOrHidden.length; i < len; ++i) {
-        layer = layersShownOrHidden[i];
-        this.layerShownOrHidden.raiseEvent(layer, layer._layerIndex, layer.show);
-        }
+            for (i = 0, len = layersShownOrHidden.length; i < len; ++i) {
+                layer = layersShownOrHidden[i];
+                this.layerShownOrHidden.raiseEvent(layer, layer._layerIndex, layer.show);
+            }
         }*/
     }
 

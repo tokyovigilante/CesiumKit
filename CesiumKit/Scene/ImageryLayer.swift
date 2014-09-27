@@ -130,19 +130,22 @@ class ImageryLayer {
     * @default {@link ImageryLayer.DEFAULT_GAMMA}
     */
     this.gamma = defaultValue(options.gamma, defaultValue(imageryProvider.defaultGamma, ImageryLayer.DEFAULT_GAMMA));
-    
+    */
     /**
     * Determines if this layer is shown.
     *
     * @type {Boolean}
     * @default true
     */
-    this.show = defaultValue(options.show, true);*/
+    var show = /*options.show ??*/ true
 
     var layerIndex: Int = -1
 
     var imageryProvider: BingMapsImageryProvider
 
+    // true if this is the base (lowest shown) layer.
+    private var _isBaseLayer = false
+    
     // FIXME: ImageryProvider
     init (imageryProvider: BingMapsImageryProvider/*ImageryProvider*/, options: ImageryLayerOptions = ImageryLayerOptions()) {
 
@@ -229,9 +232,6 @@ class ImageryLayer {
     // The index of this layer in the ImageryLayerCollection.
     this._layerIndex = -1;
     
-    // true if this is the base (lowest shown) layer.
-    this._isBaseLayer = false;
-    
     this._requestImageError = undefined;
     };
     
@@ -299,7 +299,7 @@ class ImageryLayer {
     * @default 1.0
     */
     ImageryLayer.DEFAULT_GAMMA = 1.0;
-    
+    */
     /**
     * Gets a value indicating whether this layer is the base layer in the
     * {@link ImageryLayerCollection}.  The base layer is the one that underlies all
@@ -309,10 +309,15 @@ class ImageryLayer {
     *
     * @returns {Boolean} true if this is the base layer; otherwise, false.
     */
-    ImageryLayer.prototype.isBaseLayer = function() {
-    return this._isBaseLayer;
-    };
-    
+    var isBaseLayer: Bool {
+        get {
+            return _isBaseLayer
+        }
+        set (value) {
+            _isBaseLayer = value
+        }
+    }
+    /*
     /**
     * Returns true if this object was destroyed; otherwise, false.
     * <br /><br />
