@@ -7,65 +7,81 @@
 //
 
 /** @param {Object} [options] Object with the following properties:
+
+
+* @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
+*                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
+*                          This can either be a simple number or a function with the signature
+*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+*                          current frame state, this layer, and the x, y, and level coordinates of the
+*                          imagery tile for which the brightness is required, and it is expected to return
+*                          the brightness value to use for the tile.  The function is executed for every
+*                          frame and for every tile, so it must be fast.
+* @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
+*                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
+*                          This can either be a simple number or a function with the signature
+*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+*                          current frame state, this layer, and the x, y, and level coordinates of the
+*                          imagery tile for which the contrast is required, and it is expected to return
+*                          the contrast value to use for the tile.  The function is executed for every
+*                          frame and for every tile, so it must be fast.
+* @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
+*                          This can either be a simple number or a function with the signature
+*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+*                          current frame state, this layer, and the x, y, and level coordinates
+*                          of the imagery tile for which the hue is required, and it is expected to return
+*                          the contrast value to use for the tile.  The function is executed for every
+*                          frame and for every tile, so it must be fast.
+* @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
+*                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
+*                          This can either be a simple number or a function with the signature
+*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+*                          current frame state, this layer, and the x, y, and level coordinates
+*                          of the imagery tile for which the saturation is required, and it is expected to return
+*                          the contrast value to use for the tile.  The function is executed for every
+*                          frame and for every tile, so it must be fast.
+* @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
+*                          This can either be a simple number or a function with the signature
+*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+*                          current frame state, this layer, and the x, y, and level coordinates of the
+*                          imagery tile for which the gamma is required, and it is expected to return
+*                          the gamma value to use for the tile.  The function is executed for every
+*                          frame and for every tile, so it must be fast.
+* @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
+* @param {Number} [options.maximumAnisotropy=maximum supported] The maximum anisotropy level to use
+*        for texture filtering.  If this parameter is not specified, the maximum anisotropy supported
+*        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
+*        views.
+* @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
+*                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+* @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
+*                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+*/
+class ImageryLayerOptions {
+    /**
     * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
     *        can limit the visible portion of the imagery provider.
+    */
+    let rectangle: Rectangle? = nil
+    
+    /**
     * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
     *                          This can either be a simple number or a function with the signature
     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
     *                          current frame state, this layer, and the x, y, and level coordinates of the
     *                          imagery tile for which the alpha is required, and it is expected to return
     *                          the alpha value to use for the tile.
-    * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
-    *                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the brightness is required, and it is expected to return
-    *                          the brightness value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
-    *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the contrast is required, and it is expected to return
-    *                          the contrast value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    * @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates
-    *                          of the imagery tile for which the hue is required, and it is expected to return
-    *                          the contrast value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
-    *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates
-    *                          of the imagery tile for which the saturation is required, and it is expected to return
-    *                          the contrast value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the gamma is required, and it is expected to return
-    *                          the gamma value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
-    * @param {Number} [options.maximumAnisotropy=maximum supported] The maximum anisotropy level to use
-    *        for texture filtering.  If this parameter is not specified, the maximum anisotropy supported
-    *        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
-    *        views.
-    * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
-    *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
-    * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
-    *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
     */
-
-struct ImageryLayerOptions {
-// FIXME: ImageryLayerOptions
+    let alpha: (() -> Double) = { return 1.0 }
+    
+    
+    /*init(
+        rectangle: Rectangle? = nil,
+        alpha: (() -> Double) = { return 1.0 }
+        ) {
+            self.rectangle = rectangle ?? imageryProvider.rectangle
+            self.alpha = alpha
+    }*/
 }
 
 /**

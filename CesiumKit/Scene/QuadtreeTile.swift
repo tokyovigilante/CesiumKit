@@ -19,7 +19,7 @@
 * @param tilingScheme The tiling scheme in which this tile exists.
 * @param  This tile's parent, or undefined if this is a root tile.
 */
-class QuadtreeTile {
+class QuadtreeTile: Equatable {
     
     let level: Int
     let x: Int
@@ -199,5 +199,13 @@ class QuadtreeTile {
             _children = nil
         }
     }
+    
+}
 
+func ==(lhs: QuadtreeTile, rhs: QuadtreeTile) -> Bool {
+    return (
+        lhs.level == rhs.level &&
+        lhs.x == rhs.x &&
+        lhs.y == rhs.y
+    )
 }
