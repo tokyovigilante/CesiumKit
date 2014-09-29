@@ -29,7 +29,6 @@ class Queue<T: Equatable> {
     * Dequeues an item.  Returns undefined if the queue is empty.
     */
     func dequeue() -> T? {
-        
         if _array.count == 0 {
             return nil
         }
@@ -78,7 +77,7 @@ class Queue<T: Equatable> {
         
         this._array.sort(compareFunction);
     };
-    
+    */
     /**
     * A function used to compare two items while sorting a queue.
     * @callback Queue~Comparator
@@ -94,6 +93,5 @@ class Queue<T: Equatable> {
     *     return a - b;
     * }
     */
-    
-    return Queue;*/
+
 }

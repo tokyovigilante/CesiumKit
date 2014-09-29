@@ -32,10 +32,6 @@ class QuadtreePrimitive {
     
     var tileProvider: QuadtreeTileProvider
     
-    var maximumScreenSpaceError: Int
-    
-    var tileCacheSize: Int
-    
     var debug = (
         enableDebugOutput : false,
         
@@ -54,30 +50,16 @@ class QuadtreePrimitive {
         suspendLodUpdate: false
     )
     
-    var _tilesToRender = [QuadtreeTile]()
+    private var _tilesToRender = [QuadtreeTile]()
     
-    var _tileTraversalQueue = Queue<QuadtreeTile>()
-
+    private var _tileTraversalQueue = Queue<QuadtreeTile>()
     
-    init (tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Int = 2, tileCacheSize: Int = 100) {
-        
-        self.maximumScreenSpaceError = maximumScreenSpaceError
-        self.tileCacheSize = tileCacheSize
-        
-        assert(tileProvider.quadtree == nil, "A QuadtreeTileProvider can only be used with a single QuadtreePrimitive")
-        
-        self.tileProvider = tileProvider
-        self.tileProvider.quadtree = self
-
+    private var _tileLoadQueue = [QuadtreeTile]()
     
-        
-        var tilingScheme = tileProvider.tilingScheme
-        var ellipsoid = tilingScheme.ellipsoid
-
-/*this._tileLoadQueue = [];
-    this._tileReplacementQueue = new TileReplacementQueue();
-    this._levelZeroTiles = undefined;
-    this._levelZeroTilesReady = false;
+    private var _tileReplacementQueue = TileReplacementQueue()
+    
+    private var _levelZeroTiles = [QuadtreeTile]()
+    private var _levelZeroTilesReady = false
     
     /**
     * Gets or sets the maximum screen-space error, in pixels, that is allowed.
@@ -86,7 +68,7 @@ class QuadtreePrimitive {
     * @type {Number}
     * @default 2
     */
-    this.maximumScreenSpaceError = defaultValue(options.maximumScreenSpaceError, 2);
+    var maximumScreenSpaceError: Int
     
     /**
     * Gets or sets the maximum number of tiles that will be retained in the tile cache.
@@ -96,28 +78,29 @@ class QuadtreePrimitive {
     * @type {Number}
     * @default 100
     */
-    this.tileCacheSize = defaultValue(options.tileCacheSize, 100);
+    var tileCacheSize: Int
     
-    this._occluders = new QuadtreeOccluders({
-    ellipsoid : ellipsoid
-    });
-    }
-    }
-    
-   /* defineProperties(QuadtreePrimitive.prototype, {
-    /**
-    * Gets the provider of {@link QuadtreeTile} instances for this quadtree.
-    * @type {QuadtreeTile}
-    * @memberof QuadtreePrimitive.prototype
-    */
-    tileProvider : {
-    get : function() {
-    return this._tileProvider;
-    }
-    }
-    });
-    */
+    var _occluders: QuadtreeOccluders
 
+    init (tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Int = 2, tileCacheSize: Int = 100) {
+        
+        self.maximumScreenSpaceError = maximumScreenSpaceError
+        self.tileCacheSize = tileCacheSize
+        
+        assert(tileProvider.quadtree == nil, "A QuadtreeTileProvider can only be used with a single QuadtreePrimitive")
+        
+        self.tileProvider = tileProvider
+        
+        var tilingScheme = tileProvider.tilingScheme
+        var ellipsoid = tilingScheme.ellipsoid
+        
+        _occluders = QuadtreeOccluders(ellipsoid : ellipsoid)
+        
+        self.tileCacheSize = tileCacheSize
+        
+        self.tileProvider.quadtree = self
+    }
+    
     /**
     * Invalidates and frees all the tiles in the quadtree.  The tiles must be reloaded
     * before they can be displayed.
@@ -125,9 +108,9 @@ class QuadtreePrimitive {
     * @memberof QuadtreePrimitive
     */
         
-    QuadtreePrimitive.prototype.invalidateAllTiles = function() {
+    func invalidateAllTiles() {
     // Clear the replacement queue
-    var replacementQueue = this._tileReplacementQueue;
+    /*var replacementQueue = this._tileReplacementQueue;
     replacementQueue.head = undefined;
     replacementQueue.tail = undefined;
     replacementQueue.count = 0;
@@ -143,6 +126,7 @@ class QuadtreePrimitive {
     this._levelZeroTiles = undefined;
     };
     */
+    }
     /**
     * Invokes a specified function for each {@link QuadtreeTile} that is partially
     * or completely loaded.
@@ -171,8 +155,8 @@ class QuadtreePrimitive {
     var tilesRendered = this._tilesToRender;
     for (var i = 0, len = tilesRendered.length; i < len; ++i) {
     tileFunction(tilesRendered[i]);
-    }*/
     }
+    }*/
     
     /**
     * Updates the primitive.
