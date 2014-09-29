@@ -20,7 +20,6 @@ import Foundation
 class ImageryLayerCollection {
     
     private var _layers = [ImageryLayer]()
-/*
     
     /**
     * An event that is raised when a layer is added to the collection.  Event handlers are passed the layer that
@@ -28,7 +27,7 @@ class ImageryLayerCollection {
     * @type {Event}
     * @default Event()
     */
-    this.layerAdded = new Event();
+    var layerAdded = Event()
     
     /**
     * An event that is raised when a layer is removed from the collection.  Event handlers are passed the layer that
@@ -36,7 +35,7 @@ class ImageryLayerCollection {
     * @type {Event}
     * @default Event()
     */
-    this.layerRemoved = new Event();
+    var layerRemoved = Event()
     
     /**
     * An event that is raised when a layer changes position in the collection.  Event handlers are passed the layer that
@@ -44,7 +43,7 @@ class ImageryLayerCollection {
     * @type {Event}
     * @default Event()
     */
-    this.layerMoved = new Event();
+    var layerMoved = Event()
     
     /**
     * An event that is raised when a layer is shown or hidden by setting the
@@ -55,9 +54,8 @@ class ImageryLayerCollection {
     * @type {Event}
     * @default Event()
     */
-    this.layerShownOrHidden = new Event();
-}*/
-
+    var layerShownOrHidden = Event()
+}
 
     /**
     * Gets the number of layers in this collection.
@@ -347,11 +345,8 @@ ImageryLayerCollection.prototype.destroy = function() {
         var layersShownOrHidden = [ImageryLayer]()
         var layer: ImageryLayer
         
-        // for layer in _layers {
-        for (var i = 0, len = _layers.count; i < len; ++i) {
-            layer = _layers[i]
-            
-            layer.layerIndex = i
+        for (index, layer) in enumerate(_layers) {
+            layer.layerIndex = index
             
             if (layer.show) {
                 layer.isBaseLayer = isBaseLayer
@@ -359,24 +354,18 @@ ImageryLayerCollection.prototype.destroy = function() {
             } else {
                 layer.isBaseLayer = false
             }
-            /*
-            if (layer.show !== layer._show) {
-                if (defined(layer._show)) {
-                    if (!defined(layersShownOrHidden)) {
-                        layersShownOrHidden = [];
-                    }
-                    layersShownOrHidden.push(layer);
-                }
-                layer._show = layer.show;
-            }*/
-        }
-        /*
-        if (defined(layersShownOrHidden)) {
-            for (i = 0, len = layersShownOrHidden.length; i < len; ++i) {
-                layer = layersShownOrHidden[i];
-                this.layerShownOrHidden.raiseEvent(layer, layer._layerIndex, layer.show);
+            
+            if (layer.show != layer._show) {
+                //if (defined(layer._show)) {
+                layersShownOrHidden.append(layer)
+                //
+                layer._show = layer.show
             }
-        }*/
+        }
+        for (index, layer) in enumerate(layersShownOrHidden) {
+            //FIXME: RaiseEvent
+            layerShownOrHidden.raiseEvent()//layer, layer._layerIndex, layer.show)
+        }
     }
 
 }

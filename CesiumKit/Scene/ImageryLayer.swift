@@ -8,15 +8,6 @@
 
 /** @param {Object} [options] Object with the following properties:
 
-
-* @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
-*                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
-*                          This can either be a simple number or a function with the signature
-*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-*                          current frame state, this layer, and the x, y, and level coordinates of the
-*                          imagery tile for which the brightness is required, and it is expected to return
-*                          the brightness value to use for the tile.  The function is executed for every
-*                          frame and for every tile, so it must be fast.
 * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
 *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
 *                          This can either be a simple number or a function with the signature
@@ -74,6 +65,17 @@ class ImageryLayerOptions {
     */
     let alpha: (() -> Double) = { return 1.0 }
     
+    /**
+    * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
+    *                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
+    *                          This can either be a simple number or a function with the signature
+    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+    *                          current frame state, this layer, and the x, y, and level coordinates of the
+    *                          imagery tile for which the brightness is required, and it is expected to return
+    *                          the brightness value to use for the tile.  The function is executed for every
+    *                          frame and for every tile, so it must be fast.
+    */
+    let brightness: (() -> Double) = { return 1.0 }
     
     /*init(
         rectangle: Rectangle? = nil,
@@ -154,6 +156,8 @@ class ImageryLayer {
     * @default true
     */
     var show = /*options.show ??*/ true
+    
+    var _show: Bool
 
     var layerIndex: Int = -1
 
@@ -241,10 +245,10 @@ class ImageryLayer {
     this._imageryCache = {};
     
     this._skeletonPlaceholder = new TileImagery(Imagery.createPlaceholder(this));
-    
+    */
     // The value of the show property on the last update.
-    this._show = true;
-    
+    _show = true
+    /*
     // The index of this layer in the ImageryLayerCollection.
     this._layerIndex = -1;
     
