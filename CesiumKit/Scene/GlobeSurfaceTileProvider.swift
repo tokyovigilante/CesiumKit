@@ -199,10 +199,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if (_layerOrderChanged) {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
-                tile.data?.imagery.sort(sortTileImageryByLayerIndex)
-                /*if var imagery: [TileImagery] = tile.data?.imagery {
+                //tile.data?.imagery.sort(sortTileImageryByLayerIndex)
+                if var imagery: [TileImagery] = tile.data?.imagery {
                     imagery.sort(sortTileImageryByLayerIndex)
-                }*/
+                }
             })
             // Sort the TileImagery instances in each tile by the layer index.
             //quadtree?.forEachLoadedTile({ (tile: QuadtreeTile) -> () in
