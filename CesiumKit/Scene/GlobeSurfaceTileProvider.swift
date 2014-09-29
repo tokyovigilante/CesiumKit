@@ -174,9 +174,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     func beginUpdate (#context: Context, frameState: FrameState, commandList: inout [Command]) {
         
-        func sortTileImageryByLayerIndex(a: TileImagery, b: TileImagery) -> Int {
-            
+        var sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
             var aImagery: Imagery
+            
+            //if isOrderedBefore.
             if (a.loadingImagery == nil) {
                 aImagery = a.readyImagery!
             } else {
@@ -190,18 +191,25 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 bImagery = b.loadingImagery!
             }
             
-            return aImagery.imageryLayer.layerIndex - bImagery.imageryLayer.layerIndex
+            return aImagery.imageryLayer.layerIndex < bImagery.imageryLayer.layerIndex
         }
-        
+
         imageryLayers.update()
         
         if (_layerOrderChanged) {
             _layerOrderChanged = false
-        
-        // Sort the TileImagery instances in each tile by the layer index.
-        //    quadtree.forEachLoadedTile(func (tile:) {
-        //    tile.data.imagery.sort(sortTileImageryByLayerIndex)
-        }
+            quadtree?.forEachLoadedTile({ (tile) -> () in
+                tile.data?.imagery.sort(sortTileImageryByLayerIndex)
+                /*if var imagery: [TileImagery] = tile.data?.imagery {
+                    imagery.sort(sortTileImageryByLayerIndex)
+                }*/
+            })
+            // Sort the TileImagery instances in each tile by the layer index.
+            //quadtree?.forEachLoadedTile({ (tile: QuadtreeTile) -> () in
+            //})
+            //quadtree!.forEachLoadedTile(/*
+            //    { tile in tile.data?.imagery.sort(sortTileImageryByLayerIndex) }*/ )
+            //}
         
         /*
         var i;
@@ -212,9 +220,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         var tiles = tilesToRenderByTextureCount[i];
         if (defined(tiles)) {
         tiles.length = 0;
+        }*/
         }
-        }
-        
+        /*
         this._usedDrawCommands = 0;
         
         // Add credits for terrain and imagery providers.

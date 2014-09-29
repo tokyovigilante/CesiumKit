@@ -55,7 +55,6 @@ class ImageryLayerCollection {
     * @default Event()
     */
     var layerShownOrHidden = Event()
-}
 
     /**
     * Gets the number of layers in this collection.
@@ -68,15 +67,15 @@ class ImageryLayerCollection {
         }
     }
     
-/**
-* Adds a layer to the collection.
-*
-* @param {ImageryLayer} layer the layer to add.
-* @param {Number} [index] the index to add the layer at.  If omitted, the layer will
-*                         added on top of all existing layers.
-*
-* @exception {DeveloperError} index, if supplied, must be greater than or equal to zero and less than or equal to the number of the layers.
-*/
+    /**
+    * Adds a layer to the collection.
+    *
+    * @param {ImageryLayer} layer the layer to add.
+    * @param {Number} [index] the index to add the layer at.  If omitted, the layer will
+    *                         added on top of all existing layers.
+    *
+    * @exception {DeveloperError} index, if supplied, must be greater than or equal to zero and less than or equal to the number of the layers.
+    */
     func add (layer: ImageryLayer, index: Int? = nil) {
         //FIXME: Unimplemented
         /*let hasIndex = index != nil
@@ -97,21 +96,21 @@ class ImageryLayerCollection {
         this.layerAdded.raiseEvent(layer, index);*/
     }
 
-/**
-* Creates a new layer using the given ImageryProvider and adds it to the collection.
-*
-* @param {ImageryProvider} imageryProvider the imagery provider to create a new layer for.
-* @param {Number} [index] the index to add the layer at.  If omitted, the layer will
-*                         added on top of all existing layers.
-* @returns {ImageryLayer} The newly created layer.
-*/
-// FIXME: ImageryProvider
-func addImageryProvider(imageryProvider: BingMapsImageryProvider, index: Int?) -> ImageryLayer {
-    
-    var layer = ImageryLayer(imageryProvider: imageryProvider)
-    add(layer, index: index)
-    return layer
-}
+    /**
+    * Creates a new layer using the given ImageryProvider and adds it to the collection.
+    *
+    * @param {ImageryProvider} imageryProvider the imagery provider to create a new layer for.
+    * @param {Number} [index] the index to add the layer at.  If omitted, the layer will
+    *                         added on top of all existing layers.
+    * @returns {ImageryLayer} The newly created layer.
+    */
+    // FIXME: ImageryProvider
+    func addImageryProvider(imageryProvider: BingMapsImageryProvider, index: Int?) -> ImageryLayer {
+        
+        var layer = ImageryLayer(imageryProvider: imageryProvider)
+        add(layer, index: index)
+        return layer
+    }
 /*
 /**
 * Removes a layer from this collection, if present.
@@ -193,9 +192,11 @@ ImageryLayerCollection.prototype.indexOf = function(layer) {
 * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
 */
     subscript(index: Int) -> ImageryLayer? {
-        //FIXME: Unimplemented
-        //rangecheck
-        return nil
+        
+        if index > _layers.count {
+            return nil
+        }
+        return _layers[index]
     }
 
 /*

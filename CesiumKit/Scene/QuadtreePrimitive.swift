@@ -134,15 +134,16 @@ class QuadtreePrimitive {
     * @param {Function} tileFunction The function to invoke for each loaded tile.  The
     *        function is passed a reference to the tile as its only parameter.
     */
-    /*
-    func forEachLoadedTile = function(tileFunction: () -> ()) {
-    var tile = this._tileReplacementQueue.head;
-    while (defined(tile)) {
-    if (tile.state !== QuadtreeTileLoadState.START) {
-                    tileFunction(tile);
-                }    tile = tile.replacementNext;
+    
+    func forEachLoadedTile (tileFunction: QuadtreeTile -> ()) {
+        _tileReplacementQueue.forEachLoadedTile(tileFunction)
+    /*var tile = _tileReplacementQueue.head
+    while (tile != nil) {
+    if (tile.state != .Start) {
+                    tileFunction(tile)
+                }    tile = tile.replacementNext
+    };*/
     }
-    };
     
     /**
     * Invokes a specified function for each {@link QuadtreeTile} that was rendered
@@ -151,7 +152,7 @@ class QuadtreePrimitive {
     * @param {Function} tileFunction The function to invoke for each rendered tile.  The
     *        function is passed a reference to the tile as its only parameter.
     */
-    QuadtreePrimitive.prototype.forEachRenderedTile = function(tileFunction) {
+    /*QuadtreePrimitive.prototype.forEachRenderedTile = function(tileFunction) {
     var tilesRendered = this._tilesToRender;
     for (var i = 0, len = tilesRendered.length; i < len; ++i) {
     tileFunction(tilesRendered[i]);

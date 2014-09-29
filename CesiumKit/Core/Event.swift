@@ -132,7 +132,7 @@ class Event {
     
     return false;
     };
-    
+    */
     /**
     * Raises the event by calling each registered listener with all supplied arguments.
     *
@@ -141,39 +141,36 @@ class Event {
     * @see Event#addEventListener
     * @see Event#removeEventListener
     */
-    Event.prototype.raiseEvent = function() {
-    this._insideRaiseEvent = true;
-    
-    var i;
-    var listeners = this._listeners;
-    var scopes = this._scopes;
-    var length = listeners.length;
-    
-    for (i = 0; i < length; i++) {
-    var listener = listeners[i];
-    if (defined(listener)) {
-    listeners[i].apply(scopes[i], arguments);
+    func raiseEvent() {
+        /*this._insideRaiseEvent = true;
+        
+        var i;
+        var listeners = this._listeners;
+        var scopes = this._scopes;
+        var length = listeners.length;
+        
+        for (i = 0; i < length; i++) {
+        var listener = listeners[i];
+        if (defined(listener)) {
+        listeners[i].apply(scopes[i], arguments);
+        }
+        }
+        
+        //Actually remove items removed in removeEventListener.
+        var toRemove = this._toRemove;
+        length = toRemove.length;
+        for (i = 0; i < length; i++) {
+        var index = toRemove[i];
+        listeners.splice(index, 1);
+        scopes.splice(index, 1);
+        }
+        toRemove.length = 0;
+        
+        this._insideRaiseEvent = false;*/
     }
-    }
-    
-    //Actually remove items removed in removeEventListener.
-    var toRemove = this._toRemove;
-    length = toRemove.length;
-    for (i = 0; i < length; i++) {
-    var index = toRemove[i];
-    listeners.splice(index, 1);
-    scopes.splice(index, 1);
-    }
-    toRemove.length = 0;
-    
-    this._insideRaiseEvent = false;
-    };
     
     /**
     * A function that removes a listener.
     * @callback Event~RemoveCallback
     */
-    
-    return Event;
-    }); */
 }
