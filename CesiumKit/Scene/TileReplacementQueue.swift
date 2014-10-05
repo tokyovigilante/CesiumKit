@@ -20,16 +20,10 @@ class TileReplacementQueue {
     
     var tail: QuadtreeTile? = nil
     
-    private var _array = [QuadtreeTile]()
-    
-    var count: Int {
-        get {
-            return _array.count
-        }
-    }
+    var count = 0
     
     private var _lastBeforeStartOfFrame: QuadtreeTile? = nil
-    
+
     /**
     * Marks the start of the render frame.  Tiles before (closer to the head) this tile in the
     * list were used last frame and must not be unloaded.
@@ -133,10 +127,4 @@ class TileReplacementQueue {
     
     return TileReplacementQueue;
     });*/
-    
-    func forEachLoadedTile (tileFunction: QuadtreeTile -> ()) {
-        for tile in _array {
-            tileFunction(tile)
-        }
-    }
 }

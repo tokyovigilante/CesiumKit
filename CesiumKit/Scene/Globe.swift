@@ -672,7 +672,7 @@ class Globe {
         }
         
         if _depthCommand.shaderProgram == nil {
-             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: "GlobeVSDepth", fragmentShaderSource: "GlobeFSDepth", attributeLocations: ["position" : 0])
+             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: GlobeVSDepth, fragmentShaderSource: GlobeFSDepth, attributeLocations: ["position" : 0])
         }
         
         var hasWaterMask = showWaterEffect && _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask()
@@ -704,88 +704,82 @@ class Globe {
         }
         // Initial compile or re-compile if uber-shader parameters changed
         
-        /*if _northPoleCommand.shaderProgram == nil ||
-            _southPoleCommand.shaderProgram == nil) ||
-            this._oceanNormalMapChanged ||
-                        this._hasWaterMask !== hasWaterMask ||
-                        this._hasVertexNormals !== hasVertexNormals ||
-                        this._enableLighting !== enableLighting)  {
+        if _northPoleCommand.shaderProgram == nil ||
+            _southPoleCommand.shaderProgram == nil ||
+            _oceanNormalMapChanged ||
+            _hasWaterMask != hasWaterMask ||
+            _hasVertexNormals != hasVertexNormals ||
+            _enableLighting != enableLighting  {
                 
-            var getPosition3DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }';
-            var getPosition2DMode = 'vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }';
-            var getPositionColumbusViewMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }';
-            var getPositionMorphingMode = 'vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }';
-            
-            var getPositionMode;
-            
-            switch (mode) {
-            case SceneMode.SCENE3D:
-            getPositionMode = getPosition3DMode;
-            break;
-            case SceneMode.SCENE2D:
-            getPositionMode = getPosition2DMode;
-            break;
-            case SceneMode.COLUMBUS_VIEW:
-            getPositionMode = getPositionColumbusViewMode;
-            break;
-            case SceneMode.MORPHING:
-            getPositionMode = getPositionMorphingMode;
-            break;
-            }
-            
-            var get2DYPositionFractionGeographicProjection = 'float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }';
-            var get2DYPositionFractionMercatorProjection = 'float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }';
-            
-            var get2DYPositionFraction;
-            
-            if (projection instanceof GeographicProjection) {
-            get2DYPositionFraction = get2DYPositionFractionGeographicProjection;
-            } else {
-            get2DYPositionFraction = get2DYPositionFractionMercatorProjection;
-            }
-            
-            var surfaceShaderSet = this._surfaceShaderSet;
-            
-            var shaderDefines = [];
-            
-            if (hasWaterMask) {
-            shaderDefines.push('SHOW_REFLECTIVE_OCEAN');
-            
-            if (defined(this._oceanNormalMap)) {
-            shaderDefines.push('SHOW_OCEAN_WAVES');
-            }
-            }
-            
-            if (enableLighting) {
-            if (hasVertexNormals) {
-            shaderDefines.push('ENABLE_VERTEX_LIGHTING');
-            } else {
-            shaderDefines.push('ENABLE_DAYNIGHT_SHADING');
-            }
-            }
-            
-            surfaceShaderSet.baseVertexShaderString = createShaderSource({
-            defines : shaderDefines,
-            sources : [GlobeVS, getPositionMode, get2DYPositionFraction]
-            });
-            
-            surfaceShaderSet.baseFragmentShaderString = createShaderSource({
-            defines : shaderDefines,
-            sources : [GlobeFS]
-            });
-            
-            surfaceShaderSet.invalidateShaders();
-            
-            var poleShaderProgram = context.replaceShaderProgram(northPoleCommand.shaderProgram, GlobeVSPole, GlobeFSPole, terrainAttributeLocations);
-            
-            northPoleCommand.shaderProgram = poleShaderProgram;
-            southPoleCommand.shaderProgram = poleShaderProgram;
-            
-            this._hasWaterMask = hasWaterMask;
-            this._hasVertexNormals = hasVertexNormals;
-            this._enableLighting = enableLighting;
-            this._oceanNormalMapChanged = false;
-        }*/
+                let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
+                let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
+                let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
+                let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
+                
+                var getPositionMode: String
+                
+                switch mode {
+                case .Scene3D:
+                    getPositionMode = getPosition3DMode
+                case .Scene2D:
+                    getPositionMode = getPosition2DMode
+                case .ColumbusView:
+                    getPositionMode = getPositionColumbusViewMode
+                case .Morphing:
+                    getPositionMode = getPositionMorphingMode
+                }
+                
+                var get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
+                var get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
+                
+                var get2DYPositionFraction: String
+                
+                if (projection is GeographicProjection) {
+                    get2DYPositionFraction = get2DYPositionFractionGeographicProjection
+                } else {
+                    get2DYPositionFraction = get2DYPositionFractionMercatorProjection
+                }
+                
+                var shaderDefines = [String]()
+                
+                if (hasWaterMask) {
+                    shaderDefines.append("SHOW_REFLECTIVE_OCEAN")
+                    
+                    if _oceanNormalMap != nil {
+                        shaderDefines.append("SHOW_OCEAN_WAVES")
+                    }
+                }
+                
+                if (enableLighting) {
+                    if (hasVertexNormals) {
+                        shaderDefines.append("ENABLE_VERTEX_LIGHTING")
+                    } else {
+                        shaderDefines.append("ENABLE_DAYNIGHT_SHADING")
+                    }
+                }
+                
+                _surfaceShaderSet.baseVertexShaderString = ShaderProgram.createShaderSource(
+                    defines : shaderDefines,
+                    sources: [GlobeVS, getPositionMode, get2DYPositionFraction]
+                )
+                
+                _surfaceShaderSet.baseFragmentShaderString = ShaderProgram.createShaderSource(
+                    defines: shaderDefines,
+                    sources: [GlobeFS]
+                )
+                
+                _surfaceShaderSet.invalidateShaders()
+                
+                var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderSource: GlobeVSPole, fragmentShaderSource: GlobeFSPole, attributeLocations: terrainAttributeLocations)
+                
+                _northPoleCommand.shaderProgram = poleShaderProgram
+                _southPoleCommand.shaderProgram = poleShaderProgram
+                
+                _hasWaterMask = hasWaterMask
+                _hasVertexNormals = hasVertexNormals
+                _enableLighting = enableLighting
+                _oceanNormalMapChanged = false
+        }
         
         _occluder.cameraPosition = frameState.camera!.positionWC
         

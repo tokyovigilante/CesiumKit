@@ -109,23 +109,16 @@ class QuadtreePrimitive {
     */
         
     func invalidateAllTiles() {
-    // Clear the replacement queue
-    /*var replacementQueue = this._tileReplacementQueue;
-    replacementQueue.head = undefined;
-    replacementQueue.tail = undefined;
-    replacementQueue.count = 0;
-    
-    // Free and recreate the level zero tiles.
-    var levelZeroTiles = this._levelZeroTiles;
-    if (defined(levelZeroTiles)) {
-    for (var i = 0; i < levelZeroTiles.length; ++i) {
-    levelZeroTiles[i].freeResources();
-    }
-    }
-    
-    this._levelZeroTiles = undefined;
-    };
-    */
+        // Clear the replacement queue
+        _tileReplacementQueue.head = nil
+        _tileReplacementQueue.tail = nil
+        _tileReplacementQueue.count = 0
+        
+        // Free and recreate the level zero tiles.
+        for tile in _levelZeroTiles {
+            tile.freeResources()
+        }
+        _levelZeroTiles.removeAll()
     }
     /**
     * Invokes a specified function for each {@link QuadtreeTile} that is partially
@@ -136,13 +129,13 @@ class QuadtreePrimitive {
     */
     
     func forEachLoadedTile (tileFunction: QuadtreeTile -> ()) {
-        _tileReplacementQueue.forEachLoadedTile(tileFunction)
-    /*var tile = _tileReplacementQueue.head
-    while (tile != nil) {
-    if (tile.state != .Start) {
-                    tileFunction(tile)
-                }    tile = tile.replacementNext
-    };*/
+        var tile = _tileReplacementQueue.head
+        while tile != nil {
+            if tile!.state != .Start {
+                tileFunction(tile!)
+            }
+            tile = tile!.replacementNext
+        }
     }
     
     /**

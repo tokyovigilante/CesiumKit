@@ -16,8 +16,8 @@ import Foundation
 */
 class GlobeSurfaceShaderSet {
     
-    let baseVertexShaderString: String? = nil
-    let baseFragmentShaderString: String? = nil
+    var baseVertexShaderString: String? = nil
+    var baseFragmentShaderString: String? = nil
     
     let attributeLocations: [String: Int]
     

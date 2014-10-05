@@ -64,6 +64,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     */
     var terrainProvider: TerrainProvider
     
+    var surfaceShaderSet: GlobeSurfaceShaderSet
+    
     /**
     * Gets an event that is raised when the geometry provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -71,7 +73,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @memberof QuadtreeTileProvider.prototype
     * @type {Event}
     */
-    let errorEvent: Event
+    let errorEvent = Event()
     
     /**
     * The distance where everything becomes lit. This only takes effect
@@ -95,12 +97,23 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     var zoomedOutOceanSpecularIntensity = 0.5
     
-    var surfaceShaderSet: GlobeSurfaceShaderSet
+    private var _renderState: RenderState? = nil
+    
+    private var _blendRenderState: RenderState? = nil
     
     private var _layerOrderChanged = false
 
     var baseColor = Cartesian4.fromColor(red: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
     
+    private var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
+
+    private var _drawCommands = [DrawCommand]()
+    
+    private var _uniformMaps = [TileUniformMap]()
+    
+    private var _usedDrawCommands = 0
+    
+    private var _debug: (wireFrame: Bool, boundingSphereTile: BoundingSphere?) = (false, nil)
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -108,53 +121,16 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         self.imageryLayers = imageryLayers
         self.surfaceShaderSet = surfaceShaderSet
         
-        /*
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(options)) {
-        throw new DeveloperError('options is required.');
-        }
-        if (!defined(options.terrainProvider)) {
-        throw new DeveloperError('options.terrainProvider is required.');
-        } else if (!defined(options.imageryLayers)) {
-        throw new DeveloperError('options.imageryLayers is required.');
-        } else if (!defined(options.surfaceShaderSet)) {
-        throw new DeveloperError('options.surfaceShaderSet is required.');
-        }
-        //>>includeEnd('debug');
-        
-        this.lightingFadeOutDistance = 6500000.0;
-        this.lightingFadeInDistance = 9000000.0;
-        this.oceanNormalMap = undefined;
-        this.zoomedOutOceanSpecularIntensity = 0.5;
-        
-        this._quadtree = undefined;
-        this._terrainProvider = options.terrainProvider;
-        this._imageryLayers = options.imageryLayers;
-        this._surfaceShaderSet = options.surfaceShaderSet;
-        this._renderState = undefined;
-        this._blendRenderState = undefined;
-        */
-        errorEvent = Event()
+        // FIXME: events
         /*
         this._imageryLayers.layerAdded.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerAdded, this);
         this._imageryLayers.layerRemoved.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerRemoved, this);
         this._imageryLayers.layerMoved.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerMoved, this);
         this._imageryLayers.layerShownOrHidden.addEventListener(GlobeSurfaceTileProvider.prototype._onLayerShownOrHidden, this);
         */
-        /*
-        this._tilesToRenderByTextureCount = [];
-        this._drawCommands = [];
-        this._uniformMaps = [];
-        this._usedDrawCommands = 0;
-        
-        this._debug = {
-        wireframe : false,
-        boundingSphereTile : undefined
+        if quadtree != nil {
+            quadtree!.invalidateAllTiles()
         }
-        
-        
-        if (defined(this._quadtree)) {
-        this._quadtree.invalidateAllTiles();*/
         
     }
     
@@ -204,29 +180,17 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                     imagery.sort(sortTileImageryByLayerIndex)
                 }
             })
-            // Sort the TileImagery instances in each tile by the layer index.
-            //quadtree?.forEachLoadedTile({ (tile: QuadtreeTile) -> () in
-            //})
-            //quadtree!.forEachLoadedTile(/*
-            //    { tile in tile.data?.imagery.sort(sortTileImageryByLayerIndex) }*/ )
-            //}
         
-        /*
-        var i;
-        var len;
-        
-        var tilesToRenderByTextureCount = this._tilesToRenderByTextureCount;
-        for (i = 0, len = tilesToRenderByTextureCount.length; i < len; ++i) {
-        var tiles = tilesToRenderByTextureCount[i];
-        if (defined(tiles)) {
-        tiles.length = 0;
-        }*/
+            for key in _tilesToRenderByTextureCount.keys {
+                _tilesToRenderByTextureCount[key] = [QuadtreeTile]()
+            }
         }
-        /*
-        this._usedDrawCommands = 0;
+        
+        _usedDrawCommands = 0
         
         // Add credits for terrain and imagery providers.
-        var creditDisplay = frameState.creditDisplay;
+        // FIXME: Credits
+        /*var creditDisplay = frameState.creditDisplay;
         
         if (this._terrainProvider.ready && defined(this._terrainProvider.credit)) {
         creditDisplay.addCredit(this._terrainProvider.credit);

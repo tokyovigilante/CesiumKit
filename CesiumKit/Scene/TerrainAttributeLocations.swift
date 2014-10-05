@@ -6,9 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
-struct TerrainAttributeLocations {
-    var position3DAndHeight = 0
-    var textureCoordinates = 1
-}
+let terrainAttributeLocations = [
+    "position3DAndHeight": 0,
+    "textureCoordinates": 1
+]

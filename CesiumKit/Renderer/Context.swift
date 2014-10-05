@@ -144,7 +144,7 @@ class Context {
     var _validateShaderProgram = false
     var _logShaderCompilation = false
     
-    var shaderCache: ShaderCache? = nil
+    var _shaderCache: ShaderCache? = nil
     
     /**
     * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
@@ -716,24 +716,26 @@ class Context {
         
         //FIXME: currentrenderstate.apply
         //currentRenderState.apply(defaultPassState)
+        
     }
     
-    func replaceShaderProgram(shaderProgram: ShaderProgram, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: TerrainAttributeLocations) -> ShaderProgram? {
-        // FIXME: replaceShaderProgram
-        //return shaderCache.replaceShaderProgram(shaderProgram, vertexShaderSource, fragmentShaderSource, attributeLocations)
-        return nil
+    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int] = terrainAttributeLocations) -> ShaderProgram? {
+        if _shaderCache == nil {
+            _shaderCache = ShaderCache(context: self)
+        }
+        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
     }
 
     func createShaderProgram(#vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> ShaderProgram? {
-        if shaderCache == nil {
-            shaderCache = ShaderCache(context: self)
+        if _shaderCache == nil {
+            _shaderCache = ShaderCache(context: self)
         }
-        return shaderCache!.getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
+        return _shaderCache!.getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
     }
 
     func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
-}
+    }
 
 /**
 * Creates a vertex buffer, which contains untyped vertex data in GPU-controlled memory.

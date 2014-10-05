@@ -35,6 +35,21 @@ class Queue<T: Equatable> {
         return _array.removeAtIndex(0)
     }
     
+    var head: T? {
+        get {
+            if _array.count == 0 {
+                return nil
+            }
+            return _array[0]
+        }
+    }
+    
+    var tail: T? {
+        get {
+            return _array.last
+        }
+    }
+    
     var count: Int {
         get {
             return _array.count

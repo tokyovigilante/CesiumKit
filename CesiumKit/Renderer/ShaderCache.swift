@@ -27,6 +27,36 @@ class ShaderCache {
     * Returns a shader program from the cache, or creates and caches a new shader program,
     * given the GLSL vertex and fragment shader source and attribute locations.
     * <p>
+    * The difference between this and {@link ShaderCache#getShaderProgram}, is this is used to
+    * replace an existing reference to a shader program, which is passed as the first argument.
+    * </p>
+    *
+    * @param {ShaderProgram} shaderProgram The shader program that is being reassigned.  This can be <code>undefined</code>.
+    * @param {String} vertexShaderSource The GLSL source for the vertex shader.
+    * @param {String} fragmentShaderSource The GLSL source for the fragment shader.
+    * @param {Object} attributeLocations Indices for the attribute inputs to the vertex shader.
+    * @returns {ShaderProgram} The cached or newly created shader program.
+    *
+    * @see ShaderCache#getShaderProgram
+    *
+    * @example
+    * this._shaderProgram = context.shaderCache.replaceShaderProgram(
+    *     this._shaderProgram, vs, fs, attributeLocations);
+    */
+    func replaceShaderProgram (shaderProgram: ShaderProgram?, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> ShaderProgram? {
+        
+        if let existingShader = shaderProgram {
+            existingShader.count = 0
+            releaseShaderProgram(existingShader)
+        }
+        
+        return getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
+    }
+    
+    /**
+    * Returns a shader program from the cache, or creates and caches a new shader program,
+    * given the GLSL vertex and fragment shader source and attribute locations.
+    * <p>
     *
     * @param {String} vertexShaderSource The GLSL source for the vertex shader.
     * @param {String} fragmentShaderSource The GLSL source for the fragment shader.
@@ -50,6 +80,7 @@ class ShaderCache {
                 attributeLocations: attributeLocations,
                 id: nextShaderProgramId++
             )
+            _shaders[keyword] = cachedShader!
         }
         cachedShader!.count++
         return cachedShader!
@@ -65,7 +96,7 @@ class ShaderCache {
     * @param {ShaderProgram} shader The shader to decrement
     */
     func releaseShaderProgram(shader: ShaderProgram) {
-        if --shader.count == 0 {
+        if --shader.count < 1 {
             _shaders.removeValueForKey(shader.keyword)
         }
     }

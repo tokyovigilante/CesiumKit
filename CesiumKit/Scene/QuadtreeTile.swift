@@ -49,8 +49,8 @@ class QuadtreeTile: Equatable {
     var renderable = false
     
     // QuadtreeTileReplacementQueue gets/sets these private properties.
-    //    var replacementPrevious = undefined;
-    //    var replacementNext = undefined;
+    var replacementPrevious: QuadtreeTile? = nil
+    var replacementNext: QuadtreeTile? = nil
     
     // The distance from the camera to this tile, updated when the tile is selected
     // for rendering.  We can get rid of this if we have a better way to sort by
