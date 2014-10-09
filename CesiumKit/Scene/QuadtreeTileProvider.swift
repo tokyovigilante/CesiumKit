@@ -147,7 +147,7 @@ protocol QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (context: Context, frameState: FrameState, tile: QuadtreeTile)
+    func loadTile (tile: QuadtreeTile, context: Context, frameState: FrameState)
     
     /**
     * Determines the visibility of a given tile.  The tile may be fully visible, partially visible, or not
@@ -162,7 +162,7 @@ protocol QuadtreeTileProvider {
     *
     * @returns {Visibility} The visibility of the tile.
     */
-    func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: [Occluder]) -> Visibility
+    func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility
     
     /**
     * Shows a specified tile in this frame.  The provider can cause the tile to be shown by adding
@@ -187,11 +187,9 @@ protocol QuadtreeTileProvider {
     *
     * @param {QuadtreeTile} tile The tile instance.
     * @param {FrameState} frameState The state information of the current rendering frame.
-    * @param {Cartesian3} cameraCartesianPosition The position of the camera in world coordinates.
-    * @param {Cartographic} cameraCartographicPosition The position of the camera in cartographic / geodetic coordinates.
     *
     * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
     */
-    func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState, cameraCartesianPosition: Cartesian3, cameraCartographicPosition: Cartographic) -> Double
+    func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState) -> Double
     
 }

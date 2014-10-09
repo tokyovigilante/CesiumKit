@@ -109,7 +109,7 @@ class Globe {
     * @type {Number}
     * @default 2
     */
-    var maximumScreenSpaceError = 2
+    var maximumScreenSpaceError: Double = 2.0
     
     /**
     * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
@@ -190,7 +190,7 @@ class Globe {
             return _surface.tileProvider.baseColor
         }
         set (value) {
-            _surface.tileProvider.baseColor = value
+            //_surface.tileProvider.baseColor = value
         }
     }
     

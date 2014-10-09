@@ -276,8 +276,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (context: Context, frameState: FrameState, tile: QuadtreeTile) {
-        /*GlobeSurfaceTile.processStateMachine(tile, context, this._terrainProvider, this._imageryLayers);*/
+    func loadTile (tile: QuadtreeTile, context: Context, frameState: FrameState) {
+        //GlobeSurfaceTile.processStateMachine(tile, context, this._terrainProvider, this._imageryLayers);*/
     }
     
     
@@ -292,7 +292,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @returns {Visibility} The visibility of the tile.
     */
-    func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: [Occluder]) -> Visibility {
+    func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
         /*
         var boundingSphereScratch = new BoundingSphere();
         
@@ -390,79 +390,74 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
     */
-    func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState, cameraCartesianPosition: Cartesian3, cameraCartographicPosition: Cartographic) -> Double {
-        /*
-        var southwestCornerScratch = new Cartesian3();
-        var northeastCornerScratch = new Cartesian3();
-        var negativeUnitY = new Cartesian3(0.0, -1.0, 0.0);
-        var negativeUnitZ = new Cartesian3(0.0, 0.0, -1.0);
-        var vectorScratch = new Cartesian3();
-
+    func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState) -> Double {
         
-        var surfaceTile = tile.data;
+        let negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
+        let negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
         
-        var southwestCornerCartesian = surfaceTile.southwestCornerCartesian;
-        var northeastCornerCartesian = surfaceTile.northeastCornerCartesian;
-        var westNormal = surfaceTile.westNormal;
-        var southNormal = surfaceTile.southNormal;
-        var eastNormal = surfaceTile.eastNormal;
-        var northNormal = surfaceTile.northNormal;
-        var maximumHeight = surfaceTile.maximumHeight;
+        let surfaceTile = tile.data!
         
-        if (frameState.mode !== SceneMode.SCENE3D) {
-        southwestCornerCartesian = frameState.mapProjection.project(Rectangle.southwest(tile.rectangle), southwestCornerScratch);
-        southwestCornerCartesian.z = southwestCornerCartesian.y;
-        southwestCornerCartesian.y = southwestCornerCartesian.x;
-        southwestCornerCartesian.x = 0.0;
-        northeastCornerCartesian = frameState.mapProjection.project(Rectangle.northeast(tile.rectangle), northeastCornerScratch);
-        northeastCornerCartesian.z = northeastCornerCartesian.y;
-        northeastCornerCartesian.y = northeastCornerCartesian.x;
-        northeastCornerCartesian.x = 0.0;
-        westNormal = negativeUnitY;
-        eastNormal = Cartesian3.UNIT_Y;
-        southNormal = negativeUnitZ;
-        northNormal = Cartesian3.UNIT_Z;
-        maximumHeight = 0.0;
+        var southwestCornerCartesian = surfaceTile.southwestCornerCartesian
+        var northeastCornerCartesian = surfaceTile.northeastCornerCartesian
+        var westNormal = surfaceTile.westNormal
+        var southNormal = surfaceTile.southNormal
+        var eastNormal = surfaceTile.eastNormal
+        var northNormal = surfaceTile.northNormal
+        var maximumHeight = surfaceTile.maximumHeight
+        if frameState.mode != .Scene3D {
+            southwestCornerCartesian = frameState.mapProjection!.project(tile.rectangle.southwest())
+            southwestCornerCartesian.z = southwestCornerCartesian.y
+            southwestCornerCartesian.y = southwestCornerCartesian.x
+            southwestCornerCartesian.x = 0.0
+            northeastCornerCartesian = frameState.mapProjection!.project(tile.rectangle.northeast())
+            northeastCornerCartesian.z = northeastCornerCartesian.y
+            northeastCornerCartesian.y = northeastCornerCartesian.x
+            northeastCornerCartesian.x = 0.0
+            westNormal = negativeUnitY
+            eastNormal = Cartesian3.unitY()
+            southNormal = negativeUnitZ
+            northNormal = Cartesian3.unitZ()
+            maximumHeight = 0.0
         }
         
-        var cameraCartesianPosition = frameState.camera.positionWC;
-        var cameraCartographicPosition = frameState.camera.positionCartographic;
+        let cameraCartesianPosition = frameState.camera!.positionWC
+        let cameraCartographicPosition = frameState.camera!.positionCartographic
         
-        var vectorFromSouthwestCorner = Cartesian3.subtract(cameraCartesianPosition, southwestCornerCartesian, vectorScratch);
-        var distanceToWestPlane = Cartesian3.dot(vectorFromSouthwestCorner, westNormal);
-        var distanceToSouthPlane = Cartesian3.dot(vectorFromSouthwestCorner, southNormal);
+        let vectorFromSouthwestCorner = cameraCartesianPosition.subtract(southwestCornerCartesian)
+        let distanceToWestPlane = vectorFromSouthwestCorner.dot(westNormal)
+        let distanceToSouthPlane = vectorFromSouthwestCorner.dot(southNormal)
         
-        var vectorFromNortheastCorner = Cartesian3.subtract(cameraCartesianPosition, northeastCornerCartesian, vectorScratch);
-        var distanceToEastPlane = Cartesian3.dot(vectorFromNortheastCorner, eastNormal);
-        var distanceToNorthPlane = Cartesian3.dot(vectorFromNortheastCorner, northNormal);
+        let vectorFromNortheastCorner = cameraCartesianPosition.subtract(northeastCornerCartesian)
+        let distanceToEastPlane = vectorFromNortheastCorner.dot(eastNormal)
+        let distanceToNorthPlane = vectorFromNortheastCorner.dot(northNormal)
         
-        var cameraHeight;
-        if (frameState.mode === SceneMode.SCENE3D) {
-        cameraHeight = cameraCartographicPosition.height;
+        var cameraHeight: Double
+        if frameState.mode == .Scene3D {
+            cameraHeight = cameraCartographicPosition.height
         } else {
-        cameraHeight = cameraCartesianPosition.x;
+            cameraHeight = cameraCartesianPosition.x
         }
-        var distanceFromTop = cameraHeight - maximumHeight;
+        let distanceFromTop = cameraHeight - maximumHeight
         
-        var result = 0.0;
+        var result = 0.0
         
-        if (distanceToWestPlane > 0.0) {
-        result += distanceToWestPlane * distanceToWestPlane;
-        } else if (distanceToEastPlane > 0.0) {
-        result += distanceToEastPlane * distanceToEastPlane;
-        }
-        
-        if (distanceToSouthPlane > 0.0) {
-        result += distanceToSouthPlane * distanceToSouthPlane;
-        } else if (distanceToNorthPlane > 0.0) {
-        result += distanceToNorthPlane * distanceToNorthPlane;
+        if distanceToWestPlane > 0.0 {
+            result += distanceToWestPlane * distanceToWestPlane
+        } else if distanceToEastPlane > 0.0 {
+            result += distanceToEastPlane * distanceToEastPlane
         }
         
-        if (distanceFromTop > 0.0) {
-        result += distanceFromTop * distanceFromTop;
+        if distanceToSouthPlane > 0.0 {
+            result += distanceToSouthPlane * distanceToSouthPlane
+        } else if distanceToNorthPlane > 0.0 {
+            result += distanceToNorthPlane * distanceToNorthPlane
         }
         
-        return Math.sqrt(result);*/return 0.0
+        if distanceFromTop > 0.0 {
+            result += distanceFromTop * distanceFromTop
+        }
+        
+        return sqrt(result)
     }
     
     /**

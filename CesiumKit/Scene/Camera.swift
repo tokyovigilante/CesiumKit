@@ -22,19 +22,19 @@ import Foundation
 *
 * @constructor
 *
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html|Cesium Sandcastle Camera Demo}
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera%20Tutorial.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
+*
 * @example
 * // Create a camera looking down the negative z-axis, positioned at the origin,
 * // with a field of view of 60 degrees, and 1:1 aspect ratio.
 * var camera = new Cesium.Camera(scene);
 * camera.position = new Cesium.Cartesian3();
-* camera.direction = Cesium.Cartesian3.negate(Cesium.Cartesian3.UNIT_Z);
+* camera.direction = Cesium.Cartesian3.negate(Cesium.Cartesian3.UNIT_Z, new Cesium.Cartesian3());
 * camera.up = Cesium.Cartesian3.clone(Cesium.Cartesian3.UNIT_Y);
-* camera.frustum.fovy = Cesium.Math.PI_OVER_THREE;
+* camera.frustum.fov = Cesium.Math.PI_OVER_THREE;
 * camera.frustum.near = 1.0;
 * camera.frustum.far = 2.0;
-*
-* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html|Cesium Sandcastle Camera Demo}
-* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Camera.html">Sandcastle Example</a> from the <a href="http://cesiumjs.org/2013/02/13/Cesium-Camera-Tutorial/|Camera Tutorial}
 */
 public class Camera {
     
@@ -47,8 +47,42 @@ public class Camera {
     *
     * @type {Cartesian3}
     */
-    var position: Cartesian3
-    var positionWC: Cartesian3
+
+    var position = Cartesian3()
+    private var _position = Cartesian3()
+    
+    /**
+    * Gets the position of the camera in world coordinates.
+    * @memberof Camera.prototype
+    *
+    * @type {Cartesian3}
+    * @readonly
+    */
+    var positionWC: Cartesian3 {
+        get {
+            updateMembers()
+            return _positionWC
+        }
+    }
+    private var _positionWC = Cartesian3()
+    
+    /**
+    * Gets the {@link Cartographic} position of the camera, with longitude and latitude
+    * expressed in radians and height in meters.  In 2D and Columbus View, it is possible
+    * for the returned longitude and latitude to be outside the range of valid longitudes
+    * and latitudes when the camera is outside the map.
+    * @memberof Camera.prototype
+    *
+    * @type {Cartographic}
+    */
+    var positionCartographic: Cartographic {
+        get {
+            updateMembers()
+            return _positionCartographic
+        }
+    }
+    private var _positionCartographic = Cartographic()
+
     
     /**
     * The view direction of the camera.
@@ -213,8 +247,9 @@ var transform2DInverse: Matrix4
         
         //self.maxRadii = Ellipsoid.wgs84Ellipsoid().maximumRadius
         
-        self.position = Cartesian3(x: 0.0, y: -2.0, z: 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
-        self.positionWC = position
+        
+        self._position = Cartesian3(x: 0.0, y: -2.0, z: 1.0).normalize().multiplyByScalar(2.5 * maxRadii)
+        self._positionWC = position
         
         direction = position.negate().normalize()
         directionWC = direction

@@ -519,7 +519,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         /*if _lastFrameTime != nil {
             let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
             let frameTime = 1/delta
-            let performanceString = String(format: "%.02f fps (%.02f ms)", frameTime, delta)
+            let performanceString = String(format: "%.02f fps (%2f ms)", frameTime, delta * 1000)
             println(performanceString)
         }*/
 

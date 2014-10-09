@@ -94,16 +94,10 @@ class QuadtreeTile: Equatable {
     */
     var eligibleForUnloading: Bool {
         get {
-            var result = true
-            
             if data != nil {
-                // FIXME: data.eligibleForUnloading
-                //result = data.eligibleForUnloading
-                //if (!defined(result)) {
-                //    result = true
-                //}
+                return data!.eligibleForUnloading
             }
-            return result
+            return true
         }
     }
 

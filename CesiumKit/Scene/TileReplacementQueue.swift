@@ -31,7 +31,7 @@ class TileReplacementQueue {
     func markStartOfRenderFrame() {
         _lastBeforeStartOfFrame = head
     }
-    /*
+    
     /**
     * Reduces the size of the queue to a specified size by unloading the least-recently used
     * tiles.  Tiles that were used last frame will not be unloaded, even if that puts the number
@@ -39,52 +39,48 @@ class TileReplacementQueue {
     *
     * @param {Number} maximumTiles The maximum number of tiles in the queue.
     */
-    TileReplacementQueue.prototype.trimTiles = function(maximumTiles) {
-    var tileToTrim = this.tail;
-    var keepTrimming = true;
-    while (keepTrimming &&
-    defined(this._lastBeforeStartOfFrame) &&
-    this.count > maximumTiles &&
-    defined(tileToTrim)) {
-    // Stop trimming after we process the last tile not used in the
-    // current frame.
-    keepTrimming = tileToTrim !== this._lastBeforeStartOfFrame;
-    
-    var previous = tileToTrim.replacementPrevious;
-    
-    if (tileToTrim.eligibleForUnloading) {
-    tileToTrim.freeResources();
-    remove(this, tileToTrim);
+    func trimTiles(maximumTiles: Int) {
+        var tileToTrim = tail
+        var keepTrimming = true
+        while keepTrimming && _lastBeforeStartOfFrame != nil && count > maximumTiles && tileToTrim != nil {
+            // Stop trimming after we process the last tile not used in the
+            // current frame.
+            keepTrimming = tileToTrim! != _lastBeforeStartOfFrame
+            
+            var previous = tileToTrim!.replacementPrevious
+            
+            if tileToTrim!.eligibleForUnloading {
+                tileToTrim!.freeResources()
+                remove(tileToTrim!)
+            }
+            tileToTrim = previous
+        }
     }
     
-    tileToTrim = previous;
-    }
-    };
-    
-    function remove(tileReplacementQueue, item) {
-    var previous = item.replacementPrevious;
-    var next = item.replacementNext;
-    
-    if (item === tileReplacementQueue._lastBeforeStartOfFrame) {
-    tileReplacementQueue._lastBeforeStartOfFrame = next;
-    }
-    
-    if (item === tileReplacementQueue.head) {
-    tileReplacementQueue.head = next;
-    } else {
-    previous.replacementNext = next;
-    }
-    
-    if (item === tileReplacementQueue.tail) {
-    tileReplacementQueue.tail = previous;
-    } else {
-    next.replacementPrevious = previous;
-    }
-    
-    item.replacementPrevious = undefined;
-    item.replacementNext = undefined;
-    
-    --tileReplacementQueue.count;
+    func remove(item: QuadtreeTile) {
+        var previous = item.replacementPrevious
+        var next = item.replacementNext
+        
+        if item == _lastBeforeStartOfFrame {
+            _lastBeforeStartOfFrame = next
+        }
+        
+        if (item == head) {
+            head = next
+        } else {
+            previous!.replacementNext = next
+        }
+        
+        if (item == tail) {
+            tail = previous
+        } else {
+            next!.replacementPrevious = previous
+        }
+        
+        item.replacementPrevious = nil
+        item.replacementNext = nil
+        
+        --count
     }
     
     /**
@@ -93,38 +89,35 @@ class TileReplacementQueue {
     *
     * @param {TileReplacementQueue} item The tile that was rendered.
     */
-    TileReplacementQueue.prototype.markTileRendered = function(item) {
-    var head = this.head;
-    if (head === item) {
-    if (item === this._lastBeforeStartOfFrame) {
-    this._lastBeforeStartOfFrame = item.replacementNext;
+    func markTileRendered (item: QuadtreeTile) {
+        if head == item {
+            if (item == _lastBeforeStartOfFrame) {
+                _lastBeforeStartOfFrame = item.replacementNext
+            }
+            return;
+        }
+        
+        ++count
+        
+        if head == nil {
+            // no other tiles in the list
+            item.replacementPrevious = nil
+            item.replacementNext = nil
+            head = item
+            tail = item
+            return
+        }
+        
+        if item.replacementPrevious != nil || item.replacementNext != nil {
+            // tile already in the list, remove from its current location
+            remove(item)
+        }
+        
+        item.replacementPrevious = nil
+        item.replacementNext = head
+        head!.replacementPrevious = item
+        
+        head = item
     }
-    return;
-    }
     
-    ++this.count;
-    
-    if (!defined(head)) {
-    // no other tiles in the list
-    item.replacementPrevious = undefined;
-    item.replacementNext = undefined;
-    this.head = item;
-    this.tail = item;
-    return;
-    }
-    
-    if (defined(item.replacementPrevious) || defined(item.replacementNext)) {
-    // tile already in the list, remove from its current location
-    remove(this, item);
-    }
-    
-    item.replacementPrevious = undefined;
-    item.replacementNext = head;
-    head.replacementPrevious = item;
-    
-    this.head = item;
-    };
-    
-    return TileReplacementQueue;
-    });*/
 }

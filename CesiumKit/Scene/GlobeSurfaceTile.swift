@@ -21,14 +21,14 @@ class GlobeSurfaceTile {
     * @default []
     */
     var imagery = [TileImagery]()
-    /*
+    
     /**
     * The world coordinates of the southwest corner of the tile's rectangle.
     *
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.southwestCornerCartesian = new Cartesian3();
+    var southwestCornerCartesian = Cartesian3()
     
     /**
     * The world coordinates of the northeast corner of the tile's rectangle.
@@ -36,7 +36,7 @@ class GlobeSurfaceTile {
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.northeastCornerCartesian = new Cartesian3();
+    var northeastCornerCartesian = Cartesian3()
     
     /**
     * A normal that, along with southwestCornerCartesian, defines a plane at the western edge of
@@ -45,7 +45,7 @@ class GlobeSurfaceTile {
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.westNormal = new Cartesian3();
+    var westNormal = Cartesian3()
     
     /**
     * A normal that, along with southwestCornerCartesian, defines a plane at the southern edge of
@@ -56,7 +56,7 @@ class GlobeSurfaceTile {
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.southNormal = new Cartesian3();
+    var southNormal = Cartesian3()
     
     /**
     * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
@@ -65,7 +65,7 @@ class GlobeSurfaceTile {
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.eastNormal = new Cartesian3();
+    var eastNormal = Cartesian3()
     
     /**
     * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
@@ -76,21 +76,27 @@ class GlobeSurfaceTile {
     * @type {Cartesian3}
     * @default Cartesian3()
     */
-    this.northNormal = new Cartesian3();
+    var northNormal = Cartesian3()
     
-    this.waterMaskTexture = undefined;
+    var waterMaskTexture: Texture? = nil
     
-    this.waterMaskTranslationAndScale = new Cartesian4(0.0, 0.0, 1.0, 1.0);
+    var waterMaskTranslationAndScale = Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 1.0)
     
+    /*
     this.terrainData = undefined;
-    this.center = new Cartesian3();
-    this.vertexArray = undefined;
-    this.minimumHeight = 0.0;
-    this.maximumHeight = 0.0;
-    this.boundingSphere3D = new BoundingSphere();
-    this.boundingSphere2D = new BoundingSphere();
-    this.occludeePointInScaledSpace = new Cartesian3();
     */
+    var center = Cartesian3()
+    
+    var vertexArray: VertexArray? = nil
+    
+    var minimumHeight = 0.0
+    var maximumHeight = 0.0
+    
+    var boundingSphere3D = BoundingSphere()
+    var boundingSphere2D = BoundingSphere()
+    
+    var occludeePointInScaledSpace = Cartesian3()
+    
     var loadedTerrain: TileTerrain? = nil
     
     var upsampledTerrain: TileTerrain? = nil
@@ -108,7 +114,6 @@ class GlobeSurfaceTile {
     * @memberof GlobeSurfaceTile.prototype
     * @type {Boolean}
     */
-    
     var eligibleForUnloading: Bool {
         get {
             // Do not remove tiles that are transitioning or that have
