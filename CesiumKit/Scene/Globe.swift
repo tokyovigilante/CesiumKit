@@ -194,7 +194,7 @@ class Globe {
         }
     }
     
-    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
+    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
     
         self.ellipsoid = ellipsoid
         terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
@@ -215,7 +215,7 @@ class Globe {
         
         _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
         _depthCommand = DrawCommand(
-            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84Ellipsoid().maximumRadius),
+            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84().maximumRadius),
             pass: Pass.Opaque//,
             /*owner: self*/)
         _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)

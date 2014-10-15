@@ -52,21 +52,18 @@ class GeographicTilingScheme: TilingScheme {
     var numberOfLevelZeroTilesY: Int
     
     init(
-ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(),
-rectangle: Rectangle = Rectangle.maxValue(),
-numberOfLevelZeroTilesX: Int = 2,
-numberOfLevelZeroTilesY: Int = 1) {
+        ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
+        rectangle: Rectangle = Rectangle.maxValue(),
+        numberOfLevelZeroTilesX: Int = 2,
+        numberOfLevelZeroTilesY: Int = 1) {
+            
+            self.ellipsoid = ellipsoid
+            self.rectangle = rectangle
+            self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
+            self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
+            self.projection = GeographicProjection()
+    }
     
-self.ellipsoid = ellipsoid
-self.rectangle = rectangle
-self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
-self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
-    self.projection = GeographicProjection()
-
-}
-
-
-
     /**
      * Gets the total number of tiles in the X direction at a specified level-of-detail.
      *

@@ -60,7 +60,7 @@ class WebMercatorTilingScheme: TilingScheme {
     var rectangleSouthwestInMeters: Cartesian3
     var rectangleNortheastInMeters: Cartesian3
     
-    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid(),
+    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         numberOfLevelZeroTilesX: Int = 1,
         numberOfLevelZeroTilesY: Int = 1,
         rectangleSouthwestInMeters: Cartesian3? = nil,

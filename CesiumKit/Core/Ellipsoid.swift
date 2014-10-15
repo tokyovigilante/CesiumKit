@@ -93,7 +93,7 @@ public struct Ellipsoid {
     * @type {Ellipsoid}
     * @constant
     */
-    static func wgs84Ellipsoid() -> Ellipsoid {
+    static func wgs84() -> Ellipsoid {
         return Ellipsoid(x: EarthEquatorialRadius, y: EarthEquatorialRadius, z: EarthPolarRadius)
     }
     

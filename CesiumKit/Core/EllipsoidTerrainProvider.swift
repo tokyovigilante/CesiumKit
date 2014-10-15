@@ -8,6 +8,8 @@
 
 import Foundation
 
+var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]
+
 /**
      * A very simple {@link TerrainProvider} that produces geometry by tessellating an ellipsoidal
      * surface.
@@ -44,7 +46,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     */
     var tilingScheme: TilingScheme
     
-    var ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+    var ellipsoid: Ellipsoid = Ellipsoid.wgs84()
     
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
@@ -64,13 +66,11 @@ class EllipsoidTerrainProvider: TerrainProvider {
 
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
-    private let terrainData: HeightmapTerrainData
+    private let _terrainData: HeightmapTerrainData
     
     var heightmapTerrainQuality = 0.25
-
-    var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]
     
-    required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) {
+    required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         
         self.tilingScheme = tilingScheme
         self.ellipsoid = ellipsoid
@@ -84,13 +84,13 @@ class EllipsoidTerrainProvider: TerrainProvider {
         _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: 64, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
 
         // FIXME: terraindata
-       self.terrainData = HeightmapTerrainData()/*
-            buffer = Array<UInt16>(16 * 16, 0),
+        _terrainData = HeightmapTerrainData(
+            buffer: SerializedArray(data: NSData.serializeArray([UInt16](count: 16 * 16, repeatedValue: 0)), type: .UnsignedShort),
             width : 16,
-            height : 16)*/
+            height : 16)
     }
 
-    func getRegularGridIndices(width: Int, height: Int) -> [UInt16] {
+    class func getRegularGridIndices(#width: Int, height: Int) -> [UInt16] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
@@ -100,7 +100,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
         }
         var indices = byWidth![height]
         if indices == nil {
-            var unwrappedIndices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            indices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
             var index: UInt16 = 0
             var indicesIndex = 0
@@ -111,12 +111,12 @@ class EllipsoidTerrainProvider: TerrainProvider {
                     var lowerRight: UInt16 = lowerLeft + 1
                     var upperRight: UInt16 = upperLeft + 1
                     
-                    unwrappedIndices[indicesIndex++] = upperLeft
-                    unwrappedIndices[indicesIndex++] = lowerLeft
-                    unwrappedIndices[indicesIndex++] = upperRight
-                    unwrappedIndices[indicesIndex++] = upperRight
-                    unwrappedIndices[indicesIndex++] = lowerLeft
-                    unwrappedIndices[indicesIndex++] = lowerRight
+                    indices![indicesIndex++] = upperLeft
+                    indices![indicesIndex++] = lowerLeft
+                    indices![indicesIndex++] = upperRight
+                    indices![indicesIndex++] = upperRight
+                    indices![indicesIndex++] = lowerLeft
+                    indices![indicesIndex++] = lowerRight
                     
                     ++index
                 }
@@ -124,7 +124,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
             }
             var unWrappedByWidth = byWidth!
             
-            unWrappedByWidth[height] = unwrappedIndices
+            unWrappedByWidth[height] = indices!
             regularGridIndexArrays[width] = unWrappedByWidth
         }
         
@@ -155,8 +155,10 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          pending and the request will be retried later.
      */
     
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, resolve: (TerrainData?) -> () )  {
-        resolve(terrainData)
+    func requestTileGeometry(#x: Int, y: Int, level: Int/*, throttleRequests: Bool = true*/) -> TerrainData? {
+        
+        return _terrainData
+        //resolve(terrainData)
         /*dispatch_async(terrainProcessorQueue, {
             // FIXME: Do expensive work to make terrainData
             dispatch_async(dispatch_get_main_queue(),  {

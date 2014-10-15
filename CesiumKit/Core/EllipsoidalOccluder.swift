@@ -43,7 +43,7 @@ class EllipsoidalOccluder {
     var cameraPositionInScaledSpace: Cartesian3
     var distanceToLimbInScaledSpaceSquared: Double
     
-    init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3?) {
+    init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3? = nil) {
         self.ellipsoid = ellipsoid
         
         if cameraPosition != nil {
@@ -154,7 +154,7 @@ class EllipsoidalOccluder {
     */
     func computeHorizonCullingPointFromVertices(
         directionToPoint: Cartesian3,
-        vertices: [Double],
+        vertices: [Float],
         stride: Int,
         center: Cartesian3 = Cartesian3.zero()) -> Cartesian3? {
             
@@ -164,9 +164,9 @@ class EllipsoidalOccluder {
             var positionScratch: Cartesian3
             for (var i = 0; i < vertices.count; i += stride) {
                 positionScratch = Cartesian3(
-                    x: vertices[i] + center.x,
-                    y: vertices[i + 1] + center.y,
-                    z: vertices[i + 2] + center.z)
+                    x: Double(vertices[i]) + center.x,
+                    y: Double(vertices[i + 1]) + center.y,
+                    z: Double(vertices[i + 2]) + center.z)
                 
                 var candidateMagnitude = computeMagnitude(ellipsoid, position: positionScratch, scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
                 resultMagnitude = max(resultMagnitude, candidateMagnitude)

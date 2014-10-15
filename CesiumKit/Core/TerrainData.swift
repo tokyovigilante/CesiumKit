@@ -69,7 +69,7 @@ protocol TerrainData {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int, resolve: (TerrainMesh?) -> ())
+    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh?
     
     /**
     * Upsamples this terrain data for use by a descendant tile.

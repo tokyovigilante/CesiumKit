@@ -76,9 +76,9 @@ public struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
-        self.x = x;
-        self.y = y;
-        self.z = z;
+        self.x = x
+        self.y = y
+        self.z = z
     }
     
     /**
@@ -449,7 +449,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
+    static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         var lon = Math.toRadians(longitude)
         var lat = Math.toRadians(latitude)
@@ -469,7 +469,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    static func fromRadians(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()) -> Cartesian3 {
+    static func fromRadians(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         var cosLatitude = cos(latitude);
         var n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()

@@ -174,7 +174,7 @@ public class CesiumGlobe {
     */
     public let scene: Scene
     
-    let ellipsoid: Ellipsoid = Ellipsoid.wgs84Ellipsoid()
+    let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
 
     var globe: Globe
     

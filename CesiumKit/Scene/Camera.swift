@@ -40,7 +40,7 @@ public class Camera {
     
     weak var scene: Scene?
     
-    let maxRadii: Double = Ellipsoid.wgs84Ellipsoid().maximumRadius
+    let maxRadii: Double = Ellipsoid.wgs84().maximumRadius
     
     /**
     * The position of the camera.

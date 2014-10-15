@@ -11,6 +11,7 @@
 		9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
 		940CA70C19B1957A00A6E482 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
 		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
+		940CD1F019E7C4CF00FFAD81 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CD1EF19E7C4CF00FFAD81 /* Threading.swift */; };
 		940D794719C3F66900012DC4 /* GeometryPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794619C3F66900012DC4 /* GeometryPipeline.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		940F448719C59EF400A3BB00 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448619C59EF400A3BB00 /* Buffer.swift */; };
@@ -130,6 +131,7 @@
 		94E8511619A81461006B7780 /* PerspectiveOffCenterFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */; };
 		94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1A19550A9600012DC4 /* Geometry.swift */; };
 		94E9BA1D19550B5E00012DC4 /* GeometryAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */; };
+		94F501DC19E9395A00FFAD81 /* HeightmapTessellator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */; };
 		94F87F5519DAAA5400FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
 /* End PBXBuildFile section */
@@ -161,6 +163,7 @@
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		940CD1EF19E7C4CF00FFAD81 /* Threading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		940F448619C59EF400A3BB00 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
@@ -283,6 +286,7 @@
 		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
+		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
 		94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexBuffer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -335,6 +339,7 @@
 				942CD41719553F9E00012DC4 /* GeometryAttributes.swift */,
 				940D794619C3F66900012DC4 /* GeometryPipeline.swift */,
 				942CF4BE19CD90AA00012DC4 /* HeightmapTerrainData.swift */,
+				94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */,
 				940CA70D19B19D6E00A6E482 /* Image.swift */,
 				943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
@@ -359,6 +364,7 @@
 				94786824194A95B800B3F462 /* TerrainData.swift */,
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
+				940CD1EF19E7C4CF00FFAD81 /* Threading.swift */,
 				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
 				94327176195468EA0011D8FC /* Transforms.swift */,
 				948B802D194D3BD900012DC4 /* VertexFormat.swift */,
@@ -665,6 +671,7 @@
 				949ABA8119410120009B1183 /* Intersect.swift in Sources */,
 				94540421199F03C300012DC4 /* JulianDate.swift in Sources */,
 				94E03FB719D96C8300FFAD81 /* GridImageryProvider.swift in Sources */,
+				940CD1F019E7C4CF00FFAD81 /* Threading.swift in Sources */,
 				94B87DBF194D620E00012DC4 /* Matrix.swift in Sources */,
 				94540437199F63A700012DC4 /* Imagery.swift in Sources */,
 				948D03DB19449DC900DC0E52 /* Cartesian3.swift in Sources */,
@@ -701,6 +708,7 @@
 				942CF4BD19CD7DD500012DC4 /* QuadtreeTileProvider.swift in Sources */,
 				947A240F19C9919D0040042F /* CullFace.swift in Sources */,
 				94B87DC5194D699400012DC4 /* Context.swift in Sources */,
+				94F501DC19E9395A00FFAD81 /* HeightmapTessellator.swift in Sources */,
 				94327177195468EA0011D8FC /* Transforms.swift in Sources */,
 				9417EC451942C31B00586516 /* Interval.swift in Sources */,
 				940CA70C19B1957A00A6E482 /* SceneTransitioner.swift in Sources */,

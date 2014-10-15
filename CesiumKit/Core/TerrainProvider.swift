@@ -20,6 +20,7 @@ import Foundation
 * @see CesiumTerrainProvider
 * @see ArcGisImageServerTerrainProvider
 */
+// FIXME: make base class
 protocol TerrainProvider {
     
     /**
@@ -85,7 +86,7 @@ protocol TerrainProvider {
     
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    func getRegularGridIndices(width: Int, height: Int) -> [UInt16]
+    class func getRegularGridIndices(#width: Int, height: Int) -> [UInt16]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -113,7 +114,7 @@ protocol TerrainProvider {
     *          returns undefined instead of a promise, it is an indication that too many requests are already
     *          pending and the request will be retried later.
     */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, resolve: (TerrainData?) -> () )
+    func requestTileGeometry(#x: Int, y: Int, level: Int/*, throttleRequests: Bool*/) -> TerrainData? //resolve: (TerrainData?) -> () )
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be

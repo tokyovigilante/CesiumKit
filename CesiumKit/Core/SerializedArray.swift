@@ -35,18 +35,19 @@ class SerializedArray {
     func bytes () -> UnsafePointer<Void> {
         return _storageBuffer.bytes
     }
-    /*
-    subscript(index: Int) -> Int {
-    get {
     
-    // return an appropriate subscript value here
-    _storageBuffer.getBytes(&value, range: NSMakeRange(start, sizeof(UInt8)))
-    }
-    set(newValue) {
+    subscript(index: Int) -> Int {
+        get {
+            var value: Int8 = 0
+            // return an appropriate subscript value here
+            _storageBuffer.getBytes(&value, range: NSMakeRange(index, sizeof(Int8)))
+            return Int(value)
+        }
+    /*set(newValue) {
     // perform a suitable setting action here
     _storageBuffer.replaceBytesInRange(<#range: NSRange#>, withBytes: <#UnsafePointer<Void>#>)
-    }
     }*/
+    }
     
     func description () -> String {
         return "\(count) objects"
