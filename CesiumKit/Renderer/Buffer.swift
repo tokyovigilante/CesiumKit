@@ -18,7 +18,7 @@ class Buffer {
     
     var buffer: GLuint
     
-    var vertexArrayDestroyable = true
+    //var vertexArrayDestroyable = true
     
     init (target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw) {
         assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")

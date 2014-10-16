@@ -8,5 +8,5 @@
 
 let terrainAttributeLocations = [
     "position3DAndHeight": 0,
-    "textureCoordinates": 1
+    "textureCoordAndEncodedNormals": 1
 ]

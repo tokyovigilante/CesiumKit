@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-enum TerrainState {
+enum TerrainState: Int {
     
-    case Failed,
+    case Failed = 0,
     Unloaded,
     Receiving,
     Received,

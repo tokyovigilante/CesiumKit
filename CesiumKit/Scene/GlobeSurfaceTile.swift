@@ -409,11 +409,11 @@ class GlobeSurfaceTile {
         
         if let loaded = loaded {
             loaded.processLoadStateMachine(context: context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
-            /*
+            
             // Publish the terrain data on the tile as soon as it is available.
             // We'll potentially need it to upsample child tiles.
-            if (loaded.state >= TerrainState.RECEIVED) {
-                if (surfaceTile.terrainData !== loaded.data) {
+            if loaded.state.rawValue >= TerrainState.Received.rawValue {
+                if surfaceTile.terrainData !== loaded.data {
                     surfaceTile.terrainData = loaded.data;
                     
                     // If there's a water mask included in the terrain data, create a
@@ -435,9 +435,9 @@ class GlobeSurfaceTile {
                     
                     propagateNewLoadedDataToChildren(tile);
                 }
-                suspendUpsampling = true;*/
+                suspendUpsampling = true;
             }
-            /*
+            
             if (loaded.state === TerrainState.READY) {
                 loaded.publishToTile(tile);
                 
@@ -485,7 +485,7 @@ class GlobeSurfaceTile {
                 // but maybe we'll be saved by loading.
                 surfaceTile.upsampledTerrain = undefined;
             }
-        }*/
+        }
     }
     
     class func getUpsampleTileDetails(tile: QuadtreeTile) -> (data: TerrainData, x: Int, y: Int, level: Int)? {

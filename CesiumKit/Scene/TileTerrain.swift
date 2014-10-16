@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
 /**
 * Manages details of the terrain load or upsample process.
 *
@@ -85,12 +86,12 @@ class TileTerrain {
         }
         
         if state == .Received {
-            transform(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level);
+            transform(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
         
-        /*if state == .Transformed) {
-            createResources(this, context, terrainProvider, x, y, level);
-        }*/
+        if state == .Transformed {
+            createResources(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
+        }
     }
     
     
@@ -99,7 +100,7 @@ class TileTerrain {
         
         func success(terrainData: TerrainData) {
             weakSelf?.data = terrainData
-            weakSelf?.state = TerrainState.Received
+            weakSelf?.state = .Received
         }
         
         func failure(error: String) {
@@ -126,18 +127,8 @@ class TileTerrain {
                 return AsyncResult(terrainData)
             }
             return AsyncResult("terrain data request failed")
-            /*
-            // If the request method returns undefined (instead of a promise), the request
-            // has been deferred.
-            if (defined(tileTerrain.data)) {
-                tileTerrain.state = TerrainState.RECEIVING;
-                
-                when(tileTerrain.data, success, failure);
-            } else {
-                // Deferred - try again later.
-                tileTerrain.state = TerrainState.UNLOADED;
-            }*/
         }
+        
         AsyncResult<TerrainData>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
 /*
@@ -183,77 +174,82 @@ TileTerrain.prototype.processUpsampleStateMachine = function(context, terrainPro
 };
 */
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        let tilingScheme = terrainProvider.tilingScheme
+
+        weak var weakSelf = self
         
-        var mesh = self.data?.createMesh(tilingScheme: tilingScheme, x: x, y: y, level: level)
-        /*
-        if (!defined(meshPromise)) {
-        // Postponed.
-        return;
+        func success(mesh: TerrainMesh) {
+            weakSelf?.mesh = mesh
+            weakSelf?.state = .Transformed
         }
         
-        tileTerrain.state = TerrainState.TRANSFORMING;
+        func failure(error: String) {
+            weakSelf?.state = .Failed
+            var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
+            println(message)
+        }
         
-        when(meshPromise, function(mesh) {
-        tileTerrain.mesh = mesh;
-        tileTerrain.state = TerrainState.TRANSFORMED;
-        }, function() {
-        tileTerrain.state = TerrainState.FAILED;
-        });*/
-    }
-/*
-function createResources(tileTerrain, context, terrainProvider, x, y, level) {
-    var datatype = ComponentDatatype.FLOAT;
-    var stride;
-    var numTexCoordComponents;
-    var typedArray = tileTerrain.mesh.vertices;
-    var buffer = context.createVertexBuffer(typedArray, BufferUsage.STATIC_DRAW);
-    if (terrainProvider.hasVertexNormals) {
-        stride = 8 * ComponentDatatype.getSizeInBytes(datatype);
-        numTexCoordComponents = 4;
-    } else {
-        stride = 6 * ComponentDatatype.getSizeInBytes(datatype);
-        numTexCoordComponents = 2;
-    }
-    
-    var position3DAndHeightLength = 4;
-    
-    var attributes = [{
-        index : terrainAttributeLocations.position3DAndHeight,
-        vertexBuffer : buffer,
-        componentDatatype : datatype,
-        componentsPerAttribute : position3DAndHeightLength,
-        offsetInBytes : 0,
-        strideInBytes : stride
-        }, {
-            index : terrainAttributeLocations.textureCoordAndEncodedNormals,
-            vertexBuffer : buffer,
-            componentDatatype : datatype,
-            componentsPerAttribute : numTexCoordComponents,
-            offsetInBytes : position3DAndHeightLength * ComponentDatatype.getSizeInBytes(datatype),
-            strideInBytes : stride
-    }];
-    
-    var indexBuffers = tileTerrain.mesh.indices.indexBuffers || {};
-    var indexBuffer = indexBuffers[context.id];
-    if (!defined(indexBuffer) || indexBuffer.isDestroyed()) {
-        var indices = tileTerrain.mesh.indices;
-        indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT);
-        indexBuffer.vertexArrayDestroyable = false;
-        indexBuffer.referenceCount = 1;
-        indexBuffers[context.id] = indexBuffer;
-        tileTerrain.mesh.indices.indexBuffers = indexBuffers;
-    } else {
-        ++indexBuffer.referenceCount;
-    }
-    
-    tileTerrain.vertexArray = context.createVertexArray(attributes, indexBuffer);
-    
-    tileTerrain.state = TerrainState.READY;
-}
+        func doRequest() -> AsyncResult<TerrainMesh> {
+            // Request the terrain from the terrain provider.
+            weakSelf?.state = .Transforming
+            var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
 
-return TileTerrain;
-});
+            if let mesh = mesh {
+                return AsyncResult(mesh)
+            }
+            return AsyncResult("terrain data request failed")
+        }
+        
+        AsyncResult<TerrainMesh>.perform(doRequest, asyncClosures: (success: success, failure: failure))
+    }
 
-*/
+    func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        let datatype = ComponentDatatype.Float32
+        var stride = 0
+        var numTexCoordComponents = 0
+        //var typedArray = tileTerrain.mesh.vertices;
+        let buffer = context.createVertexBuffer(
+            array: SerializedArray(data: NSData.serializeArray(self.mesh!.vertices), type: datatype),
+            usage: BufferUsage.StaticDraw)
+        
+        if terrainProvider.hasVertexNormals {
+            stride = 8 * datatype.elementSize()
+            numTexCoordComponents = 4
+        } else {
+            stride = 6 * datatype.elementSize()
+            numTexCoordComponents = 2
+        }
+        
+        var position3DAndHeightLength = 4
+        
+        var attributes = [
+            VertexAttributes(
+                index: terrainAttributeLocations["position3DAndHeight"]!,
+                vertexBuffer: buffer,
+                componentsPerAttribute: position3DAndHeightLength,
+                componentDatatype: datatype,
+                offsetInBytes: 0,
+                strideInBytes: stride),
+            VertexAttributes(
+                index: terrainAttributeLocations["textureCoordAndEncodedNormals"]!,
+                vertexBuffer: buffer,
+                componentsPerAttribute : numTexCoordComponents,
+                componentDatatype: datatype,
+                offsetInBytes : position3DAndHeightLength * datatype.elementSize(),
+                strideInBytes : stride)
+        ]
+        
+        var indexBuffer = mesh!.indexBuffers[context.id]
+        if indexBuffer == nil {
+            indexBuffer = context.createIndexBuffer(
+                array: SerializedArray(data: NSData.serializeArray(self.mesh!.indices), type: .UnsignedShort),
+                usage: .StaticDraw,
+                indexDatatype: .UnsignedShort)
+            mesh!.indexBuffers.removeAll()
+            mesh!.indexBuffers[context.id] = indexBuffer
+        }
+        
+        vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)
+        state = .Ready
+    }
+    
 }

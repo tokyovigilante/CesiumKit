@@ -214,7 +214,6 @@ class HeightmapTerrainData: TerrainData {
             boundingSphere3D: boundingSphere3D,
             occludeePointInScaledSpace: occludeePointInScaledSpace!
         )
-        return nil
     }
 
     /**

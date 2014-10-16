@@ -54,6 +54,12 @@ struct TerrainMesh {
     let indices: [UInt16]
     
     /**
+    * Index buffers (if any) generated from indices.
+    * @type {Dictionary<String, IndexBuffer>}
+    */
+    var indexBuffers = [String: IndexBuffer]()
+    
+    /**
     * The lowest height in the tile, in meters above the ellipsoid.
     * @type {Number}
     */
@@ -78,4 +84,16 @@ struct TerrainMesh {
     * @type {Cartesian3}
     */
     let occludeePointInScaledSpace: Cartesian3
+    
+    init (center: Cartesian3, vertices: [Float], indices: [UInt16], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3) {
+        self.center = center
+        self.vertices = vertices
+        self.indices = indices
+        self.minimumHeight = minimumHeight
+        self.maximumHeight = maximumHeight
+        self.boundingSphere3D = boundingSphere3D
+        self.occludeePointInScaledSpace = occludeePointInScaledSpace
+        
+        indexBuffers = [String: IndexBuffer]()
+    }
 }

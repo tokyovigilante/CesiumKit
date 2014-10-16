@@ -135,7 +135,7 @@ protocol TerrainProvider {
     *
     * @returns {Boolean} True if the provider has a water mask; otherwise, false.
     */
-    func hasWaterMask() -> Bool
+    var hasWaterMask: Bool { get }
     
     /**
     * Gets a value indicating whether or not the requested tiles include vertex normals.
@@ -143,6 +143,6 @@ protocol TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
-    func hasVertexNormals() -> Bool
+    var hasVertexNormals: Bool { get }
 }
 

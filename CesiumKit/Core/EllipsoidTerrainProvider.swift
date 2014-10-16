@@ -184,12 +184,16 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *
      * @returns {Boolean} True if the provider has a water mask; otherwise, false.
      */
-    func hasWaterMask() -> Bool {
-        return false
+    var hasWaterMask: Bool {
+        get {
+            return false
+        }
     }
     
-    func hasVertexNormals() -> Bool {
-        return false
+    var hasVertexNormals: Bool {
+        get {
+            return false
+        }
     }
     
 }

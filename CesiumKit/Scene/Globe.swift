@@ -675,9 +675,9 @@ class Globe {
              _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: GlobeVSDepth, fragmentShaderSource: GlobeFSDepth, attributeLocations: ["position" : 0])
         }
         
-        var hasWaterMask = showWaterEffect && _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask()
+        var hasWaterMask = showWaterEffect && _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
         var hasWaterMaskChanged = _hasWaterMask != hasWaterMask
-        var hasVertexNormals = _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasVertexNormals()
+        var hasVertexNormals = _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasVertexNormals
         var hasVertexNormalsChanged = _hasVertexNormals != hasVertexNormals
         var hasEnableLightingChanged = _enableLighting != enableLighting
         
