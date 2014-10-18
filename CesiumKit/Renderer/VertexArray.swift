@@ -18,18 +18,15 @@ class VertexArray {
     
     let vertexCount: Int
     
-    private let vaoExtension: Bool
-
-    private let vao: GLuint = 0
+    private var vao: GLuint = 0
     
-    private let indexBuffer: IndexBuffer?
+    let indexBuffer: IndexBuffer?
 
-    init(vertexArrayObject: Bool, attributes: [VertexAttributes], indexBuffer: IndexBuffer?) {
+    init(attributes: [VertexAttributes], indexBuffer: IndexBuffer?) {
         
         var vaAttributes = [VertexAttributes]()
         var numberOfVertices = 1  // if every attribute is backed by a single value
         self.vertexCount = numberOfVertices
-        vaoExtension = vertexArrayObject
 
         for var i = 0; i < attributes.count; ++i {
             addAttribute(&vaAttributes, attribute: attributes[i], index: i)
@@ -56,16 +53,11 @@ class VertexArray {
             uniqueIndices[index] = true
         }
         
-
-        
-        // Setup VAO if extension is supported
-        if vaoExtension {
-            var vao: GLuint = 0
-            glGenVertexArrays(1, &vao)
-            glBindVertexArray(vao)
-            bind(vaAttributes, indexBuffer: indexBuffer)
-            glBindVertexArray(0)
-        }
+        // Setup VAO
+        glGenVertexArrays(1, &vao)
+        glBindVertexArray(vao)
+        bind(vaAttributes, indexBuffer: indexBuffer)
+        glBindVertexArray(0)
         
         self.vertexCount = numberOfVertices
         self._attributes = vaAttributes
@@ -202,29 +194,9 @@ gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 }
 };
 
-VertexArray.prototype.isDestroyed = function() {
-return false;
-};
-
-VertexArray.prototype.destroy = function() {
-var attributes = this._attributes;
-for ( var i = 0; i < attributes.length; ++i) {
-var vertexBuffer = attributes[i].vertexBuffer;
-if (defined(vertexBuffer) && !vertexBuffer.isDestroyed() && vertexBuffer.vertexArrayDestroyable) {
-vertexBuffer.destroy();
-}
-}
-
-var indexBuffer = this._indexBuffer;
-if (defined(indexBuffer) && !indexBuffer.isDestroyed() && indexBuffer.vertexArrayDestroyable) {
-indexBuffer.destroy();
-}
-
-if (defined(this._vao)) {
-this._vaoExtension.deleteVertexArrayOES(this._vao);
-}
-
-return destroyObject(this);
-};
 */
+    deinit {
+        glDeleteVertexArrays(1, &vao)
+    }
 }
+

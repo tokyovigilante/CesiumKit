@@ -59,26 +59,25 @@ class TileTerrain {
     }
     }
     };
-    
-    TileTerrain.prototype.publishToTile = function(tile) {
-    var surfaceTile = tile.data;
-    
-    var mesh = this.mesh;
-    Cartesian3.clone(mesh.center, surfaceTile.center);
-    surfaceTile.minimumHeight = mesh.minimumHeight;
-    surfaceTile.maximumHeight = mesh.maximumHeight;
-    surfaceTile.boundingSphere3D = BoundingSphere.clone(mesh.boundingSphere3D, surfaceTile.boundingSphere3D);
-    
-    tile.data.occludeePointInScaledSpace = Cartesian3.clone(mesh.occludeePointInScaledSpace, surfaceTile.occludeePointInScaledSpace);
-    
-    // Free the tile's existing vertex array, if any.
-    surfaceTile.freeVertexArray();
-    
-    // Transfer ownership of the vertex array to the tile itself.
-    surfaceTile.vertexArray = this.vertexArray;
-    this.vertexArray = undefined;
-    };
     */
+    func publishToTile(tile: QuadtreeTile) {
+        var surfaceTile = tile.data!
+        assert(mesh != nil, "mesh not created")
+        surfaceTile.center = mesh!.center
+
+        surfaceTile.minimumHeight = mesh!.minimumHeight
+        surfaceTile.maximumHeight = mesh!.maximumHeight
+        surfaceTile.boundingSphere3D = mesh!.boundingSphere3D
+        
+        tile.data!.occludeePointInScaledSpace = mesh!.occludeePointInScaledSpace
+        
+        // Free the tile's existing vertex array, if any.
+        surfaceTile.freeVertexArray()
+        
+        // Transfer ownership of the vertex array to the tile itself.
+        surfaceTile.vertexArray = this.vertexArray;
+        this.vertexArray = undefined;
+    }
     
     func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {

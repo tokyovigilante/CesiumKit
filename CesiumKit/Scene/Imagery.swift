@@ -36,10 +36,10 @@ class Imagery {
     
     var texture: Texture? = nil
     
-    var referenceCount = 0
-    
     var credits: Credit? = nil
-
+    
+    private var _referenceCount: Int = 0
+    
     init(imageryLayer: ImageryLayer, level: Int, x: Int, y: Int, rectangle: Rectangle? = nil) {
         
         self.imageryLayer = imageryLayer
@@ -60,43 +60,28 @@ class Imagery {
         }
     }
 
-    /*Imagery.createPlaceholder = function(imageryLayer) {
-    var result = new Imagery(imageryLayer, 0, 0, 0);
-    result.addReference();
-    result.state = ImageryState.PLACEHOLDER;
-    return result;
-    };
-    
-    Imagery.prototype.addReference = function() {
-    ++this.referenceCount;
-    };
-    
-    Imagery.prototype.releaseReference = function() {
-    --this.referenceCount;
-    
-    if (this.referenceCount === 0) {
-    this.imageryLayer.removeImageryFromCache(this);
-    
-    if (defined(this.parent)) {
-    this.parent.releaseReference();
+    class func createPlaceholder(imageryLayer: ImageryLayer) -> Imagery {
+        var result = Imagery(imageryLayer: imageryLayer, level: 0, x: 0, y: 0)
+        result.addReference()
+        result.state = .PlaceHolder
+        return result
     }
     
-    if (defined(this.image) && defined(this.image.destroy)) {
-    this.image.destroy();
+    func addReference() {
+        ++_referenceCount
     }
     
-    if (defined(this.texture)) {
-    this.texture.destroy();
+    func releaseReference() -> Int {
+        --_referenceCount
+        
+        if _referenceCount == 0 {
+            imageryLayer.removeImageryFromCache(self)
+            
+            if parent != nil {
+                parent!.releaseReference()
+            }
+            return 0
+        }
+        return _referenceCount
     }
-    
-    destroyObject(this);
-    
-    return 0;
-    }
-    
-    return this.referenceCount;
-    };
-    
-    return Imagery;
-    });*/
 }

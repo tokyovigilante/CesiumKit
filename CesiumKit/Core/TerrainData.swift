@@ -18,7 +18,7 @@ import Foundation
 * @see HeightmapTerrainData
 * @see QuantizedMeshTerrainData
 */
-protocol TerrainData {
+class TerrainData: Equatable {
     
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
@@ -27,7 +27,23 @@ protocol TerrainData {
     * @memberof TerrainData.prototype
     * @type {Uint8Array|Image|Canvas}
     */
-    var waterMask: Array<UInt16>? { get }
+    var waterMask: [UInt8]?
+    
+    /**
+    * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
+    * terrain data.  If this value is false, the data was obtained from some other source, such
+    * as by downloading it from a remote server.  This method should return true for instances
+    * returned from a call to {@link TerrainData#upsample}.
+    * @function
+    *
+    * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
+    */
+    var createdByUpsampling: Bool
+    
+    init(waterMask: [UInt8]? = nil, createdByUpsampling: Bool = false) {
+        self.waterMask = waterMask
+        self.createdByUpsampling = createdByUpsampling
+    }
     
     /**
     * Computes the terrain height at a specified longitude and latitude.
@@ -40,7 +56,10 @@ protocol TerrainData {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
+    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
+        assert(false, "invalid base class")
+        return Double.NaN
+    }
     
     /**
     * Determines if a given child tile is available, based on the
@@ -55,7 +74,10 @@ protocol TerrainData {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
+    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
+        assert(false, "invalid base class")
+        return false
+    }
     
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
@@ -69,7 +91,10 @@ protocol TerrainData {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh?
+    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh? {
+        assert(false, "invalid base class")
+        return nil
+    }
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -86,16 +111,13 @@ protocol TerrainData {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, resolve: (TerrainData) -> ())
-    
-    /**
-    * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
-    * terrain data.  If this value is false, the data was obtained from some other source, such
-    * as by downloading it from a remote server.  This method should return true for instances
-    * returned from a call to {@link TerrainData#upsample}.
-    * @function
-    *
-    * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
-    */
-    var wasCreatedByUpsampling: Bool { get }
+    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData? {
+        assert(false, "invalid base class")
+        return nil
+    }
+}
+
+func ==(lhs: TerrainData, rhs: TerrainData) -> Bool {
+    assert(false, "invalid base class")
+    return false
 }

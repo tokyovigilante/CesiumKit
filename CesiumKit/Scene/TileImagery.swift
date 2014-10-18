@@ -22,29 +22,24 @@ class TileImagery {
     
     var loadingImagery: Imagery? = nil
     
-    var textureCoordinateRectangle: Cartesian4
+    var textureCoordinateRectangle: Cartesian4? = nil
     
     var textureTranslationAndScale: Cartesian4? = nil
     
-    init(imagery: Imagery, textureCoordinateRectangle: Cartesian4) {
+    init(imagery: Imagery, textureCoordinateRectangle: Cartesian4? = nil) {
         loadingImagery = imagery
         self.textureCoordinateRectangle = textureCoordinateRectangle
         textureTranslationAndScale = nil
     }
-    /*
+    
     /**
     * Frees the resources held by this instance.
     */
-    TileImagery.prototype.freeResources = function() {
-    if (defined(this.readyImagery)) {
-    this.readyImagery.releaseReference();
+    deinit {
+        
     }
     
-    if (defined(this.loadingImagery)) {
-    this.loadingImagery.releaseReference();
-    }
-    };
-    
+        /*
     /**
     * Processes the load state machine for this instance.
     *

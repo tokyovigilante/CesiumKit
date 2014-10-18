@@ -127,7 +127,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var minimumLevel: Int { get }
+    var minimumLevel: Int? { get }
     
     /**
     * Gets the tiling scheme used by the provider.  This function should

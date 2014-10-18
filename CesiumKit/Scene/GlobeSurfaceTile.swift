@@ -87,6 +87,7 @@ class GlobeSurfaceTile {
     var center = Cartesian3()
     
     var vertexArray: VertexArray? = nil
+    var wireframeVertexArray: VertexArray? = nil
     
     var minimumHeight = 0.0
     var maximumHeight = 0.0
@@ -230,39 +231,12 @@ class GlobeSurfaceTile {
         
         this.freeVertexArray();*/
     }
-    /*
-    GlobeSurfaceTile.prototype.freeVertexArray = function() {
-    var indexBuffer;
     
-    if (defined(this.vertexArray)) {
-    indexBuffer = this.vertexArray.indexBuffer;
-    
-    this.vertexArray.destroy();
-    this.vertexArray = undefined;
-    
-    if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
-    --indexBuffer.referenceCount;
-    if (indexBuffer.referenceCount === 0) {
-    indexBuffer.destroy();
-    }
-    }
+    func freeVertexArray() {
+        vertexArray = nil
+        wireframeVertexArray = nil
     }
     
-    if (typeof this.wireframeVertexArray !== 'undefined') {
-    indexBuffer = this.wireframeVertexArray.indexBuffer;
-    
-    this.wireframeVertexArray.destroy();
-    this.wireframeVertexArray = undefined;
-    
-    if (!indexBuffer.isDestroyed() && typeof indexBuffer.referenceCount !== 'undefined') {
-    --indexBuffer.referenceCount;
-    if (indexBuffer.referenceCount === 0) {
-    indexBuffer.destroy();
-    }
-    }
-}
-};
-*/
     class func processStateMachine(tile: QuadtreeTile, context: Context, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
@@ -278,33 +252,35 @@ class GlobeSurfaceTile {
         if tile.state == .Loading {
             GlobeSurfaceTile.processTerrainStateMachine(tile, context: context, terrainProvider: terrainProvider)
         }
-        /*
+        
         // The terrain is renderable as soon as we have a valid vertex array.
-        var isRenderable = defined(surfaceTile.vertexArray);
+        let isRenderable = surfaceTile?.vertexArray != nil
         
         // But it's not done loading until our two state machines are terminated.
-        var isDoneLoading = !defined(surfaceTile.loadedTerrain) && !defined(surfaceTile.upsampledTerrain);
+        let isDoneLoading = surfaceTile?.loadedTerrain == nil && surfaceTile?.upsampledTerrain == nil
         
         // If this tile's terrain and imagery are just upsampled from its parent, mark the tile as
         // upsampled only.  We won't refine a tile if its four children are upsampled only.
-        var isUpsampledOnly = defined(surfaceTile.terrainData) && surfaceTile.terrainData.wasCreatedByUpsampling();
+        var isUpsampledOnly = surfaceTile?.terrainData != nil && surfaceTile!.terrainData!.createdByUpsampling
         
         // Transition imagery states
-        var tileImageryCollection = surfaceTile.imagery;
-        for (var i = 0, len = tileImageryCollection.length; i < len; ++i) {
-            var tileImagery = tileImageryCollection[i];
-            if (!defined(tileImagery.loadingImagery)) {
-                isUpsampledOnly = false;
-                continue;
+
+        var tileImageryCollection = surfaceTile!.imagery
+        for var i = 0, len = tileImageryCollection.count; i < len; ++i {
+            var tileImagery = tileImageryCollection[i]
+            if tileImagery.loadingImagery == nil {
+                isUpsampledOnly = false
+                continue
             }
-            
-            if (tileImagery.loadingImagery.state === ImageryState.PLACEHOLDER) {
-                var imageryLayer = tileImagery.loadingImagery.imageryLayer;
+            Array
+            if tileImagery.loadingImagery!.state == .PlaceHolder {
+                var imageryLayer = tileImagery.loadingImagery.imageryLayer
                 if (imageryLayer.imageryProvider.ready) {
                     // Remove the placeholder and add the actual skeletons (if any)
                     // at the same position.  Then continue the loop at the same index.
-                    tileImagery.freeResources();
-                    tileImageryCollection.splice(i, 1);
+                    //tileImagery.freeResources();
+                    tileImageryCollection.removeAtIndex(i)
+                    //tileImageryCollection.splice(i, 1);
                     imageryLayer._createTileImagerySkeletons(tile, terrainProvider, i);
                     --i;
                     len = tileImageryCollection.length;
@@ -335,7 +311,7 @@ class GlobeSurfaceTile {
             if (isDoneLoading) {
                 tile.state = QuadtreeTileLoadState.DONE;
             }
-        }*/
+        }
     }
 
 //var cartesian3Scratch = new Cartesian3();
@@ -418,28 +394,28 @@ class GlobeSurfaceTile {
                     
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
-                    var waterMask = surfaceTile.terrainData.waterMask;
-                    if (defined(waterMask)) {
-                        if (defined(surfaceTile.waterMaskTexture)) {
-                            --surfaceTile.waterMaskTexture.referenceCount;
-                            if (surfaceTile.waterMaskTexture.referenceCount === 0) {
-                                surfaceTile.waterMaskTexture.destroy();
+                    if let waterMask = surfaceTile.terrainData?.waterMask {
+                        /*if let waterMaskTexture = surfaceTile.waterMaskTexture {
+                            --surfaceTile.waterMaskTexture.referenceCount
+                            if (surfaceTile.waterMaskTexture.referenceCount == 0) {
+                                surfaceTile.waterMaskTexture.destroy()
                             }
-                        }
-                        surfaceTile.waterMaskTexture = createWaterMaskTexture(context, waterMask);
-                        surfaceTile.waterMaskTranslationAndScale.x = 0.0;
-                        surfaceTile.waterMaskTranslationAndScale.y = 0.0;
-                        surfaceTile.waterMaskTranslationAndScale.z = 1.0;
-                        surfaceTile.waterMaskTranslationAndScale.w = 1.0;
+                        }*/
+
+                        //surfaceTile.waterMaskTexture = createWaterMaskTexture(context: context, waterMask: waterMask)
+                        surfaceTile.waterMaskTranslationAndScale.x = 0.0
+                        surfaceTile.waterMaskTranslationAndScale.y = 0.0
+                        surfaceTile.waterMaskTranslationAndScale.z = 1.0
+                        surfaceTile.waterMaskTranslationAndScale.w = 1.0
                     }
                     
-                    propagateNewLoadedDataToChildren(tile);
+                    propagateNewLoadedDataToChildren(tile)
                 }
-                suspendUpsampling = true;
+                suspendUpsampling = true
             }
             
-            if (loaded.state === TerrainState.READY) {
-                loaded.publishToTile(tile);
+            if loaded.state == .Ready {
+                loaded.publishToTile(tile)
                 
                 // No further loading or upsampling is necessary.
                 surfaceTile.pickTerrain = defaultValue(surfaceTile.loadedTerrain, surfaceTile.upsampledTerrain);
@@ -540,51 +516,44 @@ class GlobeSurfaceTile {
             }
         }
     }
-
-    function propagateNewLoadedDataToChildren(tile) {
-        var surfaceTile = tile.data;
-
+    */
+    func propagateNewLoadedDataToChildren(tile: QuadtreeTile) {
+        let surfaceTile = tile.data!
+        
         // Now that there's new data for this tile:
         //  - child tiles that were previously upsampled need to be re-upsampled based on the new data.
         //  - child tiles that were previously deemed unavailable may now be available.
-
-        if (defined(tile.children)) {
-            for (var childIndex = 0; childIndex < 4; ++childIndex) {
-                var childTile = tile.children[childIndex];
-                if (childTile.state !== QuadtreeTileLoadState.START) {
-                    var childSurfaceTile = childTile.data;
-                    if (defined(childSurfaceTile.terrainData) && !childSurfaceTile.terrainData.wasCreatedByUpsampling()) {
-                        // Data for the child tile has already been loaded.
-                        continue;
-                    }
-
-                    // Restart the upsampling process, no matter its current state.
-                    // We create a new instance rather than just restarting the existing one
-                    // because there could be an asynchronous operation pending on the existing one.
-                    if (defined(childSurfaceTile.upsampledTerrain)) {
-                        childSurfaceTile.upsampledTerrain.freeResources();
-                    }
-                    childSurfaceTile.upsampledTerrain = new TileTerrain({
-                        data : surfaceTile.terrainData,
-                        x : tile.x,
-                        y : tile.y,
-                        level : tile.level
-                    });
-
-                    if (surfaceTile.terrainData.isChildAvailable(tile.x, tile.y, childTile.x, childTile.y)) {
-                        // Data is available for the child now.  It might have been before, too.
-                        if (!defined(childSurfaceTile.loadedTerrain)) {
-                            // No load process is in progress, so start one.
-                            childSurfaceTile.loadedTerrain = new TileTerrain();
-                        }
-                    }
-
-                    childTile.state = QuadtreeTileLoadState.LOADING;
+        
+        for childTile in tile.children {
+            if childTile.state != .Start {
+                let childSurfaceTile = childTile.data!
+                if childSurfaceTile.terrainData != nil && childSurfaceTile.terrainData!.createdByUpsampling {
+                    // Data for the child tile has already been loaded.
+                    continue
                 }
+                
+                // Restart the upsampling process, no matter its current state.
+                // We create a new instance rather than just restarting the existing one
+                // because there could be an asynchronous operation pending on the existing one.
+                childSurfaceTile.upsampledTerrain = TileTerrain(upsampleDetails: (
+                    data : surfaceTile.terrainData!,
+                    x : tile.x,
+                    y : tile.y,
+                    level : tile.level)
+                )
+                
+                if surfaceTile.terrainData!.isChildAvailable(tile.x, thisY: tile.y, childX: childTile.x, childY: childTile.y) {
+                    // Data is available for the child now.  It might have been before, too.
+                    if childSurfaceTile.loadedTerrain == nil {
+                        // No load process is in progress, so start one.
+                        childSurfaceTile.loadedTerrain = TileTerrain()
+                    }
+                }
+                childTile.state = .Loading
             }
         }
     }
-    */
+
     class func isDataAvailable(tile: QuadtreeTile) -> Bool {
         var parent = tile.parent
         if parent == nil {
@@ -598,9 +567,9 @@ class GlobeSurfaceTile {
         }
         return parent!.data!.terrainData!.isChildAvailable(parent!.x, thisY: parent!.y, childX: tile.x, childY: tile.y)
     }
-    /*
-    function createWaterMaskTexture(context, waterMask) {
-        var result;
+    
+    func createWaterMaskTexture(#context: Context, waterMask: [UInt8]) -> Texture {
+        /*var result;
 
         var waterMaskData = context.cache.tile_waterMaskData;
         if (!defined(waterMaskData)) {
@@ -673,9 +642,9 @@ class GlobeSurfaceTile {
         }
 
         ++result.referenceCount;
-        return result;
+        return result;*/
     }
-
+    /*
     function upsampleWaterMask(tile) {
         var surfaceTile = tile.data;
 

@@ -68,6 +68,7 @@
 		9465B0261956F5DE00355D2C /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0251956F5DE00355D2C /* Texture.swift */; };
 		9465B0281956F61400355D2C /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		946D25AA19592BFD0080379D /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
+		946DE02019F1072500FFAD81 /* ImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */; };
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
@@ -680,6 +681,7 @@
 				9491BBB01949D084007C1C4C /* TerrainProvider.swift in Sources */,
 				9465B0261956F5DE00355D2C /* Texture.swift in Sources */,
 				94540439199F649000012DC4 /* ImageryLayer.swift in Sources */,
+				946DE02019F1072500FFAD81 /* ImageryProvider.swift in Sources */,
 				942CF4BF19CD90AA00012DC4 /* HeightmapTerrainData.swift in Sources */,
 				94540423199F045600012DC4 /* Event.swift in Sources */,
 				94B87DCD194D706800012DC4 /* CullingVolume.swift in Sources */,

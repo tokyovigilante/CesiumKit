@@ -55,7 +55,7 @@ class Texture {
 
     weak var context: Context?
     
-    let textureName: Int
+    var textureName: GLuint
     
     let textureTarget = GL_TEXTURE_2D
     
@@ -104,7 +104,7 @@ class Texture {
         var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance*/
         var flipY = options.flipY
         
-        var textureName: GLuint = 0
+        textureName = 0
         glGenTextures(1, &textureName)
         
         /*glActiveTexture(GLenum(GL_TEXTURE0))
@@ -142,7 +142,6 @@ class Texture {
         */
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        self.textureName = Int(textureName)
         self.dimensions = Cartesian2(x: Double(width), y: Double(height))
     }
     /*
@@ -447,11 +446,8 @@ class Texture {
     Texture.prototype.isDestroyed = function() {
     return false;
     };
-    
-    Texture.prototype.destroy = function() {
-    this._context._gl.deleteTexture(this._texture);
-    return destroyObject(this);
-    };
-    
-    return Texture;*/
+    */
+    deinit {
+        glDeleteTextures(1, &textureName)
+    }
 }

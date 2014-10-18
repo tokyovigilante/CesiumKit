@@ -117,6 +117,6 @@ protocol TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2?
+    func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)?
     
 }

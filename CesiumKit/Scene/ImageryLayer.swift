@@ -6,54 +6,26 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-/** @param {Object} [options] Object with the following properties:
+import Foundation
 
-* @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
-*                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
-*                          This can either be a simple number or a function with the signature
-*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-*                          current frame state, this layer, and the x, y, and level coordinates of the
-*                          imagery tile for which the contrast is required, and it is expected to return
-*                          the contrast value to use for the tile.  The function is executed for every
-*                          frame and for every tile, so it must be fast.
-* @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
-*                          This can either be a simple number or a function with the signature
-*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-*                          current frame state, this layer, and the x, y, and level coordinates
-*                          of the imagery tile for which the hue is required, and it is expected to return
-*                          the contrast value to use for the tile.  The function is executed for every
-*                          frame and for every tile, so it must be fast.
-* @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
-*                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
-*                          This can either be a simple number or a function with the signature
-*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-*                          current frame state, this layer, and the x, y, and level coordinates
-*                          of the imagery tile for which the saturation is required, and it is expected to return
-*                          the contrast value to use for the tile.  The function is executed for every
-*                          frame and for every tile, so it must be fast.
-* @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
-*                          This can either be a simple number or a function with the signature
-*                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-*                          current frame state, this layer, and the x, y, and level coordinates of the
-*                          imagery tile for which the gamma is required, and it is expected to return
-*                          the gamma value to use for the tile.  The function is executed for every
-*                          frame and for every tile, so it must be fast.
-* @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
-* @param {Number} [options.maximumAnisotropy=maximum supported] The maximum anisotropy level to use
-*        for texture filtering.  If this parameter is not specified, the maximum anisotropy supported
-*        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
-*        views.
-* @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
-*                 or undefined to show it at all levels.  Level zero is the least-detailed level.
-* @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
-*                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+/**
+* An imagery layer that displays tiled image data from a single imagery provider
+* on a {@link Globe}.
+*
+* @alias ImageryLayer
+* @constructor
+*
+* @param {ImageryProvider} imageryProvider The imagery provider to use.
 */
-class ImageryLayerOptions {
+class ImageryLayer {
+    
+    var imageryProvider: ImageryProvider
+    
     /**
     * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
     *        can limit the visible portion of the imagery provider.
     */
-    let rectangle: Rectangle? = nil
+    private let _rectangle: Rectangle
     
     /**
     * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
@@ -63,7 +35,7 @@ class ImageryLayerOptions {
     *                          imagery tile for which the alpha is required, and it is expected to return
     *                          the alpha value to use for the tile.
     */
-    let alpha: (() -> Double) = { return 1.0 }
+    let alpha: (() -> Double)
     
     /**
     * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
@@ -75,251 +47,92 @@ class ImageryLayerOptions {
     *                          the brightness value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let brightness: (() -> Double) = { return 1.0 }
-    
-    /*init(
-        rectangle: Rectangle? = nil,
-        alpha: (() -> Double) = { return 1.0 }
-        ) {
-            self.rectangle = rectangle ?? imageryProvider.rectangle
-            self.alpha = alpha
-    }*/
-}
-
-/**
-    * An imagery layer that displays tiled image data from a single imagery provider
-    * on a {@link Globe}.
-    *
-    * @alias ImageryLayer
-    * @constructor
-    *
-    * @param {ImageryProvider} imageryProvider The imagery provider to use.
-    */
-class ImageryLayer {
-/*
-    /**
-    * The alpha blending value of this layer, with 0.0 representing fully transparent and
-    * 1.0 representing fully opaque.
-    *
-    * @type {Number}
-    * @default 1.0
-    */
-    this.alpha = defaultValue(options.alpha, defaultValue(imageryProvider.defaultAlpha, 1.0));
+    let brightness: (() -> Double)
     
     /**
-    * The brightness of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0
-    * makes the imagery darker while greater than 1.0 makes it brighter.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_BRIGHTNESS}
+    * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
+    *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
+    *                          This can either be a simple number or a function with the signature
+    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+    *                          current frame state, this layer, and the x, y, and level coordinates of the
+    *                          imagery tile for which the contrast is required, and it is expected to return
+    *                          the contrast value to use for the tile.  The function is executed for every
+    *                          frame and for every tile, so it must be fast.
     */
-    this.brightness = defaultValue(options.brightness, defaultValue(imageryProvider.defaultBrightness, ImageryLayer.DEFAULT_BRIGHTNESS));
+    let contrast: (() -> Double)
+    
+    /*
+    * @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
+    *                          This can either be a simple number or a function with the signature
+    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+    *                          current frame state, this layer, and the x, y, and level coordinates
+    *                          of the imagery tile for which the hue is required, and it is expected to return
+    *                          the contrast value to use for the tile.  The function is executed for every
+    *                          frame and for every tile, so it must be fast.
+    */
+    let hue: (() -> Double)
     
     /**
-    * The contrast of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
-    * the contrast while greater than 1.0 increases it.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_CONTRAST}
+    * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
+    *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
+    *                          This can either be a simple number or a function with the signature
+    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+    *                          current frame state, this layer, and the x, y, and level coordinates
+    *                          of the imagery tile for which the saturation is required, and it is expected to return
+    *                          the contrast value to use for the tile.  The function is executed for every
+    *                          frame and for every tile, so it must be fast.
     */
-    this.contrast = defaultValue(options.contrast, defaultValue(imageryProvider.defaultContrast, ImageryLayer.DEFAULT_CONTRAST));
+    let saturation: (() -> Double)
     
     /**
-    * The hue of this layer in radians. 0.0 uses the unmodified imagery color.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_HUE}
+    * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
+    *                          This can either be a simple number or a function with the signature
+    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+    *                          current frame state, this layer, and the x, y, and level coordinates of the
+    *                          imagery tile for which the gamma is required, and it is expected to return
+    *                          the gamma value to use for the tile.  The function is executed for every
+    *                          frame and for every tile, so it must be fast.
     */
-    this.hue = defaultValue(options.hue, defaultValue(imageryProvider.defaultHue, ImageryLayer.DEFAULT_HUE));
+    let gamma: (() -> Double)
     
     /**
-    * The saturation of this layer. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
-    * saturation while greater than 1.0 increases it.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_SATURATION}
+    * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
     */
-    this.saturation = defaultValue(options.saturation, defaultValue(imageryProvider.defaultSaturation, ImageryLayer.DEFAULT_SATURATION));
+    let show: Bool
     
-    /**
-    * The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_GAMMA}
-    */
-    this.gamma = defaultValue(options.gamma, defaultValue(imageryProvider.defaultGamma, ImageryLayer.DEFAULT_GAMMA));
-    */
-    /**
-    * Determines if this layer is shown.
-    *
-    * @type {Boolean}
-    * @default true
-    */
-    var show = /*options.show ??*/ true
-    
-    var _show: Bool
-
-    var layerIndex: Int = -1
-
-    var imageryProvider: BingMapsImageryProvider
-
-    // true if this is the base (lowest shown) layer.
-    private var _isBaseLayer = false
-    
-    // FIXME: ImageryProvider
-    init (imageryProvider: BingMapsImageryProvider/*ImageryProvider*/, options: ImageryLayerOptions = ImageryLayerOptions()) {
-
-    self.imageryProvider = imageryProvider
-/*
-       
-    this._imageryProvider = imageryProvider;
-    
-    options = defaultValue(options, {});
-    
-    /**
-    * The alpha blending value of this layer, with 0.0 representing fully transparent and
-    * 1.0 representing fully opaque.
-    *
-    * @type {Number}
-    * @default 1.0
-    */
-    this.alpha = defaultValue(options.alpha, defaultValue(imageryProvider.defaultAlpha, 1.0));
-    
-    /**
-    * The brightness of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0
-    * makes the imagery darker while greater than 1.0 makes it brighter.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_BRIGHTNESS}
-    */
-    this.brightness = defaultValue(options.brightness, defaultValue(imageryProvider.defaultBrightness, ImageryLayer.DEFAULT_BRIGHTNESS));
-    
-    /**
-    * The contrast of this layer.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
-    * the contrast while greater than 1.0 increases it.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_CONTRAST}
-    */
-    this.contrast = defaultValue(options.contrast, defaultValue(imageryProvider.defaultContrast, ImageryLayer.DEFAULT_CONTRAST));
-    
-    /**
-    * The hue of this layer in radians. 0.0 uses the unmodified imagery color.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_HUE}
-    */
-    this.hue = defaultValue(options.hue, defaultValue(imageryProvider.defaultHue, ImageryLayer.DEFAULT_HUE));
-    
-    /**
-    * The saturation of this layer. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
-    * saturation while greater than 1.0 increases it.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_SATURATION}
-    */
-    this.saturation = defaultValue(options.saturation, defaultValue(imageryProvider.defaultSaturation, ImageryLayer.DEFAULT_SATURATION));
-    
-    /**
-    * The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
-    *
-    * @type {Number}
-    * @default {@link ImageryLayer.DEFAULT_GAMMA}
-    */
-    this.gamma = defaultValue(options.gamma, defaultValue(imageryProvider.defaultGamma, ImageryLayer.DEFAULT_GAMMA));
-    
-    /**
-    * Determines if this layer is shown.
-    *
-    * @type {Boolean}
-    * @default true
-    */
-    this.show = defaultValue(options.show, true);
-    
-    this._minimumTerrainLevel = options.minimumTerrainLevel;
-    this._maximumTerrainLevel = options.maximumTerrainLevel;
-    
-    this._rectangle = defaultValue(options.rectangle, Rectangle.MAX_VALUE);
-    this._maximumAnisotropy = options.maximumAnisotropy;
-    
-    this._imageryCache = {};
-    
-    this._skeletonPlaceholder = new TileImagery(Imagery.createPlaceholder(this));
-    */
     // The value of the show property on the last update.
-    _show = true
+    var _show: Bool = true
+    
     /*
+    * @param {Number} [options.maximumAnisotropy=maximum supported] The maximum anisotropy level to use
+    *        for texture filtering.  If this parameter is not specified, the maximum anisotropy supported
+    *        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
+    *        views.
+    */
+    let maximumAnisotropy: Int?
+    
+    /*
+    * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
+    *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+    */
+    private let _minimumTerrainLevel: Int?
+    
+    /**
+    * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
+    *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+    */
+    private let _maximumTerrainLevel: Int?
+    
+    
+    private var _imageryCache = [String: TileImagery]()
+    
+    private var _skeletonPlaceholder: TileImagery
+    
     // The index of this layer in the ImageryLayerCollection.
-    this._layerIndex = -1;
+    private var _layerIndex = -1
     
-    this._requestImageError = undefined;
-    };
+    //private var _requestImageError = undefined;
     
-    defineProperties(ImageryLayer.prototype, {
-    
-    /**
-    * Gets the imagery provider for this layer.
-    * @memberof ImageryLayer.prototype
-    * @type {ImageryProvider}
-    * @readonly
-    */
-    imageryProvider : {
-    get: function() {
-    return this._imageryProvider;
-    }*/
-    }
-    /*
-    /**
-    * Gets the rectangle of this layer.  If this rectangle is smaller than the rectangle of the
-    * {@link ImageryProvider}, only a portion of the imagery provider is shown.
-    * @memberof ImageryLayer.prototype
-    * @type {Rectangle}
-    * @readonly
-    */
-    rectangle: {
-    get: function() {
-    return this._rectangle;
-    }
-    }
-    });
-    
-    
-    /**
-    * This value is used as the default brightness for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the brightness of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
-    ImageryLayer.DEFAULT_BRIGHTNESS = 1.0;
-    /**
-    * This value is used as the default contrast for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the contrast of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
-    ImageryLayer.DEFAULT_CONTRAST = 1.0;
-    /**
-    * This value is used as the default hue for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the hue of the imagery.
-    * @type {Number}
-    * @default 0.0
-    */
-    ImageryLayer.DEFAULT_HUE = 0.0;
-    /**
-    * This value is used as the default saturation for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the saturation of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
-    ImageryLayer.DEFAULT_SATURATION = 1.0;
-    /**
-    * This value is used as the default gamma for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the gamma of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
-    ImageryLayer.DEFAULT_GAMMA = 1.0;
-    */
     /**
     * Gets a value indicating whether this layer is the base layer in the
     * {@link ImageryLayerCollection}.  The base layer is the one that underlies all
@@ -329,49 +142,40 @@ class ImageryLayer {
     *
     * @returns {Boolean} true if this is the base layer; otherwise, false.
     */
-    var isBaseLayer: Bool {
-        get {
-            return _isBaseLayer
-        }
-        set (value) {
-            _isBaseLayer = value
-        }
-    }
-    /*
-    /**
-    * Returns true if this object was destroyed; otherwise, false.
-    * <br /><br />
-    * If this object was destroyed, it should not be used; calling any function other than
-    * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
-    *
-    * @returns {Boolean} True if this object was destroyed; otherwise, false.
-    *
-    * @see ImageryLayer#destroy
-    */
-    ImageryLayer.prototype.isDestroyed = function() {
-    return false;
-    };
+    var isBaseLayer = false
     
-    /**
-    * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
-    * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
-    * <br /><br />
-    * Once an object is destroyed, it should not be used; calling any function other than
-    * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
-    * assign the return value (<code>undefined</code>) to the object as done in the example.
-    *
-    * @returns {undefined}
-    *
-    * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
-    *
-    * @see ImageryLayer#isDestroyed
-    *
-    * @example
-    * imageryLayer = imageryLayer && imageryLayer.destroy();
-    */
-    ImageryLayer.prototype.destroy = function() {
-    return destroyObject(this);
-    };
+    init (
+        imageryProvider: ImageryProvider,
+        rectangle: Rectangle = Rectangle.maxValue(),
+        alpha: (() -> Double) = { return 1.0 },
+        brightness: (() -> Double) = { return 1.0 },
+        contrast: (() -> Double) = { return 1.0 },
+        hue: (() -> Double) = { return 0.0 },
+        saturation: (() -> Double) = { return 1.0 },
+        gamma: (() -> Double) = { return 1.0 },
+        show: Bool = true,
+        minimumTerrainLevel: Int? = nil,
+        maximumTerrainLevel: Int? = nil,
+        maximumAnisotropy: Int? = nil
+        ) {
+            self.imageryProvider = imageryProvider
+            self._rectangle = rectangle
+            self.alpha = alpha
+            self.brightness = brightness
+            self.contrast = contrast
+            self.hue = hue
+            self.saturation = saturation
+            self.gamma = gamma
+            self.show = show
+            self._minimumTerrainLevel = minimumTerrainLevel
+            self._maximumTerrainLevel = maximumTerrainLevel
+            self.maximumAnisotropy = maximumAnisotropy
+            
+            _skeletonPlaceholder = TileImagery(imagery: Imagery.createPlaceholder(self))
+    }
+    
+    
+    
     
     /**
     * Create skeletons for the imagery tiles that partially or completely overlap a given terrain
@@ -379,188 +183,189 @@ class ImageryLayer {
     *
     * @private
     *
-    * @param {Tile} tile The terrain tile.
+    * @param {QuadtreeTile} tile The terrain tile.
     * @param {TerrainProvider} terrainProvider The terrain provider associated with the terrain tile.
     * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery lsit.
     * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
     */
-    ImageryLayer.prototype._createTileImagerySkeletons = function(tile, terrainProvider, insertionPoint) {
-    var surfaceTile = tile.data;
-    
-    if (defined(this._minimumTerrainLevel) && tile.level < this._minimumTerrainLevel) {
-    return false;
+    func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int?) -> Bool {
+        let surfaceTile = tile.data!
+        
+        if _minimumTerrainLevel != nil && tile.level < _minimumTerrainLevel {
+            return false
+        }
+        if _maximumTerrainLevel != nil && tile.level > _maximumTerrainLevel {
+            return false
+        }
+        var insertionPoint = insertionPoint
+        if insertionPoint == nil {
+            insertionPoint = surfaceTile.imagery.count
+        }
+        
+        if (!imageryProvider.ready) {
+            // The imagery provider is not ready, so we can't create skeletons, yet.
+            // Instead, add a placeholder so that we'll know to create
+            // the skeletons once the provider is ready.
+            _skeletonPlaceholder.loadingImagery!.addReference()
+            surfaceTile.imagery.removeAtIndex(insertionPoint!)
+            surfaceTile.imagery.insert(_skeletonPlaceholder, atIndex: insertionPoint!)
+            return true
+        }
+        
+        // Compute the rectangle of the imagery from this imageryProvider that overlaps
+        // the geometry tile.  The ImageryProvider and ImageryLayer both have the
+        // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
+        // always fully contains the ImageryProvider's rectangle.
+        var rectangle = tile.rectangle.intersectWith(imageryProvider.rectangle).intersectWith(_rectangle)
+        
+        if rectangle.east <= rectangle.west || rectangle.north <= rectangle.south {
+            // There is no overlap between this terrain tile and this imagery
+            // provider.  Unless this is the base layer, no skeletons need to be created.
+            // We stretch texels at the edge of the base layer over the entire globe.
+            if !isBaseLayer {
+                return false
+            }
+            
+            let baseImageryRectangle = imageryProvider.rectangle.intersectWith(_rectangle)
+            var baseTerrainRectangle = tile.rectangle
+            
+            if baseTerrainRectangle.south >= baseImageryRectangle.north {
+                rectangle.north = baseImageryRectangle.north
+                rectangle.south = rectangle.north
+            } else if baseTerrainRectangle.north <= baseImageryRectangle.south {
+                rectangle.south = baseImageryRectangle.south
+                rectangle.north = rectangle.south
+            }
+            
+            if baseTerrainRectangle.west >= baseImageryRectangle.east {
+                rectangle.east = baseImageryRectangle.east
+                rectangle.west = rectangle.east
+            } else if baseTerrainRectangle.east <= baseImageryRectangle.west {
+                rectangle.east = baseImageryRectangle.west
+                rectangle.west = rectangle.east
+            }
+        }
+        
+        var latitudeClosestToEquator = 0.0
+        if (rectangle.south > 0.0) {
+            latitudeClosestToEquator = rectangle.south
+        } else if (rectangle.north < 0.0) {
+            latitudeClosestToEquator = rectangle.north
+        }
+        
+        // Compute the required level in the imagery tiling scheme.
+        // The errorRatio should really be imagerySSE / terrainSSE rather than this hard-coded value.
+        // But first we need configurable imagery SSE and we need the rendering to be able to handle more
+        // images attached to a terrain tile than there are available texture units.  So that's for the future.
+        let errorRatio = 1.0
+        let targetGeometricError = errorRatio * terrainProvider.levelMaximumGeometricError(tile.level)
+        var imageryLevel = levelWithMaximumTexelSpacing(texelSpacing: targetGeometricError, latitudeClosestToEquator: latitudeClosestToEquator)
+        imageryLevel = max(0, imageryLevel)
+        var maximumLevel = imageryProvider.maximumLevel
+        if (imageryLevel > maximumLevel) {
+            imageryLevel = maximumLevel
+        }
+        
+        if let minimumLevel = imageryProvider.minimumLevel {
+            if (imageryLevel < minimumLevel) {
+                imageryLevel = minimumLevel
+            }
+        }
+        
+        let imageryTilingScheme = imageryProvider.tilingScheme
+        let northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest(), level: imageryLevel)
+        let southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast(), level: imageryLevel)
+        
+        // If the southeast corner of the rectangle lies very close to the north or west side
+        // of the southeast tile, we don't actually need the southernmost or easternmost
+        // tiles.
+        // Similarly, if the northwest corner of the rectangle lies very close to the south or east side
+        // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
+        
+        // We define "very close" as being within 1/512 of the width of the tile.
+        var veryCloseX = (tile.rectangle.north - tile.rectangle.south) / 512.0
+        var veryCloseY = (tile.rectangle.east - tile.rectangle.west) / 512.0
+        
+        var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel)
+        if (Math.abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
+            ++northwestTileCoordinates.y;
+        }
+        if (Math.abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
+            ++northwestTileCoordinates.x;
+        }
+        
+        var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(southeastTileCoordinates.x, southeastTileCoordinates.y, imageryLevel);
+        if (Math.abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
+            --southeastTileCoordinates.y;
+        }
+        if (Math.abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
+            --southeastTileCoordinates.x;
+        }
+        
+        // Create TileImagery instances for each imagery tile overlapping this terrain tile.
+        // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
+        
+        var terrainRectangle = tile.rectangle;
+        var imageryRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel);
+        
+        var minU;
+        var maxU = 0.0;
+        
+        var minV = 1.0;
+        var maxV;
+        
+        // If this is the northern-most or western-most tile in the imagery tiling scheme,
+        // it may not start at the northern or western edge of the terrain tile.
+        // Calculate where it does start.
+        if (!this.isBaseLayer() && Math.abs(imageryRectangle.west - tile.rectangle.west) >= veryCloseX) {
+            maxU = Math.min(1.0, (imageryRectangle.west - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
+        }
+        
+        if (!this.isBaseLayer() && Math.abs(imageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
+            minV = Math.max(0.0, (imageryRectangle.north - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
+        }
+        
+        var initialMinV = minV;
+        
+        for ( var i = northwestTileCoordinates.x; i <= southeastTileCoordinates.x; i++) {
+            minU = maxU;
+            
+            imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, northwestTileCoordinates.y, imageryLevel);
+            maxU = Math.min(1.0, (imageryRectangle.east - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
+            
+            // If this is the eastern-most imagery tile mapped to this terrain tile,
+            // and there are more imagery tiles to the east of this one, the maxU
+            // should be 1.0 to make sure rounding errors don't make the last
+            // image fall shy of the edge of the terrain tile.
+            if (i === southeastTileCoordinates.x && (this.isBaseLayer() || Math.abs(imageryRectangle.east - tile.rectangle.east) < veryCloseX)) {
+                maxU = 1.0;
+            }
+            
+            minV = initialMinV;
+            
+            for ( var j = northwestTileCoordinates.y; j <= southeastTileCoordinates.y; j++) {
+                maxV = minV;
+                
+                imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, j, imageryLevel);
+                minV = Math.max(0.0, (imageryRectangle.south - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
+                
+                // If this is the southern-most imagery tile mapped to this terrain tile,
+                // and there are more imagery tiles to the south of this one, the minV
+                // should be 0.0 to make sure rounding errors don't make the last
+                // image fall shy of the edge of the terrain tile.
+                if (j === southeastTileCoordinates.y && (this.isBaseLayer() || Math.abs(imageryRectangle.south - tile.rectangle.south) < veryCloseY)) {
+                    minV = 0.0;
+                }
+                
+                var texCoordsRectangle = Cartesian4(minU, minV, maxU, maxV);
+                var imagery = this.getImageryFromCache(i, j, imageryLevel, imageryRectangle);
+                surfaceTile.imagery.splice(insertionPoint, 0, TileImagery(imagery, texCoordsRectangle));
+                ++insertionPoint;
+            }
+        }
+        
+        return true;
     }
-    if (defined(this._maximumTerrainLevel) && tile.level > this._maximumTerrainLevel) {
-    return false;
-    }
-    
-    var imageryProvider = this._imageryProvider;
-    
-    if (!defined(insertionPoint)) {
-    insertionPoint = surfaceTile.imagery.length;
-    }
-    
-    if (!imageryProvider.ready) {
-    // The imagery provider is not ready, so we can't create skeletons, yet.
-    // Instead, add a placeholder so that we'll know to create
-    // the skeletons once the provider is ready.
-    this._skeletonPlaceholder.loadingImagery.addReference();
-    surfaceTile.imagery.splice(insertionPoint, 0, this._skeletonPlaceholder);
-    return true;
-    }
-    
-    // Compute the rectangle of the imagery from this imageryProvider that overlaps
-    // the geometry tile.  The ImageryProvider and ImageryLayer both have the
-    // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
-    // always fully contains the ImageryProvider's rectangle.
-    var rectangle = Rectangle.intersectWith(tile.rectangle, imageryProvider.rectangle);
-    rectangle = Rectangle.intersectWith(rectangle, this._rectangle);
-    
-    if (rectangle.east <= rectangle.west || rectangle.north <= rectangle.south) {
-    // There is no overlap between this terrain tile and this imagery
-    // provider.  Unless this is the base layer, no skeletons need to be created.
-    // We stretch texels at the edge of the base layer over the entire globe.
-    if (!this.isBaseLayer()) {
-    return false;
-    }
-    
-    var baseImageryRectangle = Rectangle.intersectWith(imageryProvider.rectangle, this._rectangle);
-    var baseTerrainRectangle = tile.rectangle;
-    
-    if (baseTerrainRectangle.south >= baseImageryRectangle.north) {
-    rectangle.north = rectangle.south = baseImageryRectangle.north;
-    } else if (baseTerrainRectangle.north <= baseImageryRectangle.south) {
-    rectangle.north = rectangle.south = baseImageryRectangle.south;
-    }
-    
-    if (baseTerrainRectangle.west >= baseImageryRectangle.east) {
-    rectangle.west = rectangle.east = baseImageryRectangle.east;
-    } else if (baseTerrainRectangle.east <= baseImageryRectangle.west) {
-    rectangle.west = rectangle.east = baseImageryRectangle.west;
-    }
-    }
-    
-    var latitudeClosestToEquator = 0.0;
-    if (rectangle.south > 0.0) {
-    latitudeClosestToEquator = rectangle.south;
-    } else if (rectangle.north < 0.0) {
-    latitudeClosestToEquator = rectangle.north;
-    }
-    
-    // Compute the required level in the imagery tiling scheme.
-    // The errorRatio should really be imagerySSE / terrainSSE rather than this hard-coded value.
-    // But first we need configurable imagery SSE and we need the rendering to be able to handle more
-    // images attached to a terrain tile than there are available texture units.  So that's for the future.
-    var errorRatio = 1.0;
-    var targetGeometricError = errorRatio * terrainProvider.getLevelMaximumGeometricError(tile.level);
-    var imageryLevel = getLevelWithMaximumTexelSpacing(this, targetGeometricError, latitudeClosestToEquator);
-    imageryLevel = Math.max(0, imageryLevel);
-    var maximumLevel = imageryProvider.maximumLevel;
-    if (imageryLevel > maximumLevel) {
-    imageryLevel = maximumLevel;
-    }
-    
-    if (defined(imageryProvider.minimumLevel)) {
-    var minimumLevel = imageryProvider.minimumLevel;
-    if (imageryLevel < minimumLevel) {
-    imageryLevel = minimumLevel;
-    }
-    }
-    
-    var imageryTilingScheme = imageryProvider.tilingScheme;
-    var northwestTileCoordinates = imageryTilingScheme.positionToTileXY(Rectangle.northwest(rectangle), imageryLevel);
-    var southeastTileCoordinates = imageryTilingScheme.positionToTileXY(Rectangle.southeast(rectangle), imageryLevel);
-    
-    // If the southeast corner of the rectangle lies very close to the north or west side
-    // of the southeast tile, we don't actually need the southernmost or easternmost
-    // tiles.
-    // Similarly, if the northwest corner of the rectangle lies very close to the south or east side
-    // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
-    
-    // We define "very close" as being within 1/512 of the width of the tile.
-    var veryCloseX = (tile.rectangle.north - tile.rectangle.south) / 512.0;
-    var veryCloseY = (tile.rectangle.east - tile.rectangle.west) / 512.0;
-    
-    var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel);
-    if (Math.abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
-    ++northwestTileCoordinates.y;
-    }
-    if (Math.abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
-    ++northwestTileCoordinates.x;
-    }
-    
-    var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(southeastTileCoordinates.x, southeastTileCoordinates.y, imageryLevel);
-    if (Math.abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
-    --southeastTileCoordinates.y;
-    }
-    if (Math.abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
-    --southeastTileCoordinates.x;
-    }
-    
-    // Create TileImagery instances for each imagery tile overlapping this terrain tile.
-    // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
-    
-    var terrainRectangle = tile.rectangle;
-    var imageryRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel);
-    
-    var minU;
-    var maxU = 0.0;
-    
-    var minV = 1.0;
-    var maxV;
-    
-    // If this is the northern-most or western-most tile in the imagery tiling scheme,
-    // it may not start at the northern or western edge of the terrain tile.
-    // Calculate where it does start.
-    if (!this.isBaseLayer() && Math.abs(imageryRectangle.west - tile.rectangle.west) >= veryCloseX) {
-    maxU = Math.min(1.0, (imageryRectangle.west - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
-    }
-    
-    if (!this.isBaseLayer() && Math.abs(imageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
-    minV = Math.max(0.0, (imageryRectangle.north - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
-    }
-    
-    var initialMinV = minV;
-    
-    for ( var i = northwestTileCoordinates.x; i <= southeastTileCoordinates.x; i++) {
-    minU = maxU;
-    
-    imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, northwestTileCoordinates.y, imageryLevel);
-    maxU = Math.min(1.0, (imageryRectangle.east - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
-    
-    // If this is the eastern-most imagery tile mapped to this terrain tile,
-    // and there are more imagery tiles to the east of this one, the maxU
-    // should be 1.0 to make sure rounding errors don't make the last
-    // image fall shy of the edge of the terrain tile.
-    if (i === southeastTileCoordinates.x && (this.isBaseLayer() || Math.abs(imageryRectangle.east - tile.rectangle.east) < veryCloseX)) {
-    maxU = 1.0;
-    }
-    
-    minV = initialMinV;
-    
-    for ( var j = northwestTileCoordinates.y; j <= southeastTileCoordinates.y; j++) {
-    maxV = minV;
-    
-    imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, j, imageryLevel);
-    minV = Math.max(0.0, (imageryRectangle.south - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
-    
-    // If this is the southern-most imagery tile mapped to this terrain tile,
-    // and there are more imagery tiles to the south of this one, the minV
-    // should be 0.0 to make sure rounding errors don't make the last
-    // image fall shy of the edge of the terrain tile.
-    if (j === southeastTileCoordinates.y && (this.isBaseLayer() || Math.abs(imageryRectangle.south - tile.rectangle.south) < veryCloseY)) {
-    minV = 0.0;
-    }
-    
-    var texCoordsRectangle = new Cartesian4(minU, minV, maxU, maxV);
-    var imagery = this.getImageryFromCache(i, j, imageryLevel, imageryRectangle);
-    surfaceTile.imagery.splice(insertionPoint, 0, new TileImagery(imagery, texCoordsRectangle));
-    ++insertionPoint;
-    }
-    }
-    
-    return true;
-    };
     
     /**
     * Calculate the translation and scale for a particular {@link TileImagery} attached to a
@@ -573,6 +378,7 @@ class ImageryLayer {
     * @returns {Cartesian4} The translation and scale where X and Y are the translation and Z and W
     *          are the scale.
     */
+    /*
     ImageryLayer.prototype._calculateTextureTranslationAndScale = function(tile, tileImagery) {
     var imageryRectangle = tileImagery.readyImagery.rectangle;
     var terrainRectangle = tile.rectangle;
@@ -625,80 +431,80 @@ class ImageryLayer {
     message,
     imagery.x, imagery.y, imagery.level,
     doRequest);
-}
-
-function doRequest() {
+    }
+    
+    function doRequest() {
     imagery.state = ImageryState.TRANSITIONING;
     var imagePromise = imageryProvider.requestImage(imagery.x, imagery.y, imagery.level);
     
     if (!defined(imagePromise)) {
-        // Too many parallel requests, so postpone loading tile.
-        imagery.state = ImageryState.UNLOADED;
-        return;
+    // Too many parallel requests, so postpone loading tile.
+    imagery.state = ImageryState.UNLOADED;
+    return;
     }
     
     if (defined(imageryProvider.getTileCredits)) {
-        imagery.credits = imageryProvider.getTileCredits(imagery.x, imagery.y, imagery.level);
+    imagery.credits = imageryProvider.getTileCredits(imagery.x, imagery.y, imagery.level);
     }
     
     when(imagePromise, success, failure);
-}
-
-doRequest();
-};
-
-/**
-* Create a WebGL texture for a given {@link Imagery} instance.
-*
-* @private
-*
-* @param {Context} context The rendered context to use to create textures.
-* @param {Imagery} imagery The imagery for which to create a texture.
-*/
-ImageryLayer.prototype._createTexture = function(context, imagery) {
+    }
+    
+    doRequest();
+    };
+    
+    /**
+    * Create a WebGL texture for a given {@link Imagery} instance.
+    *
+    * @private
+    *
+    * @param {Context} context The rendered context to use to create textures.
+    * @param {Imagery} imagery The imagery for which to create a texture.
+    */
+    ImageryLayer.prototype._createTexture = function(context, imagery) {
     var imageryProvider = this._imageryProvider;
     
     // If this imagery provider has a discard policy, use it to check if this
     // image should be discarded.
     if (defined(imageryProvider.tileDiscardPolicy)) {
-        var discardPolicy = imageryProvider.tileDiscardPolicy;
-        if (defined(discardPolicy)) {
-            // If the discard policy is not ready yet, transition back to the
-            // RECEIVED state and we'll try again next time.
-            if (!discardPolicy.isReady()) {
-                imagery.state = ImageryState.RECEIVED;
-                return;
-            }
-            
-            // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
-            if (discardPolicy.shouldDiscardImage(imagery.image)) {
-                imagery.state = ImageryState.INVALID;
-                return;
-            }
-        }
+    var discardPolicy = imageryProvider.tileDiscardPolicy;
+    if (defined(discardPolicy)) {
+    // If the discard policy is not ready yet, transition back to the
+    // RECEIVED state and we'll try again next time.
+    if (!discardPolicy.isReady()) {
+    imagery.state = ImageryState.RECEIVED;
+    return;
+    }
+    
+    // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
+    if (discardPolicy.shouldDiscardImage(imagery.image)) {
+    imagery.state = ImageryState.INVALID;
+    return;
+    }
+    }
     }
     
     // Imagery does not need to be discarded, so upload it to WebGL.
     var texture = context.createTexture2D({
-        source : imagery.image,
-        pixelFormat : imageryProvider.hasAlphaChannel ? PixelFormat.RGBA : PixelFormat.RGB
+    source : imagery.image,
+    pixelFormat : imageryProvider.hasAlphaChannel ? PixelFormat.RGBA : PixelFormat.RGB
     });
     
     imagery.texture = texture;
     imagery.image = undefined;
     imagery.state = ImageryState.TEXTURE_LOADED;
-};
-
-/**
-* Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
-* mipmaps for the geographic texture.
-*
-* @private
-*
-* @param {Context} context The rendered context to use.
-* @param {Imagery} imagery The imagery instance to reproject.
-*/
-ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
+    };
+    
+    /**
+    * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
+    * mipmaps for the geographic texture.
+    *
+    * @private
+    *
+    * @param {Context} context The rendered context to use.
+    * @param {Imagery} imagery The imagery instance to reproject.
+    */
+    ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
     var texture = imagery.texture;
     var rectangle = imagery.rectangle;
     
@@ -707,43 +513,43 @@ ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
     // avoids precision problems in the reprojection transformation while making
     // no noticeable difference in the georeferencing of the image.
     if (!(this._imageryProvider.tilingScheme instanceof GeographicTilingScheme) &&
-        (rectangle.east - rectangle.west) / texture.width > 1e-5) {
-            var reprojectedTexture = reprojectToGeographic(this, context, texture, imagery.rectangle);
-            texture.destroy();
-            imagery.texture = texture = reprojectedTexture;
+    (rectangle.east - rectangle.west) / texture.width > 1e-5) {
+    var reprojectedTexture = reprojectToGeographic(this, context, texture, imagery.rectangle);
+    texture.destroy();
+    imagery.texture = texture = reprojectedTexture;
     }
     
     // Use mipmaps if this texture has power-of-two dimensions.
     if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
-        var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
-        if (!defined(mipmapSampler)) {
-            var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
-            mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
-                wrapS : TextureWrap.CLAMP_TO_EDGE,
-                wrapT : TextureWrap.CLAMP_TO_EDGE,
-                minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
-                magnificationFilter : TextureMagnificationFilter.LINEAR,
-                maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(this._maximumAnisotropy, maximumSupportedAnisotropy))
-            });
-        }
-        texture.generateMipmap(MipmapHint.NICEST);
-        texture.sampler = mipmapSampler;
+    var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
+    if (!defined(mipmapSampler)) {
+    var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
+    mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
+    wrapS : TextureWrap.CLAMP_TO_EDGE,
+    wrapT : TextureWrap.CLAMP_TO_EDGE,
+    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
+    magnificationFilter : TextureMagnificationFilter.LINEAR,
+    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(this._maximumAnisotropy, maximumSupportedAnisotropy))
+    });
+    }
+    texture.generateMipmap(MipmapHint.NICEST);
+    texture.sampler = mipmapSampler;
     } else {
-        var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
-        if (!defined(nonMipmapSampler)) {
-            nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = context.createSampler({
-                wrapS : TextureWrap.CLAMP_TO_EDGE,
-                wrapT : TextureWrap.CLAMP_TO_EDGE,
-                minificationFilter : TextureMinificationFilter.LINEAR,
-                magnificationFilter : TextureMagnificationFilter.LINEAR
-            });
-        }
-        texture.sampler = nonMipmapSampler;
+    var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
+    if (!defined(nonMipmapSampler)) {
+    nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = context.createSampler({
+    wrapS : TextureWrap.CLAMP_TO_EDGE,
+    wrapT : TextureWrap.CLAMP_TO_EDGE,
+    minificationFilter : TextureMinificationFilter.LINEAR,
+    magnificationFilter : TextureMagnificationFilter.LINEAR
+    });
+    }
+    texture.sampler = nonMipmapSampler;
     }
     
     imagery.state = ImageryState.READY;
-};
-*/
+    };
+    */
     // FIXME: Not implemented
     func getImageryFromCache (#x: Int, y: Int, level: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         //var cacheKey = getImageryCacheKey(x, y, level);
@@ -757,37 +563,37 @@ ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
         imagery.addReference();*/
         return imagery
     }
-/*
-ImageryLayer.prototype.removeImageryFromCache = function(imagery) {
-    var cacheKey = getImageryCacheKey(imagery.x, imagery.y, imagery.level);
-    delete this._imageryCache[cacheKey];
-};
-
-function getImageryCacheKey(x, y, level) {
-    return JSON.stringify([x, y, level]);
-}
-
-var uniformMap = {
+    
+    func removeImageryFromCache (imagery: Imagery) {
+        var cacheKey = getImageryCacheKey(x: imagery.x, y: imagery.y, level: imagery.level)
+        _imageryCache.removeValueForKey(cacheKey)
+    }
+    
+    func getImageryCacheKey(#x: Int, y: Int, level: Int) -> String {
+        return "x:\(x)y\(y)level\(level)"
+    }
+    /*
+    var uniformMap = {
     u_textureDimensions : function() {
-        return this.textureDimensions;
+    return this.textureDimensions;
     },
     u_texture : function() {
-        return this.texture;
+    return this.texture;
     },
     u_northLatitude : function() {
-        return this.northLatitude;
+    return this.northLatitude;
     },
     u_southLatitude : function() {
-        return this.southLatitude;
+    return this.southLatitude;
     },
     u_southMercatorYLow : function() {
-        return this.southMercatorYLow;
+    return this.southMercatorYLow;
     },
     u_southMercatorYHigh : function() {
-        return this.southMercatorYHigh;
+    return this.southMercatorYHigh;
     },
     u_oneOverMercatorHeight : function() {
-        return this.oneOverMercatorHeight;
+    return this.oneOverMercatorHeight;
     },
     
     textureDimensions : new Cartesian2(),
@@ -797,87 +603,87 @@ var uniformMap = {
     southMercatorYHigh : 0,
     southMercatorYLow : 0,
     oneOverMercatorHeight : 0
-};
-
-var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
-
-function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
+    };
+    
+    var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
+    
+    function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
     var reproject = context.cache.imageryLayer_reproject;
     
     if (!defined(reproject)) {
-        reproject = context.cache.imageryLayer_reproject = {
-            framebuffer : undefined,
-            vertexArray : undefined,
-            shaderProgram : undefined,
-            renderState : undefined,
-            sampler : undefined,
-            destroy : function() {
-                if (defined(this.framebuffer)) {
-                    this.framebuffer.destroy();
-                }
-                if (defined(this.vertexArray)) {
-                    this.vertexArray.destroy();
-                }
-                if (defined(this.shaderProgram)) {
-                    this.shaderProgram.destroy();
-                }
-            }
-        };
-        
-        // We need a vertex array with close to one vertex per output texel because we're doing
-        // the reprojection by computing texture coordinates in the vertex shader.
-        // If we computed Web Mercator texture coordinate per-fragment instead, we could get away with only
-        // four vertices.  Problem is: fragment shaders have limited precision on many mobile devices,
-        // leading to all kinds of smearing artifacts.  Current browsers (Chrome 26 for example)
-        // do not correctly report the available fragment shader precision, so we can't have different
-        // paths for devices with or without high precision fragment shaders, even if we want to.
-        
-        var positions = new Array(256 * 256 * 2);
-        var index = 0;
-        for (var j = 0; j < 256; ++j) {
-            var y = j / 255.0;
-            for (var i = 0; i < 256; ++i) {
-                var x = i / 255.0;
-                positions[index++] = x;
-                positions[index++] = y;
-            }
-        }
-        
-        var reprojectGeometry = new Geometry({
-        attributes : {
-        position : new GeometryAttribute({
-        componentDatatype : ComponentDatatype.FLOAT,
-        componentsPerAttribute : 2,
-        values : positions
-        })
-        },
-        indices : TerrainProvider.getRegularGridIndices(256, 256),
-        primitiveType : PrimitiveType.TRIANGLES
-        });
-        
-        var reprojectAttribInds = {
-            position : 0
-        };
-        
-        reproject.vertexArray = context.createVertexArrayFromGeometry({
-            geometry : reprojectGeometry,
-            attributeLocations : reprojectAttribInds,
-            bufferUsage : BufferUsage.STATIC_DRAW
-        });
-        
-        reproject.shaderProgram = context.createShaderProgram(
-            ReprojectWebMercatorVS,
-            ReprojectWebMercatorFS,
-            reprojectAttribInds);
-        
-        var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
-        reproject.sampler = context.createSampler({
-            wrapS : TextureWrap.CLAMP_TO_EDGE,
-            wrapT : TextureWrap.CLAMP_TO_EDGE,
-            minificationFilter : TextureMinificationFilter.LINEAR,
-            magnificationFilter : TextureMagnificationFilter.LINEAR,
-            maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
-        });
+    reproject = context.cache.imageryLayer_reproject = {
+    framebuffer : undefined,
+    vertexArray : undefined,
+    shaderProgram : undefined,
+    renderState : undefined,
+    sampler : undefined,
+    destroy : function() {
+    if (defined(this.framebuffer)) {
+    this.framebuffer.destroy();
+    }
+    if (defined(this.vertexArray)) {
+    this.vertexArray.destroy();
+    }
+    if (defined(this.shaderProgram)) {
+    this.shaderProgram.destroy();
+    }
+    }
+    };
+    
+    // We need a vertex array with close to one vertex per output texel because we're doing
+    // the reprojection by computing texture coordinates in the vertex shader.
+    // If we computed Web Mercator texture coordinate per-fragment instead, we could get away with only
+    // four vertices.  Problem is: fragment shaders have limited precision on many mobile devices,
+    // leading to all kinds of smearing artifacts.  Current browsers (Chrome 26 for example)
+    // do not correctly report the available fragment shader precision, so we can't have different
+    // paths for devices with or without high precision fragment shaders, even if we want to.
+    
+    var positions = new Array(256 * 256 * 2);
+    var index = 0;
+    for (var j = 0; j < 256; ++j) {
+    var y = j / 255.0;
+    for (var i = 0; i < 256; ++i) {
+    var x = i / 255.0;
+    positions[index++] = x;
+    positions[index++] = y;
+    }
+    }
+    
+    var reprojectGeometry = new Geometry({
+    attributes : {
+    position : new GeometryAttribute({
+    componentDatatype : ComponentDatatype.FLOAT,
+    componentsPerAttribute : 2,
+    values : positions
+    })
+    },
+    indices : TerrainProvider.getRegularGridIndices(256, 256),
+    primitiveType : PrimitiveType.TRIANGLES
+    });
+    
+    var reprojectAttribInds = {
+    position : 0
+    };
+    
+    reproject.vertexArray = context.createVertexArrayFromGeometry({
+    geometry : reprojectGeometry,
+    attributeLocations : reprojectAttribInds,
+    bufferUsage : BufferUsage.STATIC_DRAW
+    });
+    
+    reproject.shaderProgram = context.createShaderProgram(
+    ReprojectWebMercatorVS,
+    ReprojectWebMercatorFS,
+    reprojectAttribInds);
+    
+    var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
+    reproject.sampler = context.createSampler({
+    wrapS : TextureWrap.CLAMP_TO_EDGE,
+    wrapT : TextureWrap.CLAMP_TO_EDGE,
+    minificationFilter : TextureMinificationFilter.LINEAR,
+    magnificationFilter : TextureMagnificationFilter.LINEAR,
+    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
+    });
     }
     
     texture.sampler = reproject.sampler;
@@ -904,11 +710,11 @@ function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
     uniformMap.oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY);
     
     var outputTexture = context.createTexture2D({
-        width : width,
-        height : height,
-        pixelFormat : texture.pixelFormat,
-        pixelDatatype : texture.pixelDatatype,
-        preMultiplyAlpha : texture.preMultiplyAlpha
+    width : width,
+    height : height,
+    pixelFormat : texture.pixelFormat,
+    pixelDatatype : texture.pixelDatatype,
+    preMultiplyAlpha : texture.preMultiplyAlpha
     });
     
     // Allocate memory for the mipmaps.  Failure to do this before rendering
@@ -918,11 +724,11 @@ function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
     outputTexture.generateMipmap(MipmapHint.NICEST);
     
     if (defined(reproject.framebuffer)) {
-        reproject.framebuffer.destroy();
+    reproject.framebuffer.destroy();
     }
     
     reproject.framebuffer = context.createFramebuffer({
-        colorTextures : [outputTexture]
+    colorTextures : [outputTexture]
     });
     reproject.framebuffer.destroyAttachments = false;
     
@@ -933,12 +739,12 @@ function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
     command.execute(context);
     
     if ((!defined(reproject.renderState)) ||
-        (reproject.renderState.viewport.width !== width) ||
-        (reproject.renderState.viewport.height !== height)) {
-            
-            reproject.renderState = context.createRenderState({
-                viewport : new BoundingRectangle(0, 0, width, height)
-            });
+    (reproject.renderState.viewport.width !== width) ||
+    (reproject.renderState.viewport.height !== height)) {
+    
+    reproject.renderState = context.createRenderState({
+    viewport : new BoundingRectangle(0, 0, width, height)
+    });
     }
     
     var drawCommand = new DrawCommand({
@@ -952,31 +758,27 @@ function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
     drawCommand.execute(context);
     
     return outputTexture;
-}
-
-/**
-* Gets the level with the specified world coordinate spacing between texels, or less.
-*
-* @param {Number} texelSpacing The texel spacing for which to find a corresponding level.
-* @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
-* @returns {Number} The level with the specified texel spacing or less.
-*/
-function getLevelWithMaximumTexelSpacing(layer, texelSpacing, latitudeClosestToEquator) {
-    // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
-    var imageryProvider = layer._imageryProvider;
-    var tilingScheme = imageryProvider.tilingScheme;
-    var ellipsoid = tilingScheme.ellipsoid;
-    var latitudeFactor = !(layer._imageryProvider.tilingScheme instanceof GeographicTilingScheme) ? Math.cos(latitudeClosestToEquator) : 1.0;
-    var tilingSchemeRectangle = tilingScheme.rectangle;
-    var levelZeroMaximumTexelSpacing = ellipsoid.maximumRadius * (tilingSchemeRectangle.east - tilingSchemeRectangle.west) * latitudeFactor / (imageryProvider.tileWidth * tilingScheme.getNumberOfXTilesAtLevel(0));
+    }
+    */
+    /**
+    * Gets the level with the specified world coordinate spacing between texels, or less.
+    *
+    * @param {Number} texelSpacing The texel spacing for which to find a corresponding level.
+    * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
+    * @returns {Number} The level with the specified texel spacing or less.
+    */
+    func levelWithMaximumTexelSpacing(#texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
+        // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
+        let tilingScheme = imageryProvider.tilingScheme
+        let ellipsoid = tilingScheme.ellipsoid
+        let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0
+        let tilingSchemeRectangle = tilingScheme.rectangle
+        let levelZeroMaximumTexelSpacing = ellipsoid.maximumRadius * (tilingSchemeRectangle.east - tilingSchemeRectangle.west) * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAtLevel(0))
+        
+        let twoToTheLevelPower = levelZeroMaximumTexelSpacing / texelSpacing;
+        let level = log(twoToTheLevelPower) / log(2)
+        let rounded = Int(round(level))
+        return rounded | 0
+    }
     
-    var twoToTheLevelPower = levelZeroMaximumTexelSpacing / texelSpacing;
-    var level = Math.log(twoToTheLevelPower) / Math.log(2);
-    var rounded = Math.round(level);
-    return rounded | 0;
-}
-
-return ImageryLayer;
-});*/
-
 }

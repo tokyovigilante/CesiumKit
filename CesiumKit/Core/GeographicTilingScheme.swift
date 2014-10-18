@@ -27,11 +27,11 @@ import Foundation
      */
 class GeographicTilingScheme: TilingScheme {
 
-        /**
-         * Gets the ellipsoid that is tiled by this tiling scheme.
-         * @memberof GeographicTilingScheme.prototype
-         * @type {Ellipsoid}
-         */
+    /**
+    * Gets the ellipsoid that is tiled by this tiling scheme.
+    * @memberof GeographicTilingScheme.prototype
+    * @type {Ellipsoid}
+    */
     var ellipsoid: Ellipsoid
     
     /**
@@ -164,7 +164,7 @@ class GeographicTilingScheme: TilingScheme {
      * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
      *          if 'result' is undefined.
      */
-    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2? {
+    func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         if (position.latitude > rectangle.north ||
             position.latitude < rectangle.south ||
             position.longitude < rectangle.west ||
@@ -172,25 +172,22 @@ class GeographicTilingScheme: TilingScheme {
             // outside the bounds of the tiling scheme
             return nil
         }
-
         var xTiles = numberOfXTilesAtLevel(level)
         var yTiles = numberOfYTilesAtLevel(level)
 
         var xTileWidth = (rectangle.east - rectangle.west) / Double(xTiles)
         var yTileHeight = (rectangle.north - rectangle.south) / Double(yTiles)
-// FIXME: Tile coordinate bitwise operator
-        /*var xTileCoordinate = position.longitude - rectangle.west) / xTileWidth | 0
+
+        var xTileCoordinate = Int(round((position.longitude - rectangle.west) / xTileWidth))
         if (xTileCoordinate >= xTiles) {
             xTileCoordinate = xTiles - 1
         }
         //var
-        var yTileCoordinate = rectangle.north - position.latitude
-        yTileCoordinate /= Double(yTileHeight) | 0.0
+        var yTileCoordinate = Int(round((rectangle.north - position.latitude) / yTileHeight))
         if (yTileCoordinate >= yTiles) {
             yTileCoordinate = yTiles - 1
         }
-*/
-        return Cartesian2()//x: xTileCoordinate, y: yTileCoordinate)
+        return (x: xTileCoordinate, y: yTileCoordinate)
     }
 
 }
