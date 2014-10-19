@@ -57,7 +57,7 @@ struct TerrainMesh {
     * Index buffers (if any) generated from indices.
     * @type {Dictionary<String, IndexBuffer>}
     */
-    var indexBuffers = [String: IndexBuffer]()
+    var indexBuffer: IndexBuffer? = nil//s = [String: IndexBuffer]()
     
     /**
     * The lowest height in the tile, in meters above the ellipsoid.
@@ -93,7 +93,5 @@ struct TerrainMesh {
         self.maximumHeight = maximumHeight
         self.boundingSphere3D = boundingSphere3D
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
-        
-        indexBuffers = [String: IndexBuffer]()
     }
 }

@@ -71,7 +71,7 @@
 *   waterMask : waterMask
 * });
 */
-class HeightmapTerrainData: TerrainData {
+class HeightmapTerrainData: TerrainData, Equatable {
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
     * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
@@ -268,48 +268,23 @@ class HeightmapTerrainData: TerrainData {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    override func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData? {
-        //>>includeStart('debug', pragmas.debug);
-        /*if (!defined(tilingScheme)) {
-            throw new DeveloperError('tilingScheme is required.');
-        }
-        if (!defined(thisX)) {
-            throw new DeveloperError('thisX is required.');
-        }
-        if (!defined(thisY)) {
-            throw new DeveloperError('thisY is required.');
-        }
-        if (!defined(thisLevel)) {
-            throw new DeveloperError('thisLevel is required.');
-        }
-        if (!defined(descendantX)) {
-            throw new DeveloperError('descendantX is required.');
-        }
-        if (!defined(descendantY)) {
-            throw new DeveloperError('descendantY is required.');
-        }
-        if (!defined(descendantLevel)) {
-            throw new DeveloperError('descendantLevel is required.');
-        }
-        var levelDifference = descendantLevel - thisLevel;
-        if (levelDifference > 1) {
-            throw new DeveloperError('Upsampling through more than one level at a time is not currently supported.');
-        }
-        //>>includeEnd('debug');
+    override func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData {
+        //FIXME: Unimplemented
+        /*let levelDifference = descendantLevel - thisLevel
+        assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
         
-        var result;
+        var result: TerrainData
         
-        if ((this._width % 2) === 1 && (this._height % 2) === 1) {
+        if ((_width % 2) == 1 && (_height % 2) == 1) {
             // We have an odd number of posts greater than 2 in each direction,
             // so we can upsample by simply dropping half of the posts in each direction.
-            result = upsampleBySubsetting(this, tilingScheme, thisX, thisY, thisLevel, descendantX, descendantY, descendantLevel);
-        } else {
+            result =*/return upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
+/*        } else {
             // The number of posts in at least one direction is even, so we must upsample
             // by interpolating heights.
-            result = upsampleByInterpolating(this, tilingScheme, thisX, thisY, thisLevel, descendantX, descendantY, descendantLevel);
+            result = upsampleByInterpolating(this, tilingScheme, thisX, thisY, thisLevel, descendantX, descendantY, descendantLevel)
         }
-        
-        return result;*/return nil
+        */
     }
     
     private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
@@ -317,41 +292,41 @@ class HeightmapTerrainData: TerrainData {
         /*let levelDifference = 1
         
         // Compute the post indices of the corners of this tile within its own level.
-        let leftPostIndex = descendantX * (width - 1)
-        let rightPostIndex = leftPostIndex + width - 1
-        let topPostIndex = descendantY * (height - 1)
-        let bottomPostIndex = topPostIndex + height - 1
+        var leftPostIndex = descendantX * (_width - 1)
+        var rightPostIndex = leftPostIndex + _width - 1
+        var topPostIndex = descendantY * (_height - 1)
+        var bottomPostIndex = topPostIndex + _height - 1
         
         // Transform the post indices to the ancestor's level.
-        var twoToTheLevelDifference = 1 << levelDifference;
-        leftPostIndex /= twoToTheLevelDifference;
-        rightPostIndex /= twoToTheLevelDifference;
-        topPostIndex /= twoToTheLevelDifference;
-        bottomPostIndex /= twoToTheLevelDifference;
+        let twoToTheLevelDifference = 1 << levelDifference
+        leftPostIndex /= twoToTheLevelDifference
+        rightPostIndex /= twoToTheLevelDifference
+        topPostIndex /= twoToTheLevelDifference
+        bottomPostIndex /= twoToTheLevelDifference
         
         // Adjust the indices to be relative to the northwest corner of the source tile.
-        var sourceLeft = thisX * (width - 1);
-        var sourceTop = thisY * (height - 1);
-        leftPostIndex -= sourceLeft;
-        rightPostIndex -= sourceLeft;
-        topPostIndex -= sourceTop;
-        bottomPostIndex -= sourceTop;
+        var sourceLeft = thisX * (_width - 1)
+        var sourceTop = thisY * (_height - 1)
+        leftPostIndex -= sourceLeft
+        rightPostIndex -= sourceLeft
+        topPostIndex -= sourceTop
+        bottomPostIndex -= sourceTop
+    
+        var leftInteger = leftPostIndex | 0
+        var rightInteger = rightPostIndex | 0
+        var topInteger = topPostIndex | 0
+        var bottomInteger = bottomPostIndex | 0
         
-        var leftInteger = leftPostIndex | 0;
-        var rightInteger = rightPostIndex | 0;
-        var topInteger = topPostIndex | 0;
-        var bottomInteger = bottomPostIndex | 0;
+        var upsampledWidth = (rightInteger - leftInteger + 1)
+        var upsampledHeight = (bottomInteger - topInteger + 1)
         
-        var upsampledWidth = (rightInteger - leftInteger + 1);
-        var upsampledHeight = (bottomInteger - topInteger + 1);
-        
-        var sourceHeights = terrainData._buffer;
-        var structure = terrainData._structure;
+        var sourceHeights = _buffer
+        var structure = _structure
         
         // Copy the relevant posts.
-        var numberOfHeights = upsampledWidth * upsampledHeight;
-        var numberOfElements = numberOfHeights * structure.stride;
-        var heights = new sourceHeights.constructor(numberOfElements);
+        var numberOfHeights = upsampledWidth * upsampledHeight
+        var numberOfElements = numberOfHeights * structure.stride
+        var heights = sourceHeights.constructor(numberOfElements);
         
         var outputIndex = 0;
         var i, j;
@@ -553,4 +528,11 @@ class HeightmapTerrainData: TerrainData {
             }
         }*/
     }
+
+}
+
+func ==(lhs: HeightmapTerrainData, rhs: HeightmapTerrainData) -> Bool {
+    let left = unsafeAddressOf(lhs)
+    let right = unsafeAddressOf(rhs)
+    return left == right
 }

@@ -75,8 +75,8 @@ class TileTerrain {
         surfaceTile.freeVertexArray()
         
         // Transfer ownership of the vertex array to the tile itself.
-        surfaceTile.vertexArray = this.vertexArray;
-        this.vertexArray = undefined;
+        surfaceTile.vertexArray = vertexArray
+        vertexArray = nil
     }
     
     func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
@@ -130,48 +130,43 @@ class TileTerrain {
         
         AsyncResult<TerrainData>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
-/*
-TileTerrain.prototype.processUpsampleStateMachine = function(context, terrainProvider, x, y, level) {
-    if (this.state === TerrainState.UNLOADED) {
-        var upsampleDetails = this.upsampleDetails;
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(upsampleDetails)) {
-            throw new DeveloperError('TileTerrain cannot upsample unless provided upsampleDetails.');
+
+    func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        /*if (state == .Unloaded) {
+
+            assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
+            
+            var sourceData = upsampleDetails!.data
+            var sourceX = upsampleDetails!.x
+            var sourceY = upsampleDetails!.y
+            var sourceLevel = upsampleDetails!.level
+            
+            this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
+            if (!defined(this.data)) {
+                // The upsample request has been deferred - try again later.
+                return;
+            }
+            
+            this.state = TerrainState.RECEIVING;
+            
+            var that = this;
+            when(this.data, function(terrainData) {
+                that.data = terrainData;
+                that.state = TerrainState.RECEIVED;
+                }, function() {
+                    that.state = TerrainState.FAILED;
+                });
         }
-        //>>includeEnd('debug');
         
-        var sourceData = upsampleDetails.data;
-        var sourceX = upsampleDetails.x;
-        var sourceY = upsampleDetails.y;
-        var sourceLevel = upsampleDetails.level;
-        
-        this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
-        if (!defined(this.data)) {
-            // The upsample request has been deferred - try again later.
-            return;
+        if (this.state === TerrainState.RECEIVED) {
+            transform(this, context, terrainProvider, x, y, level);
         }
         
-        this.state = TerrainState.RECEIVING;
-        
-        var that = this;
-        when(this.data, function(terrainData) {
-            that.data = terrainData;
-            that.state = TerrainState.RECEIVED;
-            }, function() {
-                that.state = TerrainState.FAILED;
-            });
+        if (this.state === TerrainState.TRANSFORMED) {
+            createResources(this, context, terrainProvider, x, y, level);
+        }*/
     }
-    
-    if (this.state === TerrainState.RECEIVED) {
-        transform(this, context, terrainProvider, x, y, level);
-    }
-    
-    if (this.state === TerrainState.TRANSFORMED) {
-        createResources(this, context, terrainProvider, x, y, level);
-    }
-};
-*/
+
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
 
         weak var weakSelf = self
@@ -205,9 +200,9 @@ TileTerrain.prototype.processUpsampleStateMachine = function(context, terrainPro
         let datatype = ComponentDatatype.Float32
         var stride = 0
         var numTexCoordComponents = 0
-        //var typedArray = tileTerrain.mesh.vertices;
+        let terrainMesh = mesh!
         let buffer = context.createVertexBuffer(
-            array: SerializedArray(data: NSData.serializeArray(self.mesh!.vertices), type: datatype),
+            array: SerializedArray(data: NSData.serializeArray(terrainMesh.vertices), type: datatype),
             usage: BufferUsage.StaticDraw)
         
         if terrainProvider.hasVertexNormals {
@@ -237,17 +232,16 @@ TileTerrain.prototype.processUpsampleStateMachine = function(context, terrainPro
                 strideInBytes : stride)
         ]
         
-        var indexBuffer = mesh!.indexBuffers[context.id]
-        if indexBuffer == nil {
-            indexBuffer = context.createIndexBuffer(
+        //var indexBuffer = terrainMesh.indexBuffers[context.id]
+        if mesh!.indexBuffer == nil {
+            mesh!.indexBuffer = context.createIndexBuffer(
                 array: SerializedArray(data: NSData.serializeArray(self.mesh!.indices), type: .UnsignedShort),
                 usage: .StaticDraw,
                 indexDatatype: .UnsignedShort)
-            mesh!.indexBuffers.removeAll()
-            mesh!.indexBuffers[context.id] = indexBuffer
+            //mesh!.indexBuffers.removeAll()
+            //mesh!.indexBuffer/*s[context.id]*/ = indexBuffer
         }
-        
-        vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)
+        vertexArray = context.createVertexArray(attributes, indexBuffer: mesh!.indexBuffer)
         state = .Ready
     }
     

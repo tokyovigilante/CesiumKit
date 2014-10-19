@@ -6,98 +6,60 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+/**
+* Provides tiled imagery using the Bing Maps Imagery REST API.
+*
+* @alias BingMapsImageryProvider
+* @constructor
+*
+* @param {Object} options Object with the following properties:
+* @param {String} options.url The url of the Bing Maps server hosting the imagery.
+* @param {String} [options.key] The Bing Maps key for your application, which can be
+*        created at {@link https://www.bingmapsportal.com/}.
+*        If this parameter is not provided, {@link BingMapsApi.defaultKey} is used.
+*        If {@link BingMapsApi.defaultKey} is undefined as well, a message is
+*        written to the console reminding you that you must create and supply a Bing Maps
+*        key as soon as possible.  Please do not deploy an application that uses
+*        Bing Maps imagery without creating a separate key for your application.
+* @param {String} [options.tileProtocol] The protocol to use when loading tiles, e.g. 'http:' or 'https:'.
+*        By default, tiles are loaded using the same protocol as the page.
+* @param {String} [options.mapStyle=BingMapsStyle.AERIAL] The type of Bing Maps
+*        imagery to load.
+* @param {TileDiscardPolicy} [options.tileDiscardPolicy] The policy that determines if a tile
+*        is invalid and should be discarded.  If this value is not specified, a default
+*        {@link DiscardMissingTileImagePolicy} is used which requests
+*        tile 0,0 at the maximum tile level and checks pixels (0,0), (120,140), (130,160),
+*        (200,50), and (200,200).  If all of these pixels are transparent, the discard check is
+*        disabled and no tiles are discarded.  If any of them have a non-transparent color, any
+*        tile that has the same values in these pixel locations is discarded.  The end result of
+*        these defaults should be correct tile discarding for a standard Bing Maps server.  To ensure
+*        that no tiles are discarded, construct and pass a {@link NeverTileDiscardPolicy} for this
+*        parameter.
+* @param {Proxy} [options.proxy] A proxy to use for requests. This object is
+*        expected to have a getURL function which returns the proxied URL, if needed.
+*
+* @see ArcGisMapServerImageryProvider
+* @see GoogleEarthImageryProvider
+* @see OpenStreetMapImageryProvider
+* @see SingleTileImageryProvider
+* @see TileMapServiceImageryProvider
+* @see WebMapServiceImageryProvider
+*
+* @see {@link http://msdn.microsoft.com/en-us/library/ff701713.aspx|Bing Maps REST Services}
+* @see {@link http://www.w3.org/TR/cors/|Cross-Origin Resource Sharing}
+*
+* @example
+* var bing = new Cesium.BingMapsImageryProvider({
+*     url : '//dev.virtualearth.net',
+*     key : 'get-yours-at-https://www.bingmapsportal.com/',
+*     mapStyle : Cesium.BingMapsStyle.AERIAL
+* });
+*/
 public class BingMapsImageryProvider: ImageryProvider {
-    /*
-    /*global define*/
-    define([
-    '../Core/BingMapsApi',
-    '../Core/Cartesian2',
-    '../Core/Credit',
-    '../Core/defaultValue',
-    '../Core/defined',
-    '../Core/defineProperties',
-    '../Core/DeveloperError',
-    '../Core/Event',
-    '../Core/jsonp',
-    '../Core/Math',
-    '../Core/Rectangle',
-    '../Core/TileProviderError',
-    '../Core/WebMercatorTilingScheme',
-    '../ThirdParty/when',
-    './BingMapsStyle',
-    './DiscardMissingTileImagePolicy',
-    './ImageryProvider'
-    ], function(
-    BingMapsApi,
-    Cartesian2,
-    Credit,
-    defaultValue,
-    defined,
-    defineProperties,
-    DeveloperError,
-    Event,
-    jsonp,
-    CesiumMath,
-    Rectangle,
-    TileProviderError,
-    WebMercatorTilingScheme,
-    when,
-    BingMapsStyle,
-    DiscardMissingTileImagePolicy,
-    ImageryProvider) {
-    "use strict";
-    
-    /**
-    * Provides tiled imagery using the Bing Maps Imagery REST API.
-    *
-    * @alias BingMapsImageryProvider
-    * @constructor
-    *
-    * @param {Object} options Object with the following properties:
-    * @param {String} options.url The url of the Bing Maps server hosting the imagery.
-    * @param {String} [options.key] The Bing Maps key for your application, which can be
-    *        created at {@link https://www.bingmapsportal.com/}.
-    *        If this parameter is not provided, {@link BingMapsApi.defaultKey} is used.
-    *        If {@link BingMapsApi.defaultKey} is undefined as well, a message is
-    *        written to the console reminding you that you must create and supply a Bing Maps
-    *        key as soon as possible.  Please do not deploy an application that uses
-    *        Bing Maps imagery without creating a separate key for your application.
-    * @param {String} [options.tileProtocol] The protocol to use when loading tiles, e.g. 'http:' or 'https:'.
-    *        By default, tiles are loaded using the same protocol as the page.
-    * @param {String} [options.mapStyle=BingMapsStyle.AERIAL] The type of Bing Maps
-    *        imagery to load.
-    * @param {TileDiscardPolicy} [options.tileDiscardPolicy] The policy that determines if a tile
-    *        is invalid and should be discarded.  If this value is not specified, a default
-    *        {@link DiscardMissingTileImagePolicy} is used which requests
-    *        tile 0,0 at the maximum tile level and checks pixels (0,0), (120,140), (130,160),
-    *        (200,50), and (200,200).  If all of these pixels are transparent, the discard check is
-    *        disabled and no tiles are discarded.  If any of them have a non-transparent color, any
-    *        tile that has the same values in these pixel locations is discarded.  The end result of
-    *        these defaults should be correct tile discarding for a standard Bing Maps server.  To ensure
-    *        that no tiles are discarded, construct and pass a {@link NeverTileDiscardPolicy} for this
-    *        parameter.
-    * @param {Proxy} [options.proxy] A proxy to use for requests. This object is
-    *        expected to have a getURL function which returns the proxied URL, if needed.
-    *
-    * @see ArcGisMapServerImageryProvider
-    * @see GoogleEarthImageryProvider
-    * @see OpenStreetMapImageryProvider
-    * @see SingleTileImageryProvider
-    * @see TileMapServiceImageryProvider
-    * @see WebMapServiceImageryProvider
-    *
-    * @see {@link http://msdn.microsoft.com/en-us/library/ff701713.aspx|Bing Maps REST Services}
-    * @see {@link http://www.w3.org/TR/cors/|Cross-Origin Resource Sharing}
-    *
-    * @example
-    * var bing = new Cesium.BingMapsImageryProvider({
-    *     url : '//dev.virtualearth.net',
-    *     key : 'get-yours-at-https://www.bingmapsportal.com/',
-    *     mapStyle : Cesium.BingMapsStyle.AERIAL
-    * });
-    */
-    var BingMapsImageryProvider = function BingMapsImageryProvider(options) {
-    options = defaultValue(options, {});
+
+    init () {
+    //var BingMapsImageryProvider = function BingMapsImageryProvider(options) {
+    /*options = defaultValue(options, {});
     
     //>>includeStart('debug', pragmas.debug);
     if (!defined(options.url)) {
@@ -128,7 +90,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     this.defaultGamma = 1.3;
     }
     */
-    var tilingScheme = WebMercatorTilingScheme(numberOfLevelZeroTilesX: 2, numberOfLevelZeroTilesY: 2)
+        super.init(tilingScheme: WebMercatorTilingScheme(numberOfLevelZeroTilesX: 2, numberOfLevelZeroTilesY: 2))
     /*
     this._tileWidth = undefined;
     this._tileHeight = undefined;
@@ -138,7 +100,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     this._errorEvent = new Event();
     */
-    var ready = false
+        ready = false
     /*
     var metadataUrl = this._url + '/REST/v1/Imagery/Metadata/' + this._mapStyle + '?incl=ImageryProviders&key=' + this._key;
     var that = this;
@@ -195,9 +157,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     }
     
     that._ready = true;
-    TileProviderError.handleSuccess(metadataError);
+    TileProviderError.handleSuccess(metadataError);*/
     }
-    
+    /*
     function metadataFailure(e) {
     var message = 'An error occurred while accessing ' + metadataUrl + '.';
     metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);

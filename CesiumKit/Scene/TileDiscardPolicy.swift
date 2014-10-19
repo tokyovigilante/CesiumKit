@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import ImageIO
+
 /**
 * A policy for discarding tile images according to some criteria.  This type describes an
 * interface and is not intended to be instantiated directly.
@@ -33,5 +35,5 @@ protocol TileDiscardPolicy {
     * @param {Image|Promise} image An image, or a promise that will resolve to an image.
     * @returns {Boolean} A promise that will resolve to true if the tile should be discarded.
     */
-    func shouldDiscardImage (image: Image) -> Bool
+    func shouldDiscardImage (image: CGImage) -> Bool
 }

@@ -209,34 +209,26 @@ struct BoundingSphere: Intersectable {
         projection: Projection = GeographicProjection(),
         minimumHeight: Double = 0.0,
         maximumHeight: Double = 0.0) -> BoundingSphere {
-            // FIXME FromRectangleWithHeights2D
-            /*var fromRectangle2DLowerLeft = Cartesian3()
-            var fromRectangle2DUpperRight = Cartesian3()
-            var fromRectangle2DSouthwest = Cartographic()
-            var fromRectangle2DNortheast = Cartographic()
-            
+
             if rectangle == nil {
                 return BoundingSphere()
             }
             
-            Rectangle.getSouthwest(rectangle, fromRectangle2DSouthwest)
+            var fromRectangle2DSouthwest = rectangle!.southwest()
             fromRectangle2DSouthwest.height = minimumHeight
-            Rectangle.getNortheast(rectangle, fromRectangle2DNortheast)
+            var fromRectangle2DNortheast = rectangle!.northeast()
             fromRectangle2DNortheast.height = maximumHeight
             
-            var lowerLeft = projection.project(fromRectangle2DSouthwest, fromRectangle2DLowerLeft)
-            var upperRight = projection.project(fromRectangle2DNortheast, fromRectangle2DUpperRight)
+            let lowerLeft = projection.project(fromRectangle2DSouthwest)
+            let upperRight = projection.project(fromRectangle2DNortheast)
             
-            var width = upperRight.x - lowerLeft.x;
-            var height = upperRight.y - lowerLeft.y;
-            var elevation = upperRight.z - lowerLeft.z;
+            var width = upperRight.x - lowerLeft.x
+            var height = upperRight.y - lowerLeft.y
+            var elevation = upperRight.z - lowerLeft.z
             
-            result.radius = Math.sqrt(width * width + height * height + elevation * elevation) * 0.5;
-            var center = result.center;
-            center.x = lowerLeft.x + width * 0.5;
-            center.y = lowerLeft.y + height * 0.5;
-            center.z = lowerLeft.z + elevation * 0.5;
-            return result;*/return BoundingSphere()
+            return BoundingSphere(
+                center: Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5),
+                radius: sqrt(width * width + height * height + elevation * elevation) * 0.5)
     }
 
 /**
@@ -585,47 +577,25 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
     result.radius = array[startingIndex];
     return result;
 };
-
-var unionScratch = new Cartesian3();
-var unionScratchCenter = new Cartesian3();
-/**
-* Computes a bounding sphere that contains both the left and right bounding spheres.
-*
-* @param {BoundingSphere} left A sphere to enclose in a bounding sphere.
-* @param {BoundingSphere} right A sphere to enclose in a bounding sphere.
-* @param {BoundingSphere} [result] The object onto which to store the result.
-* @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
 */
-BoundingSphere.union = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
+    /**
+    * Computes a bounding sphere that contains both the left and right bounding spheres.
+    *
+    * @param {BoundingSphere} left A sphere to enclose in a bounding sphere.
+    * @param {BoundingSphere} right A sphere to enclose in a bounding sphere.
+    * @param {BoundingSphere} [result] The object onto which to store the result.
+    * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
+    */
+    func union(other: BoundingSphere) -> BoundingSphere {
+        
+        var newCenter = center.add(other.center).multiplyByScalar(0.5)
+        
+        var radius1 = center.subtract(newCenter).magnitude() + radius
+        var radius2 = other.center.subtract(newCenter).magnitude() + other.radius
+        
+        return BoundingSphere(center: newCenter, radius: max(radius1, radius2))
     }
-    
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    var leftCenter = left.center;
-    var rightCenter = right.center;
-    
-    Cartesian3.add(leftCenter, rightCenter, unionScratchCenter);
-    var center = Cartesian3.multiplyByScalar(unionScratchCenter, 0.5, unionScratchCenter);
-    
-    var radius1 = Cartesian3.magnitude(Cartesian3.subtract(leftCenter, center, unionScratch)) + left.radius;
-    var radius2 = Cartesian3.magnitude(Cartesian3.subtract(rightCenter, center, unionScratch)) + right.radius;
-    
-    result.radius = Math.max(radius1, radius2);
-    Cartesian3.clone(center, result.center);
-    
-    return result;
-};
-
+/*
 var expandScratch = new Cartesian3();
 /**
 * Computes a bounding sphere by enlarging the provided sphere to contain the provided point.

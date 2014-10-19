@@ -171,13 +171,13 @@ class QuadtreePrimitive {
     */
     func update (#context: Context, frameState: FrameState, inout commandList: [Command]) {
   
-        _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: commandList)
+        _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
         
         selectTilesForRendering(context: context, frameState: frameState)
         processTileLoadQueue(context: context, frameState: frameState)
-        //createRenderCommandsForSelectedTiles(context, frameState, commandList)
+        createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
         
-        //this._tileProvider.endUpdate(context, frameState, commandList);*/
+        //_tileProvider.endUpdate(context, frameState, commandList);
     }
     
     /*
@@ -411,20 +411,16 @@ class QuadtreePrimitive {
             }
         }
     }
-    /*
-    function createRenderCommandsForSelectedTiles(primitive, context, frameState, commandList) {
-    function tileDistanceSortFunction(a, b) {
-    return a._distance - b._distance;
+    
+    func createRenderCommandsForSelectedTiles(#context: Context, frameState: FrameState, inout commandList: [Command]) {
+        func tileDistanceSortFunction(a: QuadtreeTile, b: QuadtreeTile) -> Bool {
+            return a.distance < b.distance
+        }
+        _tilesToRender.sort(tileDistanceSortFunction)
+        
+        for tile in _tilesToRender {
+            _tileProvider.showTileThisFrame(tile, context: context, frameState: frameState, commandList: &commandList)
+        }
     }
-    
-    var tileProvider = primitive._tileProvider;
-    var tilesToRender = primitive._tilesToRender;
-    
-    tilesToRender.sort(tileDistanceSortFunction);
-    
-    for (var i = 0, len = tilesToRender.length; i < len; ++i) {
-    tileProvider.showTileThisFrame(tilesToRender[i], context, frameState, commandList);
-    }
-    }*/
 
 }

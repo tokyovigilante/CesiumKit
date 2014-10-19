@@ -137,7 +137,7 @@ class Context {
         
     }
         
-    let id = NSUUID().UUIDString
+    var id: String
     
     // Validation and logging disabled by default for speed.
     var validateFramebuffer = false
@@ -447,9 +447,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/'>OES_vertex_array_object</a>
     */
-    var vertexArrayObject: Bool {
+    /*var vertexArrayObject: Bool {
         get { return self.view.context.API == .OpenGLES3 || checkGLExtension("OES_vertex_array_object") }
-    }
+    }*/
     
     
     /**
@@ -606,6 +606,8 @@ class Context {
     init (view: GLKView) {
         
         self.view = view
+        
+        id = NSUUID().UUIDString
         
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
@@ -911,7 +913,7 @@ class Context {
     */
     
     func createVertexArray (attributes: [VertexAttributes], indexBuffer: IndexBuffer?) -> VertexArray {
-        return VertexArray(vertexArrayObject: vertexArrayObject, attributes: attributes, indexBuffer: indexBuffer)
+        return VertexArray(attributes: attributes, indexBuffer: indexBuffer)
         
     }
 /**

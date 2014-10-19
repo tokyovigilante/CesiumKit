@@ -104,7 +104,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func beginUpdate (#context: Context, frameState: FrameState, commandList: inout [Command])
+    func beginUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
@@ -117,7 +117,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, commandList: inout [Command])
+    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be
@@ -177,7 +177,7 @@ protocol QuadtreeTileProvider {
     * @param {FrameState} frameState The state information of the current rendering frame.
     * @param {DrawCommand[]} commandList The list of rendering commands.  This method may add additional commands to this list.
     */
-    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout [DrawCommand])
+    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.

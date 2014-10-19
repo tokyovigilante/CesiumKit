@@ -113,7 +113,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     private var _usedDrawCommands = 0
     
-    private var _debug: (wireFrame: Bool, boundingSphereTile: BoundingSphere?) = (false, nil)
+    private var _debug: (wireFrame: Bool, boundingSphereTile: BoundingSphere?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -148,7 +148,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     
-    func beginUpdate (#context: Context, frameState: FrameState, commandList: inout [Command]) {
+    func beginUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
         
         var sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
             var aImagery: Imagery
@@ -213,7 +213,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, commandList: inout [Command]) {
+    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
         /*if (!defined(this._renderState)) {
         this._renderState = context.createRenderState({ // Write color and depth
         cull : {
@@ -293,48 +293,60 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @returns {Visibility} The visibility of the tile.
     */
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
-        /*
-        var boundingSphereScratch = new BoundingSphere();
         
-        var surfaceTile = tile.data;
+        //var boundingSphereScratch = new BoundingSphere();
         
-        var cullingVolume = frameState.cullingVolume;
+        let surfaceTile = tile.data!
+        let cullingVolume = frameState.cullingVolume!
+        var boundingVolume = surfaceTile.boundingSphere3D
         
-        var boundingVolume = surfaceTile.boundingSphere3D;
-        
-        if (frameState.mode !== SceneMode.SCENE3D) {
-        boundingVolume = boundingSphereScratch;
-        BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, frameState.mapProjection, surfaceTile.minimumHeight, surfaceTile.maximumHeight, boundingVolume);
-        Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
-        
-        if (frameState.mode === SceneMode.MORPHING) {
-        boundingVolume = BoundingSphere.union(surfaceTile.boundingSphere3D, boundingVolume, boundingVolume);
-        }
-        }
-        
-        var intersection = cullingVolume.computeVisibility(boundingVolume);
-        if (intersection === Intersect.OUTSIDE) {
-        return Visibility.NONE;
-        }
-        
-        if (frameState.mode === SceneMode.SCENE3D) {
-        var occludeePointInScaledSpace = surfaceTile.occludeePointInScaledSpace;
-        if (!defined(occludeePointInScaledSpace)) {
-        return intersection;
+        if frameState.mode != .Scene3D {
+            boundingVolume = BoundingSphere.fromRectangleWithHeights2D(
+                tile.rectangle,
+                projection: frameState.mapProjection!,
+                minimumHeight: surfaceTile.minimumHeight,
+                maximumHeight: surfaceTile.maximumHeight)
+            boundingVolume.center = Cartesian3(
+                x: boundingVolume.center.z,
+                y: boundingVolume.center.x,
+                z: boundingVolume.center.y)
+            
+            if (frameState.mode == .Morphing) {
+                boundingVolume = surfaceTile.boundingSphere3D.union(boundingVolume)
+            }
         }
         
-        if (occluders.ellipsoid.isScaledSpacePointVisible(occludeePointInScaledSpace)) {
-        return intersection;
+        let intersection = cullingVolume.visibility(boundingVolume)
+        if intersection == .Outside {
+            return .None
         }
         
-        return Visibility.NONE;
+        if frameState.mode == .Scene3D {
+            var occludeePointInScaledSpace = surfaceTile.occludeePointInScaledSpace
+            if occludeePointInScaledSpace == nil {
+                return Visibility(rawValue: intersection.rawValue)!
+            }
+            
+            if occluders.ellipsoid.isScaledSpacePointVisible(occludeePointInScaledSpace!) {
+                return Visibility(rawValue: intersection.rawValue)!
+            }
+            
+            return Visibility.None
         }
         
-        return intersection;*/return Visibility.None
+        return Visibility(rawValue: intersection.rawValue)!
     }
     
-    
-    
+    /*
+var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
+var modifiedModelViewScratch = new Matrix4();
+var tileRectangleScratch = new Cartesian4();
+var rtcScratch = new Cartesian3();
+var centerEyeScratch = new Cartesian4();
+var southwestScratch = new Cartesian3();
+var northeastScratch = new Cartesian3();
+*/
+
     /**
     * Shows a specified tile in this frame.  The provider can cause the tile to be shown by adding
     * render commands to the commandList, or use any other method as appropriate.  The tile is not
@@ -345,38 +357,28 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {FrameState} frameState The state information of the current rendering frame.
     * @param {DrawCommand[]} commandList The list of rendering commands.  This method may add additional commands to this list.
     */
-    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout [DrawCommand]) {
+    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
         
-        /*
+        var readyTextureCount = 0
+        var tileImageryCollection = tile.data!.imagery
         
-        var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
-        var modifiedModelViewScratch = new Matrix4();
-        var tileRectangleScratch = new Cartesian4();
-        var rtcScratch = new Cartesian3();
-        var centerEyeScratch = new Cartesian4();
-        var southwestScratch = new Cartesian3();
-        var northeastScratch = new Cartesian3();
-        
-        var readyTextureCount = 0;
-        var tileImageryCollection = tile.data.imagery;
-        for ( var i = 0, len = tileImageryCollection.length; i < len; ++i) {
-        var tileImagery = tileImageryCollection[i];
-        if (defined(tileImagery.readyImagery) && tileImagery.readyImagery.imageryLayer.alpha !== 0.0) {
-        ++readyTextureCount;
-        }
+        for ( var i = 0, len = tileImageryCollection.count; i < len; ++i) {
+            var tileImagery = tileImageryCollection[i]
+            if tileImagery.readyImagery != nil && tileImagery.readyImagery!.imageryLayer.alpha() != 0.0 {
+                ++readyTextureCount
+            }
         }
         
-        var tileSet = this._tilesToRenderByTextureCount[readyTextureCount];
-        if (!defined(tileSet)) {
-        tileSet = [];
-        this._tilesToRenderByTextureCount[readyTextureCount] = tileSet;
+        var tileSet = _tilesToRenderByTextureCount[readyTextureCount]
+        if tileSet == nil {
+            tileSet = [QuadtreeTile]()
+            _tilesToRenderByTextureCount[readyTextureCount] = tileSet
         }
         
-        tileSet.push(tile);
+        tileSet!.append(tile)
         
-        var debug = this._debug;
-        ++debug.tilesRendered;
-        debug.texturesRendered += readyTextureCount;*/
+        ++_debug.tilesRendered
+        _debug.texturesRendered += readyTextureCount
     }
     
     

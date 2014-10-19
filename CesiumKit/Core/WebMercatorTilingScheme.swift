@@ -187,7 +187,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(#position: Cartographic, level: Int) -> Cartesian2? {
+    func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         
         if (position.latitude > rectangle.north ||
             position.latitude < rectangle.south ||
@@ -218,7 +218,7 @@ class WebMercatorTilingScheme: TilingScheme {
             yTileCoordinate = yTiles - 1
         }
         
-        return Cartesian2(x: Double(xTileCoordinate), y: Double(yTileCoordinate))
+        return (x: xTileCoordinate, y: yTileCoordinate)
     }
     
 }

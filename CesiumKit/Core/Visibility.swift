@@ -16,14 +16,14 @@ import Foundation
 *
 * @exports Visibility
 */
-enum Visibility {
+enum Visibility: Int {
     /**
     * Represents that no part of an object is visible.
     *
     * @type {Number}
     * @constant
     */
-    case None,
+    case None = -1,
     
     /**
     * Represents that part, but not all, of an object is visible

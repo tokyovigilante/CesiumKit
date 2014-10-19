@@ -25,7 +25,7 @@ struct Credit: Equatable {
     var imageUrl: String?
     var link: String?
     
-    init (text: String?, imageUrl: String?, link: String?) {
+    init (text: String? = nil, imageUrl: String? = nil, link: String? = nil) {
         assert(text != nil || imageUrl != nil || link != nil, "text, imageUrl or link is required")
 
         if (text == nil && imageUrl == nil) {

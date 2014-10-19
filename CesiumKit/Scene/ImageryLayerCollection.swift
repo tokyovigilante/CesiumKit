@@ -184,13 +184,13 @@ ImageryLayerCollection.prototype.indexOf = function(layer) {
     return this._layers.indexOf(layer);
 };
 */
-/**
-* Gets a layer by index from the collection.
-*
-* @param {Number} index the index to retrieve.
-*
-* @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
-*/
+    /**
+    * Gets a layer by index from the collection.
+    *
+    * @param {Number} index the index to retrieve.
+    *
+    * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
+    */
     subscript(index: Int) -> ImageryLayer? {
         
         if index > _layers.count {

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ImageIO
 
 /**
 * An imagery layer that displays tiled image data from a single imagery provider
@@ -124,12 +125,12 @@ class ImageryLayer {
     private let _maximumTerrainLevel: Int?
     
     
-    private var _imageryCache = [String: TileImagery]()
+    private var _imageryCache = [String: Imagery]()
     
-    private var _skeletonPlaceholder: TileImagery
-    
+    lazy private var _skeletonPlaceholder: TileImagery = TileImagery(imagery: Imagery.createPlaceholder(self))
+
     // The index of this layer in the ImageryLayerCollection.
-    private var _layerIndex = -1
+    var layerIndex = -1
     
     //private var _requestImageError = undefined;
     
@@ -170,9 +171,7 @@ class ImageryLayer {
             self._minimumTerrainLevel = minimumTerrainLevel
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
-            
-            _skeletonPlaceholder = TileImagery(imagery: Imagery.createPlaceholder(self))
-    }
+        }
     
     
     
@@ -188,7 +187,7 @@ class ImageryLayer {
     * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery lsit.
     * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
     */
-    func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int?) -> Bool {
+    func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
         let surfaceTile = tile.data!
         
         if _minimumTerrainLevel != nil && tile.level < _minimumTerrainLevel {
@@ -273,8 +272,8 @@ class ImageryLayer {
         }
         
         let imageryTilingScheme = imageryProvider.tilingScheme
-        let northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest(), level: imageryLevel)
-        let southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast(), level: imageryLevel)
+        var northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest(), level: imageryLevel)!
+        var southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast(), level: imageryLevel)!
         
         // If the southeast corner of the rectangle lies very close to the north or west side
         // of the southeast tile, we don't actually need the southernmost or easternmost
@@ -286,85 +285,84 @@ class ImageryLayer {
         var veryCloseX = (tile.rectangle.north - tile.rectangle.south) / 512.0
         var veryCloseY = (tile.rectangle.east - tile.rectangle.west) / 512.0
         
-        var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel)
-        if (Math.abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
-            ++northwestTileCoordinates.y;
+        var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
+        if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
+            ++northwestTileCoordinates.y
         }
-        if (Math.abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
-            ++northwestTileCoordinates.x;
+        if (abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
+            ++northwestTileCoordinates.x
         }
         
-        var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(southeastTileCoordinates.x, southeastTileCoordinates.y, imageryLevel);
-        if (Math.abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
-            --southeastTileCoordinates.y;
+        var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
+        if (abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
+            --southeastTileCoordinates.y
         }
-        if (Math.abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
-            --southeastTileCoordinates.x;
+        if (abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
+            --southeastTileCoordinates.x
         }
         
         // Create TileImagery instances for each imagery tile overlapping this terrain tile.
         // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
         
-        var terrainRectangle = tile.rectangle;
-        var imageryRectangle = imageryTilingScheme.tileXYToRectangle(northwestTileCoordinates.x, northwestTileCoordinates.y, imageryLevel);
+        var terrainRectangle = tile.rectangle
+        var imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         
-        var minU;
-        var maxU = 0.0;
+        var minU: Double
+        var maxU = 0.0
         
-        var minV = 1.0;
-        var maxV;
+        var minV = 1.0
+        var maxV: Double
         
         // If this is the northern-most or western-most tile in the imagery tiling scheme,
         // it may not start at the northern or western edge of the terrain tile.
         // Calculate where it does start.
-        if (!this.isBaseLayer() && Math.abs(imageryRectangle.west - tile.rectangle.west) >= veryCloseX) {
-            maxU = Math.min(1.0, (imageryRectangle.west - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
+        if !isBaseLayer && abs(imageryRectangle.west - tile.rectangle.west) >= veryCloseX {
+            maxU = min(1.0, (imageryRectangle.west - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west))
         }
         
-        if (!this.isBaseLayer() && Math.abs(imageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
-            minV = Math.max(0.0, (imageryRectangle.north - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
+        if (isBaseLayer && abs(imageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
+            minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south))
         }
         
-        var initialMinV = minV;
+        var initialMinV = minV
         
-        for ( var i = northwestTileCoordinates.x; i <= southeastTileCoordinates.x; i++) {
-            minU = maxU;
+        for i in northwestTileCoordinates.x...southeastTileCoordinates.x {
+            minU = maxU
             
-            imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, northwestTileCoordinates.y, imageryLevel);
-            maxU = Math.min(1.0, (imageryRectangle.east - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
+            imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: northwestTileCoordinates.y, level: imageryLevel)
+            maxU = min(1.0, (imageryRectangle.east - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
             
             // If this is the eastern-most imagery tile mapped to this terrain tile,
             // and there are more imagery tiles to the east of this one, the maxU
             // should be 1.0 to make sure rounding errors don't make the last
             // image fall shy of the edge of the terrain tile.
-            if (i === southeastTileCoordinates.x && (this.isBaseLayer() || Math.abs(imageryRectangle.east - tile.rectangle.east) < veryCloseX)) {
-                maxU = 1.0;
+            if i == southeastTileCoordinates.x && (isBaseLayer || abs(imageryRectangle.east - tile.rectangle.east) < veryCloseX) {
+                maxU = 1.0
             }
             
-            minV = initialMinV;
+            minV = initialMinV
             
-            for ( var j = northwestTileCoordinates.y; j <= southeastTileCoordinates.y; j++) {
-                maxV = minV;
+            for j in northwestTileCoordinates.y...southeastTileCoordinates.y {
+                maxV = minV
                 
-                imageryRectangle = imageryTilingScheme.tileXYToRectangle(i, j, imageryLevel);
-                minV = Math.max(0.0, (imageryRectangle.south - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south));
+                imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: j, level: imageryLevel)
+                minV = max(0.0, (imageryRectangle.south - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south))
                 
                 // If this is the southern-most imagery tile mapped to this terrain tile,
                 // and there are more imagery tiles to the south of this one, the minV
                 // should be 0.0 to make sure rounding errors don't make the last
                 // image fall shy of the edge of the terrain tile.
-                if (j === southeastTileCoordinates.y && (this.isBaseLayer() || Math.abs(imageryRectangle.south - tile.rectangle.south) < veryCloseY)) {
-                    minV = 0.0;
+                if j == southeastTileCoordinates.y && (isBaseLayer || abs(imageryRectangle.south - tile.rectangle.south) < veryCloseY) {
+                    minV = 0.0
                 }
                 
-                var texCoordsRectangle = Cartesian4(minU, minV, maxU, maxV);
-                var imagery = this.getImageryFromCache(i, j, imageryLevel, imageryRectangle);
-                surfaceTile.imagery.splice(insertionPoint, 0, TileImagery(imagery, texCoordsRectangle));
-                ++insertionPoint;
+                let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
+                let imagery = getImageryFromCache(x: i, y: j, level: imageryLevel, imageryRectangle: imageryRectangle)
+                surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), atIndex: insertionPoint!)
+                ++insertionPoint!
             }
         }
-        
-        return true;
+        return true
     }
     
     /**
@@ -393,7 +391,7 @@ class ImageryLayer {
     scaleX,
     scaleY);
     };
-    
+    */
     /**
     * Request a particular piece of imagery from the imagery provider.  This method handles raising an
     * error event if the request fails, and retrying the request if necessary.
@@ -402,57 +400,49 @@ class ImageryLayer {
     *
     * @param {Imagery} imagery The imagery to request.
     */
-    ImageryLayer.prototype._requestImagery = function(imagery) {
-    var imageryProvider = this._imageryProvider;
-    
-    var that = this;
-    
-    function success(image) {
-    if (!defined(image)) {
-    return failure();
+    func requestImagery (imagery: Imagery) {
+        
+        weak var weakSelf = self
+        weak var weakImagery = imagery
+        func success(image: CGImage) {
+            
+            weakImagery?.image = image
+            weakImagery?.credits = imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+
+            weakImagery?.state = .Received
+            
+            //TileProviderError.handleSuccess(that._requestImageError);
+        }
+        
+        func failure(error: String) {
+            // Initially assume failure.  handleError may retry, in which case the state will
+            // change to TRANSITIONING.
+            imagery.state = .Failed
+            
+            var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+            /*that._requestImageError = TileProviderError.handleError(
+            that._requestImageError,
+            imageryProvider,
+            imageryProvider.errorEvent,
+            message,
+            imagery.x, imagery.y, imagery.level,
+            doRequest);*/
+            println(message)
+        }
+        
+        func doRequest() -> AsyncResult<CGImage> {
+            
+            weakImagery?.state = .Transitioning
+            
+            if let image = imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
+                return AsyncResult(image)
+            }
+            return AsyncResult("terrain data request failed")
+        }
+        
+        AsyncResult<CGImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
-    
-    imagery.image = image;
-    imagery.state = ImageryState.RECEIVED;
-    
-    TileProviderError.handleSuccess(that._requestImageError);
-    }
-    
-    function failure(e) {
-    // Initially assume failure.  handleError may retry, in which case the state will
-    // change to TRANSITIONING.
-    imagery.state = ImageryState.FAILED;
-    
-    var message = 'Failed to obtain image tile X: ' + imagery.x + ' Y: ' + imagery.y + ' Level: ' + imagery.level + '.';
-    that._requestImageError = TileProviderError.handleError(
-    that._requestImageError,
-    imageryProvider,
-    imageryProvider.errorEvent,
-    message,
-    imagery.x, imagery.y, imagery.level,
-    doRequest);
-    }
-    
-    function doRequest() {
-    imagery.state = ImageryState.TRANSITIONING;
-    var imagePromise = imageryProvider.requestImage(imagery.x, imagery.y, imagery.level);
-    
-    if (!defined(imagePromise)) {
-    // Too many parallel requests, so postpone loading tile.
-    imagery.state = ImageryState.UNLOADED;
-    return;
-    }
-    
-    if (defined(imageryProvider.getTileCredits)) {
-    imagery.credits = imageryProvider.getTileCredits(imagery.x, imagery.y, imagery.level);
-    }
-    
-    when(imagePromise, success, failure);
-    }
-    
-    doRequest();
-    };
-    
+    /*
     /**
     * Create a WebGL texture for a given {@link Imagery} instance.
     *
@@ -550,18 +540,18 @@ class ImageryLayer {
     imagery.state = ImageryState.READY;
     };
     */
-    // FIXME: Not implemented
+
     func getImageryFromCache (#x: Int, y: Int, level: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
-        //var cacheKey = getImageryCacheKey(x, y, level);
-        var imagery /*= this._imageryCache[cacheKey];
+        let cacheKey = getImageryCacheKey(x: x, y: y, level: level)
+        var imagery = _imageryCache[cacheKey]
         
-        if (!defined(imagery)) {
-        imagery*/ = Imagery(imageryLayer: self, level: x, x: y, y: level, rectangle: imageryRectangle)
-        /*this._imageryCache[cacheKey] = imagery;
+        if imagery == nil {
+        imagery = Imagery(imageryLayer: self, level: x, x: y, y: level, rectangle: imageryRectangle)
+        _imageryCache[cacheKey] = imagery
         }
         
-        imagery.addReference();*/
-        return imagery
+        imagery!.addReference()
+        return imagery!
     }
     
     func removeImageryFromCache (imagery: Imagery) {

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import ImageIO
     /**
     * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
     * interface and is not intended to be instantiated directly.
@@ -24,7 +25,7 @@
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
     */
-protocol ImageryProvider {
+public class ImageryProvider {
 
 /**
 * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -33,7 +34,7 @@ protocol ImageryProvider {
 * @type {Number}
 * @default undefined
 */
-    var defaultAlpha: Double
+    var defaultAlpha: Double = 1.0
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -41,7 +42,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultBrightness: Double
+    var defaultBrightness: Double = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -50,7 +51,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultContrast: Double
+    var defaultContrast: Double = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -58,7 +59,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultHue: Double
+    var defaultHue: Double = 0.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -67,7 +68,7 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultSaturation: Double
+    var defaultSaturation: Double = 0.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -75,14 +76,14 @@ protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultGamma: Double
+    var defaultGamma: Double = 0.0
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    var ready: Bool { get }
+    var ready: Bool = false
     
     /**
     * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
@@ -90,7 +91,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Rectangle}
     */
-    var rectangle: Rectangle { get }
+    var rectangle: Rectangle = Rectangle.maxValue()
     
     /**
     * Gets the width of each tile, in pixels.  This function should
@@ -98,7 +99,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var tileWidth: Int { get }
+    var tileWidth: Int = 0
     
     /**
     * Gets the height of each tile, in pixels.  This function should
@@ -106,7 +107,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var tileHeight: Int { get }
+    var tileHeight: Int = 0
 
     
     /**
@@ -115,7 +116,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var maximumLevel: Int { get }
+    var maximumLevel: Int = Int.max
 
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
@@ -127,7 +128,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var minimumLevel: Int? { get }
+    var minimumLevel: Int? = nil
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -135,7 +136,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-    var tilingScheme: TilingScheme { get }
+    var tilingScheme: TilingScheme
 
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
@@ -145,7 +146,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TileDiscardPolicy}
     */
-    var tileDiscardPolicy: TileDiscardPolicy { get }
+    var tileDiscardPolicy: TileDiscardPolicy? = nil
     
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -154,7 +155,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    var errorEvent: Event { get }
+    var errorEvent: Event
     
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
@@ -163,7 +164,7 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    var credit: Credit  { get }
+    var credit: Credit
     
     /**
     * Gets the proxy used by this provider.
@@ -181,7 +182,13 @@ protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    var hasAlphaChannel: Bool { get }
+    var hasAlphaChannel: Bool = false
+    
+    init(tilingScheme: TilingScheme) {
+        self.tilingScheme = tilingScheme
+        self.errorEvent = Event()
+        self.credit = Credit(text: "CesiumKit")
+    }
     
     /**
     * Gets the credits to be displayed when a given tile is displayed.
@@ -194,7 +201,9 @@ protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func getTileCredits (x: Int, y: Int, level: Int) -> [Credit]
+    func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+        return [credit]
+    }
     
     /**
     * Requests the image for a given tile.  This function should
@@ -218,7 +227,10 @@ protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(x: Int, y: Int, level: Int, completion: (result: Image?) -> Void)
+    func requestImage(#x: Int, y: Int, level: Int) -> CGImage? {
+        assert(false, "invalid base class")
+        return nil
+    }
 
     
     /**
@@ -232,6 +244,9 @@ protocol ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    func loadImage (url: String, completion: (result: Image?) -> Void)
+    func loadImage (url: String) -> CGImage? {
+        assert(false, "invalid base class")
+        return nil
+    }
 
 }

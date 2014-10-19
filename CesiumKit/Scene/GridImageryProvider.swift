@@ -24,7 +24,7 @@
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
 * @param {Number} [options.canvasSize=256] The size of the canvas used for rendering.
 */
-class GridImageryProvider {
+class GridImageryProvider: ImageryProvider {
     /*
     var GridImageryProvider = function GridImageryProvider(options) {
     options = defaultValue(options, {});

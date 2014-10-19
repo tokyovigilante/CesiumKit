@@ -10,12 +10,26 @@
 		940899F119CE6C3600012DC4 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940899F019CE6C3600012DC4 /* Command.swift */; };
 		9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
 		940CA70C19B1957A00A6E482 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
-		940CA70E19B19D6E00A6E482 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70D19B19D6E00A6E482 /* Image.swift */; };
 		940CD1F019E7C4CF00FFAD81 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CD1EF19E7C4CF00FFAD81 /* Threading.swift */; };
 		940D794719C3F66900012DC4 /* GeometryPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D794619C3F66900012DC4 /* GeometryPipeline.swift */; };
 		940F3AC3194C5E4400E6E6E3 /* GeographicTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */; };
 		940F448719C59EF400A3BB00 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448619C59EF400A3BB00 /* Buffer.swift */; };
 		940F448919C5A2C400A3BB00 /* BufferUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940F448819C5A2C400A3BB00 /* BufferUsage.swift */; };
+		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
+		9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
+		9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
+		9413113419F38CCB00FFAD81 /* Cartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DA19449DC900DC0E52 /* Cartesian3.swift */; };
+		9413113519F3A06600FFAD81 /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
+		9413113619F3A07600FFAD81 /* Spherical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DE1944EC1B00DC0E52 /* Spherical.swift */; };
+		9413113719F3A07B00FFAD81 /* Cartesian4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03E01944F1E200DC0E52 /* Cartesian4.swift */; };
+		9413113819F3A08100FFAD81 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D55E8194982AB005A4DD6 /* Math.swift */; };
+		9413113919F3A08800FFAD81 /* Cartographic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F51945D09F0017FE14 /* Cartographic.swift */; };
+		9413113A19F3A09800FFAD81 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
+		9413113B19F3A0A200FFAD81 /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
+		9413113C19F3A0B600FFAD81 /* Intersectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DCE194D71A200012DC4 /* Intersectable.swift */; };
+		9413113D19F3A0C000FFAD81 /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
+		9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499F1948331C009D1703 /* GeographicProjection.swift */; };
+		9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		9413F071194AB2E700FEE30C /* EllipsoidTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */; };
 		9417EC451942C31B00586516 /* Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9417EC441942C31B00586516 /* Interval.swift */; };
 		941E2134199ED26A00012DC4 /* GLSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2133199ED26A00012DC4 /* GLSupport.swift */; };
@@ -117,9 +131,7 @@
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
-		94DC793A1918425300012DC4 /* CesiumKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79221918425300012DC4 /* CesiumKit.dylib */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
-		94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DC79411918425300012DC4 /* CesiumKitTests.m */; };
 		94DF8301199A0A9100FB093D /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 		94E03FB719D96C8300FFAD81 /* GridImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */; };
 		94E049EA19DC0BB100FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
@@ -137,17 +149,17 @@
 		94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		94DC79381918425300012DC4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 94DC791A1918425300012DC4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DC79211918425300012DC4;
-			remoteInfo = CesiumKit;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
+		9413114019F3A19600FFAD81 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94DC79201918425300012DC4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -163,12 +175,12 @@
 		940899F019CE6C3600012DC4 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
-		940CA70D19B19D6E00A6E482 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		940CD1EF19E7C4CF00FFAD81 /* Threading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		940F448619C59EF400A3BB00 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
 		940F448819C5A2C400A3BB00 /* BufferUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferUsage.swift; sourceTree = "<group>"; };
+		9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidalOccluderTests.swift; path = Core/EllipsoidalOccluderTests.swift; sourceTree = "<group>"; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941E2133199ED26A00012DC4 /* GLSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GLSupport.swift; sourceTree = "<group>"; };
@@ -275,7 +287,6 @@
 		94DC79361918425300012DC4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		94DC793D1918425300012DC4 /* CesiumKitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CesiumKitTests-Info.plist"; sourceTree = "<group>"; };
 		94DC793F1918425300012DC4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		94DC79411918425300012DC4 /* CesiumKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CesiumKitTests.m; sourceTree = "<group>"; };
 		94DF8300199A0A9100FB093D /* CesiumKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumKit.swift; sourceTree = "<group>"; };
 		94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridImageryProvider.swift; sourceTree = "<group>"; };
 		94E049E919DC0BB000FFAD81 /* Shaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shaders.swift; sourceTree = "<group>"; };
@@ -308,7 +319,6 @@
 			files = (
 				94DC79341918425300012DC4 /* XCTest.framework in Frameworks */,
 				94DC79371918425300012DC4 /* UIKit.framework in Frameworks */,
-				94DC793A1918425300012DC4 /* CesiumKit.dylib in Frameworks */,
 				94DC79351918425300012DC4 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,6 +326,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9413112E19F383F900FFAD81 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -341,7 +359,6 @@
 				940D794619C3F66900012DC4 /* GeometryPipeline.swift */,
 				942CF4BE19CD90AA00012DC4 /* HeightmapTerrainData.swift */,
 				94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */,
-				940CA70D19B19D6E00A6E482 /* Image.swift */,
 				943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
@@ -525,7 +542,7 @@
 		94DC793B1918425300012DC4 /* CesiumKitTests */ = {
 			isa = PBXGroup;
 			children = (
-				94DC79411918425300012DC4 /* CesiumKitTests.m */,
+				9413112E19F383F900FFAD81 /* Core */,
 				94DC793C1918425300012DC4 /* Supporting Files */,
 			);
 			path = CesiumKitTests;
@@ -580,11 +597,11 @@
 				94DC792E1918425300012DC4 /* Sources */,
 				94DC792F1918425300012DC4 /* Frameworks */,
 				94DC79301918425300012DC4 /* Resources */,
+				9413114019F3A19600FFAD81 /* Copy Files */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				94DC79391918425300012DC4 /* PBXTargetDependency */,
 			);
 			name = CesiumKitTests;
 			productName = CesiumKitTests;
@@ -720,7 +737,6 @@
 				94E7A865199E02AB00012DC4 /* BingMapsImageryProvider.swift in Sources */,
 				9465B0241956F5A400355D2C /* UniformState.swift in Sources */,
 				94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */,
-				940CA70E19B19D6E00A6E482 /* Image.swift in Sources */,
 				9491BBB61949D63A007C1C4C /* TilingScheme.swift in Sources */,
 				9460F80D194DAA6200012DC4 /* Globe.swift in Sources */,
 				94540435199F62C900012DC4 /* ImageryState.swift in Sources */,
@@ -767,19 +783,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94DC79421918425300012DC4 /* CesiumKitTests.m in Sources */,
+				9413113419F38CCB00FFAD81 /* Cartesian3.swift in Sources */,
+				9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */,
+				9413113719F3A07B00FFAD81 /* Cartesian4.swift in Sources */,
+				9413113D19F3A0C000FFAD81 /* Projection.swift in Sources */,
+				9413113519F3A06600FFAD81 /* Packable.swift in Sources */,
+				9413113919F3A08800FFAD81 /* Cartographic.swift in Sources */,
+				9413113A19F3A09800FFAD81 /* Rectangle.swift in Sources */,
+				9413113619F3A07600FFAD81 /* Spherical.swift in Sources */,
+				9413113B19F3A0A200FFAD81 /* BoundingSphere.swift in Sources */,
+				9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */,
+				9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */,
+				9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */,
+				9413113819F3A08100FFAD81 /* Math.swift in Sources */,
+				9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */,
+				9413113C19F3A0B600FFAD81 /* Intersectable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		94DC79391918425300012DC4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 94DC79211918425300012DC4 /* CesiumKit */;
-			targetProxy = 94DC79381918425300012DC4 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		94DC793E1918425300012DC4 /* InfoPlist.strings */ = {
@@ -911,6 +933,8 @@
 		94DC79491918425300012DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -923,7 +947,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "CesiumKitTests/CesiumKitTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALID_ARCHS = arm64;
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -931,6 +959,8 @@
 		94DC794A1918425300012DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -939,7 +969,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CesiumKit/CesiumKit-Prefix.pch";
 				INFOPLIST_FILE = "CesiumKitTests/CesiumKitTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = arm64;
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
