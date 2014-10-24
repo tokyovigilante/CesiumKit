@@ -49,7 +49,7 @@ struct Rectangle/*: Packable*/ {
     * @example
     * var rectangle = Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0);
     */
-    static func fromDegrees(west: Double, south: Double, east: Double, north: Double) -> Rectangle {
+    static func fromDegrees(#west: Double, south: Double, east: Double, north: Double) -> Rectangle {
         return Rectangle(
             west: Math.toRadians(west),
             south: Math.toRadians(south),

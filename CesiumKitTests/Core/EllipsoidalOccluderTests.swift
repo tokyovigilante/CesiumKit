@@ -35,92 +35,76 @@ class EllipsoidalOccluderTests: XCTestCase {
         XCTAssert(occluder.isScaledSpacePointVisible(scaledSpacePoint) == true, "isScaledSpacePointVisible example works as claimed")
     }
     
+    func testReportsNotVisibleWhenPointDirectlyBehind () {
+        var ellipsoid = Ellipsoid.wgs84()
+        var occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        occluder.cameraPosition = Cartesian3(x: 7000000.0, y: 0.0, z: 0.0)
+        
+        var point = Cartesian3(x: -7000000, y: 0.0, z: 0.0)
+        XCTAssert(occluder.isPointVisible(point) == false, "reports not visible when point is directly behind ellipsoid")
+    }
+    
+    func testReportsVisibleWhenPointDirectlyInFront () {
+        var ellipsoid = Ellipsoid.wgs84()
+        var occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        occluder.cameraPosition = Cartesian3(x: 7000000.0, y: 0.0, z: 0.0)
+        
+        var point = Cartesian3(x: 6900000.0, y: 0.0, z: 0.0)
+        XCTAssert(occluder.isPointVisible(point) == true, "reports visible when point is in front of ellipsoid")
+    }
+    
+    func testReportsVisibleWhenPointOppositeDirection () {
+        var ellipsoid = Ellipsoid.wgs84()
+        var occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        occluder.cameraPosition = Cartesian3(x: 7000000.0, y: 0.0, z: 0.0)
+        
+        var point = Cartesian3(x: 7100000.0, y: 0.0, z: 0.0)
+        XCTAssertTrue(occluder.isPointVisible(point), "reports visible when point is in opposite direction from ellipsoid")
+    }
+    
+    func testReportsNotVisibleWhenPointOverHorizon () {
+        var ellipsoid = Ellipsoid.wgs84()
+        var occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        occluder.cameraPosition = Cartesian3(x: 7000000.0, y: 0.0, z: 0.0)
+        
+        var point = Cartesian3(x: 4510635.0, y: 4510635.0, z: 0.0);
+        XCTAssert(occluder.isPointVisible(point) == false, "reports not visible when point is over horizon")
+        }
+    
+    func testcomputeHorizonCullingPointReturnsPointOnEllipsoidWhenSinglePositionOnCenterLine () {
+        var ellipsoid = Ellipsoid(x: 12345.0, y: 4567.0, z: 8910.0)
+        var ellipsoidalOccluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        var positions = [Cartesian3(x: 12345.0, y: 0.0, z: 0.0)]
+        var directionToPoint = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
+        
+        var result: Cartesian3? = ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions: positions)
+        XCTAssert(result != nil, "returns point on ellipsoid when single position is on center line")
+        XCTAssert(Math.equalsEpsilon(result!.x, 1.0, epsilon: Math.Epsilon14), "returns point on ellipsoid when single position is on center line")
+        XCTAssert(Math.equalsEpsilon(result!.y, 0.0, epsilon: Math.Epsilon14), "returns point on ellipsoid when single position is on center line")
+        XCTAssert(Math.equalsEpsilon(result!.z, 0.0, epsilon: Math.Epsilon14), "returns point on ellipsoid when single position is on center line")
+    }
+    
+    func testReturnsUndefinedWhenHorizonOfSinglePointIsParallelToCenterLine () {
+        var ellipsoid = Ellipsoid(x: 12345.0, y: 4567.0, z: 8910.0)
+        var ellipsoidalOccluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        var positions = [Cartesian3(x: 0.0, y: 4567.0, z: 0.0)]
+        var directionToPoint = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
+        
+        var result = ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions: positions)
+        XCTAssert(result == nil, "returns undefined when horizon of single point is parallel to center line")
+    }
+
+    func testReturnsUndefinedWhenSinglePointIsInOppositeDirectionOfCenterLine () {
+        var ellipsoid = Ellipsoid(x: 12345.0, y: 4567.0, z: 8910.0)
+        var ellipsoidalOccluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        var positions = [Cartesian3(x: -14000.0, y: -1000.0, z: 0.0)]
+        var directionToPoint = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
+        XCTAssertTrue(ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions: positions) == nil, "returns undefined when single point is in the opposite direction of the center line")
+    }
 }
-            /*
-            it('reports not visible when point is directly behind ellipsoid', function() {
-                var ellipsoid = Ellipsoid.WGS84;
-                var occluder = new EllipsoidalOccluder(ellipsoid);
-                occluder.cameraPosition = new Cartesian3(7000000.0, 0.0, 0.0);
-                
-                var point = new Cartesian3(-7000000, 0.0, 0.0);
-                expect(occluder.isPointVisible(point)).toEqual(false);
-                });
-            
-            it('reports visible when point is in front of ellipsoid', function() {
-                var ellipsoid = Ellipsoid.WGS84;
-                var occluder = new EllipsoidalOccluder(ellipsoid);
-                occluder.cameraPosition = new Cartesian3(7000000.0, 0.0, 0.0);
-                
-                var point = new Cartesian3(6900000.0, 0.0, 0.0);
-                expect(occluder.isPointVisible(point)).toEqual(true);
-                });
-            
-            it('reports visible when point is in opposite direction from ellipsoid', function() {
-                var ellipsoid = Ellipsoid.WGS84;
-                var occluder = new EllipsoidalOccluder(ellipsoid);
-                occluder.cameraPosition = new Cartesian3(7000000.0, 0.0, 0.0);
-                
-                var point = new Cartesian3(7100000.0, 0.0, 0.0);
-                expect(occluder.isPointVisible(point)).toEqual(true);
-                });
-            
-            it('reports not visible when point is over horizon', function() {
-                var ellipsoid = Ellipsoid.WGS84;
-                var occluder = new EllipsoidalOccluder(ellipsoid);
-                occluder.cameraPosition = new Cartesian3(7000000.0, 0.0, 0.0);
-                
-                var point = new Cartesian3(4510635.0, 4510635.0, 0.0);
-                expect(occluder.isPointVisible(point)).toEqual(false);
-                });
-            
-            describe('computeHorizonCullingPoint', function() {
-                it('requires directionToPoint and positions', function() {
-                    var ellipsoid = new Ellipsoid(12345.0, 12345.0, 12345.0);
-                    var ellipsoidalOccluder = new EllipsoidalOccluder(ellipsoid);
-                    var positions = [new Cartesian3(-12345.0, 12345.0, 12345.0)];
-                    var directionToPoint = BoundingSphere.fromPoints(positions).center;
-                    
-                    expect(function() {
-                        ellipsoidalOccluder.computeHorizonCullingPoint(undefined, positions);
-                        }).toThrowDeveloperError();
-                    
-                    expect(function() {
-                        ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, undefined);
-                        }).toThrowDeveloperError();
-                    });
-                
-                it('returns point on ellipsoid when single position is on center line', function() {
-                    var ellipsoid = new Ellipsoid(12345.0, 4567.0, 8910.0);
-                    var ellipsoidalOccluder = new EllipsoidalOccluder(ellipsoid);
-                    var positions = [new Cartesian3(12345.0, 0.0, 0.0)];
-                    var directionToPoint = new Cartesian3(1.0, 0.0, 0.0);
-                    
-                    var result = ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions);
-                    
-                    expect(result.x).toEqualEpsilon(1.0, CesiumMath.EPSILON14);
-                    expect(result.y).toEqualEpsilon(0.0, CesiumMath.EPSILON14);
-                    expect(result.z).toEqualEpsilon(0.0, CesiumMath.EPSILON14);
-                    });
-                
-                it('returns undefined when horizon of single point is parallel to center line', function() {
-                    var ellipsoid = new Ellipsoid(12345.0, 4567.0, 8910.0);
-                    var ellipsoidalOccluder = new EllipsoidalOccluder(ellipsoid);
-                    var positions = [new Cartesian3(0.0, 4567.0, 0.0)];
-                    var directionToPoint = new Cartesian3(1.0, 0.0, 0.0);
-                    
-                    var result = ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions);
-                    expect(result).toBeUndefined();
-                    });
-                
-                it('returns undefined when single point is in the opposite direction of the center line', function() {
-                    var ellipsoid = new Ellipsoid(12345.0, 4567.0, 8910.0);
-                    var ellipsoidalOccluder = new EllipsoidalOccluder(ellipsoid);
-                    var positions = [new Cartesian3(-14000.0, -1000.0, 0.0)];
-                    var directionToPoint = new Cartesian3(1.0, 0.0, 0.0);
-                    
-                    var result = ellipsoidalOccluder.computeHorizonCullingPoint(directionToPoint, positions);
-                    expect(result).toBeUndefined();
-                    });
+/*
+
+
                 
                 it('computes a point from a single position with a grazing altitude close to zero', function() {
                     var ellipsoid = new Ellipsoid(12345.0, 12345.0, 12345.0);

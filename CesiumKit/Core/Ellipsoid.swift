@@ -127,8 +127,8 @@ public struct Ellipsoid {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
     func geodeticSurfaceNormalCartographic(cartographic: Cartographic) -> Cartesian3 {
-        var longitude = cartographic.longitude;
-        var latitude = cartographic.latitude;
+        var longitude = cartographic.longitude
+        var latitude = cartographic.latitude
         var cosLatitude = cos(latitude);
         
         return Cartesian3(

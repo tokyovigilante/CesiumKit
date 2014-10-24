@@ -296,7 +296,7 @@ public class Scene {
     * DOC_TBA
     */
     struct Scene2D {
-        var projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
+        var projection: Projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
     }
     var scene2D = Scene2D()
     

@@ -47,7 +47,7 @@
 * @see Packable
 */
 //FIXME: Packable
-struct Matrix4 /*: Packable*/ {
+struct Matrix4:/* Packable,*/Equatable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -55,38 +55,38 @@ struct Matrix4 /*: Packable*/ {
     */
     static let packedLength = 16
     
-    var grid: [Double] = [Double](count: 16, repeatedValue: 0.0)
+    private var _grid: [Double] = [Double](count: 16, repeatedValue: 0.0)
 
     init(column0Row0: Double = 0.0, column1Row0: Double = 0.0, column2Row0: Double = 0.0, column3Row0: Double = 0.0,
         column0Row1: Double = 0.0, column1Row1: Double = 0.0, column2Row1: Double = 0.0, column3Row1: Double = 0.0,
         column0Row2: Double = 0.0, column1Row2: Double = 0.0, column2Row2: Double = 0.0, column3Row2: Double = 0.0,
         column0Row3: Double = 0.0, column1Row3: Double = 0.0, column2Row3: Double = 0.0, column3Row3: Double = 0.0) {
-            grid[0] = column0Row0
-            grid[1] = column0Row1
-            grid[2] = column0Row2
-            grid[3] = column0Row3
-            grid[4] = column1Row0
-            grid[5] = column1Row1
-            grid[6] = column1Row2
-            grid[7] = column1Row3
-            grid[8] = column2Row0
-            grid[9] = column2Row1
-            grid[10] = column2Row2
-            grid[11] = column2Row3
-            grid[12] = column3Row0
-            grid[13] = column3Row1
-            grid[14] = column3Row2
-            grid[15] = column3Row3
+            _grid[0] = column0Row0
+            _grid[1] = column0Row1
+            _grid[2] = column0Row2
+            _grid[3] = column0Row3
+            _grid[4] = column1Row0
+            _grid[5] = column1Row1
+            _grid[6] = column1Row2
+            _grid[7] = column1Row3
+            _grid[8] = column2Row0
+            _grid[9] = column2Row1
+            _grid[10] = column2Row2
+            _grid[11] = column2Row3
+            _grid[12] = column3Row0
+            _grid[13] = column3Row1
+            _grid[14] = column3Row2
+            _grid[15] = column3Row3
     }
     
     subscript(index: Int) -> Double {
         get {
             assert(index < Matrix4.packedLength, "Index out of range")
-            return grid[index]
+            return _grid[index]
         }
         set {
             assert(index < Matrix4.packedLength, "Index out of range")
-            grid[index] = newValue
+            _grid[index] = newValue
         }
     }
     
@@ -97,11 +97,11 @@ struct Matrix4 /*: Packable*/ {
     subscript(row: Int, column: Int) -> Double {
         get {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
-            return grid[(row * column) + column]
+            return _grid[(row * column) + column]
         }
         set {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
-            grid[(row * column) + column] = newValue
+            _grid[(row * column) + column] = newValue
         }
     }
 
@@ -115,9 +115,9 @@ struct Matrix4 /*: Packable*/ {
     func pack(inout array: [Float], startingIndex: Int = 0) {
         for var index = 0; index < Matrix4.packedLength; ++index {
             if array.count < startingIndex - Matrix4.packedLength {
-                array.append(Float(grid[index]))
+                array.append(Float(_grid[index]))
             } else {
-                array[startingIndex + index] = Float(grid[index])
+                array[startingIndex + index] = Float(_grid[index])
             }
         }
     }
@@ -1206,22 +1206,22 @@ Matrix4.getMaximumScale = function(matrix) {
 */
     func multiply (other: Matrix4) -> Matrix4 {
         
-        var left0 = grid[0]
-        var left1 = grid[1]
-        var left2 = grid[2]
-        var left3 = grid[3]
-        var left4 = grid[4]
-        var left5 = grid[5]
-        var left6 = grid[6]
-        var left7 = grid[7]
-        var left8 = grid[8]
-        var left9 = grid[9]
-        var left10 = grid[10]
-        var left11 = grid[11]
-        var left12 = grid[12]
-        var left13 = grid[13]
-        var left14 = grid[14]
-        var left15 = grid[15]
+        var left0 = _grid[0]
+        var left1 = _grid[1]
+        var left2 = _grid[2]
+        var left3 = _grid[3]
+        var left4 = _grid[4]
+        var left5 = _grid[5]
+        var left6 = _grid[6]
+        var left7 = _grid[7]
+        var left8 = _grid[8]
+        var left9 = _grid[9]
+        var left10 = _grid[10]
+        var left11 = _grid[11]
+        var left12 = _grid[12]
+        var left13 = _grid[13]
+        var left14 = _grid[14]
+        var left15 = _grid[15]
         
         var right0 = other[0]
         var right1 = other[1]
@@ -1525,57 +1525,50 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
         var vW = cartesian.w
         
     //FIXME: compiler bug
-        /*var x = grid[0] * vX + grid[4] * vY + grid[8] * vZ + grid[12] * vW
-        var y = grid[1] * vX + grid[5] * vY + grid[9] * vZ + grid[13] * vW
-        var z = grid[2] * vX + grid[6] * vY + grid[10] * vZ + grid[14] * vW
-        var w = grid[3] * vX + grid[7] * vY + grid[11] * vZ + grid[15] * vW*/
+        let x1 = _grid[0] * vX + _grid[4] * vY
+        let x2 = _grid[8] * vZ + _grid[12] * vW
+        let x = x1 + x2
+        let y1 = _grid[1] * vX + _grid[5] * vY
+        let y2 = _grid[9] * vZ + _grid[13] * vW
+        let y = y1 + y2
+        let z1 = _grid[2] * vX + _grid[6] * vY
+        let z2 = _grid[10] * vZ + _grid[14] * vW
+        let z = z1 + z2
+        let w1 = _grid[3] * vX + _grid[7] * vY
+        let w2 = _grid[11] * vZ + _grid[15] * vW
+        let w = w1 + w2
 
-        return Cartesian4()//x: x, y: y, z: z, w: w)
+        return Cartesian4(x: x, y: y, z: z, w: w)
     }
-    /*
 
-/**
-* Computes the product of a matrix and a {@link Cartesian3}.  This is equivalent to calling {@link Matrix4.multiplyByVector}
-* with a {@link Cartesian4} with a <code>w</code> component of zero.
-*
-* @param {Matrix4} matrix The matrix.
-* @param {Cartesian3} cartesian The point.
-* @param {Cartesian3} result The object onto which to store the result.
-* @returns {Cartesian3} The modified result parameter.
-*
-* @example
-* var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
-* Cesium.Matrix4.multiplyByPointAsVector(matrix, p, result);
-* // A shortcut for
-* //   Cartesian3 p = ...
-* //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
-*/
-Matrix4.multiplyByPointAsVector = function(matrix, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    /**
+    * Computes the product of a matrix and a {@link Cartesian3}.  This is equivalent to calling {@link Matrix4.multiplyByVector}
+    * with a {@link Cartesian4} with a <code>w</code> component of zero.
+    *
+    * @param {Matrix4} matrix The matrix.
+    * @param {Cartesian3} cartesian The point.
+    * @param {Cartesian3} result The object onto which to store the result.
+    * @returns {Cartesian3} The modified result parameter.
+    *
+    * @example
+    * var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
+    * Cesium.Matrix4.multiplyByPointAsVector(matrix, p, result);
+    * // A shortcut for
+    * //   Cartesian3 p = ...
+    * //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
+    */
+    func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
+        
+        var vX = cartesian.x
+        var vY = cartesian.y
+        var vZ = cartesian.z
+        
+        var x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
+        var y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
+        var z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
+        
+        return Cartesian3(x: x, y: y, z: z)
     }
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var vX = cartesian.x;
-    var vY = cartesian.y;
-    var vZ = cartesian.z;
-    
-    var x = matrix[0] * vX + matrix[4] * vY + matrix[8] * vZ;
-    var y = matrix[1] * vX + matrix[5] * vY + matrix[9] * vZ;
-    var z = matrix[2] * vX + matrix[6] * vY + matrix[10] * vZ;
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
-};
 
 /**
 * Computes the product of a matrix and a {@link Cartesian3}. This is equivalent to calling {@link Matrix4.multiplyByVector}
@@ -1590,34 +1583,24 @@ Matrix4.multiplyByPointAsVector = function(matrix, cartesian, result) {
 * var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
 * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
 */
-Matrix4.multiplyByPoint = function(matrix, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
+        // FIXME: compiler bug
+        var vX = cartesian.x
+        var vY = cartesian.y
+        var vZ = cartesian.z
+        
+        let x1 = _grid[0] * vX + _grid[4] * vY
+        let x2 = _grid[8] * vZ + _grid[12]
+        let x = x1 + x2
+        let y1 = _grid[1] * vX + _grid[5] * vY
+        //let y2 = _grid[9] * vZ + _grid[13]
+        let y = y1// + y2
+        let z1 = _grid[2] * vX + _grid[6] * vY
+        let z2 = _grid[10] * vZ + _grid[14]
+        let z = z1 + z2
+        return Cartesian3(x: x, y: y, z: z)
     }
-    
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var vX = cartesian.x;
-    var vY = cartesian.y;
-    var vZ = cartesian.z;
-    
-    var x = matrix[0] * vX + matrix[4] * vY + matrix[8] * vZ + matrix[12];
-    var y = matrix[1] * vX + matrix[5] * vY + matrix[9] * vZ + matrix[13];
-    var z = matrix[2] * vX + matrix[6] * vY + matrix[10] * vZ + matrix[14];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
-};
-
+    /*
 /**
 * Computes the product of a matrix and a scalar.
 *
@@ -1819,56 +1802,6 @@ Matrix4.abs = function(matrix, result) {
     return result;
 };
 
-/**
-* Compares the provided matrices componentwise and returns
-* <code>true</code> if they are equal, <code>false</code> otherwise.
-*
-* @param {Matrix4} [left] The first matrix.
-* @param {Matrix4} [right] The second matrix.
-* @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
-*
-* @example
-* //compares two Matrix4 instances
-*
-* // a = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-*
-* // b = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-*
-* if(Cesium.Matrix4.equals(a,b)) {
-*      console.log("Both matrices are equal");
-* } else {
-*      console.log("They are not equal");
-* }
-*
-* //Prints "Both matrices are equal" on the console
-*/
-Matrix4.equals = function(left, right) {
-    return (left === right) ||
-        (defined(left) &&
-            defined(right) &&
-            left[0] === right[0] &&
-            left[1] === right[1] &&
-            left[2] === right[2] &&
-            left[3] === right[3] &&
-            left[4] === right[4] &&
-            left[5] === right[5] &&
-            left[6] === right[6] &&
-            left[7] === right[7] &&
-            left[8] === right[8] &&
-            left[9] === right[9] &&
-            left[10] === right[10] &&
-            left[11] === right[11] &&
-            left[12] === right[12] &&
-            left[13] === right[13] &&
-            left[14] === right[14] &&
-            left[15] === right[15]);
-};
 
 /**
 * Compares the provided matrices componentwise and returns
@@ -1977,9 +1910,9 @@ Matrix4.getTranslation = function(matrix, result) {
     func rotation() -> Matrix3 {
         
         return Matrix3(
-            column0Row0: grid[0], column1Row0: grid[1], column2Row0: grid[2],
-            column0Row1: grid[4], column1Row1: grid[5], column2Row1: grid[6],
-            column0Row2: grid[8], column1Row2: grid[9], column2Row2: grid[10])
+            column0Row0: _grid[0], column1Row0: _grid[1], column2Row0: _grid[2],
+            column0Row1: _grid[4], column1Row1: _grid[5], column2Row1: _grid[6],
+            column0Row2: _grid[8], column1Row2: _grid[9], column2Row2: _grid[10])
     }
 /*
 /**
@@ -2125,19 +2058,19 @@ Matrix4.inverse = function(matrix, result) {
         //return Matrix4.fromRotationTranslation(rT, rTT, result);
         
         
-        var matrix0 = grid[0]
-        var matrix1 = grid[1]
-        var matrix2 = grid[2]
-        var matrix4 = grid[4]
-        var matrix5 = grid[5]
-        var matrix6 = grid[6]
-        var matrix8 = grid[8]
-        var matrix9 = grid[9]
-        var matrix10 = grid[10]
+        var matrix0 = _grid[0]
+        var matrix1 = _grid[1]
+        var matrix2 = _grid[2]
+        var matrix4 = _grid[4]
+        var matrix5 = _grid[5]
+        var matrix6 = _grid[6]
+        var matrix8 = _grid[8]
+        var matrix9 = _grid[9]
+        var matrix10 = _grid[10]
         
-        var vX = grid[12]
-        var vY = grid[13]
-        var vZ = grid[14]
+        var vX = _grid[12]
+        var vY = _grid[13]
+        var vZ = _grid[14]
         
         var x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ
         var y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ
@@ -2212,3 +2145,53 @@ Matrix4.prototype.toString = function() {
 };*/
 
 }
+
+/**
+* Compares the provided matrices componentwise and returns
+* <code>true</code> if they are equal, <code>false</code> otherwise.
+*
+* @param {Matrix4} [left] The first matrix.
+* @param {Matrix4} [right] The second matrix.
+* @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
+*
+* @example
+* //compares two Matrix4 instances
+*
+* // a = [10.0, 14.0, 18.0, 22.0]
+* //     [11.0, 15.0, 19.0, 23.0]
+* //     [12.0, 16.0, 20.0, 24.0]
+* //     [13.0, 17.0, 21.0, 25.0]
+*
+* // b = [10.0, 14.0, 18.0, 22.0]
+* //     [11.0, 15.0, 19.0, 23.0]
+* //     [12.0, 16.0, 20.0, 24.0]
+* //     [13.0, 17.0, 21.0, 25.0]
+*
+* if(Cesium.Matrix4.equals(a,b)) {
+*      console.log("Both matrices are equal");
+* } else {
+*      console.log("They are not equal");
+* }
+*
+* //Prints "Both matrices are equal" on the console
+*/
+func == (left: Matrix4, right: Matrix4) -> Bool {
+    var first = left[0] == right[0] &&
+            left[1] == right[1] &&
+            left[2] == right[2] &&
+            left[3] == right[3] &&
+            left[4] == right[4] &&
+            left[5] == right[5] &&
+            left[6] == right[6] &&
+            left[7] == right[7]
+    var second = left[8] == right[8] &&
+            left[9] == right[9] &&
+            left[10] == right[10] &&
+            left[11] == right[11] &&
+            left[12] == right[12] &&
+            left[13] == right[13] &&
+            left[14] == right[14] &&
+            left[15] == right[15]
+    return first && second
+}
+

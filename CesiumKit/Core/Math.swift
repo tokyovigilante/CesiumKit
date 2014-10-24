@@ -456,7 +456,7 @@ CesiumMath.zeroToTwoPi = function(x) {
     // small negative values.
     return (value < 0.0) ? (value + CesiumMath.TWO_PI) % CesiumMath.TWO_PI : value;
 };
-
+*/
 /**
 * Determines if two values are equal within the provided epsilon.  This is useful
 * to avoid problems due to roundoff error when comparing floating-point values directly.
@@ -470,20 +470,10 @@ CesiumMath.zeroToTwoPi = function(x) {
 * var b = Cesium.Math.equalsEpsilon(0.0, 0.01, Cesium.Math.EPSILON2); // true
 * var b = Cesium.Math.equalsEpsilon(0.0, 0.1, Cesium.Math.EPSILON2);  // false
 */
-CesiumMath.equalsEpsilon = function(left, right, epsilon) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
+    static func equalsEpsilon(left: Double, _ right: Double, epsilon: Double = 0.0) -> Bool {
+        return abs(left - right) <= epsilon
     }
-    
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    //>>includeEnd('debug');
-    epsilon = defaultValue(epsilon, 0.0);
-    return Math.abs(left - right) <= epsilon;
-};
-
+/*
 var factorials = [1];
 
 /**

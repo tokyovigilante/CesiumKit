@@ -26,20 +26,26 @@ public struct Cartographic {
     * @type {Number}
     * @default 0.0
     */
-    var longitude: Double = 0.0
+    var longitude: Double
     /**
     * The latitude, in radians.
     * @type {Number}
     * @default 0.0
     */
-    var latitude: Double = 0.0
+    var latitude: Double
     
     /**
     * The height, in meters, above the ellipsoid.
     * @type {Number}
     * @default 0.0
     */
-    var height: Double = 0.0
+    var height: Double
+    
+    init(longitude: Double = 0.0, latitude: Double = 0.0, height: Double = 0.0) {
+        self.longitude = longitude
+        self.latitude = latitude
+        self.height = height
+    }
     
     /**
     * Creates a new Cartographic instance from longitude and latitude
