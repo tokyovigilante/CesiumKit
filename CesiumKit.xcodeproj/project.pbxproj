@@ -232,6 +232,9 @@
 		94D45B2919BDC26300FFE1CB /* Matrix3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2819BDC26300FFE1CB /* Matrix3.swift */; };
 		94D45B2B19BDC7DD00FFE1CB /* EncodedCartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */; };
 		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
+		94D5AC1C19FBAD1800FFAD81 /* BlendingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */; };
+		94D5AC1E19FBAD4800FFAD81 /* BlendEquation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */; };
+		94D5AC2319FBAE7F00FFAD81 /* BlendFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
@@ -386,6 +389,9 @@
 		94D45B2819BDC26300FFE1CB /* Matrix3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix3.swift; sourceTree = "<group>"; };
 		94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodedCartesian3.swift; sourceTree = "<group>"; };
 		94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidTests.swift; path = Core/EllipsoidTests.swift; sourceTree = "<group>"; };
+		94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendingState.swift; sourceTree = "<group>"; };
+		94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendEquation.swift; sourceTree = "<group>"; };
+		94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendFunction.swift; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* CesiumKit.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = CesiumKit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -553,6 +559,9 @@
 			isa = PBXGroup;
 			children = (
 				94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */,
+				94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */,
+				94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */,
+				94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */,
 				94B87DCA194D6F5000012DC4 /* Camera.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
@@ -786,14 +795,17 @@
 				942D02EC194DBC1E00012DC4 /* DrawCommand.swift in Sources */,
 				94D45B2B19BDC7DD00FFE1CB /* EncodedCartesian3.swift in Sources */,
 				942AEB1B1955286F00CD0858 /* ComponentDatatype.swift in Sources */,
+				94D5AC1C19FBAD1800FFAD81 /* BlendingState.swift in Sources */,
 				94B87DC7194D6ADF00012DC4 /* FrameState.swift in Sources */,
 				94F87F5519DAAA5400FFAD81 /* TileUniformMap.swift in Sources */,
 				94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */,
 				942D02F0194DBDDF00012DC4 /* VertexArray.swift in Sources */,
 				94CD3FAB199B5A1B00012DC4 /* CubeMapFace.swift in Sources */,
+				94D5AC1E19FBAD4800FFAD81 /* BlendEquation.swift in Sources */,
 				94C57E1419722AB90046791A /* Matrix4.swift in Sources */,
 				94B87DCF194D71A200012DC4 /* Intersectable.swift in Sources */,
 				947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */,
+				94D5AC2319FBAE7F00FFAD81 /* BlendFunction.swift in Sources */,
 				948B802E194D3BD900012DC4 /* VertexFormat.swift in Sources */,
 				949E67A519D6BCB200012DC4 /* Queue.swift in Sources */,
 				94540425199F05D300012DC4 /* FrustumCommands.swift in Sources */,
