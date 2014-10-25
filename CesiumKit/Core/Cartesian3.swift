@@ -598,6 +598,7 @@ public struct Cartesian3: Packable, Equatable {
     static func unitY() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 1.0, z: 0.0)
     }
+    
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
     *
@@ -607,6 +608,7 @@ public struct Cartesian3: Packable, Equatable {
     static func unitZ() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 0.0, z: 1.0)
     }
+    
     /**
     * Creates a string representing this Cartesian in the format '(x, y, z)'.
     *

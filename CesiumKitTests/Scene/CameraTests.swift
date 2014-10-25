@@ -868,7 +868,7 @@ camera.viewRectangle();
 }).toThrowDeveloperError();
 });
 */
-    func testViewsRectangleIn3D () {
+    func testViewsRectangleIn3D1 () {
         var rectangle = Rectangle(west: -M_PI, south: -M_PI_2, east: M_PI, north: M_PI_2)
         camera.viewRectangle(rectangle)
         XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: 14680290.639204923, y: 0.0, z: 0.0), epsilon: Math.Epsilon6), "position equality")
@@ -876,45 +876,43 @@ camera.viewRectangle();
         XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3.unitZ(), epsilon: Math.Epsilon10), "up equality")
         XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3.unitY(), epsilon: Math.Epsilon10), "right equality")
     }
+    
+    func testViewsRectangleIn3D2 () {
+        let rectangle = Rectangle(
+            west: Math.toRadians(21.25),
+            south: Math.toRadians(41.23),
+            east: Math.toRadians(21.51),
+            north: Math.toRadians(41.38)
+        )
+        camera.viewRectangle(rectangle, ellipsoid: Ellipsoid.wgs84())
+        XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: 4481581.054168208, y: 1754494.5938935655, z: 4200573.072090136), epsilon: Math.Epsilon6), "position equality")
+        XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3(x: -0.7015530983057745, y: -0.2746510892984876, z: -0.6575637074875123), epsilon: Math.Epsilon10), "direction equality")
+        XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3(x: -0.6123128513437499, y: -0.23971441651266895, z: 0.7533989451779698), epsilon: Math.Epsilon10), "up equality")
+        XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3(x: -0.36454934142973716, y: 0.9311840729217532, z: 0.0), epsilon: Math.Epsilon10), "right equality")
+    }
+
+    func testViewsRectangleIn3D3 () {
+        let rectangle = Rectangle(
+            west: Math.toRadians(90.0),
+            south: Math.toRadians(-50.0),
+            east: Math.toRadians(157.0),
+            north: Math.toRadians(0.0))
+        camera.viewRectangle(rectangle, ellipsoid: Ellipsoid.wgs84())
+        XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: -7210721.873278953, y: 8105929.1576369405, z: -5972336.199381728), epsilon: Math.Epsilon6), "position equality")
+        XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3(x: 0.5822498554483325, y: -0.6545358652367963, z: 0.48225294913469874), epsilon: Math.Epsilon10), "direction equality")
+        XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3(x: -0.32052676705406324, y: 0.3603199946588929, z: 0.8760320159964963), epsilon: Math.Epsilon10), "up equality")
+        XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3(x: -0.7471597536218517, y: -0.6646444933705039, z: 0.0), epsilon: Math.Epsilon10), "right equality")
+    }
+
+    func testViewsRectangleIn3DAcrossIDL () {
+        let rectangle = Rectangle(west: 0.1, south: -M_PI_2, east: -0.1, north: M_PI_2)
+        camera.viewRectangle(rectangle)
+        XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: -14680290.639204923, y: 0.0, z: 0.0), epsilon: Math.Epsilon6), "position equality")
+        XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3.unitX(), epsilon: Math.Epsilon10), "direction equality")
+        XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3.unitZ(), epsilon: Math.Epsilon10), "up equality")
+        XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3.unitY().negate(), epsilon: Math.Epsilon10), "right equality")
+    }
 /*
-it('views rectangle in 3D (2)', function() {
-var rectangle = new Rectangle(
-CesiumMath.toRadians(21.25),
-CesiumMath.toRadians(41.23),
-CesiumMath.toRadians(21.51),
-CesiumMath.toRadians(41.38));
-camera.viewRectangle(rectangle, Ellipsoid.WGS84);
-expect(camera.position).toEqualEpsilon(new Cartesian3(4481581.054168208, 1754494.5938935655, 4200573.072090136), CesiumMath.EPSILON6);
-expect(camera.direction).toEqualEpsilon(new Cartesian3(-0.7015530983057745, -0.2746510892984876, -0.6575637074875123), CesiumMath.EPSILON10);
-expect(camera.up).toEqualEpsilon(new Cartesian3(-0.6123128513437499, -0.23971441651266895, 0.7533989451779698), CesiumMath.EPSILON10);
-expect(camera.right).toEqualEpsilon(new Cartesian3(-0.36454934142973716, 0.9311840729217532, 0.0), CesiumMath.EPSILON10);
-});
-
-it('views rectangle in 3D (3)', function() {
-var rectangle = new Rectangle(
-CesiumMath.toRadians(90.0),
-CesiumMath.toRadians(-50.0),
-CesiumMath.toRadians(157.0),
-CesiumMath.toRadians(0.0));
-camera.viewRectangle(rectangle);
-expect(camera.position).toEqualEpsilon(new Cartesian3(-7210721.873278953, 8105929.1576369405, -5972336.199381728), CesiumMath.EPSILON6);
-expect(camera.direction).toEqualEpsilon(new Cartesian3(0.5822498554483325, -0.6545358652367963, 0.48225294913469874), CesiumMath.EPSILON10);
-expect(camera.up).toEqualEpsilon(new Cartesian3(-0.32052676705406324, 0.3603199946588929, 0.8760320159964963), CesiumMath.EPSILON10);
-expect(camera.right).toEqualEpsilon(new Cartesian3(-0.7471597536218517, -0.6646444933705039, 0.0), CesiumMath.EPSILON10);
-});
-
-it('views rectangle in 3D across IDL', function() {
-var rectangle = new Rectangle(
-0.1,
--CesiumMath.PI_OVER_TWO,
--0.1,
-CesiumMath.PI_OVER_TWO);
-camera.viewRectangle(rectangle);
-expect(camera.position).toEqualEpsilon(new Cartesian3(-14680290.639204923, 0.0, 0.0), CesiumMath.EPSILON6);
-expect(camera.direction).toEqualEpsilon(Cartesian3.UNIT_X, CesiumMath.EPSILON10);
-expect(camera.up).toEqualEpsilon(Cartesian3.UNIT_Z, CesiumMath.EPSILON10);
-expect(camera.right).toEqualEpsilon(Cartesian3.negate(Cartesian3.UNIT_Y, new Cartesian3()), CesiumMath.EPSILON10);
-});
 
 it('views rectangle in 2D with larger longitude', function() {
 var frustum = new OrthographicFrustum();

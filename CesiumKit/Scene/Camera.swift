@@ -1653,14 +1653,12 @@ var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new C
         northEast = northEast.subtract(center)
         southWest = southWest.subtract(center)
         
-        var direction = center.negate()
+        var direction = center.negate().normalize()
         cameraRF.direction = direction
         
-        direction = direction.normalize()
-        var right = direction.cross(Cartesian3.unitZ())
+        var right = direction.cross(Cartesian3.unitZ()).normalize()
         cameraRF.right = right
         
-        right = right.normalize()
         var up = right.cross(direction)
         cameraRF.up = up
         
@@ -1677,9 +1675,9 @@ var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new C
             abs(right.dot(southWest))
         )
         
-        var tanPhi = tan(frustum.fovy * 0.5)
-        var tanTheta = frustum.aspectRatio * tanPhi
-        var d = max(width / tanTheta, height / tanPhi)
+        let tanPhi = tan(frustum.fovy * 0.5)
+        let tanTheta = frustum.aspectRatio * tanPhi
+        let d = max(width / tanTheta, height / tanPhi)
         
         return center.normalize().multiplyByScalar(mag + d)
     }
