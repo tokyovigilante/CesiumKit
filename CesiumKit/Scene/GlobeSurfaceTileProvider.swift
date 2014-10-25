@@ -225,35 +225,20 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             _blendRenderState!.cull.enabled = true
             _blendRenderState!.depthTest.enabled = true
             _blendRenderState!.depthTest.function = .LessOrEqual
-            _blendRenderState!.blending = BlendingState
+            _blendRenderState!.blending = BlendingState.AlphaBlend()
 
         }
-        if (!defined(this._blendRenderState)) {
-            this._blendRenderState = context.createRenderState({ // Write color and depth
-                cull : {
-                    enabled : true
-                },
-                depthTest : {
-                    enabled : true,
-                    func : DepthFunction.LESS_OR_EQUAL
-                },
-                blending : BlendingState.ALPHA_BLEND
-            });
-        }
         
-        this._renderState.depthTest.enabled = frameState.mode === SceneMode.SCENE3D || frameState.mode === SceneMode.COLUMBUS_VIEW;
-        this._blendRenderState.depthTest.enabled = this._renderState.depthTest.enabled;
+        _renderState!.depthTest.enabled = frameState.mode == .Scene3D || frameState.mode == SceneMode.ColumbusView
+        _blendRenderState!.depthTest.enabled = _renderState!.depthTest.enabled
         
         // And the tile render commands to the command list, sorted by texture count.
-        var tilesToRenderByTextureCount = this._tilesToRenderByTextureCount;
-        for (var textureCountIndex = 0, textureCountLength = tilesToRenderByTextureCount.length; textureCountIndex < textureCountLength; ++textureCountIndex) {
-            var tilesToRender = tilesToRenderByTextureCount[textureCountIndex];
-            if (!defined(tilesToRender)) {
-                continue;
-            }
-            
-            for (var tileIndex = 0, tileLength = tilesToRender.length; tileIndex < tileLength; ++tileIndex) {
-                addDrawCommandsForTile(this, tilesToRender[tileIndex], context, frameState, commandList);
+        for (var textureCountIndex = 0; textureCountIndex < _tilesToRenderByTextureCount.count; ++textureCountIndex) {
+            if let tilesToRender = _tilesToRenderByTextureCount[textureCountIndex] {
+                
+                for (var tileIndex = 0; tileIndex < tilesToRender.count; ++tileIndex) {
+                    addDrawCommandsForTile(tilesToRender[tileIndex], context: context, frameState: frameState, commandList: commandList)
+                }
             }
         }
     }
@@ -694,227 +679,221 @@ var northeastScratch = new Cartesian3();
     }
     
     var otherPassesInitialColor = new Cartesian4(0.0, 0.0, 0.0, 0.0);
-    
-    function addDrawCommandsForTile(tileProvider, tile, context, frameState, commandList) {
-    var surfaceTile = tile.data;
-    
-    var viewMatrix = frameState.camera.viewMatrix;
-    
-    var maxTextures = context.maximumTextureImageUnits;
-    if (defined(tileProvider.oceanNormalMap)) {
-    --maxTextures;
+    */
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, commandList: [Command]) {
+        let surfaceTile = tile.data!
+        
+        let viewMatrix = frameState.camera!.viewMatrix
+        
+        var maxTextures = context.maximumTextureImageUnits
+        
+        if oceanNormalMap != nil {
+            --maxTextures
+        }
+        if surfaceTile.waterMaskTexture != nil {
+            --maxTextures
+        }
+        
+        var rtc = surfaceTile.center
+        
+        var scratchArray = [Float32](count: 1, repeatedValue: 0.0)
+        
+        // Not used in 3D.
+        var tileRectangle = Cartesian4()
+        
+        // Only used for Mercator projections.
+        var southLatitude = 0.0
+        var northLatitude = 0.0
+        var southMercatorYHigh = 0.0
+        var southMercatorYLow = 0.0
+        var oneOverMercatorHeight = 0.0
+        
+        if frameState.mode != .Scene3D {
+            var projection = frameState.mapProjection!
+            var southwest = projection.project(tile.rectangle.southwest())
+            var northeast = projection.project(tile.rectangle.northeast())
+            
+            tileRectangle.x = southwest.x
+            tileRectangle.y = southwest.y
+            tileRectangle.z = northeast.x
+            tileRectangle.w = northeast.y
+            
+            // In 2D and Columbus View, use the center of the tile for RTC rendering.
+            if frameState.mode != .Morphing {
+                rtc = Cartesian3(x: 0.0, y: (tileRectangle.z + tileRectangle.x) * 0.5, z: (tileRectangle.w + tileRectangle.y) * 0.5)
+                tileRectangle.x -= rtc.y
+                tileRectangle.y -= rtc.z
+                tileRectangle.z -= rtc.y
+                tileRectangle.w -= rtc.z
+            }
+            
+            if projection is WebMercatorProjection {
+                southLatitude = tile.rectangle.south
+                northLatitude = tile.rectangle.north
+                
+                var southMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(southLatitude)
+                var northMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(northLatitude)
+                
+                scratchArray[0] = Float32(southMercatorY)
+                southMercatorYHigh = Double(scratchArray[0])
+                southMercatorYLow = southMercatorY - Double(scratchArray[0])
+                
+                oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
+            }
+        }
+        
+        var centerEye = Cartesian4(x: rtc.x, y: rtc.y, z: rtc.z, w: 1.0)
+        
+        centerEye = viewMatrix.multiplyByVector(centerEye)
+        /*viewMatrix.setColumn(3, centerEye, modifiedModelViewScratch);
+        
+        var tileImageryCollection = surfaceTile.imagery;
+        var imageryIndex = 0;
+        var imageryLen = tileImageryCollection.length;
+        
+        var firstPassRenderState = tileProvider._renderState;
+        var otherPassesRenderState = tileProvider._blendRenderState;
+        var renderState = firstPassRenderState;
+        
+        var initialColor = tileProvider._firstPassInitialColor
+        
+        do {
+            var numberOfDayTextures = 0;
+            
+            var command;
+            var uniformMap;
+            
+            if (tileProvider._drawCommands.length <= tileProvider._usedDrawCommands) {
+                command = new DrawCommand();
+                command.owner = tile;
+                command.cull = false;
+                command.boundingVolume = new BoundingSphere();
+                
+                uniformMap = createTileUniformMap();
+                
+                tileProvider._drawCommands.push(command);
+                tileProvider._uniformMaps.push(uniformMap);
+            } else {
+                command = tileProvider._drawCommands[tileProvider._usedDrawCommands];
+                uniformMap = tileProvider._uniformMaps[tileProvider._usedDrawCommands];
+            }
+            
+            command.owner = tile;
+            
+            ++tileProvider._usedDrawCommands;
+            
+            command.debugShowBoundingVolume = (tile === tileProvider._debug.boundingSphereTile);
+            
+            Cartesian4.clone(initialColor, uniformMap.initialColor);
+            uniformMap.oceanNormalMap = tileProvider.oceanNormalMap;
+            uniformMap.lightingFadeDistance.x = tileProvider.lightingFadeOutDistance;
+            uniformMap.lightingFadeDistance.y = tileProvider.lightingFadeInDistance;
+            uniformMap.zoomedOutOceanSpecularIntensity = tileProvider.zoomedOutOceanSpecularIntensity;
+            
+            uniformMap.center3D = surfaceTile.center;
+            
+            Cartesian4.clone(tileRectangle, uniformMap.tileRectangle);
+            uniformMap.southAndNorthLatitude.x = southLatitude;
+            uniformMap.southAndNorthLatitude.y = northLatitude;
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow;
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight;
+            Matrix4.clone(modifiedModelViewScratch, uniformMap.modifiedModelView);
+            
+            var applyBrightness = false;
+            var applyContrast = false;
+            var applyHue = false;
+            var applySaturation = false;
+            var applyGamma = false;
+            var applyAlpha = false;
+            
+            while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
+                var tileImagery = tileImageryCollection[imageryIndex];
+                var imagery = tileImagery.readyImagery;
+                ++imageryIndex;
+                
+                if (!defined(imagery) || imagery.state !== ImageryState.READY || imagery.imageryLayer.alpha === 0.0) {
+                    continue;
+                }
+                
+                var imageryLayer = imagery.imageryLayer;
+                
+                if (!defined(tileImagery.textureTranslationAndScale)) {
+                    tileImagery.textureTranslationAndScale = imageryLayer._calculateTextureTranslationAndScale(tile, tileImagery);
+                }
+                
+                uniformMap.dayTextures[numberOfDayTextures] = imagery.texture;
+                uniformMap.dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale;
+                uniformMap.dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle;
+                
+                uniformMap.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha;
+                applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] !== 1.0;
+                
+                uniformMap.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness;
+                applyBrightness = applyBrightness || uniformMap.dayTextureBrightness[numberOfDayTextures] !== ImageryLayer.DEFAULT_BRIGHTNESS;
+                
+                uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast;
+                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] !== ImageryLayer.DEFAULT_CONTRAST;
+                
+                uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue;
+                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] !== ImageryLayer.DEFAULT_HUE;
+                
+                uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation;
+                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] !== ImageryLayer.DEFAULT_SATURATION;
+                
+                uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma;
+                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] !== 1.0 / ImageryLayer.DEFAULT_GAMMA;
+                
+                if (defined(imagery.credits)) {
+                    var creditDisplay = frameState.creditDisplay;
+                    var credits = imagery.credits;
+                    for (var creditIndex = 0, creditLength = credits.length; creditIndex < creditLength; ++creditIndex) {
+                        creditDisplay.addCredit(credits[creditIndex]);
+                    }
+                }
+                
+                ++numberOfDayTextures;
+            }
+            
+            // trim texture array to the used length so we don't end up using old textures
+            // which might get destroyed eventually
+            uniformMap.dayTextures.length = numberOfDayTextures;
+            uniformMap.waterMask = surfaceTile.waterMaskTexture;
+            Cartesian4.clone(surfaceTile.waterMaskTranslationAndScale, uniformMap.waterMaskTranslationAndScale);
+            
+            command.shaderProgram = tileProvider._surfaceShaderSet.getShaderProgram(context, numberOfDayTextures, applyBrightness, applyContrast, applyHue, applySaturation, applyGamma, applyAlpha);
+            command.renderState = renderState;
+            command.primitiveType = PrimitiveType.TRIANGLES;
+            command.vertexArray = surfaceTile.vertexArray;
+            command.uniformMap = uniformMap;
+            command.pass = Pass.OPAQUE;
+            
+            if (tileProvider._debug.wireframe) {
+                createWireframeVertexArrayIfNecessary(context, tileProvider, tile);
+                if (defined(surfaceTile.wireframeVertexArray)) {
+                    command.vertexArray = surfaceTile.wireframeVertexArray;
+                    command.primitiveType = PrimitiveType.LINES;
+                }
+            }
+            
+            var boundingVolume = command.boundingVolume;
+            
+            if (frameState.mode !== SceneMode.SCENE3D) {
+                BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, frameState.mapProjection, surfaceTile.minimumHeight, surfaceTile.maximumHeight, boundingVolume);
+                Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
+                
+                if (frameState.mode === SceneMode.MORPHING) {
+                    boundingVolume = BoundingSphere.union(surfaceTile.boundingSphere3D, boundingVolume, boundingVolume);
+                }
+            } else {
+                BoundingSphere.clone(surfaceTile.boundingSphere3D, boundingVolume);
+            }
+            
+            commandList.push(command);
+            
+            renderState = otherPassesRenderState;
+            initialColor = otherPassesInitialColor;
+        } while (imageryIndex < imageryLen);*/
     }
-    if (defined(surfaceTile.waterMaskTexture)) {
-    --maxTextures;
-    }
-    
-    var rtc = surfaceTile.center;
-    
-    // Not used in 3D.
-    var tileRectangle = tileRectangleScratch;
-    
-    // Only used for Mercator projections.
-    var southLatitude = 0.0;
-    var northLatitude = 0.0;
-    var southMercatorYHigh = 0.0;
-    var southMercatorYLow = 0.0;
-    var oneOverMercatorHeight = 0.0;
-    
-    if (frameState.mode !== SceneMode.SCENE3D) {
-    var projection = frameState.mapProjection;
-    var southwest = projection.project(Rectangle.southwest(tile.rectangle), southwestScratch);
-    var northeast = projection.project(Rectangle.northeast(tile.rectangle), northeastScratch);
-    
-    tileRectangle.x = southwest.x;
-    tileRectangle.y = southwest.y;
-    tileRectangle.z = northeast.x;
-    tileRectangle.w = northeast.y;
-    
-    // In 2D and Columbus View, use the center of the tile for RTC rendering.
-    if (frameState.mode !== SceneMode.MORPHING) {
-    rtc = rtcScratch;
-    rtc.x = 0.0;
-    rtc.y = (tileRectangle.z + tileRectangle.x) * 0.5;
-    rtc.z = (tileRectangle.w + tileRectangle.y) * 0.5;
-    tileRectangle.x -= rtc.y;
-    tileRectangle.y -= rtc.z;
-    tileRectangle.z -= rtc.y;
-    tileRectangle.w -= rtc.z;
-    }
-    
-    if (projection instanceof WebMercatorProjection) {
-    southLatitude = tile.rectangle.south;
-    northLatitude = tile.rectangle.north;
-    
-    var southMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(southLatitude);
-    var northMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(northLatitude);
-    
-    float32ArrayScratch[0] = southMercatorY;
-    southMercatorYHigh = float32ArrayScratch[0];
-    southMercatorYLow = southMercatorY - float32ArrayScratch[0];
-    
-    oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY);
-    }
-    }
-    
-    var centerEye = centerEyeScratch;
-    centerEye.x = rtc.x;
-    centerEye.y = rtc.y;
-    centerEye.z = rtc.z;
-    centerEye.w = 1.0;
-    
-    Matrix4.multiplyByVector(viewMatrix, centerEye, centerEye);
-    Matrix4.setColumn(viewMatrix, 3, centerEye, modifiedModelViewScratch);
-    
-    var tileImageryCollection = surfaceTile.imagery;
-    var imageryIndex = 0;
-    var imageryLen = tileImageryCollection.length;
-    
-    var firstPassRenderState = tileProvider._renderState;
-    var otherPassesRenderState = tileProvider._blendRenderState;
-    var renderState = firstPassRenderState;
-    
-    var initialColor = tileProvider._firstPassInitialColor
-    
-    do {
-    var numberOfDayTextures = 0;
-    
-    var command;
-    var uniformMap;
-    
-    if (tileProvider._drawCommands.length <= tileProvider._usedDrawCommands) {
-    command = new DrawCommand();
-    command.owner = tile;
-    command.cull = false;
-    command.boundingVolume = new BoundingSphere();
-    
-    uniformMap = createTileUniformMap();
-    
-    tileProvider._drawCommands.push(command);
-    tileProvider._uniformMaps.push(uniformMap);
-    } else {
-    command = tileProvider._drawCommands[tileProvider._usedDrawCommands];
-    uniformMap = tileProvider._uniformMaps[tileProvider._usedDrawCommands];
-    }
-    
-    command.owner = tile;
-    
-    ++tileProvider._usedDrawCommands;
-    
-    command.debugShowBoundingVolume = (tile === tileProvider._debug.boundingSphereTile);
-    
-    Cartesian4.clone(initialColor, uniformMap.initialColor);
-    uniformMap.oceanNormalMap = tileProvider.oceanNormalMap;
-    uniformMap.lightingFadeDistance.x = tileProvider.lightingFadeOutDistance;
-    uniformMap.lightingFadeDistance.y = tileProvider.lightingFadeInDistance;
-    uniformMap.zoomedOutOceanSpecularIntensity = tileProvider.zoomedOutOceanSpecularIntensity;
-    
-    uniformMap.center3D = surfaceTile.center;
-    
-    Cartesian4.clone(tileRectangle, uniformMap.tileRectangle);
-    uniformMap.southAndNorthLatitude.x = southLatitude;
-    uniformMap.southAndNorthLatitude.y = northLatitude;
-    uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow;
-    uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
-    uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight;
-    Matrix4.clone(modifiedModelViewScratch, uniformMap.modifiedModelView);
-    
-    var applyBrightness = false;
-    var applyContrast = false;
-    var applyHue = false;
-    var applySaturation = false;
-    var applyGamma = false;
-    var applyAlpha = false;
-    
-    while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
-    var tileImagery = tileImageryCollection[imageryIndex];
-    var imagery = tileImagery.readyImagery;
-    ++imageryIndex;
-    
-    if (!defined(imagery) || imagery.state !== ImageryState.READY || imagery.imageryLayer.alpha === 0.0) {
-    continue;
-    }
-    
-    var imageryLayer = imagery.imageryLayer;
-    
-    if (!defined(tileImagery.textureTranslationAndScale)) {
-    tileImagery.textureTranslationAndScale = imageryLayer._calculateTextureTranslationAndScale(tile, tileImagery);
-    }
-    
-    uniformMap.dayTextures[numberOfDayTextures] = imagery.texture;
-    uniformMap.dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale;
-    uniformMap.dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle;
-    
-    uniformMap.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha;
-    applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] !== 1.0;
-    
-    uniformMap.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness;
-    applyBrightness = applyBrightness || uniformMap.dayTextureBrightness[numberOfDayTextures] !== ImageryLayer.DEFAULT_BRIGHTNESS;
-    
-    uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast;
-    applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] !== ImageryLayer.DEFAULT_CONTRAST;
-    
-    uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue;
-    applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] !== ImageryLayer.DEFAULT_HUE;
-    
-    uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation;
-    applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] !== ImageryLayer.DEFAULT_SATURATION;
-    
-    uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma;
-    applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] !== 1.0 / ImageryLayer.DEFAULT_GAMMA;
-    
-    if (defined(imagery.credits)) {
-    var creditDisplay = frameState.creditDisplay;
-    var credits = imagery.credits;
-    for (var creditIndex = 0, creditLength = credits.length; creditIndex < creditLength; ++creditIndex) {
-    creditDisplay.addCredit(credits[creditIndex]);
-    }
-    }
-    
-    ++numberOfDayTextures;
-    }
-    
-    // trim texture array to the used length so we don't end up using old textures
-    // which might get destroyed eventually
-    uniformMap.dayTextures.length = numberOfDayTextures;
-    uniformMap.waterMask = surfaceTile.waterMaskTexture;
-    Cartesian4.clone(surfaceTile.waterMaskTranslationAndScale, uniformMap.waterMaskTranslationAndScale);
-    
-    command.shaderProgram = tileProvider._surfaceShaderSet.getShaderProgram(context, numberOfDayTextures, applyBrightness, applyContrast, applyHue, applySaturation, applyGamma, applyAlpha);
-    command.renderState = renderState;
-    command.primitiveType = PrimitiveType.TRIANGLES;
-    command.vertexArray = surfaceTile.vertexArray;
-    command.uniformMap = uniformMap;
-    command.pass = Pass.OPAQUE;
-    
-    if (tileProvider._debug.wireframe) {
-    createWireframeVertexArrayIfNecessary(context, tileProvider, tile);
-    if (defined(surfaceTile.wireframeVertexArray)) {
-    command.vertexArray = surfaceTile.wireframeVertexArray;
-    command.primitiveType = PrimitiveType.LINES;
-    }
-    }
-    
-    var boundingVolume = command.boundingVolume;
-    
-    if (frameState.mode !== SceneMode.SCENE3D) {
-    BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, frameState.mapProjection, surfaceTile.minimumHeight, surfaceTile.maximumHeight, boundingVolume);
-    Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
-    
-    if (frameState.mode === SceneMode.MORPHING) {
-    boundingVolume = BoundingSphere.union(surfaceTile.boundingSphere3D, boundingVolume, boundingVolume);
-    }
-    } else {
-    BoundingSphere.clone(surfaceTile.boundingSphere3D, boundingVolume);
-    }
-    
-    commandList.push(command);
-    
-    renderState = otherPassesRenderState;
-    initialColor = otherPassesInitialColor;
-    } while (imageryIndex < imageryLen);
-    }
-    
-    return GlobeSurfaceTileProvider;
-    });*/
+
 }

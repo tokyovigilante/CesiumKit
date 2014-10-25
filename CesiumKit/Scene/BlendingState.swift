@@ -25,6 +25,7 @@ struct BlendingState {
     let functionSourceAlpha: BlendFunction
     let functionDestinationRgb: BlendFunction
     let functionDestinationAlpha: BlendFunction
+    let color: Cartesian4
     
     /**
     * Blending is disabled.
@@ -39,7 +40,8 @@ struct BlendingState {
             functionSourceRgb: .Zero,
             functionSourceAlpha: .Zero,
             functionDestinationRgb: .Zero,
-            functionDestinationAlpha: .Zero)
+            functionDestinationAlpha: .Zero,
+            color: Cartesian4())
     }
     
     /**
@@ -55,7 +57,8 @@ struct BlendingState {
             functionSourceRgb : .SourceAlpha,
             functionSourceAlpha : .SourceAlpha,
             functionDestinationRgb : .OneMinusSourceAlpha,
-            functionDestinationAlpha : .OneMinusSourceAlpha)
+            functionDestinationAlpha : .OneMinusSourceAlpha,
+            color: Cartesian4())
     }
     
     /**
@@ -71,7 +74,8 @@ struct BlendingState {
             functionSourceRgb : .One,
             functionSourceAlpha : .One,
             functionDestinationRgb : .OneMinusSourceAlpha,
-            functionDestinationAlpha : .OneMinusSourceAlpha)
+            functionDestinationAlpha : .OneMinusSourceAlpha,
+            color: Cartesian4())
     }
     
     /**
@@ -87,7 +91,8 @@ struct BlendingState {
             functionSourceRgb : .SourceAlpha,
             functionSourceAlpha : .SourceAlpha,
             functionDestinationRgb : .One,
-            functionDestinationAlpha : .One)
+            functionDestinationAlpha : .One,
+            color: Cartesian4())
     }
     
 }

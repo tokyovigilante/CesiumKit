@@ -177,7 +177,7 @@ class QuadtreePrimitive {
         processTileLoadQueue(context: context, frameState: frameState)
         createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
         
-        _tileProvider.endUpdate(context, frameState, commandList);
+        _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList);
     }
     
     /*

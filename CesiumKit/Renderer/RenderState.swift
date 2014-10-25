@@ -124,17 +124,7 @@ struct RenderState/*: Printable*/ {
     
     var stencilMask: GLuint = ~0
     
-    struct Blending {
-        var enabled: Bool = false
-        var color: Cartesian4 = Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
-        var equationRgb: GLenum = GLenum(GL_FUNC_ADD)
-        var equationAlpha: GLenum = GLenum(GL_FUNC_ADD)
-        var functionSourceRgb: GLenum = GLenum(GL_ONE)
-        var functionSourceAlpha: GLenum = GLenum(GL_ONE)
-        var functionDestinationRgb: GLenum = GLenum(GL_ZERO)
-        var functionDestinationAlpha: GLenum = GLenum(GL_ZERO)
-    }
-    var blending = Blending()
+    var blending = BlendingState.Disabled()
     
     struct StencilTest {
         var enabled: Bool = false
@@ -381,8 +371,8 @@ struct RenderState/*: Printable*/ {
         
         if enabled {
             glBlendColor(GLfloat(blending.color.x), GLfloat(blending.color.y), GLfloat(blending.color.z), GLfloat(blending.color.w))
-            glBlendEquationSeparate(blending.equationRgb, blending.equationAlpha);
-            glBlendFuncSeparate(blending.functionSourceRgb, blending.functionDestinationRgb, blending.functionSourceAlpha, blending.functionDestinationAlpha)
+            glBlendEquationSeparate(blending.equationRgb.toGL(), blending.equationAlpha.toGL())
+            glBlendFuncSeparate(blending.functionSourceRgb.toGL(), blending.functionDestinationRgb.toGL(), blending.functionSourceAlpha.toGL(), blending.functionDestinationAlpha.toGL())
         }
     }
     
