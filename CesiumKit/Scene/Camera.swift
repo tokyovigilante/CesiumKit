@@ -512,27 +512,27 @@ public class Camera {
         
         let positionChanged = _position != position
         if positionChanged {
-            position = _position
+            _position = position
         }
         
         let directionChanged = _direction != direction
         if directionChanged {
-            direction = _direction
+            _direction = direction
         }
         
         let upChanged = _up != up
         if upChanged {
-            up = _up
+            _up = up
         }
         
         let rightChanged = _right != right
         if rightChanged {
-            right = _right
+            _right = right
         }
     
         let transformChanged = _transform != self.transform || _modeChanged
         if transformChanged {
-            self.transform = _transform
+            _transform = transform
             _invTransform = _transform.inverseTransformation()
 
             if mode == SceneMode.ColumbusView || mode == SceneMode.Scene2D {

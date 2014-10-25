@@ -214,28 +214,31 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
-        /*if (!defined(this._renderState)) {
-        this._renderState = context.createRenderState({ // Write color and depth
-        cull : {
-        enabled : true
-        },
-        depthTest : {
-        enabled : true
-        }
-        });
+        if _renderState == nil {
+            _renderState = context.createRenderState()
+            _renderState!.cull.enabled = true
+            _renderState!.depthTest.enabled = true
         }
         
+        if _blendRenderState == nil {
+            _blendRenderState = context.createRenderState()
+            _blendRenderState!.cull.enabled = true
+            _blendRenderState!.depthTest.enabled = true
+            _blendRenderState!.depthTest.function = .LessOrEqual
+            _blendRenderState!.blending = BlendingState
+
+        }
         if (!defined(this._blendRenderState)) {
-        this._blendRenderState = context.createRenderState({ // Write color and depth
-        cull : {
-        enabled : true
-        },
-        depthTest : {
-        enabled : true,
-        func : DepthFunction.LESS_OR_EQUAL
-        },
-        blending : BlendingState.ALPHA_BLEND
-        });
+            this._blendRenderState = context.createRenderState({ // Write color and depth
+                cull : {
+                    enabled : true
+                },
+                depthTest : {
+                    enabled : true,
+                    func : DepthFunction.LESS_OR_EQUAL
+                },
+                blending : BlendingState.ALPHA_BLEND
+            });
         }
         
         this._renderState.depthTest.enabled = frameState.mode === SceneMode.SCENE3D || frameState.mode === SceneMode.COLUMBUS_VIEW;
@@ -244,15 +247,15 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         // And the tile render commands to the command list, sorted by texture count.
         var tilesToRenderByTextureCount = this._tilesToRenderByTextureCount;
         for (var textureCountIndex = 0, textureCountLength = tilesToRenderByTextureCount.length; textureCountIndex < textureCountLength; ++textureCountIndex) {
-        var tilesToRender = tilesToRenderByTextureCount[textureCountIndex];
-        if (!defined(tilesToRender)) {
-        continue;
+            var tilesToRender = tilesToRenderByTextureCount[textureCountIndex];
+            if (!defined(tilesToRender)) {
+                continue;
+            }
+            
+            for (var tileIndex = 0, tileLength = tilesToRender.length; tileIndex < tileLength; ++tileIndex) {
+                addDrawCommandsForTile(this, tilesToRender[tileIndex], context, frameState, commandList);
+            }
         }
-        
-        for (var tileIndex = 0, tileLength = tilesToRender.length; tileIndex < tileLength; ++tileIndex) {
-        addDrawCommandsForTile(this, tilesToRender[tileIndex], context, frameState, commandList);
-        }
-        }*/
     }
     
     /**
