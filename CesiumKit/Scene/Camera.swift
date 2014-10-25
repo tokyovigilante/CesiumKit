@@ -331,6 +331,7 @@ public class Camera {
         position  = position.normalize().multiplyByScalar(mag)
     }
     
+    // Testing only
     init(fakeScene: (
         canvas: (clientWidth: Int, clientHeight: Int),
         drawingBufferWidth: Int,
@@ -1626,7 +1627,7 @@ var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new C
         
         // If we go across the International Date Line
         if (west > east) {
-            east += M_2_PI
+            east += M_PI * 2
         }
         
         var cart = Cartographic(longitude: east, latitude: north)

@@ -10,8 +10,13 @@ import XCTest
 
 class CameraTests: XCTestCase {
 
-    var camera: Camera
-    var scene = (
+    var camera: Camera!
+    var scene: (
+    canvas: (clientWidth: Int, clientHeight: Int),
+    drawingBufferWidth: Int,
+    drawingBufferHeight: Int,
+    mapProjection: Projection//,
+    /* tweens = new TweenCollection();*/) = (
         canvas: (clientWidth: 512, clientHeight: 384),
         drawingBufferWidth: 1024,
         drawingBufferHeight: 768,
@@ -19,10 +24,10 @@ class CameraTests: XCTestCase {
         /* tweens = new TweenCollection();*/
     )
     
-    var position: Cartesian3
-    var up: Cartesian3
-    var dir: Cartesian3
-    var right: Cartesian3
+    var position: Cartesian3!
+    var up: Cartesian3!
+    var dir: Cartesian3!
+    var right: Cartesian3!
     
     var moveAmount = 3.0
     var turnAmount = M_PI_2
@@ -30,18 +35,20 @@ class CameraTests: XCTestCase {
     var zoomAmount = 1.0
 
     override func setUp() {
+        super.setUp()
+        
+        camera = Camera(fakeScene: scene)
         position = Cartesian3.unitZ()
         up = Cartesian3.unitY()
         dir = Cartesian3.unitZ().negate()
         right = dir.cross(up)
-               
-        camera = Camera(fakeScene: scene)
+        
         camera.position = position
         camera.up = up
         camera.direction = dir
         camera.right = right
         
-        camera.minimumZoomDistance = 0.0
+        //camera.minimumZoomDistance = 0.0
     }
 
 /*
@@ -864,10 +871,10 @@ camera.viewRectangle();
     func testViewsRectangleIn3D () {
         var rectangle = Rectangle(west: -M_PI, south: -M_PI_2, east: M_PI, north: M_PI_2)
         camera.viewRectangle(rectangle)
-        /*expect(camera.position).toEqualEpsilon(new Cartesian3(14680290.639204923, 0.0, 0.0), CesiumMath.EPSILON6);
-        expect(camera.direction).toEqualEpsilon(Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()), CesiumMath.EPSILON10);
-        expect(camera.up).toEqualEpsilon(Cartesian3.UNIT_Z, CesiumMath.EPSILON10);
-        expect(camera.right).toEqualEpsilon(Cartesian3.UNIT_Y, CesiumMath.EPSILON10);*/
+        XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: 14680290.639204923, y: 0.0, z: 0.0), epsilon: Math.Epsilon6), "position equality")
+        XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3.unitX().negate(), epsilon: Math.Epsilon10), "direction equality")
+        XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3.unitZ(), epsilon: Math.Epsilon10), "up equality")
+        XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3.unitY(), epsilon: Math.Epsilon10), "right equality")
     }
 /*
 it('views rectangle in 3D (2)', function() {

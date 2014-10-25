@@ -231,6 +231,7 @@
 		94CD3FAF199B6F8A00012DC4 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAE199B6F8A00012DC4 /* Clock.swift */; };
 		94D45B2919BDC26300FFE1CB /* Matrix3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2819BDC26300FFE1CB /* Matrix3.swift */; };
 		94D45B2B19BDC7DD00FFE1CB /* EncodedCartesian3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */; };
+		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
@@ -384,6 +385,7 @@
 		94CD3FAE199B6F8A00012DC4 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		94D45B2819BDC26300FFE1CB /* Matrix3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix3.swift; sourceTree = "<group>"; };
 		94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodedCartesian3.swift; sourceTree = "<group>"; };
+		94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidTests.swift; path = Core/EllipsoidTests.swift; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* CesiumKit.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = CesiumKit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 			isa = PBXGroup;
 			children = (
 				9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */,
+				94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -944,6 +947,7 @@
 				9410137D19FB037500FFAD81 /* TerrainData.swift in Sources */,
 				9410136019FB033C00FFAD81 /* Cartesian2.swift in Sources */,
 				9410136619FB037500FFAD81 /* ComponentDatatype.swift in Sources */,
+				94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */,
 				941013A319FB038400FFAD81 /* GlobeSurfaceTile.swift in Sources */,
 				9410139519FB037D00FFAD81 /* IndexBuffer.swift in Sources */,
 				9410136A19FB037500FFAD81 /* Event.swift in Sources */,
