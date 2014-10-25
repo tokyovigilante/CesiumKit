@@ -305,7 +305,7 @@ public struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func multiplyByScalar(scalar: Double) -> Cartesian3 {
-        return  Cartesian3(x: x * scalar, y: y * scalar, z: z * scalar);
+        return Cartesian3(x: x * scalar, y: y * scalar, z: z * scalar);
     }
     
     /**

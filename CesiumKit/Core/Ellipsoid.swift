@@ -161,27 +161,13 @@ public struct Ellipsoid {
     * var position = new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 5000);
     * var cartesianPosition = Cesium.Ellipsoid.WGS84.cartographicToCartesian(position);
     */
-    
-    var n = cartographicToCartesianNormal;
-    var k = cartographicToCartesianK;
-    this.geodeticSurfaceNormalCartographic(cartographic, n);
-    Cartesian3.multiplyComponents(this._radiiSquared, n, k);
-    var gamma = Math.sqrt(Cartesian3.dot(n, k));
-    Cartesian3.divideByScalar(k, gamma, k);
-    Cartesian3.multiplyByScalar(n, cartographic.height, n);
-    
-    if (!defined(result)) {
-    result = new Cartesian3();
-    }
-    return Cartesian3.add(k, n, result);
-    
     func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3 {
         var n = geodeticSurfaceNormalCartographic(cartographic)
         var k = n.multiplyComponents(radiiSquared)
         
-        var gamma = sqrt(n.dot(k))
-        k.divideByScalar(gamma)
-        n.multiplyByScalar(cartographic.height)
+        let gamma = sqrt(n.dot(k))
+        k = k.divideByScalar(gamma)
+        n = n.multiplyByScalar(cartographic.height)
         
         return k.add(n)
     }
