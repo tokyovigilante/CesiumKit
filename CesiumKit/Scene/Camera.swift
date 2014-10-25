@@ -1653,11 +1653,13 @@ var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new C
         northEast = northEast.subtract(center)
         southWest = southWest.subtract(center)
         
-        var direction = ellipsoid.geodeticSurfaceNormal(center)
+        var direction = center.negate()
         cameraRF.direction = direction
-        direction = direction.negate().normalize()
+        
+        direction = direction.normalize()
         var right = direction.cross(Cartesian3.unitZ())
         cameraRF.right = right
+        
         right = right.normalize()
         var up = right.cross(direction)
         cameraRF.up = up
