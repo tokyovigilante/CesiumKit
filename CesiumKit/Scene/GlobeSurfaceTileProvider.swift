@@ -543,103 +543,14 @@ var northeastScratch = new Cartesian3();
     this._onLayerRemoved(layer, index);
     }
     };
+    */
     
-    function createTileUniformMap() {
-    var uniformMap = {
-    u_initialColor : function() {
-    return this.initialColor;
-    },
-    u_zoomedOutOceanSpecularIntensity : function() {
-    return this.zoomedOutOceanSpecularIntensity;
-    },
-    u_oceanNormalMap : function() {
-    return this.oceanNormalMap;
-    },
-    u_lightingFadeDistance : function() {
-    return this.lightingFadeDistance;
-    },
-    u_center3D : function() {
-    return this.center3D;
-    },
-    u_tileRectangle : function() {
-    return this.tileRectangle;
-    },
-    u_modifiedModelView : function() {
-    return this.modifiedModelView;
-    },
-    u_dayTextures : function() {
-    return this.dayTextures;
-    },
-    u_dayTextureTranslationAndScale : function() {
-    return this.dayTextureTranslationAndScale;
-    },
-    u_dayTextureTexCoordsRectangle : function() {
-    return this.dayTextureTexCoordsRectangle;
-    },
-    u_dayTextureAlpha : function() {
-    return this.dayTextureAlpha;
-    },
-    u_dayTextureBrightness : function() {
-    return this.dayTextureBrightness;
-    },
-    u_dayTextureContrast : function() {
-    return this.dayTextureContrast;
-    },
-    u_dayTextureHue : function() {
-    return this.dayTextureHue;
-    },
-    u_dayTextureSaturation : function() {
-    return this.dayTextureSaturation;
-    },
-    u_dayTextureOneOverGamma : function() {
-    return this.dayTextureOneOverGamma;
-    },
-    u_dayIntensity : function() {
-    return this.dayIntensity;
-    },
-    u_southAndNorthLatitude : function() {
-    return this.southAndNorthLatitude;
-    },
-    u_southMercatorYLowAndHighAndOneOverHeight : function() {
-    return this.southMercatorYLowAndHighAndOneOverHeight;
-    },
-    u_waterMask : function() {
-    return this.waterMask;
-    },
-    u_waterMaskTranslationAndScale : function() {
-    return this.waterMaskTranslationAndScale;
-    },
-    
-    initialColor : new Cartesian4(0.0, 0.0, 0.5, 1.0),
-    zoomedOutOceanSpecularIntensity : 0.5,
-    oceanNormalMap : undefined,
-    lightingFadeDistance : new Cartesian2(6500000.0, 9000000.0),
-    
-    center3D : undefined,
-    modifiedModelView : new Matrix4(),
-    tileRectangle : new Cartesian4(),
-    
-    dayTextures : [],
-    dayTextureTranslationAndScale : [],
-    dayTextureTexCoordsRectangle : [],
-    dayTextureAlpha : [],
-    dayTextureBrightness : [],
-    dayTextureContrast : [],
-    dayTextureHue : [],
-    dayTextureSaturation : [],
-    dayTextureOneOverGamma : [],
-    dayIntensity : 0.0,
-    
-    southAndNorthLatitude : new Cartesian2(),
-    southMercatorYLowAndHighAndOneOverHeight : new Cartesian3(),
-    
-    waterMask : undefined,
-    waterMaskTranslationAndScale : new Cartesian4()
-    };
-    
-    return uniformMap;
+    func createTileUniformMap() -> TileUniformMap {
+        
+        return TileUniformMap()
     }
     
+    /*
     function createWireframeVertexArrayIfNecessary(context, provider, tile) {
     var surfaceTile = tile.data;
     
@@ -770,22 +681,22 @@ var northeastScratch = new Cartesian3();
         
         let initialColor = _firstPassInitialColor
         
-        /*do {
-            var numberOfDayTextures = 0;
+        do {
+            var numberOfDayTextures = 0
             
-            var command;
-            var uniformMap;
+            var command: DrawCommand
+            var uniformMap: TileUniformMap
             
-            if (tileProvider._drawCommands.length <= tileProvider._usedDrawCommands) {
-                command = new DrawCommand();
-                command.owner = tile;
-                command.cull = false;
-                command.boundingVolume = new BoundingSphere();
+            if (_drawCommands.count <= _usedDrawCommands) {
+                command = DrawCommand()
+                command.owner = tile
+                command.cull = false
+                command.boundingVolume = BoundingSphere()
                 
-                uniformMap = createTileUniformMap();
+                uniformMap = createTileUniformMap()
                 
-                tileProvider._drawCommands.push(command);
-                tileProvider._uniformMaps.push(uniformMap);
+                _drawCommands.append(command)
+                _uniformMaps.append(uniformMap)
             } else {
                 command = tileProvider._drawCommands[tileProvider._usedDrawCommands];
                 uniformMap = tileProvider._uniformMaps[tileProvider._usedDrawCommands];
@@ -906,7 +817,7 @@ var northeastScratch = new Cartesian3();
             
             renderState = otherPassesRenderState;
             initialColor = otherPassesInitialColor;
-        } while (imageryIndex < imageryLen);*/
+        } while (imageryIndex < imageryLen)
     }
 
 }
