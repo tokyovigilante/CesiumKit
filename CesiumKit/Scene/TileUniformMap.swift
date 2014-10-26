@@ -16,11 +16,11 @@ class TileUniformMap {
     
     var lightingFadeDistance = Cartesian2(x: 6500000.0, y: 9000000.0)
     
-    var center3D: Cartesian3? = nil
+    var center3D = Cartesian3()
     
     var modifiedModelView = Matrix4()
     
-    var tileRectangle = Rectangle()
+    var tileRectangle = Cartesian4()
     
     var dayTextures = [Texture]()
     
@@ -66,11 +66,11 @@ class TileUniformMap {
         return lightingFadeDistance
     }
     
-    func u_center3D () -> Cartesian3? {
+    func u_center3D () -> Cartesian3 {
         return center3D
     }
     
-    func u_tileRectangle () -> Rectangle {
+    func u_tileRectangle () -> Cartesian4 {
         return tileRectangle
     }
     

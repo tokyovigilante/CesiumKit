@@ -376,22 +376,22 @@ class ImageryLayer {
     * @returns {Cartesian4} The translation and scale where X and Y are the translation and Z and W
     *          are the scale.
     */
-    /*
-    ImageryLayer.prototype._calculateTextureTranslationAndScale = function(tile, tileImagery) {
-    var imageryRectangle = tileImagery.readyImagery.rectangle;
-    var terrainRectangle = tile.rectangle;
-    var terrainWidth = terrainRectangle.east - terrainRectangle.west;
-    var terrainHeight = terrainRectangle.north - terrainRectangle.south;
+    func calculateTextureTranslationAndScale (tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4 {
+        let imageryRectangle = tileImagery.readyImagery!.rectangle!
+        let terrainRectangle = tile.rectangle
+        let terrainWidth = terrainRectangle.east - terrainRectangle.west
+        let terrainHeight = terrainRectangle.north - terrainRectangle.south
+        
+        let scaleX = terrainWidth / (imageryRectangle.east - imageryRectangle.west)
+        let scaleY = terrainHeight / (imageryRectangle.north - imageryRectangle.south)
+        
+        return Cartesian4(
+            x: scaleX * (terrainRectangle.west - imageryRectangle.west) / terrainWidth,
+            y: scaleY * (terrainRectangle.south - imageryRectangle.south) / terrainHeight,
+            z: scaleX,
+            w: scaleY)
+    }
     
-    var scaleX = terrainWidth / (imageryRectangle.east - imageryRectangle.west);
-    var scaleY = terrainHeight / (imageryRectangle.north - imageryRectangle.south);
-    return new Cartesian4(
-    scaleX * (terrainRectangle.west - imageryRectangle.west) / terrainWidth,
-    scaleY * (terrainRectangle.south - imageryRectangle.south) / terrainHeight,
-    scaleX,
-    scaleY);
-    };
-    */
     /**
     * Request a particular piece of imagery from the imagery provider.  This method handles raising an
     * error event if the request fails, and retrying the request if necessary.

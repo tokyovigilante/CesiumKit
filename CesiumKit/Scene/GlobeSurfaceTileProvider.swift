@@ -672,7 +672,7 @@ var northeastScratch = new Cartesian3();
         frameState.camera!.viewMatrix = viewMatrix.setColumn(3, cartesian: centerEye)
         
         let tileImageryCollection = surfaceTile.imagery
-        let imageryIndex = 0
+        var imageryIndex = 0
         let imageryLen = tileImageryCollection.count
         
         let firstPassRenderState = _renderState
@@ -708,42 +708,42 @@ var northeastScratch = new Cartesian3();
             
             command.debugShowBoundingVolume = (tile == _debug.boundingSphereTile)
             
-            Cartesian4.clone(initialColor, uniformMap.initialColor);
-            uniformMap.oceanNormalMap = tileProvider.oceanNormalMap;
-            uniformMap.lightingFadeDistance.x = tileProvider.lightingFadeOutDistance;
-            uniformMap.lightingFadeDistance.y = tileProvider.lightingFadeInDistance;
-            uniformMap.zoomedOutOceanSpecularIntensity = tileProvider.zoomedOutOceanSpecularIntensity;
+            uniformMap.initialColor = initialColor
+            uniformMap.oceanNormalMap = oceanNormalMap
+            uniformMap.lightingFadeDistance.x = lightingFadeOutDistance
+            uniformMap.lightingFadeDistance.y = lightingFadeInDistance
+            uniformMap.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
             
-            uniformMap.center3D = surfaceTile.center;
+            uniformMap.center3D = surfaceTile.center
             
-            Cartesian4.clone(tileRectangle, uniformMap.tileRectangle);
-            uniformMap.southAndNorthLatitude.x = southLatitude;
-            uniformMap.southAndNorthLatitude.y = northLatitude;
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow;
+            uniformMap.tileRectangle = tileRectangle
+            uniformMap.southAndNorthLatitude.x = southLatitude
+            uniformMap.southAndNorthLatitude.y = northLatitude
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight;
-            Matrix4.clone(modifiedModelViewScratch, uniformMap.modifiedModelView);
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight
+            uniformMap.modifiedModelView = frameState.camera!.viewMatrix
             
-            var applyBrightness = false;
-            var applyContrast = false;
-            var applyHue = false;
-            var applySaturation = false;
-            var applyGamma = false;
-            var applyAlpha = false;
+            var applyBrightness = false
+            var applyContrast = false
+            var applyHue = false
+            var applySaturation = false
+            var applyGamma = false
+            var applyAlpha = false
             
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
-                var tileImagery = tileImageryCollection[imageryIndex];
-                var imagery = tileImagery.readyImagery;
-                ++imageryIndex;
+                let tileImagery = tileImageryCollection[imageryIndex]
+                let imagery = tileImagery.readyImagery
+                ++imageryIndex
                 
-                if (!defined(imagery) || imagery.state !== ImageryState.READY || imagery.imageryLayer.alpha === 0.0) {
-                    continue;
+                if imagery == nil || imagery!.state != .Ready || imagery!.imageryLayer.alpha() == 0.0 {
+                    continue
                 }
                 
-                var imageryLayer = imagery.imageryLayer;
+                let imageryLayer = imagery!.imageryLayer
                 
-                if (!defined(tileImagery.textureTranslationAndScale)) {
-                    tileImagery.textureTranslationAndScale = imageryLayer._calculateTextureTranslationAndScale(tile, tileImagery);
+                if tileImagery.textureTranslationAndScale == nil {
+                    tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery);
                 }
                 
                 uniformMap.dayTextures[numberOfDayTextures] = imagery.texture;
