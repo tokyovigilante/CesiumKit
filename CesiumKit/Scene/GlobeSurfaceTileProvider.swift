@@ -125,7 +125,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     private var _usedDrawCommands = 0
     
-    private var _debug: (wireFrame: Bool, boundingSphereTile: BoundingSphere?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
+    private var _debug: (wireFrame: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -698,15 +698,15 @@ var northeastScratch = new Cartesian3();
                 _drawCommands.append(command)
                 _uniformMaps.append(uniformMap)
             } else {
-                command = tileProvider._drawCommands[tileProvider._usedDrawCommands];
-                uniformMap = tileProvider._uniformMaps[tileProvider._usedDrawCommands];
+                command = _drawCommands[_usedDrawCommands]
+                uniformMap = _uniformMaps[_usedDrawCommands]
             }
             
-            command.owner = tile;
+            command.owner = tile
             
-            ++tileProvider._usedDrawCommands;
+            ++_usedDrawCommands
             
-            command.debugShowBoundingVolume = (tile === tileProvider._debug.boundingSphereTile);
+            command.debugShowBoundingVolume = (tile == _debug.boundingSphereTile)
             
             Cartesian4.clone(initialColor, uniformMap.initialColor);
             uniformMap.oceanNormalMap = tileProvider.oceanNormalMap;
