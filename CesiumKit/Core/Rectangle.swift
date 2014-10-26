@@ -23,14 +23,14 @@ import Foundation
 */
 // FIXME: Packable
 struct Rectangle/*: Packable*/ {
-    var west: Double = 0.0
-    var south: Double = 0.0
-    var east: Double = 0.0
-    var north: Double = 0.0
+    var west: Double
+    var south: Double
+    var east: Double
+    var north: Double
     
     static var packedLength: Int = 4
     
-    init(west: Double, south: Double, east: Double, north: Double) {
+    init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = west
         self.south = south
         self.east = east
