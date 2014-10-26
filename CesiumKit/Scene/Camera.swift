@@ -190,6 +190,9 @@ public class Camera {
             updateMembers()
             return _viewMatrix
         }
+        set (value) {
+            _viewMatrix = value
+        }
     }
     
     private var _viewMatrix = Matrix4()
@@ -286,11 +289,7 @@ public class Camera {
     
     private var _max2Dfrustum: OrthographicFrustum? = nil
 
-    var transform2D = Matrix4(
-        column0Row0: 0.0, column1Row0: 0.0, column2Row0: 1.0, column3Row0: 0.0,
-        column0Row1: 1.0, column1Row1: 0.0, column2Row1: 0.0, column3Row1: 0.0,
-        column0Row2: 0.0, column1Row2: 1.0, column2Row2: 0.0, column3Row2: 0.0,
-        column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
+    var transform2D = Matrix4(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)
 
     var transform2DInverse: Matrix4
 

@@ -235,6 +235,10 @@
 		94D5AC1C19FBAD1800FFAD81 /* BlendingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */; };
 		94D5AC1E19FBAD4800FFAD81 /* BlendEquation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */; };
 		94D5AC2319FBAE7F00FFAD81 /* BlendFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */; };
+		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
+		94D5AC2619FC4BBD00FFAD81 /* BlendFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */; };
+		94D5AC2719FC4BBD00FFAD81 /* BlendEquation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */; };
+		94D5AC2819FC4BBD00FFAD81 /* BlendingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */; };
 		94DC79261918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
@@ -392,6 +396,7 @@
 		94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendingState.swift; sourceTree = "<group>"; };
 		94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendEquation.swift; sourceTree = "<group>"; };
 		94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendFunction.swift; sourceTree = "<group>"; };
+		94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Matrix4Tests.swift; path = Core/Matrix4Tests.swift; sourceTree = "<group>"; };
 		94DC79221918425300012DC4 /* CesiumKit.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = CesiumKit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
@@ -452,6 +457,7 @@
 			children = (
 				9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */,
 				94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */,
+				94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -927,6 +933,7 @@
 				9410136719FB037500FFAD81 /* Credit.swift in Sources */,
 				9410139019FB037D00FFAD81 /* DrawCommand.swift in Sources */,
 				9413113419F38CCB00FFAD81 /* Cartesian3.swift in Sources */,
+				94D5AC2619FC4BBD00FFAD81 /* BlendFunction.swift in Sources */,
 				9410136C19FB037500FFAD81 /* Geometry.swift in Sources */,
 				9410138D19FB037D00FFAD81 /* CubeMapFace.swift in Sources */,
 				9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */,
@@ -934,12 +941,14 @@
 				9413113719F3A07B00FFAD81 /* Cartesian4.swift in Sources */,
 				9410136219FB035500FFAD81 /* Context.swift in Sources */,
 				9410136F19FB037500FFAD81 /* GeometryPipeline.swift in Sources */,
+				94D5AC2719FC4BBD00FFAD81 /* BlendEquation.swift in Sources */,
 				9413113D19F3A0C000FFAD81 /* Projection.swift in Sources */,
 				9413113519F3A06600FFAD81 /* Packable.swift in Sources */,
 				9410139119FB037D00FFAD81 /* Framebuffer.swift in Sources */,
 				9410137219FB037500FFAD81 /* IndexDatatype.swift in Sources */,
 				941013B319FB038400FFAD81 /* ScreenSpaceCameraController.swift in Sources */,
 				941013AE19FB038400FFAD81 /* QuadtreePrimitive.swift in Sources */,
+				94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */,
 				9410136319FB036000FFAD81 /* Globe.swift in Sources */,
 				941013BB19FB038400FFAD81 /* TileUniformMap.swift in Sources */,
 				9410139A19FB037D00FFAD81 /* Texture.swift in Sources */,
@@ -987,6 +996,7 @@
 				941013AC19FB038400FFAD81 /* PrimitiveCollection.swift in Sources */,
 				9410138419FB037500FFAD81 /* Visibility.swift in Sources */,
 				9410136819FB037500FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
+				94D5AC2819FC4BBD00FFAD81 /* BlendingState.swift in Sources */,
 				9410137719FB037500FFAD81 /* PrimitiveType.swift in Sources */,
 				9410137119FB037500FFAD81 /* HeightmapTessellator.swift in Sources */,
 				9410136519FB037500FFAD81 /* Clock.swift in Sources */,

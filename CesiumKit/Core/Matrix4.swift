@@ -57,10 +57,10 @@ struct Matrix4:/* Packable,*/Equatable {
     
     private var _grid: [Double] = [Double](count: 16, repeatedValue: 0.0)
 
-    init(column0Row0: Double = 0.0, column1Row0: Double = 0.0, column2Row0: Double = 0.0, column3Row0: Double = 0.0,
-        column0Row1: Double = 0.0, column1Row1: Double = 0.0, column2Row1: Double = 0.0, column3Row1: Double = 0.0,
-        column0Row2: Double = 0.0, column1Row2: Double = 0.0, column2Row2: Double = 0.0, column3Row2: Double = 0.0,
-        column0Row3: Double = 0.0, column1Row3: Double = 0.0, column2Row3: Double = 0.0, column3Row3: Double = 0.0) {
+    init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0, _ column3Row0: Double = 0.0,
+        _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0, _ column3Row1: Double = 0.0,
+        _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
+        _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
             _grid[0] = column0Row0
             _grid[1] = column0Row1
             _grid[2] = column0Row2
@@ -1001,7 +1001,7 @@ Matrix4.getColumn = function(matrix, index, result) {
     result.w = w;
     return result;
 };
-
+*/
 /**
 * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
 *
@@ -1028,31 +1028,20 @@ Matrix4.getColumn = function(matrix, index, result) {
 * //     [18.0, 19.0, 97.0, 21.0]
 * //     [22.0, 23.0, 96.0, 25.0]
 */
-Matrix4.setColumn = function(matrix, index, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
+        
+        assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
+        
+        var result = self
+        
+        let startIndex = index * 4
+        result[startIndex] = cartesian.x
+        result[startIndex + 1] = cartesian.y
+        result[startIndex + 2] = cartesian.z
+        result[startIndex + 3] = cartesian.w
+        return result
     }
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required');
-    }
-    if (typeof index !== 'number' || index < 0 || index > 3) {
-        throw new DeveloperError('index must be 0, 1, 2, or 3.');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    result = Matrix4.clone(matrix, result);
-    var startIndex = index * 4;
-    result[startIndex] = cartesian.x;
-    result[startIndex + 1] = cartesian.y;
-    result[startIndex + 2] = cartesian.z;
-    result[startIndex + 3] = cartesian.w;
-    return result;
-};
-
+/*
 /**
 * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
 *
@@ -1260,7 +1249,7 @@ Matrix4.getMaximumScale = function(matrix) {
         var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
         var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
         
-        return Matrix4(column0Row0: column0Row0, column1Row0: column0Row1, column2Row0: column0Row2, column3Row0: column0Row3, column0Row1: column1Row0, column1Row1: column1Row1, column2Row1: column1Row2, column3Row1: column1Row3, column0Row2: column2Row0, column1Row2: column2Row1, column2Row2: column2Row2, column3Row2: column2Row3, column0Row3: column3Row0, column1Row3: column3Row1, column2Row3: column3Row2, column3Row3: column3Row3)
+        return Matrix4(column0Row0, column0Row1, column0Row2, column0Row3, column1Row0, column1Row1, column1Row2, column1Row3, column2Row0, column2Row1, column2Row2, column2Row3, column3Row0, column3Row1, column3Row2, column3Row3)
     }
 
 /**
@@ -2077,10 +2066,10 @@ Matrix4.inverse = function(matrix, result) {
         var z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
         
         return Matrix4(
-            column0Row0: matrix0, column1Row0: matrix4, column2Row0: matrix8, column3Row0: 0.0,
-            column0Row1: matrix1, column1Row1: matrix5, column2Row1: matrix9, column3Row1: 0.0,
-            column0Row2: matrix2, column1Row2: matrix6, column2Row2: matrix10, column3Row2: 0.0,
-            column0Row3: x, column1Row3: y, column2Row3: z, column3Row3: 1.0)
+            matrix0, matrix4, matrix8, 0.0,
+            matrix1, matrix5, matrix9, 0.0,
+            matrix2, matrix6, matrix10, 0.0,
+            x, y, z, 1.0)
     }
     
     /**
@@ -2091,10 +2080,10 @@ Matrix4.inverse = function(matrix, result) {
     */
     static func identity() -> Matrix4 {
         return Matrix4(
-            column0Row0: 1.0, column1Row0: 0.0, column2Row0: 0.0, column3Row0: 0.0,
-            column0Row1: 0.0, column1Row1: 1.0, column2Row1: 0.0, column3Row1: 0.0,
-            column0Row2: 0.0, column1Row2: 0.0, column2Row2: 1.0, column3Row2: 0.0,
-            column0Row3: 0.0, column1Row3: 0.0, column2Row3: 0.0, column3Row3: 1.0)
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0)
     }
 /*
 /**

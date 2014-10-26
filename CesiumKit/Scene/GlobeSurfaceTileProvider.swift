@@ -102,8 +102,20 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     private var _blendRenderState: RenderState? = nil
     
     private var _layerOrderChanged = false
-
-    var baseColor = Cartesian4.fromColor(red: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
+   
+    var baseColor: Cartesian4 {
+        get {
+            return _baseColor
+        }
+        set (value) {
+            _baseColor = value
+            _firstPassInitialColor = value
+        }
+    }
+    
+    private var _baseColor: Cartesian4
+    
+    private var _firstPassInitialColor: Cartesian4
     
     private var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
 
@@ -131,7 +143,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if quadtree != nil {
             quadtree!.invalidateAllTiles()
         }
-        
+        _baseColor = Cartesian4()
+        _firstPassInitialColor = Cartesian4()
+        baseColor = Cartesian4.fromColor(red: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
@@ -360,10 +374,9 @@ var northeastScratch = new Cartesian3();
         var tileSet = _tilesToRenderByTextureCount[readyTextureCount]
         if tileSet == nil {
             tileSet = [QuadtreeTile]()
-            _tilesToRenderByTextureCount[readyTextureCount] = tileSet
         }
-        
         tileSet!.append(tile)
+        _tilesToRenderByTextureCount[readyTextureCount] = tileSet
         
         ++_debug.tilesRendered
         _debug.texturesRendered += readyTextureCount
@@ -683,7 +696,7 @@ var northeastScratch = new Cartesian3();
     func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, commandList: [Command]) {
         let surfaceTile = tile.data!
         
-        let viewMatrix = frameState.camera!.viewMatrix
+        var viewMatrix = frameState.camera!.viewMatrix
         
         var maxTextures = context.maximumTextureImageUnits
         
@@ -745,19 +758,19 @@ var northeastScratch = new Cartesian3();
         var centerEye = Cartesian4(x: rtc.x, y: rtc.y, z: rtc.z, w: 1.0)
         
         centerEye = viewMatrix.multiplyByVector(centerEye)
-        /*viewMatrix.setColumn(3, centerEye, modifiedModelViewScratch);
+        frameState.camera!.viewMatrix = viewMatrix.setColumn(3, cartesian: centerEye)
         
-        var tileImageryCollection = surfaceTile.imagery;
-        var imageryIndex = 0;
-        var imageryLen = tileImageryCollection.length;
+        let tileImageryCollection = surfaceTile.imagery
+        let imageryIndex = 0
+        let imageryLen = tileImageryCollection.count
         
-        var firstPassRenderState = tileProvider._renderState;
-        var otherPassesRenderState = tileProvider._blendRenderState;
-        var renderState = firstPassRenderState;
+        let firstPassRenderState = _renderState
+        let otherPassesRenderState = _blendRenderState
+        let renderState = firstPassRenderState
         
-        var initialColor = tileProvider._firstPassInitialColor
+        let initialColor = _firstPassInitialColor
         
-        do {
+        /*do {
             var numberOfDayTextures = 0;
             
             var command;
