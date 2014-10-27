@@ -187,6 +187,7 @@
 		9465B0281956F61400355D2C /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		946D25AA19592BFD0080379D /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
 		946DE02019F1072500FFAD81 /* ImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */; };
+		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		947540E119483BD5005251CC /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		94786823194A959200B3F462 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		94786825194A95B800B3F462 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
@@ -346,6 +347,7 @@
 		9465B0251956F5DE00355D2C /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		9465B0271956F61400355D2C /* CubeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMap.swift; sourceTree = "<group>"; };
 		946D25A919592BFD0080379D /* Ray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
+		946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BoundingSphereTests.swift; path = Core/BoundingSphereTests.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
 		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
@@ -455,6 +457,7 @@
 		9413112E19F383F900FFAD81 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */,
 				9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */,
 				94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */,
 				94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */,
@@ -1025,6 +1028,7 @@
 				9410135D19FB030600FFAD81 /* SceneMode.swift in Sources */,
 				9410137B19FB037500FFAD81 /* ScreenSpaceEventHandler.swift in Sources */,
 				9410137F19FB037500FFAD81 /* TerrainProvider.swift in Sources */,
+				946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */,
 				9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */,
 				941013B619FB038400FFAD81 /* TerrainState.swift in Sources */,
 				941013A519FB038400FFAD81 /* GridImageryProvider.swift in Sources */,

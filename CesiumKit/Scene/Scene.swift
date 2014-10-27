@@ -398,7 +398,7 @@ public class Scene {
     *
     * @default undefined
     */
-    //var debugFrustumStatistics = nil //undefined;
+    //private var _debugFrustumStatistics = nil //undefined;
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -597,61 +597,56 @@ function insertIntoBin(scene, command, distance) {
 
 var scratchCullingVolume = new CullingVolume();
 var distances = new Interval();
-
-function createPotentiallyVisibleSet(scene) {
-    var commandList = scene._commandList;
-    var overlayList = scene._overlayCommandList;
+*/
+func createPotentiallyVisibleSet() {
     
-    var cullingVolume = scene._frameState.cullingVolume;
-    var camera = scene._camera;
     
-    var direction = camera.directionWC;
-    var position = camera.positionWC;
+    var distances: Interval
     
-    if (scene.debugShowFrustums) {
-        scene._debugFrustumStatistics = {
+    let cullingVolume = frameState.cullingVolume!
+    
+    let direction = camera.directionWC
+    let position = camera.positionWC
+    
+    
+    //FIXME debugShowFrustums
+    /*if (debugShowFrustums) {
+        _debugFrustumStatistics = {
             totalCommands : 0,
             commandsInFrustums : {}
         };
+    }*/
+    
+    //var numberOfFrustums = _frustumCommandsList.count
+    //for (var n = 0; n < numberOfFrustums; ++n) {
+    for frustumCommands in _frustumCommandsList {
+        frustumCommands.opaqueIndex = 0
+        frustumCommands.translucentIndex = 0
     }
+    var near = Double.infinity
+    var far = 0.0
+    var undefBV = false
     
-    var frustumCommandsList = scene._frustumCommandsList;
-    var numberOfFrustums = frustumCommandsList.length;
-    for (var n = 0; n < numberOfFrustums; ++n) {
-        frustumCommandsList[n].opaqueIndex = 0;
-        frustumCommandsList[n].translucentIndex = 0;
-    }
-    
-    var near = Number.MAX_VALUE;
-    var far = Number.MIN_VALUE;
-    var undefBV = false;
-    
-    var occluder;
-    if (scene._frameState.mode === SceneMode.SCENE3D) {
-        occluder = scene._frameState.occluder;
+    var occluder: Occluder?
+    if frameState.mode == .Scene3D {
+        occluder = frameState.occluder
     }
     
     // get user culling volume minus the far plane.
-    var planes = scratchCullingVolume.planes;
-    for (var m = 0; m < 5; ++m) {
-        planes[m] = cullingVolume.planes[m];
-    }
-    cullingVolume = scratchCullingVolume;
+    cullingVolume = CullingVolume(frameState.cullingVolume!.planes[0...4])
     
-    var length = commandList.length;
-    for (var i = 0; i < length; ++i) {
-        var command = commandList[i];
-        var pass = command.pass;
+    
+    /*for command in _commandList {
+        let pass = command.pass
         
-        if (pass === Pass.OVERLAY) {
-            overlayList.push(command);
+        if pass == .Overlay {
+            _overlayCommandList.append(command)
         } else {
-            var boundingVolume = command.boundingVolume;
-            if (defined(boundingVolume)) {
-                if (command.cull &&
-                    ((cullingVolume.getVisibility(boundingVolume) === Intersect.OUTSIDE) ||
-                        (defined(occluder) && !occluder.isBoundingSphereVisible(boundingVolume)))) {
-                            continue;
+            if let boundingVolume = command.boundingVolume {
+                if command.cull &&
+                   (cullingVolume.getVisibility(boundingVolume) == .Outside ||
+                    occluder != nil && !occluder.isBoundingSphereVisible(boundingVolume)) {
+                            continue
                 }
                 
                 distances = BoundingSphere.getPlaneDistances(boundingVolume, position, direction, distances);
@@ -689,9 +684,9 @@ function createPotentiallyVisibleSet(scene) {
         (near < frustumCommandsList[0].near || far > frustumCommandsList[numberOfFrustums - 1].far)))) {
             updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList);
             createPotentiallyVisibleSet(scene);
-    }
+    }*/
 }
-
+/*
 function getAttributeLocations(shaderProgram) {
     var attributeLocations = {};
     var attributes = shaderProgram.vertexAttributes;
@@ -1080,9 +1075,9 @@ function callAfterRenderFunctions(frameState) {
         _overlayCommandList.removeAll()
     
         updatePrimitives()
-        /*createPotentiallyVisibleSet()
+        createPotentiallyVisibleSet()
         
-        var passState = scene._passState;
+        /*var passState = scene._passState;
         
         executeCommands(scene, passState, defaultValue(scene.backgroundColor, Color.BLACK));
         executeOverlayCommands(scene, passState);*/

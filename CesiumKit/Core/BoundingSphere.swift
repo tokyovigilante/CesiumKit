@@ -737,8 +737,7 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     
     return result;
 };
-
-var scratchCartesian3 = new Cartesian3();
+*/
 /**
 * The distances calculated by the vector from the center of the bounding sphere to position projected onto direction
 * plus/minus the radius of the bounding sphere.
@@ -752,34 +751,15 @@ var scratchCartesian3 = new Cartesian3();
 * @param {Cartesian2} [result] A Cartesian2 to store the nearest and farthest distances.
 * @returns {Interval} The nearest and farthest distances on the bounding sphere from position in direction.
 */
-BoundingSphere.getPlaneDistances = function(sphere, position, direction, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-        throw new DeveloperError('sphere is required.');
+    func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval {
+        
+        let toCenter = center.subtract(position)
+        let proj = direction.multiplyByScalar(direction.dot(toCenter))
+        let mag = proj.magnitude
+        
+        return Interval(start: mag - sphere.radius, stop: mag + sphere.radius)
     }
-    
-    if (!defined(position)) {
-        throw new DeveloperError('position is required.');
-    }
-    
-    if (!defined(direction)) {
-        throw new DeveloperError('direction is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new Interval();
-    }
-    
-    var toCenter = Cartesian3.subtract(sphere.center, position, scratchCartesian3);
-    var proj = Cartesian3.multiplyByScalar(direction, Cartesian3.dot(direction, toCenter), scratchCartesian3);
-    var mag = Cartesian3.magnitude(proj);
-    
-    result.start = mag - sphere.radius;
-    result.stop = mag + sphere.radius;
-    return result;
-};
-
+/*
 var projectTo2DNormalScratch = new Cartesian3();
 var projectTo2DEastScratch = new Cartesian3();
 var projectTo2DNorthScratch = new Cartesian3();
