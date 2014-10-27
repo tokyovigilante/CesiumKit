@@ -20,6 +20,46 @@ import ImageIO
 */
 class ImageryLayer {
     
+    /**
+    * This value is used as the default brightness for the imagery layer if one is not provided during construction
+    * or by the imagery provider. This value does not modify the brightness of the imagery.
+    * @type {Number}
+    * @default 1.0
+    */
+    let DefaultBrightness = 1.0
+    
+    /**
+    * This value is used as the default contrast for the imagery layer if one is not provided during construction
+    * or by the imagery provider. This value does not modify the contrast of the imagery.
+    * @type {Number}
+    * @default 1.0
+    */
+    let DefaultContrast = 1.0
+    
+    /**
+    * This value is used as the default hue for the imagery layer if one is not provided during construction
+    * or by the imagery provider. This value does not modify the hue of the imagery.
+    * @type {Number}
+    * @default 0.0
+    */
+    let DefaultHue = 0.0
+    
+    /**
+    * This value is used as the default saturation for the imagery layer if one is not provided during construction
+    * or by the imagery provider. This value does not modify the saturation of the imagery.
+    * @type {Number}
+    * @default 1.0
+    */
+    let DefaultSaturation = 1.0
+    
+    /**
+    * This value is used as the default gamma for the imagery layer if one is not provided during construction
+    * or by the imagery provider. This value does not modify the gamma of the imagery.
+    * @type {Number}
+    * @default 1.0
+    */
+    let DefaultGamma = 1.0
+
     var imageryProvider: ImageryProvider
     
     /**

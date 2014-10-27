@@ -96,7 +96,7 @@ class DrawCommand: Command {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: [String: ()->()]?
+    var uniformMap: UniformMap?
     
     /**
     * The render state.
@@ -201,6 +201,7 @@ class DrawCommand: Command {
             self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
+            self.uniformMap = nil
     }
     
     /**

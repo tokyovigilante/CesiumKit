@@ -6,7 +6,9 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class TileUniformMap {
+protocol UniformMap {}
+
+class TileUniformMap: UniformMap {
     
     var initialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.5, w: 1.0)
     
@@ -26,7 +28,7 @@ class TileUniformMap {
     
     var dayTextureTranslationAndScale = [Cartesian4]()
     
-    var dayTextureTexCoordsRectangle = [Rectangle]()
+    var dayTextureTexCoordsRectangle = [Cartesian4]()
     
     var dayTextureAlpha = [Double]()
     
@@ -46,7 +48,7 @@ class TileUniformMap {
     
     var southMercatorYLowAndHighAndOneOverHeight = Cartesian3()
     
-    var waterMask: [UInt8]? = nil
+    var waterMask: Texture? = nil
     
     var waterMaskTranslationAndScale = Cartesian4()
     
@@ -86,7 +88,7 @@ class TileUniformMap {
         return dayTextureTranslationAndScale
     }
     
-    func u_dayTextureTexCoordsRectangle () -> [Rectangle] {
+    func u_dayTextureTexCoordsRectangle () -> [Cartesian4] {
         return dayTextureTexCoordsRectangle
     }
     
@@ -126,7 +128,7 @@ class TileUniformMap {
         return southMercatorYLowAndHighAndOneOverHeight
     }
     
-    func u_waterMask () -> [UInt8]? {
+    func u_waterMask () -> Texture? {
         return waterMask
     }
     

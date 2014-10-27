@@ -125,7 +125,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     private var _usedDrawCommands = 0
     
-    private var _debug: (wireFrame: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
+    private var _debug: (wireframe: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -249,9 +249,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         // And the tile render commands to the command list, sorted by texture count.
         for (var textureCountIndex = 0; textureCountIndex < _tilesToRenderByTextureCount.count; ++textureCountIndex) {
             if let tilesToRender = _tilesToRenderByTextureCount[textureCountIndex] {
-                
-                for (var tileIndex = 0; tileIndex < tilesToRender.count; ++tileIndex) {
-                    addDrawCommandsForTile(tilesToRender[tileIndex], context: context, frameState: frameState, commandList: commandList)
+                for tile in tilesToRender {
+                //for (var tileIndex = 0; tileIndex < tilesToRender.count; ++tileIndex) {
+                    addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
                 }
             }
         }
@@ -602,9 +602,10 @@ var northeastScratch = new Cartesian3();
     return context.createVertexArray(vertexArray._attributes, wireframeIndexBuffer);
     }
     
-    var otherPassesInitialColor = new Cartesian4(0.0, 0.0, 0.0, 0.0);
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, commandList: [Command]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+        let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
+
         let surfaceTile = tile.data!
         
         var viewMatrix = frameState.camera!.viewMatrix
@@ -677,9 +678,9 @@ var northeastScratch = new Cartesian3();
         
         let firstPassRenderState = _renderState
         let otherPassesRenderState = _blendRenderState
-        let renderState = firstPassRenderState
+        var renderState = firstPassRenderState
         
-        let initialColor = _firstPassInitialColor
+        var initialColor = _firstPassInitialColor
         
         do {
             var numberOfDayTextures = 0
@@ -743,80 +744,102 @@ var northeastScratch = new Cartesian3();
                 let imageryLayer = imagery!.imageryLayer
                 
                 if tileImagery.textureTranslationAndScale == nil {
-                    tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery);
+                    tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: tileImagery)
                 }
                 
-                uniformMap.dayTextures[numberOfDayTextures] = imagery.texture;
-                uniformMap.dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale;
-                uniformMap.dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle;
+                uniformMap.dayTextures[numberOfDayTextures] = imagery!.texture!
+                uniformMap.dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale!
+                uniformMap.dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle!
                 
-                uniformMap.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha;
-                applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] !== 1.0;
+                uniformMap.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha()
+                applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] != 1.0
                 
-                uniformMap.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness;
-                applyBrightness = applyBrightness || uniformMap.dayTextureBrightness[numberOfDayTextures] !== ImageryLayer.DEFAULT_BRIGHTNESS;
+                uniformMap.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness()
+                applyBrightness = applyBrightness || uniformMap.dayTextureBrightness[numberOfDayTextures] != imageryLayer.DefaultBrightness
                 
-                uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast;
-                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] !== ImageryLayer.DEFAULT_CONTRAST;
+                uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast()
+                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] != imageryLayer.DefaultContrast
                 
-                uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue;
-                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] !== ImageryLayer.DEFAULT_HUE;
+                uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue()
+                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] != imageryLayer.DefaultHue
                 
-                uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation;
-                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] !== ImageryLayer.DEFAULT_SATURATION;
+                uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation()
+                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] != imageryLayer.DefaultSaturation
                 
-                uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma;
-                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] !== 1.0 / ImageryLayer.DEFAULT_GAMMA;
+                uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma()
+                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.DefaultGamma
                 
-                if (defined(imagery.credits)) {
-                    var creditDisplay = frameState.creditDisplay;
+                // FIXME: Credits
+                /*if imagery!.credits.count > 0 {
+                    var creditDisplay = frameState.creditDisplay
                     var credits = imagery.credits;
                     for (var creditIndex = 0, creditLength = credits.length; creditIndex < creditLength; ++creditIndex) {
                         creditDisplay.addCredit(credits[creditIndex]);
                     }
-                }
+                }*/
                 
                 ++numberOfDayTextures;
             }
             
             // trim texture array to the used length so we don't end up using old textures
             // which might get destroyed eventually
-            uniformMap.dayTextures.length = numberOfDayTextures;
-            uniformMap.waterMask = surfaceTile.waterMaskTexture;
-            Cartesian4.clone(surfaceTile.waterMaskTranslationAndScale, uniformMap.waterMaskTranslationAndScale);
+            if uniformMap.dayTextures.count > numberOfDayTextures {
+                uniformMap.dayTextures.removeRange(Range(numberOfDayTextures..<uniformMap.dayTextures.count))
+            }
+            uniformMap.waterMask = surfaceTile.waterMaskTexture
+            uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale
             
-            command.shaderProgram = tileProvider._surfaceShaderSet.getShaderProgram(context, numberOfDayTextures, applyBrightness, applyContrast, applyHue, applySaturation, applyGamma, applyAlpha);
-            command.renderState = renderState;
-            command.primitiveType = PrimitiveType.TRIANGLES;
-            command.vertexArray = surfaceTile.vertexArray;
-            command.uniformMap = uniformMap;
-            command.pass = Pass.OPAQUE;
+            command.shaderProgram = surfaceShaderSet.getShaderProgram(
+                context: context,
+                textureCount: numberOfDayTextures,
+                applyBrightness: applyBrightness,
+                applyContrast: applyContrast,
+                applyHue: applyHue,
+                applySaturation: applySaturation,
+                applyGamma: applyGamma,
+                applyAlpha: applyAlpha)
+            command.renderState = renderState
+            command.primitiveType = .Triangles
+            command.vertexArray = surfaceTile.vertexArray
+            command.uniformMap = uniformMap
+            command.pass = .Opaque
             
-            if (tileProvider._debug.wireframe) {
-                createWireframeVertexArrayIfNecessary(context, tileProvider, tile);
+            if _debug.wireframe {
+                // FIXME: Wireframe
+                assert(false, "not implemented")
+                /*createWireframeVertexArrayIfNecessary(context, tileProvider, tile);
                 if (defined(surfaceTile.wireframeVertexArray)) {
                     command.vertexArray = surfaceTile.wireframeVertexArray;
                     command.primitiveType = PrimitiveType.LINES;
-                }
+                }*/
             }
             
-            var boundingVolume = command.boundingVolume;
+            var boundingSphere: BoundingSphere
             
-            if (frameState.mode !== SceneMode.SCENE3D) {
-                BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, frameState.mapProjection, surfaceTile.minimumHeight, surfaceTile.maximumHeight, boundingVolume);
-                Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
+            if frameState.mode != .Scene3D {
+                boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
+                    tile.rectangle,
+                    projection: frameState.mapProjection!,
+                    minimumHeight: surfaceTile.minimumHeight,
+                    maximumHeight: surfaceTile.maximumHeight)
                 
-                if (frameState.mode === SceneMode.MORPHING) {
-                    boundingVolume = BoundingSphere.union(surfaceTile.boundingSphere3D, boundingVolume, boundingVolume);
+                boundingSphere.center = Cartesian3(
+                    x: boundingSphere.center.z,
+                    y: boundingSphere.center.x,
+                    z: boundingSphere.center.y)
+                
+                if (frameState.mode == .Morphing) {
+                    boundingSphere = surfaceTile.boundingSphere3D.union(boundingSphere)
                 }
             } else {
-                BoundingSphere.clone(surfaceTile.boundingSphere3D, boundingVolume);
+                boundingSphere = surfaceTile.boundingSphere3D
             }
             
-            commandList.push(command);
+            command.boundingVolume = boundingSphere
+            commandList.append(command)
             
-            renderState = otherPassesRenderState;
-            initialColor = otherPassesInitialColor;
+            renderState = otherPassesRenderState
+            initialColor = otherPassesInitialColor
         } while (imageryIndex < imageryLen)
     }
 

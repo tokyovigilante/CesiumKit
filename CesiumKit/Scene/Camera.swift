@@ -38,6 +38,8 @@ import Foundation
 */
 public class Camera {
     
+    var isUpdated = false
+    
     weak var scene: Scene?
     
     let maxRadii: Double = Ellipsoid.wgs84().maximumRadius
@@ -507,6 +509,12 @@ public class Camera {
     
     */
     func updateMembers() {
+        
+        /*if isUpdated {
+            return
+        }
+        isUpdated = true*/
+        
         var scratchCartesian = Cartesian3()
         
         let positionChanged = _position != position
@@ -529,13 +537,13 @@ public class Camera {
             _right = right
         }
     
-        let transformChanged = _transform != self.transform || _modeChanged
+        let transformChanged = _transform != transform || _modeChanged
         if transformChanged {
             _transform = transform
             _invTransform = _transform.inverseTransformation()
 
             if mode == SceneMode.ColumbusView || mode == SceneMode.Scene2D {
-                if _transform == Matrix4.identity() {
+                if _transform.equals(Matrix4.identity()) {
                     _actualTransform = transform2D
                 } else if mode == .ColumbusView {
                     assert(false, "unimplemented")

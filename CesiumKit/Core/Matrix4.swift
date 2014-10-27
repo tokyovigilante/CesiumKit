@@ -47,7 +47,7 @@
 * @see Packable
 */
 //FIXME: Packable
-struct Matrix4:/* Packable,*/Equatable {
+struct Matrix4: Packable, Equatable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -55,13 +55,14 @@ struct Matrix4:/* Packable,*/Equatable {
     */
     static let packedLength = 16
     
-    private var _grid: [Double] = [Double](count: 16, repeatedValue: 0.0)
+    var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
 
     init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0, _ column3Row0: Double = 0.0,
         _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0, _ column3Row1: Double = 0.0,
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
         _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
-            _grid[0] = column0Row0
+            _grid = [column0Row0, column0Row1, column0Row2, column0Row3, column1Row0, column1Row1, column1Row2, column1Row3, column2Row0, column2Row1, column2Row2, column2Row3, column3Row0, column3Row1, column3Row2, column3Row3]
+            /*_grid[0] = column0Row0
             _grid[1] = column0Row1
             _grid[2] = column0Row2
             _grid[3] = column0Row3
@@ -76,7 +77,12 @@ struct Matrix4:/* Packable,*/Equatable {
             _grid[12] = column3Row0
             _grid[13] = column3Row1
             _grid[14] = column3Row2
-            _grid[15] = column3Row3
+            _grid[15] = column3Row3*/
+    }
+    
+    init(grid: [Double]) {
+        assert(grid.count == 16, "invalid grid length")
+        _grid = grid
     }
     
     subscript(index: Int) -> Double {
@@ -130,12 +136,12 @@ struct Matrix4:/* Packable,*/Equatable {
     * @param {Matrix4} [result] The object into which to store the result.
     */
     static func unpack(array: [Float], startingIndex: Int) -> Matrix4 {
-        var result = Matrix4()
+        var result = [Double]()
         
         for var index = 0; index < Matrix4.packedLength; ++index {
             result[index] = Double(array[index])
         }
-        return result
+        return Matrix4(grid: result)
     }
 /*
 /**
@@ -731,7 +737,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     */
     static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
-        var result = Matrix4()
+        var result = [Double](count: 16, repeatedValue: 0.0)
         var column0Row0 = 2.0 * near / (right - left)
         var column1Row1 = 2.0 * near / (top - bottom)
         var column2Row0 = (right + left) / (right - left)
@@ -756,7 +762,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
         result[13] = 0.0
         result[14] = column3Row2
         result[15] = 0.0
-        return result
+        return Matrix4(grid: result)
     }
     
     /**
@@ -779,7 +785,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
         var column2Row3 = -1.0
         var column3Row2 = -2.0 * near
         
-        var result = Matrix4()
+        var result = [Double](count: 16, repeatedValue: 0.0)
         
         result[0] = column0Row0
         result[1] = 0.0
@@ -797,7 +803,7 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
         result[13] = 0.0
         result[14] = column3Row2
         result[15] = 0.0
-        return result
+        return Matrix4(grid: result)
 }
 /*
 /**
@@ -1032,14 +1038,14 @@ Matrix4.getColumn = function(matrix, index, result) {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         
-        var result = self
+        var result = self._grid
         
         let startIndex = index * 4
         result[startIndex] = cartesian.x
         result[startIndex + 1] = cartesian.y
         result[startIndex + 2] = cartesian.z
         result[startIndex + 3] = cartesian.w
-        return result
+        return Matrix4(grid: result)
     }
 /*
 /**
@@ -1195,39 +1201,39 @@ Matrix4.getMaximumScale = function(matrix) {
 */
     func multiply (other: Matrix4) -> Matrix4 {
         
-        var left0 = _grid[0]
-        var left1 = _grid[1]
-        var left2 = _grid[2]
-        var left3 = _grid[3]
-        var left4 = _grid[4]
-        var left5 = _grid[5]
-        var left6 = _grid[6]
-        var left7 = _grid[7]
-        var left8 = _grid[8]
-        var left9 = _grid[9]
-        var left10 = _grid[10]
-        var left11 = _grid[11]
-        var left12 = _grid[12]
-        var left13 = _grid[13]
-        var left14 = _grid[14]
-        var left15 = _grid[15]
+        let left0: Double = _grid[0]
+        let left1: Double = _grid[1]
+        let left2: Double = _grid[2]
+        let left3: Double = _grid[3]
+        let left4: Double = _grid[4]
+        let left5: Double = _grid[5]
+        let left6: Double = _grid[6]
+        let left7: Double = _grid[7]
+        let left8: Double = _grid[8]
+        let left9: Double = _grid[9]
+        let left10: Double = _grid[10]
+        let left11: Double = _grid[11]
+        let left12: Double = _grid[12]
+        let left13: Double = _grid[13]
+        let left14: Double = _grid[14]
+        let left15: Double = _grid[15]
         
-        var right0 = other[0]
-        var right1 = other[1]
-        var right2 = other[2]
-        var right3 = other[3]
-        var right4 = other[4]
-        var right5 = other[5]
-        var right6 = other[6]
-        var right7 = other[7]
-        var right8 = other[8]
-        var right9 = other[9]
-        var right10 = other[10]
-        var right11 = other[11]
-        var right12 = other[12]
-        var right13 = other[13]
-        var right14 = other[14]
-        var right15 = other[15]
+        let right0: Double = other[0]
+        let right1: Double = other[1]
+        let right2: Double = other[2]
+        let right3: Double = other[3]
+        let right4: Double = other[4]
+        let right5: Double = other[5]
+        let right6: Double = other[6]
+        let right7: Double = other[7]
+        let right8: Double = other[8]
+        let right9: Double = other[9]
+        let right10: Double = other[10]
+        let right11: Double = other[11]
+        let right12: Double = other[12]
+        let right13: Double = other[13]
+        let right14: Double = other[14]
+        let right15: Double = other[15]
         
         var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
         var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
@@ -1508,24 +1514,24 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 */
     func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
 
-        var vX = cartesian.x
-        var vY = cartesian.y
-        var vZ = cartesian.z
-        var vW = cartesian.w
+        let vX: Double = cartesian.x
+        let vY: Double = cartesian.y
+        let vZ: Double = cartesian.z
+        let vW: Double = cartesian.w
         
-    //FIXME: compiler bug
-        let x1 = _grid[0] * vX + _grid[4] * vY
-        let x2 = _grid[8] * vZ + _grid[12] * vW
-        let x = x1 + x2
-        let y1 = _grid[1] * vX + _grid[5] * vY
-        let y2 = _grid[9] * vZ + _grid[13] * vW
-        let y = y1 + y2
-        let z1 = _grid[2] * vX + _grid[6] * vY
-        let z2 = _grid[10] * vZ + _grid[14] * vW
-        let z = z1 + z2
-        let w1 = _grid[3] * vX + _grid[7] * vY
-        let w2 = _grid[11] * vZ + _grid[15] * vW
-        let w = w1 + w2
+        //FIXME: compiler bug
+        let x1: Double = _grid[0] * vX + _grid[4] * vY
+        let x2: Double = _grid[8] * vZ + _grid[12] * vW
+        let x: Double = x1 + x2
+        let y1: Double = _grid[1] * vX + _grid[5] * vY
+        let y2: Double = _grid[9] * vZ + _grid[13] * vW
+        let y: Double = y1 + y2
+        let z1: Double = _grid[2] * vX + _grid[6] * vY
+        let z2: Double = _grid[10] * vZ + _grid[14] * vW
+        let z: Double = z1 + z2
+        let w1: Double = _grid[3] * vX + _grid[7] * vY
+        let w2: Double = _grid[11] * vZ + _grid[15] * vW
+        let w: Double = w1 + w2
 
         return Cartesian4(x: x, y: y, z: z, w: w)
     }
@@ -1548,13 +1554,13 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     */
     func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
         
-        var vX = cartesian.x
-        var vY = cartesian.y
-        var vZ = cartesian.z
+        let vX: Double = cartesian.x
+        let vY: Double = cartesian.y
+        let vZ: Double = cartesian.z
         
-        var x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
-        var y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
-        var z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
+        let x: Double = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
+        let y: Double = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
+        let z: Double = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
         
         return Cartesian3(x: x, y: y, z: z)
     }
@@ -2047,23 +2053,23 @@ Matrix4.inverse = function(matrix, result) {
         //return Matrix4.fromRotationTranslation(rT, rTT, result);
         
         
-        var matrix0 = _grid[0]
-        var matrix1 = _grid[1]
-        var matrix2 = _grid[2]
-        var matrix4 = _grid[4]
-        var matrix5 = _grid[5]
-        var matrix6 = _grid[6]
-        var matrix8 = _grid[8]
-        var matrix9 = _grid[9]
-        var matrix10 = _grid[10]
+        let matrix0: Double = _grid[0]
+        let matrix1: Double = _grid[1]
+        let matrix2: Double = _grid[2]
+        let matrix4: Double = _grid[4]
+        let matrix5: Double = _grid[5]
+        let matrix6: Double = _grid[6]
+        let matrix8: Double = _grid[8]
+        let matrix9: Double = _grid[9]
+        let matrix10: Double = _grid[10]
         
-        var vX = _grid[12]
-        var vY = _grid[13]
-        var vZ = _grid[14]
+        let vX: Double = _grid[12]
+        let vY: Double = _grid[13]
+        let vZ: Double = _grid[14]
         
-        var x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ
-        var y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ
-        var z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
+        let x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ
+        let y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ
+        let z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
         
         return Matrix4(
             matrix0, matrix4, matrix8, 0.0,
@@ -2095,7 +2101,7 @@ Matrix4.inverse = function(matrix, result) {
 Matrix4.prototype.clone = function(result) {
     return Matrix4.clone(this, result);
 };
-
+*/
 /**
 * Compares this matrix to the provided matrix componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -2103,10 +2109,61 @@ Matrix4.prototype.clone = function(result) {
 * @param {Matrix4} [right] The right hand side matrix.
 * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
 */
-Matrix4.prototype.equals = function(right) {
-    return Matrix4.equals(this, right);
-};
+    func equals(other: Matrix4) -> Bool {
+        let left0: Double = _grid[0]
+        let left1: Double = _grid[1]
+        let left2: Double = _grid[2]
+        let left3: Double = _grid[3]
+        let left4: Double = _grid[4]
+        let left5: Double = _grid[5]
+        let left6: Double = _grid[6]
+        let left7: Double = _grid[7]
+        let left8: Double = _grid[8]
+        let left9: Double = _grid[9]
+        let left10: Double = _grid[10]
+        let left11: Double = _grid[11]
+        let left12: Double = _grid[12]
+        let left13: Double = _grid[13]
+        let left14: Double = _grid[14]
+        let left15: Double = _grid[15]
+        
+        let right0: Double = other[0]
+        let right1: Double = other[1]
+        let right2: Double = other[2]
+        let right3: Double = other[3]
+        let right4: Double = other[4]
+        let right5: Double = other[5]
+        let right6: Double = other[6]
+        let right7: Double = other[7]
+        let right8: Double = other[8]
+        let right9: Double = other[9]
+        let right10: Double = other[10]
+        let right11: Double = other[11]
+        let right12: Double = other[12]
+        let right13: Double = other[13]
+        let right14: Double = other[14]
+        let right15: Double = other[15]
+        
+        return
+            left0 == right0 &&
+                left1 == right1 &&
+                left2 == right2 &&
+                left3 == right3 &&
+                left4 == right4 &&
+                left5 == right5 &&
+                left6 == right6 &&
+                left7 == right7 &&
+                left8 == right8 &&
+                left9 == right9 &&
+                left10 == right10 &&
+                left11 == right11 &&
+                left12 == right12 &&
+                left13 == right13 &&
+                left14 == right14 &&
+                left15 == right15
 
+    }
+/*
 /**
 * Compares this matrix to the provided matrix componentwise and returns
 * <code>true</code> if they are within the provided epsilon,
@@ -2165,22 +2222,6 @@ Matrix4.prototype.toString = function() {
 * //Prints "Both matrices are equal" on the console
 */
 func == (left: Matrix4, right: Matrix4) -> Bool {
-    var first = left[0] == right[0] &&
-            left[1] == right[1] &&
-            left[2] == right[2] &&
-            left[3] == right[3] &&
-            left[4] == right[4] &&
-            left[5] == right[5] &&
-            left[6] == right[6] &&
-            left[7] == right[7]
-    var second = left[8] == right[8] &&
-            left[9] == right[9] &&
-            left[10] == right[10] &&
-            left[11] == right[11] &&
-            left[12] == right[12] &&
-            left[13] == right[13] &&
-            left[14] == right[14] &&
-            left[15] == right[15]
-    return first && second
+    return left.equals(right)
 }
 
