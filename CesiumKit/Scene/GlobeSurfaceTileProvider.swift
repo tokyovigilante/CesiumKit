@@ -247,8 +247,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         _blendRenderState!.depthTest.enabled = _renderState!.depthTest.enabled
         
         // And the tile render commands to the command list, sorted by texture count.
-        for (var textureCountIndex = 0; textureCountIndex < _tilesToRenderByTextureCount.count; ++textureCountIndex) {
-            if let tilesToRender = _tilesToRenderByTextureCount[textureCountIndex] {
+        for tilesToRender in _tilesToRenderByTextureCount {
+        //for (var textureCountIndex = 0; textureCountIndex < _tilesToRenderByTextureCount.count; ++textureCountIndex) {
+            //if let tilesToRender = _tilesToRenderByTextureCount[textureCountIndex] {
                 for tile in tilesToRender {
                 //for (var tileIndex = 0; tileIndex < tilesToRender.count; ++tileIndex) {
                     addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
