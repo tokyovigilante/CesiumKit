@@ -55,15 +55,14 @@ struct Matrix3/*: Packable*/ {
             grid[8] = column2Row2
     }
 
-    
-    subscript(column: Int, row: Int) -> Double {
+    subscript(index: Int) -> Double {
         get {
-            assert(indexIsValid(column: column, row: row), "Index out of range")
-            return _grid[(column * 3) + row]
+            assert(index < Matrix3.packedLength, "Index out of range")
+            return grid[index]
         }
         set {
-            assert(indexIsValid(column: column, row: row), "Index out of range")
-            _grid[(column * 3) + row] = newValue
+            assert(index < Matrix3.packedLength, "Index out of range")
+            grid[index] = newValue
         }
     }
     
@@ -71,14 +70,15 @@ struct Matrix3/*: Packable*/ {
         return row >= 0 && column >= 0 && (row * column) + column < Matrix3.packedLength
     }
     
-    subscript(row: Int, column: Int) -> Double {
+    
+    subscript(column: Int, row: Int) -> Double {
         get {
-            assert(indexIsValidForRow(row, column: column), "Index out of range")
-            return grid[(row * column) + column]
+            assert(indexIsValid(column: column, row: row), "Index out of range")
+            return grid[(column * 3) + row]
         }
         set {
-            assert(indexIsValidForRow(row, column: column), "Index out of range")
-            grid[(row * column) + column] = newValue
+            assert(indexIsValid(column: column, row: row), "Index out of range")
+            grid[(column * 3) + row] = newValue
         }
     }
     
