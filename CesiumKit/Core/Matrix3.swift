@@ -55,14 +55,15 @@ struct Matrix3/*: Packable*/ {
             grid[8] = column2Row2
     }
 
-    subscript(index: Int) -> Double {
+    
+    subscript(column: Int, row: Int) -> Double {
         get {
-            assert(index < Matrix3.packedLength, "Index out of range")
-            return grid[index]
+            assert(indexIsValid(column: column, row: row), "Index out of range")
+            return _grid[(column * 3) + row]
         }
         set {
-            assert(index < Matrix3.packedLength, "Index out of range")
-            grid[index] = newValue
+            assert(indexIsValid(column: column, row: row), "Index out of range")
+            _grid[(column * 3) + row] = newValue
         }
     }
     

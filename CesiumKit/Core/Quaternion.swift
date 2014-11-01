@@ -49,6 +49,13 @@ struct Quaternion {
     */
     var w: Double = 0.0
     
+    init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
+    }
+    
     /**
     * Computes a quaternion representing a rotation around an axis.
     * @memberof Quaternion
@@ -479,51 +486,36 @@ Quaternion.dot = function(left, right) {
     
     return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w;
 };
-
-/**
-* Computes the product of two quaternions.
-* @memberof Quaternion
-*
-* @param {Quaternion} left The first quaternion.
-* @param {Quaternion} right The second quaternion.
-* @param {Quaternion} [result] The object onto which to store the result.
-* @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
 */
-Quaternion.multiply = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required');
+    /**
+    * Computes the product of two quaternions.
+    * @memberof Quaternion
+    *
+    * @param {Quaternion} left The first quaternion.
+    * @param {Quaternion} right The second quaternion.
+    * @param {Quaternion} [result] The object onto which to store the result.
+    * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
+    */
+    func multiply (other: Quaternion) -> Quaternion {
+        
+        var selfX = self.x
+        var selfY = self.y
+        var selfZ = self.z
+        var selfW = self.w
+        
+        var otherX = other.x
+        var otherY = other.y
+        var otherZ = other.z
+        var otherW = other.w
+        
+        var x = selfW * otherX + selfX * otherW + selfY * otherZ - selfZ * otherY
+        var y = selfW * otherY - selfX * otherZ + selfY * otherW + selfZ * otherX
+        var z = selfW * otherZ + selfX * otherY - selfY * otherX + selfZ * otherW
+        var w = selfW * otherW - selfX * otherX - selfY * otherY - selfZ * otherZ
+        
+        return Quaternion(x: x, y: y, z: z, w: w)
     }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required');
-    }
-    //>>includeEnd('debug');
-    
-    var leftX = left.x;
-    var leftY = left.y;
-    var leftZ = left.z;
-    var leftW = left.w;
-    
-    var rightX = right.x;
-    var rightY = right.y;
-    var rightZ = right.z;
-    var rightW = right.w;
-    
-    var x = leftW * rightX + leftX * rightW + leftY * rightZ - leftZ * rightY;
-    var y = leftW * rightY - leftX * rightZ + leftY * rightW + leftZ * rightX;
-    var z = leftW * rightZ + leftX * rightY - leftY * rightX + leftZ * rightW;
-    var w = leftW * rightW - leftX * rightX - leftY * rightY - leftZ * rightZ;
-    
-    if (!defined(result)) {
-        return new Quaternion(x, y, z, w);
-    }
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
-
+/*
 /**
 * Multiplies the provided quaternion componentwise by the provided scalar.
 * @memberof Quaternion

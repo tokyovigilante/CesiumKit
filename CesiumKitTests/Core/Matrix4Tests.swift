@@ -402,7 +402,7 @@ expect(resultColumn3).toEqual(expectedColumn3);
         let matrix = Matrix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
         
         let expected = Matrix4(17.0, 2.0, 3.0, 4.0, 18.0, 6.0, 7.0, 8.0, 19.0, 10.0, 11.0, 12.0, 20.0, 14.0, 15.0, 16.0)
-        let returnedResult = matrix.setColumn(0, Cartesian4(17.0, 18.0, 19.0, 20.0))
+        let returnedResult = matrix.setColumn(0, cartesian: Cartesian4(x: 17.0, y: 18.0, z: 19.0, w: 20.0))
         XCTAssertEqual(expected, returnedResult, "testSetColumnWorksForEachColumn 1")
         /*
         expected = new Matrix4(1.0, 17.0, 3.0, 4.0, 5.0, 18.0, 7.0, 8.0, 9.0, 19.0, 11.0, 12.0, 13.0, 20.0, 15.0, 16.0);

@@ -125,15 +125,6 @@ class DrawCommand: Command {
     var pass: Pass?
     
     /**
-    * Specifies if this command is only to be executed in the frustum closest
-    * to the eye containing the bounding volume. Defaults to <code>false</code>.
-    *
-    * @type {Boolean}
-    * @default false
-    */
-    var executeInClosestFrustum: Bool
-    
-    /**
     * The object who created this command.  This is useful for debugging command
     * execution; it allows us to see who created a command when we only have a
     * reference to the command, and can be used to selectively execute commands
@@ -164,6 +155,15 @@ class DrawCommand: Command {
     * @private
     */
     var debugOverlappingFrustums: Int
+
+    /**
+    * Specifies if this command is only to be executed in the frustum closest
+    * to the eye containing the bounding volume. Defaults to <code>false</code>.
+    *
+    * @type {Boolean}
+    * @default false
+    */
+    var executeInClosestFrustum: Bool = false
     
     /**
     * @private

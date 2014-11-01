@@ -151,7 +151,7 @@ public class Scene {
     
     private var _commandList = [Command]()
     private var _frustumCommandsList = [FrustumCommands]()
-    private var _overlayCommandList = [DrawCommand]()
+    private var _overlayCommandList = [Command]()
     
     
     /*
@@ -378,7 +378,7 @@ public class Scene {
     *
     * @default false
     */
-    public var debugShowFrustums = false
+    var _debugShowFrustums = false
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -398,7 +398,7 @@ public class Scene {
     *
     * @default undefined
     */
-    //private var _debugFrustumStatistics = nil //undefined;
+    private var _debugFrustumStatistics: (totalCommands: Int, commandsInFrustums: [Int]) = (0, [Int]())
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -551,77 +551,66 @@ public class Scene {
         }
     }
 
-/*
-function insertIntoBin(scene, command, distance) {
-    if (scene.debugShowFrustums) {
-        command.debugOverlappingFrustums = 0;
-    }
-    
-    var frustumCommandsList = scene._frustumCommandsList;
-    var length = frustumCommandsList.length;
-    
-    for (var i = 0; i < length; ++i) {
-        var frustumCommands = frustumCommandsList[i];
-        var curNear = frustumCommands.near;
-        var curFar = frustumCommands.far;
-        
-        if (distance.start > curFar) {
-            continue;
+    func insertIntoBin(command: Command, distance: Interval) {
+        if _debugShowFrustums {
+            command.debugOverlappingFrustums = 0
         }
         
-        if (distance.stop < curNear) {
-            break;
-        }
-        
-        if (command.pass === Pass.OPAQUE || command instanceof ClearCommand) {
-            frustumCommands.opaqueCommands[frustumCommands.opaqueIndex++] = command;
-        } else if (command.pass === Pass.TRANSLUCENT){
-            frustumCommands.translucentCommands[frustumCommands.translucentIndex++] = command;
-        }
-        
-        if (scene.debugShowFrustums) {
-            command.debugOverlappingFrustums |= (1 << i);
-        }
-        
-        if (command.executeInClosestFrustum) {
-            break;
-        }
-    }
-    
-    if (scene.debugShowFrustums) {
-        var cf = scene._debugFrustumStatistics.commandsInFrustums;
-        cf[command.debugOverlappingFrustums] = defined(cf[command.debugOverlappingFrustums]) ? cf[command.debugOverlappingFrustums] + 1 : 1;
-        ++scene._debugFrustumStatistics.totalCommands;
-    }
-}
+        for (index, frustumCommands) in enumerate(_frustumCommandsList) {
+            if distance.start > frustumCommands.far {
+                continue
+            }
+            
+            if distance.stop < frustumCommands.near {
+                break
+            }
+            
+            if command.pass == .Opaque || command is ClearCommand {
+                frustumCommands.opaqueCommands.append(command)
 
-var scratchCullingVolume = new CullingVolume();
-var distances = new Interval();
-*/
+            } else if command.pass == Pass.Translucent {
+                frustumCommands.translucentCommands.append(command)
+            }
+            
+            if _debugShowFrustums {
+                command.debugOverlappingFrustums |= (1 << index)
+            }
+            
+            if command.executeInClosestFrustum {
+                break
+            }
+        }
+        if _debugShowFrustums {
+            // FIXME: debugShowFrustums
+            //let cf = _debugFrustumStatistics.commandsInFrustums
+            //cf[command.debugOverlappingFrustums] = defined(cf[command.debugOverlappingFrustums]) ? cf[command.debugOverlappingFrustums] + 1 : 1;
+            //++scene._debugFrustumStatistics.totalCommands;
+        }
+    }
+
 func createPotentiallyVisibleSet() {
     
-    
     var distances: Interval
-    
-    let cullingVolume = frameState.cullingVolume!
     
     let direction = camera.directionWC
     let position = camera.positionWC
     
     
     //FIXME debugShowFrustums
-    /*if (debugShowFrustums) {
-        _debugFrustumStatistics = {
+    if _debugShowFrustums {
+        _debugFrustumStatistics = (
             totalCommands : 0,
-            commandsInFrustums : {}
-        };
-    }*/
+            commandsInFrustums : [Int]()
+        )
+    }
     
-    //var numberOfFrustums = _frustumCommandsList.count
+    let numberOfFrustums = _frustumCommandsList.count
     //for (var n = 0; n < numberOfFrustums; ++n) {
     for frustumCommands in _frustumCommandsList {
-        frustumCommands.opaqueIndex = 0
-        frustumCommands.translucentIndex = 0
+        frustumCommands.opaqueCommands.removeAll()
+        frustumCommands.translucentCommands.removeAll()
+        //frustumCommands.opaqueIndex = 0
+        //frustumCommands.translucentIndex = 0
     }
     var near = Double.infinity
     var far = 0.0
@@ -633,59 +622,64 @@ func createPotentiallyVisibleSet() {
     }
     
     // get user culling volume minus the far plane.
-    cullingVolume = CullingVolume(frameState.cullingVolume!.planes[0...4])
+    var planes = frameState.cullingVolume!.planes[0...4]
+    let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
     
     
-    /*for command in _commandList {
+    for command in _commandList {
         let pass = command.pass
-        
+    
         if pass == .Overlay {
             _overlayCommandList.append(command)
         } else {
             if let boundingVolume = command.boundingVolume {
                 if command.cull &&
-                   (cullingVolume.getVisibility(boundingVolume) == .Outside ||
-                    occluder != nil && !occluder.isBoundingSphereVisible(boundingVolume)) {
+                   (cullingVolume.visibility(boundingVolume) == .Outside ||
+                    occluder != nil && !(occluder!.isBoundingSphereVisible(boundingVolume as BoundingSphere))) {
                             continue
                 }
                 
-                distances = BoundingSphere.getPlaneDistances(boundingVolume, position, direction, distances);
-                near = Math.min(near, distances.start);
-                far = Math.max(far, distances.stop);
+                distances = (boundingVolume as BoundingSphere).computePlaneDistances(position, direction: direction)
+                near = min(near, distances.start)
+                far = max(far, distances.stop)
             } else {
                 // Clear commands don't need a bounding volume - just add the clear to all frustums.
                 // If another command has no bounding volume, though, we need to use the camera's
                 // worst-case near and far planes to avoid clipping something important.
-                distances.start = camera.frustum.near;
-                distances.stop = camera.frustum.far;
-                undefBV = !(command instanceof ClearCommand);
+                distances.start = camera.frustum.near
+                distances.stop = camera.frustum.far
+                undefBV = !(command is ClearCommand)
             }
             
-            insertIntoBin(scene, command, distances);
+            insertIntoBin(command, distance: distances)
         }
     }
     
     if (undefBV) {
-        near = camera.frustum.near;
-        far = camera.frustum.far;
+        near = camera.frustum.near
+        far = camera.frustum.far
     } else {
         // The computed near plane must be between the user defined near and far planes.
         // The computed far plane must between the user defined far and computed near.
         // This will handle the case where the computed near plane is further than the user defined far plane.
-        near = Math.min(Math.max(near, camera.frustum.near), camera.frustum.far);
-        far = Math.max(Math.min(far, camera.frustum.far), near);
+        near = min(max(near, camera.frustum.near), camera.frustum.far)
+        far = max(min(far, camera.frustum.far), near)
     }
     
     // Exploit temporal coherence. If the frustums haven't changed much, use the frustums computed
     // last frame, else compute the new frustums and sort them by frustum again.
-    var farToNearRatio = scene.farToNearRatio;
-    var numFrustums = Math.ceil(Math.log(far / near) / Math.log(farToNearRatio));
-    if (near !== Number.MAX_VALUE && (numFrustums !== numberOfFrustums || (frustumCommandsList.length !== 0 &&
-        (near < frustumCommandsList[0].near || far > frustumCommandsList[numberOfFrustums - 1].far)))) {
-            updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList);
-            createPotentiallyVisibleSet(scene);
-    }*/
+    let numFrustums = ceil(log(far / near) / log(farToNearRatio))
+    if near != Double.infinity &&
+        (numFrustums != numberOfFrustums ||
+            (_frustumCommandsList.count != 0 &&
+                (near < _frustumCommandsList[0].near || far > _frustumCommandsList[numberOfFrustums - 1].far)
+            )
+        ) {
+                updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList)
+                createPotentiallyVisibleSet()
+    }
 }
+    
 /*
 function getAttributeLocations(shaderProgram) {
     var attributeLocations = {};

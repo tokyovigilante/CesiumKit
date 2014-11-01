@@ -13,8 +13,11 @@ import Foundation
 *
 * @private
 */
-struct ClearCommand: Command {
+class ClearCommand: Command {
 
+    let boundingVolume: Intersectable? = nil
+    let cull: Bool = false
+    
     /**
     * The value to clear the color buffer to.  When <code>undefined</code>, the color buffer is not cleared.
     *
@@ -79,6 +82,16 @@ struct ClearCommand: Command {
     // FIXME: Owner
     //unowned var owner: AnyObject
     
+    var debugOverlappingFrustums: Int = 0
+    var executeInClosestFrustum: Bool = false
+    /**
+    * The pass when to render.
+    *
+    * @type {Pass}
+    * @default undefined
+    */
+    var pass: Pass? = nil
+
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
     *
@@ -95,7 +108,7 @@ struct ClearCommand: Command {
         //self.owner = owner
     }
     
-    static func all() -> ClearCommand {
+    class func all() -> ClearCommand {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1.0, renderState: nil, framebuffer: nil/*, owner: unowned*/)
     }
     

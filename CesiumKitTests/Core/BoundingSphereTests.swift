@@ -436,14 +436,12 @@ expect(BoundingSphere.transformWithoutScale(bs, transform)).toEqual(expected);
 });
 */
     func testFindsDistances () {
-        
-        it('finds distances', function() {
-            let bs = BoundingSphere(Cartesian3.zero(), 1.0)
-            let position = Cartesian3(-2.0, 1.0, 0.0)
-            let direction = Cartesian3.unitX()
-            let expected = Interval(1.0, 3.0)
-            XCTAssertTrue(bs.computePlaneDistances(position, direction) == expected)
-        }
+        let bs = BoundingSphere(center: Cartesian3.zero(), radius: 1.0)
+        let position = Cartesian3(x: -2.0, y: 1.0, z: 0.0)
+        let direction = Cartesian3.unitX()
+        let expected = Interval(start: 1.0, stop: 3.0)
+        XCTAssertTrue(bs.computePlaneDistances(position, direction: direction) == expected, "finds distances")
+    }
 /*
 it('estimated distance squared to point', function() {
 var bs = new BoundingSphere(Cartesian3.ZERO, 1.0);

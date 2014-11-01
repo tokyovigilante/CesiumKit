@@ -755,9 +755,9 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
         
         let toCenter = center.subtract(position)
         let proj = direction.multiplyByScalar(direction.dot(toCenter))
-        let mag = proj.magnitude
+        let mag = proj.magnitude()
         
-        return Interval(start: mag - sphere.radius, stop: mag + sphere.radius)
+        return Interval(start: mag - radius, stop: mag + radius)
     }
 /*
 var projectTo2DNormalScratch = new Cartesian3();

@@ -10,7 +10,33 @@
 /**
 * Renderer command protocol
 */
-protocol Command {
+protocol Command: class {
+    
+    /**
+    * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
+    * <p>
+    * For best rendering performance, use the tightest possible bounding volume.  Although
+    * <code>undefined</code> is allowed, always try to provide a bounding volume to
+    * allow the tightest possible near and far planes to be computed for the scene, and
+    * minimize the number of frustums needed.
+    * </p>
+    *
+    * @type {Object}
+    * @default undefined
+    *
+    * @see DrawCommand#debugShowBoundingVolume
+    */
+    var boundingVolume: Intersectable? { get }
+    
+    /**
+    * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
+    * If the command was already culled, set this to <code>false</code> for a performance improvement.
+    *
+    * @type {Boolean}
+    * @default true
+    */
+    var cull: Bool { get }
+    
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
     * scissor test, color mask, depth mask, and stencil mask.  When the render state is
@@ -32,4 +58,16 @@ protocol Command {
     * @default undefined
     */
     var framebuffer: Framebuffer? { get set }
+    
+    /**
+    * The pass when to render.
+    *
+    * @type {Pass}
+    * @default undefined
+    */
+    var pass: Pass? { get set }
+    
+    var debugOverlappingFrustums: Int { get set }
+    
+    var executeInClosestFrustum: Bool { get set }
 }

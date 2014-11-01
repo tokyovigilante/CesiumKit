@@ -20,10 +20,10 @@
 class FrustumCommands {
     var near = 0.0
     var far = 0.0
-    var opaqueCommands = [DrawCommand]()
-    var opaqueIndex: Int = 0
-    var translucentCommands = [DrawCommand]()
-    var translucentIndex: Int = 0
+    var opaqueCommands = [Command]()
+    //var opaqueIndex: Int = 0
+    var translucentCommands = [Command]()
+    //var translucentIndex: Int = 0
     
     init (near: Double = 0.0, far: Double = 0.0) {
         self.near = near

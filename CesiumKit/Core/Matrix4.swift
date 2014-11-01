@@ -100,14 +100,14 @@ struct Matrix4: Packable, Equatable {
         return row >= 0 && column >= 0 && (row * column) + column < Matrix4.packedLength
     }
     
-    subscript(row: Int, column: Int) -> Double {
+    subscript(column: Int, row: Int) -> Double {
         get {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
-            return _grid[(row * column) + column]
+            return _grid[(column * 4) + row]
         }
         set {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
-            _grid[(row * column) + column] = newValue
+            _grid[(column * 4) + row] = newValue
         }
     }
 
