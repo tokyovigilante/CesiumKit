@@ -66,7 +66,7 @@ struct Matrix3/*: Packable*/ {
         }
     }
     
-    func indexIsValidForRow(row: Int, column: Int) -> Bool {
+    func indexIsValid(row: Int, column: Int) -> Bool {
         return row >= 0 && column >= 0 && (row * column) + column < Matrix3.packedLength
     }
     
