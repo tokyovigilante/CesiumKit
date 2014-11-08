@@ -242,15 +242,15 @@ public class CesiumGlobe {
         var creditContainerContainer = defined(options.creditContainer) ? getElement(options.creditContainer) : element;
         creditContainerContainer.appendChild(creditContainer);*/
         
-        self._canRender = false
-        self.renderLoopRunning = false
-        self.useDefaultRenderLoop = options.useDefaultRenderLoop
-        self.showRenderLoopErrors = options.showRenderLoopErrors
-        self.clock = options.clock
+        _canRender = false
+        renderLoopRunning = false
+        useDefaultRenderLoop = options.useDefaultRenderLoop
+        showRenderLoopErrors = options.showRenderLoopErrors
+        clock = options.clock
         _lastFrameTime = nil
         
-        self.globe = Globe(ellipsoid: ellipsoid)
-        self.scene = Scene(
+        globe = Globe(ellipsoid: ellipsoid)
+        scene = Scene(
             view: view,
             globe: self.globe,
             /*canvas : canvas,
@@ -259,8 +259,9 @@ public class CesiumGlobe {
             mapProjection : options.mapProjection,*/
             scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
             /*            }*/)
-        self.scene.globe = globe
-        self.scene.camera.constrainedAxis = Cartesian3.unitZ()
+        scene.globe = globe
+        scene.camera.constrainedAxis = Cartesian3.unitZ()
+        scene.backgroundColor = Cartesian4.fromColor(red: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
         
         /*var creditDisplay = scene.frameState.creditDisplay;
         

@@ -43,7 +43,7 @@ class ClearCommand: Command {
     *
     * @default undefined
     */
-    var stencil: Double?
+    var stencil: Int?
     
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
@@ -99,7 +99,7 @@ class ClearCommand: Command {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Double? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Int? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
         self.color = color
         self.depth = depth
         self.stencil = stencil
@@ -109,10 +109,10 @@ class ClearCommand: Command {
     }
     
     class func all() -> ClearCommand {
-        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1.0, renderState: nil, framebuffer: nil/*, owner: unowned*/)
+        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil, framebuffer: nil/*, owner: unowned*/)
     }
     
-    func execute(context: Context, passState: PassState) {
+    func execute(#context: Context, passState: PassState) {
         context.clear(clearCommand: self, passState: passState)
     }
     

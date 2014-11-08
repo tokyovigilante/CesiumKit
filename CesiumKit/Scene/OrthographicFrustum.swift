@@ -26,67 +26,82 @@
 * frustum.near = 0.01 * maxRadii;
 * frustum.far = 50.0 * maxRadii;
 */
-// FIXME: Frustum protocol
-struct OrthographicFrustum/*: Frustum*/ {
 
+struct OrthographicFrustum: Frustum {
+
+    var fov: Double = Double.NaN
+    var fovy: Double = Double.NaN
     
-/*
-    var OrthographicFrustum = function() {
+    var aspectRatio: Double = Double.NaN
+    
+    let infiniteProjectionMatrix: Matrix4? = nil
+    
+    var projectionMatrix: Matrix4 {
+        get {
+            return _orthographicMatrix
+        }
+    }
+    private var _orthographicMatrix = Matrix4()
+
     /**
-    * The left clipping plane.
+    * Defines the left clipping plane.
     * @type {Number}
     * @default undefined
     */
-    this.left = undefined;
-    this._left = undefined;
+    var left = Double.NaN
+    private var _left = Double.NaN
     
     /**
-    * The right clipping plane.
+    * Defines the right clipping plane.
     * @type {Number}
     * @default undefined
     */
-    this.right = undefined;
-    this._right = undefined;
+    var right = Double.NaN
+    private var _right = Double.NaN
     
     /**
-    * The top clipping plane.
+    * Defines the top clipping plane.
     * @type {Number}
     * @default undefined
     */
-    this.top = undefined;
-    this._top = undefined;
+    var top = Double.NaN
+    private var _top = Double.NaN
     
     /**
-    * The bottom clipping plane.
+    * Defines the bottom clipping plane.
     * @type {Number}
     * @default undefined
     */
-    this.bottom = undefined;
-    this._bottom = undefined;
+    var bottom = Double.NaN
+    private var _bottom = Double.NaN
     
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
-    this.near = 1.0;
-    this._near = this.near;
+    var near = 1.0
+    private var _near = 1.0
     
     /**
     * The distance of the far plane.
     * @type {Number}
-    * @default 500000000.0;
+    * @default 500000000.0
     */
-    this.far = 500000000.0;
-    this._far = this.far;
+    var far = 500000000.0
+    private var _far = 500000000.0
     
+    private var _cullingVolume = CullingVolume()
+    
+    // FIXME: OrthographicFrustum
+    /*
     this._cullingVolume = new CullingVolume();
     this._orthographicMatrix = new Matrix4();
     };
-    
-    function update(frustum) {
+    */
+    func update() {
     //>>includeStart('debug', pragmas.debug);
-    if (!defined(frustum.right) || !defined(frustum.left) ||
+    /*if (!defined(frustum.right) || !defined(frustum.left) ||
     !defined(frustum.top) || !defined(frustum.bottom) ||
     !defined(frustum.near) || !defined(frustum.far)) {
     throw new DeveloperError('right, left, top, bottom, near, or far parameters are not set.');
@@ -116,9 +131,9 @@ struct OrthographicFrustum/*: Frustum*/ {
     frustum._near = frustum.near;
     frustum._far = frustum.far;
     frustum._orthographicMatrix = Matrix4.computeOrthographicOffCenter(frustum.left, frustum.right, frustum.bottom, frustum.top, frustum.near, frustum.far, frustum._orthographicMatrix);
+    }*/
     }
-    }
-    
+    /*
     defineProperties(OrthographicFrustum.prototype, {
     /**
     * Gets the orthographic projection matrix computed from the view frustum.
@@ -127,17 +142,13 @@ struct OrthographicFrustum/*: Frustum*/ {
     */
     projectionMatrix : {
     get : function() {
-    update(this);
-    return this._orthographicMatrix;
-    }
-    }
-    });
-    
+    update(this);*/
+    /*
     var getPlanesRight = new Cartesian3();
     var getPlanesNearCenter = new Cartesian3();
     var getPlanesPoint = new Cartesian3();
     var negateScratch = new Cartesian3();
-    
+    */
     /**
     * Creates a culling volume for this frustum.
     *
@@ -151,9 +162,8 @@ struct OrthographicFrustum/*: Frustum*/ {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    OrthographicFrustum.prototype.computeCullingVolume = function(position, direction, up) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(position)) {
+    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume  {
+        /*if (!defined(position)) {
     throw new DeveloperError('position is required.');
     }
     if (!defined(direction)) {
@@ -254,8 +264,9 @@ struct OrthographicFrustum/*: Frustum*/ {
     plane.z = -direction.z;
     plane.w = -Cartesian3.dot(Cartesian3.negate(direction, negateScratch), point);
     
-    return this._cullingVolume;
-    };
+    return this._cullingVolume*/
+        return _cullingVolume
+    }
     
     /**
     * Returns the pixel's width and height in meters.
@@ -273,8 +284,8 @@ struct OrthographicFrustum/*: Frustum*/ {
     * // Get the width and height of a pixel.
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight));
     */
-    OrthographicFrustum.prototype.getPixelSize = function(drawingBufferDimensions, distance, result) {
-    update(this);
+    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+/*    update(this);
     
     //>>includeStart('debug', pragmas.debug);
     if (!defined(drawingBufferDimensions)) {
@@ -299,8 +310,8 @@ struct OrthographicFrustum/*: Frustum*/ {
     
     result.x = pixelWidth;
     result.y = pixelHeight;
-    return result;
-    };
+    return result;*/return Cartesian2()
+    }
     
     /**
     * Returns a duplicate of a OrthographicFrustum instance.
@@ -308,7 +319,7 @@ struct OrthographicFrustum/*: Frustum*/ {
     * @param {OrthographicFrustum} [result] The object onto which to store the result.
     * @returns {OrthographicFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    OrthographicFrustum.prototype.clone = function(result) {
+    /*OrthographicFrustum.prototype.clone = function(result) {
     if (!defined(result)) {
     result = new OrthographicFrustum();
     }

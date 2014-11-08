@@ -1905,9 +1905,9 @@ Matrix4.getTranslation = function(matrix, result) {
     func rotation() -> Matrix3 {
         
         return Matrix3(
-            column0Row0: _grid[0], column1Row0: _grid[1], column2Row0: _grid[2],
-            column0Row1: _grid[4], column1Row1: _grid[5], column2Row1: _grid[6],
-            column0Row2: _grid[8], column1Row2: _grid[9], column2Row2: _grid[10])
+            _grid[0], _grid[1], _grid[2],
+            _grid[4], _grid[5], _grid[6],
+            _grid[8], _grid[9], _grid[10])
     }
 /*
 /**

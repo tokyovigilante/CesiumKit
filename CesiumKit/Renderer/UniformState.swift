@@ -807,9 +807,9 @@ class UniformState {
     // FIXME: frustum
     func updateFrustum (frustum: Frustum) {
         setProjection(frustum.projectionMatrix)
-        //if (frustum.infiniteProjectionMatrix != nil) {
-            setInfiniteProjection(frustum.infiniteProjectionMatrix)
-        //}
+        if frustum.infiniteProjectionMatrix != nil {
+            setInfiniteProjection(frustum.infiniteProjectionMatrix!)
+        }
         _currentFrustum.x = frustum.near
         _currentFrustum.y = frustum.far
     }

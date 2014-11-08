@@ -500,18 +500,27 @@ class Context {
     */
     var maximumColorAttachments: GLint = 0
     
-    var clearColor = Cartesian4()
+    private var _clearColor = Cartesian4()
     
-    var clearDepth: Double = 0.0
-    var clearStencil: Int = 0
+    private var _clearDepth: Double = 0.0
+    private var _clearStencil: Int = 0
     
     var uniformState: UniformState
-    lazy var passState: PassState = { return self.defaultPassState }()
+
+    var passState: PassState {
+        get {
+            return _defaultPassState
+        }
+    }
     //var renderState: RenderState
-    lazy var currentRenderState: RenderState = { return self.defaultRenderState }()
+    var currentRenderState: RenderState {
+        get {
+            return _defaultRenderState
+        }
+    }
     
-    lazy var defaultPassState: PassState = { return PassState(context: self) }()
-    lazy var defaultRenderState: RenderState = { return self.createRenderState() }()
+    lazy private var _defaultPassState: PassState = { return PassState(context: self) }()
+    lazy private var _defaultRenderState: RenderState = { return self.createRenderState() }()
     
     var currentFrameBuffer: Framebuffer? = nil
     
@@ -682,14 +691,14 @@ class Context {
     
         var cc = [GLfloat](count: 4, repeatedValue: 0.0)
         glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
-        clearColor = Cartesian4.fromColor(red: Double(cc[0]), green: Double(cc[1]), blue: Double(cc[2]), alpha: Double(cc[3]))
+        _clearColor = Cartesian4.fromColor(red: Double(cc[0]), green: Double(cc[1]), blue: Double(cc[2]), alpha: Double(cc[3]))
         
         var clearDepthTemp: GLfloat = 0.0
         glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepthTemp)
-        clearDepth = Double(clearDepthTemp)
+        _clearDepth = Double(clearDepthTemp)
         
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &GLIntTemp)
-        clearStencil = Int(GLIntTemp)
+        _clearStencil = Int(GLIntTemp)
     
         uniformState = UniformState()
    
@@ -1399,91 +1408,95 @@ function validateFramebuffer(context, framebuffer) {
         }
     }
 }
-
-function applyRenderState(context, renderState, passState) {
-    var previousState = context._currentRenderState;
-    if (previousState !== renderState) {
+*/
+    func applyRenderState(renderState: RenderState, passState: PassState) {
+        //FIXME: applyRenderState
+        /*
+        var previousState = context._currentRenderState;
+        if (previousState !== renderState) {
         context._currentRenderState = renderState;
         RenderState.partialApply(context._gl, previousState, renderState, passState);
+        }*/
+        // else same render state as before so state is already applied.
     }
-    // else same render state as before so state is already applied.
-}
-
+/*
 var scratchBackBufferArray;
 // this check must use typeof, not defined, because defined doesn't work with undeclared variables.
 if (typeof WebGLRenderingContext !== 'undefined') {
     scratchBackBufferArray = [WebGLRenderingContext.BACK];
 }
-
-function bindFramebuffer(context, framebuffer) {
-    if (framebuffer !== context._currentFramebuffer) {
-        context._currentFramebuffer = framebuffer;
-        var buffers = scratchBackBufferArray;
-        
-        if (defined(framebuffer)) {
-            framebuffer._bind();
-            validateFramebuffer(context, framebuffer);
-            
-            // TODO: Need a way for a command to give what draw buffers are active.
-            buffers = framebuffer._getActiveColorAttachments();
-        } else {
-            var gl = context._gl;
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        }
-        
-        if (context.drawBuffers) {
-            context._drawBuffers.drawBuffersWEBGL(buffers);
-        }
-    }
-}
-
-var defaultClearCommand = new ClearCommand();
 */
-    func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState) {
-/*
-        clearCommand = defaultValue(clearCommand, defaultClearCommand);
-    passState = defaultValue(passState, this._defaultPassState);
-    
-    var gl = this._gl;
-    var bitmask = 0;
-    
-    var c = clearCommand.color;
-    var d = clearCommand.depth;
-    var s = clearCommand.stencil;
-    
-    if (defined(c)) {
-        if (!Color.equals(this._clearColor, c)) {
-            Color.clone(c, this._clearColor);
-            gl.clearColor(c.red, c.green, c.blue, c.alpha);
-        }
-        bitmask |= gl.COLOR_BUFFER_BIT;
+    func bindFramebuffer(framebuffer: Framebuffer?) {
+        // FIXME: bindframebuffer
+        /*
+        if (framebuffer !== context._currentFramebuffer) {
+            context._currentFramebuffer = framebuffer;
+            var buffers = scratchBackBufferArray;
+            
+            if (defined(framebuffer)) {
+                framebuffer._bind();
+                validateFramebuffer(context, framebuffer);
+                
+                // TODO: Need a way for a command to give what draw buffers are active.
+                buffers = framebuffer._getActiveColorAttachments();
+            } else {
+                var gl = context._gl;
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            }
+            
+            if (context.drawBuffers) {
+                context._drawBuffers.drawBuffersWEBGL(buffers);
+            }
+        }*/
     }
-    
-    if (defined(d)) {
-        if (d !== this._clearDepth) {
-            this._clearDepth = d;
-            gl.clearDepth(d);
+
+    func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState?) {
+        
+        var passState = passState ?? _defaultPassState
+        
+        var bitmask: Int32 = 0
+        
+        var c = clearCommand.color
+        var d = clearCommand.depth
+        var s = clearCommand.stencil
+        
+        if c != nil {
+            if _clearColor != c {
+                _clearColor = c!
+                glClearColor(
+                    GLfloat(_clearColor.red),
+                    GLfloat(_clearColor.green),
+                    GLfloat(_clearColor.blue),
+                    GLfloat(_clearColor.alpha)
+                )
+            }
+            bitmask = bitmask | GL_COLOR_BUFFER_BIT
         }
-        bitmask |= gl.DEPTH_BUFFER_BIT;
-    }
     
-    if (defined(s)) {
-        if (s !== this._clearStencil) {
-            this._clearStencil = s;
-            gl.clearStencil(s);
+        if d != nil {
+            if (d! != _clearDepth) {
+                _clearDepth = d!
+                glClearDepthf(GLfloat(_clearDepth))
+            }
+            bitmask = bitmask | GL_DEPTH_BUFFER_BIT
         }
-        bitmask |= gl.STENCIL_BUFFER_BIT;
+        
+        if s != nil {
+            if (s! != _clearStencil) {
+                _clearStencil = s!
+                glClearStencil(GLint(_clearStencil))
+            }
+            bitmask = bitmask | GL_STENCIL_BUFFER_BIT
+        }
+        
+        var rs = clearCommand.renderState ?? _defaultRenderState
+        applyRenderState(rs, passState: passState)
+        
+        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+        var framebuffer = clearCommand.framebuffer ?? passState.framebuffer
+        bindFramebuffer(framebuffer)
+        glClear(GLbitfield(bitmask))
     }
-    
-    var rs = defaultValue(clearCommand.renderState, this._defaultRenderState);
-    applyRenderState(this, rs, passState);
-    
-    // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-    var framebuffer = defaultValue(clearCommand.framebuffer, passState.framebuffer);
-    bindFramebuffer(this, framebuffer);
-    
-    gl.clear(bitmask);*/
-}
 /*
 function beginDraw(context, framebuffer, drawCommand, passState, renderState, shaderProgram) {
     var rs = defaultValue(defaultValue(renderState, drawCommand.renderState), context._defaultRenderState);
@@ -1553,7 +1566,7 @@ function continueDraw(context, drawCommand, shaderProgram) {
 */
 func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState, shaderProgram: ShaderProgram) {
     
-    var activePassState = passState ?? defaultPassState
+    var activePassState = passState ?? _defaultPassState
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
     var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
     // FIXME: Unimplemented

@@ -87,7 +87,7 @@ public class Scene {
         canvas.parentNode.appendChild(creditContainer);
     }*/
     
-    lazy var passState: PassState = { return PassState(context: self.context) }()
+    private var _passState: PassState
     
     /**
     * Gets or sets the depth-test ellipsoid.
@@ -114,7 +114,7 @@ public class Scene {
     * @type {Camera}
     */
     // TODO: setCamera
-    lazy public var camera: Camera = { return Camera(scene: self) }()
+    public var camera: Camera
 
     
     /**
@@ -133,7 +133,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {FrameState}
     */
-    var frameState: FrameState
+    private var _frameState: FrameState
 
     /**
     * Gets the collection of animations taking place in the scene.
@@ -162,9 +162,9 @@ public class Scene {
     this._fxaa = new FXAA();
     */
     
-    var clearColorCommand = ClearCommand(color: Cartesian4.zero()/*, owner: self*/)
+    var _clearColorCommand = ClearCommand(color: Cartesian4.zero()/*, owner: self*/)
     
-    var depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
+    var _depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
     
     lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self) }()
     
@@ -484,10 +484,19 @@ public class Scene {
         context = Context(view: view)
         self.globe = globe
         
-        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
-        frameState.scene3DOnly = scene3DOnly ?? false
+        _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
+        _frameState.scene3DOnly = scene3DOnly ?? false
         
         // initial guess at frustums.
+        _passState = PassState(context: context)
+
+        camera = Camera(
+            projection: scene2D.projection,
+            mode: mode,
+            initialWidth: Double(context.view.frame.width),
+            initialHeight: Double(context.view.frame.height)
+        )
+        camera.scene = self
         var near = camera.frustum.near
         var far = camera.frustum.far
         var numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
@@ -515,20 +524,20 @@ public class Scene {
 
     func updateFrameState(frameNumber: Int, time: JulianDate) {
 
-        frameState.mode = mode
-        frameState.morphTime = morphTime
-        frameState.mapProjection = scene2D.projection
-        frameState.frameNumber = frameNumber
-        frameState.time = time
-        frameState.camera = camera
-        frameState.cullingVolume = camera.frustum.computeCullingVolume(
+        _frameState.mode = mode
+        _frameState.morphTime = morphTime
+        _frameState.mapProjection = scene2D.projection
+        _frameState.frameNumber = frameNumber
+        _frameState.time = time
+        _frameState.camera = camera
+        _frameState.cullingVolume = camera.frustum.computeCullingVolume(
             position: camera.positionWC,
             direction: camera.directionWC,
             up: camera.upWC)
-        frameState.occluder = getOccluder()
-        frameState.afterRender.removeAll()
+        _frameState.occluder = getOccluder()
+        _frameState.afterRender.removeAll()
         
-        clearPasses(&frameState.passes)
+        clearPasses(&_frameState.passes)
     }
     
     func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
@@ -590,7 +599,8 @@ public class Scene {
 
 func createPotentiallyVisibleSet() {
     
-    var distances: Interval
+    var distances = Interval()
+    
     
     let direction = camera.directionWC
     let position = camera.positionWC
@@ -612,24 +622,22 @@ func createPotentiallyVisibleSet() {
         //frustumCommands.opaqueIndex = 0
         //frustumCommands.translucentIndex = 0
     }
-    var near = Double.infinity
-    var far = 0.0
+    var near: Double = Double.infinity
+    var far: Double = 0.0
     var undefBV = false
     
     var occluder: Occluder?
-    if frameState.mode == .Scene3D {
-        occluder = frameState.occluder
+    if _frameState.mode == .Scene3D {
+        occluder = _frameState.occluder
     }
     
     // get user culling volume minus the far plane.
-    var planes = frameState.cullingVolume!.planes[0...4]
+    var planes = _frameState.cullingVolume!.planes[0...4]
     let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
     
     
     for command in _commandList {
-        let pass = command.pass
-    
-        if pass == .Overlay {
+        if command.pass == .Overlay {
             _overlayCommandList.append(command)
         } else {
             if let boundingVolume = command.boundingVolume {
@@ -668,15 +676,15 @@ func createPotentiallyVisibleSet() {
     
     // Exploit temporal coherence. If the frustums haven't changed much, use the frustums computed
     // last frame, else compute the new frustums and sort them by frustum again.
-    let numFrustums = ceil(log(far / near) / log(farToNearRatio))
+    let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
     if near != Double.infinity &&
         (numFrustums != numberOfFrustums ||
             (_frustumCommandsList.count != 0 &&
-                (near < _frustumCommandsList[0].near || far > _frustumCommandsList[numberOfFrustums - 1].far)
+                (near < (_frustumCommandsList[0] as FrustumCommands).near || far > (_frustumCommandsList[numberOfFrustums - 1] as FrustumCommands).far)
             )
         ) {
-                updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList)
-                createPotentiallyVisibleSet()
+            updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
+            createPotentiallyVisibleSet()
     }
 }
     
@@ -833,175 +841,174 @@ function isVisible(command, frameState) {
             ((cullingVolume.getVisibility(boundingVolume) !== Intersect.OUTSIDE) &&
                 (!defined(occluder) || occluder.isBoundingSphereVisible(boundingVolume)))));
 }
-
-function translucentCompare(a, b, position) {
-    return BoundingSphere.distanceSquaredTo(b.boundingVolume, position) - BoundingSphere.distanceSquaredTo(a.boundingVolume, position);
+*/
+    func translucentCompare(a: Command, b: Command, position: Cartesian3) -> Bool {
+    return ((b.boundingVolume as BoundingSphere).distanceSquaredTo(position)) > ((a.boundingVolume as BoundingSphere).distanceSquaredTo(position))
 }
 
-function executeTranslucentCommandsSorted(scene, executeFunction, passState, commands) {
-    var context = scene.context;
+    func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [Command]) {
     
-    mergeSort(commands, translucentCompare, scene._camera.positionWC);
+    mergeSort(commands, translucentCompare, scene._camera.positionWC)
     
     var length = commands.length;
     for (var j = 0; j < length; ++j) {
         executeFunction(commands[j], scene, context, passState);
     }
 }
-
+/*
 var scratchPerspectiveFrustum = new PerspectiveFrustum();
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
+*/
+    func executeCommands(#passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
 
-function executeCommands(scene, passState, clearColor, picking) {
-    var frameState = scene._frameState;
-    var camera = scene._camera;
-    var context = scene.context;
-    var us = context.uniformState;
-    
-    var frustum;
-    if (defined(camera.frustum.fovy)) {
-        frustum = camera.frustum.clone(scratchPerspectiveFrustum);
-    } else if (defined(camera.frustum.infiniteProjectionMatrix)){
-        frustum = camera.frustum.clone(scratchPerspectiveOffCenterFrustum);
-    } else {
-        frustum = camera.frustum.clone(scratchOrthographicFrustum);
-    }
-    
-    if (defined(scene.sun) && scene.sunBloom !== scene._sunBloom) {
-        if (scene.sunBloom) {
-            scene._sunPostProcess = new SunPostProcess();
-        } else if(defined(scene._sunPostProcess)){
+        var frustum: Frustum
+        if camera.frustum.fovy != Double.NaN {
+            frustum = PerspectiveFrustum()
+        } else if camera.frustum.infiniteProjectionMatrix != nil {
+            frustum = PerspectiveOffCenterFrustum()
+        } else {
+            frustum = OrthographicFrustum()
+        }
+        
+        // FIXME: Sun
+        /*if (defined(scene.sun) && scene.sunBloom !== scene._sunBloom) {
+            if (scene.sunBloom) {
+                scene._sunPostProcess = new SunPostProcess();
+            } else if(defined(scene._sunPostProcess)){
+                scene._sunPostProcess = scene._sunPostProcess.destroy();
+            }
+            
+            scene._sunBloom = scene.sunBloom;
+        } else if (!defined(scene.sun) && defined(scene._sunPostProcess)) {
             scene._sunPostProcess = scene._sunPostProcess.destroy();
+            scene._sunBloom = false;
+        }*/
+        
+        // FIXME: Skybox, atmosphere
+        /*var skyBoxCommand = (frameState.passes.render && defined(scene.skyBox)) ? scene.skyBox.update(context, frameState) : undefined;
+        var skyAtmosphereCommand = (frameState.passes.render && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
+        var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
+        var sunVisible = isVisible(sunCommand, frameState);*/
+        
+        _clearColorCommand.color = clearColor
+        _clearColorCommand.execute(context: context, passState: passState)
+        
+        var renderTranslucentCommands = false
+        //var i;
+        //var frustumCommandsList = scene._frustumCommandsList;
+        //var numFrustums = frustumCommandsList.length;
+        for frustumCommands in _frustumCommandsList {
+        //for (i = 0; i < numFrustums; ++i) {
+            if frustumCommands.translucentCommands.count > 0 {
+            //if (frustumCommandsList[i].translucentIndex > 0) {
+                renderTranslucentCommands = true
+                break
+            }
+        }
+        // FIXME: OIT
+        /*var useOIT = !picking && renderTranslucentCommands && scene._oit.isSupported();
+        if (useOIT) {
+            scene._oit.update(context);
+            scene._oit.clear(context, passState, clearColor);
+            useOIT = useOIT && scene._oit.isSupported();
         }
         
-        scene._sunBloom = scene.sunBloom;
-    } else if (!defined(scene.sun) && defined(scene._sunPostProcess)) {
-        scene._sunPostProcess = scene._sunPostProcess.destroy();
-        scene._sunBloom = false;
-    }
-    
-    var skyBoxCommand = (frameState.passes.render && defined(scene.skyBox)) ? scene.skyBox.update(context, frameState) : undefined;
-    var skyAtmosphereCommand = (frameState.passes.render && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
-    var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
-    var sunVisible = isVisible(sunCommand, frameState);
-    
-    var clear = scene._clearColorCommand;
-    Color.clone(clearColor, clear.color);
-    clear.execute(context, passState);
-    
-    var renderTranslucentCommands = false;
-    var i;
-    var frustumCommandsList = scene._frustumCommandsList;
-    var numFrustums = frustumCommandsList.length;
-    for (i = 0; i < numFrustums; ++i) {
-        if (frustumCommandsList[i].translucentIndex > 0) {
-            renderTranslucentCommands = true;
-            break;
+        var useFXAA = !picking && (scene.fxaa || (useOIT && scene.fxaaOrderIndependentTranslucency));
+        if (useFXAA) {
+            scene._fxaa.update(context);
+            scene._fxaa.clear(context, passState, clearColor);
         }
-    }
-    
-    var useOIT = !picking && renderTranslucentCommands && scene._oit.isSupported();
-    if (useOIT) {
-        scene._oit.update(context);
-        scene._oit.clear(context, passState, clearColor);
-        useOIT = useOIT && scene._oit.isSupported();
-    }
-    
-    var useFXAA = !picking && (scene.fxaa || (useOIT && scene.fxaaOrderIndependentTranslucency));
-    if (useFXAA) {
-        scene._fxaa.update(context);
-        scene._fxaa.clear(context, passState, clearColor);
-    }
-    
-    var opaqueFramebuffer = passState.framebuffer;
-    if (useOIT) {
-        opaqueFramebuffer = scene._oit.getColorFramebuffer();
-    } else if (useFXAA) {
-        opaqueFramebuffer = scene._fxaa.getColorFramebuffer();
-    }
-    
-    if (sunVisible && scene.sunBloom) {
-        passState.framebuffer = scene._sunPostProcess.update(context);
-    } else {
-        passState.framebuffer = opaqueFramebuffer;
-    }
-    
-    // Ideally, we would render the sky box and atmosphere last for
-    // early-z, but we would have to draw it in each frustum
-    frustum.near = camera.frustum.near;
-    frustum.far = camera.frustum.far;
-    us.updateFrustum(frustum);
-    
-    if (defined(skyBoxCommand)) {
-        executeCommand(skyBoxCommand, scene, context, passState);
-    }
-    
-    if (defined(skyAtmosphereCommand)) {
-        executeCommand(skyAtmosphereCommand, scene, context, passState);
-    }
-    
-    if (defined(sunCommand) && sunVisible) {
-        sunCommand.execute(context, passState);
-        
-        if (scene.sunBloom) {
-            scene._sunPostProcess.execute(context, opaqueFramebuffer);
+        */
+        var opaqueFramebuffer = passState.framebuffer
+        /*if (useOIT) {
+            opaqueFramebuffer = scene._oit.getColorFramebuffer();
+        } else if (useFXAA) {
+            opaqueFramebuffer = scene._fxaa.getColorFramebuffer();
+        }*/
+        // FIXME: Sun
+        /*if (sunVisible && scene.sunBloom) {
+            passState.framebuffer = scene._sunPostProcess.update(context);
+        } else {
             passState.framebuffer = opaqueFramebuffer;
-        }
-    }
-    
-    var clearDepth = scene._depthClearCommand;
-    var executeTranslucentCommands;
-    if (useOIT) {
-        if (!defined(scene._executeOITFunction)) {
-            scene._executeOITFunction = function(scene, executeFunction, passState, commands) {
-                scene._oit.executeCommands(scene, executeFunction, passState, commands);
-            };
-        }
-        executeTranslucentCommands = scene._executeOITFunction;
-    } else {
-        executeTranslucentCommands = executeTranslucentCommandsSorted;
-    }
-    
-    for (i = 0; i < numFrustums; ++i) {
-        var index = numFrustums - i - 1;
-        var frustumCommands = frustumCommandsList[index];
-        frustum.near = frustumCommands.near;
-        frustum.far = frustumCommands.far;
+        }*/
         
-        if (index !== 0) {
-            // Avoid tearing artifacts between adjacent frustums
-            frustum.near *= 0.99;
+        // Ideally, we would render the sky box and atmosphere last for
+        // early-z, but we would have to draw it in each frustum
+        frustum.near = camera.frustum.near
+        frustum.far = camera.frustum.far
+        context.uniformState.updateFrustum(frustum)
+        
+        // FIXME: skybox, atmosphere
+        /*if (defined(skyBoxCommand)) {
+            executeCommand(skyBoxCommand, scene, context, passState);
         }
         
-        us.updateFrustum(frustum);
-        clearDepth.execute(context, passState);
-        
-        var commands = frustumCommands.opaqueCommands;
-        var length = frustumCommands.opaqueIndex;
-        for (var j = 0; j < length; ++j) {
-            executeCommand(commands[j], scene, context, passState);
+        if (defined(skyAtmosphereCommand)) {
+            executeCommand(skyAtmosphereCommand, scene, context, passState);
         }
         
-        frustum.near = frustumCommands.near;
-        us.updateFrustum(frustum);
+        if (defined(sunCommand) && sunVisible) {
+            sunCommand.execute(context, passState);
+            
+            if (scene.sunBloom) {
+                scene._sunPostProcess.execute(context, opaqueFramebuffer);
+                passState.framebuffer = opaqueFramebuffer;
+            }
+        }*/
         
-        commands = frustumCommands.translucentCommands;
-        commands.length = frustumCommands.translucentIndex;
-        executeTranslucentCommands(scene, executeCommand, passState, commands);
+        var clearDepth = scene._depthClearCommand;
+        var executeTranslucentCommands;
+        /*if (useOIT) {
+            if (!defined(scene._executeOITFunction)) {
+                scene._executeOITFunction = function(scene, executeFunction, passState, commands) {
+                    scene._oit.executeCommands(scene, executeFunction, passState, commands);
+                };
+            }
+            executeTranslucentCommands = scene._executeOITFunction;
+        } else {*/
+            executeTranslucentCommands = executeTranslucentCommandsSorted()
+        //}
+        
+        for (i = 0; i < numFrustums; ++i) {
+            var index = numFrustums - i - 1;
+            var frustumCommands = frustumCommandsList[index];
+            frustum.near = frustumCommands.near;
+            frustum.far = frustumCommands.far;
+            
+            if (index !== 0) {
+                // Avoid tearing artifacts between adjacent frustums
+                frustum.near *= 0.99;
+            }
+            
+            us.updateFrustum(frustum);
+            clearDepth.execute(context, passState);
+            
+            var commands = frustumCommands.opaqueCommands;
+            var length = frustumCommands.opaqueIndex;
+            for (var j = 0; j < length; ++j) {
+                executeCommand(commands[j], scene, context, passState);
+            }
+            
+            frustum.near = frustumCommands.near;
+            us.updateFrustum(frustum);
+            
+            commands = frustumCommands.translucentCommands;
+            commands.length = frustumCommands.translucentIndex;
+            executeTranslucentCommands(scene, executeCommand, passState, commands);
+        }
+        
+        if (useOIT) {
+            passState.framebuffer = useFXAA ? scene._fxaa.getColorFramebuffer() : undefined;
+            scene._oit.execute(context, passState);
+        }
+        
+        if (useFXAA) {
+            passState.framebuffer = undefined;
+            scene._fxaa.execute(context, passState);
+        }
     }
-    
-    if (useOIT) {
-        passState.framebuffer = useFXAA ? scene._fxaa.getColorFramebuffer() : undefined;
-        scene._oit.execute(context, passState);
-    }
-    
-    if (useFXAA) {
-        passState.framebuffer = undefined;
-        scene._fxaa.execute(context, passState);
-    }
-}
-
+/*
 function executeOverlayCommands(scene, passState) {
     var context = scene.context;
     var commandList = scene._overlayCommandList;
@@ -1013,7 +1020,7 @@ function executeOverlayCommands(scene, passState) {
 */
     func updatePrimitives() {
         
-        globe.update(context: context, frameState: frameState, commandList: &_commandList)
+        globe.update(context: context, frameState: _frameState, commandList: &_commandList)
         //FIXME: primitives
         //scene._primitives.update(context, frameState, commandList);
         //FIXME: moon
@@ -1055,15 +1062,15 @@ function callAfterRenderFunctions(frameState) {
         // FIXME: Events
         //preRender.raiseEvent(self, time)
         
-        var us = context.uniformState
+        var uniformState = context.uniformState
         
-        var frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
+        var frameNumber = Math.incrementWrap(_frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
-        frameState.passes.render = true
+        _frameState.passes.render = true
         // FIXME: Creditdisplay
         //frameState.creditDisplay.beginFrame();
         
-        us.update(context, frameState: frameState)
+        uniformState.update(context, frameState: _frameState)
         
         _commandList.removeAll()
         _overlayCommandList.removeAll()
@@ -1071,12 +1078,10 @@ function callAfterRenderFunctions(frameState) {
         updatePrimitives()
         createPotentiallyVisibleSet()
         
-        /*var passState = scene._passState;
+        executeCommands(passState: _passState, clearColor: backgroundColor)
+        /*executeOverlayCommands(scene, passState);
         
-        executeCommands(scene, passState, defaultValue(scene.backgroundColor, Color.BLACK));
-        executeOverlayCommands(scene, passState);*/
-        
-        /*frameState.creditDisplay.endFrame();
+        frameState.creditDisplay.endFrame();
         
         if (scene.debugShowFramesPerSecond) {
             // TODO: Performance display

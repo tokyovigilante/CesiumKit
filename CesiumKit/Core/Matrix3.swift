@@ -1,18 +1,12 @@
 //
 //  Matrix3.swift
-//  Karearea
-//
-//  Created by Ryan Walklin on 1/11/14.
-//  Copyright (c) 2014 Ryan Walklin. All rights reserved.
-//
-
-//
-//  Matrix3.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 8/09/14.
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
+
+import Foundation
 
 /**
 * A 3x3 matrix, indexable as a column-major order array.

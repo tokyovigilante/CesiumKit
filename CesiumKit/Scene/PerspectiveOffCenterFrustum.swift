@@ -127,7 +127,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     *
     * @see PerspectiveOffCenterFrustum#projectionMatrix
     */
-    var infiniteProjectionMatrix: Matrix4 {
+    var infiniteProjectionMatrix: Matrix4? {
         get {
             update()
             return _infinitePerspective

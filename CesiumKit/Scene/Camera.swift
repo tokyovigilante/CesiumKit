@@ -309,17 +309,16 @@ public class Camera {
     */
     var defaultViewFactor = 0.5
     
-    init(scene: Scene) {
+    init(projection: Projection, mode: SceneMode, initialWidth: Double, initialHeight: Double) {
         
-        self.scene = scene
-        
-        _projection = scene.scene2D.projection
+        _projection = projection
         _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
+        self.mode = mode
         
         transform2DInverse = transform2D.inverseTransformation()
 
         frustum = PerspectiveFrustum()
-        frustum.aspectRatio = Double(scene.context.view.frame.size.width) / Double(scene.context.view.frame.size.height)
+        frustum.aspectRatio = Double(initialWidth) / Double(initialHeight)
         frustum.fov = Math.toRadians(60.0)
 
         updateViewMatrix()

@@ -105,7 +105,7 @@ protocol Frustum {
     *
     * @see PerspectiveFrustum#projectionMatrix
     */
-    var infiniteProjectionMatrix: Matrix4 { get }
+    var infiniteProjectionMatrix: Matrix4? { get }
     
     /**
     * Creates a culling volume for this frustum.
