@@ -505,22 +505,11 @@ class Context {
     private var _clearDepth: Double = 0.0
     private var _clearStencil: Int = 0
     
-    var uniformState: UniformState
-
-    var passState: PassState {
-        get {
-            return _defaultPassState
-        }
-    }
-    //var renderState: RenderState
-    var currentRenderState: RenderState {
-        get {
-            return _defaultRenderState
-        }
-    }
+    private var _currentRenderState: RenderState
+    private let _defaultRenderState: RenderState
+    private let _defaultPassState: PassState
     
-    lazy private var _defaultPassState: PassState = { return PassState(context: self) }()
-    lazy private var _defaultRenderState: RenderState = { return self.createRenderState() }()
+    var uniformState: UniformState
     
     var _currentFramebuffer: Framebuffer? = nil
     
@@ -598,7 +587,7 @@ class Context {
 
     var cachedState: RenderState? = nil
     
-    var maxFrameTextureUnitIndex = 0
+    private var _maxFrameTextureUnitIndex = 0
     
     var pickObjects: [AnyObject]
     
@@ -700,13 +689,18 @@ class Context {
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &GLIntTemp)
         _clearStencil = Int(GLIntTemp)
     
-        uniformState = UniformState()
-   
-        //passState = defaultPassState
-        //currentRenderState = defaultRenderState
-    
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
+        
+        var us = UniformState()
+        var rs = RenderState()
+        //var ps = PassState()
+        
+        _defaultRenderState = rs
+        uniformState = us
+        _currentRenderState = rs
+        _defaultPassState = PassState()
+        _defaultPassState.context = self
     
         /**
         * @example
@@ -724,9 +718,7 @@ class Context {
         * }
         */
         //this.options = options;
-        
-        //FIXME: currentrenderstate.apply
-        //currentRenderState.apply(defaultPassState)
+        _currentRenderState.apply(_defaultPassState)
         
     }
     
@@ -1377,7 +1369,7 @@ var renderStateCache = {};
 * @see ClearCommand
 */
     func createRenderState() -> RenderState {
-        return RenderState(context: self)
+        return RenderState()
     }
 
 
@@ -1406,13 +1398,11 @@ var renderStateCache = {};
     }
 
     func applyRenderState(renderState: RenderState, passState: PassState) {
-        //FIXME: applyRenderState
-        /*
-        var previousState = context._currentRenderState;
-        if (previousState !== renderState) {
-        context._currentRenderState = renderState;
-        RenderState.partialApply(context._gl, previousState, renderState, passState);
-        }*/
+        var previousState = _currentRenderState
+        if previousState !== renderState {
+            _currentRenderState = renderState
+            renderState.partialApply(previousState, passState: passState)
+        }
         // else same render state as before so state is already applied.
     }
 /*
@@ -1501,12 +1491,12 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         //>>includeEnd('debug');
         
         bindFramebuffer(framebuffer)
-        /*
-        var sp = defaultValue(shaderProgram, drawCommand.shaderProgram);
-        sp._bind();
-        context._maxFrameTextureUnitIndex = Math.max(context._maxFrameTextureUnitIndex, sp.maximumTextureUnitIndex);
         
-        applyRenderState(context, rs, passState);*/
+        var sp = shaderProgram ?? drawCommand.shaderProgram
+        sp!.bind()
+        _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex!)
+        
+        applyRenderState(rs, passState: passState)
     }
 
     func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram) {

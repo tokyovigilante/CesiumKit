@@ -21,7 +21,7 @@ struct PassState {
     *
     * @type {Context}
     */
-    weak var context: Context? = nil
+    weak var context: Context! = nil
     
     /**
     * The framebuffer to render to.  This framebuffer is used unless a {@link DrawCommand}
@@ -56,10 +56,6 @@ struct PassState {
     * @default undefined
     */
     var scissorTest: RenderState.ScissorTest? = nil
-    
-    init(context: Context) {
-        self.context = context
-    }
 
 }
 

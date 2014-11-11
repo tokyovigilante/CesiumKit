@@ -75,7 +75,7 @@ return ((stencilOperation === WebGLRenderingContext.ZERO) ||
 }
 
 */
-struct RenderState/*: Printable*/ {
+class RenderState/*: Printable*/ {
     
     var frontFace = WindingOrder.CounterClockwise
     
@@ -160,10 +160,10 @@ struct RenderState/*: Printable*/ {
     
     var id = 0
     
-    //var applyFunctions = []
+    //var applyFunctions = [((), -> Any)]? = nil
     
-    init(context: Context) {
-        
+//    init(viewport: BoundingRectangle?) {
+        // FIXME: Viewport
     /*
     view
 
@@ -172,7 +172,7 @@ struct RenderState/*: Printable*/ {
     (!defined(viewport.width)) ? context.drawingBufferWidth : viewport.width,
     (!defined(viewport.height)) ? context.drawingBufferHeight : viewport.height) : undefined;
     */
-    }
+ // }
     
     /*var description: String {
         get {
@@ -514,26 +514,28 @@ struct RenderState/*: Printable*/ {
         
         return funcs;
     }
-    
-    RenderState.partialApply = function(gl, previousState, nextState, passState) {
-    // When a new render state is applied, instead of making WebGL calls for all the states or first
-    // comparing the states one-by-one with the previous state (basically a linear search), we take
-    // advantage of RenderState's immutability, and store a dynamically populated sparse data structure
-    // containing functions that make the minimum number of WebGL calls when transitioning from one state
-    // to the other.  In practice, this works well since state-to-state transitions generally only require a
-    // few WebGL calls, especially if commands are stored by state.
-    var funcs = nextState._applyFunctions[previousState.id];
-    if (!defined(funcs)) {
-    funcs = createFuncs(previousState, nextState);
-    nextState._applyFunctions[previousState.id] = funcs;
+    */
+    func partialApply (previousState: RenderState, passState: PassState) {
+        // When a new render state is applied, instead of making WebGL calls for all the states or first
+        // comparing the states one-by-one with the previous state (basically a linear search), we take
+        // advantage of RenderState's immutability, and store a dynamically populated sparse data structure
+        // containing functions that make the minimum number of WebGL calls when transitioning from one state
+        // to the other.  In practice, this works well since state-to-state transitions generally only require a
+        // few WebGL calls, especially if commands are stored by state.
+        // FIXME: PartialApply
+        apply(passState)
+        /*var funcs = applyFunctions[previousState.id]
+        if (!defined(funcs)) {
+            funcs = createFuncs(previousState, nextState);
+            nextState._applyFunctions[previousState.id] = funcs;
+        }
+        
+        var len = funcs.length;
+        for (var i = 0; i < len; ++i) {
+            funcs[i](gl, nextState, passState);
+        }*/
     }
-    
-    var len = funcs.length;
-    for (var i = 0; i < len; ++i) {
-    funcs[i](gl, nextState, passState);
-    }
-    }
-    
+    /*
     /**
     * Duplicates a RenderState instance. The object returned must still be created with {@link Context#createRenderState}.
     *

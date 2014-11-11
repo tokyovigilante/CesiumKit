@@ -488,8 +488,8 @@ public class Scene {
         _frameState.scene3DOnly = scene3DOnly ?? false
         
         // initial guess at frustums.
-        _passState = PassState(context: context)
-
+        _passState = PassState()
+        _passState.context = context
         camera = Camera(
             projection: scene2D.projection,
             mode: mode,

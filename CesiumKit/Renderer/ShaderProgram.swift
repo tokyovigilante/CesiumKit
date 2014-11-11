@@ -339,7 +339,7 @@ class UniformArray {
 
 class ShaderProgram {
 
-    var logShaderCompilation: Bool = false
+    var _logShaderCompilation: Bool = false
     
     /**
     * GLSL source for the shader program's vertex shader.  This is the version of
@@ -351,7 +351,7 @@ class ShaderProgram {
     * @type {String}
     * @readonly
     */
-    let vertexShaderSource: String
+    let _vertexShaderSource: String
     
     /**
     * GLSL source for the shader program's fragment shader.  This is the version of
@@ -363,15 +363,15 @@ class ShaderProgram {
     * @type {String}
     * @readonly
     */
-    let fragmentShaderSource: String
+    let _fragmentShaderSource: String
     
-    let attributeLocations: [String: Int]
+    let _attributeLocations: [String: Int]
     
-    var program: GLuint? = nil
+    private var _program: GLuint? = nil
     
     var keyword: String {
         get {
-            return vertexShaderSource + fragmentShaderSource + attributeLocations.description
+            return _vertexShaderSource + _fragmentShaderSource + _attributeLocations.description
         }
     }
     
@@ -417,15 +417,15 @@ class ShaderProgram {
     
     var count: Int = 0
     
-    let id: Int
+    let _id: Int
     
     init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int], id: Int) {
         
-        self.logShaderCompilation = logShaderCompilation
-        self.attributeLocations = attributeLocations
-        self.vertexShaderSource = vertexShaderSource
-        self.fragmentShaderSource = fragmentShaderSource
-        self.id = id
+        _logShaderCompilation = logShaderCompilation
+        _attributeLocations = attributeLocations
+        _vertexShaderSource = vertexShaderSource
+        _fragmentShaderSource = fragmentShaderSource
+        _id = id
         count = 0
         
         
@@ -457,39 +457,39 @@ class ShaderProgram {
     }
     }
 */
-    /*
-    function extractShaderVersion(source) {
-    // This will fail if the first #version is actually in a comment.
-    var index = source.indexOf('#version');
-    if (index !== -1) {
-    var newLineIndex = source.indexOf('\n', index);
     
-    // We could throw an exception if there is not a new line after
-    // #version, but the GLSL compiler will catch it.
-    if (index !== -1) {
-    // Extract #version directive, including the new line.
-    var version = source.substring(index, newLineIndex + 1);
-    
-    // Comment out original #version directive so the line numbers
-    // are not off by one.  There can be only one #version directive
-    // and it must appear at the top of the source, only preceded by
-    // whitespace and comments.
-    var modified = source.substring(0, index) + '//' + source.substring(index);
-    
-    return {
-    version : version,
-    source : modified
-    };
-    }
-    }
-    
-    return {
+    /*func extractShaderVersion(source: String) {
+        // This will fail if the first #version is actually in a comment.
+        var index = source.indexOf("#version")
+        if (index != nil) {
+            var newLineIndex = source.indexOf("\n", startIndex: index);
+            
+            // We could throw an exception if there is not a new line after
+            // #version, but the GLSL compiler will catch it.
+            if (newLineIndex != nil) {
+                // Extract #version directive, including the new line.
+                var version = source.substringWithRange(Range(index!, advance(newLineIndex!, 1)))
+                
+                // Comment out original #version directive so the line numbers
+                // are not off by one.  There can be only one #version directive
+                // and it must appear at the top of the source, only preceded by
+                // whitespace and comments.
+                var modified = source.substring(0, index) + '//' + source.substring(index);
+                
+                return {
+                    version : version,
+                    source : modified
+                };
+            }
+        }
+
+return {
     version : '', // defaults to #version 100
     source : source // no modifications required
-    };
-    }
-    
-    function getDependencyNode(name, glslSource, nodes) {
+};
+}*/
+
+  /*  function getDependencyNode(name, glslSource, nodes) {
     var dependencyNode;
     
     // check if already loaded
@@ -561,9 +561,9 @@ class ShaderProgram {
     generateDependencies(referencedNode, dependencyNodes);
     }
     });
-    }*/
+    }
 
-/*
+
 function sortDependencies(dependencyNodes) {
     var nodesWithoutIncomingEdges = [];
     var allNodes = [];
@@ -635,95 +635,115 @@ function getFragmentShaderPrecision() {
     '  precision mediump float; \n' +
     '#endif \n\n';
 }
+*/
+    func createAndLinkProgram(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> GLuint {
+        //let vsSourceVersioned = extractShaderVersion(vertexShaderSource)
+        //let fsSourceVersioned = extractShaderVersion(fragmentShaderSource)
+        
+        /*var vsSource =
+        vsSourceVersioned.version +
+        getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
+        '\n#line 0\n' +
+        vsSourceVersioned.source;
+        var fsSource =
+        fsSourceVersioned.version +
+        getFragmentShaderPrecision() +
+        getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
+        '\n#line 0\n' +
+        fsSourceVersioned.source;
+        var log;
+        */
+        var vertexShader: GLuint = glCreateShader(GLenum(GL_VERTEX_SHADER))
+        var vertexShaderUTF8 = UnsafePointer<GLchar>((vertexShaderSource as NSString).UTF8String)
+        var vertexShaderLength = GLint(vertexShaderSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        var shaderCount: GLsizei = 1
+        glShaderSource(vertexShader, shaderCount, &vertexShaderUTF8, &vertexShaderLength)
+        glCompileShader(vertexShader)
+        
+        var status: GLint = 0
+        glGetShaderiv(vertexShader, GLenum(GL_COMPILE_STATUS), &status)
+        
+        if (status == GL_FALSE)
+        {
+            var infoLogLength: GLint = 0
+            glGetShaderiv(vertexShader, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
+            var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
+            var actualLength: GLsizei = 0
+            glGetShaderInfoLog(vertexShader, infoLogLength, &actualLength, &strInfoLog)
+            let compileError = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+            println(compileError)
 
-function createAndLinkProgram(gl, logShaderCompilation, vertexShaderSource, fragmentShaderSource, attributeLocations) {
-    var vsSourceVersioned = extractShaderVersion(vertexShaderSource);
-    var fsSourceVersioned = extractShaderVersion(fragmentShaderSource);
-    
-    var vsSource =
-    vsSourceVersioned.version +
-    getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
-    '\n#line 0\n' +
-    vsSourceVersioned.source;
-    var fsSource =
-    fsSourceVersioned.version +
-    getFragmentShaderPrecision() +
-    getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
-    '\n#line 0\n' +
-    fsSourceVersioned.source;
-    var log;
-    
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, vsSource);
-    gl.compileShader(vertexShader);
-    
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, fsSource);
-    gl.compileShader(fragmentShader);
-    
-    var program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    
-    gl.deleteShader(vertexShader);
-    gl.deleteShader(fragmentShader);
-    
-    if (defined(attributeLocations)) {
-        for ( var attribute in attributeLocations) {
-            if (attributeLocations.hasOwnProperty(attribute)) {
-                gl.bindAttribLocation(program, attributeLocations[attribute], attribute);
-            }
         }
-    }
-    
-    gl.linkProgram(program);
-    
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        
+        /*println(gl
+        var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fsSource);
+        gl.compileShader(fragmentShader);*/
+        
+        let program = glCreateProgram()
+        /*gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        
+        gl.deleteShader(vertexShader);
+        gl.deleteShader(fragmentShader);
+        
+        if (defined(attributeLocations)) {
+        for ( var attribute in attributeLocations) {
+        if (attributeLocations.hasOwnProperty(attribute)) {
+        gl.bindAttribLocation(program, attributeLocations[attribute], attribute);
+        }
+        }
+        }
+        
+        gl.linkProgram(program);
+        
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         // For performance, only check compile errors if there is a linker error.
         if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-            log = gl.getShaderInfoLog(fragmentShader);
-            gl.deleteProgram(program);
-            console.error('[GL] Fragment shader compile log: ' + log);
-            throw new RuntimeError('Fragment shader failed to compile.  Compile log: ' + log);
+        log = gl.getShaderInfoLog(fragmentShader);
+        gl.deleteProgram(program);
+        console.error('[GL] Fragment shader compile log: ' + log);
+        throw new RuntimeError('Fragment shader failed to compile.  Compile log: ' + log);
         }
         
         if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-            log = gl.getShaderInfoLog(vertexShader);
-            gl.deleteProgram(program);
-            console.error('[GL] Vertex shader compile log: ' + log);
-            throw new RuntimeError('Vertex shader failed to compile.  Compile log: ' + log);
+        log = gl.getShaderInfoLog(vertexShader);
+        gl.deleteProgram(program);
+        console.error('[GL] Vertex shader compile log: ' + log);
+        throw new RuntimeError('Vertex shader failed to compile.  Compile log: ' + log);
         }
         
         log = gl.getProgramInfoLog(program);
         gl.deleteProgram(program);
         console.error('[GL] Shader program link log: ' + log);
         throw new RuntimeError('Program failed to link.  Link log: ' + log);
-    }
-    
-    if (logShaderCompilation) {
+        }
+        
+        if (logShaderCompilation) {
         log = gl.getShaderInfoLog(vertexShader);
         if (defined(log) && (log.length > 0)) {
-            console.log('[GL] Vertex shader compile log: ' + log);
+        console.log('[GL] Vertex shader compile log: ' + log);
         }
-    }
-    
-    if (logShaderCompilation) {
+        }
+        
+        if (logShaderCompilation) {
         log = gl.getShaderInfoLog(fragmentShader);
         if (defined(log) && (log.length > 0)) {
-            console.log('[GL] Fragment shader compile log: ' + log);
+        console.log('[GL] Fragment shader compile log: ' + log);
         }
-    }
-    
-    if (logShaderCompilation) {
+        }
+        
+        if (logShaderCompilation) {
         log = gl.getProgramInfoLog(program);
         if (defined(log) && (log.length > 0)) {
-            console.log('[GL] Shader program link log: ' + log);
+        console.log('[GL] Shader program link log: ' + log);
         }
+        }
+        */
+        return program;
     }
     
-    return program;
-}
-
+/*
 function findVertexAttributes(gl, program, numberOfAttributes) {
     var attributes = {};
     for (var i = 0; i < numberOfAttributes; ++i) {
@@ -852,13 +872,12 @@ function partitionUniforms(uniforms) {
 */
 func initialize() {
     //FIXME: Initialise
-    /*if (defined(shader._program)) {
-        return;
+    if _program != nil {
+        return
     }
     
-    var gl = shader._gl;
-    var program = createAndLinkProgram(gl, shader._logShaderCompilation, shader.vertexShaderSource, shader.fragmentShaderSource, shader._attributeLocations);
-    var numberOfVertexAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+    _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
+    /*var numberOfVertexAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
     var uniforms = findUniforms(gl, program);
     var partitionedUniforms = partitionUniforms(uniforms.uniformsByName);
     
@@ -872,12 +891,12 @@ func initialize() {
     
     shader.maximumTextureUnitIndex = setSamplerUniforms(gl, program, uniforms.samplerUniforms);*/
 }
-/*
-ShaderProgram.prototype._bind = function() {
-    initialize(this);
-    this._gl.useProgram(this._program);
-};
 
+func bind () {
+    initialize()
+    glUseProgram(_program!)
+}
+/*
 ShaderProgram.prototype._setUniforms = function(uniformMap, uniformState, validate) {
     // TODO: Performance
     
@@ -917,15 +936,15 @@ ShaderProgram.prototype._setUniforms = function(uniformMap, uniformState, valida
             throw new DeveloperError('Program validation failed.  Link log: ' + gl.getProgramInfoLog(program));
         }
     }
-};
-
+};*/
+/*
 ShaderProgram.prototype.isDestroyed = function() {
     return false;
 };
 */
     deinit {
-        if program != nil {
-            glDeleteProgram(program!)
+        if _program != nil {
+            glDeleteProgram(_program!)
         }
     }
 
@@ -1010,4 +1029,28 @@ ShaderProgram.prototype.isDestroyed = function() {
     }
 
 }
+
+extension String {
+    
+    func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
+        var startInd = startIndex ?? self.startIndex
+        // check first that the first character of search string exists
+        if contains(self, first(findStr)!) {
+            // if so set this as the place to start searching
+            startInd = find(self,first(findStr)!)!
+        }
+        else {
+            // if not return empty array
+            return nil
+        }
+        var i = distance(self.startIndex, startInd)
+        while i<=countElements(self)-countElements(findStr) {
+            if self[advance(self.startIndex, i)..<advance(self.startIndex, i+countElements(findStr))] == findStr {
+                return advance(self.startIndex, i)
+            }
+            i++
+        }
+        return nil
+    }
+} // try further optimisation by jumping to next index of first search character after every find
 
