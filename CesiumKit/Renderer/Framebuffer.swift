@@ -9,7 +9,17 @@
 import OpenGLES
 
 struct FramebufferOptions {
-    
+    /**
+    * When true, the framebuffer owns its attachments so they will be destroyed when
+    * {@link Framebuffer#destroy} is called or when a new attachment is assigned
+    * to an attachment point.
+    *
+    * @type {Boolean}
+    * @default true
+    *
+    * @see Framebuffer#destroy
+    */
+    let destroyAttachments: Bool = true
 }
 
 /**
@@ -17,31 +27,44 @@ struct FramebufferOptions {
 */
 class Framebuffer {
     
-    private
-    var framebuffer: Int
+    private var _framebuffer: GLuint = 0
     
-    init (maximumColorAttachments: Int, options: FramebufferOptions) {
+    private var _options = FramebufferOptions()
+    
+    private var _colorTextures = [GLuint]()
+
+    private var _colorRenderbuffers = [GLuint]()
+    
+    var activeColorAttachments: [GLuint] {
+        get {
+            return _activeColorAttachments
+        }
+    }
+    
+    private var _activeColorAttachments = [GLuint]()
+    
+    private var _depthTexture: Texture? = nil
+    
+    private var _depthRenderBuffer: GLuint = 0
+    
+    private var _depthRenderbuffer: Buffer? = nil
+    
+    private var _stencilRenderbuffer: Buffer? = nil
+    
+    private var _depthStencilTexture: Texture? = nil
+
+    private var _depthStencilRenderbuffer: Buffer? = nil
+
+    
+    init (maximumColorAttachments: Int, options: FramebufferOptions = FramebufferOptions()) {
         
-        var framebufferTemp: GLuint = 0
-        glGenFramebuffers(GLsizei(1), &framebufferTemp)
-        framebuffer = Int(framebufferTemp)
+        glGenFramebuffers(1, &_framebuffer)
+        
+        _options = options
     }
         /*
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-        
-        this._gl = gl;
-        this._framebuffer = gl.createFramebuffer();
-        
-        this._colorTextures = [];
-        this._colorRenderbuffers = [];
-        this._activeColorAttachments = [];
-        
-        this._depthTexture = undefined;
-        this._depthRenderbuffer = undefined;
-        this._stencilRenderbuffer = undefined;
-        this._depthStencilTexture = undefined;
-        this._depthStencilRenderbuffer = undefined;
-        
+    
+    
         /**
         * When true, the framebuffer owns its attachments so they will be destroyed when
         * {@link Framebuffer#destroy} is called or when a new attachment is assigned
@@ -232,7 +255,7 @@ class Framebuffer {
     return this._depthStencilRenderbuffer;
     }
     },
-    
+    */
     /**
     * True if the framebuffer has a depth attachment.  Depth attachments include
     * depth and depth-stencil textures, and depth and depth-stencil renderbuffers.  When
@@ -240,15 +263,15 @@ class Framebuffer {
     * @memberof Framebuffer.prototype
     * @type {Boolean}
     */
-    hasDepthAttachment : {
-    get : function() {
-    return !!(this.depthTexture || this.depthRenderbuffer || this.depthStencilTexture || this.depthStencilRenderbuffer);
+    var hasDepthAttachment: Bool {
+        get {
+            return _depthTexture != nil || _depthRenderbuffer != nil || _depthStencilTexture != nil || _depthStencilRenderbuffer != nil
+        }
     }
-    }
-    });
-    */
+    
+
     func bind() {
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(self.framebuffer))
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(_framebuffer))
     }
 
     func unbind () {

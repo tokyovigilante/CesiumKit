@@ -140,7 +140,7 @@ class Context {
     var id: String
     
     // Validation and logging disabled by default for speed.
-    var validateFramebuffer = false
+    var _validateFramebuffer = false
     var _validateShaderProgram = false
     var _logShaderCompilation = false
     
@@ -522,7 +522,7 @@ class Context {
     lazy private var _defaultPassState: PassState = { return PassState(context: self) }()
     lazy private var _defaultRenderState: RenderState = { return self.createRenderState() }()
     
-    var currentFrameBuffer: Framebuffer? = nil
+    var _currentFramebuffer: Framebuffer? = nil
     
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -1380,35 +1380,31 @@ var renderStateCache = {};
         return RenderState(context: self)
     }
 
-/*
-function validateFramebuffer(context, framebuffer) {
-    if (context.validateFramebuffer) {
-        var gl = context._gl;
-        var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-        
-        if (status !== gl.FRAMEBUFFER_COMPLETE) {
-            var message;
+
+    func validateFramebuffer(framebuffer: Framebuffer) {
+        if (_validateFramebuffer) {
+            var status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
             
-            switch (status) {
-            case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                message = 'Framebuffer is not complete.  Incomplete attachment: at least one attachment point with a renderbuffer or texture attached has its attached object no longer in existence or has an attached image with a width or height of zero, or the color attachment point has a non-color-renderable image attached, or the depth attachment point has a non-depth-renderable image attached, or the stencil attachment point has a non-stencil-renderable image attached.  Color-renderable formats include GL_RGBA4, GL_RGB5_A1, and GL_RGB565. GL_DEPTH_COMPONENT16 is the only depth-renderable format. GL_STENCIL_INDEX8 is the only stencil-renderable format.';
-                break;
-            case gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                message = 'Framebuffer is not complete.  Incomplete dimensions: not all attached images have the same width and height.';
-                break;
-            case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                message = 'Framebuffer is not complete.  Missing attachment: no images are attached to the framebuffer.';
-                break;
-            case gl.FRAMEBUFFER_UNSUPPORTED:
-                message = 'Framebuffer is not complete.  Unsupported: the combination of internal formats of the attached images violates an implementation-dependent set of restrictions.';
-                break;
+            if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
+                var message: String
+                
+                switch (status) {
+                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT):
+                    message = "Framebuffer is not complete.  Incomplete attachment: at least one attachment point with a renderbuffer or texture attached has its attached object no longer in existence or has an attached image with a width or height of zero, or the color attachment point has a non-color-renderable image attached, or the depth attachment point has a non-depth-renderable image attached, or the stencil attachment point has a non-stencil-renderable image attached.  Color-renderable formats include GL_RGBA4, GL_RGB5_A1, and GL_RGB565. GL_DEPTH_COMPONENT16 is the only depth-renderable format. GL_STENCIL_INDEX8 is the only stencil-renderable format."
+                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS):
+                    message = "Framebuffer is not complete.  Incomplete dimensions: not all attached images have the same width and height."
+                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT):
+                    message = "Framebuffer is not complete.  Missing attachment: no images are attached to the framebuffer."
+                case GLenum(GL_FRAMEBUFFER_UNSUPPORTED):
+                    message = "Framebuffer is not complete.  Unsupported: the combination of internal formats of the attached images violates an implementation-dependent set of restrictions."
+                default:
+                    message = "Unknown framebuffer error"
+                }
+                assert(false, message)
             }
-            
-            throw new DeveloperError(message);
         }
     }
-}
-*/
+
     func applyRenderState(renderState: RenderState, passState: PassState) {
         //FIXME: applyRenderState
         /*
@@ -1427,27 +1423,25 @@ if (typeof WebGLRenderingContext !== 'undefined') {
 }
 */
     func bindFramebuffer(framebuffer: Framebuffer?) {
-        // FIXME: bindframebuffer
-        /*
-        if (framebuffer !== context._currentFramebuffer) {
-            context._currentFramebuffer = framebuffer;
-            var buffers = scratchBackBufferArray;
+
+        if (framebuffer !== _currentFramebuffer) {
+            _currentFramebuffer = framebuffer
+            var buffers = [GLuint]()
             
-            if (defined(framebuffer)) {
-                framebuffer._bind();
-                validateFramebuffer(context, framebuffer);
+            if framebuffer != nil {
+                framebuffer!.bind()
+                validateFramebuffer(framebuffer!)
                 
                 // TODO: Need a way for a command to give what draw buffers are active.
-                buffers = framebuffer._getActiveColorAttachments();
+                buffers = framebuffer!.activeColorAttachments
             } else {
-                var gl = context._gl;
-                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
             }
             
-            if (context.drawBuffers) {
-                context._drawBuffers.drawBuffersWEBGL(buffers);
+            if drawBuffers && buffers.count > 0 {
+                glDrawBuffers(GLsizei(buffers.count), buffers)
             }
-        }*/
+        }
     }
 
     func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState?) {
@@ -1497,29 +1491,26 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         bindFramebuffer(framebuffer)
         glClear(GLbitfield(bitmask))
     }
-/*
-function beginDraw(context, framebuffer, drawCommand, passState, renderState, shaderProgram) {
-    var rs = defaultValue(defaultValue(renderState, drawCommand.renderState), context._defaultRenderState);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (defined(framebuffer) && rs.depthTest) {
-        if (rs.depthTest.enabled && !framebuffer.hasDepthAttachment) {
-            throw new DeveloperError('The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.');
-        }
-    }
-    //>>includeEnd('debug');
-    
-    bindFramebuffer(context, framebuffer);
-    
-    var sp = defaultValue(shaderProgram, drawCommand.shaderProgram);
-    sp._bind();
-    context._maxFrameTextureUnitIndex = Math.max(context._maxFrameTextureUnitIndex, sp.maximumTextureUnitIndex);
-    
-    applyRenderState(context, rs, passState);
-}
 
-function continueDraw(context, drawCommand, shaderProgram) {
-    var primitiveType = drawCommand.primitiveType;
+    func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
+        var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
+        
+        if framebuffer != nil && rs.depthTest.enabled {
+            assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
+        }
+        //>>includeEnd('debug');
+        
+        bindFramebuffer(framebuffer)
+        /*
+        var sp = defaultValue(shaderProgram, drawCommand.shaderProgram);
+        sp._bind();
+        context._maxFrameTextureUnitIndex = Math.max(context._maxFrameTextureUnitIndex, sp.maximumTextureUnitIndex);
+        
+        applyRenderState(context, rs, passState);*/
+    }
+
+    func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram) {
+    /*var primitiveType = drawCommand.primitiveType;
     var va = drawCommand.vertexArray;
     var offset = drawCommand.offset;
     var count = drawCommand.count;
@@ -1561,16 +1552,16 @@ function continueDraw(context, drawCommand, shaderProgram) {
         va._bind();
         context._gl.drawArrays(primitiveType, offset, count);
         va._unBind();
-    }
+    }*/
 }
-*/
-func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState, shaderProgram: ShaderProgram) {
+
+func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
     
     var activePassState = passState ?? _defaultPassState
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
     var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
     // FIXME: Unimplemented
-    //beginDraw(framebuffer, drawCommand, activePassState, renderState, shaderProgram)
+    beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
     //continueDraw(this, drawCommand, shaderProgram)
 }
 /*

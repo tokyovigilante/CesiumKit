@@ -74,7 +74,7 @@ class PerspectiveFrustum: Frustum {
     * @default 1.0
     */
     var near = 1.0
-    private var _near = 1.0
+    private var _near = Double.NaN
     
     /**
     * The distance of the far plane.
@@ -82,7 +82,7 @@ class PerspectiveFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
-    private var _far = 500000000.0
+    private var _far = Double.NaN
     
     private var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
@@ -202,26 +202,25 @@ class PerspectiveFrustum: Frustum {
     * @param {PerspectiveFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    /*PerspectiveFrustum.prototype.clone = function(result) {
-    if (!defined(result)) {
-    result = new PerspectiveFrustum();
+    func clone (target: Frustum?) -> Frustum {
+        
+        var result = target ?? PerspectiveFrustum()
+        
+        result.aspectRatio = aspectRatio
+        result.fov = fov
+        result.near = near
+        result.far = far
+        
+        // force update of clone to compute matrices
+        /*result._aspectRatio = Double.NaN
+        result._fov = Double.NaN
+        result._near = Double.NaN
+        result._far = Double.NaN*/
+        
+        //result._offCenterFrustum = _offCenterFrustum.clone()
+
+        return result
     }
-    
-    result.aspectRatio = this.aspectRatio;
-    result.fov = this.fov;
-    result.near = this.near;
-    result.far = this.far;
-    
-    // force update of clone to compute matrices
-    result._aspectRatio = undefined;
-    result._fov = undefined;
-    result._near = undefined;
-    result._far = undefined;
-    
-    this._offCenterFrustum.clone(result._offCenterFrustum);
-    
-    return result;
-    };*/
     
     /**
     * Compares the provided PerspectiveFrustum componentwise and returns

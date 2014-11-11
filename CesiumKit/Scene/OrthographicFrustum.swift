@@ -319,28 +319,27 @@ struct OrthographicFrustum: Frustum {
     * @param {OrthographicFrustum} [result] The object onto which to store the result.
     * @returns {OrthographicFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    /*OrthographicFrustum.prototype.clone = function(result) {
-    if (!defined(result)) {
-    result = new OrthographicFrustum();
+    func clone (target: Frustum?) -> Frustum {
+        
+        var result = target ?? OrthographicFrustum()
+        
+        result.left = left
+        result.right = right
+        result.top = top
+        result.bottom = bottom
+        result.near = near
+        result.far = far
+        
+        // force update of clone to compute matrices
+        /*result._left = undefined;
+        result._right = undefined;
+        result._top = undefined;
+        result._bottom = undefined;
+        result._near = undefined;
+        result._far = undefined;*/
+        
+        return result
     }
-    
-    result.left = this.left;
-    result.right = this.right;
-    result.top = this.top;
-    result.bottom = this.bottom;
-    result.near = this.near;
-    result.far = this.far;
-    
-    // force update of clone to compute matrices
-    result._left = undefined;
-    result._right = undefined;
-    result._top = undefined;
-    result._bottom = undefined;
-    result._near = undefined;
-    result._far = undefined;
-    
-    return result;
-    };
     
     /**
     * Compares the provided OrthographicFrustum componentwise and returns
@@ -349,6 +348,7 @@ struct OrthographicFrustum: Frustum {
     * @param {OrthographicFrustum} [other] The right hand side OrthographicFrustum.
     * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
     */
+    /*
     OrthographicFrustum.prototype.equals = function(other) {
     return (defined(other) &&
     this.right === other.right &&

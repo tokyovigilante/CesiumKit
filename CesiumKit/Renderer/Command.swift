@@ -70,4 +70,7 @@ protocol Command: class {
     var debugOverlappingFrustums: Int { get set }
     
     var executeInClosestFrustum: Bool { get set }
+    
+    func execute(#context: Context, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?)
+    
 }

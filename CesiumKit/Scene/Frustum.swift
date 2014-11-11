@@ -163,6 +163,7 @@ protocol Frustum {
     * @param {PerspectiveFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
+    func clone (target: Frustum?) -> Frustum
     
     /**
     * Compares the provided PerspectiveFrustum componentwise and returns

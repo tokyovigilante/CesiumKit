@@ -40,40 +40,40 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @type {Number}
     * @default undefined
     */
-    var left = 0.0
-    private var _left = 0.0
+    var left = Double.NaN
+    private var _left = Double.NaN
     
     /**
     * Defines the right clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var right = 0.0
-    private var _right = 0.0
+    var right = Double.NaN
+    private var _right = Double.NaN
     
     /**
     * Defines the top clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var top = 0.0
-    private var _top = 0.0
+    var top = Double.NaN
+    private var _top = Double.NaN
     
     /**
     * Defines the bottom clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var bottom = 0.0
-    private var _bottom = 0.0
+    var bottom = Double.NaN
+    private var _bottom = Double.NaN
     
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
-    var near = 1.0;
-    private var _near = 1.0
+    var near = 1.0
+    private var _near = Double.NaN
     
     /**
     * The distance of the far plane.
@@ -81,7 +81,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
-    private var _far = 500000000.0
+    private var _far = Double.NaN
     
     private var _cullingVolume = CullingVolume()
 
@@ -89,7 +89,7 @@ class PerspectiveOffCenterFrustum: Frustum {
 
     private var _infinitePerspective = Matrix4()
 
-    /*mutating*/ func update () {
+    func update () {
         
         if top != _top || bottom != _bottom || left != _left ||
             right != _right || near != _near || far != _far {
@@ -237,28 +237,27 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @param {PerspectiveOffCenterFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveOffCenterFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    /*PerspectiveOffCenterFrustum.prototype.clone = function(result) {
-    if (!defined(result)) {
-    result = new PerspectiveOffCenterFrustum();
+    func clone(target: Frustum?) -> Frustum {
+
+        var result = target ?? PerspectiveOffCenterFrustum()
+        
+        result.right = right
+        result.left = left
+        result.top = top
+        result.bottom = bottom
+        result.near = near
+        result.far = far
+        
+        // force update of clone to compute matrices
+        /*result._left = Double.NaN
+        result._right = Double.NaN
+        result._top = Double.NaN
+        result._bottom = Double.NaN
+        result._near = Double.NaN
+        result._far = Double.NaN*/
+        
+        return result
     }
-    
-    result.right = this.right;
-    result.left = this.left;
-    result.top = this.top;
-    result.bottom = this.bottom;
-    result.near = this.near;
-    result.far = this.far;
-    
-    // force update of clone to compute matrices
-    result._left = undefined;
-    result._right = undefined;
-    result._top = undefined;
-    result._bottom = undefined;
-    result._near = undefined;
-    result._far = undefined;
-    
-    return result;
-    };*/
     
     /**
     * Compares the provided PerspectiveOffCenterFrustum componentwise and returns

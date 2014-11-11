@@ -750,43 +750,46 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         1.0, 0.0, 0.0, 0.0, //
         0.0, 1.0, 0.0, 0.0, //
         0.0, 0.0, 0.0, 1.0));
-
-function executeCommand(command, scene, context, passState, renderState, shaderProgram, debugFramebuffer) {
-    if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
-        return;
-    }
+*/
     
-    if (scene.debugShowCommands || scene.debugShowFrustums) {
-        executeDebugCommand(command, scene, passState, renderState, shaderProgram);
-    } else {
-        command.execute(context, passState, renderState, shaderProgram);
-    }
-    
-    if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
-        // Debug code to draw bounding volume for command.  Not optimized!
-        // Assumes bounding volume is a bounding sphere.
-        if (defined(scene._debugSphere)) {
-            scene._debugSphere.destroy();
-        }
+    func executeCommand(command: Command, passState: PassState, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil, debugFramebuffer: Framebuffer? = nil) {
+        // FIXME: scene.debugCommandFilter
+        /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
+            return;
+        }*/
+        // FIXME: debugShowCommands
+        /*
+        if (scene.debugShowCommands || scene.debugShowFrustums) {
+            executeDebugCommand(command, scene, passState, renderState, shaderProgram);
+        } else {*/
+        command.execute(context: context, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
+        //}
         
-        var frameState = scene._frameState;
-        var boundingVolume = command.boundingVolume;
-        var radius = boundingVolume.radius;
-        var center = boundingVolume.center;
-        
-        var geometry = GeometryPipeline.toWireframe(EllipsoidGeometry.createGeometry(new EllipsoidGeometry({
-            radii : new Cartesian3(radius, radius, radius),
-            vertexFormat : PerInstanceColorAppearance.FLAT_VERTEX_FORMAT
+        /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
+            // Debug code to draw bounding volume for command.  Not optimized!
+            // Assumes bounding volume is a bounding sphere.
+            if (defined(scene._debugSphere)) {
+                scene._debugSphere.destroy();
+            }
+            
+            var frameState = scene._frameState;
+            var boundingVolume = command.boundingVolume;
+            var radius = boundingVolume.radius;
+            var center = boundingVolume.center;
+            
+            var geometry = GeometryPipeline.toWireframe(EllipsoidGeometry.createGeometry(new EllipsoidGeometry({
+                radii : new Cartesian3(radius, radius, radius),
+                vertexFormat : PerInstanceColorAppearance.FLAT_VERTEX_FORMAT
             })));
-        
-        if (frameState.mode !== SceneMode.SCENE3D) {
-            center = Matrix4.multiplyByPoint(transformFrom2D, center);
-            var projection = frameState.scene2D.projection;
-            var centerCartographic = projection.unproject(center);
-            center = projection.ellipsoid.cartographicToCartesian(centerCartographic);
-        }
-        
-        scene._debugSphere = new Primitive({
+            
+            if (frameState.mode !== SceneMode.SCENE3D) {
+                center = Matrix4.multiplyByPoint(transformFrom2D, center);
+                var projection = frameState.scene2D.projection;
+                var centerCartographic = projection.unproject(center);
+                center = projection.ellipsoid.cartographicToCartesian(centerCartographic);
+            }
+            
+            scene._debugSphere = new Primitive({
             geometryInstances : new GeometryInstance({
             geometry : geometry,
             modelMatrix : Matrix4.multiplyByTranslation(Matrix4.IDENTITY, center),
@@ -800,24 +803,24 @@ function executeCommand(command, scene, context, passState, renderState, shaderP
             }),
             asynchronous : false
             });
-        
-        var commandList = [];
-        scene._debugSphere.update(context, frameState, commandList);
-        
-        var framebuffer;
-        if (defined(debugFramebuffer)) {
-            framebuffer = passState.framebuffer;
-            passState.framebuffer = debugFramebuffer;
-        }
-        
-        commandList[0].execute(context, passState);
-        
-        if (defined(framebuffer)) {
-            passState.framebuffer = framebuffer;
-        }
+            
+            var commandList = [];
+            scene._debugSphere.update(context, frameState, commandList);
+            
+            var framebuffer;
+            if (defined(debugFramebuffer)) {
+                framebuffer = passState.framebuffer;
+                passState.framebuffer = debugFramebuffer;
+            }
+            
+            commandList[0].execute(context, passState);
+            
+            if (defined(framebuffer)) {
+                passState.framebuffer = framebuffer;
+            }
+        }*/
     }
-}
-
+/*
 function isVisible(command, frameState) {
     if (!defined(command)) {
         return;
@@ -847,13 +850,13 @@ function isVisible(command, frameState) {
 }
 
     func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [Command]) {
+    // FIXME: sorting
+    //mergeSort(commands, translucentCompare, scene._camera.positionWC)
     
-    mergeSort(commands, translucentCompare, scene._camera.positionWC)
-    
-    var length = commands.length;
-    for (var j = 0; j < length; ++j) {
-        executeFunction(commands[j], scene, context, passState);
-    }
+    //var length = commands.count
+    //for (var j = 0; j < length; ++j) {
+    //    executeFunction(commands[j], context: context, passState: passState)
+   //}
 }
 /*
 var scratchPerspectiveFrustum = new PerspectiveFrustum();
@@ -864,11 +867,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
         var frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
-            frustum = PerspectiveFrustum()
+            frustum = camera.frustum.clone(PerspectiveFrustum())
         } else if camera.frustum.infiniteProjectionMatrix != nil {
-            frustum = PerspectiveOffCenterFrustum()
+            frustum = camera.frustum.clone(PerspectiveOffCenterFrustum())
         } else {
-            frustum = OrthographicFrustum()
+            frustum = camera.frustum.clone(OrthographicFrustum())
         }
         
         // FIXME: Sun
@@ -956,8 +959,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 passState.framebuffer = opaqueFramebuffer;
             }
         }*/
-        
+        /*
         var clearDepth = scene._depthClearCommand;
+        // FIXME: Translucentcommands
         var executeTranslucentCommands;
         /*if (useOIT) {
             if (!defined(scene._executeOITFunction)) {
@@ -968,36 +972,35 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             executeTranslucentCommands = scene._executeOITFunction;
         } else {*/
             executeTranslucentCommands = executeTranslucentCommandsSorted()
-        //}
+        //}*/
         
-        for (i = 0; i < numFrustums; ++i) {
-            var index = numFrustums - i - 1;
-            var frustumCommands = frustumCommandsList[index];
-            frustum.near = frustumCommands.near;
-            frustum.far = frustumCommands.far;
+        for (index, frustumCommands) in enumerate(_frustumCommandsList) {
+//        for (i = 0; i < numFrustums; ++i) {
+ //           var index = numFrustums - i - 1;
+   //         var frustumCommands = frustumCommandsList[index];
+            frustum.near = frustumCommands.near
+            frustum.far = frustumCommands.far
             
-            if (index !== 0) {
+            if index != 0 {
                 // Avoid tearing artifacts between adjacent frustums
-                frustum.near *= 0.99;
+                frustum.near *= 0.99
             }
             
-            us.updateFrustum(frustum);
-            clearDepth.execute(context, passState);
+            context.uniformState.updateFrustum(frustum)
+            _depthClearCommand.execute(context: context, passState: passState)
             
-            var commands = frustumCommands.opaqueCommands;
-            var length = frustumCommands.opaqueIndex;
-            for (var j = 0; j < length; ++j) {
-                executeCommand(commands[j], scene, context, passState);
+            for command in frustumCommands.opaqueCommands {
+                executeCommand(command, passState: passState)
             }
             
-            frustum.near = frustumCommands.near;
-            us.updateFrustum(frustum);
-            
-            commands = frustumCommands.translucentCommands;
+            frustum.near = frustumCommands.near
+            context.uniformState.updateFrustum(frustum)
+            // FIXME: translucentcommands
+            /*commands = frustumCommands.translucentCommands;
             commands.length = frustumCommands.translucentIndex;
-            executeTranslucentCommands(scene, executeCommand, passState, commands);
+            executeTranslucentCommands(scene, executeCommand, passState, commands);*/
         }
-        
+        /*
         if (useOIT) {
             passState.framebuffer = useFXAA ? scene._fxaa.getColorFramebuffer() : undefined;
             scene._oit.execute(context, passState);
@@ -1006,7 +1009,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         if (useFXAA) {
             passState.framebuffer = undefined;
             scene._fxaa.execute(context, passState);
-        }
+        }*/
     }
 /*
 function executeOverlayCommands(scene, passState) {

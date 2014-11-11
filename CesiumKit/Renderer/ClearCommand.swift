@@ -112,7 +112,7 @@ class ClearCommand: Command {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil, framebuffer: nil/*, owner: unowned*/)
     }
     
-    func execute(#context: Context, passState: PassState) {
+    func execute(#context: Context, passState: PassState, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         context.clear(clearCommand: self, passState: passState)
     }
     

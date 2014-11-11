@@ -212,7 +212,7 @@ class DrawCommand: Command {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
     */
-    func execute(context: Context, passState: PassState, renderState: RenderState, shaderProgram: ShaderProgram) {
+    func execute(#context: Context, passState: PassState, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
 
     }
