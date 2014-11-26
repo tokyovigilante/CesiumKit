@@ -386,18 +386,18 @@ class UniformState {
                 return this._infiniteProjection;
             }
         },
-
+*/
         /**
          * @memberof UniformState.prototype
          * @type {Matrix4}
          */
-        modelView : {
-            get : function() {
-                cleanModelView(this);
-                return this._modelView;
+    var modelView: Matrix4 {
+            get {
+                cleanModelView()
+                return _modelView
             }
-        },
-
+        }
+/*
         /**
          * The 3D model-view matrix.  In 3D mode, this is equivalent to {@link UniformState#modelView}.  In 2D and
          * Columbus View, however, it is a synthetic matrix based on the equivalent position of the camera in the 3D world.
@@ -882,16 +882,15 @@ class UniformState {
             }
         }
     }
-
+*/
     // Derived
-    function cleanModelView(uniformState) {
-        if (uniformState._modelViewDirty) {
-            uniformState._modelViewDirty = false;
-
-            Matrix4.multiplyTransformation(uniformState._view, uniformState._model, uniformState._modelView);
+    func cleanModelView() {
+        if (_modelViewDirty) {
+            _modelViewDirty = false
+            _view = _view.multiplyTransformation(_model)
         }
     }
-
+/*
     function cleanModelView3D(uniformState) {
         if (uniformState._modelView3DDirty) {
             uniformState._modelView3DDirty = false;

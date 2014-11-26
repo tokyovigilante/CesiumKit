@@ -1277,80 +1277,58 @@ Matrix4.getMaximumScale = function(matrix) {
 * var m2 = Cesium.Transforms.eastNorthUpToFixedFrame(new Cesium.Cartesian3(1.0, 1.0, 1.0));
 * var m3 = Cesium.Matrix4.multiplyTransformation(m1, m2);
 */
-/*Matrix4.multiplyTransformation = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required');
-    }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
+func multiplyTransformation (other: Matrix4) -> Matrix4 {
     
-    var left0 = left[0];
-    var left1 = left[1];
-    var left2 = left[2];
-    var left4 = left[4];
-    var left5 = left[5];
-    var left6 = left[6];
-    var left8 = left[8];
-    var left9 = left[9];
-    var left10 = left[10];
-    var left12 = left[12];
-    var left13 = left[13];
-    var left14 = left[14];
+    var this0 = _grid[0]
+    var this1 = _grid[1]
+    var this2 = _grid[2]
+    var this4 = _grid[4]
+    var this5 = _grid[5]
+    var this6 = _grid[6]
+    var this8 = _grid[8]
+    var this9 = _grid[9]
+    var this10 = _grid[10]
+    var this12 = _grid[12]
+    var this13 = _grid[13]
+    var this14 = _grid[14]
     
-    var right0 = right[0];
-    var right1 = right[1];
-    var right2 = right[2];
-    var right4 = right[4];
-    var right5 = right[5];
-    var right6 = right[6];
-    var right8 = right[8];
-    var right9 = right[9];
-    var right10 = right[10];
-    var right12 = right[12];
-    var right13 = right[13];
-    var right14 = right[14];
+    var other0 = other[0]
+    var other1 = other[1]
+    var other2 = other[2]
+    var other4 = other[4]
+    var other5 = other[5]
+    var other6 = other[6]
+    var other8 = other[8]
+    var other9 = other[9]
+    var other10 = other[10]
+    var other12 = other[12]
+    var other13 = other[13]
+    var other14 = other[14]
     
-    var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2;
-    var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2;
-    var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2;
+    var column0Row0 = this0 * other0 + this4 * other1 + this8 * other2
+    var column0Row1 = this1 * other0 + this5 * other1 + this9 * other2
+    var column0Row2 = this2 * other0 + this6 * other1 + this10 * other2
     
-    var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6;
-    var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6;
-    var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6;
+    var column1Row0 = this0 * other4 + this4 * other5 + this8 * other6
+    var column1Row1 = this1 * other4 + this5 * other5 + this9 * other6
+    var column1Row2 = this2 * other4 + this6 * other5 + this10 * other6
     
-    var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10;
-    var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10;
-    var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10;
+    var column2Row0 = this0 * other8 + this4 * other9 + this8 * other10
+    var column2Row1 = this1 * other8 + this5 * other9 + this9 * other10
+    var column2Row2 = this2 * other8 + this6 * other9 + this10 * other10
     
-    var column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12;
-    var column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13;
-    var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14;
+    var column3Row0 = this0 * other12 + this4 * other13 + this8 * other14 + this12
+    var column3Row1 = this1 * other12 + this5 * other13 + this9 * other14 + this13
+    var column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
     
-    result[0] = column0Row0;
-    result[1] = column0Row1;
-    result[2] = column0Row2;
-    result[3] = 0.0;
-    result[4] = column1Row0;
-    result[5] = column1Row1;
-    result[6] = column1Row2;
-    result[7] = 0.0;
-    result[8] = column2Row0;
-    result[9] = column2Row1;
-    result[10] = column2Row2;
-    result[11] = 0.0;
-    result[12] = column3Row0;
-    result[13] = column3Row1;
-    result[14] = column3Row2;
-    result[15] = 1.0;
-    return result;
-};
-
+    return Matrix4(
+        column0Row0, column0Row1, column0Row2, 0.0,
+        column1Row0, column1Row1, column1Row2, 0.0,
+        column2Row0, column2Row1, column2Row2, 0.0,
+        column3Row0, column3Row1, column3Row2, 1.0
+    )
+}
+/*
 /**
 * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
 * by an implicit translation matrix defined by a {@link Cartesian3}.  This is an optimization

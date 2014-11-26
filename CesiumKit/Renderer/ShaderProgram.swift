@@ -97,7 +97,7 @@ import OpenGLES
     * @private
     */
 */*/
-struct Uniform {
+class Uniform {
 /*
     var activeUniform: 
     var Uniform = function(gl, activeUniform, uniformName, location, value) {
@@ -337,6 +337,34 @@ class UniformArray {
     let index: Int
 }*/
 
+private class DependencyNode {
+    
+    var name: String
+    
+    var glslSource: String
+    
+    var dependsOn = [DependencyNode]()
+    
+    var requiredBy = [DependencyNode]()
+    
+    var evaluated: Bool = false
+    
+    init (
+        name: String,
+        glslSource: String,
+        dependsOn: [DependencyNode] = [DependencyNode](),
+        requiredBy: [DependencyNode] = [DependencyNode](),
+        evaluated: Bool = false)
+    {
+        self.name = name
+        self.glslSource = glslSource
+        self.dependsOn = dependsOn
+        self.requiredBy = requiredBy
+        self.evaluated = evaluated
+    }
+    
+}
+
 class ShaderProgram {
 
     var _logShaderCompilation: Bool = false
@@ -394,24 +422,26 @@ class ShaderProgram {
     }
     private var _vertexAttributes = [VertexAttributes]()
 
-/*
-    var uniformsByName: [String: Uniform]? {
+
+    var uniformsByName: [String: Uniform] {
         get {
             initialize()
-            return self.uniformsByName
+            return _uniformsByName!
         }
     }
-
+    private var _uniformsByName = [String: Uniform]?()
+    
     var uniforms: [Uniform]? = nil
 
     var automaticUniforms = [Uniform]()
 
     var manualUniforms: [Uniform] {
-    get {
-        initialize()
-        return self.manualUniforms
+        get {
+            initialize()
+            return _manualUniforms!
+        }
     }
-    }*/
+    private var _manualUniforms = [Uniform]?()
     
     var maximumTextureUnitIndex: Int? = nil
     
@@ -429,10 +459,10 @@ class ShaderProgram {
         count = 0
         
         
-/*        this._uniformsByName = undefined;
-        this._uniforms = undefined;
-        this._automaticUniforms = undefined;
-        this._manualUniforms = undefined;*/
+        //_uniformsByName = nil
+        //_uniforms = nil
+        //_automaticUniforms = nil
+        //_manualUniforms = nil
     }
     
     /*
@@ -458,12 +488,14 @@ class ShaderProgram {
     }
 */
     
-    /*func extractShaderVersion(source: String) {
+    func extractShaderVersion(source: String) -> (version: String, source: String) {
         // This will fail if the first #version is actually in a comment.
+        //var index = source.indexOf("#version")
         var index = source.indexOf("#version")
+        
         if (index != nil) {
-            var newLineIndex = source.indexOf("\n", startIndex: index);
-            
+            var newLineIndex = source.indexOf("\n", startIndex: index)
+            /*
             // We could throw an exception if there is not a new line after
             // #version, but the GLSL compiler will catch it.
             if (newLineIndex != nil) {
@@ -480,62 +512,57 @@ class ShaderProgram {
                     version : version,
                     source : modified
                 };
+            }*/
+        }
+    
+        return (
+            version: "", // defaults to #version 100
+            source : source // no modifications required
+        )
+    }
+
+    private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode {
+
+        var dependencyNode: DependencyNode?
+    
+        // check if already loaded
+        for node in nodes {
+            if node.name == name {
+                dependencyNode = node
             }
         }
+    
+        if dependencyNode == nil {
+            // strip doc comments so we don't accidentally try to determine a dependency for something found
+            // in a comment
+            /*var commentBlocks = glslSource.match(/\/\*\*[\s\S]*?\*\//gm);
+            if (defined(commentBlocks) && commentBlocks !== null) {
+            for (i = 0; i < commentBlocks.length; ++i) {
+            var commentBlock = commentBlocks[i];
+            
+            // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
+            var numberOfLines = commentBlock.match(/\n/gm).length;
+            var modifiedComment = '';
+            for (var lineNumber = 0; lineNumber < numberOfLines; ++lineNumber) {
+            if (lineNumber === 0) {
+            modifiedComment += '// Comment replaced to prevent problems when determining dependencies on built-in functions\n';
+            } else {
+            modifiedComment += '//\n';
+            }
+            }
+            
+            //glslSource = glslSource.replace(commentBlock, modifiedComment);
+            }*/
+            
+            
+            // create new node
+            dependencyNode = DependencyNode(name: name, glslSource: glslSource)
+            nodes.append(DependencyNode)
+        }
 
-return {
-    version : '', // defaults to #version 100
-    source : source // no modifications required
-};
-}*/
-
-  /*  function getDependencyNode(name, glslSource, nodes) {
-    var dependencyNode;
-    
-    // check if already loaded
-    for (var i = 0; i < nodes.length; ++i) {
-    if (nodes[i].name === name) {
-    dependencyNode = nodes[i];
-    }
-    }
-    
-    if (!defined(dependencyNode)) {
-    // strip doc comments so we don't accidentally try to determine a dependency for something found
-    // in a comment
-    var commentBlocks = glslSource.match(/\/\*\*[\s\S]*?\*\//gm);
-    if (defined(commentBlocks) && commentBlocks !== null) {
-    for (i = 0; i < commentBlocks.length; ++i) {
-    var commentBlock = commentBlocks[i];
-    
-    // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
-    var numberOfLines = commentBlock.match(/\n/gm).length;
-    var modifiedComment = '';
-    for (var lineNumber = 0; lineNumber < numberOfLines; ++lineNumber) {
-    if (lineNumber === 0) {
-    modifiedComment += '// Comment replaced to prevent problems when determining dependencies on built-in functions\n';
-    } else {
-    modifiedComment += '//\n';
-    }
-    }
-    
-    glslSource = glslSource.replace(commentBlock, modifiedComment);
-    }
-    }
-    
-    // create new node
-    dependencyNode = {
-    name : name,
-    glslSource : glslSource,
-    dependsOn : [],
-    requiredBy : [],
-    evaluated : false
-    };
-    nodes.push(dependencyNode);
-    }
-    
-    return dependencyNode;
-    }
-    
+        return dependencyNode
+}
+    /*
     function generateDependencies(currentNode, dependencyNodes) {
     if (currentNode.evaluated) {
     return;
@@ -610,12 +637,13 @@ function sortDependencies(dependencyNodes) {
         throw new DeveloperError(message);
     }
 }
-
-function getBuiltinsAndAutomaticUniforms(shaderSource) {
+*/
+    func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
     // generate a dependency graph for builtin functions
-    var dependencyNodes = [];
-    var root = getDependencyNode('main', shaderSource, dependencyNodes);
-    generateDependencies(root, dependencyNodes);
+        
+    var dependencyNodes = [DependencyNode]()
+    var root = getDependencyNode("main", shaderSource, dependencyNodes)
+    /*generateDependencies(root, dependencyNodes)
     sortDependencies(dependencyNodes);
     
     // Concatenate the source code for the function dependencies.
@@ -624,10 +652,11 @@ function getBuiltinsAndAutomaticUniforms(shaderSource) {
     for (var i = dependencyNodes.length - 1; i >= 0; --i) {
         builtinsSource = builtinsSource + dependencyNodes[i].glslSource + '\n';
     }
-    
-    return builtinsSource.replace(root.glslSource, '');
-}
-
+    */
+    //return builtinsSource.replace(root.glslSource, "")
+        return shaderSource
+    }
+/*
 function getFragmentShaderPrecision() {
     return '#ifdef GL_FRAGMENT_PRECISION_HIGH \n' +
     '  precision highp float; \n' +
@@ -637,25 +666,25 @@ function getFragmentShaderPrecision() {
 }
 */
     func createAndLinkProgram(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> GLuint {
-        //let vsSourceVersioned = extractShaderVersion(vertexShaderSource)
-        //let fsSourceVersioned = extractShaderVersion(fragmentShaderSource)
+
+        let vsSourceVersioned = extractShaderVersion(vertexShaderSource)
+        let fsSourceVersioned = extractShaderVersion(fragmentShaderSource)
         
-        /*var vsSource =
-        vsSourceVersioned.version +
+        var vsSource = vsSourceVersioned.version +
         getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
-        '\n#line 0\n' +
-        vsSourceVersioned.source;
-        var fsSource =
+        "\n#line 0\n" +
+        vsSourceVersioned.source
+/*        var fsSource =
         fsSourceVersioned.version +
         getFragmentShaderPrecision() +
         getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
         '\n#line 0\n' +
         fsSourceVersioned.source;
-        var log;
-        */
+        var log;*/
+        
         var vertexShader: GLuint = glCreateShader(GLenum(GL_VERTEX_SHADER))
-        var vertexShaderUTF8 = UnsafePointer<GLchar>((vertexShaderSource as NSString).UTF8String)
-        var vertexShaderLength = GLint(vertexShaderSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        var vertexShaderUTF8 = UnsafePointer<GLchar>((vsSource as NSString).UTF8String)
+        var vertexShaderLength = GLint(vsSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         var shaderCount: GLsizei = 1
         glShaderSource(vertexShader, shaderCount, &vertexShaderUTF8, &vertexShaderLength)
         glCompileShader(vertexShader)
@@ -871,7 +900,7 @@ function partitionUniforms(uniforms) {
 }
 */
 func initialize() {
-    //FIXME: Initialise
+
     if _program != nil {
         return
     }

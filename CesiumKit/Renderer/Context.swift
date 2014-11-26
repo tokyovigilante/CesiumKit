@@ -719,7 +719,6 @@ class Context {
         */
         //this.options = options;
         _currentRenderState.apply(_defaultPassState)
-        
     }
     
     func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int] = terrainAttributeLocations) -> ShaderProgram? {
