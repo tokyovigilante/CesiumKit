@@ -557,10 +557,10 @@ class ShaderProgram {
             
             // create new node
             dependencyNode = DependencyNode(name: name, glslSource: glslSource)
-            nodes.append(DependencyNode)
+            nodes << dependencyNode!
         }
 
-        return dependencyNode
+        return dependencyNode!
 }
     /*
     function generateDependencies(currentNode, dependencyNodes) {
@@ -642,7 +642,7 @@ function sortDependencies(dependencyNodes) {
     // generate a dependency graph for builtin functions
         
     var dependencyNodes = [DependencyNode]()
-    var root = getDependencyNode("main", shaderSource, dependencyNodes)
+    var root = getDependencyNode("main", glslSource: shaderSource, nodes: &dependencyNodes)
     /*generateDependencies(root, dependencyNodes)
     sortDependencies(dependencyNodes);
     

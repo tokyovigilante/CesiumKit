@@ -1,16 +1,17 @@
 CesiumKit
 =========
-Objective-C/iOS port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
+iOS/Swift port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
 
 Status
 ------
-Currently renderer and core are incomplete. Minimal untextured globe support is the first priority.
+Currently renderer and core are partially complete. Minimal untextured globe support nearly functional.
 
-I'm currenty not going to implement 2D or Columbus view as these aren't priorities for the personal project this is intended for. However community contributions and feedback are welcome.
+I'm eventually hoping for near complete globe support with CZML interoperability with cesium.js.
+Community contributions and feedback are welcome.
 
 Testing
 -------
-Nothing user-friendly yet. Likely to be via providing CSScene with a GLKView or EAGLContext. Once there's something to render I'll create a simple UIApplication test runner.
+Nothing user-friendly yet. Once there's something to render I'll create a simple test runner. At the moment the only external API are global object creation and render calls, and I'm hoping to keep things simple for implementation.
 
 Licence
 -------
