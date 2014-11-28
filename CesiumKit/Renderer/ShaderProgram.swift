@@ -465,29 +465,6 @@ class ShaderProgram {
         //_manualUniforms = nil
     }
     
-    /*
-    /**
-    * For ShaderProgram testing
-    * @private
-    */
-    ShaderProgram._czmBuiltinsAndUniforms = {};
-    
-    // combine automatic uniforms and Cesium built-ins
-    for ( var builtinName in CzmBuiltins) {
-    if (CzmBuiltins.hasOwnProperty(builtinName)) {
-    ShaderProgram._czmBuiltinsAndUniforms[builtinName] = CzmBuiltins[builtinName];
-    }
-    }
-    for ( var uniformName in AutomaticUniforms) {
-    if (AutomaticUniforms.hasOwnProperty(uniformName)) {
-    var uniform = AutomaticUniforms[uniformName];
-    if (typeof uniform.getDeclaration === 'function') {
-    ShaderProgram._czmBuiltinsAndUniforms[uniformName] = uniform.getDeclaration(uniformName);
-    }
-    }
-    }
-*/
-    
     func extractShaderVersion(source: String) -> (version: String, source: String) {
         // This will fail if the first #version is actually in a comment.
         //var index = source.indexOf("#version")
@@ -535,9 +512,11 @@ class ShaderProgram {
         if dependencyNode == nil {
             // strip doc comments so we don't accidentally try to determine a dependency for something found
             // in a comment
-            /*var commentBlocks = glslSource.match(/\/\*\*[\s\S]*?\*\//gm);
-            if (defined(commentBlocks) && commentBlocks !== null) {
-            for (i = 0; i < commentBlocks.length; ++i) {
+            let commentRegex = Regex("/\\/\\*\\*[\\s\\S]*?\\*\\//gm")
+            var commentBlocks = commentRegex.matches(glslSource)
+            if commentBlocks.count > 0 {
+                // FIXME: shader comments
+/*            for (i = 0; i < commentBlocks.length; ++i) {
             var commentBlock = commentBlocks[i];
             
             // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
@@ -550,9 +529,9 @@ class ShaderProgram {
             modifiedComment += '//\n';
             }
             }
-            
+            */
             //glslSource = glslSource.replace(commentBlock, modifiedComment);
-            }*/
+            }
             
             
             // create new node
@@ -561,36 +540,44 @@ class ShaderProgram {
         }
 
         return dependencyNode!
-}
-    /*
-    function generateDependencies(currentNode, dependencyNodes) {
-    if (currentNode.evaluated) {
-    return;
     }
     
-    currentNode.evaluated = true;
-    /*
-    // identify all dependencies that are referenced from this glsl source code
-    // var czmMatches = currentNode.glslSource.match(/\bczm_[a-zA-Z0-9_]*/g);
-    if (defined(czmMatches) && czmMatches !== null) {
-    // remove duplicates
-    czmMatches = czmMatches.filter(function(elem, pos) {
-    return czmMatches.indexOf(elem) === pos;
-    });
-    
-    czmMatches.forEach(function(element, index, array) {
-    if (element !== currentNode.name && ShaderProgram._czmBuiltinsAndUniforms.hasOwnProperty(element)) {
-    var referencedNode = getDependencyNode(element, ShaderProgram._czmBuiltinsAndUniforms[element], dependencyNodes);
-    currentNode.dependsOn.push(referencedNode);
-    referencedNode.requiredBy.push(currentNode);
-    
-    // recursive call to find any dependencies of the new node
-    generateDependencies(referencedNode, dependencyNodes);
-    }
-    });
+    private func generateDependencies(currentNode: DependencyNode, inout dependencyNodes: [DependencyNode]) {
+        if currentNode.evaluated {
+            return
+        }
+        
+        currentNode.evaluated = true
+        
+        // identify all dependencies that are referenced from this glsl source code
+        let czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
+        var czmMatches = czmRegex.matches(currentNode.glslSource)
+        if czmMatches.count > 0 {
+            /*if (defined(czmMatches) && czmMatches !== null) {
+            // remove duplicates
+            czmMatches = czmMatches.filter(function(elem, pos) {
+            return czmMatches.indexOf(elem) === pos;
+            });*/
+            for match in czmMatches {
+                let result = match as NSTextCheckingResult
+                let matchRange = Range(start: result.range.location, end: result.range.location + result.range.length)
+                let element = currentNode.glslSource[matchRange]
+                if (element != currentNode.name) {
+                    if let builtin = Builtins[element] {
+                        var referencedNode = getDependencyNode(element, glslSource: builtin, nodes: &dependencyNodes)
+                        currentNode.dependsOn.append(referencedNode)
+                        referencedNode.requiredBy.append(currentNode)
+                        
+                        // recursive call to find any dependencies of the new node
+                        generateDependencies(referencedNode, dependencyNodes: &dependencyNodes)
+                    }
+                }
+                
+            }
+        }
     }
 
-
+/*
 function sortDependencies(dependencyNodes) {
     var nodesWithoutIncomingEdges = [];
     var allNodes = [];
@@ -638,13 +625,13 @@ function sortDependencies(dependencyNodes) {
     }
 }
 */
-    func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
+    private func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
     // generate a dependency graph for builtin functions
         
     var dependencyNodes = [DependencyNode]()
     var root = getDependencyNode("main", glslSource: shaderSource, nodes: &dependencyNodes)
-    /*generateDependencies(root, dependencyNodes)
-    sortDependencies(dependencyNodes);
+    generateDependencies(root, dependencyNodes: dependencyNodes)
+    /*sortDependencies(dependencyNodes);
     
     // Concatenate the source code for the function dependencies.
     // Iterate in reverse so that dependent items are declared before they are used.

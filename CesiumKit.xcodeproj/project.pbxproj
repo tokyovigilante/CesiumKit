@@ -261,6 +261,7 @@
 		94E8511619A81461006B7780 /* PerspectiveOffCenterFrustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */; };
 		94E9BA1B19550A9600012DC4 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1A19550A9600012DC4 /* Geometry.swift */; };
 		94E9BA1D19550B5E00012DC4 /* GeometryAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */; };
+		94F3ECA51A283ADB00FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		94F501DC19E9395A00FFAD81 /* HeightmapTessellator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */; };
 		94F87F5519DAAA5400FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		94FC57D419CCEBFE00012DC4 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
@@ -426,6 +427,7 @@
 		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
+		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
 		94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexBuffer.swift; sourceTree = "<group>"; };
@@ -625,7 +627,6 @@
 		943999451930418C00012DC4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				94CE3DBF1A24803A00FFAD81 /* Builtins */,
 				94E049E919DC0BB000FFAD81 /* Shaders.swift */,
 			);
 			path = Shaders;
@@ -636,15 +637,9 @@
 			children = (
 				94697D9F1A25C74500FFAD81 /* Regex.swift */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
+				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 			);
 			name = Platform;
-			sourceTree = "<group>";
-		};
-		94CE3DBF1A24803A00FFAD81 /* Builtins */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Builtins;
 			sourceTree = "<group>";
 		};
 		94DC79191918425300012DC4 = {
@@ -680,9 +675,9 @@
 		94DC79271918425300012DC4 /* CesiumKit */ = {
 			isa = PBXGroup;
 			children = (
-				94697D9E1A25C72000FFAD81 /* Platform */,
 				94DF8300199A0A9100FB093D /* CesiumKit.swift */,
 				945D2DBA193D7FA800012DC4 /* CesiumKit-Bridging-Header.h */,
+				94697D9E1A25C72000FFAD81 /* Platform */,
 				943999031930418C00012DC4 /* Core */,
 				9439992A1930418C00012DC4 /* DynamicScene */,
 				9439992B1930418C00012DC4 /* Renderer */,
@@ -923,6 +918,7 @@
 				948D55E9194982AB005A4DD6 /* Math.swift in Sources */,
 				94BA59F319A6DA640049322D /* PerspectiveFrustum.swift in Sources */,
 				9460F807194DA5AF00012DC4 /* Visibility.swift in Sources */,
+				94F3ECA51A283ADB00FFAD81 /* String.swift in Sources */,
 				94BA59F119A695DD0049322D /* OrthographicFrustum.swift in Sources */,
 				9460F80B194DA8A400012DC4 /* Framebuffer.swift in Sources */,
 				94E4CB2C1950581300F7E37D /* Pass.swift in Sources */,

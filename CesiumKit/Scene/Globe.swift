@@ -672,7 +672,7 @@ class Globe {
         }
         
         if _depthCommand.shaderProgram == nil {
-             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: GlobeVSDepth, fragmentShaderSource: GlobeFSDepth, attributeLocations: ["position" : 0])
+             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: Shaders["GlobeVSDepth"]!, fragmentShaderSource: Shaders["GlobeFSDepth"]!, attributeLocations: ["position" : 0])
         }
         
         var hasWaterMask = showWaterEffect && _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
@@ -760,17 +760,17 @@ class Globe {
                 
                 _surfaceShaderSet.baseVertexShaderString = ShaderProgram.createShaderSource(
                     defines : shaderDefines,
-                    sources: [GlobeVS, getPositionMode, get2DYPositionFraction]
+                    sources: [Shaders["GlobeVS"]!, getPositionMode, get2DYPositionFraction]
                 )
                 
                 _surfaceShaderSet.baseFragmentShaderString = ShaderProgram.createShaderSource(
                     defines: shaderDefines,
-                    sources: [GlobeFS]
+                    sources: [Shaders["GlobeFS"]!]
                 )
                 
                 _surfaceShaderSet.invalidateShaders()
                 
-                var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderSource: GlobeVSPole, fragmentShaderSource: GlobeFSPole, attributeLocations: terrainAttributeLocations)
+                var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderSource: Shaders["GlobeVSPole"]!, fragmentShaderSource: Shaders["GlobeFSPole"]!, attributeLocations: terrainAttributeLocations)
                 
                 _northPoleCommand.shaderProgram = poleShaderProgram
                 _southPoleCommand.shaderProgram = poleShaderProgram

@@ -17,10 +17,21 @@ class ShaderCache {
     
     private var _shaders = [String: ShaderProgram]()
     
+    
     var nextShaderProgramId = 0
     
     init (context: Context) {
         self.context = context
+        
+        /*for ( var uniformName in AutomaticUniforms) {
+            if (AutomaticUniforms.hasOwnProperty(uniformName)) {
+                var uniform = AutomaticUniforms[uniformName];
+                if (typeof uniform.getDeclaration === 'function') {
+                    ShaderProgram._czmBuiltinsAndUniforms[uniformName] = uniform.getDeclaration(uniformName);
+                }
+            }
+        }*/
+
     }
     
     /**
