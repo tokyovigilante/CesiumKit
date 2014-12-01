@@ -17,4 +17,8 @@ extension String {
             return self[Range(start: startIndex, end: endIndex)]
         }
     }
+    
+    func replace(existingString: String, _ newString: String) -> String {
+        return self.stringByReplacingOccurrencesOfString(existingString, withString: newString, options: NSStringCompareOptions.LiteralSearch, range: nil)
+    }
 }

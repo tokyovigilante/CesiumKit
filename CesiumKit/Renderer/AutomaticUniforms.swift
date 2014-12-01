@@ -10,25 +10,45 @@
 /*
 
 var viewerPositionWCScratch = new Cartesian3();
+*/
+struct AutomaticUniform {
+    var size: Int
+    var datatype: UniformDataType
+    var getValue: (uniformState: UniformState) -> Any
+    
+    func declaration (name: String) -> String {
+        var declaration = "uniform " + datatype.rawValue + " " + name
+        
+        if size == 1 {
+            declaration += ";"
+        } else {
+            declaration += "[\(size)];"
+        }
+        
+        return declaration
+    }
+}
 
-var AutomaticUniform = function(options) {
-this._size = options.size;
-this._datatype = options.datatype;
-this.getValue = options.getValue;
-};
-
-defineProperties(AutomaticUniform.prototype, {
-size: {
-get : function() {
-return this._size;
+enum UniformDataType: String {
+    case/*datatypeToGlsl[WebGLRenderingContext.FLOAT] = 'float';
+    datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC2] = 'vec2';
+    datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC3] = 'vec3';*/
+    FLOAT_VEC4 = "vec4",
+    /*datatypeToGlsl[WebGLRenderingContext.INT] = 'int';
+    datatypeToGlsl[WebGLRenderingContext.INT_VEC2] = 'ivec2';
+    datatypeToGlsl[WebGLRenderingContext.INT_VEC3] = 'ivec3';
+    datatypeToGlsl[WebGLRenderingContext.INT_VEC4] = 'ivec4';
+    datatypeToGlsl[WebGLRenderingContext.BOOL] = 'bool';
+    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC2] = 'bvec2';
+    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC3] = 'bvec3';
+    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC4] = 'bvec4';
+    datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT2] = 'mat2';
+    datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT3] = 'mat3';*/
+    FLOAT_MAT4 = "mat4"
+    /*datatypeToGlsl[WebGLRenderingContext.SAMPLER_2D] = 'sampler2D';
+    datatypeToGlsl[WebGLRenderingContext.SAMPLER_CUBE] = 'samplerCube';*/
 }
-},
-datatype : {
-get : function() {
-return this._datatype;
-}
-}
-});
+/*
 
 // this check must use typeof, not defined, because defined doesn't work with undeclared variables.
 if (typeof WebGLRenderingContext === 'undefined') {
@@ -53,50 +73,49 @@ datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT3] = 'mat3';
 datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT4] = 'mat4';
 datatypeToGlsl[WebGLRenderingContext.SAMPLER_2D] = 'sampler2D';
 datatypeToGlsl[WebGLRenderingContext.SAMPLER_CUBE] = 'samplerCube';
-
-AutomaticUniform.prototype.getDeclaration = function(name) {
-var declaration = 'uniform ' + datatypeToGlsl[this._datatype] + ' ' + name;
-
-var size = this._size;
-if (size === 1) {
-declaration += ';';
-} else {
-declaration += '[' + size.toString() + '];';
-}
-
-return declaration;
-};
-
+*/
 /**
 * @private
 */
-var AutomaticUniforms = {
-/**
-* An automatic GLSL uniform containing the viewport's <code>x</code>, <code>y</code>, <code>width</code>,
-* and <code>height</code> properties in an <code>vec4</code>'s <code>x</code>, <code>y</code>, <code>z</code>,
-* and <code>w</code> components, respectively.
-*
-* @alias czm_viewport
-* @glslUniform
-*
-* @see Context#getViewport
-*
-* @example
-* // GLSL declaration
-* uniform vec4 czm_viewport;
-*
-* // Scale the window coordinate components to [0, 1] by dividing
-* // by the viewport's width and height.
-* vec2 v = gl_FragCoord.xy / czm_viewport.zw;
-*/
-czm_viewport : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_VEC4,
-getValue : function(uniformState) {
-return uniformState.viewportCartesian4;
-}
-}),
 
+
+
+    /*size: 1,
+    datatype: UniformDataType.FLOAT_VEC4,
+    getValue: {() -> [Float]  in
+    }
+)*/
+
+let AutomaticUniforms: [String: AutomaticUniform] = [
+    /**
+    * An automatic GLSL uniform containing the viewport's <code>x</code>, <code>y</code>, <code>width</code>,
+    * and <code>height</code> properties in an <code>vec4</code>'s <code>x</code>, <code>y</code>, <code>z</code>,
+    * and <code>w</code> components, respectively.
+    *
+    * @alias czm_viewport
+    * @glslUniform
+    *
+    * @see Context#getViewport
+    *
+    * @example
+    * // GLSL declaration
+    * uniform vec4 czm_viewport;
+    *
+    * // Scale the window coordinate components to [0, 1] by dividing
+    * // by the viewport's width and height.
+    * vec2 v = gl_FragCoord.xy / czm_viewport.zw;
+    */
+    "czm_viewport": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_VEC4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.viewportCartesian4.pack(&result, startingIndex: 0)
+            return result
+        }
+    )
+,
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 orthographic projection matrix that
 * transforms window coordinates to clip coordinates.  Clip coordinates is the
@@ -226,36 +245,38 @@ getValue : function(uniformState) {
 return uniformState.inverseModel;
 }
 }),
-
-/**
-* An automatic GLSL uniform representing a 4x4 view transformation matrix that
-* transforms world coordinates to eye coordinates.
-*
-* @alias czm_view
-* @glslUniform
-*
-* @see UniformState#view
-* @see czm_viewRotation
-* @see czm_modelView
-* @see czm_viewProjection
-* @see czm_modelViewProjection
-* @see czm_inverseView
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_view;
-*
-* // Example
-* vec4 eyePosition = czm_view * worldPosition;
 */
-czm_view : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.view;
-}
-}),
-
+    /**
+    * An automatic GLSL uniform representing a 4x4 view transformation matrix that
+    * transforms world coordinates to eye coordinates.
+    *
+    * @alias czm_view
+    * @glslUniform
+    *
+    * @see UniformState#view
+    * @see czm_viewRotation
+    * @see czm_modelView
+    * @see czm_viewProjection
+    * @see czm_modelViewProjection
+    * @see czm_inverseView
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_view;
+    *
+    * // Example
+    * vec4 eyePosition = czm_view * worldPosition;
+    */
+    "czm_view": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.view.pack(&result, startingIndex: 0)
+            return result
+        }
+    ),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 view transformation matrix that
 * transforms 3D world coordinates to eye coordinates.  In 3D mode, this is identical to
@@ -447,7 +468,7 @@ getValue : function(uniformState) {
 return uniformState.inverseViewRotation3D;
 }
 }),
-
+*/
 /**
 * An automatic GLSL uniform representing a 4x4 projection transformation matrix that
 * transforms eye coordinates to clip coordinates.  Clip coordinates is the
@@ -468,14 +489,16 @@ return uniformState.inverseViewRotation3D;
 * // Example
 * gl_Position = czm_projection * eyePosition;
 */
-czm_projection : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.projection;
-}
-}),
-
+    "czm_projection": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.projection.pack(&result, startingIndex: 0)
+            return result
+        }
+    ),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 inverse projection transformation matrix that
 * transforms from clip coordinates to eye coordinates. Clip coordinates is the
@@ -541,7 +564,7 @@ getValue : function(uniformState) {
 return uniformState.infiniteProjection;
 }
 }),
-
+*/
 /**
 * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
 * transforms model coordinates to eye coordinates.
@@ -568,14 +591,15 @@ return uniformState.infiniteProjection;
 * // The above is equivalent to, but more efficient than:
 * vec4 eyePosition = czm_view * czm_model * modelPosition;
 */
-czm_modelView : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.modelView;
-}
-}),
-
+    "czm_modelView" : AutomaticUniform(
+        size : 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.modelView.pack(&result, startingIndex: 0)
+            return result
+        }),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
 * transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
@@ -643,7 +667,7 @@ getValue : function(uniformState) {
 return uniformState.modelViewRelativeToEye;
 }
 }),
-
+*/
 /**
 * An automatic GLSL uniform representing a 4x4 transformation matrix that
 * transforms from eye coordinates to model coordinates.
@@ -661,14 +685,15 @@ return uniformState.modelViewRelativeToEye;
 * // Example
 * vec4 modelPosition = czm_inverseModelView * eyePosition;
 */
-czm_inverseModelView : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.inverseModelView;
-}
-}),
-
+    "czm_inverseModelView" : AutomaticUniform(
+        size : 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.inverseModelView.pack(&result, startingIndex: 0)
+            return result
+    }),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 transformation matrix that
 * transforms from eye coordinates to 3D model coordinates.  In 3D mode, this is identical to
@@ -1371,6 +1396,5 @@ return uniformState.sunDirectionWC;
         })
     };
 
-    return AutomaticUniforms;
-});
-*/
+    return AutomaticUniforms;*/
+]

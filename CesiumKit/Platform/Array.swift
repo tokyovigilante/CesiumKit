@@ -156,3 +156,6 @@ public func <<<T>(inout array: [T], elem: T) -> [T] {
     array.append(elem)
     return array
 }
+
+
+

@@ -149,17 +149,17 @@ class UniformState {
                 }
             }
         },*/
-/*
+
         /**
          * @memberof UniformState.prototype
          * @private
          */
-        viewportCartesian4 : {
-            get : function() {
-                return this._viewportCartesian4;
-            }
-        },
-
+    var viewportCartesian4: Cartesian4 {
+        get {
+            return _viewportCartesian4
+        }
+    }
+/*
         viewportOrthographic : {
             get : function() {
                 cleanViewport(this);
@@ -240,17 +240,17 @@ class UniformState {
                 return m;
             }
         },
-
-        /**
-         * @memberof UniformState.prototype
-         * @type {Matrix4}
-         */
-        view : {
-            get : function() {
-                return this._view;
-            }
-        },
-
+*/
+    /**
+    * @memberof UniformState.prototype
+    * @type {Matrix4}
+    */
+    var view: Matrix4 {
+        get {
+            return _view
+        }
+    }
+/*
         /**
          * The 3D view matrix.  In 3D mode, this is identical to {@link UniformState#view},
          * but in 2D and Columbus View it is a synthetic matrix based on the equivalent position
@@ -344,17 +344,17 @@ class UniformState {
                 return this._inverseViewRotation3D;
             }
         },
-
-        /**
-         * @memberof UniformState.prototype
-         * @type {Matrix4}
-         */
-        projection : {
-            get : function() {
-                return this._projection;
-            }
-        },
-
+*/
+    /**
+    * @memberof UniformState.prototype
+    * @type {Matrix4}
+    */
+    var projection: Matrix4 {
+        get  {
+            return _projection
+        }
+    }
+/*
         /**
          * @memberof UniformState.prototype
          * @type {Matrix4}
@@ -423,18 +423,18 @@ class UniformState {
                 return this._modelViewRelativeToEye;
             }
         },
-
+*/
         /**
          * @memberof UniformState.prototype
          * @type {Matrix4}
          */
-        inverseModelView : {
-            get : function() {
-                cleanInverseModelView(this);
-                return this._inverseModelView;
+        var inverseModelView: Matrix4 {
+            get {
+                cleanInverseModelView()
+                return _inverseModelView
             }
-        },
-
+        }
+/*
         /**
          * The inverse of the 3D model-view matrix.  In 3D mode, this is equivalent to {@link UniformState#inverseModelView}.
          * In 2D and Columbus View, however, it is a synthetic matrix based on the equivalent position of the camera in the 3D world.
@@ -898,15 +898,15 @@ class UniformState {
             Matrix4.multiplyTransformation(uniformState.view3D, uniformState._model, uniformState._modelView3D);
         }
     }
+*/
+    func cleanInverseModelView() {
+        if _inverseModelViewDirty {
+            _inverseModelViewDirty = false
 
-    function cleanInverseModelView(uniformState) {
-        if (uniformState._inverseModelViewDirty) {
-            uniformState._inverseModelViewDirty = false;
-
-            Matrix4.inverse(uniformState.modelView, uniformState._inverseModelView);
+            _inverseModelView = modelView.inverse()
         }
     }
-
+/*
     function cleanInverseModelView3D(uniformState) {
         if (uniformState._inverseModelView3DDirty) {
             uniformState._inverseModelView3DDirty = false;
