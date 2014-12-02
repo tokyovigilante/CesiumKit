@@ -1487,13 +1487,11 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         if framebuffer != nil && rs.depthTest.enabled {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }
-        //>>includeEnd('debug');
-        
         bindFramebuffer(framebuffer)
         
         var sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.bind()
-        _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex!)
+        _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
         applyRenderState(rs, passState: passState)
     }
@@ -1549,7 +1547,7 @@ func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderSt
     var activePassState = passState ?? _defaultPassState
     // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
     var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
-    // FIXME: Unimplemented
+
     beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
     //continueDraw(this, drawCommand, shaderProgram)
 }

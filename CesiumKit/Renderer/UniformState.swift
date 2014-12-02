@@ -33,7 +33,10 @@ class UniformState {
     * @type {FrameState}
     * @readonly
     */
-    var _frameState: FrameState? = nil
+    var frameState: FrameState {
+        return _frameState
+    }
+    var _frameState: FrameState = FrameState()
     
     private var _temeToPseudoFixed = Matrix3.fromMatrix4(Matrix4.identity())
     
@@ -166,14 +169,14 @@ class UniformState {
                 return this._viewportOrthographicMatrix;
             }
         },
-
-        viewportTransformation : {
-            get : function() {
-                cleanViewport(this);
-                return this._viewportTransformation;
-            }
-        },
-
+*/
+    var viewportTransformation: Matrix4 {
+        get {
+            cleanViewport()
+            return _viewportTransformation
+        }
+    }
+/*
         /**
          * @memberof UniformState.prototype
          * @type {Matrix4}
@@ -470,19 +473,19 @@ class UniformState {
                 return this._inverseViewProjection;
             }
         },
-
-        /**
-         * @memberof UniformState.prototype
-         * @type {Matrix4}
-         */
-        modelViewProjection : {
-            get : function() {
-                cleanModelViewProjection(this);
-                return this._modelViewProjection;
-
-            }
-        },
-
+*/
+    /**
+    * @memberof UniformState.prototype
+    * @type {Matrix4}
+    */
+    var modelViewProjection: Matrix4 {
+        get {
+            cleanModelViewProjection()
+            return _modelViewProjection
+            
+        }
+    }
+/*
         /**
          * @memberof UniformState.prototype
          * @type {Matrix4}
@@ -854,15 +857,16 @@ class UniformState {
         //_temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
     };
 
-    /*function cleanViewport(uniformState) {
-        if (uniformState._viewportDirty) {
-            var v = uniformState._viewport;
-            Matrix4.computeOrthographicOffCenter(v.x, v.x + v.width, v.y, v.y + v.height, 0.0, 1.0, uniformState._viewportOrthographicMatrix);
-            Matrix4.computeViewportTransformation(v, 0.0, 1.0, uniformState._viewportTransformation);
-            uniformState._viewportDirty = false;
+    func cleanViewport() {
+        if _viewportDirty {
+            var v = _viewport
+            
+            _viewportOrthographicMatrix = Matrix4.computeOrthographicOffCenter(left: v.x, right: v.x + v.width, bottom: v.y, top: v.y + v.height, near: 0.0, far: 1.0)
+            _viewportTransformation = Matrix4.computeViewportTransformation(viewport: v, nearDepthRange: 0.0, farDepthRange: 1.0)
+            _viewportDirty = false
         }
     }
-
+/*
     function cleanInverseProjection(uniformState) {
         if (uniformState._inverseProjectionDirty) {
             uniformState._inverseProjectionDirty = false;
@@ -930,15 +934,14 @@ class UniformState {
             Matrix4.inverse(uniformState.viewProjection, uniformState._inverseViewProjection);
         }
     }
-
-    function cleanModelViewProjection(uniformState) {
-        if (uniformState._modelViewProjectionDirty) {
-            uniformState._modelViewProjectionDirty = false;
-
-            Matrix4.multiply(uniformState._projection, uniformState.modelView, uniformState._modelViewProjection);
+*/
+    func cleanModelViewProjection() {
+        if _modelViewProjectionDirty {
+            _modelViewProjectionDirty = false
+            _modelViewProjection = _projection.multiply(modelView)
         }
     }
-
+/*
     function cleanModelViewRelativeToEye(uniformState) {
         if (uniformState._modelViewRelativeToEyeDirty) {
             uniformState._modelViewRelativeToEyeDirty = false;

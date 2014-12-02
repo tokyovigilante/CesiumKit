@@ -30,7 +30,7 @@ struct AutomaticUniform {
 }
 
 enum UniformDataType: String {
-    case/*datatypeToGlsl[WebGLRenderingContext.FLOAT] = 'float';
+    case FLOAT = "float",/*
     datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC2] = 'vec2';
     datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC3] = 'vec3';*/
     FLOAT_VEC4 = "vec4",
@@ -113,8 +113,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
             uniformState.viewportCartesian4.pack(&result, startingIndex: 0)
             return result
         }
-    )
-,
+    ),
 /*
 /**
 * An automatic GLSL uniform representing a 4x4 orthographic projection matrix that
@@ -150,7 +149,7 @@ getValue : function(uniformState) {
 return uniformState.viewportOrthographic;
 }
 }),
-
+*/
 /**
 * An automatic GLSL uniform representing a 4x4 transformation matrix that
 * transforms normalized device coordinates to window coordinates.  The context's
@@ -185,14 +184,16 @@ return uniformState.viewportOrthographic;
 * q.xyz /= q.w;                                                // clip to normalized device coordinates (ndc)
 * q.xyz = (czm_viewportTransformation * vec4(q.xyz, 1.0)).xyz; // ndc to window coordinates
 */
-czm_viewportTransformation : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.viewportTransformation;
-}
-}),
-
+    "czm_viewportTransformation": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.viewportTransformation.pack(&result, startingIndex: 0)
+            return result
+        }
+    ),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 model transformation matrix that
 * transforms model coordinates to world coordinates.
@@ -271,7 +272,7 @@ return uniformState.inverseModel;
         size: 1,
         datatype: .FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 4, repeatedValue: 0.0)
+            var result = [Float](count: 16, repeatedValue: 0.0)
             uniformState.view.pack(&result, startingIndex: 0)
             return result
         }
@@ -598,8 +599,9 @@ return uniformState.infiniteProjection;
             var result = [Float](count: 4, repeatedValue: 0.0)
             uniformState.modelView.pack(&result, startingIndex: 0)
             return result
-        }),
-/*
+        }
+    ),
+
 /**
 * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
 * transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
@@ -633,7 +635,7 @@ getValue : function(uniformState) {
 return uniformState.modelView3D;
 }
 }),
-
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
 * transforms model coordinates, relative to the eye, to eye coordinates.  This is used
@@ -780,42 +782,43 @@ getValue : function(uniformState) {
 return uniformState.inverseViewProjection;
 }
 }),
-
-/**
-* An automatic GLSL uniform representing a 4x4 model-view-projection transformation matrix that
-* transforms model coordinates to clip coordinates.  Clip coordinates is the
-* coordinate system for a vertex shader's <code>gl_Position</code> output.
-*
-* @alias czm_modelViewProjection
-* @glslUniform
-*
-* @see UniformState#modelViewProjection
-* @see czm_model
-* @see czm_view
-* @see czm_projection
-* @see czm_modelView
-* @see czm_viewProjection
-* @see czm_modelViewInfiniteProjection
-* @see czm_inverseModelViewProjection
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_modelViewProjection;
-*
-* // Example
-* vec4 gl_Position = czm_modelViewProjection * modelPosition;
-*
-* // The above is equivalent to, but more efficient than:
-* gl_Position = czm_projection * czm_view * czm_model * modelPosition;
 */
-czm_modelViewProjection : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.modelViewProjection;
-}
-}),
-
+    /**
+    * An automatic GLSL uniform representing a 4x4 model-view-projection transformation matrix that
+    * transforms model coordinates to clip coordinates.  Clip coordinates is the
+    * coordinate system for a vertex shader's <code>gl_Position</code> output.
+    *
+    * @alias czm_modelViewProjection
+    * @glslUniform
+    *
+    * @see UniformState#modelViewProjection
+    * @see czm_model
+    * @see czm_view
+    * @see czm_projection
+    * @see czm_modelView
+    * @see czm_viewProjection
+    * @see czm_modelViewInfiniteProjection
+    * @see czm_inverseModelViewProjection
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_modelViewProjection;
+    *
+    * // Example
+    * vec4 gl_Position = czm_modelViewProjection * modelPosition;
+    *
+    * // The above is equivalent to, but more efficient than:
+    * gl_Position = czm_projection * czm_view * czm_model * modelPosition;
+    */
+    "czm_modelViewProjection": AutomaticUniform(
+        size : 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            return uniformState.modelViewProjection
+            
+        }
+    ),
+/*
 /**
 * An automatic GLSL uniform representing a 4x4 inverse model-view-projection transformation matrix that
 * transforms clip coordinates to model coordinates.  Clip coordinates is the
@@ -1300,7 +1303,7 @@ return uniformState.sunDirectionWC;
                 return uniformState.frameState.frameNumber;
             }
         }),
-
+*/
         /**
          * An automatic GLSL uniform representing the current morph transition time between
          * 2D/Columbus View and 3D, with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -1315,14 +1318,17 @@ return uniformState.sunDirectionWC;
          * // Example
          * vec4 p = czm_columbusViewMorph(position2D, position3D, czm_morphTime);
          */
-        czm_morphTime : new AutomaticUniform({
-            size : 1,
-            datatype : WebGLRenderingContext.FLOAT,
-            getValue : function(uniformState) {
-                return uniformState.frameState.morphTime;
-            }
-        }),
-
+    "czm_morphTime": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT,
+        getValue: { (uniformState: UniformState) -> Any in
+            return uniformState.frameState.morphTime
+        }
+    ),
+    
+/*
+    
+    
         /**
          * An automatic GLSL uniform representing the current {@link SceneMode}, expressed
          * as a float.

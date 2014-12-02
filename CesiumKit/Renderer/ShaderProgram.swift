@@ -10,7 +10,7 @@ import Foundation
 import OpenGLES
 
 /*
-    /*
+
     var scratchUniformMatrix2;
     var scratchUniformMatrix3;
     var scratchUniformMatrix4;
@@ -19,124 +19,136 @@ import OpenGLES
     scratchUniformMatrix3 = new Float32Array(9);
     scratchUniformMatrix4 = new Float32Array(16);
     }
-    function setUniform (uniform) {
-    var gl = uniform._gl;
-    var location = uniform._location;
-    switch (uniform._activeUniform.type) {
-    case gl.FLOAT:
-    return function() {
-    gl.uniform1f(location, uniform.value);
-    };
-    case gl.FLOAT_VEC2:
-    return function() {
-    var v = uniform.value;
-    gl.uniform2f(location, v.x, v.y);
-    };
-    case gl.FLOAT_VEC3:
-    return function() {
-    var v = uniform.value;
-    gl.uniform3f(location, v.x, v.y, v.z);
-    };
-    case gl.FLOAT_VEC4:
-    return function() {
-    var v = uniform.value;
+*/
+// represents WebGLActiveInfo
+
+struct ActiveInfo {
+    var name: String = ""
     
-    if (defined(v.red)) {
-    gl.uniform4f(location, v.red, v.green, v.blue, v.alpha);
-    } else if (defined(v.x)) {
-    gl.uniform4f(location, v.x, v.y, v.z, v.w);
-    } else {
-    throw new DeveloperError('Invalid vec4 value for uniform "' + uniform._activeUniform.name + '".');
-    }
-    };
+    var size: GLsizei = 0
+    
+    var type: GLenum = 0
+}
+
+func setUniform (uniform: Uniform) -> (() -> ()) {
+
+    var location = uniform._location
+    switch uniform._activeUniform.type {
+    case GLenum(GL_FLOAT):
+        return { glUniform1f(location, uniform.value as GLfloat) }
+    case GLenum(GL_FLOAT_VEC2):
+        return {
+            var v = uniform.value as Cartesian2
+            glUniform2f(location, GLfloat(v.x), GLfloat(v.y))
+        }
+    case GLenum(GL_FLOAT_VEC3):
+        return {
+            var v = uniform.value as Cartesian3
+            glUniform3f(location, GLfloat(v.x), GLfloat(v.y), GLfloat(v.z))
+        }
+    /*case gl.FLOAT_VEC4:
+        return function() {
+            var v = uniform.value;
+            
+            if (defined(v.red)) {
+                gl.uniform4f(location, v.red, v.green, v.blue, v.alpha);
+            } else if (defined(v.x)) {
+                gl.uniform4f(location, v.x, v.y, v.z, v.w);
+            } else {
+                throw new DeveloperError('Invalid vec4 value for uniform "' + uniform._activeUniform.name + '".');
+            }
+        };
     case gl.SAMPLER_2D:
     case gl.SAMPLER_CUBE:
-    return function() {
-    gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
-    gl.bindTexture(uniform.value._target, uniform.value._texture);
-    };
+        return function() {
+            gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
+            gl.bindTexture(uniform.value._target, uniform.value._texture);
+        };
     case gl.INT:
     case gl.BOOL:
-    return function() {
-    gl.uniform1i(location, uniform.value);
-    };
+        return function() {
+            gl.uniform1i(location, uniform.value);
+        };
     case gl.INT_VEC2:
     case gl.BOOL_VEC2:
-    return function() {
-    var v = uniform.value;
-    gl.uniform2i(location, v.x, v.y);
-    };
+        return function() {
+            var v = uniform.value;
+            gl.uniform2i(location, v.x, v.y);
+        };
     case gl.INT_VEC3:
     case gl.BOOL_VEC3:
-    return function() {
-    var v = uniform.value;
-    gl.uniform3i(location, v.x, v.y, v.z);
-    };
+        return function() {
+            var v = uniform.value;
+            gl.uniform3i(location, v.x, v.y, v.z);
+        };
     case gl.INT_VEC4:
     case gl.BOOL_VEC4:
-    return function() {
-    var v = uniform.value;
-    gl.uniform4i(location, v.x, v.y, v.z, v.w);
-    };
+        return function() {
+            var v = uniform.value;
+            gl.uniform4i(location, v.x, v.y, v.z, v.w);
+        };
     case gl.FLOAT_MAT2:
-    return function() {
-    gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
-    };
+        return function() {
+            gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
+        };
     case gl.FLOAT_MAT3:
-    return function() {
-    gl.uniformMatrix3fv(location, false, Matrix3.toArray(uniform.value, scratchUniformMatrix3));
-    };
+        return function() {
+            gl.uniformMatrix3fv(location, false, Matrix3.toArray(uniform.value, scratchUniformMatrix3));
+        };
     case gl.FLOAT_MAT4:
-    return function() {
-    gl.uniformMatrix4fv(location, false, Matrix4.toArray(uniform.value, scratchUniformMatrix4));
-    };
+        return function() {
+            gl.uniformMatrix4fv(location, false, Matrix4.toArray(uniform.value, scratchUniformMatrix4));
+        };*/
     default:
-    throw new RuntimeError('Unrecognized uniform type: ' + uniform._activeUniform.type + ' for uniform "' + uniform._activeUniform.name + '".');
+        fatalError("Unrecognized uniform type: \(uniform._activeUniform.type) for uniform '\(uniform._activeUniform.name)")
     }
-    /**
-    * @private
-    */
-*/*/
+}
+
 class Uniform {
-/*
-    var activeUniform: 
-    var Uniform = function(gl, activeUniform, uniformName, location, value) {
-    this.value = value;
     
-    this._gl = gl;
-    this._activeUniform = activeUniform;
-    this._uniformName = uniformName;
-    this._location = location;
+    private var _activeUniform: ActiveInfo
     
-    /**
-    * @private
-    */
-    this.textureUnitIndex = undefined;
-    
-    this._set = setUniform(this);
-    
-    if ((activeUniform.type === gl.SAMPLER_2D) || (activeUniform.type === gl.SAMPLER_CUBE)) {
-    this._setSampler = function(textureUnitIndex) {
-    this.textureUnitIndex = textureUnitIndex;
-    gl.uniform1i(location, textureUnitIndex);
-    return textureUnitIndex + 1;
-    };
+    var name: String {
+        get {
+            return _uniformName
+        }
     }
-    };
+    private var _uniformName: String
     
-    defineProperties(Uniform.prototype, {
-    name : {
-    get : function() {
-    return this._uniformName;
-    }
-    },
-    datatype : {
-    get : function() {
-    return this._activeUniform.type;
-    }
-    }
-    });
+    private var _location: GLint
     
+    var value: Any
+    
+    private var _textureUnitIndex: GLint = 0
+    
+    private var _set: (uniform: Uniform) -> (() -> ())
+    
+    var datatype: GLenum {
+        get {
+            return self._activeUniform.type
+        }
+    }
+    
+    private var _setSampler: ((textureUnitIndex: GLint) -> GLint)?
+
+    init (activeUniform: ActiveInfo, uniformName: String, location: GLint, value: Any) {
+        
+        self.value = value
+        _activeUniform = activeUniform
+        _uniformName = uniformName
+        _location = location
+        
+        _set = setUniform
+        
+        if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
+            _setSampler = { (textureUnitIndex: GLint) -> GLint in
+                self._textureUnitIndex = textureUnitIndex
+                glUniform1i(self._location, self._textureUnitIndex)
+                return textureUnitIndex + 1
+            }
+        }
+    }
+    /*
     function setUniformArray(uniformArray) {
     var gl = uniformArray._gl;
     var locations = uniformArray._locations;
@@ -262,10 +274,10 @@ class Uniform {
     throw new RuntimeError('Unrecognized uniform type: ' + uniformArray._activeUniform.type);
     }
     }
-    */
+
 }
 class UniformArray {
-/*
+
     /**
     * @private
     */
@@ -372,6 +384,8 @@ private func == (left: DependencyNode, right: DependencyNode) -> Bool {
 
 class ShaderProgram {
 
+    //var _activeUniform = ActiveInfo()
+
     var _logShaderCompilation: Bool = false
     
     /**
@@ -407,8 +421,6 @@ class ShaderProgram {
             return _vertexShaderSource + _fragmentShaderSource + (_attributeLocations == nil ? "" :_attributeLocations!.description)
         }
     }
-    
-    //FIXME: Uniform in ShaderProgram
     
     var numberOfVertexAttributes: Int {
         get {
@@ -448,7 +460,7 @@ class ShaderProgram {
     }
     private var _manualUniforms = [Uniform]?()
     
-    var maximumTextureUnitIndex: Int? = nil
+    var maximumTextureUnitIndex: Int = 0
     
     var count: Int = 0
     
@@ -579,6 +591,7 @@ class ShaderProgram {
                     } else if let uniform = AutomaticUniforms[element] {
                         elementSource = uniform.declaration(element)
                     }
+                    if elementSource == nil { println("uniform \(element) not found") }
                     if elementSource != nil {
                         var referencedNode = getDependencyNode(element, glslSource: elementSource!, nodes: &dependencyNodes)
                         currentNode.dependsOn.append(referencedNode)
@@ -744,6 +757,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+                println(fsSource)
                 fatalError("[GL] Fragment shader compile log: " + errorMessage!)
             }
             
@@ -798,95 +812,105 @@ function findVertexAttributes(gl, program, numberOfAttributes) {
     return attributes;
 }
 */
-    func findUniforms() -> (
-        uniformsByName: [Uniform],
-        uniforms : [Uniform],
-        samplerUniforms : [Uniform]) {
-            
-    var uniformsByName = [Uniform]()
-    var uniforms = [Uniform]()
-    var samplerUniforms = [Uniform]()
-    
-            var numberOfUniforms: GLint = 0
-            glGetProgramiv(_program!, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
-    
-    /*for (var i = 0; i < numberOfUniforms; ++i) {
-        var activeUniform = gl.getActiveUniform(program, i);
-        var suffix = '[0]';
-        var uniformName = activeUniform.name.indexOf(suffix, activeUniform.name.length - suffix.length) !== -1 ? activeUniform.name.slice(0, activeUniform.name.length - 3) : activeUniform.name;
+    func findUniforms() -> (uniformsByName: [Uniform], uniforms : [Uniform], samplerUniforms : [Uniform]) {
         
-        // Ignore GLSL built-in uniforms returned in Firefox.
-        if (uniformName.indexOf('gl_') !== 0) {
-            if (activeUniform.name.indexOf('[') < 0) {
-            // Single uniform
-            var location = gl.getUniformLocation(program, uniformName);
-            var uniformValue = gl.getUniform(program, location);
-            var uniform = new Uniform(gl, activeUniform, uniformName, location, uniformValue);
+        var uniformsByName = [Uniform]()
+        var uniforms = [Uniform]()
+        var samplerUniforms = [Uniform]()
+        
+        var numberOfUniforms: GLint = 0
+        glGetProgramiv(_program!, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
+        
+        var maxUniformLength: GLint = 0
+        glGetProgramiv(_program!, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
+        
+        for var i = 0; i < Int(numberOfUniforms); ++i {
+            var uniformLength: GLsizei = 0
+            var uniformNameBuffer = [GLchar](count: Int(uniformLength + 1), repeatedValue: 0)
+            var activeUniform = ActiveInfo()
+            glGetActiveUniform(_program!, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &activeUniform.size, &activeUniform.type, &uniformNameBuffer)
+            activeUniform.name = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
+
+            var suffix = "[0]"
             
-            uniformsByName[uniformName] = uniform;
-            uniforms.push(uniform);
-            
-            if (uniform._setSampler) {
-            samplerUniforms.push(uniform);
-            }
-            } else {
-            // Uniform array
-            
-            var uniformArray;
-            var locations;
-            var value;
-            var loc;
-            
-            // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
-            // as separate uniforms, one for each array element.  Check for and handle that case.
-            var indexOfBracket = uniformName.indexOf('[');
-            if (indexOfBracket >= 0) {
-            // We're assuming the array elements show up in numerical order - it seems to be true.
-            uniformArray = uniformsByName[uniformName.slice(0, indexOfBracket)];
-            
-            // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
-            // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
-            if (typeof uniformArray === 'undefined') {
-            continue;
+            var uniformName = activeUniform.name
+            if uniformName.hasSuffix(suffix) {
+                let suffixRange = Range(
+                    start: advance(activeUniform.name.endIndex, -3),
+                    end: activeUniform.name.endIndex)
+                activeUniform.name.removeRange(suffixRange)
             }
             
-            locations = uniformArray._locations;
-            
-            // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
-            // but the size is not 1 like it is in Firefox.  So if we push locations here,
-            // we'll end up adding too many locations.
-            if (locations.length <= 1) {
-            value = uniformArray.value;
-            loc = gl.getUniformLocation(program, uniformName);
-            locations.push(loc);
-            value.push(gl.getUniform(program, loc));
-            }
-        } else {
-            locations = [];
-            value = [];
-            for ( var j = 0; j < activeUniform.size; ++j) {
+                /*if (activeUniform.name.indexOf('[') < 0) {
+                // Single uniform
+                var location = gl.getUniformLocation(program, uniformName);
+                var uniformValue = gl.getUniform(program, location);
+                var uniform = new Uniform(gl, activeUniform, uniformName, location, uniformValue);
+                
+                uniformsByName[uniformName] = uniform;
+                uniforms.push(uniform);
+                
+                if (uniform._setSampler) {
+                samplerUniforms.push(uniform);
+                }
+                } else {
+                // Uniform array
+                
+                var uniformArray;
+                var locations;
+                var value;
+                var loc;
+                
+                // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
+                // as separate uniforms, one for each array element.  Check for and handle that case.
+                var indexOfBracket = uniformName.indexOf('[');
+                if (indexOfBracket >= 0) {
+                // We're assuming the array elements show up in numerical order - it seems to be true.
+                uniformArray = uniformsByName[uniformName.slice(0, indexOfBracket)];
+                
+                // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
+                // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
+                if (typeof uniformArray === 'undefined') {
+                continue;
+                }
+                
+                locations = uniformArray._locations;
+                
+                // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
+                // but the size is not 1 like it is in Firefox.  So if we push locations here,
+                // we'll end up adding too many locations.
+                if (locations.length <= 1) {
+                value = uniformArray.value;
+                loc = gl.getUniformLocation(program, uniformName);
+                locations.push(loc);
+                value.push(gl.getUniform(program, loc));
+                }
+                } else {
+                locations = [];
+                value = [];
+                for ( var j = 0; j < activeUniform.size; ++j) {
                 loc = gl.getUniformLocation(program, uniformName + '[' + j + ']');
                 locations.push(loc);
                 value.push(gl.getUniform(program, loc));
-            }
-            uniformArray = new UniformArray(gl, activeUniform, uniformName, locations, value);
-            
-            uniformsByName[uniformName] = uniformArray;
-            uniforms.push(uniformArray);
-            
-            if (uniformArray._setSampler) {
+                }
+                uniformArray = new UniformArray(gl, activeUniform, uniformName, locations, value);
+                
+                uniformsByName[uniformName] = uniformArray;
+                uniforms.push(uniformArray);
+                
+                if (uniformArray._setSampler) {
                 samplerUniforms.push(uniformArray);
-            }
+                }
+                }
+                }
+            }*/
         }
-    }
-}
-}
-*/
-            return (
-                uniformsByName : uniformsByName,
-                uniforms : uniforms,
-                samplerUniforms : samplerUniforms
-            )
+        
+        return (
+            uniformsByName : uniformsByName,
+            uniforms : uniforms,
+            samplerUniforms : samplerUniforms
+        )
     }
 /*
 function partitionUniforms(uniforms) {
@@ -1078,7 +1102,8 @@ ShaderProgram.prototype.isDestroyed = function() {
 extension String {
     
     func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
-        var startInd = startIndex ?? self.startIndex
+        return self.rangeOfString(findStr, options: nil, range: nil, locale: nil)?.startIndex
+        /*var startInd = startIndex ?? self.startIndex
         // check first that the first character of search string exists
         if contains(self, first(findStr)!) {
             // if so set this as the place to start searching
@@ -1095,7 +1120,7 @@ extension String {
             }
             i++
         }
-        return nil
+        return nil*/
     }
 } // try further optimisation by jumping to next index of first search character after every find
 

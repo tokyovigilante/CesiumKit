@@ -87,7 +87,7 @@ class DrawCommand: Command {
     * @type {ShaderProgram}
     * @default undefined
     */
-    weak var shaderProgram: ShaderProgram?
+    var shaderProgram: ShaderProgram?
     
     /**
     * An object with functions whose names match the uniforms in the shader program

@@ -655,74 +655,40 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     result[15] = 0.0;
     return result;
 };
+*/
+    /**
+    * Computes a Matrix4 instance representing an orthographic transformation matrix.
+    *
+    * @param {Number} left The number of meters to the left of the camera that will be in view.
+    * @param {Number} right The number of meters to the right of the camera that will be in view.
+    * @param {Number} bottom The number of meters below of the camera that will be in view.
+    * @param {Number} top The number of meters above of the camera that will be in view.
+    * @param {Number} near The distance to the near plane in meters.
+    * @param {Number} far The distance to the far plane in meters.
+    * @param {Matrix4} result The object in which the result will be stored.
+    * @returns The modified result parameter.
+    */
+    static func computeOrthographicOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+        
+        var a = 1.0 / (right - left)
+        var b = 1.0 / (top - bottom)
+        var c = 1.0 / (far - near)
+        
+        let tx = -(right + left) * a
+        let ty = -(top + bottom) * b
+        let tz = -(far + near) * c
+        
+        a *= 2.0
+        b *= 2.0
+        c *= -2.0
+        
+        return Matrix4(
+            a, 0.0, 0.0, 0.0,
+            0.0, b, 0.0, 0.0,
+            0.0, 0.0, c, 0.0,
+            tx, ty, tz, 1.0)
+    }
 
-/**
-* Computes a Matrix4 instance representing an orthographic transformation matrix.
-*
-* @param {Number} left The number of meters to the left of the camera that will be in view.
-* @param {Number} right The number of meters to the right of the camera that will be in view.
-* @param {Number} bottom The number of meters below of the camera that will be in view.
-* @param {Number} top The number of meters above of the camera that will be in view.
-* @param {Number} near The distance to the near plane in meters.
-* @param {Number} far The distance to the far plane in meters.
-* @param {Matrix4} result The object in which the result will be stored.
-* @returns The modified result parameter.
-*/
-Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, far, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-        throw new DeveloperError('left is required.');
-    }
-    if (!defined(right)) {
-        throw new DeveloperError('right is required.');
-    }
-    if (!defined(bottom)) {
-        throw new DeveloperError('bottom is required.');
-    }
-    if (!defined(top)) {
-        throw new DeveloperError('top is required.');
-    }
-    if (!defined(near)) {
-        throw new DeveloperError('near is required.');
-    }
-    if (!defined(far)) {
-        throw new DeveloperError('far is required.');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var a = 1.0 / (right - left);
-    var b = 1.0 / (top - bottom);
-    var c = 1.0 / (far - near);
-    
-    var tx = -(right + left) * a;
-    var ty = -(top + bottom) * b;
-    var tz = -(far + near) * c;
-    a *= 2.0;
-    b *= 2.0;
-    c *= -2.0;
-    
-    result[0] = a;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = 0.0;
-    result[5] = b;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = 0.0;
-    result[9] = 0.0;
-    result[10] = c;
-    result[11] = 0.0;
-    result[12] = tx;
-    result[13] = ty;
-    result[14] = tz;
-    result[15] = 1.0;
-    return result;
-};
-*/
     /**
     * Computes a Matrix4 instance representing an off center perspective transformation.
     *
@@ -737,32 +703,19 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     */
     static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
-        var result = [Double](count: 16, repeatedValue: 0.0)
-        var column0Row0 = 2.0 * near / (right - left)
-        var column1Row1 = 2.0 * near / (top - bottom)
-        var column2Row0 = (right + left) / (right - left)
-        var column2Row1 = (top + bottom) / (top - bottom)
-        var column2Row2 = -(far + near) / (far - near)
-        var column2Row3 = -1.0
-        var column3Row2 = -2.0 * far * near / (far - near)
+        let column0Row0 = 2.0 * near / (right - left)
+        let column1Row1 = 2.0 * near / (top - bottom)
+        let column2Row0 = (right + left) / (right - left)
+        let column2Row1 = (top + bottom) / (top - bottom)
+        let column2Row2 = -(far + near) / (far - near)
+        let column2Row3 = -1.0
+        let column3Row2 = -2.0 * far * near / (far - near)
         
-        result[0] = column0Row0
-        result[1] = 0.0
-        result[2] = 0.0
-        result[3] = 0.0
-        result[4] = 0.0
-        result[5] = column1Row1
-        result[6] = 0.0
-        result[7] = 0.0
-        result[8] = column2Row0
-        result[9] = column2Row1
-        result[10] = column2Row2
-        result[11] = column2Row3
-        result[12] = 0.0
-        result[13] = 0.0
-        result[14] = column3Row2
-        result[15] = 0.0
-        return Matrix4(grid: result)
+        return Matrix4(
+            column0Row0, 0.0, 0.0, 0.0,
+            0.0, column1Row1, 0.0, 0.0,
+            column2Row0, column2Row1, column2Row2, column2Row3,
+            0.0, 0.0, column3Row2, 0.0)
     }
     
     /**
@@ -777,103 +730,71 @@ Matrix4.computeOrthographicOffCenter = function(left, right, bottom, top, near, 
     * @returns The modified result parameter.
     */
     static func computeInfinitePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
-        var column0Row0 = 2.0 * near / (right - left)
-        var column1Row1 = 2.0 * near / (top - bottom)
-        var column2Row0 = (right + left) / (right - left)
-        var column2Row1 = (top + bottom) / (top - bottom)
-        var column2Row2 = -1.0
-        var column2Row3 = -1.0
-        var column3Row2 = -2.0 * near
+        let column0Row0 = 2.0 * near / (right - left)
+        let column1Row1 = 2.0 * near / (top - bottom)
+        let column2Row0 = (right + left) / (right - left)
+        let column2Row1 = (top + bottom) / (top - bottom)
+        let column2Row2 = -1.0
+        let column2Row3 = -1.0
+        let column3Row2 = -2.0 * near
         
-        var result = [Double](count: 16, repeatedValue: 0.0)
-        
-        result[0] = column0Row0
-        result[1] = 0.0
-        result[2] = 0.0
-        result[3] = 0.0
-        result[4] = 0.0
-        result[5] = column1Row1
-        result[6] = 0.0
-        result[7] = 0.0
-        result[8] = column2Row0
-        result[9] = column2Row1
-        result[10] = column2Row2
-        result[11] = column2Row3
-        result[12] = 0.0
-        result[13] = 0.0
-        result[14] = column3Row2
-        result[15] = 0.0
-        return Matrix4(grid: result)
-}
-/*
-/**
-* Computes a Matrix4 instance that transforms from normalized device coordinates to window coordinates.
-*
-* @param {Object}[viewport = { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }] The viewport's corners as shown in Example 1.
-* @param {Number}[nearDepthRange=0.0] The near plane distance in window coordinates.
-* @param {Number}[farDepthRange=1.0] The far plane distance in window coordinates.
-* @param {Matrix4} result The object in which the result will be stored.
-* @returns The modified result parameter.
-*
-* @example
-* // Example 1.  Create viewport transformation using an explicit viewport and depth range.
-* var m = Cesium.Matrix4.computeViewportTransformation({
-*     x : 0.0,
-*     y : 0.0,
-*     width : 1024.0,
-*     height : 768.0
-* }, 0.0, 1.0);
-*
-* @example
-* // Example 2.  Create viewport transformation using the context's viewport.
-* var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
-*/
-Matrix4.computeViewportTransformation = function(viewport, nearDepthRange, farDepthRange, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
+        return Matrix4(
+            column0Row0, 0.0, 0.0, 0.0,
+            0.0, column1Row1, 0.0, 0.0,
+            column2Row0, column2Row1, column2Row2, column2Row3,
+            0.0, 0.0, column3Row2, 0.0
+        )
     }
-    //>>includeEnd('debug');
-    
-    viewport = defaultValue(viewport, defaultValue.EMPTY_OBJECT);
-    var x = defaultValue(viewport.x, 0.0);
-    var y = defaultValue(viewport.y, 0.0);
-    var width = defaultValue(viewport.width, 0.0);
-    var height = defaultValue(viewport.height, 0.0);
-    nearDepthRange = defaultValue(nearDepthRange, 0.0);
-    farDepthRange = defaultValue(farDepthRange, 1.0);
-    
-    var halfWidth = width * 0.5;
-    var halfHeight = height * 0.5;
-    var halfDepth = (farDepthRange - nearDepthRange) * 0.5;
-    
-    var column0Row0 = halfWidth;
-    var column1Row1 = halfHeight;
-    var column2Row2 = halfDepth;
-    var column3Row0 = x + halfWidth;
-    var column3Row1 = y + halfHeight;
-    var column3Row2 = nearDepthRange + halfDepth;
-    var column3Row3 = 1.0;
-    
-    result[0] = column0Row0;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = 0.0;
-    result[5] = column1Row1;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = 0.0;
-    result[9] = 0.0;
-    result[10] = column2Row2;
-    result[11] = 0.0;
-    result[12] = column3Row0;
-    result[13] = column3Row1;
-    result[14] = column3Row2;
-    result[15] = column3Row3;
-    return result;
-};
 
+    /**
+    * Computes a Matrix4 instance that transforms from normalized device coordinates to window coordinates.
+    *
+    * @param {Object}[viewport = { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }] The viewport's corners as shown in Example 1.
+    * @param {Number}[nearDepthRange=0.0] The near plane distance in window coordinates.
+    * @param {Number}[farDepthRange=1.0] The far plane distance in window coordinates.
+    * @param {Matrix4} result The object in which the result will be stored.
+    * @returns The modified result parameter.
+    *
+    * @example
+    * // Example 1.  Create viewport transformation using an explicit viewport and depth range.
+    * var m = Cesium.Matrix4.computeViewportTransformation({
+    *     x : 0.0,
+    *     y : 0.0,
+    *     width : 1024.0,
+    *     height : 768.0
+    * }, 0.0, 1.0);
+    *
+    * @example
+    * // Example 2.  Create viewport transformation using the context's viewport.
+    * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
+    */
+    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 0.0) -> Matrix4 {
+        
+        let x = viewport.x
+        let y = viewport.y
+        let width = viewport.width
+        let height = viewport.height
+        
+        let halfWidth = width * 0.5
+        let halfHeight = height * 0.5
+        let halfDepth = (farDepthRange - nearDepthRange) * 0.5
+        
+        let column0Row0 = halfWidth
+        let column1Row1 = halfHeight
+        let column2Row2 = halfDepth
+        let column3Row0 = x + halfWidth
+        let column3Row1 = y + halfHeight
+        let column3Row2 = nearDepthRange + halfDepth
+        let column3Row3 = 1.0
+        return Matrix4(
+            column0Row0, 0.0, 0.0, 0.0,
+            0.0, column1Row1, 0.0, 0.0,
+            0.0, 0.0, column2Row2, 0.0,
+            column3Row0, column3Row1, column3Row2, column3Row3
+        )
+    }
+
+    
 /**
 * Computes an Array from the provided Matrix4 instance.
 * The array will be in column-major order.
@@ -893,6 +814,7 @@ Matrix4.computeViewportTransformation = function(viewport, nearDepthRange, farDe
 * // m remains the same
 * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
 */
+    /*
 Matrix4.toArray = function(matrix, result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(matrix)) {
@@ -1279,47 +1201,47 @@ Matrix4.getMaximumScale = function(matrix) {
 */
 func multiplyTransformation (other: Matrix4) -> Matrix4 {
     
-    var this0 = _grid[0]
-    var this1 = _grid[1]
-    var this2 = _grid[2]
-    var this4 = _grid[4]
-    var this5 = _grid[5]
-    var this6 = _grid[6]
-    var this8 = _grid[8]
-    var this9 = _grid[9]
-    var this10 = _grid[10]
-    var this12 = _grid[12]
-    var this13 = _grid[13]
-    var this14 = _grid[14]
+    let this0 = _grid[0]
+    let this1 = _grid[1]
+    let this2 = _grid[2]
+    let this4 = _grid[4]
+    let this5 = _grid[5]
+    let this6 = _grid[6]
+    let this8 = _grid[8]
+    let this9 = _grid[9]
+    let this10 = _grid[10]
+    let this12 = _grid[12]
+    let this13 = _grid[13]
+    let this14 = _grid[14]
     
-    var other0 = other[0]
-    var other1 = other[1]
-    var other2 = other[2]
-    var other4 = other[4]
-    var other5 = other[5]
-    var other6 = other[6]
-    var other8 = other[8]
-    var other9 = other[9]
-    var other10 = other[10]
-    var other12 = other[12]
-    var other13 = other[13]
-    var other14 = other[14]
+    let other0 = other[0]
+    let other1 = other[1]
+    let other2 = other[2]
+    let other4 = other[4]
+    let other5 = other[5]
+    let other6 = other[6]
+    let other8 = other[8]
+    let other9 = other[9]
+    let other10 = other[10]
+    let other12 = other[12]
+    let other13 = other[13]
+    let other14 = other[14]
     
-    var column0Row0 = this0 * other0 + this4 * other1 + this8 * other2
-    var column0Row1 = this1 * other0 + this5 * other1 + this9 * other2
-    var column0Row2 = this2 * other0 + this6 * other1 + this10 * other2
+    let column0Row0 = this0 * other0 + this4 * other1 + this8 * other2
+    let column0Row1 = this1 * other0 + this5 * other1 + this9 * other2
+    let column0Row2 = this2 * other0 + this6 * other1 + this10 * other2
     
-    var column1Row0 = this0 * other4 + this4 * other5 + this8 * other6
-    var column1Row1 = this1 * other4 + this5 * other5 + this9 * other6
-    var column1Row2 = this2 * other4 + this6 * other5 + this10 * other6
+    let column1Row0 = this0 * other4 + this4 * other5 + this8 * other6
+    let column1Row1 = this1 * other4 + this5 * other5 + this9 * other6
+    let column1Row2 = this2 * other4 + this6 * other5 + this10 * other6
     
-    var column2Row0 = this0 * other8 + this4 * other9 + this8 * other10
-    var column2Row1 = this1 * other8 + this5 * other9 + this9 * other10
-    var column2Row2 = this2 * other8 + this6 * other9 + this10 * other10
+    let column2Row0 = this0 * other8 + this4 * other9 + this8 * other10
+    let column2Row1 = this1 * other8 + this5 * other9 + this9 * other10
+    let column2Row2 = this2 * other8 + this6 * other9 + this10 * other10
     
-    var column3Row0 = this0 * other12 + this4 * other13 + this8 * other14 + this12
-    var column3Row1 = this1 * other12 + this5 * other13 + this9 * other14 + this13
-    var column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
+    let column3Row0 = this0 * other12 + this4 * other13 + this8 * other14 + this12
+    let column3Row1 = this1 * other12 + this5 * other13 + this9 * other14 + this13
+    let column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
     
     return Matrix4(
         column0Row0, column0Row1, column0Row2, 0.0,
