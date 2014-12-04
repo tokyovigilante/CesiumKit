@@ -95,7 +95,7 @@ class GlobeSurfaceShaderSet {
                     baseFragmentShaderString! + "\n" +
                     "vec3 computeDayColor(vec3 initialColor, vec2 textureCoordinates)\n" +
                     "{\n" +
-                "    vec3 color = initialColor\n"
+                "    vec3 color = initialColor;\n"
                 fs += fs2
                 for i in 0..<textureCount {
                     //fs +=

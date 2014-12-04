@@ -30,23 +30,23 @@ struct AutomaticUniform {
 }
 
 enum UniformDataType: String {
-    case FLOAT = "float",/*
-    datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC2] = 'vec2';
-    datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC3] = 'vec3';*/
+    case FLOAT = "float",
+    FLOAT_VEC2 = "vec2",
+    FLOAT_VEC3 = "vec3",
     FLOAT_VEC4 = "vec4",
-    /*datatypeToGlsl[WebGLRenderingContext.INT] = 'int';
-    datatypeToGlsl[WebGLRenderingContext.INT_VEC2] = 'ivec2';
-    datatypeToGlsl[WebGLRenderingContext.INT_VEC3] = 'ivec3';
-    datatypeToGlsl[WebGLRenderingContext.INT_VEC4] = 'ivec4';
-    datatypeToGlsl[WebGLRenderingContext.BOOL] = 'bool';
-    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC2] = 'bvec2';
-    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC3] = 'bvec3';
-    datatypeToGlsl[WebGLRenderingContext.BOOL_VEC4] = 'bvec4';
-    datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT2] = 'mat2';
-    datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT3] = 'mat3';*/
-    FLOAT_MAT4 = "mat4"
-    /*datatypeToGlsl[WebGLRenderingContext.SAMPLER_2D] = 'sampler2D';
-    datatypeToGlsl[WebGLRenderingContext.SAMPLER_CUBE] = 'samplerCube';*/
+    INT = "int",
+    INT_VEC2 = "ivec2",
+    INT_VEC3 = "ivec3",
+    INT_VEC4 = "ivec4",
+    BOOL = "bool",
+    BOOL_VEC2 = "bvec2",
+    BOOL_VEC3 = "bvec3",
+    BOOL_VEC4 = "bvec4",
+    FLOAT_MAT2 = "mat2",
+    FLOAT_MAT3 = "mat3",
+    FLOAT_MAT4 = "mat4",
+    SAMPLER_2D = "sampler2D",
+    SAMPLER_CUBE = "samplerCube"
 }
 /*
 
@@ -596,45 +596,48 @@ return uniformState.infiniteProjection;
         size : 1,
         datatype: .FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 4, repeatedValue: 0.0)
+            var result = [Float](count: 16, repeatedValue: 0.0)
             uniformState.modelView.pack(&result, startingIndex: 0)
             return result
         }
     ),
 
-/**
-* An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
-* transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
-* {@link czm_modelView}, but in 2D and Columbus View it represents the model-view matrix
-* as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
-* 2D and Columbus View in the same way that 3D is lit.
-* <br /><br />
-* Positions should be transformed to eye coordinates using <code>czm_modelView3D</code> and
-* normals should be transformed using {@link czm_normal3D}.
-*
-* @alias czm_modelView3D
-* @glslUniform
-*
-* @see UniformState#modelView3D
-* @see czm_modelView
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_modelView3D;
-*
-* // Example
-* vec4 eyePosition = czm_modelView3D * modelPosition;
-*
-* // The above is equivalent to, but more efficient than:
-* vec4 eyePosition = czm_view3D * czm_model * modelPosition;
-*/
-czm_modelView3D : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.modelView3D;
-}
-}),
+    /**
+    * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
+    * transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
+    * {@link czm_modelView}, but in 2D and Columbus View it represents the model-view matrix
+    * as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
+    * 2D and Columbus View in the same way that 3D is lit.
+    * <br /><br />
+    * Positions should be transformed to eye coordinates using <code>czm_modelView3D</code> and
+    * normals should be transformed using {@link czm_normal3D}.
+    *
+    * @alias czm_modelView3D
+    * @glslUniform
+    *
+    * @see UniformState#modelView3D
+    * @see czm_modelView
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_modelView3D;
+    *
+    * // Example
+    * vec4 eyePosition = czm_modelView3D * modelPosition;
+    *
+    * // The above is equivalent to, but more efficient than:
+    * vec4 eyePosition = czm_view3D * czm_model * modelPosition;
+    */
+    "czm_modelView3D": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.modelView3D.pack(&result, startingIndex: 0)
+            return result
+
+        }
+    ),
 /*
 /**
 * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
@@ -691,7 +694,7 @@ return uniformState.modelViewRelativeToEye;
         size : 1,
         datatype: .FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 4, repeatedValue: 0.0)
+            var result = [Float](count: 16, repeatedValue: 0.0)
             uniformState.inverseModelView.pack(&result, startingIndex: 0)
             return result
     }),
@@ -814,8 +817,9 @@ return uniformState.inverseViewProjection;
         size : 1,
         datatype: .FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.modelViewProjection
-            
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.modelViewProjection.pack(&result, startingIndex: 0)
+            return result
         }
     ),
 /*
@@ -942,38 +946,40 @@ getValue : function(uniformState) {
 return uniformState.normal;
 }
 }),
-
-/**
-* An automatic GLSL uniform representing a 3x3 normal transformation matrix that
-* transforms normal vectors in 3D model coordinates to eye coordinates.
-* In 3D mode, this is identical to
-* {@link czm_normal}, but in 2D and Columbus View it represents the normal transformation
-* matrix as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
-* 2D and Columbus View in the same way that 3D is lit.
-* <br /><br />
-* Positions should be transformed to eye coordinates using {@link czm_modelView3D} and
-* normals should be transformed using <code>czm_normal3D</code>.
-*
-* @alias czm_normal3D
-* @glslUniform
-*
-* @see UniformState#normal3D
-* @see czm_normal
-*
-* @example
-* // GLSL declaration
-* uniform mat3 czm_normal3D;
-*
-* // Example
-* vec3 eyeNormal = czm_normal3D * normal;
 */
-czm_normal3D : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT3,
-getValue : function(uniformState) {
-return uniformState.normal3D;
-}
-}),
+    /**
+    * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
+    * transforms normal vectors in 3D model coordinates to eye coordinates.
+    * In 3D mode, this is identical to
+    * {@link czm_normal}, but in 2D and Columbus View it represents the normal transformation
+    * matrix as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
+    * 2D and Columbus View in the same way that 3D is lit.
+    * <br /><br />
+    * Positions should be transformed to eye coordinates using {@link czm_modelView3D} and
+    * normals should be transformed using <code>czm_normal3D</code>.
+    *
+    * @alias czm_normal3D
+    * @glslUniform
+    *
+    * @see UniformState#normal3D
+    * @see czm_normal
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat3 czm_normal3D;
+    *
+    * // Example
+    * vec3 eyeNormal = czm_normal3D * normal;
+    */
+    "czm_normal3D": AutomaticUniform(
+        size : 1,
+        datatype: .FLOAT_MAT3,
+        getValue: { (uniformState: UniformState) -> Any in
+            var result = [Float](count: 9, repeatedValue: 0.0)
+            uniformState.normal3D.pack(&result, startingIndex: 0)
+            return result
+        }
+    ),
 
 /**
 * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
@@ -995,6 +1001,7 @@ return uniformState.normal3D;
 * // Example
 * vec3 normalMC = czm_inverseNormal * normalEC;
 */
+    /*
 czm_inverseNormal : new AutomaticUniform({
 size : 1,
 datatype : WebGLRenderingContext.FLOAT_MAT3,
@@ -1144,33 +1151,33 @@ getValue : function(uniformState) {
 return uniformState.sunPositionColumbusView;
 }
 }),
-
-/**
-* An automatic GLSL uniform representing the normalized direction to the sun in eye coordinates.
-* This is commonly used for directional lighting computations.
-*
-* @alias czm_sunDirectionEC
-* @glslUniform
-*
-* @see UniformState#sunDirectionEC
-* @see czm_moonDirectionEC
-* @see czm_sunDirectionWC
-*
-* @example
-* // GLSL declaration
-* uniform vec3 czm_sunDirectionEC;
-*
-* // Example
-* float diffuse = max(dot(czm_sunDirectionEC, normalEC), 0.0);
 */
-czm_sunDirectionEC : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_VEC3,
-getValue : function(uniformState) {
-return uniformState.sunDirectionEC;
-}
-}),
-
+    /**
+    * An automatic GLSL uniform representing the normalized direction to the sun in eye coordinates.
+    * This is commonly used for directional lighting computations.
+    *
+    * @alias czm_sunDirectionEC
+    * @glslUniform
+    *
+    * @see UniformState#sunDirectionEC
+    * @see czm_moonDirectionEC
+    * @see czm_sunDirectionWC
+    *
+    * @example
+    * // GLSL declaration
+    * uniform vec3 czm_sunDirectionEC;
+    *
+    * // Example
+    * float diffuse = max(dot(czm_sunDirectionEC, normalEC), 0.0);
+    */
+    "czm_sunDirectionEC": AutomaticUniform(
+        size: 1,
+        datatype: .FLOAT_VEC3,
+        getValue: { (uniformState: UniformState) in
+            return uniformState.sunDirectionEC
+        }
+    ),
+/*
 /**
 * An automatic GLSL uniform representing the normalized direction to the sun in world coordinates.
 * This is commonly used for directional lighting computations.
@@ -1193,32 +1200,32 @@ getValue : function(uniformState) {
 return uniformState.sunDirectionWC;
             }
         }),
-
-        /**
-         * An automatic GLSL uniform representing the normalized direction to the moon in eye coordinates.
-         * This is commonly used for directional lighting computations.
-         *
-         * @alias czm_moonDirectionEC
-         * @glslUniform
-         *
-         * @see UniformState#moonDirectionEC
-         * @see czm_sunDirectionEC
-         *
-         * @example
-         * // GLSL declaration
-         * uniform vec3 czm_moonDirectionEC;
-         *
-         * // Example
-         * float diffuse = max(dot(czm_moonDirectionEC, normalEC), 0.0);
-         */
-        czm_moonDirectionEC : new AutomaticUniform({
-            size : 1,
-            datatype : WebGLRenderingContext.FLOAT_VEC3,
-            getValue : function(uniformState) {
-                return uniformState.moonDirectionEC;
-            }
-        }),
-
+*/
+    /**
+    * An automatic GLSL uniform representing the normalized direction to the moon in eye coordinates.
+    * This is commonly used for directional lighting computations.
+    *
+    * @alias czm_moonDirectionEC
+    * @glslUniform
+    *
+    * @see UniformState#moonDirectionEC
+    * @see czm_sunDirectionEC
+    *
+    * @example
+    * // GLSL declaration
+    * uniform vec3 czm_moonDirectionEC;
+    *
+    * // Example
+    * float diffuse = max(dot(czm_moonDirectionEC, normalEC), 0.0);
+    */
+    "czm_moonDirectionEC": AutomaticUniform(
+        size : 1,
+        datatype: .FLOAT_VEC3,
+        getValue: { (uniformState: UniformState) in
+            return uniformState.moonDirectionEC
+        }
+    ),
+/*
         /**
          * An automatic GLSL uniform representing the high bits of the camera position in model
          * coordinates.  This is used for GPU RTE to eliminate jittering artifacts when rendering
@@ -1284,7 +1291,7 @@ return uniformState.sunDirectionWC;
                 return Matrix4.getTranslation(uniformState.inverseView, viewerPositionWCScratch);
             }
         }),
-
+*/
         /**
          * An automatic GLSL uniform representing the frame number. This uniform is automatically incremented
          * every frame.
@@ -1296,14 +1303,14 @@ return uniformState.sunDirectionWC;
          * // GLSL declaration
          * uniform float czm_frameNumber;
          */
-        czm_frameNumber : new AutomaticUniform({
-            size : 1,
-            datatype : WebGLRenderingContext.FLOAT,
-            getValue : function(uniformState) {
-                return uniformState.frameState.frameNumber;
+        "czm_frameNumber": AutomaticUniform(
+            size: 1,
+            datatype : .FLOAT,
+            getValue: { (uniformState: UniformState) in
+                return uniformState.frameState.frameNumber
             }
-        }),
-*/
+        ),
+    
         /**
          * An automatic GLSL uniform representing the current morph transition time between
          * 2D/Columbus View and 3D, with 0.0 being 2D or Columbus View and 1.0 being 3D.

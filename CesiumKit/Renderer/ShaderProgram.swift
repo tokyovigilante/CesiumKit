@@ -573,27 +573,26 @@ class ShaderProgram {
         
         // identify all dependencies that are referenced from this glsl source code
         let czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
-        var czmMatches = czmRegex.matches(currentNode.glslSource)
-        if czmMatches.count > 0 {
-            /*if (defined(czmMatches) && czmMatches !== null) {
-            // remove duplicates
-            czmMatches = czmMatches.filter(function(elem, pos) {
-            return czmMatches.indexOf(elem) === pos;
-            });*/
+        var czmMatchRanges = czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
+        var czmMatches: [String]
+        if czmMatchRanges.count > 0 {
+            czmMatches = czmMatchRanges.map({
+                currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
+            })
+            czmMatches = deleteDuplicates(czmMatches)
+
             for match in czmMatches {
-                let result = match as NSTextCheckingResult
-                let matchRange = Range(start: result.range.location, end: result.range.location + result.range.length)
-                let element = currentNode.glslSource[matchRange]
-                if (element != currentNode.name) {
-                    var elementSource: String?
-                    if let builtin = Builtins[element] {
+                if (match != currentNode.name) {
+                    var elementSource: String? = nil
+                    if let builtin = Builtins[match] {
                         elementSource = builtin
-                    } else if let uniform = AutomaticUniforms[element] {
-                        elementSource = uniform.declaration(element)
+                    } else if let uniform = AutomaticUniforms[match] {
+                        elementSource = uniform.declaration(match)
+                    } else {
+                        println("uniform \(match) not found")
                     }
-                    if elementSource == nil { println("uniform \(element) not found") }
                     if elementSource != nil {
-                        var referencedNode = getDependencyNode(element, glslSource: elementSource!, nodes: &dependencyNodes)
+                        var referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
                         currentNode.dependsOn.append(referencedNode)
                         referencedNode.requiredBy.append(currentNode)
                         
@@ -666,10 +665,11 @@ class ShaderProgram {
         
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
-        var builtinsSource = ""
+        var builtinsSource = reverse(dependencyNodes).reduce("", { $0 + $1.glslSource + "\n" })
+        /*var builtinsSource = ""
         for var i = dependencyNodes.count - 1; i >= 0; --i {
             builtinsSource += dependencyNodes[i].glslSource + "\n"
-        }
+        }*/
         return builtinsSource.replace(root.glslSource, "")
     }
 
@@ -757,6 +757,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+                //println(fragmentShaderSource)
                 println(fsSource)
                 fatalError("[GL] Fragment shader compile log: " + errorMessage!)
             }

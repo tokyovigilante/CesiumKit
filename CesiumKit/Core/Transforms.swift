@@ -8,18 +8,11 @@
 
 import Foundation
 
+/**
+* Contains functions for transforming positions to various reference frames.
+* @exports Transforms
+*/
 struct Transforms {
-    /*
-    /**
-     * Contains functions for transforming positions to various reference frames.
-     * @exports Transforms
-     */
-    var Transforms = {};
-
-    var eastNorthUpToFixedFrameNormal = new Cartesian3();
-    var eastNorthUpToFixedFrameTangent = new Cartesian3();
-    var eastNorthUpToFixedFrameBitangent = new Cartesian3();
-
     /**
      * Computes a 4x4 transformation matrix from a reference frame with an east-north-up axes
      * centered at the provided origin to the provided ellipsoid's fixed reference frame.
@@ -41,83 +34,33 @@ struct Transforms {
      * var center = ellipsoid.cartographicToCartesian(Cesium.Cartographic.ZERO);
      * var transform = Cesium.Transforms.eastNorthUpToFixedFrame(center);
      */
-    Transforms.eastNorthUpToFixedFrame = function(origin, ellipsoid, result) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(origin)) {
-            throw new DeveloperError('origin is required.');
-        }
-        //>>includeEnd('debug');
-
+    static func eastNorthUpToFixedFrame (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
+        
         // If x and y are zero, assume origin is at a pole, which is a special case.
-        if (CesiumMath.equalsEpsilon(origin.x, 0.0, CesiumMath.EPSILON14) &&
-            CesiumMath.equalsEpsilon(origin.y, 0.0, CesiumMath.EPSILON14)) {
-            var sign = CesiumMath.sign(origin.z);
-            if (!defined(result)) {
-                return new Matrix4(
-                        0.0, -sign,  0.0, origin.x,
-                        1.0,   0.0,  0.0, origin.y,
-                        0.0,   0.0, sign, origin.z,
-                        0.0,   0.0,  0.0, 1.0);
-            }
-            result[0] = 0.0;
-            result[1] = 1.0;
-            result[2] = 0.0;
-            result[3] = 0.0;
-            result[4] = -sign;
-            result[5] = 0.0;
-            result[6] = 0.0;
-            result[7] = 0.0;
-            result[8] = 0.0;
-            result[9] = 0.0;
-            result[10] = sign;
-            result[11] = 0.0;
-            result[12] = origin.x;
-            result[13] = origin.y;
-            result[14] = origin.z;
-            result[15] = 1.0;
-            return result;
+        if Math.equalsEpsilon(origin.x, 0.0, epsilon: Math.Epsilon14) &&
+            Math.equalsEpsilon(origin.y, 0.0, epsilon: Math.Epsilon14) {
+                let sign = Double(Math.sign(origin.z))
+                return Matrix4(
+                    0.0, -sign,  0.0, origin.x,
+                    1.0,   0.0,  0.0, origin.y,
+                    0.0,   0.0, sign, origin.z,
+                    0.0,   0.0,  0.0, 1.0);
         }
-
-        var normal = eastNorthUpToFixedFrameNormal;
-        var tangent  = eastNorthUpToFixedFrameTangent;
-        var bitangent = eastNorthUpToFixedFrameBitangent;
-
-        ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-        ellipsoid.geodeticSurfaceNormal(origin, normal);
-
-        tangent.x = -origin.y;
-        tangent.y = origin.x;
-        tangent.z = 0.0;
-        Cartesian3.normalize(tangent, tangent);
-
-        Cartesian3.cross(normal, tangent, bitangent);
-
-        if (!defined(result)) {
-            return new Matrix4(
-                    tangent.x, bitangent.x, normal.x, origin.x,
-                    tangent.y, bitangent.y, normal.y, origin.y,
-                    tangent.z, bitangent.z, normal.z, origin.z,
-                    0.0,       0.0,         0.0,      1.0);
-        }
-        result[0] = tangent.x;
-        result[1] = tangent.y;
-        result[2] = tangent.z;
-        result[3] = 0.0;
-        result[4] = bitangent.x;
-        result[5] = bitangent.y;
-        result[6] = bitangent.z;
-        result[7] = 0.0;
-        result[8] = normal.x;
-        result[9] = normal.y;
-        result[10] = normal.z;
-        result[11] = 0.0;
-        result[12] = origin.x;
-        result[13] = origin.y;
-        result[14] = origin.z;
-        result[15] = 1.0;
-        return result;
-    };
-
+        
+        let normal = ellipsoid.geodeticSurfaceNormal(origin)
+        
+        let tangent = Cartesian3(x: -origin.y, y: origin.x, z: 0.0).normalize()
+        
+        let bitangent = normal.cross(tangent)
+        
+        return Matrix4(
+            tangent.x, bitangent.x, normal.x, origin.x,
+            tangent.y, bitangent.y, normal.y, origin.y,
+            tangent.z, bitangent.z, normal.z, origin.z,
+            0.0,       0.0,         0.0,      1.0)
+        
+    }
+/*
     var northEastDownToFixedFrameNormal = new Cartesian3();
     var northEastDownToFixedFrameTangent = new Cartesian3();
     var northEastDownToFixedFrameBitangent = new Cartesian3();
