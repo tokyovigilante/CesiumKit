@@ -93,9 +93,9 @@ class GlobeSurfaceShaderSet {
                 fs2 += String("#define TEXTURE_UNITS \(textureCount)\n")
                 fs2 +=
                     baseFragmentShaderString! + "\n" +
-                    "vec3 computeDayColor(vec3 initialColor, vec2 textureCoordinates)\n" +
+                    "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n" +
                     "{\n" +
-                "    vec3 color = initialColor;\n"
+                "    vec4 color = initialColor;\n"
                 fs += fs2
                 for i in 0..<textureCount {
                     //fs +=
@@ -110,11 +110,11 @@ class GlobeSurfaceShaderSet {
                         fs += (applyContrast ?   "   u_dayTextureContrast[\(i)],\n" : "0.0,\n")
                         fs += (applyHue ?        "   u_dayTextureHue[\(i)],\n" : "0.0,\n")
                         fs += (applySaturation ? "   u_dayTextureSaturation[\(i)],\n" : "0.0,\n")
-                        fs += (applyGamma ?      "   u_dayTextureOneOverGamma[\(i)])\n" : "0.0)\n")
+                        fs += (applyGamma ?      "   u_dayTextureOneOverGamma[\(i)])\n" : "0.0);\n")
                 }
                 
                 fs +=
-                    "    return color\n" +
+                    "    return color;\n" +
                 "}"
                 
                 shader = context.createShaderProgram(vertexShaderSource: vs, fragmentShaderSource: fs, attributeLocations: attributeLocations)

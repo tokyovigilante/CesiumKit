@@ -47,7 +47,7 @@ class DrawCommand: Command {
     * @type {Matrix4}
     * @default undefined
     */
-    var modelMatrix: Matrix?
+    var modelMatrix: Matrix4?
     
     /**
     * The type of geometry in the vertex array.
@@ -79,7 +79,7 @@ class DrawCommand: Command {
     * @type {Number}
     * @default 0
     */
-    var offset: Int
+    var offset: Int = 0
     
     /**
     * The shader program to apply.
@@ -96,7 +96,7 @@ class DrawCommand: Command {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: UniformMap?
+    var uniformMap: [String: (() -> Any)]
     
     /**
     * The render state.
@@ -201,7 +201,7 @@ class DrawCommand: Command {
             self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
-            self.uniformMap = nil
+            self.uniformMap = Dictionary<String, (() -> Any)>()
     }
     
     /**

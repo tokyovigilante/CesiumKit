@@ -18,7 +18,7 @@ class VertexArray {
     
     let vertexCount: Int
     
-    private var vao: GLuint = 0
+    private var _vao: GLuint = 0
     
     let indexBuffer: IndexBuffer?
 
@@ -53,15 +53,17 @@ class VertexArray {
             uniqueIndices[index] = true
         }
         
-        // Setup VAO
-        glGenVertexArrays(1, &vao)
-        glBindVertexArray(vao)
-        bind(vaAttributes, indexBuffer: indexBuffer)
-        glBindVertexArray(0)
-        
         self.vertexCount = numberOfVertices
         self._attributes = vaAttributes
         self.indexBuffer = indexBuffer
+        
+        // Setup VAO
+        glGenVertexArrays(1, &_vao)
+        glBindVertexArray(_vao)
+        bind()
+        glBindVertexArray(0)
+        
+
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
@@ -132,9 +134,9 @@ class VertexArray {
         attributes.append(attr)
     }
     
-    private func bind(attributes: [VertexAttributes], indexBuffer: IndexBuffer?) {
+    private func bind() {
         
-        for attribute in attributes {
+        for attribute in _attributes {
             if attribute.enabled {
                 attribute.vertexAttrib()
             }
@@ -166,37 +168,18 @@ return this._indexBuffer;
     func attribute(index: Int) -> VertexAttributes {
         return _attributes[index]
     }
-/*
-VertexArray.prototype._bind = function() {
-if (defined(this._vao)) {
-this._vaoExtension.bindVertexArrayOES(this._vao);
-} else {
-bind(this._gl, this._attributes, this._indexBuffer);
-}
-};
 
-VertexArray.prototype._unBind = function() {
-if (defined(this._vao)) {
-this._vaoExtension.bindVertexArrayOES(null);
-} else {
-var attributes = this._attributes;
-var gl = this._gl;
+    func _bind() {
+        glBindVertexArray(_vao)
+        let err = glGetError()
+    }
 
-for ( var i = 0; i < attributes.length; ++i) {
-var attribute = attributes[i];
-if (attribute.enabled) {
-attribute.disableVertexAttribArray(gl);
-}
-}
-if (this._indexBuffer) {
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-}
-}
-};
+    func _unBind() {
+        glBindVertexArray(0)
+    }
 
-*/
     deinit {
-        glDeleteVertexArrays(1, &vao)
+        glDeleteVertexArrays(1, &_vao)
     }
 }
 

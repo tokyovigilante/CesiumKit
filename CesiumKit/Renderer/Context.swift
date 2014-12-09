@@ -1496,61 +1496,48 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         applyRenderState(rs, passState: passState)
     }
 
-    func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram) {
-    /*var primitiveType = drawCommand.primitiveType;
-    var va = drawCommand.vertexArray;
-    var offset = drawCommand.offset;
-    var count = drawCommand.count;
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!PrimitiveType.validate(primitiveType)) {
-        throw new DeveloperError('drawCommand.primitiveType is required and must be valid.');
-    }
-    
-    if (!defined(va)) {
-        throw new DeveloperError('drawCommand.vertexArray is required.');
-    }
-    
-    if (offset < 0) {
-        throw new DeveloperError('drawCommand.offset must be omitted or greater than or equal to zero.');
-    }
-    
-    if (count < 0) {
-        throw new DeveloperError('drawCommand.count must be omitted or greater than or equal to zero.');
-    }
-    //>>includeEnd('debug');
-    
-    context._us.model = defaultValue(drawCommand.modelMatrix, Matrix4.IDENTITY);
-    var sp = defaultValue(shaderProgram, drawCommand.shaderProgram);
-    sp._setUniforms(drawCommand.uniformMap, context._us, context.validateShaderProgram);
-    
-    var indexBuffer = va.indexBuffer;
-    
-    if (defined(indexBuffer)) {
-        offset = offset * indexBuffer.bytesPerIndex; // offset in vertices to offset in bytes
-        count = defaultValue(count, indexBuffer.numberOfIndices);
+    func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {
+        let primitiveType = drawCommand.primitiveType
+        let va = drawCommand.vertexArray
+        var offset = drawCommand.offset
+        var count = drawCommand.count
         
-        va._bind();
-        context._gl.drawElements(primitiveType, count, indexBuffer.indexDatatype, offset);
-        va._unBind();
-    } else {
-        count = defaultValue(count, va.numberOfVertices);
+        assert(va != nil, "drawCommand.vertexArray is required")
+        assert(offset >= 0, "drawCommand.offset must be omitted or greater than or equal to zero")
+        assert(count == nil || count! >= 0, "drawCommand.count must be omitted or greater than or equal to zero")
         
-        va._bind();
-        context._gl.drawArrays(primitiveType, offset, count);
-        va._unBind();
-    }*/
-}
+        
+        uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
+        let sp = shaderProgram ?? drawCommand.shaderProgram
+        sp!.setUniforms(nil/*drawCommand.uniformMap*/, uniformState: uniformState, validate: _validateShaderProgram)
+        
+        
+        if let indexBuffer = va!.indexBuffer {
+            offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
+            count = count ?? indexBuffer.numberOfIndices
+            
+            va!._bind()
+            // FIXME: primitiveType toGL()
+            glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
+            va!._unBind()
+        } else {
+            /*count = defaultValue(count, va.numberOfVertices);
+            
+            va._bind();
+            context._gl.drawArrays(primitiveType, offset, count);
+            va._unBind();*/
+        }
+    }
 
-func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
-    
-    var activePassState = passState ?? _defaultPassState
-    // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-    var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
-
-    beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
-    //continueDraw(this, drawCommand, shaderProgram)
-}
+    func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
+        
+        var activePassState = passState ?? _defaultPassState
+        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+        var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
+        
+        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
+        continueDraw(drawCommand, shaderProgram: shaderProgram)
+    }
 /*
 Context.prototype.endFrame = function() {
     var gl = this._gl;

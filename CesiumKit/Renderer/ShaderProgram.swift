@@ -11,18 +11,19 @@ import OpenGLES
 
 /*
 
-    var scratchUniformMatrix2;
-    var scratchUniformMatrix3;
-    var scratchUniformMatrix4;
-    if (FeatureDetection.supportsTypedArrays()) {
-    scratchUniformMatrix2 = new Float32Array(4);
-    scratchUniformMatrix3 = new Float32Array(9);
-    scratchUniformMatrix4 = new Float32Array(16);
-    }
+var scratchUniformMatrix2;
+var scratchUniformMatrix3;
+var scratchUniformMatrix4;
+if (FeatureDetection.supportsTypedArrays()) {
+scratchUniformMatrix2 = new Float32Array(4);
+scratchUniformMatrix3 = new Float32Array(9);
+scratchUniformMatrix4 = new Float32Array(16);
+}
 */
 // represents WebGLActiveInfo
 
-struct ActiveInfo {
+struct ActiveUniformInfo {
+    
     var name: String = ""
     
     var size: GLsizei = 0
@@ -30,83 +31,18 @@ struct ActiveInfo {
     var type: GLenum = 0
 }
 
-func setUniform (uniform: Uniform) -> (() -> ()) {
-
-    var location = uniform._location
-    switch uniform._activeUniform.type {
-    case GLenum(GL_FLOAT):
-        return { glUniform1f(location, uniform.value as GLfloat) }
-    case GLenum(GL_FLOAT_VEC2):
-        return {
-            var v = uniform.value as Cartesian2
-            glUniform2f(location, GLfloat(v.x), GLfloat(v.y))
-        }
-    case GLenum(GL_FLOAT_VEC3):
-        return {
-            var v = uniform.value as Cartesian3
-            glUniform3f(location, GLfloat(v.x), GLfloat(v.y), GLfloat(v.z))
-        }
-    /*case gl.FLOAT_VEC4:
-        return function() {
-            var v = uniform.value;
-            
-            if (defined(v.red)) {
-                gl.uniform4f(location, v.red, v.green, v.blue, v.alpha);
-            } else if (defined(v.x)) {
-                gl.uniform4f(location, v.x, v.y, v.z, v.w);
-            } else {
-                throw new DeveloperError('Invalid vec4 value for uniform "' + uniform._activeUniform.name + '".');
-            }
-        };
-    case gl.SAMPLER_2D:
-    case gl.SAMPLER_CUBE:
-        return function() {
-            gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
-            gl.bindTexture(uniform.value._target, uniform.value._texture);
-        };
-    case gl.INT:
-    case gl.BOOL:
-        return function() {
-            gl.uniform1i(location, uniform.value);
-        };
-    case gl.INT_VEC2:
-    case gl.BOOL_VEC2:
-        return function() {
-            var v = uniform.value;
-            gl.uniform2i(location, v.x, v.y);
-        };
-    case gl.INT_VEC3:
-    case gl.BOOL_VEC3:
-        return function() {
-            var v = uniform.value;
-            gl.uniform3i(location, v.x, v.y, v.z);
-        };
-    case gl.INT_VEC4:
-    case gl.BOOL_VEC4:
-        return function() {
-            var v = uniform.value;
-            gl.uniform4i(location, v.x, v.y, v.z, v.w);
-        };
-    case gl.FLOAT_MAT2:
-        return function() {
-            gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
-        };
-    case gl.FLOAT_MAT3:
-        return function() {
-            gl.uniformMatrix3fv(location, false, Matrix3.toArray(uniform.value, scratchUniformMatrix3));
-        };
-    case gl.FLOAT_MAT4:
-        return function() {
-            gl.uniformMatrix4fv(location, false, Matrix4.toArray(uniform.value, scratchUniformMatrix4));
-        };*/
-    default:
-        fatalError("Unrecognized uniform type: \(uniform._activeUniform.type) for uniform '\(uniform._activeUniform.name)")
-    }
+struct VertexAttributeInfo {
+    
+    var name: String = ""
+    
+    var type: GLenum = 0
+    
+    var index: GLenum = 0
 }
 
 class Uniform {
     
-    private var _activeUniform: ActiveInfo
+    private var _activeUniform: ActiveUniformInfo
     
     var name: String {
         get {
@@ -121,7 +57,7 @@ class Uniform {
     
     private var _textureUnitIndex: GLint = 0
     
-    private var _set: (uniform: Uniform) -> (() -> ())
+    //var set: (uniform: Uniform) -> (() -> ())
     
     var datatype: GLenum {
         get {
@@ -130,15 +66,19 @@ class Uniform {
     }
     
     private var _setSampler: ((textureUnitIndex: GLint) -> GLint)?
-
-    init (activeUniform: ActiveInfo, uniformName: String, location: GLint, value: Any) {
+    
+    var hasSetSampler: Bool {
+        get {
+            return _setSampler != nil
+        }
+    }
+    
+    init (activeUniform: ActiveUniformInfo, uniformName: String, location: GLint, value: Any) {
         
         self.value = value
         _activeUniform = activeUniform
         _uniformName = uniformName
         _location = location
-        
-        _set = setUniform
         
         if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
             _setSampler = { (textureUnitIndex: GLint) -> GLint in
@@ -148,6 +88,77 @@ class Uniform {
             }
         }
     }
+    
+    func set() {
+        
+        switch _activeUniform.type {
+        case GLenum(GL_FLOAT):
+            glUniform1f(_location, self.value as GLfloat)
+        case GLenum(GL_FLOAT_VEC2):
+            var v = value as Cartesian2
+            glUniform2f(_location, GLfloat(v.x), GLfloat(v.y))
+            
+        case GLenum(GL_FLOAT_VEC3):
+            var v = self.value as Cartesian3
+            glUniform3f(self._location, GLfloat(v.x), GLfloat(v.y), GLfloat(v.z))
+            /*case gl.FLOAT_VEC4:
+            return function() {
+            var v = uniform.value;
+            
+            if (defined(v.red)) {
+            gl.uniform4f(location, v.red, v.green, v.blue, v.alpha);
+            } else if (defined(v.x)) {
+            gl.uniform4f(location, v.x, v.y, v.z, v.w);
+            } else {
+            throw new DeveloperError('Invalid vec4 value for uniform "' + uniform._activeUniform.name + '".');
+            }
+            };
+            case gl.SAMPLER_2D:
+            case gl.SAMPLER_CUBE:
+            return function() {
+            gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
+            gl.bindTexture(uniform.value._target, uniform.value._texture);
+            };
+            case gl.INT:
+            case gl.BOOL:
+            return function() {
+            gl.uniform1i(location, uniform.value);
+            };
+            case gl.INT_VEC2:
+            case gl.BOOL_VEC2:
+            return function() {
+            var v = uniform.value;
+            gl.uniform2i(location, v.x, v.y);
+            };
+            case gl.INT_VEC3:
+            case gl.BOOL_VEC3:
+            return function() {
+            var v = uniform.value;
+            gl.uniform3i(location, v.x, v.y, v.z);
+            };
+            case gl.INT_VEC4:
+            case gl.BOOL_VEC4:
+            return function() {
+            var v = uniform.value;
+            gl.uniform4i(location, v.x, v.y, v.z, v.w);
+            };
+            case gl.FLOAT_MAT2:
+            return function() {
+            gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
+            };
+            case gl.FLOAT_MAT3:
+            return function() {
+            gl.uniformMatrix3fv(location, false, Matrix3.toArray(uniform.value, scratchUniformMatrix3));
+            };
+            */
+        case GLenum(GL_FLOAT_MAT4):
+            var v = value as Matrix4
+            glUniformMatrix4fv(_location, 1, GLboolean(0), v.toArray())
+        default:
+            fatalError("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
+        }
+    }
+    
     /*
     function setUniformArray(uniformArray) {
     var gl = uniformArray._gl;
@@ -274,10 +285,10 @@ class Uniform {
     throw new RuntimeError('Unrecognized uniform type: ' + uniformArray._activeUniform.type);
     }
     }
-
-}
-class UniformArray {
-
+    
+    }
+    class UniformArray {
+    
     /**
     * @private
     */
@@ -322,32 +333,15 @@ class UniformArray {
     }
     }
     });
-    
-    function setSamplerUniforms(gl, program, samplerUniforms) {
-    gl.useProgram(program);
-    
-    var textureUnitIndex = 0;
-    var length = samplerUniforms.length;
-    for (var i = 0; i < length; ++i) {
-    textureUnitIndex = samplerUniforms[i]._setSampler(textureUnitIndex);
-    }
-    
-    gl.useProgram(null);
-    
-    return textureUnitIndex;
-    }*/
+    */
 
+    
     
     /**
     * @private
     */
-
+    
 }
-/*struct VertexAttribute {
-    let name: String
-    let type: Int
-    let index: Int
-}*/
 
 private class DependencyNode: Equatable {
     
@@ -379,13 +373,13 @@ private class DependencyNode: Equatable {
 
 private func == (left: DependencyNode, right: DependencyNode) -> Bool {
     return left.name == right.name &&
-    left.glslSource == right.glslSource
+        left.glslSource == right.glslSource
 }
 
 class ShaderProgram {
-
+    
     //var _activeUniform = ActiveInfo()
-
+    
     var _logShaderCompilation: Bool = false
     
     /**
@@ -430,16 +424,16 @@ class ShaderProgram {
         
     }
     private var _numberOfVertexAttributes: GLint = 0
-
-    var vertexAttributes: [VertexAttributes] {
+    
+    var vertexAttributes: [String: VertexAttributeInfo] {
         get {
             initialize()
             return _vertexAttributes
         }
     }
-    private var _vertexAttributes = [VertexAttributes]()
-
-
+    private var _vertexAttributes = [String: VertexAttributeInfo]()
+    
+    
     var uniformsByName: [String: Uniform] {
         get {
             initialize()
@@ -448,17 +442,17 @@ class ShaderProgram {
     }
     private var _uniformsByName = [String: Uniform]?()
     
-    var uniforms: [Uniform]? = nil
-
-    var automaticUniforms = [Uniform]()
-
-    var manualUniforms: [Uniform] {
+    private var _uniforms: [Uniform]? = nil
+    
+    private var _automaticUniforms = [automaticTuple]()
+    
+    var manualUniforms: [String: Uniform] {
         get {
             initialize()
             return _manualUniforms!
         }
     }
-    private var _manualUniforms = [Uniform]?()
+    private var _manualUniforms = [String: Uniform]?()
     
     var maximumTextureUnitIndex: Int = 0
     
@@ -482,7 +476,7 @@ class ShaderProgram {
         //_manualUniforms = nil
     }
     
-    func extractShaderVersion(source: String) -> (version: String, source: String) {
+    private func extractShaderVersion(source: String) -> (version: String, source: String) {
         // This will fail if the first #version is actually in a comment.
         //var index = source.indexOf("#version")
         var index = source.indexOf("#version")
@@ -493,32 +487,32 @@ class ShaderProgram {
             // We could throw an exception if there is not a new line after
             // #version, but the GLSL compiler will catch it.
             if (newLineIndex != nil) {
-                // Extract #version directive, including the new line.
-                var version = source.substringWithRange(Range(index!, advance(newLineIndex!, 1)))
-                
-                // Comment out original #version directive so the line numbers
-                // are not off by one.  There can be only one #version directive
-                // and it must appear at the top of the source, only preceded by
-                // whitespace and comments.
-                var modified = source.substring(0, index) + '//' + source.substring(index);
-                
-                return {
-                    version : version,
-                    source : modified
-                };
+            // Extract #version directive, including the new line.
+            var version = source.substringWithRange(Range(index!, advance(newLineIndex!, 1)))
+            
+            // Comment out original #version directive so the line numbers
+            // are not off by one.  There can be only one #version directive
+            // and it must appear at the top of the source, only preceded by
+            // whitespace and comments.
+            var modified = source.substring(0, index) + '//' + source.substring(index);
+            
+            return {
+            version : version,
+            source : modified
+            };
             }*/
         }
-    
+        
         return (
             version: "", // defaults to #version 100
             source : source // no modifications required
         )
     }
-
-    private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode {
-
-        var dependencyNode: DependencyNode?
     
+    private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode {
+        
+        var dependencyNode: DependencyNode?
+        
         // check if already loaded
         for node in nodes {
             if node.name == name {
@@ -560,7 +554,7 @@ class ShaderProgram {
             dependencyNode = DependencyNode(name: name, glslSource: newGLSLSource)
             nodes << dependencyNode!
         }
-
+        
         return dependencyNode!
     }
     
@@ -580,7 +574,7 @@ class ShaderProgram {
                 currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
             })
             czmMatches = deleteDuplicates(czmMatches)
-
+            
             for match in czmMatches {
                 if (match != currentNode.name) {
                     var elementSource: String? = nil
@@ -604,8 +598,8 @@ class ShaderProgram {
             }
         }
     }
-
-
+    
+    
     private func sortDependencies(inout dependencyNodes: [DependencyNode]) {
         
         var nodesWithoutIncomingEdges = [DependencyNode]()
@@ -654,7 +648,7 @@ class ShaderProgram {
             fatalError(message)
         }
     }
-
+    
     private func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
         // generate a dependency graph for builtin functions
         
@@ -665,42 +659,39 @@ class ShaderProgram {
         
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
-        var builtinsSource = reverse(dependencyNodes).reduce("", { $0 + $1.glslSource + "\n" })
-        /*var builtinsSource = ""
-        for var i = dependencyNodes.count - 1; i >= 0; --i {
-            builtinsSource += dependencyNodes[i].glslSource + "\n"
-        }*/
-        return builtinsSource.replace(root.glslSource, "")
+        return reverse(dependencyNodes)
+            .reduce("", { $0 + $1.glslSource + "\n" })
+            .replace(root.glslSource, "")
     }
-
-    func getFragmentShaderPrecision() -> String {
+    
+    private func getFragmentShaderPrecision() -> String {
         return "#ifdef GL_FRAGMENT_PRECISION_HIGH \n" +
             "  precision highp float; \n" +
             "#else \n" +
             "  precision mediump float; \n" +
         "#endif \n\n"
     }
-
-    func createAndLinkProgram(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]?) -> GLuint {
-
+    
+    private func createAndLinkProgram(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]?) -> GLuint {
+        
         let vsSourceVersioned = extractShaderVersion(vertexShaderSource)
         let fsSourceVersioned = extractShaderVersion(fragmentShaderSource)
         
         var vsSource = vsSourceVersioned.version +
-        getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
-        "\n#line 0\n" +
-        vsSourceVersioned.source
+            getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
+            "\n#line 0\n" +
+            vsSourceVersioned.source
         
         var fsSource = fsSourceVersioned.version +
-        getFragmentShaderPrecision() +
-        getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
-        "\n#line 0\n" +
-        fsSourceVersioned.source
+            getFragmentShaderPrecision() +
+            getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
+            "\n#line 0\n" +
+            fsSourceVersioned.source
         
         var log: GLint = 0
         
         var shaderCount: GLsizei = 1
-
+        
         var vertexSourceUTF8 = UnsafePointer<GLchar>((vsSource as NSString).UTF8String)
         var vertexSourceLength = GLint(vsSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         
@@ -710,7 +701,7 @@ class ShaderProgram {
         
         var fragmentSourceUTF8 = UnsafePointer<GLchar>((fsSource as NSString).UTF8String)
         var fragmentSourceLength = GLint(fsSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
-
+        
         var fragmentShader: GLuint = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
         glShaderSource(fragmentShader, shaderCount, &fragmentSourceUTF8, &fragmentSourceLength)
         glCompileShader(fragmentShader)
@@ -721,7 +712,7 @@ class ShaderProgram {
         
         glDeleteShader(vertexShader)
         glDeleteShader(fragmentShader)
-
+        
         if _attributeLocations != nil {
             for (key, value) in _attributeLocations! {
                 glBindAttribLocation(program, GLuint(value), (key as NSString).UTF8String)
@@ -737,7 +728,7 @@ class ShaderProgram {
             // For performance, only check compile errors if there is a linker error.
             
             var infoLogLength: GLint = 0
-
+            
             glGetShaderiv(vertexShader, GLenum(GL_COMPILE_STATUS), &status)
             
             if status == 0 {
@@ -757,7 +748,6 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                //println(fragmentShaderSource)
                 println(fsSource)
                 fatalError("[GL] Fragment shader compile log: " + errorMessage!)
             }
@@ -768,7 +758,6 @@ class ShaderProgram {
             glGetProgramInfoLog(program, infoLogLength, &actualLength, &strInfoLog)
             glDeleteProgram(program)
             let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-
             fatalError("Program failed to link.  Link log: " + errorMessage!)
         }
         /*
@@ -796,42 +785,56 @@ class ShaderProgram {
         return program
     }
     
-/*
-function findVertexAttributes(gl, program, numberOfAttributes) {
-    var attributes = {};
-    for (var i = 0; i < numberOfAttributes; ++i) {
-        var attr = gl.getActiveAttrib(program, i);
-        var location = gl.getAttribLocation(program, attr.name);
+    typealias VertexAttribute = (name: String, type: GLenum, index: GLint)
+
+    private func findVertexAttributes(numberOfAttributes: Int) -> [String: VertexAttributeInfo] {
         
-        attributes[attr.name] = {
-            name : attr.name,
-            type : attr.type,
-            index : location
-        };
+        assert(_program != nil, "no GLSL program")
+        let program = _program!
+        
+        var attributes = [String: VertexAttributeInfo]()
+        
+        for var i = 0; i < numberOfAttributes; ++i {
+            
+            var maxVertexAttribLength: GLint = 0
+            glGetProgramiv(program, GLenum(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH), &maxVertexAttribLength)
+            
+            var vertexAttribNameBuffer = [GLchar](count: Int(maxVertexAttribLength), repeatedValue: 0)
+            var attr = VertexAttributeInfo()
+            var vertexAttribSize: GLint = 0
+            var vertexAttribLength: GLsizei = 0
+            
+            glGetActiveAttrib(program, GLuint(i), GLsizei(maxVertexAttribLength), &vertexAttribLength, &vertexAttribSize, &attr.type, &vertexAttribNameBuffer)
+            attr.name = String.fromCString(UnsafePointer<CChar>(vertexAttribNameBuffer))!
+            attr.index = GLenum(i)
+            
+            attributes[attr.name] = attr
+        }
+        return attributes
     }
     
-    return attributes;
-}
-*/
-    func findUniforms() -> (uniformsByName: [Uniform], uniforms : [Uniform], samplerUniforms : [Uniform]) {
+    private func findUniforms() -> (uniformsByName: [String: Uniform], uniforms : [Uniform], samplerUniforms : [Uniform]) {
         
-        var uniformsByName = [Uniform]()
+        assert(_program != nil, "no GLSL program")
+        let program = _program!
+        
+        var uniformsByName = [String: Uniform]()
         var uniforms = [Uniform]()
         var samplerUniforms = [Uniform]()
         
         var numberOfUniforms: GLint = 0
-        glGetProgramiv(_program!, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
+        glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
         
         var maxUniformLength: GLint = 0
-        glGetProgramiv(_program!, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
+        glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
         
         for var i = 0; i < Int(numberOfUniforms); ++i {
             var uniformLength: GLsizei = 0
             var uniformNameBuffer = [GLchar](count: Int(uniformLength + 1), repeatedValue: 0)
-            var activeUniform = ActiveInfo()
-            glGetActiveUniform(_program!, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &activeUniform.size, &activeUniform.type, &uniformNameBuffer)
+            var activeUniform = ActiveUniformInfo()
+            glGetActiveUniform(program, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &activeUniform.size, &activeUniform.type, &uniformNameBuffer)
             activeUniform.name = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
-
+            
             var suffix = "[0]"
             
             var uniformName = activeUniform.name
@@ -842,24 +845,25 @@ function findVertexAttributes(gl, program, numberOfAttributes) {
                 activeUniform.name.removeRange(suffixRange)
             }
             
-                /*if (activeUniform.name.indexOf('[') < 0) {
+            if activeUniform.name.indexOf("[") == nil {
                 // Single uniform
-                var location = gl.getUniformLocation(program, uniformName);
-                var uniformValue = gl.getUniform(program, location);
-                var uniform = new Uniform(gl, activeUniform, uniformName, location, uniformValue);
+                let location = glGetUniformLocation(program, (uniformName as NSString).UTF8String)
+                var uniformValue: GLfloat = 0.0
+                glGetUniformfv(program, location, &uniformValue)
+                let uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: uniformValue)
                 
-                uniformsByName[uniformName] = uniform;
-                uniforms.push(uniform);
+                uniformsByName[uniformName] = uniform
+                uniforms.append(uniform)
                 
-                if (uniform._setSampler) {
-                samplerUniforms.push(uniform);
+                if uniform.hasSetSampler {
+                    samplerUniforms.append(uniform)
                 }
-                } else {
+            } else {
                 // Uniform array
                 
-                var uniformArray;
-                var locations;
-                var value;
+                /*var uniformArray: UniformArray*/
+                var locations = [GLint]()
+                /*var value;
                 var loc;
                 
                 // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
@@ -903,8 +907,8 @@ function findVertexAttributes(gl, program, numberOfAttributes) {
                 samplerUniforms.push(uniformArray);
                 }
                 }
-                }
-            }*/
+                }*/
+            }
         }
         
         return (
@@ -913,111 +917,100 @@ function findVertexAttributes(gl, program, numberOfAttributes) {
             samplerUniforms : samplerUniforms
         )
     }
-/*
-function partitionUniforms(uniforms) {
-    var automaticUniforms = [];
-    var manualUniforms = {};
     
-    for ( var uniform in uniforms) {
-        if (uniforms.hasOwnProperty(uniform)) {
-            var automaticUniform = AutomaticUniforms[uniform];
-            if (automaticUniform) {
-                automaticUniforms.push({
-                    uniform : uniforms[uniform],
-                    automaticUniform : automaticUniform
-                    });
-            } else {
-                manualUniforms[uniform] = uniforms[uniform];
-            }
-        }
-    }
+    typealias automaticTuple = (uniform: Uniform, automaticUniform: AutomaticUniform)
     
-    return {
-        automaticUniforms : automaticUniforms,
-        manualUniforms : manualUniforms
-    };
-}
-*/
-func initialize() {
-
-    if _program != nil {
-        return
-    }
-    
-    _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
-
-    glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-    
-    var uniforms = findUniforms()
-    /*var partitionedUniforms = partitionUniforms(uniforms.uniformsByName);
-    
-    shader._program = program;
-    shader._numberOfVertexAttributes = numberOfVertexAttributes;
-    shader._vertexAttributes = findVertexAttributes(gl, program, numberOfVertexAttributes);
-    shader._uniformsByName = uniforms.uniformsByName;
-    shader._uniforms = uniforms.uniforms;
-    shader._automaticUniforms = partitionedUniforms.automaticUniforms;
-    shader._manualUniforms = partitionedUniforms.manualUniforms;
-    
-    shader.maximumTextureUnitIndex = setSamplerUniforms(gl, program, uniforms.samplerUniforms);*/
-}
-
-func bind () {
-    initialize()
-    glUseProgram(_program!)
-}
-/*
-ShaderProgram.prototype._setUniforms = function(uniformMap, uniformState, validate) {
-    // TODO: Performance
-    
-    var len;
-    var i;
-    
-    var uniforms = this._uniforms;
-    var manualUniforms = this._manualUniforms;
-    var automaticUniforms = this._automaticUniforms;
-    
-    if (uniformMap) {
-        for ( var uniform in manualUniforms) {
-            if (manualUniforms.hasOwnProperty(uniform)) {
-                manualUniforms[uniform].value = uniformMap[uniform]();
-            }
-        }
-    }
-    
-    len = automaticUniforms.length;
-    for (i = 0; i < len; ++i) {
-        automaticUniforms[i].uniform.value = automaticUniforms[i].automaticUniform.getValue(uniformState);
-    }
-    
-    ///////////////////////////////////////////////////////////////////
-    
-    len = uniforms.length;
-    for (i = 0; i < len; ++i) {
-        uniforms[i]._set();
-    }
-    
-    if (validate) {
-        var gl = this._gl;
-        var program = this._program;
+    private func partitionUniforms(uniforms: [String: Uniform]) -> (automaticUniforms: [automaticTuple], manualUniforms: [String: Uniform]) {
+        var automaticUniforms = [automaticTuple]()
+        var manualUniforms = [String: Uniform]()
         
-        gl.validateProgram(program);
-        if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-            throw new DeveloperError('Program validation failed.  Link log: ' + gl.getProgramInfoLog(program));
+        for (name, uniform) in uniforms {
+            // FIXME: could use filter/map
+            if let automaticUniform = AutomaticUniforms[name] {
+                automaticUniforms.append((
+                    uniform : uniform,
+                    automaticUniform : automaticUniform
+                ))
+            } else {
+                manualUniforms[uniform.name] = uniform
+            }
+        }
+        return (automaticUniforms: automaticUniforms, manualUniforms: manualUniforms)
+    }
+    
+    private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
+        
+        glUseProgram(_program!)
+        
+        var textureUnitIndex: GLint = 0
+        for samplerUniform in samplerUniforms {
+            textureUnitIndex = samplerUniform._setSampler!(textureUnitIndex: textureUnitIndex)
+        }
+        
+        glUseProgram(0)
+        
+        return textureUnitIndex
+    }
+    
+    func initialize() {
+        
+        if _program != nil {
+            return
+        }
+        
+        _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
+        
+        glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
+        
+        var uniforms = findUniforms()
+        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
+        
+        _vertexAttributes = findVertexAttributes(numberOfVertexAttributes)
+        _uniformsByName = uniforms.uniformsByName
+        _uniforms = uniforms.uniforms
+        _automaticUniforms = partitionedUniforms.automaticUniforms
+        _manualUniforms = partitionedUniforms.manualUniforms
+        
+        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))
+    }
+    
+    func bind () {
+        initialize()
+        glUseProgram(_program!)
+    }
+    
+    func setUniforms (uniformMap: [String: ((map: TileUniformMap) -> Any)]?, uniformState: UniformState, validate: Bool) {
+        // TODO: Performance
+        
+        /*if uniformMap != nil {
+            for (name, uniform) in _manualUniforms! {
+                uniform.value = uniformMap[name](map: uniformMap)
+            }
+        }*/
+        for (name, uniform) in _automaticUniforms {
+//            uniform.value = uniform.automaticUniform.getValue(uniformState)
+        }
+        
+        for uniform in _uniforms! {
+            uniform.set()
+            
+            if validate {
+                /*glValidateProgram(_program!)
+                glGetProgramiv()
+                if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+                    throw new DeveloperError('Program validation failed.  Link log: ' + gl.getProgramInfoLog(program));
+                }
+            }*/
+            }
         }
     }
-};*/
-/*
-ShaderProgram.prototype.isDestroyed = function() {
-    return false;
-};
-*/
+
     deinit {
         if _program != nil {
             glDeleteProgram(_program!)
         }
     }
-
+    
     /**
     * Creates a GLSL shader source string by sending the input through three stages:
     * <ul>
@@ -1056,7 +1049,7 @@ ShaderProgram.prototype.isDestroyed = function() {
     *
     * @private
     */
-
+    
     class func createShaderSource(#defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
         
         assert(pickColorQualifier == nil || pickColorQualifier == "uniform" || pickColorQualifier == "varying", "options.pickColorQualifier must be 'uniform' or 'varying'")
@@ -1072,8 +1065,8 @@ ShaderProgram.prototype.isDestroyed = function() {
         
         // Stage 2.  Combine shader sources, generally for pseudo-polymorphism, e.g., czm_getMaterial.
         for shaderSource in sources {
-                // #line needs to be on its own line.
-                source += "\n#line 0\n" + shaderSource
+            // #line needs to be on its own line.
+            source += "\n#line 0\n" + shaderSource
         }
         
         
@@ -1084,44 +1077,18 @@ ShaderProgram.prototype.isDestroyed = function() {
             pickColorQualifier + " vec4 czm_pickColor; \n" +
             "void main() \n" +
             "{ \n" +
-                "    czm_old_main(); \n" +
-                "    if (gl_FragColor.a == 0.0) { \n" +
-                    "        discard; \n" +
-                    "    } \n" +
-                "    gl_FragColor = czm_pickColor; \n" +
-                "}"
+            "    czm_old_main(); \n" +
+            "    if (gl_FragColor.a == 0.0) { \n" +
+            "        discard; \n" +
+            "    } \n" +
+            "    gl_FragColor = czm_pickColor; \n" +
+            "}"
             
             source = renamedFS + "\n" + pickMain*/
         }
-    
+        
         return source
-
+        
     }
-
-}
-
-extension String {
     
-    func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
-        return self.rangeOfString(findStr, options: nil, range: nil, locale: nil)?.startIndex
-        /*var startInd = startIndex ?? self.startIndex
-        // check first that the first character of search string exists
-        if contains(self, first(findStr)!) {
-            // if so set this as the place to start searching
-            startInd = find(self,first(findStr)!)!
-        }
-        else {
-            // if not return empty array
-            return nil
-        }
-        var i = distance(self.startIndex, startInd)
-        while i<=countElements(self)-countElements(findStr) {
-            if self[advance(self.startIndex, i)..<advance(self.startIndex, i+countElements(findStr))] == findStr {
-                return advance(self.startIndex, i)
-            }
-            i++
-        }
-        return nil*/
-    }
-} // try further optimisation by jumping to next index of first search character after every find
-
+}

@@ -176,40 +176,40 @@ class UniformState {
             return _viewportTransformation
         }
     }
-    /*
+    
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
-    model : {
-    get : function() {
-    return this._model;
-    },
-    set : function(matrix) {
-    Matrix4.clone(matrix, this._model);
-    
-    this._modelView3DDirty = true;
-    this._inverseModelView3DDirty = true;
-    this._inverseModelDirty = true;
-    this._inverseTransposeModelDirty = true;
-    this._modelViewDirty = true;
-    this._inverseModelViewDirty = true;
-    this._viewProjectionDirty = true;
-    this._inverseViewProjectionDirty = true;
-    this._modelViewRelativeToEyeDirty = true;
-    this._inverseModelViewDirty = true;
-    this._modelViewProjectionDirty = true;
-    this._inverseModelViewProjectionDirty = true;
-    this._modelViewProjectionRelativeToEyeDirty = true;
-    this._modelViewInfiniteProjectionDirty = true;
-    this._normalDirty = true;
-    this._inverseNormalDirty = true;
-    this._normal3DDirty = true;
-    this._inverseNormal3DDirty = true;
-    this._encodedCameraPositionMCDirty = true;
+    var model: Matrix4 {
+        get {
+            return _model
+        }
+        set (value) {
+            _model = value
+            
+            _modelView3DDirty = true
+            _inverseModelView3DDirty = true
+            _inverseModelDirty = true
+            _inverseTransposeModelDirty = true
+            _modelViewDirty = true
+            _inverseModelViewDirty = true
+            _viewProjectionDirty = true
+            _inverseViewProjectionDirty = true
+            _modelViewRelativeToEyeDirty = true
+            _inverseModelViewDirty = true
+            _modelViewProjectionDirty = true
+            _inverseModelViewProjectionDirty = true
+            _modelViewProjectionRelativeToEyeDirty = true
+            _modelViewInfiniteProjectionDirty = true
+            _normalDirty = true
+            _inverseNormalDirty = true
+            _normal3DDirty = true
+            _inverseNormal3DDirty = true
+            _encodedCameraPositionMCDirty = true
+        }
     }
-    },
-    
+    /*
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}

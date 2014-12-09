@@ -793,60 +793,30 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             column3Row0, column3Row1, column3Row2, column3Row3
         )
     }
-
     
-/**
-* Computes an Array from the provided Matrix4 instance.
-* The array will be in column-major order.
-*
-* @param {Matrix4} matrix The matrix to use..
-* @param {Number[]} [result] The Array onto which to store the result.
-* @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
-*
-* @example
-* //create an array from an instance of Matrix4
-* // m = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-* var a = Cesium.Matrix4.toArray(m);
-*
-* // m remains the same
-* //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
-*/
-    /*
-Matrix4.toArray = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
+    /**
+    * Computes an Array from the provided Matrix4 instance.
+    * The array will be in column-major order.
+    *
+    * @param {Matrix4} matrix The matrix to use..
+    * @param {Number[]} [result] The Array onto which to store the result.
+    * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
+    *
+    * @example
+    * //create an array from an instance of Matrix4
+    * // m = [10.0, 14.0, 18.0, 22.0]
+    * //     [11.0, 15.0, 19.0, 23.0]
+    * //     [12.0, 16.0, 20.0, 24.0]
+    * //     [13.0, 17.0, 21.0, 25.0]
+    * var a = Cesium.Matrix4.toArray(m);
+    *
+    * // m remains the same
+    * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
+    */
+    func toArray() -> [Float] {
+        return _grid.map({ Float($0) })
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return [matrix[0], matrix[1], matrix[2], matrix[3],
-            matrix[4], matrix[5], matrix[6], matrix[7],
-            matrix[8], matrix[9], matrix[10], matrix[11],
-            matrix[12], matrix[13], matrix[14], matrix[15]];
-    }
-    result[0] = matrix[0];
-    result[1] = matrix[1];
-    result[2] = matrix[2];
-    result[3] = matrix[3];
-    result[4] = matrix[4];
-    result[5] = matrix[5];
-    result[6] = matrix[6];
-    result[7] = matrix[7];
-    result[8] = matrix[8];
-    result[9] = matrix[9];
-    result[10] = matrix[10];
-    result[11] = matrix[11];
-    result[12] = matrix[12];
-    result[13] = matrix[13];
-    result[14] = matrix[14];
-    result[15] = matrix[15];
-    return result;
-};
-
+/*
 /**
 * Computes the array index of the element at the provided row and column.
 *

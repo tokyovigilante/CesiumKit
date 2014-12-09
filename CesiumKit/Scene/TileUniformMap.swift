@@ -52,88 +52,92 @@ class TileUniformMap: UniformMap {
     
     var waterMaskTranslationAndScale = Cartesian4()
     
-    func u_initialColor () -> Cartesian4 {
-            return initialColor
-    }
+    var uniforms: [String: ((map: TileUniformMap) -> Any)] = [
     
-    func u_zoomedOutOceanSpecularIntensity () -> Double {
-        return zoomedOutOceanSpecularIntensity
-    }
-    
-    func u_oceanNormalMap () -> Texture? {
-        return oceanNormalMap
-    }
-    
-    func u_lightingFadeDistance () -> Cartesian2 {
-        return lightingFadeDistance
-    }
-    
-    func u_center3D () -> Cartesian3 {
-        return center3D
-    }
-    
-    func u_tileRectangle () -> Cartesian4 {
-        return tileRectangle
-    }
-    
-    func u_modifiedModelView () -> Matrix4 {
-        return modifiedModelView
-    }
-    
-    func u_dayTextures () -> [Texture] {
-        return dayTextures
-    }
-    
-    func u_dayTextureTranslationAndScale () -> [Cartesian4] {
-        return dayTextureTranslationAndScale
-    }
-    
-    func u_dayTextureTexCoordsRectangle () -> [Cartesian4] {
-        return dayTextureTexCoordsRectangle
-    }
-    
-    func u_dayTextureAlpha () -> [Double]  {
-        return dayTextureAlpha
-    }
-    
-    func u_dayTextureBrightness () -> [Double] {
-        return dayTextureBrightness
-    }
-    
-    func u_dayTextureContrast () -> [Double] {
-        return dayTextureContrast
-    }
-    
-    func u_dayTextureHue () -> [Double] {
-        return dayTextureHue
-    }
-    
-    func u_dayTextureSaturation () -> [Double] {
-        return dayTextureSaturation
-    }
-    
-    func u_dayTextureOneOverGamma () -> [Double] {
-        return dayTextureOneOverGamma
-    }
-    
-    func u_dayIntensity () -> Double {
-        return dayIntensity
-    }
-    
-    func u_southAndNorthLatitude () -> Cartesian2 {
-        return southAndNorthLatitude
-    }
-    
-    func u_southMercatorYLowAndHighAndOneOverHeight () -> Cartesian3 {
-        return southMercatorYLowAndHighAndOneOverHeight
-    }
-    
-    func u_waterMask () -> Texture? {
-        return waterMask
-    }
-    
-    func u_waterMaskTranslationAndScale () -> Cartesian4 {
-        return waterMaskTranslationAndScale
-    }
-    
+        "u_initialColor": { (map: TileUniformMap) -> Cartesian4 in
+            return map.initialColor
+        },
+        
+        "u_zoomedOutOceanSpecularIntensity": { (map: TileUniformMap) -> Double in
+            return map.zoomedOutOceanSpecularIntensity
+        },
+        
+        "u_oceanNormalMap": { (map: TileUniformMap) -> Texture? in
+            return map.oceanNormalMap
+        },
+        
+        "u_lightingFadeDistance": { (map: TileUniformMap) -> Cartesian2 in
+            return map.lightingFadeDistance
+        },
+        
+        "u_center3D": { (map: TileUniformMap) -> Cartesian3 in
+            return map.center3D
+        },
+        
+        "u_tileRectangle": { (map: TileUniformMap) -> Cartesian4 in
+            return map.tileRectangle
+        },
+        
+        "u_modifiedModelView": { (map: TileUniformMap) -> Matrix4 in
+            return map.modifiedModelView
+        },
+        
+        "u_dayTextures": { (map: TileUniformMap) -> [Texture] in
+            return map.dayTextures
+        },
+        
+        "u_dayTextureTranslationAndScale": { (map: TileUniformMap) -> [Cartesian4] in
+            return map.dayTextureTranslationAndScale
+        },
+        
+        "u_dayTextureTexCoordsRectangle": { (map: TileUniformMap) -> [Cartesian4] in
+            return map.dayTextureTexCoordsRectangle
+        },
+        
+        "u_dayTextureAlpha": { (map: TileUniformMap) -> [Double]  in
+            return map.dayTextureAlpha
+        },
+        
+        "u_dayTextureBrightness": { (map: TileUniformMap) -> [Double] in
+            return map.dayTextureBrightness
+        },
+        
+        "u_dayTextureContrast": { (map: TileUniformMap) -> [Double] in
+            return map.dayTextureContrast
+        },
+        
+        "u_dayTextureHue": { (map: TileUniformMap) -> [Double] in
+            return map.dayTextureHue
+        },
+        
+        "u_dayTextureSaturation": { (map: TileUniformMap) -> [Double] in
+            return map.dayTextureSaturation
+        },
+        
+        "u_dayTextureOneOverGamma": { (map: TileUniformMap) -> [Double] in
+            return map.dayTextureOneOverGamma
+        },
+        
+        "u_dayIntensity": { (map: TileUniformMap) -> Double in
+            return map.dayIntensity
+        },
+        
+        "u_southAndNorthLatitude": { (map: TileUniformMap) -> Cartesian2 in
+            return map.southAndNorthLatitude
+        },
+        
+        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: TileUniformMap) -> Cartesian3 in
+            return map.southMercatorYLowAndHighAndOneOverHeight
+        },
+        
+        "u_waterMask": { (map: TileUniformMap) -> Texture? in
+            return map.waterMask
+        },
+        
+        "u_waterMaskTranslationAndScale": { (map: TileUniformMap) -> Cartesian4 in
+            return map.waterMaskTranslationAndScale
+        }
+    ]
+
+
 }
