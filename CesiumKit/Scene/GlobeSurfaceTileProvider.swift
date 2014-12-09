@@ -802,8 +802,7 @@ var northeastScratch = new Cartesian3();
             command.renderState = renderState
             command.primitiveType = .Triangles
             command.vertexArray = surfaceTile.vertexArray
-            // FIXME: Disabled
-            //command.uniformMap = uniformMap
+            command.uniformMap = uniformMap
             command.pass = .Opaque
             
             if _debug.wireframe {

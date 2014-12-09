@@ -52,12 +52,12 @@ class TileUniformMap: UniformMap {
     
     var waterMaskTranslationAndScale = Cartesian4()
     
-    var uniforms: [String: ((map: TileUniformMap) -> Any)] = [
+    var uniforms: [String: ((map: TileUniformMap) -> UniformValue)] = [
     
-        "u_initialColor": { (map: TileUniformMap) -> Cartesian4 in
-            return map.initialColor
+        "u_initialColor": { (map: TileUniformMap) -> UniformValue in
+            return .FloatVec4(map.initialColor)
         },
-        
+        /*
         "u_zoomedOutOceanSpecularIntensity": { (map: TileUniformMap) -> Double in
             return map.zoomedOutOceanSpecularIntensity
         },
@@ -136,7 +136,7 @@ class TileUniformMap: UniformMap {
         
         "u_waterMaskTranslationAndScale": { (map: TileUniformMap) -> Cartesian4 in
             return map.waterMaskTranslationAndScale
-        }
+        }*/
     ]
 
 

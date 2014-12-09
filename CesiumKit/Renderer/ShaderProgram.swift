@@ -670,12 +670,12 @@ class ShaderProgram {
         assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
-    func setUniforms (uniformMap: [String: UniformFunc]?, uniformState: UniformState, validate: Bool) {
+    func setUniforms (uniformMap: TileUniformMap?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
 
         if uniformMap != nil {
             for (name, uniform) in _manualUniforms! {
-                if let uniformFunc: UniformFunc = uniformMap![name] {
+                if let uniformFunc: UniformFunc = uniformMap!.uniforms[name] {
                     println("cool story")
                     //uniform.value = uniformFunc(uniformMap)
                 }
@@ -687,14 +687,9 @@ class ShaderProgram {
         
         for uniform in _uniforms! {
             uniform.set()
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             if validate {
                 glValidateProgram(_program!)
                 var err: GLenum
-                do {
-                    err = glGetError()
-                } while err != 0
-                //assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
                 var status: GLint = 0
                 glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
                 if status != 1 {

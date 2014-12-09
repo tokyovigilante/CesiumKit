@@ -1516,15 +1516,14 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
-        
-        
+    
         if let indexBuffer = va!.indexBuffer {
             offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
             // FIXME: primitiveType toGL()
+            //glDrawElements(GLenum(GL_TRIANGLES), GLsizei(count!), GLenum(GL_UNSIGNED_SHORT), UnsafePointer<Void>(bitPattern: 0))
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             va!._unBind()

@@ -96,7 +96,7 @@ class DrawCommand: Command {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: [String: UniformFunc]
+    var uniformMap: TileUniformMap?
     
     /**
     * The render state.
@@ -179,7 +179,6 @@ class DrawCommand: Command {
         count: Int? = nil,
         offset: Int = 0,
         shaderProgram: ShaderProgram? = nil,
-        uniformMap: Dictionary<String, ()->()>? = nil,
         renderState: RenderState? = nil,
         framebuffer: Framebuffer? = nil,
         pass: Pass? = nil,
@@ -201,7 +200,7 @@ class DrawCommand: Command {
             self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
-            self.uniformMap = [String: UniformFunc]()
+            self.uniformMap = nil
     }
     
     /**

@@ -30,29 +30,6 @@ class IndexBuffer: Buffer {
         
         super.init(target: .ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
 
-        //var buffer
-        //var buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, typedArrayOrSizeInBytes, usage);
-        /*var numberOfIndices = buffer.sizeInBytes / bytesPerIndex;
-        
-        defineProperties(buffer, {
-        indexDatatype: {
-        get : function() {
-        return indexDatatype;
-        }
-        },
-        bytesPerIndex : {
-        get : function() {
-        return bytesPerIndex;
-        }
-        },
-        numberOfIndices : {
-        get : function() {
-        return numberOfIndices;
-        }
-        }
-        });
-        
-        return buffer;*/
     }
     
 }

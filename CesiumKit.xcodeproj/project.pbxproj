@@ -511,6 +511,7 @@
 				94B87DBE194D620E00012DC4 /* Matrix.swift */,
 				94D45B2819BDC26300FFE1CB /* Matrix3.swift */,
 				94C57E1319722AB90046791A /* Matrix4.swift */,
+				948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */,
 				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				942D02ED194DBD0800012DC4 /* PrimitiveType.swift */,
@@ -532,7 +533,6 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
-				948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";

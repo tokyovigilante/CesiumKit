@@ -147,7 +147,7 @@ class VertexArray {
         }
 
         if indexBuffer != nil {
-            glBindBuffer(BufferTarget.ArrayBuffer.toGL(), indexBuffer!.buffer)
+            glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
             assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         }
     }
@@ -175,7 +175,6 @@ return this._indexBuffer;
     }
 
     func _bind() {
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindVertexArray(_vao)
         assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
