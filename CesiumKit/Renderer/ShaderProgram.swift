@@ -9,19 +9,7 @@
 import Foundation
 import OpenGLES
 
-/*
-
-var scratchUniformMatrix2;
-var scratchUniformMatrix3;
-var scratchUniformMatrix4;
-if (FeatureDetection.supportsTypedArrays()) {
-scratchUniformMatrix2 = new Float32Array(4);
-scratchUniformMatrix3 = new Float32Array(9);
-scratchUniformMatrix4 = new Float32Array(16);
-}
-*/
 // represents WebGLActiveInfo
-
 struct ActiveUniformInfo {
     
     var name: String = ""
@@ -40,308 +28,7 @@ struct VertexAttributeInfo {
     var index: GLenum = 0
 }
 
-class Uniform {
-    
-    private var _activeUniform: ActiveUniformInfo
-    
-    var name: String {
-        get {
-            return _uniformName
-        }
-    }
-    private var _uniformName: String
-    
-    private var _location: GLint
-    
-    var value: Any
-    
-    private var _textureUnitIndex: GLint = 0
-    
-    //var set: (uniform: Uniform) -> (() -> ())
-    
-    var datatype: GLenum {
-        get {
-            return self._activeUniform.type
-        }
-    }
-    
-    private var _setSampler: ((textureUnitIndex: GLint) -> GLint)?
-    
-    var hasSetSampler: Bool {
-        get {
-            return _setSampler != nil
-        }
-    }
-    
-    init (activeUniform: ActiveUniformInfo, uniformName: String, location: GLint, value: Any) {
-        
-        self.value = value
-        _activeUniform = activeUniform
-        _uniformName = uniformName
-        _location = location
-        
-        if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
-            _setSampler = { (textureUnitIndex: GLint) -> GLint in
-                self._textureUnitIndex = textureUnitIndex
-                glUniform1i(self._location, self._textureUnitIndex)
-                return textureUnitIndex + 1
-            }
-        }
-    }
-    
-    func set() {
-        
-        switch _activeUniform.type {
-        case GLenum(GL_FLOAT):
-            glUniform1f(_location, self.value as GLfloat)
-        case GLenum(GL_FLOAT_VEC2):
-            var v = value as Cartesian2
-            glUniform2f(_location, GLfloat(v.x), GLfloat(v.y))
-            
-        case GLenum(GL_FLOAT_VEC3):
-            var v = self.value as Cartesian3
-            glUniform3f(self._location, GLfloat(v.x), GLfloat(v.y), GLfloat(v.z))
-            /*case gl.FLOAT_VEC4:
-            return function() {
-            var v = uniform.value;
-            
-            if (defined(v.red)) {
-            gl.uniform4f(location, v.red, v.green, v.blue, v.alpha);
-            } else if (defined(v.x)) {
-            gl.uniform4f(location, v.x, v.y, v.z, v.w);
-            } else {
-            throw new DeveloperError('Invalid vec4 value for uniform "' + uniform._activeUniform.name + '".');
-            }
-            };
-            case gl.SAMPLER_2D:
-            case gl.SAMPLER_CUBE:
-            return function() {
-            gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
-            gl.bindTexture(uniform.value._target, uniform.value._texture);
-            };
-            case gl.INT:
-            case gl.BOOL:
-            return function() {
-            gl.uniform1i(location, uniform.value);
-            };
-            case gl.INT_VEC2:
-            case gl.BOOL_VEC2:
-            return function() {
-            var v = uniform.value;
-            gl.uniform2i(location, v.x, v.y);
-            };
-            case gl.INT_VEC3:
-            case gl.BOOL_VEC3:
-            return function() {
-            var v = uniform.value;
-            gl.uniform3i(location, v.x, v.y, v.z);
-            };
-            case gl.INT_VEC4:
-            case gl.BOOL_VEC4:
-            return function() {
-            var v = uniform.value;
-            gl.uniform4i(location, v.x, v.y, v.z, v.w);
-            };
-            case gl.FLOAT_MAT2:
-            return function() {
-            gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
-            };
-            case gl.FLOAT_MAT3:
-            return function() {
-            gl.uniformMatrix3fv(location, false, Matrix3.toArray(uniform.value, scratchUniformMatrix3));
-            };
-            */
-        case GLenum(GL_FLOAT_MAT4):
-            var v = value as Matrix4
-            glUniformMatrix4fv(_location, 1, GLboolean(0), v.toArray())
-        default:
-            fatalError("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
-        }
-    }
-    
-    /*
-    function setUniformArray(uniformArray) {
-    var gl = uniformArray._gl;
-    var locations = uniformArray._locations;
-    switch (uniformArray._activeUniform.type) {
-    case gl.FLOAT:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniform1f(locations[i], value[i]);
-    }
-    };
-    case gl.FLOAT_VEC2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform2f(locations[i], v.x, v.y);
-    }
-    };
-    case gl.FLOAT_VEC3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform3f(locations[i], v.x, v.y, v.z);
-    }
-    };
-    case gl.FLOAT_VEC4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    
-    if (defined(v.red)) {
-    gl.uniform4f(locations[i], v.red, v.green, v.blue, v.alpha);
-    } else if (defined(v.x)) {
-    gl.uniform4f(locations[i], v.x, v.y, v.z, v.w);
-    } else {
-    throw new DeveloperError('Invalid vec4 value.');
-    }
-    }
-    };
-    case gl.SAMPLER_2D:
-    case gl.SAMPLER_CUBE:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    var index = uniformArray.textureUnitIndex + i;
-    gl.activeTexture(gl.TEXTURE0 + index);
-    gl.bindTexture(v._target, v._texture);
-    }
-    };
-    case gl.INT:
-    case gl.BOOL:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniform1i(locations[i], value[i]);
-    }
-    };
-    case gl.INT_VEC2:
-    case gl.BOOL_VEC2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform2i(locations[i], v.x, v.y);
-    }
-    };
-    case gl.INT_VEC3:
-    case gl.BOOL_VEC3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform3i(locations[i], v.x, v.y, v.z);
-    }
-    };
-    case gl.INT_VEC4:
-    case gl.BOOL_VEC4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform4i(locations[i], v.x, v.y, v.z, v.w);
-    }
-    };
-    case gl.FLOAT_MAT2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix2fv(locations[i], false, Matrix2.toArray(value[i], scratchUniformMatrix2));
-    }
-    };
-    case gl.FLOAT_MAT3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
-    }
-    };
-    case gl.FLOAT_MAT4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix4fv(locations[i], false, Matrix4.toArray(value[i], scratchUniformMatrix4));
-    }
-    };
-    default:
-    throw new RuntimeError('Unrecognized uniform type: ' + uniformArray._activeUniform.type);
-    }
-    }
-    
-    }
-    class UniformArray {
-    
-    /**
-    * @private
-    */
-    var UniformArray = function(gl, activeUniform, uniformName, locations, value) {
-    this._gl = gl;
-    this._activeUniform = activeUniform;
-    this._uniformName = uniformName;
-    this.value = value;
-    this._locations = locations;
-    
-    /**
-    * @private
-    */
-    this.textureUnitIndex = undefined;
-    
-    this._set = setUniformArray(this);
-    
-    if ((activeUniform.type === gl.SAMPLER_2D) || (activeUniform.type === gl.SAMPLER_CUBE)) {
-    this._setSampler = function(textureUnitIndex) {
-    this.textureUnitIndex = textureUnitIndex;
-    
-    var length = locations.length;
-    for (var i = 0; i < length; ++i) {
-    var index = textureUnitIndex + i;
-    gl.uniform1i(locations[i], index);
-    }
-    
-    return textureUnitIndex + length;
-    };
-    }
-    };
-    
-    defineProperties(UniformArray.prototype, {
-    name : {
-    get : function() {
-    return this._uniformName;
-    }
-    },
-    datatype : {
-    get : function() {
-    return this._activeUniform.type;
-    }
-    }
-    });
-    */
 
-    
-    
-    /**
-    * @private
-    */
-    
-}
 
 private class DependencyNode: Equatable {
     
@@ -845,12 +532,14 @@ class ShaderProgram {
                 activeUniform.name.removeRange(suffixRange)
             }
             
-            if activeUniform.name.indexOf("[") == nil {
+            if activeUniform.name.indexOf("[") == nil && !activeUniform.name.hasPrefix("gl_") {
                 // Single uniform
-                let location = glGetUniformLocation(program, (uniformName as NSString).UTF8String)
-                var uniformValue: GLfloat = 0.0
-                glGetUniformfv(program, location, &uniformValue)
-                let uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: uniformValue)
+                let location = GLint(glGetUniformLocation(program, (uniformName as NSString).UTF8String))
+                assert(glGetError() == GLenum(GL_NO_ERROR))
+                var value: GLfloat = 0.0
+                glGetUniformfv(program, location, &value)
+                assert(glGetError() == GLenum(GL_NO_ERROR))
+                let uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(value))
                 
                 uniformsByName[uniformName] = uniform
                 uniforms.append(uniform)
@@ -944,7 +633,7 @@ class ShaderProgram {
         
         var textureUnitIndex: GLint = 0
         for samplerUniform in samplerUniforms {
-            textureUnitIndex = samplerUniform._setSampler!(textureUnitIndex: textureUnitIndex)
+            textureUnitIndex = samplerUniform.setSampler!(textureUnitIndex: textureUnitIndex)
         }
         
         glUseProgram(0)
@@ -961,7 +650,8 @@ class ShaderProgram {
         _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
         
         glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-        
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+
         var uniforms = findUniforms()
         var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
         
@@ -977,30 +667,45 @@ class ShaderProgram {
     func bind () {
         initialize()
         glUseProgram(_program!)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
-    func setUniforms (uniformMap: [String: ((map: TileUniformMap) -> Any)]?, uniformState: UniformState, validate: Bool) {
+    func setUniforms (uniformMap: [String: UniformFunc]?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
-        
-        /*if uniformMap != nil {
+
+        if uniformMap != nil {
             for (name, uniform) in _manualUniforms! {
-                uniform.value = uniformMap[name](map: uniformMap)
+                if let uniformFunc: UniformFunc = uniformMap![name] {
+                    println("cool story")
+                    //uniform.value = uniformFunc(uniformMap)
+                }
             }
-        }*/
-        for (name, uniform) in _automaticUniforms {
-//            uniform.value = uniform.automaticUniform.getValue(uniformState)
+        }
+        for automaticUniform in _automaticUniforms {
+            automaticUniform.uniform.value = automaticUniform.automaticUniform.getValue(uniformState: uniformState)
         }
         
         for uniform in _uniforms! {
             uniform.set()
-            
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             if validate {
-                /*glValidateProgram(_program!)
-                glGetProgramiv()
-                if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-                    throw new DeveloperError('Program validation failed.  Link log: ' + gl.getProgramInfoLog(program));
+                glValidateProgram(_program!)
+                var err: GLenum
+                do {
+                    err = glGetError()
+                } while err != 0
+                //assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+                var status: GLint = 0
+                glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
+                if status != 1 {
+                    var infoLogLength: GLsizei = 0
+                    glGetProgramiv(_program!, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
+                    var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
+                    var actualLength: GLsizei = 0
+                    glGetProgramInfoLog(_program!, infoLogLength, &actualLength, &strInfoLog)
+                    let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+                    fatalError("Program validation failed.  Link log: " + errorMessage!)
                 }
-            }*/
             }
         }
     }
@@ -1088,7 +793,9 @@ class ShaderProgram {
         }
         
         return source
-        
     }
     
 }
+
+typealias UniformFunc = ((map: TileUniformMap) -> UniformValue)
+

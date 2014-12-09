@@ -141,7 +141,8 @@ class Context {
     
     // Validation and logging disabled by default for speed.
     var _validateFramebuffer = false
-    var _validateShaderProgram = false
+    // FIXME: validate is on
+    var _validateShaderProgram = true
     var _logShaderCompilation = false
     
     var _shaderCache: ShaderCache? = nil
@@ -432,6 +433,7 @@ class Context {
         var result = checkGLExtension("EXT_texture_filter_anisotropic")
         if result {
             glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         }
         return result
     }
@@ -481,6 +483,7 @@ class Context {
         if db {
             glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
             glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         }
         return db
     }
@@ -692,6 +695,8 @@ class Context {
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
         
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+
         var us = UniformState()
         var rs = RenderState()
         //var ps = PassState()
@@ -1425,10 +1430,12 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 buffers = framebuffer!.activeColorAttachments
             } else {
                 glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
             
             if drawBuffers && buffers.count > 0 {
                 glDrawBuffers(GLsizei(buffers.count), buffers)
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
         }
     }
@@ -1471,7 +1478,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             }
             bitmask = bitmask | GL_STENCIL_BUFFER_BIT
         }
-        
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         var rs = clearCommand.renderState ?? _defaultRenderState
         applyRenderState(rs, passState: passState)
         
@@ -1488,7 +1495,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }
         bindFramebuffer(framebuffer)
-        
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         var sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
@@ -1509,16 +1516,17 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
-        sp!.setUniforms(nil/*drawCommand.uniformMap*/, uniformState: uniformState, validate: _validateShaderProgram)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
         
         
         if let indexBuffer = va!.indexBuffer {
             offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
             count = count ?? indexBuffer.numberOfIndices
-            
             va!._bind()
             // FIXME: primitiveType toGL()
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             va!._unBind()
         } else {
             /*count = defaultValue(count, va.numberOfVertices);

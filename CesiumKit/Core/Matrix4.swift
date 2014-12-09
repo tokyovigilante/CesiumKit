@@ -62,22 +62,6 @@ struct Matrix4: Packable, Equatable {
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
         _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
             _grid = [column0Row0, column0Row1, column0Row2, column0Row3, column1Row0, column1Row1, column1Row2, column1Row3, column2Row0, column2Row1, column2Row2, column2Row3, column3Row0, column3Row1, column3Row2, column3Row3]
-            /*_grid[0] = column0Row0
-            _grid[1] = column0Row1
-            _grid[2] = column0Row2
-            _grid[3] = column0Row3
-            _grid[4] = column1Row0
-            _grid[5] = column1Row1
-            _grid[6] = column1Row2
-            _grid[7] = column1Row3
-            _grid[8] = column2Row0
-            _grid[9] = column2Row1
-            _grid[10] = column2Row2
-            _grid[11] = column2Row3
-            _grid[12] = column3Row0
-            _grid[13] = column3Row1
-            _grid[14] = column3Row2
-            _grid[15] = column3Row3*/
     }
     
     init(grid: [Double]) {

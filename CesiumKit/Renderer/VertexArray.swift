@@ -59,11 +59,12 @@ class VertexArray {
         
         // Setup VAO
         glGenVertexArrays(1, &_vao)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindVertexArray(_vao)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         bind()
         glBindVertexArray(0)
-        
-
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
@@ -85,22 +86,25 @@ class VertexArray {
         
         if (hasVertexBuffer) {
             // Common case: vertex buffer for per-vertex data
-            weak var weakSelf = attr
-            attr.vertexAttrib = {
-                glBindBuffer(BufferTarget.ArrayBuffer.toGL(), weakSelf!.vertexBuffer!.buffer)
+            attr.vertexAttrib = { (attr: VertexAttributes) in
+                glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
                 glVertexAttribPointer(
-                    GLuint(weakSelf!.index),
-                    GLint(weakSelf!.componentsPerAttribute),
-                    weakSelf!.componentDatatype.toGL(),
-                    weakSelf!.normalize ? GLboolean(GL_TRUE) : GLboolean(GL_FALSE),
-                    GLsizei(weakSelf!.strideInBytes),
-                    UnsafePointer<Void>(bitPattern: weakSelf!.offsetInBytes)
+                    GLuint(attr.index),
+                    GLint(attr.componentsPerAttribute),
+                    attr.componentDatatype.toGL(),
+                    attr.normalize ? GLboolean(GL_TRUE) : GLboolean(GL_FALSE),
+                    GLsizei(attr.strideInBytes),
+                    UnsafePointer<Void>(bitPattern: attr.offsetInBytes)
                 )
-                glEnableVertexAttribArray(GLuint(weakSelf!.index))
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+                glEnableVertexAttribArray(GLuint(attr.index))
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
             
-            attr.disableVertexAttribArray = {
-                glDisableVertexAttribArray(GLuint(weakSelf!.index))
+            attr.disableVertexAttribArray = { (attr: VertexAttributes) in
+                glDisableVertexAttribArray(GLuint(attr.index))
+                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
         } else {
             // Less common case: value array for the same data for each vertex
@@ -138,12 +142,13 @@ class VertexArray {
         
         for attribute in _attributes {
             if attribute.enabled {
-                attribute.vertexAttrib()
+                attribute.vertexAttrib(attr: attribute)
             }
         }
 
         if indexBuffer != nil {
             glBindBuffer(BufferTarget.ArrayBuffer.toGL(), indexBuffer!.buffer)
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         }
     }
 
@@ -170,16 +175,19 @@ return this._indexBuffer;
     }
 
     func _bind() {
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindVertexArray(_vao)
-        let err = glGetError()
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 
     func _unBind() {
         glBindVertexArray(0)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 
     deinit {
         glDeleteVertexArrays(1, &_vao)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 }
 

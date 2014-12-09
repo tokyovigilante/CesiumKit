@@ -249,6 +249,7 @@
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
+		94DCAA651A36F0B800FFAD81 /* Uniform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DCAA641A36F0B800FFAD81 /* Uniform.swift */; };
 		94DF8301199A0A9100FB093D /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 		94E03FB719D96C8300FFAD81 /* GridImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */; };
 		94E049EA19DC0BB100FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
@@ -416,6 +417,7 @@
 		94DC79361918425300012DC4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		94DC793D1918425300012DC4 /* CesiumKitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CesiumKitTests-Info.plist"; sourceTree = "<group>"; };
 		94DC793F1918425300012DC4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		94DCAA641A36F0B800FFAD81 /* Uniform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uniform.swift; sourceTree = "<group>"; };
 		94DF8300199A0A9100FB093D /* CesiumKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumKit.swift; sourceTree = "<group>"; };
 		94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridImageryProvider.swift; sourceTree = "<group>"; };
 		94E049E919DC0BB000FFAD81 /* Shaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shaders.swift; sourceTree = "<group>"; };
@@ -572,6 +574,7 @@
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				947A240C19C9911D0040042F /* VertexAttributes.swift */,
 				947A241019C99C860040042F /* WindingOrder.swift */,
+				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -939,6 +942,7 @@
 				947A240B19C98B2E0040042F /* BufferTarget.swift in Sources */,
 				948D03DD19449E9600DC0E52 /* Packable.swift in Sources */,
 				94786823194A959200B3F462 /* TerrainMesh.swift in Sources */,
+				94DCAA651A36F0B800FFAD81 /* Uniform.swift in Sources */,
 				942CD41819553F9E00012DC4 /* GeometryAttributes.swift in Sources */,
 				9409DC9C19A95F0200F9842B /* TileDiscardPolicy.swift in Sources */,
 				943D25B11947128A00263D91 /* Rectangle.swift in Sources */,

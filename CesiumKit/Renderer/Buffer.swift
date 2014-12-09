@@ -33,7 +33,9 @@ class Buffer {
         
         var buffer: GLuint = 0
         glGenBuffers(1, &buffer)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindBuffer(target.toGL(), buffer)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         var data: UnsafePointer<Void>
         if array != nil {
             data = array!.bytes()
@@ -41,8 +43,10 @@ class Buffer {
             data = nil
         }
         glBufferData(target.toGL(), GLsizeiptr(bufferSize), data, usage.toGL())
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindBuffer(target.toGL(), 0)
-        
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+
         self.target = target
         self.sizeInBytes = bufferSize
         self.buffer = buffer
@@ -54,11 +58,15 @@ class Buffer {
         assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
         
         glBindBuffer(target.toGL(), buffer)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.bytes())
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindBuffer(target.toGL(), 0)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
     deinit {
         glDeleteBuffers(1, &buffer)
+        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 }

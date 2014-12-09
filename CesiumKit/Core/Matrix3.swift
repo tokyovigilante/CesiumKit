@@ -450,7 +450,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
         _grid[7] = 0.0
         _grid[8] = 1.0
     }
-    /*
+    
     /**
     * Creates an Array from the provided Matrix3 instance.
     * The array will be in column-major order.
@@ -459,28 +459,10 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Number[]} [result] The Array onto which to store the result.
     * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
     */
-    Matrix3.toArray = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
+    func toArray() -> [Float] {
+        return _grid.map({ Float($0) })
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    return [matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], matrix[6], matrix[7], matrix[8]];
-    }
-    result[0] = matrix[0];
-    result[1] = matrix[1];
-    result[2] = matrix[2];
-    result[3] = matrix[3];
-    result[4] = matrix[4];
-    result[5] = matrix[5];
-    result[6] = matrix[6];
-    result[7] = matrix[7];
-    result[8] = matrix[8];
-    return result;
-    };
-    
+    /*
     /**
     * Computes the array index of the element at the provided row and column.
     *

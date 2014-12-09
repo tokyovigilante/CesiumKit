@@ -14,7 +14,7 @@ var viewerPositionWCScratch = new Cartesian3();
 struct AutomaticUniform {
     var size: Int
     var datatype: UniformDataType
-    var getValue: (uniformState: UniformState) -> Any
+    var getValue: (uniformState: UniformState) -> UniformValue
     
     func declaration (name: String) -> String {
         var declaration = "uniform " + datatype.rawValue + " " + name
@@ -108,10 +108,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewport": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_VEC4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 4, repeatedValue: 0.0)
-            uniformState.viewportCartesian4.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatVec4(uniformState.viewportCartesian4)
         }
     ),
 /*
@@ -188,9 +186,7 @@ return uniformState.viewportOrthographic;
         size: 1,
         datatype: .FLOAT_MAT4,
         getValue: { (uniformState: UniformState) in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.viewportTransformation.pack(&result, startingIndex: 0)
-            return result
+            return .FloatMatrix4(uniformState.viewportTransformation)
         }
     ),
 /*
@@ -271,10 +267,8 @@ return uniformState.inverseModel;
     "czm_view": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.view.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.view)
         }
     ),
 /*
@@ -493,10 +487,8 @@ return uniformState.inverseViewRotation3D;
     "czm_projection": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 4, repeatedValue: 0.0)
-            uniformState.projection.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.projection)
         }
     ),
 /*
@@ -595,10 +587,8 @@ return uniformState.infiniteProjection;
     "czm_modelView" : AutomaticUniform(
         size : 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelView.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.modelView)
         }
     ),
 
@@ -631,11 +621,8 @@ return uniformState.infiniteProjection;
     "czm_modelView3D": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelView3D.pack(&result, startingIndex: 0)
-            return result
-
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.modelView3D)
         }
     ),
 /*
@@ -673,31 +660,30 @@ return uniformState.modelViewRelativeToEye;
 }
 }),
 */
-/**
-* An automatic GLSL uniform representing a 4x4 transformation matrix that
-* transforms from eye coordinates to model coordinates.
-*
-* @alias czm_inverseModelView
-* @glslUniform
-*
-* @see UniformState#inverseModelView
-* @see czm_modelView
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_inverseModelView;
-*
-* // Example
-* vec4 modelPosition = czm_inverseModelView * eyePosition;
-*/
+    /**
+    * An automatic GLSL uniform representing a 4x4 transformation matrix that
+    * transforms from eye coordinates to model coordinates.
+    *
+    * @alias czm_inverseModelView
+    * @glslUniform
+    *
+    * @see UniformState#inverseModelView
+    * @see czm_modelView
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_inverseModelView;
+    *
+    * // Example
+    * vec4 modelPosition = czm_inverseModelView * eyePosition;
+    */
     "czm_inverseModelView" : AutomaticUniform(
         size : 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.inverseModelView.pack(&result, startingIndex: 0)
-            return result
-    }),
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.inverseModelView)
+        }
+    ),
 /*
 /**
 * An automatic GLSL uniform representing a 4x4 transformation matrix that
@@ -816,10 +802,8 @@ return uniformState.inverseViewProjection;
     "czm_modelViewProjection": AutomaticUniform(
         size : 1,
         datatype: .FLOAT_MAT4,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelViewProjection.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.modelViewProjection)
         }
     ),
 /*
@@ -974,10 +958,8 @@ return uniformState.normal;
     "czm_normal3D": AutomaticUniform(
         size : 1,
         datatype: .FLOAT_MAT3,
-        getValue: { (uniformState: UniformState) -> Any in
-            var result = [Float](count: 9, repeatedValue: 0.0)
-            uniformState.normal3D.pack(&result, startingIndex: 0)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix3(uniformState.normal3D)
         }
     ),
 
@@ -1173,8 +1155,8 @@ return uniformState.sunPositionColumbusView;
     "czm_sunDirectionEC": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_VEC3,
-        getValue: { (uniformState: UniformState) in
-            return uniformState.sunDirectionEC
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatVec3(uniformState.sunDirectionEC)
         }
     ),
 /*
@@ -1221,8 +1203,8 @@ return uniformState.sunDirectionWC;
     "czm_moonDirectionEC": AutomaticUniform(
         size : 1,
         datatype: .FLOAT_VEC3,
-        getValue: { (uniformState: UniformState) in
-            return uniformState.moonDirectionEC
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatVec3(uniformState.moonDirectionEC)
         }
     ),
 /*
@@ -1306,8 +1288,8 @@ return uniformState.sunDirectionWC;
         "czm_frameNumber": AutomaticUniform(
             size: 1,
             datatype : .FLOAT,
-            getValue: { (uniformState: UniformState) in
-                return uniformState.frameState.frameNumber
+            getValue: { (uniformState: UniformState) -> UniformValue in
+                return .FloatVec1(Float(uniformState.frameState.frameNumber))
             }
         ),
     
@@ -1328,8 +1310,8 @@ return uniformState.sunDirectionWC;
     "czm_morphTime": AutomaticUniform(
         size: 1,
         datatype: .FLOAT,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.frameState.morphTime
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return UniformValue.FloatVec1(Float(uniformState.frameState.morphTime))
         }
     ),
     

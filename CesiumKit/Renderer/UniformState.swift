@@ -890,7 +890,7 @@ class UniformState {
     func cleanModelView() {
         if _modelViewDirty {
             _modelViewDirty = false
-            _view = _view.multiplyTransformation(_model)
+            _modelView = _view.multiplyTransformation(_model)
         }
     }
     
