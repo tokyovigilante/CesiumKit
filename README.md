@@ -11,7 +11,7 @@ Community contributions and feedback are welcome.
 
 Testing
 -------
-Nothing user-friendly yet. Once there's something to render I'll create a simple test runner. At the moment the only external API are global object creation and render calls, and I'm hoping to keep things simple for implementation.
+Build and run CesiumKitRunner. At the moment the only external API are global object creation and render calls, and I'm hoping to keep things simple for implementation.
 
 Licence
 -------
