@@ -20,7 +20,11 @@ public class Regex {
     init(_ pattern: String) {
         self.pattern = pattern
         var error: NSError?
-        self.expression = NSRegularExpression(pattern: pattern, options: .CaseInsensitive, error: &error)!
+        var expression = NSRegularExpression(pattern: pattern, options: .CaseInsensitive, error: &error)
+        if error != nil {
+            println(error!.description)
+        }
+        self.expression = expression!
     }
     
     public func matches(testStr: String) -> [AnyObject] {

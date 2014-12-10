@@ -64,9 +64,7 @@ private func == (left: DependencyNode, right: DependencyNode) -> Bool {
 }
 
 class ShaderProgram {
-    
-    //var _activeUniform = ActiveInfo()
-    
+
     var _logShaderCompilation: Bool = false
     
     /**
@@ -147,6 +145,10 @@ class ShaderProgram {
     
     let _id: Int
     
+    private let _commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
+    private let _lineRegex = Regex("\\n")
+    private let _czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
+
     init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]? = nil, id: Int) {
         
         _logShaderCompilation = logShaderCompilation
@@ -155,12 +157,6 @@ class ShaderProgram {
         _fragmentShaderSource = fragmentShaderSource
         _id = id
         count = 0
-        
-        
-        //_uniformsByName = nil
-        //_uniforms = nil
-        //_automaticUniforms = nil
-        //_manualUniforms = nil
     }
     
     private func extractShaderVersion(source: String) -> (version: String, source: String) {
@@ -212,8 +208,7 @@ class ShaderProgram {
             var newGLSLSource = glslSource
             // strip doc comments so we don't accidentally try to determine a dependency for something found
             // in a comment
-            let commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
-            var commentBlocks = commentRegex.matches(glslSource)
+            var commentBlocks = _commentRegex.matches(glslSource)
             if commentBlocks.count > 0 {
                 // FIXME: shader comments
                 for var i = 0; i < commentBlocks.count; ++i {
@@ -221,8 +216,7 @@ class ShaderProgram {
                     let commentBlock = commentBlocks[i] as NSTextCheckingResult
                     let matchRange = Range(start: commentBlock.range.location, end: commentBlock.range.location + commentBlock.range.length)
                     let comment = glslSource[matchRange]
-                    let lineRegex = Regex("\\n")
-                    let numberOfLines = lineRegex.matches(comment).count
+                    let numberOfLines = _lineRegex.matches(comment).count
                     
                     // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
                     var modifiedComment = ""
@@ -253,8 +247,7 @@ class ShaderProgram {
         currentNode.evaluated = true
         
         // identify all dependencies that are referenced from this glsl source code
-        let czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
-        var czmMatchRanges = czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
+        var czmMatchRanges = _czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
         var czmMatches: [String]
         if czmMatchRanges.count > 0 {
             czmMatches = czmMatchRanges.map({
@@ -505,12 +498,12 @@ class ShaderProgram {
         assert(_program != nil, "no GLSL program")
         let program = _program!
         
-        var uniformsByName = [String: Uniform]()
-        var uniforms = [Uniform]()
-        var samplerUniforms = [Uniform]()
-        
         var numberOfUniforms: GLint = 0
         glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
+        
+        var uniformsByName = Dictionary<String, Uniform>()
+        var uniforms = [Uniform]()
+        var samplerUniforms = [Uniform]()
         
         var maxUniformLength: GLint = 0
         glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
@@ -520,83 +513,86 @@ class ShaderProgram {
             var uniformNameBuffer = [GLchar](count: Int(uniformLength + 1), repeatedValue: 0)
             var activeUniform = ActiveUniformInfo()
             glGetActiveUniform(program, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &activeUniform.size, &activeUniform.type, &uniformNameBuffer)
-            activeUniform.name = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
+            var uniformName = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
             
-            var suffix = "[0]"
+            let suffix = "[0]"
             
-            var uniformName = activeUniform.name
             if uniformName.hasSuffix(suffix) {
                 let suffixRange = Range(
-                    start: advance(activeUniform.name.endIndex, -3),
-                    end: activeUniform.name.endIndex)
-                activeUniform.name.removeRange(suffixRange)
+                    start: advance(uniformName.endIndex, -3),
+                    end: uniformName.endIndex)
+                uniformName.removeRange(suffixRange)
             }
-            
-            if activeUniform.name.indexOf("[") == nil && !activeUniform.name.hasPrefix("gl_") {
-                // Single uniform
-                let location = GLint(glGetUniformLocation(program, (uniformName as NSString).UTF8String))
-                assert(glGetError() == GLenum(GL_NO_ERROR))
-                var value: GLfloat = 0.0
-                glGetUniformfv(program, location, &value)
-                assert(glGetError() == GLenum(GL_NO_ERROR))
-                let uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(value))
-                
-                uniformsByName[uniformName] = uniform
-                uniforms.append(uniform)
-                
-                if uniform.hasSetSampler {
-                    samplerUniforms.append(uniform)
-                }
-            } else {
-                // Uniform array
-                
-                /*var uniformArray: UniformArray*/
-                var locations = [GLint]()
-                /*var value;
-                var loc;
-                
-                // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
-                // as separate uniforms, one for each array element.  Check for and handle that case.
-                var indexOfBracket = uniformName.indexOf('[');
-                if (indexOfBracket >= 0) {
-                // We're assuming the array elements show up in numerical order - it seems to be true.
-                uniformArray = uniformsByName[uniformName.slice(0, indexOfBracket)];
-                
-                // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
-                // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
-                if (typeof uniformArray === 'undefined') {
-                continue;
-                }
-                
-                locations = uniformArray._locations;
-                
-                // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
-                // but the size is not 1 like it is in Firefox.  So if we push locations here,
-                // we'll end up adding too many locations.
-                if (locations.length <= 1) {
-                value = uniformArray.value;
-                loc = gl.getUniformLocation(program, uniformName);
-                locations.push(loc);
-                value.push(gl.getUniform(program, loc));
-                }
+            activeUniform.name = uniformName
+
+            if !activeUniform.name.hasPrefix("gl_") {
+                if activeUniform.name.indexOf("[") == nil {
+                    // Single uniform
+                    let nameBuffer = UnsafePointer<GLchar>((activeUniform.name as NSString).UTF8String)
+                    let location = GLint(glGetUniformLocation(program, nameBuffer))
+                    assert(glGetError() == GLenum(GL_NO_ERROR))
+                    var value: GLfloat = 0.0
+                    /*glGetUniformfv(program, location, &value)
+                    assert(glGetError() == GLenum(GL_NO_ERROR))*/
+                    var uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(value))
+                    
+                    uniformsByName[activeUniform.name] = uniform
+                    uniforms.append(uniform)
+                    
+                    if uniform.hasSetSampler {
+                        samplerUniforms.append(uniform)
+                    }
                 } else {
-                locations = [];
-                value = [];
-                for ( var j = 0; j < activeUniform.size; ++j) {
-                loc = gl.getUniformLocation(program, uniformName + '[' + j + ']');
-                locations.push(loc);
-                value.push(gl.getUniform(program, loc));
+                    // Uniform array
+                    
+                    /*var uniformArray: UniformArray*/
+                    var locations = [GLint]()
+                    /*var value;
+                    var loc;
+                    
+                    // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
+                    // as separate uniforms, one for each array element.  Check for and handle that case.
+                    var indexOfBracket = uniformName.indexOf('[');
+                    if (indexOfBracket >= 0) {
+                    // We're assuming the array elements show up in numerical order - it seems to be true.
+                    uniformArray = uniformsByName[uniformName.slice(0, indexOfBracket)];
+                    
+                    // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
+                    // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
+                    if (typeof uniformArray === 'undefined') {
+                    continue;
+                    }
+                    
+                    locations = uniformArray._locations;
+                    
+                    // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
+                    // but the size is not 1 like it is in Firefox.  So if we push locations here,
+                    // we'll end up adding too many locations.
+                    if (locations.length <= 1) {
+                    value = uniformArray.value;
+                    loc = gl.getUniformLocation(program, uniformName);
+                    locations.push(loc);
+                    value.push(gl.getUniform(program, loc));
+                    }
+                    } else {
+                    locations = [];
+                    value = [];
+                    for ( var j = 0; j < activeUniform.size; ++j) {
+                    loc = gl.getUniformLocation(program, uniformName + '[' + j + ']');
+                    locations.push(loc);
+                    value.push(gl.getUniform(program, loc));
+                    }
+                    uniformArray = new UniformArray(gl, activeUniform, uniformName, locations, value);
+                    
+                    uniformsByName[uniformName] = uniformArray;
+                    uniforms.push(uniformArray);
+                    
+                    if (uniformArray._setSampler) {
+                    samplerUniforms.push(uniformArray);
+                    }
+                    }
+                    }*/
                 }
-                uniformArray = new UniformArray(gl, activeUniform, uniformName, locations, value);
-                
-                uniformsByName[uniformName] = uniformArray;
-                uniforms.push(uniformArray);
-                
-                if (uniformArray._setSampler) {
-                samplerUniforms.push(uniformArray);
-                }
-                }
-                }*/
             }
         }
         
@@ -676,8 +672,9 @@ class ShaderProgram {
         if uniformMap != nil {
             for (name, uniform) in _manualUniforms! {
                 if let uniformFunc: UniformFunc = uniformMap!.uniforms[name] {
-                    println("cool story")
-                    //uniform.value = uniformFunc(uniformMap)
+                    uniform.value = uniformFunc(map: uniformMap!)
+                } else {
+                    assert(true, "no matching uniform for \(name)")
                 }
             }
         }
@@ -692,7 +689,7 @@ class ShaderProgram {
                 var err: GLenum
                 var status: GLint = 0
                 glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
-                if status != 1 {
+                if status != GLint(GL_TRUE) {
                     var infoLogLength: GLsizei = 0
                     glGetProgramiv(_program!, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
                     var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)

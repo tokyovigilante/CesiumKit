@@ -1936,58 +1936,12 @@ Matrix4.prototype.clone = function(result) {
 * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
 */
     func equals(other: Matrix4) -> Bool {
-        let left0: Double = _grid[0]
-        let left1: Double = _grid[1]
-        let left2: Double = _grid[2]
-        let left3: Double = _grid[3]
-        let left4: Double = _grid[4]
-        let left5: Double = _grid[5]
-        let left6: Double = _grid[6]
-        let left7: Double = _grid[7]
-        let left8: Double = _grid[8]
-        let left9: Double = _grid[9]
-        let left10: Double = _grid[10]
-        let left11: Double = _grid[11]
-        let left12: Double = _grid[12]
-        let left13: Double = _grid[13]
-        let left14: Double = _grid[14]
-        let left15: Double = _grid[15]
-        
-        let right0: Double = other[0]
-        let right1: Double = other[1]
-        let right2: Double = other[2]
-        let right3: Double = other[3]
-        let right4: Double = other[4]
-        let right5: Double = other[5]
-        let right6: Double = other[6]
-        let right7: Double = other[7]
-        let right8: Double = other[8]
-        let right9: Double = other[9]
-        let right10: Double = other[10]
-        let right11: Double = other[11]
-        let right12: Double = other[12]
-        let right13: Double = other[13]
-        let right14: Double = other[14]
-        let right15: Double = other[15]
-        
-        return
-            left0 == right0 &&
-                left1 == right1 &&
-                left2 == right2 &&
-                left3 == right3 &&
-                left4 == right4 &&
-                left5 == right5 &&
-                left6 == right6 &&
-                left7 == right7 &&
-                left8 == right8 &&
-                left9 == right9 &&
-                left10 == right10 &&
-                left11 == right11 &&
-                left12 == right12 &&
-                left13 == right13 &&
-                left14 == right14 &&
-                left15 == right15
-
+        for var i = 0; i < 16; i++ {
+            if _grid[i] != other[i] {
+                return false
+            }
+        }
+        return true
     }
 /*
 /**

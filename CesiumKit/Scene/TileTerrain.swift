@@ -171,18 +171,18 @@ class TileTerrain {
 
         weak var weakSelf = self
         
-        func success(mesh: TerrainMesh) {
+        var success = { (mesh: TerrainMesh) -> () in
             weakSelf?.mesh = mesh
             weakSelf?.state = .Transformed
         }
         
-        func failure(error: String) {
+        var failure = { (error: String) -> () in
             weakSelf?.state = .Failed
             var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
             println(message)
         }
         
-        func doRequest() -> AsyncResult<TerrainMesh> {
+        var doRequest = { () -> AsyncResult<TerrainMesh> in
             // Request the terrain from the terrain provider.
             weakSelf?.state = .Transforming
             var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)

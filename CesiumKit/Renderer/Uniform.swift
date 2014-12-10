@@ -309,7 +309,7 @@ class Uniform {
     this.textureUnitIndex = undefined;
     
     this._set = setUniformArray(this);
-    
+        
     if ((activeUniform.type === gl.SAMPLER_2D) || (activeUniform.type === gl.SAMPLER_CUBE)) {
     this._setSampler = function(textureUnitIndex) {
     this.textureUnitIndex = textureUnitIndex;

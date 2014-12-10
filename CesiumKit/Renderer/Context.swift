@@ -1523,7 +1523,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
             // FIXME: primitiveType toGL()
-            //glDrawElements(GLenum(GL_TRIANGLES), GLsizei(count!), GLenum(GL_UNSIGNED_SHORT), UnsafePointer<Void>(bitPattern: 0))
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             va!._unBind()

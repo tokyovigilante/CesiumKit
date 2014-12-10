@@ -509,11 +509,6 @@ public class Camera {
     */
     func updateMembers() {
         
-        /*if isUpdated {
-            return
-        }
-        isUpdated = true*/
-        
         var scratchCartesian = Cartesian3()
         
         let positionChanged = _position != position

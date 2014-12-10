@@ -69,19 +69,19 @@ class TileUniformMap: UniformMap {
         "u_lightingFadeDistance": { (map: TileUniformMap) -> Cartesian2 in
             return map.lightingFadeDistance
         },
-        
-        "u_center3D": { (map: TileUniformMap) -> Cartesian3 in
-            return map.center3D
+        */
+        "u_center3D": { (map: TileUniformMap) -> UniformValue in
+            return .FloatVec3(map.center3D)
         },
-        
+        /*
         "u_tileRectangle": { (map: TileUniformMap) -> Cartesian4 in
             return map.tileRectangle
         },
-        
-        "u_modifiedModelView": { (map: TileUniformMap) -> Matrix4 in
-            return map.modifiedModelView
+        */
+        "u_modifiedModelView": { (map: TileUniformMap) -> UniformValue in
+            return .FloatMatrix4(map.modifiedModelView)
         },
-        
+        /*
         "u_dayTextures": { (map: TileUniformMap) -> [Texture] in
             return map.dayTextures
         },
