@@ -510,30 +510,30 @@ class ShaderProgram {
         
         for var i = 0; i < Int(numberOfUniforms); ++i {
             var uniformLength: GLsizei = 0
-            var uniformNameBuffer = [GLchar](count: Int(uniformLength + 1), repeatedValue: 0)
+            var uniformNameBuffer = [GLchar](count: Int(maxUniformLength + 1), repeatedValue: 0)
             var activeUniform = ActiveUniformInfo()
             glGetActiveUniform(program, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &activeUniform.size, &activeUniform.type, &uniformNameBuffer)
-            /*var uniformName = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
+            var uniformName = String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!
             
-            let suffix = "[0]"*/
-            /*
+            let suffix = "[0]"
+            
             if uniformName.hasSuffix(suffix) {
                 let suffixRange = Range(
                     start: advance(uniformName.endIndex, -3),
                     end: uniformName.endIndex)
                 uniformName.removeRange(suffixRange)
-            }*/
+            }
             activeUniform.name = uniformName
 
-            /*if !activeUniform.name.hasPrefix("gl_") {
+            if !activeUniform.name.hasPrefix("gl_") {
                 if activeUniform.name.indexOf("[") == nil {
                     // Single uniform
-                    /*let nameBuffer = UnsafePointer<GLchar>((activeUniform.name as NSString).UTF8String)
+                    let nameBuffer = UnsafePointer<GLchar>((activeUniform.name as NSString).UTF8String)
                     let location = GLint(glGetUniformLocation(program, nameBuffer))
                     assert(glGetError() == GLenum(GL_NO_ERROR))
                     var value: GLfloat = 0.0
-                    /*glGetUniformfv(program, location, &value)
-                    assert(glGetError() == GLenum(GL_NO_ERROR))*/
+                    glGetUniformfv(program, location, &value)
+                    assert(glGetError() == GLenum(GL_NO_ERROR))
                     var uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(value))
                     
                     uniformsByName[activeUniform.name] = uniform
@@ -541,7 +541,7 @@ class ShaderProgram {
                     
                     if uniform.hasSetSampler {
                         samplerUniforms.append(uniform)
-                    }*/
+                    }
                 } else {
                     // Uniform array
                     
@@ -593,7 +593,7 @@ class ShaderProgram {
                     }
                     }*/
                 }
-            }*/
+            }
         }
         
         return (

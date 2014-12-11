@@ -107,7 +107,7 @@ class Uniform {
             if (err != GLenum(GL_NO_ERROR)) {
                 println(err)
             }
-            //assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
+            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         case .FloatVec2(let value):
             glUniform2f(_location, GLfloat(value.x), GLfloat(value.y))
             assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
