@@ -464,7 +464,7 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/'>EXT_frag_depth</a>
     */
     var fragmentDepth: Bool {
-    get { return checkGLExtension("EXT_frag_depth") }
+        get { return checkGLExtension("EXT_frag_depth") }
     }
     
     /**
@@ -1429,7 +1429,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 // TODO: Need a way for a command to give what draw buffers are active.
                 buffers = framebuffer!.activeColorAttachments
             } else {
-                glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+                //glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
                 assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
             
@@ -1484,6 +1484,10 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
         var framebuffer = clearCommand.framebuffer ?? passState.framebuffer
+        
+        //var oldFBO: GLint = 0
+        //glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
+        
         bindFramebuffer(framebuffer)
         glClear(GLbitfield(bitmask))
     }
@@ -1544,29 +1548,26 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
         continueDraw(drawCommand, shaderProgram: shaderProgram)
     }
-/*
-Context.prototype.endFrame = function() {
-    var gl = this._gl;
-    gl.useProgram(null);
-    
-    this._currentFramebuffer = undefined;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    
-    var buffers = scratchBackBufferArray;
-    if (this.drawBuffers) {
-        this._drawBuffers.drawBuffersWEBGL(scratchBackBufferArray);
-    }
-    
-    var length = this._maxFrameTextureUnitIndex;
-    this._maxFrameTextureUnitIndex = 0;
-    
-    for (var i = 0; i < length; ++i) {
-        gl.activeTexture(gl.TEXTURE0 + i);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-    }
-};
 
+    func endFrame () {
+        glUseProgram(0)
+        
+        _currentFramebuffer = nil
+        //glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+        /*
+        var buffers = scratchBackBufferArray;
+        if (this.drawBuffers) {
+            this._drawBuffers.drawBuffersWEBGL(scratchBackBufferArray);
+        }*/
+    
+        for var i = 0; i < _maxFrameTextureUnitIndex; ++i {
+            glActiveTexture(GLenum(GL_TEXTURE0 + i))
+            glBindTexture(GLenum(GL_TEXTURE_2D), 0)
+            glBindTexture(GLenum(GL_TEXTURE_CUBE_MAP), 0)
+        }
+        _maxFrameTextureUnitIndex = 0
+    }
+/*
 Context.prototype.readPixels = function(readState) {
     var gl = this._gl;
     

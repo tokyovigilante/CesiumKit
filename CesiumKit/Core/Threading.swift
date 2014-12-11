@@ -67,16 +67,17 @@ public enum AsyncResult<R> {
         backgroundClosure: () -> AsyncResult<R>,
         asyncClosures: (success: (result: R) -> (), failure: (error: String) -> ()))
     {
-        dispatch_async(queue) {
+        //FIXME: Sync
+        //dispatch_async(queue) {
             let result = backgroundClosure()
             
             if result.failed {
                 dispatch_async(dispatch_get_main_queue(), { asyncClosures.failure(error: result.error!) })
             }
             else {
-                dispatch_async(dispatch_get_main_queue(), { asyncClosures.success(result: result.value!) })
+                /*dispatch_async(dispatch_get_main_queue(), {*/ asyncClosures.success(result: result.value!) /*})*/
             }
-        }
+        //}
     }
 }
 

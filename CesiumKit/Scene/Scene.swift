@@ -1011,16 +1011,13 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             scene._fxaa.execute(context, passState);
         }*/
     }
-/*
-function executeOverlayCommands(scene, passState) {
-    var context = scene.context;
-    var commandList = scene._overlayCommandList;
-    var length = commandList.length;
-    for (var i = 0; i < length; ++i) {
-        commandList[i].execute(context, passState);
+
+    func executeOverlayCommands(passState: PassState) {
+        for command in _overlayCommandList {
+            command.execute(context: context, passState: passState, renderState: nil, shaderProgram: nil)
+        }
     }
-}
-*/
+
     func updatePrimitives() {
         
         globe.update(context: context, frameState: _frameState, commandList: &_commandList)
@@ -1082,9 +1079,9 @@ function callAfterRenderFunctions(frameState) {
         createPotentiallyVisibleSet()
         
         executeCommands(passState: _passState, clearColor: backgroundColor)
-        /*executeOverlayCommands(scene, passState);
+        executeOverlayCommands(_passState)
         
-        frameState.creditDisplay.endFrame();
+        /*frameState.creditDisplay.endFrame();
         
         if (scene.debugShowFramesPerSecond) {
             // TODO: Performance display
@@ -1105,12 +1102,12 @@ function callAfterRenderFunctions(frameState) {
             scene._performanceDisplay = scene._performanceDisplay && scene._performanceDisplay.destroy();
             scene._performanceContainer.parentNode.removeChild(scene._performanceContainer);*/
         }
-        
-        context.endFrame();
-        callAfterRenderFunctions(frameState);
+        */
+        context.endFrame()
+        //callAfterRenderFunctions(frameState);
         
         // FIXME: events
-        //scene._postRender.raiseEvent(scene, time)*/
+        //scene._postRender.raiseEvent(scene, time)
         
 }
 
