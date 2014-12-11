@@ -529,10 +529,8 @@ class ShaderProgram {
                     // Single uniform
                     let nameBuffer = UnsafePointer<GLchar>((uniformName as NSString).UTF8String)
                     let location = GLint(glGetUniformLocation(program, nameBuffer))
-                    assert(glGetError() == GLenum(GL_NO_ERROR))
                     var value: GLfloat = 0.0
                     //glGetUniformfv(program, location, &value)
-                    assert(glGetError() == GLenum(GL_NO_ERROR))
                     var uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(0.0))
                     
                     uniformsByName[activeUniform.name] = uniform
@@ -645,7 +643,6 @@ class ShaderProgram {
         _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
         
         glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
 
         var uniforms = findUniforms()
         var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
@@ -662,7 +659,6 @@ class ShaderProgram {
     func bind () {
         initialize()
         glUseProgram(_program!)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
     func setUniforms (uniformMap: TileUniformMap?, uniformState: UniformState, validate: Bool) {

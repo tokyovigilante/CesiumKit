@@ -64,13 +64,10 @@ class CubeMapFace {
         assert(yOffset + source.height <= size, "yOffset + source.height must be less than or equal to height")
         
         glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
         glActiveTexture(GLenum(GL_TEXTURE0))
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindTexture(GLenum(target), GLuint(texture))
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
 
         // FIXME: glTexSubImage2D(GLenum(target), GLint(0), GLint(xOffset), GLint(yOffset), GLsizei(source.width), GLsizei(source.height), GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(source.arrayBufferView))
         glBindTexture(GLenum(target), 0)

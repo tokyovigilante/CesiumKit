@@ -59,12 +59,9 @@ class VertexArray {
         
         // Setup VAO
         glGenVertexArrays(1, &_vao)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         glBindVertexArray(_vao)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         bind()
         glBindVertexArray(0)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
@@ -88,7 +85,6 @@ class VertexArray {
             // Common case: vertex buffer for per-vertex data
             attr.vertexAttrib = { (attr: VertexAttributes) in
                 glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
-                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
                 glVertexAttribPointer(
                     GLuint(attr.index),
                     GLint(attr.componentsPerAttribute),
@@ -97,14 +93,11 @@ class VertexArray {
                     GLsizei(attr.strideInBytes),
                     UnsafePointer<Void>(bitPattern: attr.offsetInBytes)
                 )
-                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
                 glEnableVertexAttribArray(GLuint(attr.index))
-                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
             
             attr.disableVertexAttribArray = { (attr: VertexAttributes) in
                 glDisableVertexAttribArray(GLuint(attr.index))
-                assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             }
         } else {
             // Less common case: value array for the same data for each vertex
@@ -148,7 +141,6 @@ class VertexArray {
 
         if indexBuffer != nil {
             glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         }
     }
 
@@ -176,17 +168,14 @@ return this._indexBuffer;
 
     func _bind() {
         glBindVertexArray(_vao)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 
     func _unBind() {
         glBindVertexArray(0)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 
     deinit {
         glDeleteVertexArrays(1, &_vao)
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
     }
 }
 

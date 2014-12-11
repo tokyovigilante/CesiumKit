@@ -99,24 +99,15 @@ class Uniform {
     }
     
     func set() {
-        assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         switch self.value {
         case .FloatVec1(let value):
             glUniform1f(_location, GLfloat(value))
-            let err = glGetError()
-            if (err != GLenum(GL_NO_ERROR)) {
-                println(err)
-            }
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         case .FloatVec2(let value):
             glUniform2f(_location, GLfloat(value.x), GLfloat(value.y))
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         case .FloatVec3(let value):
             glUniform3f(_location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z))
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         case .FloatVec4(let value):
             glUniform4f(_location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z), GLfloat(value.w))
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
             /*
             case gl.SAMPLER_2D:
             case gl.SAMPLER_CUBE:
@@ -154,10 +145,8 @@ class Uniform {
             */
         case .FloatMatrix3(let value):
             glUniformMatrix3fv(_location, 1, GLboolean(0), value.toArray())
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         case .FloatMatrix4(let value):
             glUniformMatrix4fv(_location, 1, GLboolean(0), value.toArray())
-            assert(glGetError() == GLenum(GL_NO_ERROR), "GL call failed")
         default:
             fatalError("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
         }
