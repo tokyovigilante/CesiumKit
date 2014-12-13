@@ -327,7 +327,7 @@ struct Rectangle/*: Packable*/ {
     * @constant
     */
     static func maxValue() -> Rectangle {
-        return Rectangle(west: M_PI, south: M_PI_2, east: M_PI, north: M_PI_2)
+        return Rectangle(west: -M_PI, south: -M_PI_2, east: M_PI, north: M_PI_2)
     }
     
 }
