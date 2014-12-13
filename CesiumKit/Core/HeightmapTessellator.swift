@@ -115,14 +115,7 @@ class HeightmapTessellator {
             // so it employs a lot of inlining and unrolling as an optimization.
             // In particular, the functionality of Ellipsoid.cartographicToCartesian
             // is inlined.
-            
-            /*var cos = cos()
-            var sin = Math.sin;
-            var sqrt = Math.sqrt;
-            var atan = Math.atan;
-            var exp = Math.exp;*/
             let piOverTwo = M_PI_2
-            //var toRadians = CesiumMath.toRadians;
             
             let oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius
             
@@ -274,6 +267,7 @@ class HeightmapTessellator {
                     
                     vertices[vertexArrayIndex++] = Float(u)
                     vertices[vertexArrayIndex++] = Float(v)
+                    println("\(vertices[vertexArrayIndex-6), \(vertices[vertexArrayIndex-5), \(vertices[vertexArrayIndex-4), \(vertices[vertexArrayIndex-3), \(vertices[vertexArrayIndex-2), \(vertices[vertexArrayIndex-1)")
                 }
             }
             

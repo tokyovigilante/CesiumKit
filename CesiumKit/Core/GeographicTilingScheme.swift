@@ -32,21 +32,39 @@ class GeographicTilingScheme: TilingScheme {
     * @memberof GeographicTilingScheme.prototype
     * @type {Ellipsoid}
     */
-    var ellipsoid: Ellipsoid
+    private var _ellipsoid: Ellipsoid
+    
+    var ellipsoid: Ellipsoid {
+        get {
+            return _ellipsoid
+        }
+    }
     
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
-    var rectangle : Rectangle
+    private var _rectangle : Rectangle
+    
+    var rectangle: Rectangle {
+        get {
+             return _rectangle
+        }
+    }
     
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    var projection : Projection
+    private var _projection : Projection
+    
+    var projection: Projection {
+        get {
+            return _projection
+        }
+    }
 
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int
@@ -57,11 +75,12 @@ class GeographicTilingScheme: TilingScheme {
         numberOfLevelZeroTilesX: Int = 2,
         numberOfLevelZeroTilesY: Int = 1) {
             
-            self.ellipsoid = ellipsoid
-            self.rectangle = rectangle
+            _ellipsoid = ellipsoid
+            _rectangle = rectangle
+            _projection = GeographicProjection(ellipsoid: _ellipsoid)
+
             self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
             self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
-            self.projection = GeographicProjection()
     }
     
     /**
@@ -141,18 +160,18 @@ class GeographicTilingScheme: TilingScheme {
         var xTiles = numberOfXTilesAtLevel(level)
         var yTiles = numberOfYTilesAtLevel(level)
 
-        var xTileWidth = (rectangle.east - rectangle.west) / Double(xTiles)
-        var west = Double(x) * xTileWidth + rectangle.west
-        var east = Double(x + 1) * xTileWidth + rectangle.west
+        var xTileWidth = (_rectangle.east - _rectangle.west) / Double(xTiles)
+        var west = Double(x) * xTileWidth + _rectangle.west
+        var east = Double(x + 1) * xTileWidth + _rectangle.west
 
-        var yTileHeight = (rectangle.north - rectangle.south) / Double(yTiles)
-        var north = rectangle.north - Double(y) * yTileHeight
-        var south = rectangle.north - Double(y + 1) * yTileHeight
+        var yTileHeight = (_rectangle.north - _rectangle.south) / Double(yTiles)
+        var north = _rectangle.north - Double(y) * yTileHeight
+        var south = _rectangle.north - Double(y + 1) * yTileHeight
 
-            return Rectangle(west: west, south: south, east: east, north: north)
-
+        return Rectangle(west: west, south: south, east: east, north: north)
     }
 
+    
     /**
      * Calculates the tile x, y coordinates of the tile containing
      * a given cartographic position.
