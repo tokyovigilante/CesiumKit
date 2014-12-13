@@ -124,6 +124,10 @@ return undefined;
 
 class Context {
     
+    var _debug: (
+        renderCountThisFrame: Int,
+        renderCount: Int
+    )
     
     var view: GLKView
     
@@ -691,6 +695,8 @@ class Context {
     
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
+
+        _debug = (0, 0)
 
         var us = UniformState()
         var rs = RenderState()
@@ -1485,6 +1491,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
     }
 
     func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
+        
         var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
         
         if framebuffer != nil && rs.depthTest.enabled {
@@ -1521,11 +1528,11 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             va!._unBind()
         } else {
-            /*count = defaultValue(count, va.numberOfVertices);
-            
-            va._bind();
-            context._gl.drawArrays(primitiveType, offset, count);
-            va._unBind();*/
+            count = count ?? va!.vertexCount
+            va!._bind()
+            glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
+            va!._unBind()
+            _debug.renderCountThisFrame++
         }
     }
 
@@ -1556,6 +1563,8 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             glBindTexture(GLenum(GL_TEXTURE_CUBE_MAP), 0)
         }
         _maxFrameTextureUnitIndex = 0
+        println("\(_debug.renderCountThisFrame)")
+        _debug.renderCountThisFrame = 0
     }
 /*
 Context.prototype.readPixels = function(readState) {
