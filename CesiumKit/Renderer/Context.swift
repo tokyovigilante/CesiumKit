@@ -141,8 +141,7 @@ class Context {
     
     // Validation and logging disabled by default for speed.
     var _validateFramebuffer = false
-    // FIXME: validate is on
-    var _validateShaderProgram = true
+    var _validateShaderProgram = false
     var _logShaderCompilation = false
     
     var _shaderCache: ShaderCache? = nil
