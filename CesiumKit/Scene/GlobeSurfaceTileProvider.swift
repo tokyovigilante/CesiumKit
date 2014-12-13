@@ -186,20 +186,16 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
 
         imageryLayers.update()
         
-        if (_layerOrderChanged) {
+        if _layerOrderChanged {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
-                //tile.data?.imagery.sort(sortTileImageryByLayerIndex)
                 if var imagery: [TileImagery] = tile.data?.imagery {
                     imagery.sort(sortTileImageryByLayerIndex)
                 }
             })
-        
-            for key in _tilesToRenderByTextureCount.keys {
-                _tilesToRenderByTextureCount[key] = [QuadtreeTile]()
-            }
         }
         
+        _tilesToRenderByTextureCount.removeAll()
         _usedDrawCommands = 0
         
         // Add credits for terrain and imagery providers.
@@ -248,13 +244,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         
         // And the tile render commands to the command list, sorted by texture count.
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
-        //for (var textureCountIndex = 0; textureCountIndex < _tilesToRenderByTextureCount.count; ++textureCountIndex) {
-            //if let tilesToRender = _tilesToRenderByTextureCount[textureCountIndex] {
-                for tile in tilesToRender {
-                //for (var tileIndex = 0; tileIndex < tilesToRender.count; ++tileIndex) {
-                    addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
-                }
-            //}
+            for tile in tilesToRender {
+                addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
+            }
         }
     }
     

@@ -69,6 +69,7 @@ extension NSData: Serializable {
     }
     
     public class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData {
+        println(values.count)
         return NSData(bytes:values, length:values.count*sizeof(SerializedType))
     }
 

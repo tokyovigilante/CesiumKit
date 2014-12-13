@@ -1532,7 +1532,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             va!._bind()
             glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
             va!._unBind()
-            _debug.renderCountThisFrame++
         }
     }
 

@@ -1072,13 +1072,11 @@ function callAfterRenderFunctions(frameState) {
         //frameState.creditDisplay.beginFrame();
         
         uniformState.update(context, frameState: _frameState)
-        
         _commandList.removeAll()
         _overlayCommandList.removeAll()
     
         updatePrimitives()
         createPotentiallyVisibleSet()
-        
         executeCommands(passState: _passState, clearColor: backgroundColor)
         executeOverlayCommands(_passState)
         

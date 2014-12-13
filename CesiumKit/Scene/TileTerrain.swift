@@ -198,7 +198,7 @@ class TileTerrain {
 
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
-        let terrainMesh = mesh!
+        var terrainMesh = mesh!
         let buffer = context.createVertexBuffer(
             array: SerializedArray(data: NSData.serializeArray(terrainMesh.vertices), type: datatype),
             usage: BufferUsage.StaticDraw)

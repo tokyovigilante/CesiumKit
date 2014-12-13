@@ -815,9 +815,9 @@ class Globe {
             tileProvider.lightingFadeInDistance = _lightingFadeInDistance
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.oceanNormalMap = _oceanNormalMap
-            
             _surface.update(context: context, frameState: frameState, commandList: &commandList)
-            
+            println(commandList.count)
+
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {

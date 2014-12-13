@@ -170,13 +170,10 @@ class QuadtreePrimitive {
     *        commands to this array during the update call.
     */
     func update (#context: Context, frameState: FrameState, inout commandList: [Command]) {
-  
         _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
-        
         selectTilesForRendering(context: context, frameState: frameState)
         processTileLoadQueue(context: context, frameState: frameState)
         createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
-        
         _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList);
     }
     
@@ -231,7 +228,6 @@ class QuadtreePrimitive {
         
         // Clear the render list.
         _tilesToRender.removeAll()
-        
         _tileTraversalQueue.clear()
         
         _debug.maxDepth = 0
