@@ -198,13 +198,13 @@ class TileTerrain {
 
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
-        var stride = 0
-        var numTexCoordComponents = 0
         let terrainMesh = mesh!
         let buffer = context.createVertexBuffer(
             array: SerializedArray(data: NSData.serializeArray(terrainMesh.vertices), type: datatype),
             usage: BufferUsage.StaticDraw)
-        
+
+        var stride: Int
+        var numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
             stride = 8 * datatype.elementSize()
             numTexCoordComponents = 4
