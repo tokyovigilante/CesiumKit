@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+protocol DrawCommandOwner: class {}
+
 /**
 * Represents a command to the renderer for drawing.
 *
@@ -135,7 +137,7 @@ class DrawCommand: Command {
     *
     * @see Scene#debugCommandFilter
     */
-    weak var owner: AnyObject?
+    weak var owner: DrawCommandOwner? = nil
     
     /**
     * This property is for debugging only; it is not for production use nor is it optimized.
@@ -183,7 +185,7 @@ class DrawCommand: Command {
         framebuffer: Framebuffer? = nil,
         pass: Pass? = nil,
         executeInClosestFrustum: Bool = false,
-        owner: AnyObject? = nil,
+        owner: DrawCommandOwner? = nil,
         debugShowBoundingVolume: Bool = false,
         debugOverlappingFrustums: Int = 0) {
             self.boundingVolume = boundingVolume

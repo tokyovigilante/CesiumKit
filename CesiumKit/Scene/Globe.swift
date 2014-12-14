@@ -833,7 +833,6 @@ class Globe {
             // of the globe are not picked.
             commandList.append(_depthCommand)
         }
-        println(commandList.count)
     }
 
 /**
