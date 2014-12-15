@@ -259,6 +259,9 @@
 		9413B8451A37B94800FFAD81 /* TileTerrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9454042E199F5C7D00012DC4 /* TileTerrain.swift */; };
 		9413B8461A37B94800FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
+		944787D81A3D8BED00FFAD81 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697D9F1A25C74500FFAD81 /* Regex.swift */; };
+		944787D91A3D8BF200FFAD81 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
+		944787DA1A3D8BF500FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A691A38444C00FFAD81 /* AppDelegate.swift */; };
 		94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */; };
@@ -1107,10 +1110,13 @@
 				9413B8431A37B94800FFAD81 /* TileImagery.swift in Sources */,
 				9410138A19FB037D00FFAD81 /* ClearCommand.swift in Sources */,
 				9410139319FB037D00FFAD81 /* GLSupport.swift in Sources */,
+				944787D81A3D8BED00FFAD81 /* Regex.swift in Sources */,
 				9413B8411A37B94800FFAD81 /* TerrainState.swift in Sources */,
 				9413113919F3A08800FFAD81 /* Cartographic.swift in Sources */,
+				944787DA1A3D8BF500FFAD81 /* String.swift in Sources */,
 				9413B8241A37B94800FFAD81 /* FrameState.swift in Sources */,
 				941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */,
+				944787D91A3D8BF200FFAD81 /* Array.swift in Sources */,
 				9413B8301A37B94800FFAD81 /* ImageryState.swift in Sources */,
 				9413B8321A37B94800FFAD81 /* Pass.swift in Sources */,
 				9410138719FB037D00FFAD81 /* Buffer.swift in Sources */,

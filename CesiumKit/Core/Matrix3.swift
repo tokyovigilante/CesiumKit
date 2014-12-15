@@ -47,13 +47,13 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
         _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0,
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0) {
             _grid[0] = column0Row0
-            _grid[1] = column0Row1
-            _grid[2] = column0Row2
-            _grid[3] = column1Row0
+            _grid[1] = column1Row0
+            _grid[2] = column2Row0
+            _grid[3] = column0Row1
             _grid[4] = column1Row1
-            _grid[5] = column1Row2
-            _grid[6] = column2Row0
-            _grid[7] = column2Row1
+            _grid[5] = column2Row1
+            _grid[6] = column0Row2
+            _grid[7] = column1Row2
             _grid[8] = column2Row2
     }
     
@@ -1143,7 +1143,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     left[7] === right[7] &&
     left[8] === right[8]);
     };
-    
+    */
     /**
     * Compares the provided matrices componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -1154,27 +1154,15 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    Matrix3.equalsEpsilon = function(left, right, epsilon) {
-    //>>includeStart('debug', pragmas.debug);
-    if (typeof epsilon !== 'number') {
-    throw new DeveloperError('epsilon must be a number');
+    func equals(other: Matrix3) -> Bool {
+        for var i = 0; i < 9; i++ {
+            if _grid[i] != other[i] {
+                return false
+            }
+        }
+        return true
     }
-    //>>includeEnd('debug');
     
-    return (left === right) ||
-    (defined(left) &&
-    defined(right) &&
-    Math.abs(left[0] - right[0]) <= epsilon &&
-    Math.abs(left[1] - right[1]) <= epsilon &&
-    Math.abs(left[2] - right[2]) <= epsilon &&
-    Math.abs(left[3] - right[3]) <= epsilon &&
-    Math.abs(left[4] - right[4]) <= epsilon &&
-    Math.abs(left[5] - right[5]) <= epsilon &&
-    Math.abs(left[6] - right[6]) <= epsilon &&
-    Math.abs(left[7] - right[7]) <= epsilon &&
-    Math.abs(left[8] - right[8]) <= epsilon);
-    };
-    */
     /**
     * An immutable Matrix3 instance initialized to the identity matrix.
     *
@@ -1313,4 +1301,8 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
 
 func * (lhs: Matrix3, rhs: Matrix3) -> Matrix3 {
     return lhs.multiply(rhs)
+}
+
+func == (left: Matrix3, right: Matrix3) -> Bool {
+    return left.equals(right)
 }

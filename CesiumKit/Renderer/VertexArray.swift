@@ -18,7 +18,7 @@ class VertexArray {
     
     let vertexCount: Int
     
-    private var _vao: GLuint = 0
+    private var _vao: GLuint? = nil
     
     let indexBuffer: IndexBuffer?
 
@@ -58,10 +58,12 @@ class VertexArray {
         self.indexBuffer = indexBuffer
         
         // Setup VAO
-        glGenVertexArrays(1, &_vao)
-        glBindVertexArray(_vao)
+        /*var vao: GLuint = 0
+        glGenVertexArrays(1, &vao)
+        glBindVertexArray(vao)
         bind()
         glBindVertexArray(0)
+        _vao = vao*/
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
@@ -167,15 +169,32 @@ return this._indexBuffer;
     }
 
     func _bind() {
-        glBindVertexArray(_vao)
+        if _vao != nil {
+            glBindVertexArray(_vao!)
+        } else {
+                bind()
+            }
     }
 
     func _unBind() {
-        glBindVertexArray(0)
+        if _vao != nil {
+            glBindVertexArray(0)
+        } else {
+            for attribute in _attributes {
+                if attribute.enabled {
+                    attribute.disableVertexAttribArray(attr: attribute)
+                }
+            }
+            if indexBuffer != nil {
+                glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), 0)
+            }
+        }
     }
 
     deinit {
-        glDeleteVertexArrays(1, &_vao)
+        if _vao != nil {
+            glDeleteVertexArrays(1, &_vao!)
+        }
     }
 }
 

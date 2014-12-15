@@ -1525,12 +1525,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
             // FIXME: primitiveType toGL()
-            if drawCommand.owner != nil {
-                if drawCommand.owner! is QuadtreeTile {
-                    let tile = drawCommand.owner! as QuadtreeTile
-                    println("L\(tile.level)X\(tile.x)Y\(tile.y)")
-                }
-            }
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             va!._unBind()
         } else {

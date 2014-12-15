@@ -57,11 +57,40 @@ struct Matrix4: Packable, Equatable {
     
     var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
 
-    init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0, _ column3Row0: Double = 0.0,
-        _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0, _ column3Row1: Double = 0.0,
-        _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
-        _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
-            _grid = [column0Row0, column0Row1, column0Row2, column0Row3, column1Row0, column1Row1, column1Row2, column1Row3, column2Row0, column2Row1, column2Row2, column2Row3, column3Row0, column3Row1, column3Row2, column3Row3]
+    init(
+        _ column0Row0: Double = 0.0,
+        _ column1Row0: Double = 0.0,
+        _ column2Row0: Double = 0.0,
+        _ column3Row0: Double = 0.0,
+        _ column0Row1: Double = 0.0,
+        _ column1Row1: Double = 0.0,
+        _ column2Row1: Double = 0.0,
+        _ column3Row1: Double = 0.0,
+        _ column0Row2: Double = 0.0,
+        _ column1Row2: Double = 0.0,
+        _ column2Row2: Double = 0.0,
+        _ column3Row2: Double = 0.0,
+        _ column0Row3: Double = 0.0,
+        _ column1Row3: Double = 0.0,
+        _ column2Row3: Double = 0.0,
+        _ column3Row3: Double = 0.0) {
+            _grid = [
+                column0Row0,
+                column0Row1,
+                column0Row2,
+                column0Row3,
+                column1Row0,
+                column1Row1,
+                column1Row2,
+                column1Row3,
+                column2Row0,
+                column2Row1,
+                column2Row2,
+                column2Row3,
+                column3Row0,
+                column3Row1,
+                column3Row2,
+                column3Row3]
     }
     
     init(grid: [Double]) {
@@ -695,11 +724,31 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         let column2Row3 = -1.0
         let column3Row2 = -2.0 * far * near / (far - near)
         
+        
+        /*
+        result[0] = column0Row0;
+        result[1] = 0.0;
+        result[2] = 0.0;
+        result[3] = 0.0;
+        result[4] = 0.0;
+        result[5] = column1Row1;
+        result[6] = 0.0;
+        result[7] = 0.0;
+        result[8] = column2Row0;
+        result[9] = column2Row1;
+        result[10] = column2Row2;
+        result[11] = column2Row3;
+        result[12] = 0.0;
+        result[13] = 0.0;
+        result[14] = column3Row2;
+        result[15] = 0.0;
+        return result;*/
+        
         return Matrix4(
-            column0Row0, 0.0, 0.0, 0.0,
-            0.0, column1Row1, 0.0, 0.0,
-            column2Row0, column2Row1, column2Row2, column2Row3,
-            0.0, 0.0, column3Row2, 0.0)
+            column0Row0, 0.0, column2Row0, 0.0,
+            0.0, column1Row1, column2Row1, 0.0,
+            0.0, 0.0, column2Row2, column3Row2,
+            0.0, 0.0, column2Row3, 0.0)
     }
     
     /**
@@ -723,10 +772,10 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         let column3Row2 = -2.0 * near
         
         return Matrix4(
-            column0Row0, 0.0, 0.0, 0.0,
-            0.0, column1Row1, 0.0, 0.0,
-            column2Row0, column2Row1, column2Row2, column2Row3,
-            0.0, 0.0, column3Row2, 0.0
+            column0Row0, 0.0, column2Row0, 0.0,
+            0.0, column1Row1, column2Row1, 0.0,
+            0.0, 0.0, column2Row2, column3Row2,
+            0.0, 0.0, column2Row3, 0.0
         )
     }
 
@@ -798,7 +847,24 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
     */
     func toArray() -> [Float] {
-        return _grid.map({ Float($0) })
+        return [
+            Float(_grid[0]),
+            Float(_grid[4]),
+            Float(_grid[8]),
+            Float(_grid[12]),
+            Float(_grid[1]),
+            Float(_grid[5]),
+            Float(_grid[9]),
+            Float(_grid[13]),
+            Float(_grid[2]),
+            Float(_grid[6]),
+            Float(_grid[10]),
+            Float(_grid[14]),
+            Float(_grid[3]),
+            Float(_grid[7]),
+            Float(_grid[11]),
+            Float(_grid[15]),
+        ]
     }
 /*
 /**
@@ -1131,7 +1197,11 @@ Matrix4.getMaximumScale = function(matrix) {
         var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
         var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
         
-        return Matrix4(column0Row0, column0Row1, column0Row2, column0Row3, column1Row0, column1Row1, column1Row2, column1Row3, column2Row0, column2Row1, column2Row2, column2Row3, column3Row0, column3Row1, column3Row2, column3Row3)
+        return Matrix4(
+            column0Row0, column1Row0, column2Row0, column3Row0,
+            column0Row1, column1Row1, column2Row1, column3Row1,
+            column0Row2, column1Row2, column2Row2, column3Row2,
+            column0Row3, column1Row3, column2Row3, column3Row3)
     }
 
 /**
@@ -1198,10 +1268,10 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     let column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
     
     return Matrix4(
-        column0Row0, column0Row1, column0Row2, 0.0,
-        column1Row0, column1Row1, column1Row2, 0.0,
-        column2Row0, column2Row1, column2Row2, 0.0,
-        column3Row0, column3Row1, column3Row2, 1.0
+        column0Row0, column1Row0, column2Row0, column3Row0,
+        column0Row1, column1Row1, column2Row1, column3Row1,
+        column0Row2, column1Row1, column2Row2, column3Row2,
+        0.0, 0.0, 0.0, 1.0
     )
 }
 /*
@@ -1710,58 +1780,46 @@ Matrix4.equalsEpsilon = function(left, right, epsilon) {
             Math.abs(left[14] - right[14]) <= epsilon &&
             Math.abs(left[15] - right[15]) <= epsilon);
 };
+*/
+    /**
+    * Gets the translation portion of the provided matrix, assuming the matrix is a affine transformation matrix.
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Cartesian3} result The object onto which to store the result.
+    * @returns {Cartesian3} The modified result parameter.
+    */
+    func translation () -> Cartesian3 {
+        return Cartesian3(x: _grid[12], y: _grid[13], z: _grid[14])
+    }
 
-/**
-* Gets the translation portion of the provided matrix, assuming the matrix is a affine transformation matrix.
-*
-* @param {Matrix4} matrix The matrix to use.
-* @param {Cartesian3} result The object onto which to store the result.
-* @returns {Cartesian3} The modified result parameter.
-*/
-Matrix4.getTranslation = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    result.x = matrix[12];
-    result.y = matrix[13];
-    result.z = matrix[14];
-    return result;
-};
-*/
-/**
-* Gets the upper left 3x3 rotation matrix of the provided matrix, assuming the matrix is a affine transformation matrix.
-*
-* @param {Matrix4} matrix The matrix to use.
-* @param {Matrix3} result The object onto which to store the result.
-* @returns {Matrix3} The modified result parameter.
-*
-* @example
-* // returns a Matrix3 instance from a Matrix4 instance
-*
-* // m = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-*
-* var b = new Cesium.Matrix3();
-* Cesium.Matrix4.getRotation(m,b);
-*
-* // b = [10.0, 14.0, 18.0]
-* //     [11.0, 15.0, 19.0]
-* //     [12.0, 16.0, 20.0]
-*/
+    /**
+    * Gets the upper left 3x3 rotation matrix of the provided matrix, assuming the matrix is a affine transformation matrix.
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Matrix3} result The object onto which to store the result.
+    * @returns {Matrix3} The modified result parameter.
+    *
+    * @example
+    * // returns a Matrix3 instance from a Matrix4 instance
+    *
+    * // m = [10.0, 14.0, 18.0, 22.0]
+    * //     [11.0, 15.0, 19.0, 23.0]
+    * //     [12.0, 16.0, 20.0, 24.0]
+    * //     [13.0, 17.0, 21.0, 25.0]
+    *
+    * var b = new Cesium.Matrix3();
+    * Cesium.Matrix4.getRotation(m,b);
+    *
+    * // b = [10.0, 14.0, 18.0]
+    * //     [11.0, 15.0, 19.0]
+    * //     [12.0, 16.0, 20.0]
+    */
     func rotation() -> Matrix3 {
         
         return Matrix3(
-            _grid[0], _grid[1], _grid[2],
-            _grid[4], _grid[5], _grid[6],
-            _grid[8], _grid[9], _grid[10])
+            _grid[0], _grid[4], _grid[8],
+            _grid[1], _grid[5], _grid[9],
+            _grid[2], _grid[6], _grid[10])
     }
 
     /**
@@ -1853,7 +1911,11 @@ Matrix4.getTranslation = function(matrix, result) {
         
         // calculate matrix inverse
         det = 1.0 / det
-        return Matrix4(dst0 * det, dst1 * det, dst2 * det, dst3 * det, dst4 * det, dst5 * det, dst6 * det, dst7 * det, dst8 * det, dst9 * det, dst10 * det, dst11 * det, dst12 * det, dst13 * det, dst14 * det, dst15 * det)
+        return Matrix4(
+            dst0 * det, dst4 * det, dst8 * det, dst12 * det,
+            dst1 * det, dst5 * det, dst9 * det, dst13 * det,
+            dst2 * det, dst6 * det, dst10 * det, dst14 * det,
+            dst3 * det, dst7 * det, dst11 * det, dst15 * det)
     }
 
 /**
@@ -1898,10 +1960,10 @@ Matrix4.getTranslation = function(matrix, result) {
         let z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
         
         return Matrix4(
-            matrix0, matrix4, matrix8, 0.0,
-            matrix1, matrix5, matrix9, 0.0,
-            matrix2, matrix6, matrix10, 0.0,
-            x, y, z, 1.0)
+            matrix0, matrix1, matrix2, x,
+            matrix4, matrix5, matrix6, y,
+            matrix8, matrix9, matrix10, z,
+            0.0, 0.0, 0.0, 1.0)
     }
     
     /**

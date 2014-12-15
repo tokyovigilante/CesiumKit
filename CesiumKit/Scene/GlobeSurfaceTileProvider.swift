@@ -663,8 +663,8 @@ var northeastScratch = new Cartesian3();
         var centerEye = Cartesian4(x: rtc.x, y: rtc.y, z: rtc.z, w: 1.0)
         
         centerEye = viewMatrix.multiplyByVector(centerEye)
-        frameState.camera!.viewMatrix = viewMatrix.setColumn(3, cartesian: centerEye)
-        
+        let modifiedModelView = viewMatrix.setColumn(3, cartesian: centerEye)
+
         let tileImageryCollection = surfaceTile.imagery
         var imageryIndex = 0
         let imageryLen = tileImageryCollection.count
@@ -716,7 +716,7 @@ var northeastScratch = new Cartesian3();
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight
-            uniformMap.modifiedModelView = frameState.camera!.viewMatrix
+            uniformMap.modifiedModelView = modifiedModelView
             
             var applyBrightness = false
             var applyContrast = false

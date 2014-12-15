@@ -14,47 +14,46 @@ class Matrix4Tests: XCTestCase {
 
     }
 
+    func testDefaultConstructorCreatesValuesArrayWithAllZeros () {
+        let matrix: Matrix4 = Matrix4()
+        XCTAssertTrue(matrix[0, 0] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[1, 0] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[2, 0] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[3, 0] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[0, 1] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[1, 1] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[2, 1] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[3, 1] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[0, 2] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[1, 2] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[2, 2] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[3, 2] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[0, 3] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[1, 3] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[2, 3] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+        XCTAssertTrue(matrix[3, 3] == 0.0, "testDefaultConstructorCreatesValuesArrayWithAllZeros")
+    }
+
+    func testConstructorSetsPropertiesFromParameters () {
+        let matrix = Matrix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
+        XCTAssertTrue(matrix[0, 0] == 1.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[1, 0] == 2.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[2, 0] == 3.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[3, 0] == 4.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[0, 1] == 5.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[1, 1] == 6.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[2, 1] == 7.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[3, 1] == 8.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[0, 2] == 9.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[1, 2] == 10.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[2, 2] == 11.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[3, 2] == 12.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[0, 3] == 13.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[1, 3] == 14.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[2, 3] == 15.0, "testConstructorSetsPropertiesFromParameters")
+        XCTAssertTrue(matrix[3, 3] == 16.0, "testConstructorSetsPropertiesFromParameters")
+    }
 /*
-it('default constructor creates values array with all zeros.', function() {
-var matrix = new Matrix4();
-expect(matrix[Matrix4.COLUMN0ROW0]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN1ROW0]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN2ROW0]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN3ROW0]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN0ROW1]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN1ROW1]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN2ROW1]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN3ROW1]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN0ROW2]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN1ROW2]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN2ROW2]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN3ROW2]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN0ROW3]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN1ROW3]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN2ROW3]).toEqual(0.0);
-expect(matrix[Matrix4.COLUMN3ROW3]).toEqual(0.0);
-});
-
-it('constructor sets properties from parameters.', function() {
-var matrix = new Matrix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0);
-expect(matrix[Matrix4.COLUMN0ROW0]).toEqual(1.0);
-expect(matrix[Matrix4.COLUMN1ROW0]).toEqual(2.0);
-expect(matrix[Matrix4.COLUMN2ROW0]).toEqual(3.0);
-expect(matrix[Matrix4.COLUMN3ROW0]).toEqual(4.0);
-expect(matrix[Matrix4.COLUMN0ROW1]).toEqual(5.0);
-expect(matrix[Matrix4.COLUMN1ROW1]).toEqual(6.0);
-expect(matrix[Matrix4.COLUMN2ROW1]).toEqual(7.0);
-expect(matrix[Matrix4.COLUMN3ROW1]).toEqual(8.0);
-expect(matrix[Matrix4.COLUMN0ROW2]).toEqual(9.0);
-expect(matrix[Matrix4.COLUMN1ROW2]).toEqual(10.0);
-expect(matrix[Matrix4.COLUMN2ROW2]).toEqual(11.0);
-expect(matrix[Matrix4.COLUMN3ROW2]).toEqual(12.0);
-expect(matrix[Matrix4.COLUMN0ROW3]).toEqual(13.0);
-expect(matrix[Matrix4.COLUMN1ROW3]).toEqual(14.0);
-expect(matrix[Matrix4.COLUMN2ROW3]).toEqual(15.0);
-expect(matrix[Matrix4.COLUMN3ROW3]).toEqual(16.0);
-});
-
 it('can pack and unpack', function() {
 var array = [];
 var matrix4 = new Matrix4(
@@ -329,15 +328,27 @@ height : 6.0
 expect(returnedResult).toEqual(expected);
 expect(returnedResult).toBe(result);
 });
-
-it('computePerspectiveOffCenter works', function() {
-var expected = new Matrix4(2, 0, 3, 0, 0, 2, 5, 0, 0, 0, -3, -4, 0, 0, -1, 0);
-var result = new Matrix4();
-var returnedResult = Matrix4.computePerspectiveOffCenter(1, 2, 2, 3, 1, 2, result);
-expect(returnedResult).toEqual(expected);
-expect(returnedResult).toBe(result);
-});
-
+*/
+    func testComputePerspectiveOffCenterWorks () {
+        let expected = Matrix4(
+            2, 0, 3, 0,
+            0, 2, 5, 0,
+            0, 0, -3, -4,
+            0, 0, -1, 0)
+        var result = Matrix4.computePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1, far: 2)
+        println("expect \(expected._grid.description)")
+        println("result \(result._grid.description)")
+        XCTAssertTrue(expected.equals(result), "testComputePerspectiveOffCenterWorks")
+    }
+    
+    func testComputeInfinitePerspectiveOffCenterWorks () {
+        let expected = Matrix4(2, 0, 3, 0, 0, 2, 5, 0, 0, 0, -1, -2, 0, 0, -1, 0)
+        var result = Matrix4.computeInfinitePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1)
+        println("expect \(expected._grid.description)")
+        println("expect \(result._grid.description)")
+        XCTAssertTrue(expected.equals(result))
+    }
+/*
 it('computeInfinitePerspectiveOffCenter  works', function() {
 var expected = new Matrix4(2, 0, 3, 0, 0, 2, 5, 0, 0, 0, -1, -2, 0, 0, -1, 0);
 var result = new Matrix4();
@@ -850,61 +861,63 @@ it('toString', function() {
 var matrix = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 expect(matrix.toString()).toEqual('(1, 2, 3, 4)\n(5, 6, 7, 8)\n(9, 10, 11, 12)\n(13, 14, 15, 16)');
 });
+*/
+    
+    func testGetTranslationWorks () {
+        var matrix = Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+        var expected = Cartesian3(x: 4, y: 8, z: 12)
+        var result = matrix.translation()
+        XCTAssertTrue(expected == result, "getTranslation works")
+    }
+    
+    func testGetRotationWorks () {
+        let matrix = Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+        let expected = Matrix3(1, 2, 3, 5, 6, 7, 9, 10, 11);
+        let result = matrix.rotation()
+        XCTAssertTrue(expected == result, "getRotation works")
+    }
 
-it('getTranslation works', function() {
-var matrix = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-var expected = new Cartesian3(4, 8, 12);
-var result = new Cartesian3();
-var returnedResult = Matrix4.getTranslation(matrix, result);
-expect(returnedResult).toBe(result);
-expect(expected).toEqual(returnedResult);
-});
+    func testInverseWorks () {
+        var matrix = Matrix4(
+            0.72,  0.70, 0.00,  0.00,
+            -0.40,  0.41, 0.82,  0.00,
+            0.57, -0.59, 0.57, -3.86,
+            0.00,  0.00, 0.00,  1.00)
+        
+        var expected = Matrix4(
+            0.7150830193944467,    -0.3976559229803265,  0.5720664155155574,  2.2081763638900513,
+            0.6930574657657118,    0.40901752077976433, -0.5884111702445733, -2.271267117144053,
+            0.0022922521876059163, 0.8210249357172755,   0.5732623731786561,  2.2127927604696125,
+            0.0,                   0.0,                  0.0,                 1.0);
+        
+        var result = matrix.inverse()
+        println("expect \(expected._grid.description)")
+        println("expect \(result._grid.description)")
+        XCTAssertTrue(result.equals(expected), "inverse works")/*
+        expect(returnedResult).toBe(result);
+        expect(expected).toEqualEpsilon(returnedResult, CesiumMath.EPSILON20);
+        expect(Matrix4.multiply(returnedResult, matrix, new Matrix4())).toEqualEpsilon(Matrix4.IDENTITY, CesiumMath.EPSILON15);*/
+    }
+    
 
-it('getRotation works', function() {
-var matrix = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-var expected = new Matrix3(1, 2, 3, 5, 6, 7, 9, 10, 11);
-var result = new Matrix3();
-var returnedResult = Matrix4.getRotation(matrix, result);
-expect(returnedResult).toBe(result);
-expect(expected).toEqual(returnedResult);
-});
-
-it('inverse works', function() {
-var matrix = new Matrix4(0.72,  0.70, 0.00,  0.00,
--0.40,  0.41, 0.82,  0.00,
-0.57, -0.59, 0.57, -3.86,
-0.00,  0.00, 0.00,  1.00);
-
-var expected = new Matrix4(0.7150830193944467,    -0.3976559229803265,  0.5720664155155574,  2.2081763638900513,
-0.6930574657657118,    0.40901752077976433, -0.5884111702445733, -2.271267117144053,
-0.0022922521876059163, 0.8210249357172755,   0.5732623731786561,  2.2127927604696125,
-0.0,                   0.0,                  0.0,                 1.0);
-
-var result = new Matrix4();
-var returnedResult = Matrix4.inverse(matrix, result);
-expect(returnedResult).toBe(result);
-expect(expected).toEqualEpsilon(returnedResult, CesiumMath.EPSILON20);
-expect(Matrix4.multiply(returnedResult, matrix, new Matrix4())).toEqualEpsilon(Matrix4.IDENTITY, CesiumMath.EPSILON15);
-});
-
-it('inverseTransformation works', function() {
-var matrix = new Matrix4(1, 0, 0, 10,
-0, 0, 1, 20,
-0, 1, 0, 30,
-0, 0, 0,  1);
-
-var expected = new Matrix4(1, 0, 0, -10,
-0, 0, 1, -30,
-0, 1, 0, -20,
-0, 0, 0, 1);
-
-var result = new Matrix4();
-var returnedResult = Matrix4.inverseTransformation(matrix, result);
-expect(returnedResult).toBe(result);
-expect(expected).toEqual(returnedResult);
-expect(Matrix4.multiply(returnedResult, matrix, new Matrix4())).toEqual(Matrix4.IDENTITY);
-});
-
+    func testInverseTransformationWorks () {
+        let matrix = Matrix4(
+            1, 0, 0, 10,
+            0, 0, 1, 20,
+            0, 1, 0, 30,
+            0, 0, 0,  1
+        )
+        let expected = Matrix4(
+            1, 0, 0, -10,
+            0, 0, 1, -30,
+            0, 1, 0, -20,
+            0, 0, 0, 1
+        )
+        let result = matrix.inverseTransformation()
+        XCTAssertTrue(expected == result, "inverseTransformation works")
+        XCTAssertTrue(matrix.multiply(result) == Matrix4.identity(), "inverseTransformation works")
+    }
+/*
 it('abs throws without a matrix', function() {
 expect(function() {
 return Matrix4.abs();

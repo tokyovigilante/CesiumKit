@@ -356,6 +356,15 @@ class UniformState {
         get  {
             return _projection
         }
+        set (value) {
+            _projection = value
+            
+            _inverseProjectionDirty = true
+            _inverseProjectionOITDirty = true
+            _viewProjectionDirty = true
+            _modelViewProjectionDirty = true
+            _modelViewProjectionRelativeToEyeDirty = true
+        }
     }
     /*
     /**
@@ -379,17 +388,21 @@ class UniformState {
     return this._inverseProjectionOIT;
     }
     },
-    
+    */
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
-    infiniteProjection : {
-    get : function() {
-    return this._infiniteProjection;
+    var infiniteProjection: Matrix4 {
+        get {
+            return _infiniteProjection
+        }
+        set (value) {
+            _infiniteProjection = value
+            _modelViewInfiniteProjectionDirty = true
+        }
     }
-    },
-    */
+    
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
@@ -750,21 +763,6 @@ class UniformState {
         _inverseViewRotation = matrix.rotation()
     }
     
-    func setProjection(matrix: Matrix4) {
-        _projection = matrix
-        
-        _inverseProjectionDirty = true
-        _inverseProjectionOITDirty = true
-        _viewProjectionDirty = true
-        _modelViewProjectionDirty = true
-        _modelViewProjectionRelativeToEyeDirty = true
-    }
-    
-    func setInfiniteProjection(matrix: Matrix4) {
-        _infiniteProjection = matrix
-        _modelViewInfiniteProjectionDirty = true
-    }
-    
     func setCamera(camera: Camera) {
         _cameraPosition = camera.positionWC
         _cameraDirection = camera.directionWC
@@ -808,9 +806,9 @@ class UniformState {
     */
     // FIXME: frustum
     func updateFrustum (frustum: Frustum) {
-        setProjection(frustum.projectionMatrix)
+        projection = frustum.projectionMatrix
         if frustum.infiniteProjectionMatrix != nil {
-            setInfiniteProjection(frustum.infiniteProjectionMatrix!)
+            infiniteProjection = frustum.infiniteProjectionMatrix!
         }
         _currentFrustum.x = frustum.near
         _currentFrustum.y = frustum.far
