@@ -47,7 +47,7 @@
 * @see Packable
 */
 //FIXME: Packable
-struct Matrix4: Packable, Equatable {
+struct Matrix4: Packable, Equatable, Printable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -723,27 +723,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         let column2Row2 = -(far + near) / (far - near)
         let column2Row3 = -1.0
         let column3Row2 = -2.0 * far * near / (far - near)
-        
-        
-        /*
-        result[0] = column0Row0;
-        result[1] = 0.0;
-        result[2] = 0.0;
-        result[3] = 0.0;
-        result[4] = 0.0;
-        result[5] = column1Row1;
-        result[6] = 0.0;
-        result[7] = 0.0;
-        result[8] = column2Row0;
-        result[9] = column2Row1;
-        result[10] = column2Row2;
-        result[11] = column2Row3;
-        result[12] = 0.0;
-        result[13] = 0.0;
-        result[14] = column3Row2;
-        result[15] = 0.0;
-        return result;*/
-        
+                
         return Matrix4(
             column0Row0, 0.0, column2Row0, 0.0,
             0.0, column1Row1, column2Row1, 0.0,
@@ -847,7 +827,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
     */
     func toArray() -> [Float] {
-        return [
+        let result = [
             Float(_grid[0]),
             Float(_grid[4]),
             Float(_grid[8]),
@@ -865,6 +845,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             Float(_grid[11]),
             Float(_grid[15]),
         ]
+        return result
     }
 /*
 /**
@@ -1720,67 +1701,48 @@ Matrix4.abs = function(matrix, result) {
     
     return result;
 };
-
-
-/**
-* Compares the provided matrices componentwise and returns
-* <code>true</code> if they are within the provided epsilon,
-* <code>false</code> otherwise.
-*
-* @param {Matrix4} [left] The first matrix.
-* @param {Matrix4} [right] The second matrix.
-* @param {Number} epsilon The epsilon to use for equality testing.
-* @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
-*
-* @example
-* //compares two Matrix4 instances
-*
-* // a = [10.5, 14.5, 18.5, 22.5]
-* //     [11.5, 15.5, 19.5, 23.5]
-* //     [12.5, 16.5, 20.5, 24.5]
-* //     [13.5, 17.5, 21.5, 25.5]
-*
-* // b = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-*
-* if(Cesium.Matrix4.equalsEpsilon(a,b,0.1)){
-*      console.log("Difference between both the matrices is less than 0.1");
-* } else {
-*      console.log("Difference between both the matrices is not less than 0.1");
-* }
-*
-* //Prints "Difference between both the matrices is not less than 0.1" on the console
 */
-Matrix4.equalsEpsilon = function(left, right, epsilon) {
-    //>>includeStart('debug', pragmas.debug);
-    if (typeof epsilon !== 'number') {
-        throw new DeveloperError('epsilon must be a number');
+
+    /**
+    * Compares the provided matrices componentwise and returns
+    * <code>true</code> if they are within the provided epsilon,
+    * <code>false</code> otherwise.
+    *
+    * @param {Matrix4} [left] The first matrix.
+    * @param {Matrix4} [right] The second matrix.
+    * @param {Number} epsilon The epsilon to use for equality testing.
+    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+    *
+    * @example
+    * //compares two Matrix4 instances
+    *
+    * // a = [10.5, 14.5, 18.5, 22.5]
+    * //     [11.5, 15.5, 19.5, 23.5]
+    * //     [12.5, 16.5, 20.5, 24.5]
+    * //     [13.5, 17.5, 21.5, 25.5]
+    *
+    * // b = [10.0, 14.0, 18.0, 22.0]
+    * //     [11.0, 15.0, 19.0, 23.0]
+    * //     [12.0, 16.0, 20.0, 24.0]
+    * //     [13.0, 17.0, 21.0, 25.0]
+    *
+    * if(Cesium.Matrix4.equalsEpsilon(a,b,0.1)){
+    *      console.log("Difference between both the matrices is less than 0.1");
+    * } else {
+    *      console.log("Difference between both the matrices is not less than 0.1");
+    * }
+    *
+    * //Prints "Difference between both the matrices is not less than 0.1" on the console
+    */
+    func equalsEpsilon (other: Matrix4, epsilon: Double) -> Bool {
+        for var i = 0; i < 16; i++ {
+            if abs(_grid[i] - other[i]) >= epsilon {
+                return false
+            }
+        }
+        return true
     }
-    //>>includeEnd('debug');
     
-    return (left === right) ||
-        (defined(left) &&
-            defined(right) &&
-            Math.abs(left[0] - right[0]) <= epsilon &&
-            Math.abs(left[1] - right[1]) <= epsilon &&
-            Math.abs(left[2] - right[2]) <= epsilon &&
-            Math.abs(left[3] - right[3]) <= epsilon &&
-            Math.abs(left[4] - right[4]) <= epsilon &&
-            Math.abs(left[5] - right[5]) <= epsilon &&
-            Math.abs(left[6] - right[6]) <= epsilon &&
-            Math.abs(left[7] - right[7]) <= epsilon &&
-            Math.abs(left[8] - right[8]) <= epsilon &&
-            Math.abs(left[9] - right[9]) <= epsilon &&
-            Math.abs(left[10] - right[10]) <= epsilon &&
-            Math.abs(left[11] - right[11]) <= epsilon &&
-            Math.abs(left[12] - right[12]) <= epsilon &&
-            Math.abs(left[13] - right[13]) <= epsilon &&
-            Math.abs(left[14] - right[14]) <= epsilon &&
-            Math.abs(left[15] - right[15]) <= epsilon);
-};
-*/
     /**
     * Gets the translation portion of the provided matrix, assuming the matrix is a affine transformation matrix.
     *
@@ -2031,7 +1993,12 @@ Matrix4.prototype.toString = function() {
     '(' + this[2] + ', ' + this[6] + ', ' + this[10] + ', ' + this[14] +')\n' +
     '(' + this[3] + ', ' + this[7] + ', ' + this[11] + ', ' + this[15] +')';
 };*/
-
+    var description: String {
+        get {
+            return _grid.description
+        }
+    }
+    
 }
 
 /**

@@ -1502,7 +1502,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
-        applyRenderState(rs, passState: passState)
+        //applyRenderState(rs, passState: passState)
     }
 
     func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {

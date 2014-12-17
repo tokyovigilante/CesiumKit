@@ -717,7 +717,6 @@ var northeastScratch = new Cartesian3();
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
             uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight
             uniformMap.modifiedModelView = modifiedModelView
-            
             var applyBrightness = false
             var applyContrast = false
             var applyHue = false

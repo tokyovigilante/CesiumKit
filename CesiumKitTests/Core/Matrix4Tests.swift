@@ -336,16 +336,12 @@ expect(returnedResult).toBe(result);
             0, 0, -3, -4,
             0, 0, -1, 0)
         var result = Matrix4.computePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1, far: 2)
-        println("expect \(expected._grid.description)")
-        println("result \(result._grid.description)")
         XCTAssertTrue(expected.equals(result), "testComputePerspectiveOffCenterWorks")
     }
     
     func testComputeInfinitePerspectiveOffCenterWorks () {
         let expected = Matrix4(2, 0, 3, 0, 0, 2, 5, 0, 0, 0, -1, -2, 0, 0, -1, 0)
         var result = Matrix4.computeInfinitePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1)
-        println("expect \(expected._grid.description)")
-        println("expect \(result._grid.description)")
         XCTAssertTrue(expected.equals(result))
     }
 /*
@@ -891,8 +887,8 @@ expect(matrix.toString()).toEqual('(1, 2, 3, 4)\n(5, 6, 7, 8)\n(9, 10, 11, 12)\n
             0.0,                   0.0,                  0.0,                 1.0);
         
         var result = matrix.inverse()
-        println("expect \(expected._grid.description)")
-        println("expect \(result._grid.description)")
+        println("expect \(expected)")
+        println("expect \(result)")
         XCTAssertTrue(result.equals(expected), "inverse works")/*
         expect(returnedResult).toBe(result);
         expect(expected).toEqualEpsilon(returnedResult, CesiumMath.EPSILON20);

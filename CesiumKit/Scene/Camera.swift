@@ -379,9 +379,9 @@ public class Camera {
         newViewMatrix[13] = -up.dot(position)
         newViewMatrix[14] = direction.dot(position)
         newViewMatrix[15] = 1.0
-        println(newViewMatrix._grid.description)
-        _viewMatrix = newViewMatrix.multiply(_actualInvTransform).inverseTransformation()
-        println(_viewMatrix._grid.description)
+        
+        _viewMatrix = newViewMatrix.multiply(_actualInvTransform)
+        _invViewMatrix = _viewMatrix.inverseTransformation()
     }
     /*
     var scratchCartographic = new Cartographic();

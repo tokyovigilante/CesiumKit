@@ -353,12 +353,11 @@ class UniformState {
     * @type {Matrix4}
     */
     var projection: Matrix4 {
-        get  {
+        get {
             return _projection
         }
         set (value) {
             _projection = value
-            
             _inverseProjectionDirty = true
             _inverseProjectionOITDirty = true
             _viewProjectionDirty = true

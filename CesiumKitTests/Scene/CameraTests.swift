@@ -50,107 +50,42 @@ class CameraTests: XCTestCase {
         
         //camera.minimumZoomDistance = 0.0
     }
-
 /*
-/*global defineSuite*/
-defineSuite([
-'Scene/Camera',
-'Core/Cartesian2',
-'Core/Cartesian3',
-'Core/Cartesian4',
-'Core/Cartographic',
-'Core/defaultValue',
-'Core/Ellipsoid',
-'Core/GeographicProjection',
-'Core/Math',
-'Core/Matrix3',
-'Core/Matrix4',
-'Core/Rectangle',
-'Core/Transforms',
-'Core/WebMercatorProjection',
-'Scene/CameraFlightPath',
-'Scene/OrthographicFrustum',
-'Scene/PerspectiveFrustum',
-'Scene/SceneMode',
-'Scene/TweenCollection'
-], function(
-Camera,
-Cartesian2,
-Cartesian3,
-Cartesian4,
-Cartographic,
-defaultValue,
-Ellipsoid,
-GeographicProjection,
-CesiumMath,
-Matrix3,
-Matrix4,
-Rectangle,
-Transforms,
-WebMercatorProjection,
-CameraFlightPath,
-OrthographicFrustum,
-PerspectiveFrustum,
-SceneMode,
-TweenCollection) {
-"use strict";
-/*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn,runs,waits,waitsFor*/
-
-var FakeScene = function(projection) {
-this.canvas = {
-clientWidth: 512,
-clientHeight: 384
-};
-this.drawingBufferWidth = 1024;
-this.drawingBufferHeight = 768;
-this.mapProjection = defaultValue(projection, new GeographicProjection());
-this.tweens = new TweenCollection();
-};
-
-beforeEach(function() {
-position = Cartesian3.clone(Cartesian3.UNIT_Z);
-up = Cartesian3.clone(Cartesian3.UNIT_Y);
-dir = Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3());
-right = Cartesian3.cross(dir, up, new Cartesian3());
-
-scene = new FakeScene();
-
-camera = new Camera(scene);
-camera.position = Cartesian3.clone(position);
-camera.up = Cartesian3.clone(up);
-camera.direction = Cartesian3.clone(dir);
-camera.right = Cartesian3.clone(right);
-
-camera.minimumZoomDistance = 0.0;
-});
-
 it('constructor throws an exception when there is no canvas', function() {
 expect(function() {
 return new Camera();
 }).toThrowDeveloperError();
-});
+});*/
 
-it('get view matrix', function() {
-var viewMatrix = camera.viewMatrix;
-var position = camera.position;
-var up = camera.up;
-var dir = camera.direction;
-var right = camera.right;
-var rotation = new Matrix4(right.x, right.y, right.z, 0.0,
-up.x,    up.y,    up.z, 0.0,
--dir.x,  -dir.y,  -dir.z, 0.0,
-0.0,     0.0,     0.0, 1.0);
-var translation = new Matrix4(1.0, 0.0, 0.0, -position.x,
-0.0, 1.0, 0.0, -position.y,
-0.0, 0.0, 1.0, -position.z,
-0.0, 0.0, 0.0,         1.0);
-var expected = Matrix4.multiply(rotation, translation, new Matrix4());
-expect(viewMatrix).toEqual(expected);
-});
+    func testGetViewMatrix () {
+        let viewMatrix = camera.viewMatrix
+        let position = camera.position
+        let up = camera.up
+        let dir = camera.direction
+        let right = camera.right
+        let rotation = Matrix4(
+            right.x, right.y, right.z, 0.0,
+            up.x,    up.y,    up.z, 0.0,
+            -dir.x,  -dir.y,  -dir.z, 0.0,
+            0.0,     0.0,     0.0, 1.0
+        )
+        let translation = Matrix4(
+            1.0, 0.0, 0.0, -position.x,
+            0.0, 1.0, 0.0, -position.y,
+            0.0, 0.0, 1.0, -position.z,
+            0.0, 0.0, 0.0,         1.0
+        )
+        var expected = rotation.multiply(translation)
+        XCTAssertTrue(0.0 == -0.0, "signed zero")
+        XCTAssertTrue(viewMatrix.equalsEpsilon(expected, epsilon: Math.Epsilon6), "get view matrix")
+    }
 
+    func testGetInverseViewMatrix () {
+        let expected = Matrix4.inverse(camera.viewMatrix.inverse()
+        XCTAssertTrue(expected.equalsEpsilon(camera.inverseViewMatrix, Math.Epsilon15)
+    }
+    
 it('get inverse view matrix', function() {
-var expected = Matrix4.inverse(camera.viewMatrix, new Matrix4());
-expect(expected).toEqualEpsilon(camera.inverseViewMatrix, CesiumMath.EPSILON15);
 });
 
 it('get inverse transform', function() {
@@ -158,7 +93,7 @@ camera.transform = new Matrix4(5.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 2.0, 0.0, 0.0,
 var expected = Matrix4.inverseTransformation(camera.transform, new Matrix4());
 expect(expected).toEqual(camera.inverseTransform);
 });
-
+/*
 it('get heading is undefined when morphing', function() {
 camera._mode = SceneMode.MORPHING;
 expect(camera.heading).not.toBeDefined();

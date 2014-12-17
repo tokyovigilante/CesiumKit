@@ -815,13 +815,12 @@ class Globe {
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.oceanNormalMap = _oceanNormalMap
             _surface.update(context: context, frameState: frameState, commandList: &commandList)
-
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {
-                    commandList.append(_clearDepthCommand)
+                    //commandList.append(_clearDepthCommand)
                     if (mode == .Scene3D) {
-                        commandList.append(_depthCommand)
+                        //commandList.append(_depthCommand)
                     }
                 }
             }
@@ -830,7 +829,7 @@ class Globe {
         if (frameState.passes.pick) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            commandList.append(_depthCommand)
+            //commandList.append(_depthCommand)
         }
     }
 

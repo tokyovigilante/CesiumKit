@@ -74,6 +74,7 @@ class PerspectiveFrustum: Frustum {
     * @default 1.0
     */
     var near = 1.0
+    
     private var _near = Double.NaN
     
     /**

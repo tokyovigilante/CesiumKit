@@ -73,6 +73,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default 1.0
     */
     var near = 1.0
+    
     private var _near = Double.NaN
     
     /**
@@ -81,6 +82,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
+    
     private var _far = Double.NaN
     
     private var _cullingVolume = CullingVolume()
