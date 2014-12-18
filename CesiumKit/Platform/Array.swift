@@ -164,5 +164,11 @@ public func deleteDuplicates<S:ExtensibleCollectionType where S.Generator.Elemen
     return s
 }
 
+extension Array {
+    func size () -> Int {
+        return self.count * sizeofValue(self[0])
+    }
+}
+
 
 
