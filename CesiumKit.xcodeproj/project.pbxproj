@@ -273,6 +273,8 @@
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
+		94ECF43C1A4532EC00FFAD81 /* SimpleVertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 94ECF43A1A4532EC00FFAD81 /* SimpleVertex.glsl */; };
+		94ECF43D1A4532EC00FFAD81 /* SimpleFragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 94ECF43B1A4532EC00FFAD81 /* SimpleFragment.glsl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -453,6 +455,8 @@
 		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
+		94ECF43A1A4532EC00FFAD81 /* SimpleVertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleVertex.glsl; sourceTree = "<group>"; };
+		94ECF43B1A4532EC00FFAD81 /* SimpleFragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleFragment.glsl; sourceTree = "<group>"; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
@@ -689,6 +693,8 @@
 		94985A671A38444C00FFAD81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				94ECF43A1A4532EC00FFAD81 /* SimpleVertex.glsl */,
+				94ECF43B1A4532EC00FFAD81 /* SimpleFragment.glsl */,
 				94985A681A38444C00FFAD81 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -887,8 +893,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				94985A781A38444C00FFAD81 /* LaunchScreen.xib in Resources */,
+				94ECF43C1A4532EC00FFAD81 /* SimpleVertex.glsl in Resources */,
 				94985A731A38444C00FFAD81 /* Main.storyboard in Resources */,
 				94985A751A38444C00FFAD81 /* Images.xcassets in Resources */,
+				94ECF43D1A4532EC00FFAD81 /* SimpleFragment.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

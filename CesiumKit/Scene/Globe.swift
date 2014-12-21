@@ -201,7 +201,7 @@ class Globe {
         
         _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         
-        _surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: ["position3DAndHeight": 0, "textureCoordinates": 1])
+        _surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: terrainAttributeLocations)
         
         _surface = QuadtreePrimitive(
             tileProvider: GlobeSurfaceTileProvider(

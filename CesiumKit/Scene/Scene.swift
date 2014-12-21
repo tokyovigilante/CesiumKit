@@ -936,15 +936,15 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         } else {
             passState.framebuffer = opaqueFramebuffer;
         }*/
-        
+        // FIXME: skybox, atmosphere
+        /*
         // Ideally, we would render the sky box and atmosphere last for
         // early-z, but we would have to draw it in each frustum
         frustum.near = camera.frustum.near
         frustum.far = camera.frustum.far
         context.uniformState.updateFrustum(frustum)
         
-        // FIXME: skybox, atmosphere
-        /*if (defined(skyBoxCommand)) {
+        if (defined(skyBoxCommand)) {
             executeCommand(skyBoxCommand, scene, context, passState);
         }
         
@@ -988,7 +988,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            _depthClearCommand.execute(context: context, passState: passState)
+            //_depthClearCommand.execute(context: context, passState: passState)
             
             for command in frustumCommands.opaqueCommands {
                 executeCommand(command, passState: passState)

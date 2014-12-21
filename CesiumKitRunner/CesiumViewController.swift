@@ -12,30 +12,18 @@ import CesiumKit
 
 class CesiumViewController: GLKViewController {
     
+    var setup = false
+
+    
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+
     }
     
     private var globe: CesiumGlobe!
     
     override func viewDidLoad () {
-        
         super.viewDidLoad()
-        
-        
-        let view: GLKView = self.view as GLKView
-        view.context = EAGLContext(API: .OpenGLES3)
-        
-        // Configure renderbuffers created by the view
-        view.drawableColorFormat = .RGBA8888
-        view.drawableDepthFormat = .Format24
-        view.drawableStencilFormat = .Format8
-        
-        // Enable multisampling
-        //view.drawableMultisample = .Multisample4X
-        
-        preferredFramesPerSecond = 60
-        
         setupContext()
     }
     
@@ -65,19 +53,33 @@ class CesiumViewController: GLKViewController {
     
     private func setupContext () {
         
-        let glView = self.view as GLKView
-        
-        if !EAGLContext.setCurrentContext(glView.context) {
+        let view: GLKView = self.view as GLKView
+       
+        view.context = EAGLContext(API: .OpenGLES3)
+
+        if !EAGLContext.setCurrentContext(view.context) {
             println("Failed to set current OpenGL context!")
             exit(1)
         }
         
+        // Configure renderbuffers created by the view
+        view.drawableColorFormat = .RGBA8888
+        view.drawableDepthFormat = .Format24
+        view.drawableStencilFormat = .Format8
+        
+        // Enable multisampling
+        //view.drawableMultisample = .Multisample4X
+        
+        preferredFramesPerSecond = 60
+
         // enable Retina support
-        glView.contentScaleFactor = UIScreen.mainScreen().scale
+        view.contentScaleFactor = UIScreen.mainScreen().scale
         
         // create globe
         let options = CesiumOptions(resolutionScale: 0.5)
-        globe = CesiumKit.CesiumGlobe(view: glView, options: options)
+        globe = CesiumKit.CesiumGlobe(view: view, options: options)
+        
+        
     }
     
     func tearDownGL () {
@@ -89,7 +91,7 @@ class CesiumViewController: GLKViewController {
     override func glkView(view: GLKView!, drawInRect rect: CGRect) {
         
         globe?.render()
-        
+                
         let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
         println(performanceString)
     }

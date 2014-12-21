@@ -1873,7 +1873,7 @@ function interleaveAttributes(attributes) {
 /*
 var viewportQuadAttributeLocations = {
     position : 0,
-    textureCoordinates : 1
+    textureCoordAndEncodedNormals : 1
 };
 
 Context.prototype.createViewportQuadCommand = function(fragmentShaderSource, overrides) {
@@ -1894,7 +1894,7 @@ Context.prototype.createViewportQuadCommand = function(fragmentShaderSource, ove
                 ]
                 }),
                 
-                textureCoordinates : new GeometryAttribute({
+                textureCoordAndEncodedNormals : new GeometryAttribute({
                 componentDatatype : ComponentDatatype.FLOAT,
                 componentsPerAttribute : 2,
                 values : [
@@ -1914,7 +1914,7 @@ Context.prototype.createViewportQuadCommand = function(fragmentShaderSource, ove
             geometry : geometry,
             attributeLocations : {
                 position : 0,
-                textureCoordinates : 1
+                textureCoordAndEncodedNormals : 1
             },
             bufferUsage : BufferUsage.STATIC_DRAW,
             interleave : true

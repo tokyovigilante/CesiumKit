@@ -232,16 +232,15 @@ class TileTerrain {
                 strideInBytes : stride)
         ]
         
-        //var indexBuffer = terrainMesh.indexBuffers[context.id]
-        if mesh!.indexBuffer == nil {
-            mesh!.indexBuffer = context.createIndexBuffer(
-                array: SerializedArray(data: NSData.serializeArray(self.mesh!.indices), type: .UnsignedShort),
+        var indexBuffer = terrainMesh.indexBuffer
+        if indexBuffer == nil {
+            indexBuffer = context.createIndexBuffer(
+                array: SerializedArray(data: NSData.serializeArray(terrainMesh.indices), type: .UnsignedShort),
                 usage: .StaticDraw,
                 indexDatatype: .UnsignedShort)
-            //mesh!.indexBuffers.removeAll()
-            //mesh!.indexBuffer/*s[context.id]*/ = indexBuffer
+            terrainMesh.indexBuffer = indexBuffer
         }
-        vertexArray = context.createVertexArray(attributes, indexBuffer: mesh!.indexBuffer)
+        vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)
         state = .Ready
     }
     

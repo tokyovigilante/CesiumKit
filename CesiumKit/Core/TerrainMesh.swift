@@ -57,7 +57,7 @@ struct TerrainMesh {
     * Index buffers (if any) generated from indices.
     * @type {Dictionary<String, IndexBuffer>}
     */
-    var indexBuffer: IndexBuffer? = nil//s = [String: IndexBuffer]()
+    var indexBuffer: IndexBuffer? = nil //s = [String: IndexBuffer]()
     
     /**
     * The lowest height in the tile, in meters above the ellipsoid.
