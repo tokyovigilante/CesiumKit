@@ -58,12 +58,12 @@ class VertexArray {
         self.indexBuffer = indexBuffer
         
         // Setup VAO
-        /*var vao: GLuint = 0
+        var vao: GLuint = 0
         glGenVertexArrays(1, &vao)
         glBindVertexArray(vao)
         bind()
         glBindVertexArray(0)
-        _vao = vao*/
+        _vao = vao
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
