@@ -829,7 +829,7 @@ class Globe {
         if (frameState.passes.pick) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            //commandList.append(_depthCommand)
+            commandList.append(_depthCommand)
         }
     }
 

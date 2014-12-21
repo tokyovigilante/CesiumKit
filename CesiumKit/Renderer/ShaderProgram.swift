@@ -361,13 +361,12 @@ class ShaderProgram {
             getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
             "\n#line 0\n" +
             vsSourceVersioned.source
-        vsSource = "uniform mat4 czm_projection;\nattribute vec4 position3DAndHeight;\nattribute vec4 textureCoordAndEncodedNormals;\nuniform vec3 u_center3D;\nuniform mat4 u_modifiedModelView;\nvarying vec2 v_textureCoordinates;\nvec4 getPosition(vec3 position3DWC);\nvec4 getPosition()\n{\nreturn czm_projection * (u_modifiedModelView * vec4(position3DAndHeight.xyz, 1.0));\n}\nvoid main()\n{\ngl_Position = getPosition();\nv_textureCoordinates = textureCoordAndEncodedNormals.xy;\n}\n"
+
         var fsSource = fsSourceVersioned.version +
             getFragmentShaderPrecision() +
             getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
             "\n#line 0\n" +
             fsSourceVersioned.source
-        fsSource = "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform vec4 u_initialColor;\nvarying vec2 v_textureCoordinates;\nvec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates);\nvoid main()\n{\nvec4 color = computeDayColor(u_initialColor, clamp(v_textureCoordinates, 0.0, 1.0));\ngl_FragColor = color;\n}\nvec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n{\nvec4 color = initialColor;\nreturn color;\n}\n"
         
         var log: GLint = 0
         
