@@ -132,7 +132,7 @@ class TileTerrain {
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        /*if (state == .Unloaded) {
+        if (state == .Unloaded) {
 
             assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
             
@@ -141,10 +141,10 @@ class TileTerrain {
             var sourceY = upsampleDetails!.y
             var sourceLevel = upsampleDetails!.level
             
-            this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
+            data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level)
             if (!defined(this.data)) {
                 // The upsample request has been deferred - try again later.
-                return;
+                return
             }
             
             this.state = TerrainState.RECEIVING;
@@ -164,7 +164,7 @@ class TileTerrain {
         
         if (this.state === TerrainState.TRANSFORMED) {
             createResources(this, context, terrainProvider, x, y, level);
-        }*/
+        }
     }
 
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {

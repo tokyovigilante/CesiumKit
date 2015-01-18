@@ -423,7 +423,7 @@ class GlobeSurfaceTile {
         }
         
         if !suspendUpsampling && upsampled != nil {
-            // FIXME: Disabled
+
             upsampled!.processUpsampleStateMachine(context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
             /*
             // Publish the terrain data on the tile as soon as it is available.
@@ -462,11 +462,14 @@ class GlobeSurfaceTile {
     class func getUpsampleTileDetails(tile: QuadtreeTile) -> (data: TerrainData, x: Int, y: Int, level: Int)? {
         // Find the nearest ancestor with loaded terrain.
         var sourceTile = tile.parent
-        while sourceTile?.data?.terrainData != nil {
-            sourceTile = sourceTile!.parent
+        while sourceTile != nil &&
+            sourceTile?.data != nil &&
+            sourceTile?.data?.terrainData == nil {
+            sourceTile = sourceTile?.parent
         }
         
-        if sourceTile == nil || sourceTile?.data == nil {
+        if sourceTile == nil ||
+            sourceTile?.data == nil {
             // No ancestors have loaded terrain - try again later.
             return nil
         }

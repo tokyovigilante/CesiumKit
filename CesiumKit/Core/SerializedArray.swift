@@ -52,18 +52,28 @@ class SerializedArray {
     func description () -> String {
         return "\(count) objects"
     }
+    
+    /*func deserializeFloat32 () -> [Float] {
+        return Float.deserializeFromArray(self._storageBuffer)
+    }*/
 }
 
 protocol Serializable {
     
-    class func serialize<SerializedType>(value:SerializedType) -> NSData
+    class func serialize<SerializedType>(value: SerializedType) -> NSData
     class func serializeArray<SerializedType>(values:[SerializedType]) -> NSData
     func hexStringValue() -> String
 }
 
+protocol Deserializable {
+
+    class func deserialize<SerializedType>(start: Int?) -> SerializedType
+    class func deserializeArray<SerializedType>(array: SerializedArray) -> [SerializedType]
+}
+
 extension NSData: Serializable {
     
-    public class func serialize<SerializedType>(value:SerializedType) -> NSData {
+    public class func serialize<SerializedType>(value: SerializedType) -> NSData {
         let values = [value]
         return NSData(bytes:values, length:sizeof(SerializedType))
     }
@@ -81,6 +91,7 @@ extension NSData: Serializable {
         }
         return hexString
     }
+    
 }
 
 // MARK: - Serializable Protocol
@@ -112,9 +123,16 @@ class func serializeArrayToBigEndian<SerializedType>(values:[SerializedType]) ->
 class func serializeArrayPairToBigEndian<SerializedType1, SerializedType2>(values:([SerializedType1], [SerializedType2])) -> NSData
 }
 //}
+*/
 // MARK: - Deserializable Protocol
 
 
+/*
+public static func deserializeArrayFromBigEndian(data:NSData) -> [Int16] {
+let size = sizeof(Int16)
+let count = data.length/size
+return [Int](0..<count).map{self.deserializeFromBigEndian(data, start:$0*size)}
+}
 
 // MARK: - UInt8
 
@@ -176,8 +194,48 @@ extension UInt8 : Deserializable {
         return deserialize(data, start:start)
     }
     
-}
+}*/
 /*extension Int16: Serializable {} // Short
-extension UInt16: Serializable {} // UnsignedShort
-extension Float: Serializable {} // Float32
-extension Double: Serializable {} // Float64*/*/
+extension UInt16: Serializable {} // UnsignedShort*/
+/*extension Float: Deserializable {
+
+    public static func deserialize<Float>(data: NSData, start: Int? = 0) -> Float {
+        var value: Float = 0.0
+        let size = sizeof(Float)
+        let offset = (start ?? 0) * size
+        if data.length >= (offset + size) {
+            data.getBytes(&value, range: NSMakeRange(offset, size))
+        }
+        return value
+    }
+
+    public static func deserializeFromArray<SerializedType>(data: NSData) -> [Float] {
+        let size = sizeof(Float)
+        let count = data.length/size
+        return [Float](0..<count).map { Float.deserialize(data, start:$0*size) }
+    }
+}*/
+/*extension Double: Serializable {} // Float64*/
+
+enum SerializableType {
+    case Float32(Float)
+    case Float64(Double)
+    
+    func deserializeFloat32() -> Float {
+        switch self {
+        case .Float32(let value):
+            return value
+        default:
+            return 0.0
+        }
+    }
+    
+    func deserializeFloat64() -> Double {
+        switch self {
+        case .Float64(let value):
+            return value
+        default:
+            return 0.0
+        }
+    }
+}

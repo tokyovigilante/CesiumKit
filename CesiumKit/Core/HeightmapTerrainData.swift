@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * Terrain data for a single tile where the terrain data is represented as a heightmap.  A heightmap
 * is a rectangular array of heights in row-major order from south to north and west to east.
@@ -71,6 +73,7 @@
 *   waterMask : waterMask
 * });
 */
+
 class HeightmapTerrainData: TerrainData, Equatable {
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
@@ -100,13 +103,13 @@ class HeightmapTerrainData: TerrainData, Equatable {
         createdByUpsampling: Bool = false
         ) {
             
-            self._buffer = buffer
-            self._width = width
-            self._height = height
+            _buffer = buffer
+            _width = width
+            _height = height
             
-            self._childTileMask = childTileMask
+            _childTileMask = childTileMask
             
-            self._structure = structure
+            _structure = structure
         
             super.init(waterMask: waterMask, createdByUpsampling: createdByUpsampling)
     }
@@ -123,25 +126,16 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          incorrect for positions far outside the rectangle.
     */
     override func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
-        /*var width = this._width;
-        var height = this._height;
         
-        var heightSample;
+        var heightSample: Double
         
-        var structure = this._structure;
-        var stride = structure.stride;
-        if (stride > 1) {
-            var elementsPerHeight = structure.elementsPerHeight;
-            var elementMultiplier = structure.elementMultiplier;
-            var isBigEndian = structure.isBigEndian;
-            
-            heightSample = interpolateHeightWithStride(this._buffer, elementsPerHeight, elementMultiplier, stride, isBigEndian, rectangle, width, height, longitude, latitude);
+        if _structure.stride > 1 {
+            heightSample = interpolateHeightWithStride(sourceHeights: _buffer.deserializeFloat32(), elementsPerHeight: _structure.elementsPerHeight, elementMultiplier: _structure.elementMultiplier, stride: _structure.stride, isBigEndian: _structure.isBigEndian, sourceRectangle: rectangle, width: _width, height: _height, longitude: longitude, latitude: latitude)
         } else {
-            heightSample = interpolateHeight(this._buffer, rectangle, width, height, longitude, latitude);
+            heightSample = interpolateHeight2(sourceHeights: _buffer.deserializeFloat32(), sourceRectangle: rectangle, width: _width, height: _height, longitude: longitude, latitude: latitude)
         }
         
-        return heightSample * structure.heightScale + structure.heightOffset;*/
-        return 0.0
+        return heightSample * _structure.heightScale + _structure.heightOffset
     }
     
     /**
@@ -158,31 +152,16 @@ class HeightmapTerrainData: TerrainData, Equatable {
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
     override func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
-        //>>includeStart('debug', pragmas.debug);
-        /*if (!defined(thisX)) {
-            throw new DeveloperError('thisX is required.');
+
+        var bitNumber = 2 // northwest child
+        if childX != thisX * 2 {
+            ++bitNumber // east child
         }
-        if (!defined(thisY)) {
-            throw new DeveloperError('thisY is required.');
-        }
-        if (!defined(childX)) {
-            throw new DeveloperError('childX is required.');
-        }
-        if (!defined(childY)) {
-            throw new DeveloperError('childY is required.');
-        }
-        //>>includeEnd('debug');
-        
-        var bitNumber = 2; // northwest child
-        if (childX !== thisX * 2) {
-            ++bitNumber; // east child
-        }
-        if (childY !== thisY * 2) {
+        if childY != thisY * 2 {
             bitNumber -= 2; // south child
         }
         
-        return (this._childTileMask & (1 << bitNumber)) !== 0;*/
-        return false
+        return _childTileMask & (1 << bitNumber) != 0
     }
     
     /**
@@ -269,27 +248,26 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          deferred.
     */
     override func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData {
-        //FIXME: Unimplemented
-        /*let levelDifference = descendantLevel - thisLevel
+
+        let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
         
         var result: TerrainData
         
-        if ((_width % 2) == 1 && (_height % 2) == 1) {
+        if _width % 2 == 1 && _height % 2 == 1 {
             // We have an odd number of posts greater than 2 in each direction,
             // so we can upsample by simply dropping half of the posts in each direction.
-            result =*/return upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
-/*        } else {
+            return upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
+        } else {
             // The number of posts in at least one direction is even, so we must upsample
             // by interpolating heights.
-            result = upsampleByInterpolating(this, tilingScheme, thisX, thisY, thisLevel, descendantX, descendantY, descendantLevel)
+            return upsampleByInterpolating(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
         }
-        */
     }
     
     private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
         
-        /*let levelDifference = 1
+        let levelDifference = 1
         
         // Compute the post indices of the corners of this tile within its own level.
         var leftPostIndex = descendantX * (_width - 1)
@@ -305,228 +283,293 @@ class HeightmapTerrainData: TerrainData, Equatable {
         bottomPostIndex /= twoToTheLevelDifference
         
         // Adjust the indices to be relative to the northwest corner of the source tile.
-        var sourceLeft = thisX * (_width - 1)
-        var sourceTop = thisY * (_height - 1)
+        let sourceLeft = thisX * (_width - 1)
+        let sourceTop = thisY * (_height - 1)
         leftPostIndex -= sourceLeft
         rightPostIndex -= sourceLeft
         topPostIndex -= sourceTop
         bottomPostIndex -= sourceTop
     
-        var leftInteger = leftPostIndex | 0
-        var rightInteger = rightPostIndex | 0
-        var topInteger = topPostIndex | 0
-        var bottomInteger = bottomPostIndex | 0
+        let leftInteger = leftPostIndex | 0
+        let rightInteger = rightPostIndex | 0
+        let topInteger = topPostIndex | 0
+        let bottomInteger = bottomPostIndex | 0
         
-        var upsampledWidth = (rightInteger - leftInteger + 1)
-        var upsampledHeight = (bottomInteger - topInteger + 1)
+        let upsampledWidth = (rightInteger - leftInteger + 1)
+        let upsampledHeight = (bottomInteger - topInteger + 1)
         
-        var sourceHeights = _buffer
-        var structure = _structure
+        let sourceHeights = _buffer.deserializeFloat32()
         
         // Copy the relevant posts.
         var numberOfHeights = upsampledWidth * upsampledHeight
-        var numberOfElements = numberOfHeights * structure.stride
-        var heights = sourceHeights.constructor(numberOfElements);
+        var numberOfElements = numberOfHeights * _structure.stride
+        var heights = [Float32](count: numberOfElements, repeatedValue: 0.0)
         
-        var outputIndex = 0;
-        var i, j;
-        var stride = structure.stride;
-        if (stride > 1) {
-            for (j = topInteger; j <= bottomInteger; ++j) {
-                for (i = leftInteger; i <= rightInteger; ++i) {
-                    var index = (j * width + i) * stride;
-                    for (var k = 0; k < stride; ++k) {
-                        heights[outputIndex++] = sourceHeights[index + k];
+        var outputIndex = 0
+        
+        if _structure.stride > 1 {
+            for i in topInteger...bottomInteger {
+                for j in leftInteger...rightInteger {
+                    var index = (j * _width + i) * _structure.stride
+                    for k in 0..<_structure.stride {
+                        heights[outputIndex++] = sourceHeights[index + k]
                     }
                 }
             }
         } else {
-            for (j = topInteger; j <= bottomInteger; ++j) {
-                for (i = leftInteger; i <= rightInteger; ++i) {
-                    heights[outputIndex++] = sourceHeights[j * width + i];
+            for j in topInteger...bottomInteger {
+                for i in leftInteger...rightInteger {
+                    heights[outputIndex++] = sourceHeights[j * _width + i]
                 }
             }
         }
-        */
-        /*return HeightmapTerrainData(
-            buffer : heights,
+
+        return HeightmapTerrainData(
+            buffer : SerializedArray(data: NSData.serializeArray(heights), type: .Float32),
             width : upsampledWidth,
             height : upsampledHeight,
-            childTileMask : 0,
-            structure : structure,
-            createdByUpsampling : true)*/
-        return HeightmapTerrainData(
-            buffer : _buffer,
-            width : _width,
-            height : _height,
             childTileMask : 0,
             structure : _structure,
             createdByUpsampling : true)
     }
     
-    private func upsampleByInterpolating(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) {
-        /*var width = terrainData._width;
-        var height = terrainData._height;
-        var structure = terrainData._structure;
-        var stride = structure.stride;
+    private func upsampleByInterpolating(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
+
+        let sourceHeights = _buffer.deserializeFloat32()
+
+        let numberOfElements = _width * _height * _structure.stride
         
-        var sourceHeights = terrainData._buffer;
-        var heights = new sourceHeights.constructor(width * height * stride);
-        
+        var heights = [Float](count: numberOfElements, repeatedValue: 0.0)
+
         // PERFORMANCE_IDEA: don't recompute these rectangles - the caller already knows them.
-        var sourceRectangle = tilingScheme.tileXYToRectangle(thisX, thisY, thisLevel);
-        var destinationRectangle = tilingScheme.tileXYToRectangle(descendantX, descendantY, descendantLevel);
+        let sourceRectangle = tilingScheme.tileXYToRectangle(x: thisX, y: thisY, level: thisLevel)
+        let destinationRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
         
-        var i, j, latitude, longitude;
+        var latitude, longitude: Double
         
-        if (stride > 1) {
-            var elementsPerHeight = structure.elementsPerHeight;
-            var elementMultiplier = structure.elementMultiplier;
-            var isBigEndian = structure.isBigEndian;
+        if _structure.stride > 1 {
+            let elementsPerHeight = _structure.elementsPerHeight
+            let elementMultiplier = _structure.elementMultiplier
+            let isBigEndian = _structure.isBigEndian
             
-            var divisor = Math.pow(elementMultiplier, elementsPerHeight - 1);
+            let divisor = pow(elementMultiplier, Double(elementsPerHeight - 1))
             
-            for (j = 0; j < height; ++j) {
-                latitude = CesiumMath.lerp(destinationRectangle.north, destinationRectangle.south, j / (height - 1));
-                for (i = 0; i < width; ++i) {
-                    longitude = CesiumMath.lerp(destinationRectangle.west, destinationRectangle.east, i / (width - 1));
-                    var heightSample = interpolateHeightWithStride(sourceHeights, elementsPerHeight, elementMultiplier, stride, isBigEndian, sourceRectangle, width, height, longitude, latitude);
-                    setHeight(heights, elementsPerHeight, elementMultiplier, divisor, stride, isBigEndian, j * width + i, heightSample);
+            for j in 0..<_height {
+                latitude = Math.lerp(
+                    p: destinationRectangle.north,
+                    q: destinationRectangle.south,
+                    time: Double(j) / (Double(_height) - 1.0)
+                )
+                for i in 0..<_width {
+                    longitude = Math.lerp(
+                        p: destinationRectangle.west,
+                        q: destinationRectangle.east,
+                        time: Double(i) / (Double(_width) - 1.0)
+                    )
+                    var heightSample = interpolateHeightWithStride(
+                        sourceHeights: sourceHeights,
+                        elementsPerHeight: elementsPerHeight,
+                        elementMultiplier: elementMultiplier,
+                        stride: _structure.stride,
+                        isBigEndian: isBigEndian,
+                        sourceRectangle: sourceRectangle,
+                        width: _width,
+                        height: _height,
+                        longitude: longitude,
+                        latitude: latitude)
+                    
+                    setHeight(
+                        heights: &heights,
+                        elementsPerHeight: elementsPerHeight,
+                        elementMultiplier: elementMultiplier,
+                        divisor: divisor,
+                        stride: _structure.stride,
+                        isBigEndian: isBigEndian,
+                        index: j * _width + i,
+                        height: heightSample
+                    )
                 }
             }
         } else {
-            for (j = 0; j < height; ++j) {
-                latitude = CesiumMath.lerp(destinationRectangle.north, destinationRectangle.south, j / (height - 1));
-                for (i = 0; i < width; ++i) {
-                    longitude = CesiumMath.lerp(destinationRectangle.west, destinationRectangle.east, i / (width - 1));
-                    heights[j * width + i] = interpolateHeight(sourceHeights, sourceRectangle, width, height, longitude, latitude);
+            for j in 0..<_height {
+                latitude = Math.lerp(
+                    p: destinationRectangle.north,
+                    q: destinationRectangle.south,
+                    time: Double(j) / Double(_height - 1))
+                for i in 0..<_width {
+                    longitude = Math.lerp(
+                        p: destinationRectangle.west,
+                        q: destinationRectangle.east,
+                        time: Double(i) / Double(_width - 1)
+                    )
+
+                    heights[j * _width + i] = Float(interpolateHeight2(
+                        sourceHeights: sourceHeights,
+                        sourceRectangle: sourceRectangle,
+                        width: _width,
+                        height: _height,
+                        longitude: longitude,
+                        latitude: latitude
+                    ))
                 }
             }
         }
-        
-        return new HeightmapTerrainData({
-        buffer : heights,
-        width : width,
-        height : height,
-        childTileMask : 0,
-        structure : terrainData._structure,
-        createdByUpsampling : true
-        });*/
+        return HeightmapTerrainData(
+            buffer : SerializedArray(data: NSData.serializeArray(heights), type: .Float32),
+            width : _width,
+            height : _height,
+            childTileMask : 0,
+            structure : _structure,
+            createdByUpsampling : true
+        )
     }
     
-    private func interpolateHeight(sourceHeights: [Float], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
-        /*var fromWest = (longitude - sourceRectangle.west) * (width - 1) / (sourceRectangle.east - sourceRectangle.west);
-        var fromSouth = (latitude - sourceRectangle.south) * (height - 1) / (sourceRectangle.north - sourceRectangle.south);
+    private func interpolateHeight2(#sourceHeights: [Float], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
+        let fromWest = (longitude - sourceRectangle.west) * Double(width - 1) / (sourceRectangle.east - sourceRectangle.west)
+        let fromSouth = (latitude - sourceRectangle.south) * Double(height - 1) / (sourceRectangle.north - sourceRectangle.south)
         
-        var westInteger = fromWest | 0;
-        var eastInteger = westInteger + 1;
+        var westInteger = Int(floor(fromWest))
+        var eastInteger = westInteger + 1
         if (eastInteger >= width) {
-            eastInteger = width - 1;
-            westInteger = width - 2;
+            eastInteger = width - 1
+            westInteger = width - 2
         }
         
-        var southInteger = fromSouth | 0;
-        var northInteger = southInteger + 1;
-        if (northInteger >= height) {
-            northInteger = height - 1;
-            southInteger = height - 2;
+        var southInteger = Int(floor(fromSouth))
+        var northInteger = southInteger + 1
+        if northInteger >= height {
+            northInteger = height - 1
+            southInteger = height - 2
         }
         
-        var dx = fromWest - westInteger;
-        var dy = fromSouth - southInteger;
+        let dx = fromWest - Double(westInteger)
+        let dy = fromSouth - Double(southInteger)
         
-        southInteger = height - 1 - southInteger;
-        northInteger = height - 1 - northInteger;
+        southInteger = height - 1 - southInteger
+        northInteger = height - 1 - northInteger
         
-        var southwestHeight = sourceHeights[southInteger * width + westInteger];
-        var southeastHeight = sourceHeights[southInteger * width + eastInteger];
-        var northwestHeight = sourceHeights[northInteger * width + westInteger];
-        var northeastHeight = sourceHeights[northInteger * width + eastInteger];
+        let southwestHeight = Double(sourceHeights[southInteger * width + westInteger])
+        let southeastHeight = Double(sourceHeights[southInteger * width + eastInteger])
+        let northwestHeight = Double(sourceHeights[northInteger * width + westInteger])
+        let northeastHeight = Double(sourceHeights[northInteger * width + eastInteger])
         
-        return triangleInterpolateHeight(dx, dy, southwestHeight, southeastHeight, northwestHeight, northeastHeight);*/
-        return 0.0
+        return triangleInterpolateHeight(dX: dx, dY: dy, southwestHeight: southwestHeight, southeastHeight: southeastHeight, northwestHeight: northwestHeight, northeastHeight: northeastHeight)
     }
     
-    private func interpolateHeightWithStride(sourceHeights: [Float], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
-        /*var fromWest = (longitude - sourceRectangle.west) * (width - 1) / (sourceRectangle.east - sourceRectangle.west);
-        var fromSouth = (latitude - sourceRectangle.south) * (height - 1) / (sourceRectangle.north - sourceRectangle.south);
+    private func interpolateHeightWithStride(#sourceHeights: [Float], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
+        let fromWest = (longitude - sourceRectangle.west) * (Double(width) - 1.0) / (sourceRectangle.east - sourceRectangle.west)
+        let fromSouth = (latitude - sourceRectangle.south) * (Double(height) - 1.0) / (sourceRectangle.north - sourceRectangle.south)
         
-        var westInteger = fromWest | 0;
-        var eastInteger = westInteger + 1;
-        if (eastInteger >= width) {
-            eastInteger = width - 1;
-            westInteger = width - 2;
+        var westInteger = Int(floor(fromWest))
+        var eastInteger = westInteger + 1
+        if eastInteger >= width {
+            eastInteger = width - 1
+            westInteger = width - 2
         }
         
-        var southInteger = fromSouth | 0;
-        var northInteger = southInteger + 1;
-        if (northInteger >= height) {
-            northInteger = height - 1;
-            southInteger = height - 2;
+        var southInteger = Int(floor(fromSouth))
+        var northInteger = southInteger + 1
+        if northInteger >= height {
+            northInteger = height - 1
+            southInteger = height - 2
         }
         
-        var dx = fromWest - westInteger;
-        var dy = fromSouth - southInteger;
+        let dx = fromWest - Double(westInteger)
+        let dy = fromSouth - Double(southInteger)
         
-        southInteger = height - 1 - southInteger;
-        northInteger = height - 1 - northInteger;
+        southInteger = height - 1 - southInteger
+        northInteger = height - 1 - northInteger
         
-        var southwestHeight = getHeight(sourceHeights, elementsPerHeight, elementMultiplier, stride, isBigEndian, southInteger * width + westInteger);
-        var southeastHeight = getHeight(sourceHeights, elementsPerHeight, elementMultiplier, stride, isBigEndian, southInteger * width + eastInteger);
-        var northwestHeight = getHeight(sourceHeights, elementsPerHeight, elementMultiplier, stride, isBigEndian, northInteger * width + westInteger);
-        var northeastHeight = getHeight(sourceHeights, elementsPerHeight, elementMultiplier, stride, isBigEndian, northInteger * width + eastInteger);
+        let southwestHeight = getHeight(
+            heights: sourceHeights,
+            elementsPerHeight: elementsPerHeight,
+            elementMultiplier: elementMultiplier,
+            stride: stride,
+            isBigEndian: isBigEndian,
+            index: southInteger * width + westInteger
+        )
+        let southeastHeight = getHeight(
+            heights: sourceHeights,
+            elementsPerHeight: elementsPerHeight,
+            elementMultiplier: elementMultiplier,
+            stride: stride,
+            isBigEndian: isBigEndian,
+            index: southInteger * width + eastInteger
+        )
+        let northwestHeight = getHeight(
+            heights: sourceHeights,
+            elementsPerHeight: elementsPerHeight,
+            elementMultiplier: elementMultiplier,
+            stride: stride,
+            isBigEndian: isBigEndian,
+            index: northInteger * width + westInteger
+        )
+        let northeastHeight = getHeight(
+            heights: sourceHeights,
+            elementsPerHeight: elementsPerHeight,
+            elementMultiplier: elementMultiplier,
+            stride: stride,
+            isBigEndian: isBigEndian,
+            index: northInteger * width + eastInteger
+        )
         
-        return triangleInterpolateHeight(dx, dy, southwestHeight, southeastHeight, northwestHeight, northeastHeight);*/
-        return 0.0
+        return triangleInterpolateHeight(
+            dX: dx,
+            dY: dy,
+            southwestHeight: southwestHeight,
+            southeastHeight: southeastHeight,
+            northwestHeight: northwestHeight,
+            northeastHeight: northeastHeight)
     }
     
-    private func triangleInterpolateHeight(dX: Double, dY: Double, southwestHeight: Double, southeastHeight: Double, northwestHeight: Double, northeastHeight: Double) -> Double {
+    private func triangleInterpolateHeight(#dX: Double, dY: Double, southwestHeight: Double, southeastHeight: Double, northwestHeight: Double, northeastHeight: Double) -> Double {
         // The HeightmapTessellator bisects the quad from southwest to northeast.
-        /*if (dY < dX) {
+        if (dY < dX) {
             // Lower right triangle
-            return southwestHeight + (dX * (southeastHeight - southwestHeight)) + (dY * (northeastHeight - southeastHeight));
+            return southwestHeight + (dX * (southeastHeight - southwestHeight)) + (dY * (northeastHeight - southeastHeight))
         }
         
         // Upper left triangle
-        return southwestHeight + (dX * (northeastHeight - northwestHeight)) + (dY * (northwestHeight - southwestHeight));*/return 0.0
+        return southwestHeight + (dX * (northeastHeight - northwestHeight)) + (dY * (northwestHeight - southwestHeight))
     }
     
-    private func getHeight(heights: [Float], elementsPerHeight: Int, elementMultiplier: Int, stride: Int, isBigEndian: Bool, index: Int) -> Double {
-        /*index *= stride;
+    private func getHeight(#heights: [Float], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, index: Int) -> Double {
+        let trueIndex = index * stride
         
-        var height = 0;
-        var i;
+        var height = 0.0
         
-        if (isBigEndian) {
-        for (i = 0; i < elementsPerHeight; ++i) {
-        height = (height * elementMultiplier) + heights[index + i];
-        }
+        if isBigEndian {
+            for i in 0..<elementsPerHeight {
+                height = height * elementMultiplier + Double(heights[trueIndex + i])
+            }
         } else {
-        for (i = elementsPerHeight - 1; i >= 0; --i) {
-        height = (height * elementMultiplier) + heights[index + i];
-        }
+            for var i = elementsPerHeight - 1; i >= 0; --i {
+                height = height * elementMultiplier + Double(heights[trueIndex + i])
+            }
         }
         
-        return height;*/return 0.0
+        return height
     }
     
-    private func setHeight(heights: [Float], elementsPerHeight: Int, elementMultiplier: Int, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double) {
-        /*index *= stride;
+    private func setHeight(inout #heights: [Float], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double) {
         
-        var i;
+        let trueIndex = index * stride
+        
+        var workingHeight = height
+        var workingDivisor = divisor
         if (isBigEndian) {
-            for (i = 0; i < elementsPerHeight; ++i) {
-                heights[index + i] = (height / divisor) | 0;
-                height -= heights[index + i] * divisor;
-                divisor /= elementMultiplier;
+            for i in 0..<elementsPerHeight {
+                heights[trueIndex + i] = Float(floor(workingHeight / workingDivisor))
+                workingHeight -= Double(heights[trueIndex + i]) * workingDivisor
+                workingDivisor /= elementMultiplier
             }
         } else {
-            for (i = elementsPerHeight - 1; i >= 0; --i) {
-                heights[index + i] = (height / divisor) | 0;
-                height -= heights[index + i] * divisor;
-                divisor /= elementMultiplier;
+            for var i = elementsPerHeight - 1; i >= 0; --i {
+                heights[trueIndex + i] = Float(floor(workingHeight / workingDivisor))
+                workingHeight -= Double(heights[trueIndex + i]) * workingDivisor
+                workingDivisor /= elementMultiplier
             }
-        }*/
+        }
     }
 
 }
