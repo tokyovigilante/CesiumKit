@@ -132,7 +132,7 @@ class TileTerrain {
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        if (state == .Unloaded) {
+        /*if (state == .Unloaded) {
 
             assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
             
@@ -140,7 +140,7 @@ class TileTerrain {
             var sourceX = upsampleDetails!.x
             var sourceY = upsampleDetails!.y
             var sourceLevel = upsampleDetails!.level
-            
+        
             data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level)
             if (!defined(this.data)) {
                 // The upsample request has been deferred - try again later.
@@ -164,7 +164,7 @@ class TileTerrain {
         
         if (this.state === TerrainState.TRANSFORMED) {
             createResources(this, context, terrainProvider, x, y, level);
-        }
+        }*/
     }
 
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
@@ -200,7 +200,7 @@ class TileTerrain {
         let datatype = ComponentDatatype.Float32
         var terrainMesh = mesh!
         let buffer = context.createVertexBuffer(
-            array: SerializedArray(data: NSData.serializeArray(terrainMesh.vertices), type: datatype),
+            array: SerializedType.fromFloatArray(terrainMesh.vertices),
             usage: BufferUsage.StaticDraw)
 
         var stride: Int
@@ -235,7 +235,7 @@ class TileTerrain {
         var indexBuffer = terrainMesh.indexBuffer
         if indexBuffer == nil {
             indexBuffer = context.createIndexBuffer(
-                array: SerializedArray(data: NSData.serializeArray(terrainMesh.indices), type: .UnsignedShort),
+                array: SerializedType.fromUInt16Array(terrainMesh.indices),
                 usage: .StaticDraw,
                 indexDatatype: .UnsignedShort)
             terrainMesh.indexBuffer = indexBuffer

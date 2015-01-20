@@ -741,7 +741,7 @@ class Context {
         return _shaderCache!.getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
     }
 
-    func createBuffer(target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
+    func createBuffer(target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
 
@@ -779,7 +779,7 @@ class Context {
 * var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
 *     BufferUsage.STATIC_DRAW);
 */
-    func createVertexBuffer(array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
+    func createVertexBuffer(array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return createBuffer(.ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
 
@@ -823,7 +823,7 @@ class Context {
 * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
 *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
 */
-    func createIndexBuffer (array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
+    func createIndexBuffer (array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
     
         if indexDatatype == IndexDatatype.UnsignedInt {
             assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
@@ -1860,11 +1860,12 @@ function interleaveAttributes(attributes) {
                 if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
                     
                     indexBuffer = createIndexBuffer(
-                        array: SerializedArray(data: NSData.serializeArray(geometry.indices!.map( { UInt32($0) } )), type: ComponentDatatype.UnsignedInt),
+                        // FIXME: combine datatype
+                        array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedInt),
                         indexDatatype: IndexDatatype.UnsignedInt)
                 } else {
                     indexBuffer = createIndexBuffer(
-                        array: SerializedArray(data: NSData.serializeArray(geometry.indices!.map( { UInt16($0) } )), type: ComponentDatatype.UnsignedShort),
+                        array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedShort),
                         indexDatatype: IndexDatatype.UnsignedShort)
                 }
             }

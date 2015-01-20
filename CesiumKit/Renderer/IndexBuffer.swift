@@ -14,7 +14,7 @@ class IndexBuffer: Buffer {
     
     let numberOfIndices: Int
     
-    init (array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) {
+    init (array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) {
         
         self.indexDatatype = indexDatatype
         

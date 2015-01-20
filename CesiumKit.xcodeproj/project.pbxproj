@@ -37,7 +37,7 @@
 		9410137919FB037500FFAD81 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E67A419D6BCB200012DC4 /* Queue.swift */; };
 		9410137A19FB037500FFAD81 /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
 		9410137B19FB037500FFAD81 /* ScreenSpaceEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */; };
-		9410137C19FB037500FFAD81 /* SerializedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */; };
+		9410137C19FB037500FFAD81 /* SerializableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438BD7519C7B0D70026A0F0 /* SerializableType.swift */; };
 		9410137D19FB037500FFAD81 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
 		9410137E19FB037500FFAD81 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
 		9410137F19FB037500FFAD81 /* TerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9491BBAF1949D084007C1C4C /* TerrainProvider.swift */; };
@@ -132,7 +132,7 @@
 		9413B7C71A37B93100FFAD81 /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
 		9413B7C81A37B93100FFAD81 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
 		9413B7C91A37B93100FFAD81 /* ScreenSpaceEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */; };
-		9413B7CA1A37B93100FFAD81 /* SerializedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */; };
+		9413B7CA1A37B93100FFAD81 /* SerializableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438BD7519C7B0D70026A0F0 /* SerializableType.swift */; };
 		9413B7CB1A37B93100FFAD81 /* Spherical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DE1944EC1B00DC0E52 /* Spherical.swift */; };
 		9413B7CC1A37B93100FFAD81 /* TerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786824194A95B800B3F462 /* TerrainData.swift */; };
 		9413B7CD1A37B93100FFAD81 /* TerrainMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94786822194A959200B3F462 /* TerrainMesh.swift */; };
@@ -334,7 +334,7 @@
 		94327176195468EA0011D8FC /* Transforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transforms.swift; sourceTree = "<group>"; };
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
-		9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializedArray.swift; sourceTree = "<group>"; };
+		9438BD7519C7B0D70026A0F0 /* SerializableType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializableType.swift; sourceTree = "<group>"; };
 		943BD2AD19CCD22F0070FC5D /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* Projection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
@@ -550,7 +550,7 @@
 				946D25A919592BFD0080379D /* Ray.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
 				94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */,
-				9438BD7519C7B0D70026A0F0 /* SerializedArray.swift */,
+				9438BD7519C7B0D70026A0F0 /* SerializableType.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				94786824194A95B800B3F462 /* TerrainData.swift */,
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
@@ -930,7 +930,7 @@
 				9413B80B1A37B94500FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,
 				9413B7C01A37B93100FFAD81 /* MergeSort.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
-				9413B7CA1A37B93100FFAD81 /* SerializedArray.swift in Sources */,
+				9413B7CA1A37B93100FFAD81 /* SerializableType.swift in Sources */,
 				9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */,
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
 				9413B7BD1A37B93100FFAD81 /* Matrix.swift in Sources */,
@@ -1158,7 +1158,7 @@
 				9413113819F3A08100FFAD81 /* Math.swift in Sources */,
 				9410137919FB037500FFAD81 /* Queue.swift in Sources */,
 				9413B8281A37B94800FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
-				9410137C19FB037500FFAD81 /* SerializedArray.swift in Sources */,
+				9410137C19FB037500FFAD81 /* SerializableType.swift in Sources */,
 				9410138F19FB037D00FFAD81 /* DepthTest.swift in Sources */,
 				9410137B19FB037500FFAD81 /* ScreenSpaceEventHandler.swift in Sources */,
 				9413B8341A37B94800FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,

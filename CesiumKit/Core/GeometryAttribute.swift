@@ -122,7 +122,7 @@ class GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: SerializedArray?
+    var values: [SerializedType]?
     
     var vertexCount: Int {
         get {
@@ -131,7 +131,7 @@ class GeometryAttribute {
         }
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: SerializedArray) {
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: [SerializedType]) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
         self.componentDatatype = componentDatatype
         self.componentsPerAttribute = componentsPerAttribute

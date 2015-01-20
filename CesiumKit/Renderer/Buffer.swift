@@ -20,7 +20,7 @@ class Buffer {
     
     //var vertexArrayDestroyable = true
     
-    init (target: BufferTarget, array: SerializedArray? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw) {
+    init (target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw) {
         assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
         
         var bufferSize: Int
@@ -36,7 +36,7 @@ class Buffer {
         glBindBuffer(target.toGL(), buffer)
         var data: UnsafePointer<Void>
         if array != nil {
-            data = array!.bytes()
+            data = array!.data().bytes
         } else {
             data = nil
         }
@@ -49,12 +49,12 @@ class Buffer {
         self.usage = usage
     }
 
-    func copyFromArrayView (arrayView: SerializedArray, offsetInBytes: Int = 0) {
+    func copyFromArrayView (arrayView: [SerializedType], offsetInBytes: Int = 0) {
         
         assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
         
         glBindBuffer(target.toGL(), buffer)
-        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.bytes())
+        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.data().bytes)
         glBindBuffer(target.toGL(), 0)
     }
     

@@ -99,7 +99,7 @@ class HeightmapTessellator {
     */
     class func computeVertices (
         inout vertices: [Float],
-        heightmap: SerializedArray,
+        heightmap: [SerializedType],
         height: Int,
         width: Int,
         skirtHeight: Double,
@@ -220,17 +220,17 @@ class HeightmapTessellator {
                     
                     var heightSample: Double
                     if (elementsPerHeight == 1) {
-                        heightSample = Double(heightmap[terrainOffset])
+                        heightSample = heightmap[terrainOffset].doubleValue()
                     } else {
                         heightSample = 0
                         
                         if isBigEndian {
                             for (var elementOffset = 0; elementOffset < elementsPerHeight; ++elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
+                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
                             }
                         } else {
                             for (var elementOffset = elementsPerHeight - 1; elementOffset >= 0; --elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
+                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
                             }
                         }
                     }
