@@ -988,7 +988,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            //_depthClearCommand.execute(context: context, passState: passState)
+            _depthClearCommand.execute(context: context, passState: passState)
             
             for command in frustumCommands.opaqueCommands {
                 executeCommand(command, passState: passState)

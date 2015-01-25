@@ -158,12 +158,11 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     */
     class func createLevelZeroTiles (tilingScheme: TilingScheme) -> [QuadtreeTile] {
         
-        var numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAtLevel(0)
-        var numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAtLevel(0)
+        let numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAtLevel(0)
+        let numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAtLevel(0)
         
         var result = [QuadtreeTile]()
         
-        var index = 0
         for var y = 0; y < numberOfLevelZeroTilesY; ++y {
             for var x = 0; x < numberOfLevelZeroTilesX; ++x {
                 result.append(QuadtreeTile(level: 0, x: x, y: y, tilingScheme: tilingScheme, parent: nil))
