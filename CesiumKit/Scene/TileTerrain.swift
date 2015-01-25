@@ -132,7 +132,7 @@ class TileTerrain {
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        /*if (state == .Unloaded) {
+        if state == .Unloaded {
 
             assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
             
@@ -140,25 +140,35 @@ class TileTerrain {
             var sourceX = upsampleDetails!.x
             var sourceY = upsampleDetails!.y
             var sourceLevel = upsampleDetails!.level
+            
+            weak var weakSelf = self
         
-            data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level)
-            if (!defined(this.data)) {
-                // The upsample request has been deferred - try again later.
-                return
+            func success(terrainData: TerrainData) {
+                weakSelf?.data = terrainData
+                weakSelf?.state = .Received
             }
             
-            this.state = TerrainState.RECEIVING;
+            func failure(error: String) {
+                weakSelf?.state = TerrainState.Failed
+                var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
+                println(message)
+            }
             
-            var that = this;
-            when(this.data, function(terrainData) {
-                that.data = terrainData;
-                that.state = TerrainState.RECEIVED;
-                }, function() {
-                    that.state = TerrainState.FAILED;
-                });
+            func doRequest() -> AsyncResult<TerrainData> {
+                // Upsample the terrain data.
+                weakSelf?.state = .Receiving
+                var terrainData = sourceData.upsample(tilingScheme: terrainProvider.tilingScheme, thisX: sourceX, thisY: sourceY, thisLevel: sourceLevel, descendantX: x, descendantY: y, descendantLevel: level)
+                if let terrainData = terrainData {
+                    return AsyncResult(terrainData)
+                }
+                return AsyncResult("terrain upsample request failed")
+            }
+            
+            AsyncResult<TerrainData>.perform(doRequest, asyncClosures: (success: success, failure: failure))
+            state = TerrainState.Receiving
         }
         
-        if (this.state === TerrainState.RECEIVED) {
+        /*if (this.state === TerrainState.RECEIVED) {
             transform(this, context, terrainProvider, x, y, level);
         }
         

@@ -383,7 +383,7 @@ class GlobeSurfaceTile {
             // We'll potentially need it to upsample child tiles.
             if loaded.state.rawValue >= TerrainState.Received.rawValue {
                 if surfaceTile.terrainData !== loaded.data {
-                    surfaceTile.terrainData = loaded.data;
+                    surfaceTile.terrainData = loaded.data
                     
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
@@ -423,9 +423,9 @@ class GlobeSurfaceTile {
         }
         
         if !suspendUpsampling && upsampled != nil {
-
-            upsampled!.processUpsampleStateMachine(context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
             /*
+            upsampled!.processUpsampleStateMachine(context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
+            
             // Publish the terrain data on the tile as soon as it is available.
             // We'll potentially need it to upsample child tiles.
             // It's safe to overwrite terrainData because we won't get here after
