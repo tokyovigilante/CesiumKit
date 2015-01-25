@@ -397,12 +397,12 @@ class QuadtreePrimitive {
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         
-        var len = _tileLoadQueue.count - 1
-        for var i = len; i >= 0; --i {
+        var len = _tileLoadQueue.count
+        for var i = len - 1; i >= 0; --i {
             let tile = _tileLoadQueue[i]
             _tileReplacementQueue.markTileRendered(tile)
             _tileProvider.loadTile(tile, context: context, frameState: frameState)
-            if NSDate().compare(endTime) != .OrderedDescending {
+            if NSDate().compare(endTime) == NSComparisonResult.OrderedAscending {
                 break
             }
         }

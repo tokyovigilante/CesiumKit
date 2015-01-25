@@ -1502,7 +1502,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
-        //applyRenderState(rs, passState: passState)
+        applyRenderState(rs, passState: passState)
     }
 
     func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {
@@ -1562,7 +1562,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             glBindTexture(GLenum(GL_TEXTURE_CUBE_MAP), 0)
         }
         _maxFrameTextureUnitIndex = 0
-        println("\(_debug.renderCountThisFrame)")
         _debug.renderCountThisFrame = 0
     }
 /*
