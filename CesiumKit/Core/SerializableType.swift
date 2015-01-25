@@ -21,7 +21,7 @@ extension Array: SerializableContainer {
         get {
             if !self.isEmpty {
                 if self.first is SerializedType? {
-                    return (self.first as SerializedType!).elementSize()
+                    return (self.first as SerializedType!).elementSize() * self.count
                 }
             }
             return 0
@@ -29,17 +29,14 @@ extension Array: SerializableContainer {
     }
     
     func data() -> NSData {
-        let length = sizeInBytes
         
-        if length == 0 || !(self.first is SerializedType) {
+        if self.count == 0 || !(self.first is SerializedType) {
             return NSData()
         }
         let firstValue = self.first! as SerializedType
 
-        /*if let array = (self as? [SerializedType]) {
-            
-        }*/
-        
+        let length = sizeInBytes
+
         switch firstValue {
         case .UnsignedInt8:
             let array = self.map ({ ($0 as SerializedType).unsignedInt8Value() })
