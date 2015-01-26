@@ -40,7 +40,11 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
-    var state: QuadtreeTileLoadState = .Start
+    var state: QuadtreeTileLoadState = .Start {
+        didSet {
+            println("L\(level)X\(x)Y\(y) \(state))")
+        }
+    }
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.
     * @type {Boolean}

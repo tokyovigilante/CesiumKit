@@ -26,7 +26,11 @@ class TileTerrain {
     * @type {TerrainState}
     * @default {@link TerrainState.UNLOADED}
     */
-    var state = TerrainState.Unloaded
+    var state: TerrainState = TerrainState.Unloaded {
+        didSet {
+            println(state)
+        }
+    }
 
     var data: TerrainData? = nil
     
@@ -97,12 +101,12 @@ class TileTerrain {
     func requestTileGeometry(#terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         weak var weakSelf = self
         
-        func success(terrainData: TerrainData) {
+        var success = { (terrainData: TerrainData) -> () in
             weakSelf?.data = terrainData
             weakSelf?.state = .Received
         }
         
-        func failure(error: String) {
+        var failure = { (error: String) -> () in
             // Initially assume failure.  handleError may retry, in which case the state will
             // change to RECEIVING or UNLOADED.
             weakSelf?.state = TerrainState.Failed
@@ -118,7 +122,7 @@ class TileTerrain {
             println(message)
         }
         
-        func doRequest() -> AsyncResult<TerrainData> {
+        var doRequest = { () -> AsyncResult<TerrainData> in
             // Request the terrain from the terrain provider.
             weakSelf?.state = .Receiving
             var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
@@ -143,18 +147,18 @@ class TileTerrain {
             
             weak var weakSelf = self
         
-            func success(terrainData: TerrainData) {
+            var success = { (terrainData: TerrainData) -> () in
                 weakSelf?.data = terrainData
                 weakSelf?.state = .Received
             }
             
-            func failure(error: String) {
+            var failure = { (error: String) -> () in
                 weakSelf?.state = TerrainState.Failed
                 var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
                 println(message)
             }
             
-            func doRequest() -> AsyncResult<TerrainData> {
+            var doRequest = { () -> AsyncResult<TerrainData> in
                 // Upsample the terrain data.
                 weakSelf?.state = .Receiving
                 var terrainData = sourceData.upsample(tilingScheme: terrainProvider.tilingScheme, thisX: sourceX, thisY: sourceY, thisLevel: sourceLevel, descendantX: x, descendantY: y, descendantLevel: level)

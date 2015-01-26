@@ -74,7 +74,8 @@ public enum AsyncResult<R> {
                 dispatch_async(dispatch_get_main_queue(), { asyncClosures.failure(error: result.error!) })
             }
             else {
-                dispatch_async(dispatch_get_main_queue(), { asyncClosures.success(result: result.value!) })
+                dispatch_async(dispatch_get_main_queue(), { asyncClosures.success(result: result.value!)
+            })
             }
         }
     }

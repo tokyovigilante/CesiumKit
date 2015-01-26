@@ -10,7 +10,7 @@
 * @exports QuadtreeTileLoadState
 * @private
 */
-enum QuadtreeTileLoadState {
+enum QuadtreeTileLoadState: Printable {
     /**
     * The tile is new and loading has not yet begun.
     * @type QuadtreeTileLoadState
@@ -42,4 +42,19 @@ enum QuadtreeTileLoadState {
     * @default 3
     */
     Failed
+    
+    var description: String {
+        get {
+            switch self {
+            case .Start:
+                return "Start"
+            case .Loading:
+                return "Loading"
+            case .Done:
+                return "Done"
+            case .Failed:
+                return "Failed"
+            }
+        }
+    }
 }

@@ -30,12 +30,13 @@ extension Array: SerializableContainer {
     
     func data() -> NSData {
         
-        if self.count == 0 || !(self.first is SerializedType) {
+        let length = sizeInBytes
+
+        if length == 0 {
             return NSData()
         }
+        
         let firstValue = self.first! as SerializedType
-
-        let length = sizeInBytes
 
         switch firstValue {
         case .UnsignedInt8:
