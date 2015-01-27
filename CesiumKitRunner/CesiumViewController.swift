@@ -76,7 +76,9 @@ class CesiumViewController: GLKViewController {
         view.contentScaleFactor = UIScreen.mainScreen().scale
         
         // create globe
-        let options = CesiumOptions(resolutionScale: 0.5)
+        let options = CesiumOptions(
+            imageryProvider: BingMapsImageryProvider(),
+            resolutionScale: 0.5)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         
         

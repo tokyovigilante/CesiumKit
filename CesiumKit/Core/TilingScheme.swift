@@ -20,7 +20,7 @@
 * @see WebMercatorTilingScheme
 * @see GeographicTilingScheme
 */
-protocol TilingScheme {
+public protocol TilingScheme {
     
     /**
     * Gets the ellipsoid that is tiled by the tiling scheme.

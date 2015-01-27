@@ -25,7 +25,7 @@ import ImageIO
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
     * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
     */
-public class ImageryProvider {
+public protocol ImageryProvider {
 
 /**
 * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -34,7 +34,7 @@ public class ImageryProvider {
 * @type {Number}
 * @default undefined
 */
-    var defaultAlpha: Double = 1.0
+    var defaultAlpha: Double { get }
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -42,7 +42,7 @@ public class ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultBrightness: Double = 1.0
+    var defaultBrightness: Double { get }
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -51,7 +51,7 @@ public class ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultContrast: Double = 1.0
+    var defaultContrast: Double { get }
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -59,7 +59,7 @@ public class ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultHue: Double = 0.0
+    var defaultHue: Double { get }
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -68,7 +68,7 @@ public class ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultSaturation: Double = 0.0
+    var defaultSaturation: Double { get }
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -76,14 +76,14 @@ public class ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultGamma: Double = 0.0
+    var defaultGamma: Double { get }
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    var ready: Bool = false
+    var ready: Bool { get }
     
     /**
     * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
@@ -91,7 +91,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Rectangle}
     */
-    var rectangle: Rectangle = Rectangle.maxValue()
+    var rectangle: Rectangle { get }
     
     /**
     * Gets the width of each tile, in pixels.  This function should
@@ -99,7 +99,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var tileWidth: Int = 0
+    var tileWidth: Int { get }
     
     /**
     * Gets the height of each tile, in pixels.  This function should
@@ -107,7 +107,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var tileHeight: Int = 0
+    var tileHeight: Int { get }
 
     
     /**
@@ -116,7 +116,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var maximumLevel: Int = Int.max
+    var maximumLevel: Int { get }
 
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
@@ -128,7 +128,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    var minimumLevel: Int? = nil
+    var minimumLevel: Int? { get }
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -136,7 +136,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-    var tilingScheme: TilingScheme
+    var tilingScheme: TilingScheme { get }
 
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
@@ -146,7 +146,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TileDiscardPolicy}
     */
-    var tileDiscardPolicy: TileDiscardPolicy? = nil
+    var tileDiscardPolicy: TileDiscardPolicy? { get }
     
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -155,7 +155,7 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    var errorEvent: Event
+    var errorEvent: Event { get }
     
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
@@ -164,14 +164,15 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    var credit: Credit
+    var credit: Credit { get }
     
     /**
     * Gets the proxy used by this provider.
     * @memberof ImageryProvider.prototype
     * @type {Proxy}
     */
-    /// FIXME: Disabled var proxy: Proxy { get }
+    // FIXME: Disabled
+    //var proxy: Proxy { get }
     
     /**
     * Gets a value indicating whether or not the images provided by this imagery provider
@@ -182,13 +183,9 @@ public class ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    var hasAlphaChannel: Bool = false
+    var hasAlphaChannel: Bool { get }
     
-    init(tilingScheme: TilingScheme) {
-        self.tilingScheme = tilingScheme
-        self.errorEvent = Event()
-        self.credit = Credit(text: "CesiumKit")
-    }
+    init(tilingScheme: TilingScheme)
     
     /**
     * Gets the credits to be displayed when a given tile is displayed.
@@ -201,9 +198,7 @@ public class ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
-        return [credit]
-    }
+    func tileCredits (#x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -227,10 +222,7 @@ public class ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(#x: Int, y: Int, level: Int) -> CGImage? {
-        assert(false, "invalid base class")
-        return nil
-    }
+    func requestImage(#x: Int, y: Int, level: Int) -> CGImage?
 
     
     /**
@@ -244,9 +236,6 @@ public class ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    func loadImage (url: String) -> CGImage? {
-        assert(false, "invalid base class")
-        return nil
-    }
+    func loadImage (url: String) -> CGImage?
 
 }
