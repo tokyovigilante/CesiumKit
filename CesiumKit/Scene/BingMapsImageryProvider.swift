@@ -174,9 +174,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public var tileHeight: Int {
         get {
-            if !ready {
-                fatalError("tileHeight must not be called before the imagery provider is ready.")
-            }
+            assert(_ready, "tileHeight must not be called before the imagery provider is ready.")
             return _tileHeight
         }
     }
@@ -191,9 +189,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public var maximumLevel: Int {
         get {
-            if !ready {
-                fatalError("maximumLevel must not be called before the imagery provider is ready.")
-            }
+            assert(_ready, "maximumLevel must not be called before the imagery provider is ready.")
             return _maximumLevel
         }
     }
@@ -211,9 +207,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public var minimumLevel: Int? {
         get {
-            if !ready {
-                fatalError("minimumLevel must not be called before the imagery provider is ready.")
-            }
+            assert(_ready, "minimumLevel must not be called before the imagery provider is ready.")
             return _minimumLevel
         }
     }
@@ -228,9 +222,7 @@ public class BingMapsImageryProvider: ImageryProvider {
 
     public var tilingScheme: TilingScheme {
         get {
-            if !_ready {
-                fatalError("tilingScheme must not be called before the imagery provider is ready.")
-            }
+            assert(_ready, "tilingScheme must not be called before the imagery provider is ready.")
             return _tilingScheme
         }
     }
@@ -247,9 +239,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public var tileDiscardPolicy: TileDiscardPolicy? {
         get {
-            if !_ready {
-                fatalError("tileDiscardPolicy must not be called before the imagery provider is ready.")
-            }
+            assert(_ready, "tileDiscardPolicy must not be called before the imagery provider is ready.")
             return _tileDiscardPolicy
         }
     }
@@ -491,9 +481,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
     public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
-        if !_ready {
-            fatalError("requestImage must not be called before the imagery provider is ready.")
-        }
+        assert(_ready, "requestImage must not be called before the imagery provider is ready.")
+        
         let url = buildImageUrl(x, y: y, level: level)
         return loadImage(url)
 

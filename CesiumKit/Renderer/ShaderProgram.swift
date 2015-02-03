@@ -325,7 +325,7 @@ class ShaderProgram {
             for node in badNodes {
                 message += node.name + "\n"
             }
-            fatalError(message)
+            assertionFailure(message)
         }
     }
     
@@ -417,7 +417,8 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(vertexShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                fatalError("[GL] Vertex shader compile log: " + errorMessage!)
+                assertionFailure("[GL] Vertex shader compile log: " + errorMessage!)
+                
             }
             
             glGetShaderiv(fragmentShader, GLenum(GL_COMPILE_STATUS), &status)
@@ -429,7 +430,7 @@ class ShaderProgram {
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
                 println(fsSource)
-                fatalError("[GL] Fragment shader compile log: " + errorMessage!)
+                assertionFailure("[GL] Fragment shader compile log: " + errorMessage!)
             }
             
             glGetProgramiv(program, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
@@ -438,7 +439,7 @@ class ShaderProgram {
             glGetProgramInfoLog(program, infoLogLength, &actualLength, &strInfoLog)
             glDeleteProgram(program)
             let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-            fatalError("Program failed to link.  Link log: " + errorMessage!)
+            assertionFailure("Program failed to link.  Link log: " + errorMessage!)
         }
         /*
         if (logShaderCompilation) {
@@ -691,7 +692,7 @@ class ShaderProgram {
                     var actualLength: GLsizei = 0
                     glGetProgramInfoLog(_program!, infoLogLength, &actualLength, &strInfoLog)
                     let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                    fatalError("Program validation failed.  Link log: " + errorMessage!)
+                    assertionFailure("Program validation failed.  Link log: " + errorMessage!)
                 }
             }
         }

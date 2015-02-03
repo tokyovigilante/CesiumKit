@@ -148,7 +148,7 @@ class Uniform {
         case .FloatMatrix4(let value):
             glUniformMatrix4fv(_location, 1, GLboolean(0), value.toArray())
         default:
-            fatalError("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
+            assertionFailure("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
         }
     }
     
