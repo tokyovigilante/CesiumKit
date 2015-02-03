@@ -272,6 +272,7 @@
 		94985A751A38444C00FFAD81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94985A741A38444C00FFAD81 /* Images.xcassets */; };
 		94985A781A38444C00FFAD81 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94985A761A38444C00FFAD81 /* LaunchScreen.xib */; };
 		94985A911A3845D900FFAD81 /* CesiumKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
 		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
@@ -420,6 +421,7 @@
 		949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeSurfaceTileProvider.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
 		949E67A419D6BCB200012DC4 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		94A833161A80C81800FFAD81 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftRegex.swift; path = Platform/SwiftRegex.swift; sourceTree = "<group>"; };
 		94B87DBE194D620E00012DC4 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		94B87DC0194D678D00012DC4 /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		94B87DC4194D699400012DC4 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
@@ -690,6 +692,7 @@
 				9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */,
 				9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */,
 				94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */,
+				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -1017,6 +1020,7 @@
 				9413B7D01A37B93100FFAD81 /* TilingScheme.swift in Sources */,
 				9413B80E1A37B94500FFAD81 /* QuadtreePrimitive.swift in Sources */,
 				9413B7B91A37B93100FFAD81 /* Intersectable.swift in Sources */,
+				94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */,
 				9413B7F61A37B94500FFAD81 /* BlendFunction.swift in Sources */,
 				9413B7E31A37B93D00FFAD81 /* Framebuffer.swift in Sources */,
 				9413B7D81A37B93D00FFAD81 /* Buffer.swift in Sources */,

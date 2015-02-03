@@ -483,7 +483,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         
-        let url = buildImageUrl(x, y: y, level: level)
+        let url = buildImageUrl(x: x, y: y, level: level)
         return loadImage(url)
 
     }
@@ -600,7 +600,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @see {@link http://msdn.microsoft.com/en-us/library/bb259689.aspx|Bing Maps Tile System}
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
-    func tileXYToQuadKey (x: Int, y: Int, level: Int) -> String {
+    func tileXYToQuadKey (#x: Int, y: Int, level: Int) -> String {
     
         var quadkey = ""
         
@@ -654,11 +654,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     */
     func buildImageUrl(#x: Int, y: Int, level: Int) -> String {
-        assert(<#condition: @autoclosure () -> Bool#>, <#message: @autoclosure () -> String#>)
-        fatalError(<#message: @autoclosure () -> String#>)
-        var imageUrl = _imageUrlTemplate
+        var imageUrl = _imageUrlTemplate! // _ready already checked
         
-        let quadkey = tileXYToQuadKey(x, y, level)
+        let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
         /*imageUrl = imageUrl.replace('{quadkey}', quadkey);
         
         var subdomains = imageryProvider._imageUrlSubdomains;
