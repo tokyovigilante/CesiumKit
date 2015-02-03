@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import ImageIO
+import UIKit.UIImage
 
 /**
 * Stores details about a tile of imagery.
@@ -28,7 +28,7 @@ class Imagery {
     
     var rectangle: Rectangle? = nil
     
-    var image: CGImage? = nil
+    var image: UIImage? = nil
     
     var imageUrl: String? = nil
     

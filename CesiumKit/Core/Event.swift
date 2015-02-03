@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class Event {
+public class Event {
     /*/*global define*/
     define([
     './defined',

@@ -79,6 +79,24 @@ public enum AsyncResult<R> {
             }
         }
     }
+    
+    public static func getURL (
+        url: NSURL,
+        asyncClosures: (success: (result: NSData) -> (), failure: (error: String) -> ()))
+    {
+        NSURLSession.sharedSession().dataTaskWithURL(url) { data, response, error in
+            if error != nil {
+                let message = "Could not load \(url.absoluteString): + \(error.localizedDescription)"
+                dispatch_async(dispatch_get_main_queue(), {
+                    asyncClosures.failure(error: message)
+                })
+                return
+            }
+            dispatch_async(dispatch_get_main_queue(), {
+                asyncClosures.success(result: data)
+            })
+            }.resume()
+    }
 }
 
 //infix operator ~> {}

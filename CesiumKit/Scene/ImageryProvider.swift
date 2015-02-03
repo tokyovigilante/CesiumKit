@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import ImageIO
+import UIKit.UIImage
     /**
     * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
     * interface and is not intended to be instantiated directly.
@@ -184,9 +184,7 @@ public protocol ImageryProvider {
     * @type {Boolean}
     */
     var hasAlphaChannel: Bool { get }
-    
-    init(tilingScheme: TilingScheme)
-    
+        
     /**
     * Gets the credits to be displayed when a given tile is displayed.
     * @function
@@ -222,7 +220,7 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(#x: Int, y: Int, level: Int) -> CGImage?
+    func requestImage(#x: Int, y: Int, level: Int) -> UIImage?
 
     
     /**
@@ -236,6 +234,6 @@ public protocol ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    func loadImage (url: String) -> CGImage?
+    func loadImage (url: String) -> UIImage?
 
 }

@@ -22,7 +22,7 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-struct Rectangle/*: Packable*/ {
+public struct Rectangle/*: Packable*/ {
     var west: Double
     var south: Double
     var east: Double

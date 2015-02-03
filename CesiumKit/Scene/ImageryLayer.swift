@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ImageIO
+import UIKit.UIImage
 
 /**
 * An imagery layer that displays tiled image data from a single imagery provider
@@ -444,7 +444,7 @@ class ImageryLayer {
         
         weak var weakSelf = self
         weak var weakImagery = imagery
-        func success(image: CGImage) {
+        func success(image: UIImage) {
             
             weakImagery?.image = image
             weakImagery?.credits = imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
@@ -470,7 +470,7 @@ class ImageryLayer {
             println(message)
         }
         
-        func doRequest() -> AsyncResult<CGImage> {
+        func doRequest() -> AsyncResult<UIImage> {
             
             weakImagery?.state = .Transitioning
             
@@ -480,7 +480,7 @@ class ImageryLayer {
             return AsyncResult("terrain data request failed")
         }
         
-        AsyncResult<CGImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))
+        AsyncResult<UIImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
     /*
     /**
