@@ -684,15 +684,15 @@
 		94697D9E1A25C72000FFAD81 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
-				94697D9F1A25C74500FFAD81 /* Regex.swift */,
+				94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
-				94F3ECA41A283ADB00FFAD81 /* String.swift */,
-				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
-				9455EB861A7D00ED00FFAD81 /* Threading.swift */,
 				9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */,
 				9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */,
-				94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */,
+				94697D9F1A25C74500FFAD81 /* Regex.swift */,
+				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
+				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
+				9455EB861A7D00ED00FFAD81 /* Threading.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";

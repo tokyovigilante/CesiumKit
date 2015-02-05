@@ -145,10 +145,14 @@ class ShaderProgram {
     
     let _id: Int
     
-    private let _commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
-    private let _lineRegex = Regex("\\n")
-    private let _czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
+    //private let _commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
+    //private let _lineRegex = Regex("\\n")
+    //private let _czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
 
+    private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
+    private let _lineRegex = "\\n"
+    private let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
+    
     init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]? = nil, id: Int) {
         
         _logShaderCompilation = logShaderCompilation
@@ -162,10 +166,13 @@ class ShaderProgram {
     private func extractShaderVersion(source: String) -> (version: String, source: String) {
         // This will fail if the first #version is actually in a comment.
         //var index = source.indexOf("#version")
-        var index = source.indexOf("#version")
         
-        if (index != nil) {
-            var newLineIndex = source.indexOf("\n", startIndex: index)
+        let index = source["version"].range().location
+        //var index = source.indexOf("#version")
+        
+        if index != NSNotFound {
+            let newLineIndex = source["\n"].ranges().filter ({ $0.location >= index }).first!.location
+            // FIXME: Disabled
             /*
             // We could throw an exception if there is not a new line after
             // #version, but the GLSL compiler will catch it.
@@ -208,15 +215,16 @@ class ShaderProgram {
             var newGLSLSource = glslSource
             // strip doc comments so we don't accidentally try to determine a dependency for something found
             // in a comment
-            var commentBlocks = _commentRegex.matches(glslSource)
+            let commentBlocks = glslSource[_commentRegex].ranges()
+            //var commentBlocks = _commentRegex.matches(glslSource)
             if commentBlocks.count > 0 {
                 // FIXME: shader comments
                 for var i = 0; i < commentBlocks.count; ++i {
                     
-                    let commentBlock = commentBlocks[i] as NSTextCheckingResult
-                    let matchRange = Range(start: commentBlock.range.location, end: commentBlock.range.location + commentBlock.range.length)
+                    let commentBlockRange = commentBlocks[i]
+                    let matchRange = Range(start: commentBlockRange.location, end: commentBlockRange.location + commentBlockRange.length)
                     let comment = glslSource[matchRange]
-                    let numberOfLines = _lineRegex.matches(comment).count
+                    let numberOfLines = comment[_lineRegex].matches().count
                     
                     // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
                     var modifiedComment = ""
@@ -227,8 +235,9 @@ class ShaderProgram {
                             modifiedComment += "//\n"
                         }
                     }
-                    
                     newGLSLSource = newGLSLSource.replace(comment, modifiedComment)
+                    //newGLSLSource = newGLSLSource[comment] ~= modifiedComment
+                    //newGLSLSource[comment] = modifiedComment
                 }
             }
             // create new node
@@ -247,13 +256,14 @@ class ShaderProgram {
         currentNode.evaluated = true
         
         // identify all dependencies that are referenced from this glsl source code
-        var czmMatchRanges = _czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
-        var czmMatches: [String]
-        if czmMatchRanges.count > 0 {
-            czmMatches = czmMatchRanges.map({
+        let czmMatches = deleteDuplicates(currentNode.glslSource[_czmRegex].matches())
+        /*var czmMatchRanges = _czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
+        var czmMatches: [String]*/
+        if czmMatches.count > 0 {
+            /*czmMatches = czmMatchRanges.map({
                 currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
             })
-            czmMatches = deleteDuplicates(czmMatches)
+            czmMatches = deleteDuplicates(czmMatches)*/
             
             for match in czmMatches {
                 if (match != currentNode.name) {

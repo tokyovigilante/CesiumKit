@@ -477,7 +477,7 @@ class ImageryLayer {
             if let image = imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
                 return AsyncResult(image)
             }
-            return AsyncResult("terrain data request failed")
+            return AsyncResult("image data request failed")
         }
         
         AsyncResult<UIImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))

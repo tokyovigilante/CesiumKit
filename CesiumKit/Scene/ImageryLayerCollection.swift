@@ -78,22 +78,23 @@ class ImageryLayerCollection {
     */
     func add (layer: ImageryLayer, index: Int? = nil) {
         //FIXME: Unimplemented
-        /*let hasIndex = index != nil
+        let hasIndex = index != nil
         
-        if (hasIndex) {
-            assert (index! >= 0, "index must be greater than or equal to zero")
-            assert (index <= this._layers.length, "index must be less than or equal to the number of layers")
-        }
+        var insertIndex: Int
         
-        if (!hasIndex) {
-            index = this._layers.length;
-            this._layers.push(layer);
+        if hasIndex {
+            insertIndex = index!
+            assert(index! >= 0, "index must be greater than or equal to zero")
+            assert(index <= _layers.count, "index must be less than or equal to the number of layers")
+            _layers.insert(layer, atIndex: insertIndex)
         } else {
-            this._layers.splice(index, 0, layer);
+            insertIndex = _layers.count
+            _layers.append(layer)
         }
         
-        this._update();
-        this.layerAdded.raiseEvent(layer, index);*/
+        update()
+            //FIXME: raiseevent
+        //this.layerAdded.raiseEvent(layer, insertIndex)
     }
 
     /**

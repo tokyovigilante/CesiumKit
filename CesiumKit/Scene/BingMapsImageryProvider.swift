@@ -376,9 +376,8 @@ public class BingMapsImageryProvider: ImageryProvider {
             
             // Force HTTPS
             let imageUrlTemplate = resource["imageUrl"].stringValue
-            var imageUrlComponents = NSURLComponents(string: imageUrlTemplate)!
-            imageUrlComponents.scheme = "https"
-            self._imageUrlTemplate = imageUrlComponents.string!
+            self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
+            
             
         // Install the default tile discard policy if none has been supplied.
             //FIXME: Tile discard policy
@@ -501,7 +500,21 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     public func loadImage (url: String) -> UIImage? {
-        assert(false, "invalid base class")
+        let imageData = NSData(contentsOfURL: NSURL(string: url)!)
+        if imageData != nil {
+            return UIImage(data: imageData!)
+        }
+        /*request(.GET, url)//, //parameters: [
+        //"incl" : "ImageryProviders",
+        //"key" : self._key])
+        .response { (request, response, data, error) in
+        if let error = error {
+        metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
+        return
+        }
+        metadataSuccess(data as NSData!)
+        }
+        }*/
         return nil
     }
 
@@ -552,42 +565,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     return getRectangleAttribution(this._attributionList, level, rectangle);
     };
     */
-    /**
-    * Requests the image for a given tile.  This function should
-    * not be called before {@link BingMapsImageryProvider#ready} returns true.
-    *
-    * @param {Number} x The tile X coordinate.
-    * @param {Number} y The tile Y coordinate.
-    * @param {Number} level The tile level.
-    * @returns {Promise} A promise for the image that will resolve when the image is available, or
-    *          undefined if there are too many active requests to the server, and the request
-    *          should be retried later.  The resolved image may be either an
-    *          Image or a Canvas DOM object.
-    *
-    * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
-    */
-    /*
-    BingMapsImageryProvider.prototype.requestImage = function(x, y, level) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!this._ready) {
-    throw new DeveloperError('requestImage must not be called before the imagery provider is ready.');
-    }
-    //>>includeEnd('debug');
     
-    var url = buildImageUrl(this, x, y, level);
-    return ImageryProvider.loadImage(this, url);
-    };
-    
-    class func loadImage (imageryProvider: ImageryProvider, url: String, completion: (result: Image?) -> Void) {
-    /*
-    if (defined(imageryProvider.tileDiscardPolicy)) {
-    return throttleRequestByServer(url, loadImageViaBlob);
-    }
-    return throttleRequestByServer(url, loadImage);
-    };*/
-    }
-    
-    BingMapsImageryProvider._logoData = 'data:image/png;base64,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';
+    /*BingMapsImageryProvider._logoData = 'data:image/png;base64,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';
     */
     /**
     * Converts a tiles (x, y, level) position into a quadkey used to request an image
@@ -657,13 +636,14 @@ public class BingMapsImageryProvider: ImageryProvider {
         var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
-        /*imageUrl = imageUrl.replace('{quadkey}', quadkey);
+        imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
-        var subdomains = imageryProvider._imageUrlSubdomains;
-        var subdomainIndex = (x + y + level) % subdomains.length;
-        imageUrl = imageUrl.replace('{subdomain}', subdomains[subdomainIndex]);
+        var subdomains = _imageUrlSubdomains!.arrayValue
+        var subdomainIndex = (x + y + level) % subdomains.count
+        imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
         
-        var proxy = imageryProvider._proxy;
+        // FIXME: proxy
+        /*var proxy = imageryProvider._proxy;
         if (defined(proxy)) {
             imageUrl = proxy.getURL(imageUrl);
         }
