@@ -178,21 +178,21 @@ class Texture {
                 let imageRef = image.CGImage
                 let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
-                let bytesPerPixel = UInt(pixelDatatype.bytesPerElement * pixelFormat.byteCount)
+                let bytesPerPixel: UInt = pixelFormat == PixelFormat.RGB ? 4 : UInt(pixelDatatype.bytesPerElement * pixelFormat.byteCount) // RGB CGImage must have Alpha
                 
                 // Allocate a textureData with the above properties:
                 var textureData = [UInt8](count: Int(width * height * bytesPerPixel), repeatedValue: 0 as UInt8) // if 4 components per pixel (RGBA)
                 
                 let colorSpace = CGColorSpaceCreateDeviceRGB()
                 let bytesPerRow = bytesPerPixel * width
-                let bitsPerComponent = UInt(pixelDatatype.bytesPerElement)
-                let imageAlpha = preMultiplyAlpha ? CGImageAlphaInfo.Last : CGImageAlphaInfo.None
+                let bitsPerComponent = UInt(pixelDatatype.bytesPerElement) * 8
+                let imageAlpha = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
                 let contextRef = CGBitmapContextCreate(&textureData, width, height, bitsPerComponent, bytesPerRow, colorSpace, CGBitmapInfo(imageAlpha.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue))
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                glTexImage2D(GLenum(GL_TEXTURE_2D), 0, pixelFormat.rawValue, width, height, 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
+                glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat.rawValue), GLsizei(width), GLsizei(height), 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
             }
 
         } else {

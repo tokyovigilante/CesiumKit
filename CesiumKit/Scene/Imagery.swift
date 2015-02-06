@@ -32,7 +32,7 @@ class Imagery {
     
     var imageUrl: String? = nil
     
-    var state: ImageryState = ImageryState.Unloaded
+    var state: ImageryState = .Unloaded
     
     var texture: Texture? = nil
     
@@ -57,7 +57,7 @@ class Imagery {
         if rectangle == nil && imageryLayer.imageryProvider.ready {
             var tilingScheme = imageryLayer.imageryProvider.tilingScheme
             self.rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
-        }
+        } 
     }
 
     class func createPlaceholder(imageryLayer: ImageryLayer) -> Imagery {

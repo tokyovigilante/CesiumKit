@@ -519,7 +519,7 @@ class ImageryLayer {
         imagery.image = nil
         imagery.state = ImageryState.TextureLoaded
     }
-    /*
+    
     /**
     * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
     * mipmaps for the geographic texture.
@@ -529,52 +529,52 @@ class ImageryLayer {
     * @param {Context} context The rendered context to use.
     * @param {Imagery} imagery The imagery instance to reproject.
     */
-    ImageryLayer.prototype._reprojectTexture = function(context, imagery) {
-    var texture = imagery.texture;
-    var rectangle = imagery.rectangle;
-    
-    // Reproject this texture if it is not already in a geographic projection and
-    // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
-    // avoids precision problems in the reprojection transformation while making
-    // no noticeable difference in the georeferencing of the image.
-    if (!(this._imageryProvider.tilingScheme instanceof GeographicTilingScheme) &&
-    (rectangle.east - rectangle.west) / texture.width > 1e-5) {
-    var reprojectedTexture = reprojectToGeographic(this, context, texture, imagery.rectangle);
-    texture.destroy();
-    imagery.texture = texture = reprojectedTexture;
+    func reprojectTexture (context: Context, imagery: Imagery) {
+        var texture = imagery.texture
+        let rectangle = imagery.rectangle!
+        
+        // Reproject this texture if it is not already in a geographic projection and
+        // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
+        // avoids precision problems in the reprojection transformation while making
+        // no noticeable difference in the georeferencing of the image.
+        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture!.width) > pow(1, -5)
+        let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
+        if !isGeographic && pixelGap {
+                let reprojectedTexture = reprojectToGeographic(context, texture: texture!, rectangle: imagery.rectangle!)
+                texture = reprojectedTexture
+                imagery.texture = texture
+        }
+        // FIXME: Mipmap
+        // Use mipmaps if this texture has power-of-two dimensions.
+        /*if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
+            var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
+            if (!defined(mipmapSampler)) {
+                var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
+                mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
+                    wrapS : TextureWrap.CLAMP_TO_EDGE,
+                    wrapT : TextureWrap.CLAMP_TO_EDGE,
+                    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
+                    magnificationFilter : TextureMagnificationFilter.LINEAR,
+                    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(this._maximumAnisotropy, maximumSupportedAnisotropy))
+                });
+            }
+            texture.generateMipmap(MipmapHint.NICEST);
+            texture.sampler = mipmapSampler;
+        } else {*/
+            /*var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
+            if (!defined(nonMipmapSampler)) {
+                nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = context.createSampler({
+                    wrapS : TextureWrap.CLAMP_TO_EDGE,
+                    wrapT : TextureWrap.CLAMP_TO_EDGE,
+                    minificationFilter : TextureMinificationFilter.LINEAR,
+                    magnificationFilter : TextureMagnificationFilter.LINEAR
+                });
+            }
+            texture.sampler = nonMipmapSampler;*/
+        //}
+        
+        imagery.state = .Ready
     }
-    
-    // Use mipmaps if this texture has power-of-two dimensions.
-    if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
-    var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
-    if (!defined(mipmapSampler)) {
-    var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
-    mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
-    wrapS : TextureWrap.CLAMP_TO_EDGE,
-    wrapT : TextureWrap.CLAMP_TO_EDGE,
-    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
-    magnificationFilter : TextureMagnificationFilter.LINEAR,
-    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(this._maximumAnisotropy, maximumSupportedAnisotropy))
-    });
-    }
-    texture.generateMipmap(MipmapHint.NICEST);
-    texture.sampler = mipmapSampler;
-    } else {
-    var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
-    if (!defined(nonMipmapSampler)) {
-    nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = context.createSampler({
-    wrapS : TextureWrap.CLAMP_TO_EDGE,
-    wrapT : TextureWrap.CLAMP_TO_EDGE,
-    minificationFilter : TextureMinificationFilter.LINEAR,
-    magnificationFilter : TextureMagnificationFilter.LINEAR
-    });
-    }
-    texture.sampler = nonMipmapSampler;
-    }
-    
-    imagery.state = ImageryState.READY;
-    };
-    */
 
     func getImageryFromCache (#x: Int, y: Int, level: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(x: x, y: y, level: level)
@@ -631,9 +631,11 @@ class ImageryLayer {
     };
     
     var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
-    
-    function reprojectToGeographic(imageryLayer, context, texture, rectangle) {
-    var reproject = context.cache.imageryLayer_reproject;
+    */
+    func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> Texture {
+        // FIXME: reproject
+        return texture
+    /*var reproject = context.cache.imageryLayer_reproject;
     
     if (!defined(reproject)) {
     reproject = context.cache.imageryLayer_reproject = {
@@ -740,7 +742,7 @@ class ImageryLayer {
     pixelFormat : texture.pixelFormat,
     pixelDatatype : texture.pixelDatatype,
     preMultiplyAlpha : texture.preMultiplyAlpha
-    });
+    })
     
     // Allocate memory for the mipmaps.  Failure to do this before rendering
     // to the texture via the FBO, and calling generateMipmap later,
@@ -782,9 +784,9 @@ class ImageryLayer {
     });
     drawCommand.execute(context);
     
-    return outputTexture;
+    return outputTexture;*/
     }
-    */
+
     /**
     * Gets the level with the specified world coordinate spacing between texels, or less.
     *

@@ -50,21 +50,21 @@ class TileImagery {
         
         var imageryLayer = loadingImagery!.imageryLayer
         
-        if (loadingImagery!.state == .Unloaded) {
+        if loadingImagery!.state == .Unloaded {
             loadingImagery!.state = .Transitioning
             imageryLayer.requestImagery(loadingImagery!)
         }
         
-        if (loadingImagery!.state == .Received) {
+        if loadingImagery!.state == .Received {
             loadingImagery!.state = .Transitioning
             imageryLayer.createTexture(context, imagery: loadingImagery!)
         }
-        /*
-        if (loadingImagery.state === ImageryState.TEXTURE_LOADED) {
-            loadingImagery.state = ImageryState.TRANSITIONING;
-            imageryLayer._reprojectTexture(context, loadingImagery);
-        }
         
+        if loadingImagery!.state == .TextureLoaded {
+            loadingImagery!.state = .Transitioning
+            imageryLayer.reprojectTexture(context, imagery: loadingImagery!)
+        }
+        /*
         if (loadingImagery.state === ImageryState.READY) {
             if (defined(this.readyImagery)) {
                 this.readyImagery.releaseReference();

@@ -8,7 +8,7 @@
 
 import OpenGLES
 
-enum PixelDatatype: GLint {
+enum PixelDatatype: GLenum {
     case UnsignedByte = 0x1401,
     UnsignedShort = 0x1403,
     UnsignedInt = 0x1405,
@@ -44,7 +44,7 @@ enum PixelDatatype: GLint {
 
 
 
-enum PixelFormat: GLint {
+enum PixelFormat: GLenum {
     /**
     * 0x1902.  A pixel format containing a depth value.
     *
