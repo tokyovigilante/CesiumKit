@@ -57,7 +57,9 @@ class Imagery {
         if rectangle == nil && imageryLayer.imageryProvider.ready {
             var tilingScheme = imageryLayer.imageryProvider.tilingScheme
             self.rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
-        } 
+        } else {
+            self.rectangle = rectangle
+        }
     }
 
     class func createPlaceholder(imageryLayer: ImageryLayer) -> Imagery {
