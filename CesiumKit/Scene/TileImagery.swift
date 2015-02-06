@@ -64,17 +64,17 @@ class TileImagery {
             loadingImagery!.state = .Transitioning
             imageryLayer.reprojectTexture(context, imagery: loadingImagery!)
         }
-        /*
-        if (loadingImagery.state === ImageryState.READY) {
-            if (defined(this.readyImagery)) {
-                this.readyImagery.releaseReference();
-            }
-            this.readyImagery = this.loadingImagery;
-            this.loadingImagery = undefined;
-            this.textureTranslationAndScale = imageryLayer._calculateTextureTranslationAndScale(tile, this);
-            return true; // done loading
-        }
         
+        if loadingImagery!.state == .Ready {
+            if readyImagery != nil {
+                readyImagery!.releaseReference()
+            }
+            readyImagery = loadingImagery
+            loadingImagery = nil
+            textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: self)
+            return true // done loading
+        }
+        /*
         // Find some ancestor imagery we can use while this imagery is still loading.
         var ancestor = loadingImagery.parent;
         var ancestorsAreStillLoading = false;
