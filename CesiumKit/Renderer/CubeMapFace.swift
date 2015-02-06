@@ -56,7 +56,7 @@ class CubeMapFace {
     *   arrayBufferView : new Uint8Array([255, 0, 0, 255])
     * });
     */
-    func copyFrom(source: ImageBuffer, xOffset: Int = 0, yOffset: Int = 0) {
+    func copyFrom(source: Imagebuffer, xOffset: Int = 0, yOffset: Int = 0) {
         
         assert(xOffset >= 0 && yOffset >= 0, "xOffset and yOffset must be greater than or equal to zero")
         

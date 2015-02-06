@@ -7,7 +7,7 @@
 //
 
 /// RGBA image data
-class ImageBuffer {
+class Imagebuffer {
     let width: Int
     let height: Int
     let arrayBufferView: [UInt8]

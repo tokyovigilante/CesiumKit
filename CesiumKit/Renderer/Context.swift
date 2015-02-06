@@ -524,8 +524,8 @@ class Context {
     * @type {Texture}
     */
     lazy var defaultTexture: Texture = {
-        var imageBuffer = ImageBuffer(width: 1, height: 1, arrayBufferView: [255, 255, 255, 255])
-        var source = TextureOptions.Source(imageBuffer: imageBuffer, frameBuffer: nil, width: 1, height: 1)
+        var imageBuffer = Imagebuffer(width: 1, height: 1, arrayBufferView: [255, 255, 255, 255])
+        var source = TextureSource.ImageBuffer(imageBuffer)
         var options = TextureOptions(source: source, width: nil, height: nil, pixelFormat: .RGBA, pixelDatatype: .UnsignedByte, flipY: false, premultiplyAlpha: true)
         return self.createTexture2D(options)
         }()
@@ -1051,7 +1051,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
 * @see Context#createSampler
 */
 
-    func createCubeMap (faces: [ImageBuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap? {
+    func createCubeMap (faces: [Imagebuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap? {
         // FIXME: cubemap
         /*
         Context.prototype.createCubeMap = function(options) {

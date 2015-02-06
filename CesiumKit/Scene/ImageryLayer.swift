@@ -482,7 +482,7 @@ class ImageryLayer {
         
         AsyncResult<UIImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
-    /*
+    
     /**
     * Create a WebGL texture for a given {@link Imagery} instance.
     *
@@ -491,40 +491,35 @@ class ImageryLayer {
     * @param {Context} context The rendered context to use to create textures.
     * @param {Imagery} imagery The imagery for which to create a texture.
     */
-    ImageryLayer.prototype._createTexture = function(context, imagery) {
-    var imageryProvider = this._imageryProvider;
-    
-    // If this imagery provider has a discard policy, use it to check if this
-    // image should be discarded.
-    if (defined(imageryProvider.tileDiscardPolicy)) {
-    var discardPolicy = imageryProvider.tileDiscardPolicy;
-    if (defined(discardPolicy)) {
-    // If the discard policy is not ready yet, transition back to the
-    // RECEIVED state and we'll try again next time.
-    if (!discardPolicy.isReady()) {
-    imagery.state = ImageryState.RECEIVED;
-    return;
+    func createTexture (context: Context, imagery: Imagery) {
+        
+        // If this imagery provider has a discard policy, use it to check if this
+        // image should be discarded.
+        if let discardPolicy = imageryProvider.tileDiscardPolicy {
+            // If the discard policy is not ready yet, transition back to the
+            // RECEIVED state and we'll try again next time.
+            if !discardPolicy.isReady {
+                imagery.state = .Received
+                return
+            }
+            
+            // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
+            if (discardPolicy.shouldDiscardImage(imagery.image!)) {
+                imagery.state = .Invalid
+                return
+            }
+        }
+        
+        // Imagery does not need to be discarded, so upload it to GL.
+        let texture = context.createTexture2D(TextureOptions(
+            source : .Image(imagery.image!),
+            pixelFormat : imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
+        
+        imagery.texture = texture
+        imagery.image = nil
+        imagery.state = ImageryState.TextureLoaded
     }
-    
-    // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
-    if (discardPolicy.shouldDiscardImage(imagery.image)) {
-    imagery.state = ImageryState.INVALID;
-    return;
-    }
-    }
-    }
-    
-    // Imagery does not need to be discarded, so upload it to WebGL.
-    var texture = context.createTexture2D({
-    source : imagery.image,
-    pixelFormat : imageryProvider.hasAlphaChannel ? PixelFormat.RGBA : PixelFormat.RGB
-    });
-    
-    imagery.texture = texture;
-    imagery.image = undefined;
-    imagery.state = ImageryState.TEXTURE_LOADED;
-    };
-    
+    /*
     /**
     * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
     * mipmaps for the geographic texture.

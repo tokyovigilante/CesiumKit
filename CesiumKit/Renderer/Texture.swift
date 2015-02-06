@@ -6,30 +6,66 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import UIKit.UIImage
 import OpenGLES
+
+enum TextureSource {
+    case ImageBuffer(Imagebuffer)
+    case FrameBuffer(Framebuffer)
+    case Image(UIImage)
+    
+    var width: Int? {
+        get {
+            switch self {
+            case .Image(let image):
+                return Int(image.size.width)
+            case .ImageBuffer(let imagebuffer):
+                return imagebuffer.width
+            default:
+                return nil
+            }
+        }
+    }
+    
+    var height: Int? {
+        get {
+            switch self {
+            case .Image(let image):
+                return Int(image.size.height)
+            case .ImageBuffer(let imagebuffer):
+                return imagebuffer.height
+            default:
+                return nil
+            }
+        }
+    }
+}
 
 struct TextureOptions {
     
-    struct Source {
-        var imageBuffer: ImageBuffer? = nil
-        var frameBuffer: Framebuffer? = nil
-        var width: Int? = nil
-        var height: Int? = nil
+    var source: TextureSource?
+    
+    var width: Int?
+    
+    var height: Int?
+    
+    var pixelFormat: PixelFormat
+    
+    var pixelDatatype: PixelDatatype
+    
+    var flipY: Bool
+    
+    var premultiplyAlpha: Bool
+    
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte, flipY: Bool = true, premultiplyAlpha: Bool = true) {
+        self.source = source
+        self.width = width
+        self.height = height
+        self.pixelFormat = pixelFormat
+        self.pixelDatatype = pixelDatatype
+        self.flipY = flipY
+        self.premultiplyAlpha = premultiplyAlpha
     }
-    
-    var source: Source?
-    
-    var width: Int? = 0
-    
-    var height: Int? = 0
-    
-    var pixelFormat: PixelFormat = PixelFormat.RGBA
-    
-    var pixelDatatype: PixelDatatype = PixelDatatype.UnsignedByte
-    
-    var flipY: Bool = true
-    
-    var premultiplyAlpha = true
 }
 
 struct TextureSampler {
@@ -61,7 +97,7 @@ class Texture {
     
     var sampler: TextureSampler? = nil
     
-    var dimensions: Cartesian2
+    //var dimensions: Cartesian2
     
     init(context: Context, options: TextureOptions) {
     
@@ -69,9 +105,13 @@ class Texture {
         
         var source = options.source
         
-        // FIXME: Textureoptions
-        width = 0//source == nil ? options.width! : options.source?.width
-        height = 0//source != nil ? options.source!.width : options.width!
+        if options.source == nil {
+            width = options.width!
+            height = options.height!
+        } else {
+            width = source!.width!
+            height = source!.height!
+        }
         
         self.pixelFormat = options.pixelFormat
         
@@ -79,7 +119,9 @@ class Texture {
         
         self.premultiplyAlpha = options.premultiplyAlpha
         
-        /*assert(width > 0, "Width must be greater than zero.")
+        textureName = 0
+        
+        assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
@@ -101,48 +143,66 @@ class Texture {
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance*/
+        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
-        textureName = 0
         glGenTextures(1, &textureName)
         
-        /*glActiveTexture(GLenum(GL_TEXTURE0))
+        glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(GLenum(GL_TEXTURE_2D), textureName)
         
-         if (source != nil) {
-            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
+         if let source = source {
+            //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, <#param: GLint#>)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             
-           if source!.imageBuffer != nil {
+            switch source {
+            case .ImageBuffer(let imagebuffer):
                 // Source: typed array
-                var pixelBuffer = source!.imageBuffer!.arrayBufferView
+                var pixelBuffer = imagebuffer.arrayBufferView
                 // FIXME - glTexImage2D
                 //glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat), GLsizei(width), GLsizei(height), 0, GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(pixelBuffer))
-            } else if source!.frameBuffer != nil {
+            case .FrameBuffer(let framebuffer):
                 // Source: framebuffer
-                if source.frameBuffer! !== context.defaultFramebuffer {
-                    source.frameBuffer.bind()
+                if framebuffer !== context.defaultFramebuffer {
+                    framebuffer.bind()
                 }
-                glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
+                /*glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
                 
                 if (source.framebuffer != context.defaultFramebuffer) {
-                    source.framebuffer.unbind()
-                }
-            } /*else {
-            // Source: ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement
-            gl.texImage2D(textureTarget, 0, pixelFormat, pixelFormat, pixelDatatype, source);
-            }*/
+                    source.framebuffer.unbind()*/
+            case .Image(let image): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
+                
+                //Extract info for your image
+                let imageRef = image.CGImage
+                let width = CGImageGetWidth(imageRef)
+                let height = CGImageGetHeight(imageRef)
+                let bytesPerPixel = UInt(pixelDatatype.bytesPerElement * pixelFormat.byteCount)
+                
+                // Allocate a textureData with the above properties:
+                var textureData = [UInt8](count: Int(width * height * bytesPerPixel), repeatedValue: 0 as UInt8) // if 4 components per pixel (RGBA)
+                
+                let colorSpace = CGColorSpaceCreateDeviceRGB()
+                let bytesPerRow = bytesPerPixel * width
+                let bitsPerComponent = UInt(pixelDatatype.bytesPerElement)
+                let imageAlpha = preMultiplyAlpha ? CGImageAlphaInfo.Last : CGImageAlphaInfo.None
+                let contextRef = CGBitmapContextCreate(&textureData, width, height, bitsPerComponent, bytesPerRow, colorSpace, CGBitmapInfo(imageAlpha.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue))
+                let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
+                CGContextDrawImage(contextRef, imageRect, imageRef)
+                
+                // Set-up your texture:
+                glTexImage2D(GLenum(GL_TEXTURE_2D), 0, pixelFormat.rawValue, width, height, 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
+            }
+
         } else {
-            gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
+            //gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
         }
-        gl.bindTexture(textureTarget, null)
-        */
+        glBindTexture(GLenum(textureTarget), GLenum(0))
+        
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        self.dimensions = Cartesian2(x: Double(width), y: Double(height))
+        //self.dimensions = Cartesian2(x: Double(width), y: Double(height))
     }
     /*
     defineProperties(Texture.prototype, {

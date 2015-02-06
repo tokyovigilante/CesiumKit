@@ -8,7 +8,7 @@
 
 import OpenGLES
 
-enum PixelDatatype: GLenum {
+enum PixelDatatype: GLint {
     case UnsignedByte = 0x1401,
     UnsignedShort = 0x1403,
     UnsignedInt = 0x1405,
@@ -17,11 +17,34 @@ enum PixelDatatype: GLenum {
     UnsignedShort4444 = 0x8033,
     UnsignedShort5551 = 0x8034,
     UnsignedShort565 = 0x8363
+    
+    var bytesPerElement: Int {
+        get {
+            switch self {
+            case UnsignedByte:
+                return 1
+            case UnsignedShort:
+                return 2
+            case UnsignedInt:
+                return 4
+            case Float:
+                return 4
+            case UnsignedInt24_8:
+                return 4
+            case UnsignedShort4444:
+                return 2
+            case UnsignedShort5551:
+                return 2
+            case UnsignedShort565:
+                return 2
+            }
+        }
+    }
 }
 
 
 
-enum PixelFormat: GLenum {
+enum PixelFormat: GLint {
     /**
     * 0x1902.  A pixel format containing a depth value.
     *
@@ -90,5 +113,24 @@ enum PixelFormat: GLenum {
     func isDepthFormat() -> Bool {
         return self == PixelFormat.DepthComponent ||
             self == PixelFormat.DepthStencil
+    }
+    
+    var byteCount: Int {
+        get {
+            switch self {
+            case .RGB:
+                return 3
+            case Alpha:
+                return 1
+            case .RGBA:
+                return 4
+            case .Luminance:
+                return 1
+            case .LuminanceAlpha:
+                return 2
+            default:
+                return 0
+            }
+        }
     }
 }

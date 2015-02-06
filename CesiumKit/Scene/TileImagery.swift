@@ -54,12 +54,12 @@ class TileImagery {
             loadingImagery!.state = .Transitioning
             imageryLayer.requestImagery(loadingImagery!)
         }
-        /*
+        
         if (loadingImagery!.state == .Received) {
             loadingImagery!.state = .Transitioning
-            imageryLayer.createTexture(context, loadingImagery)
+            imageryLayer.createTexture(context, imagery: loadingImagery!)
         }
-        
+        /*
         if (loadingImagery.state === ImageryState.TEXTURE_LOADED) {
             loadingImagery.state = ImageryState.TRANSITIONING;
             imageryLayer._reprojectTexture(context, loadingImagery);
