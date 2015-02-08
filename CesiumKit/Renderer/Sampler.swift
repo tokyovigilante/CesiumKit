@@ -8,10 +8,59 @@
 
 import OpenGLES
 
-struct Sampler {
-    var wrapS: Int = Int(GL_CLAMP_TO_EDGE)
-    var wrapT: Int = Int(GL_CLAMP_TO_EDGE)
-    var minificationFilter: Int = Int(GL_LINEAR)
-    var magnificationFilter: Int = Int(GL_LINEAR)
-    var maximumAnisotropy: Double = 1.0
+class Sampler {
+    var wrapS = TextureWrap.Edge
+    var wrapT = TextureWrap.Edge
+    var minificationFilter = TextureMinificationFilter.Linear
+    var magnificationFilter = TextureMagnificationFilter.Linear
+    var maximumAnisotropy: GLint = 1
+}
+
+enum TextureWrap: GLint {
+    case Edge, Repeat, MirroredRepeat
+    
+    func toGL() -> GLint {
+        switch self {
+        case .Edge:
+            return GLint(GL_CLAMP_TO_EDGE)
+        case .Repeat:
+            return GLint(GL_REPEAT)
+        case .MirroredRepeat:
+            return GLint(GL_MIRRORED_REPEAT)
+        }
+    }
+}
+
+enum TextureMagnificationFilter {
+    case Nearest, Linear
+    
+    func toGL() -> GLint {
+        switch self {
+        case .Nearest:
+            return GLint(GL_NEAREST)
+        case .Linear:
+            return GLint(GL_LINEAR)
+        }
+    }
+}
+
+enum TextureMinificationFilter {
+    case Nearest, Linear, NearestMipmapNearest, LinearMipmapNearest, NearestMipmapLinear, LinearMipmapLinear
+    
+    func toGL() -> GLint {
+        switch self {
+        case .Nearest:
+            return GLint(GL_NEAREST)
+        case .Linear:
+            return GLint(GL_LINEAR)
+        case .NearestMipmapNearest:
+            return GLint(GL_NEAREST_MIPMAP_NEAREST)
+        case .LinearMipmapLinear:
+            return GLint(GL_LINEAR_MIPMAP_LINEAR)
+        case .NearestMipmapLinear:
+            return GLint(GL_NEAREST_MIPMAP_LINEAR)
+        case .LinearMipmapNearest:
+            return GLint(GL_LINEAR_MIPMAP_NEAREST)
+        }
+    }
 }

@@ -680,7 +680,7 @@ class ShaderProgram {
                 if let uniformFunc: UniformFunc = uniformMap!.uniforms[name] {
                     uniform.value = uniformFunc(map: uniformMap!)
                 } else {
-                    assert(true, "no matching uniform for \(name)")
+                    assertionFailure("no matching uniform for \(name)")
                 }
             }
         }

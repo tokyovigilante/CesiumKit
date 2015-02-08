@@ -68,11 +68,6 @@ struct TextureOptions {
     }
 }
 
-struct TextureSampler {
-    
-}
-
-
 class Texture {
     
     var width: Int
@@ -93,12 +88,48 @@ class Texture {
     
     var textureName: GLuint
     
-    let textureTarget = GL_TEXTURE_2D
-    
-    var sampler: TextureSampler? = nil
-    
+    let textureTarget = GLenum(GL_TEXTURE_2D)
+
+    /**
+    * The sampler to use when sampling this texture.
+    * Create a sampler by calling {@link Context#createSampler}.  If this
+    * parameter is not specified, a default sampler is used.  The default sampler clamps texture
+    * coordinates in both directions, uses linear filtering for both magnification and minifcation,
+    * and uses a maximum anisotropy of 1.0.
+    * @memberof Texture.prototype
+    * @type {Object}
+    */
+    var sampler: Sampler {
+        didSet {
+            if pixelDatatype == .Float {
+                if (sampler.minificationFilter != .Nearest &&
+                    sampler.minificationFilter != .NearestMipmapNearest) {
+                        assertionFailure("Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.")
+                }
+                
+                if (sampler.magnificationFilter != .Nearest) {
+                    assertionFailure("Only the NEAREST magnification filter is supported for floating point textures.")
+                }
+            }
+            
+            glActiveTexture(GLenum(GL_TEXTURE0))
+            glBindTexture(textureTarget, textureName)
+            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MIN_FILTER), sampler.minificationFilter.toGL())
+            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAG_FILTER), sampler.magnificationFilter.toGL());
+            
+            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_S), sampler.wrapS.toGL())
+            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_T), sampler.wrapT.toGL())
+            if textureFilterAnisotropic {
+                glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAX_ANISOTROPY_EXT), sampler.maximumAnisotropy)
+            }
+            glBindTexture(textureTarget, 0)
+        }
+    }
+
+    private var _sampler: Sampler!
+
     //var dimensions: Cartesian2
-    
+
     init(context: Context, options: TextureOptions) {
     
         self.options = options
@@ -149,7 +180,7 @@ class Texture {
         glGenTextures(1, &textureName)
         
         glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(GLenum(GL_TEXTURE_2D), textureName)
+        glBindTexture(textureTarget, textureName)
         
          if let source = source {
             //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
@@ -192,13 +223,13 @@ class Texture {
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat.rawValue), GLsizei(width), GLsizei(height), 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
+                glTexImage2D(textureTarget, 0, GLint(pixelFormat.rawValue), GLsizei(width), GLsizei(height), 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
             }
 
         } else {
             //gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
         }
-        glBindTexture(GLenum(textureTarget), GLenum(0))
+        glBindTexture(textureTarget, GLenum(0))
         
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
@@ -206,75 +237,7 @@ class Texture {
     }
     /*
     defineProperties(Texture.prototype, {
-    /**
-    * The sampler to use when sampling this texture.
-    * Create a sampler by calling {@link Context#createSampler}.  If this
-    * parameter is not specified, a default sampler is used.  The default sampler clamps texture
-    * coordinates in both directions, uses linear filtering for both magnification and minifcation,
-    * and uses a maximum anisotropy of 1.0.
-    * @memberof Texture.prototype
-    * @type {Object}
-    */
-    sampler : {
-    get : function() {
-    return this._sampler;
-    },
-    set : function(sampler) {
-    var samplerDefined = true;
-    if (!defined(sampler)) {
-    samplerDefined = false;
-    var minFilter = TextureMinificationFilter.LINEAR;
-    var magFilter = TextureMagnificationFilter.LINEAR;
-    if (this._pixelDatatype === PixelDatatype.FLOAT) {
-    minFilter = TextureMinificationFilter.NEAREST;
-    magFilter = TextureMagnificationFilter.NEAREST;
-    }
-    
-    sampler = {
-    wrapS : TextureWrap.CLAMP_TO_EDGE,
-    wrapT : TextureWrap.CLAMP_TO_EDGE,
-    minificationFilter : minFilter,
-    magnificationFilter : magFilter,
-    maximumAnisotropy : 1.0
-    };
-    }
-    
-    if (this._pixelDatatype === PixelDatatype.FLOAT) {
-    if (sampler.minificationFilter !== TextureMinificationFilter.NEAREST &&
-    sampler.minificationFilter !== TextureMinificationFilter.NEAREST_MIPMAP_NEAREST) {
-    throw new DeveloperError('Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.');
-    }
-    
-    if (sampler.magnificationFilter !== TextureMagnificationFilter.NEAREST) {
-    throw new DeveloperError('Only the NEAREST magnification filter is supported for floating point textures.');
-    }
-    }
-    
-    var gl = this._context._gl;
-    var target = this._textureTarget;
-    
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(target, this._texture);
-    gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, sampler.minificationFilter);
-    gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, sampler.magnificationFilter);
-    
-    gl.texParameteri(target, gl.TEXTURE_WRAP_S, sampler.wrapS);
-    gl.texParameteri(target, gl.TEXTURE_WRAP_T, sampler.wrapT);
-    if (defined(this._textureFilterAnisotropic)) {
-    gl.texParameteri(target, this._textureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, sampler.maximumAnisotropy);
-    }
-    gl.bindTexture(target, null);
-    
-    this._sampler = !samplerDefined ? undefined : {
-    wrapS : sampler.wrapS,
-    wrapT : sampler.wrapT,
-    minificationFilter : sampler.minificationFilter,
-    magnificationFilter : sampler.magnificationFilter,
-    maximumAnisotropy : sampler.maximumAnisotropy
-    };
-    }
-    },
-    pixelFormat : {
+        pixelFormat : {
     get : function() {
     return this._pixelFormat;
     }

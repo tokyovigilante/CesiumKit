@@ -538,9 +538,9 @@ var northeastScratch = new Cartesian3();
     };
     */
     
-    func createTileUniformMap() -> TileUniformMap {
+    func createTileUniformMap(maxTextureCount: Int) -> TileUniformMap {
         
-        return TileUniformMap()
+        return TileUniformMap(maxTextureCount: maxTextureCount)
     }
     
     /*
@@ -687,7 +687,7 @@ var northeastScratch = new Cartesian3();
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
                 
-                uniformMap = createTileUniformMap()
+                uniformMap = createTileUniformMap(maxTextures)
                 
                 _drawCommands.append(command)
                 _uniformMaps.append(uniformMap)
@@ -770,7 +770,7 @@ var northeastScratch = new Cartesian3();
                     }
                 }*/
                 
-                ++numberOfDayTextures;
+                ++numberOfDayTextures
             }
             
             // trim texture array to the used length so we don't end up using old textures

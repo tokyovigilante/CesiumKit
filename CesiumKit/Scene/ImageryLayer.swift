@@ -530,26 +530,26 @@ class ImageryLayer {
     * @param {Imagery} imagery The imagery instance to reproject.
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
-        var texture = imagery.texture
+        var texture = imagery.texture!
         let rectangle = imagery.rectangle!
         
         // Reproject this texture if it is not already in a geographic projection and
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
         // no noticeable difference in the georeferencing of the image.
-        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture!.width) > pow(1, -5)
+        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(1, -5)
         let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
         if !isGeographic && pixelGap {
-                let reprojectedTexture = reprojectToGeographic(context, texture: texture!, rectangle: imagery.rectangle!)
-                texture = reprojectedTexture
-                imagery.texture = texture
+            let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
+            texture = reprojectedTexture
+            imagery.texture = texture
         }
-        // FIXME: Mipmap
+
         // Use mipmaps if this texture has power-of-two dimensions.
-        /*if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
+        /*if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
-            if (!defined(mipmapSampler)) {
-                var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
+            if mipmapSampler == nil {
+                var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
                 mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
                     wrapS : TextureWrap.CLAMP_TO_EDGE,
                     wrapT : TextureWrap.CLAMP_TO_EDGE,
@@ -561,16 +561,20 @@ class ImageryLayer {
             texture.generateMipmap(MipmapHint.NICEST);
             texture.sampler = mipmapSampler;
         } else {*/
-            /*var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
-            if (!defined(nonMipmapSampler)) {
-                nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = context.createSampler({
-                    wrapS : TextureWrap.CLAMP_TO_EDGE,
-                    wrapT : TextureWrap.CLAMP_TO_EDGE,
-                    minificationFilter : TextureMinificationFilter.LINEAR,
-                    magnificationFilter : TextureMagnificationFilter.LINEAR
-                });
+        var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as Sampler?
+            if nonMipmapSampler == nil {
+                nonMipmapSampler = Sampler()
+                //nonMipmapSampler?.wrapS = TextureWrap.Edge
+                /*nonMipmapSampler = Sampler(
+                    wrapS: TextureWrap.Edge,
+                    wrapT: .Edge,
+                    minificationFilter: .Linear,
+                    magnificationFilter: .Linear,
+                    maximumAnisotropy: 1.0*/
+                //)
+                context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
             }
-            texture.sampler = nonMipmapSampler;*/
+            texture.sampler = nonMipmapSampler!
         //}
         
         imagery.state = .Ready

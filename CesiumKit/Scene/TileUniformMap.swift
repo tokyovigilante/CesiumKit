@@ -10,6 +10,8 @@ protocol UniformMap {}
 
 class TileUniformMap: UniformMap {
     
+    let maxTextureCount: Int
+    
     var initialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.5, w: 1.0)
     
     var zoomedOutOceanSpecularIntensity = 0.5
@@ -24,23 +26,41 @@ class TileUniformMap: UniformMap {
     
     var tileRectangle = Cartesian4()
     
-    var dayTextures = [Texture]()
+    lazy var dayTextures: [Texture?] = {
+        return Array(count: self.maxTextureCount, repeatedValue: nil as Texture?)
+    }()
     
-    var dayTextureTranslationAndScale = [Cartesian4]()
+    lazy var dayTextureTranslationAndScale: [Cartesian4] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Cartesian4())
+    }()
     
-    var dayTextureTexCoordsRectangle = [Cartesian4]()
+    lazy var dayTextureTexCoordsRectangle: [Cartesian4] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Cartesian4())
+    }()
     
-    var dayTextureAlpha = [Double]()
+    lazy var dayTextureAlpha: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
-    var dayTextureBrightness = [Double]()
+    lazy var dayTextureBrightness: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
-    var dayTextureContrast = [Double]()
+    lazy var dayTextureContrast: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
-    var dayTextureHue = [Double]()
+    lazy var dayTextureHue: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
-    var dayTextureSaturation = [Double]()
+    lazy var dayTextureSaturation: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
-    var dayTextureOneOverGamma = [Double]()
+    lazy var dayTextureOneOverGamma: [Double] = {
+        return Array(count: self.maxTextureCount, repeatedValue: Double())
+    }()
     
     var dayIntensity = 0.0
     
@@ -139,5 +159,7 @@ class TileUniformMap: UniformMap {
         }*/
     ]
 
-
+    init(maxTextureCount: Int) {
+        self.maxTextureCount = maxTextureCount
+    }
 }

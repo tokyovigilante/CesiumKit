@@ -559,7 +559,7 @@ class Context {
     * @private
     * @type {Object}
     */
-    var cache = [AnyObject]()
+    var cache = [String: AnyObject]()
     
     /**
     * The drawingBufferWidth of the underlying GL context.

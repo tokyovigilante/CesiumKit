@@ -531,7 +531,7 @@ CesiumMath.factorial = function(n) {
         }
         return result
     }
-/*
+
 /**
 * Determines if a positive integer is a power of two.
 *
@@ -544,16 +544,10 @@ CesiumMath.factorial = function(n) {
 * var t = Cesium.Math.isPowerOfTwo(16); // true
 * var f = Cesium.Math.isPowerOfTwo(20); // false
 */
-CesiumMath.isPowerOfTwo = function(n) {
-    //>>includeStart('debug', pragmas.debug);
-    if (typeof n !== 'number' || n < 0) {
-        throw new DeveloperError('A number greater than or equal to 0 is required.');
-    }
-    //>>includeEnd('debug');
-    
-    return (n !== 0) && ((n & (n - 1)) === 0);
-};
-
+    static func isPowerOfTwo(n: Int) -> Bool {
+        return n > 0 && n & (n - 1) == 0
+}
+/*
 /**
 * Computes the next power-of-two integer greater than or equal to the provided positive integer.
 *
