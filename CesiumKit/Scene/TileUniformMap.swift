@@ -101,11 +101,11 @@ class TileUniformMap: UniformMap {
         "u_modifiedModelView": { (map: TileUniformMap) -> UniformValue in
             return .FloatMatrix4(map.modifiedModelView)
         },
-        /*
-        "u_dayTextures": { (map: TileUniformMap) -> [Texture] in
-            return map.dayTextures
-        },
         
+        /*"u_dayTextures": { (map: TileUniformMap) -> UniformValue in
+            return map.dayTextures
+        },*/
+        /*
         "u_dayTextureTranslationAndScale": { (map: TileUniformMap) -> [Cartesian4] in
             return map.dayTextureTranslationAndScale
         },

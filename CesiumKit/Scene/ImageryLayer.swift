@@ -546,36 +546,36 @@ class ImageryLayer {
         }
 
         // Use mipmaps if this texture has power-of-two dimensions.
-        /*if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
-            var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
+        if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+            var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as Sampler?
             if mipmapSampler == nil {
-                var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
-                mipmapSampler = context.cache.imageryLayer_mipmapSampler = context.createSampler({
-                    wrapS : TextureWrap.CLAMP_TO_EDGE,
-                    wrapT : TextureWrap.CLAMP_TO_EDGE,
-                    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
-                    magnificationFilter : TextureMagnificationFilter.LINEAR,
-                    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(this._maximumAnisotropy, maximumSupportedAnisotropy))
-                });
+                mipmapSampler = Sampler()
+                mipmapSampler!.wrapS = .Edge
+                mipmapSampler!.wrapT = .Edge
+                mipmapSampler!.minificationFilter = TextureMinificationFilter.LinearMipmapLinear
+                mipmapSampler!.magnificationFilter = TextureMagnificationFilter.Linear
+                mipmapSampler!.maximumAnisotropy = context.maximumTextureFilterAnisotropy
             }
-            texture.generateMipmap(MipmapHint.NICEST);
-            texture.sampler = mipmapSampler;
-        } else {*/
-        var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as Sampler?
+            
+            context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
+            texture.generateMipmap(.Nicest)
+            texture.sampler = mipmapSampler
+        } else {
+            var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as Sampler?
             if nonMipmapSampler == nil {
                 nonMipmapSampler = Sampler()
                 //nonMipmapSampler?.wrapS = TextureWrap.Edge
                 /*nonMipmapSampler = Sampler(
-                    wrapS: TextureWrap.Edge,
-                    wrapT: .Edge,
-                    minificationFilter: .Linear,
-                    magnificationFilter: .Linear,
-                    maximumAnisotropy: 1.0*/
+                wrapS: TextureWrap.Edge,
+                wrapT: .Edge,
+                minificationFilter: .Linear,
+                magnificationFilter: .Linear,
+                maximumAnisotropy: 1.0*/
                 //)
                 context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
             }
             texture.sampler = nonMipmapSampler!
-        //}
+        }
         
         imagery.state = .Ready
     }

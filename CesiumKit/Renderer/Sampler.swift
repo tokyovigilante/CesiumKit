@@ -64,3 +64,18 @@ enum TextureMinificationFilter {
         }
     }
 }
+
+enum MipmapHint {
+    case DontCare, Fastest, Nicest
+    
+    func toGL() -> GLenum {
+        switch self {
+        case .DontCare:
+            return GLenum(GL_DONT_CARE)
+        case .Fastest:
+            return GLenum(GL_FASTEST)
+        case .Nicest:
+            return GLenum(GL_NICEST)
+        }
+    }
+}

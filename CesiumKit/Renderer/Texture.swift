@@ -99,7 +99,7 @@ class Texture {
     * @memberof Texture.prototype
     * @type {Object}
     */
-    var sampler: Sampler {
+    var sampler: Sampler! {
         didSet {
             if pixelDatatype == .Float {
                 if (sampler.minificationFilter != .Nearest &&
@@ -126,8 +126,6 @@ class Texture {
         }
     }
 
-    private var _sampler: Sampler!
-
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
@@ -151,7 +149,7 @@ class Texture {
         self.premultiplyAlpha = options.premultiplyAlpha
         
         textureName = 0
-        
+
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
@@ -428,7 +426,7 @@ class Texture {
     gl.copyTexSubImage2D(target, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height);
     gl.bindTexture(target, null);
     };
-    
+    */
     /**
     * @param {MipmapHint} [hint=MipmapHint.DONT_CARE] optional.
     *
@@ -438,38 +436,22 @@ class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    Texture.prototype.generateMipmap = function(hint) {
-    hint = defaultValue(hint, MipmapHint.DONT_CARE);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (PixelFormat.isDepthFormat(this._pixelFormat)) {
-    throw new DeveloperError('Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
-    }
-    if (this._width > 1 && !CesiumMath.isPowerOfTwo(this._width)) {
-    throw new DeveloperError('width must be a power of two to call generateMipmap().');
-    }
-    if (this._height > 1 && !CesiumMath.isPowerOfTwo(this._height)) {
-    throw new DeveloperError('height must be a power of two to call generateMipmap().');
-    }
-    if (!MipmapHint.validate(hint)) {
-    throw new DeveloperError('hint is invalid.');
-    }
-    //>>includeEnd('debug');
-    
-    var gl = this._context._gl;
-    var target = this._textureTarget;
-    
-    gl.hint(gl.GENERATE_MIPMAP_HINT, hint);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(target, this._texture);
-    gl.generateMipmap(target);
-    gl.bindTexture(target, null);
-    };
-    
-    Texture.prototype.isDestroyed = function() {
-    return false;
-    };
-    */
+    func generateMipmap (mipmapHint: MipmapHint?) {
+        let hint = mipmapHint ?? MipmapHint.DontCare
+        
+        assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
+        
+        assert(width > 1 && Math.isPowerOfTwo(width), "width must be a power of two to call generateMipmap()")
+
+        assert(height > 1 && Math.isPowerOfTwo(height), "height must be a power of two to call generateMipmap")
+        
+        glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(textureTarget, textureName)
+        glGenerateMipmap(textureTarget)
+        glBindTexture(textureTarget, 0)
+}
+
     deinit {
         glDeleteTextures(1, &textureName)
     }
