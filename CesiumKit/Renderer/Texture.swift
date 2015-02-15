@@ -174,7 +174,7 @@ class Texture {
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        /*var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
         glGenTextures(1, &textureName)
@@ -192,17 +192,17 @@ class Texture {
             case .ImageBuffer(let imagebuffer):
                 // Source: typed array
                 var pixelBuffer = imagebuffer.arrayBufferView
-                // FIXME - glTexImage2D
-                //glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat), GLsizei(width), GLsizei(height), 0, GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(pixelBuffer))
+            /*    // FIXME - glTexImage2D
+                //glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat), GLsizei(width), GLsizei(height), 0, GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(pixelBuffer))*/
             case .FrameBuffer(let framebuffer):
                 // Source: framebuffer
                 if framebuffer !== context.defaultFramebuffer {
                     framebuffer.bind()
                 }
-                /*glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
+            /*    /*glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
                 
                 if (source.framebuffer != context.defaultFramebuffer) {
-                    source.framebuffer.unbind()*/
+                    source.framebuffer.unbind()*/*/
             case .Image(let image): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 //Extract info for your image
@@ -217,8 +217,17 @@ class Texture {
                 let colorSpace = CGColorSpaceCreateDeviceRGB()
                 let bytesPerRow = bytesPerPixel * width
                 let bitsPerComponent = UInt(pixelDatatype.bytesPerElement) * 8
-                let imageAlpha = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
-                let contextRef = CGBitmapContextCreate(&textureData, width, height, bitsPerComponent, bytesPerRow, colorSpace, CGBitmapInfo(imageAlpha.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue))
+                
+                let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
+                
+                /*var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
+                
+                rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
+                rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue*/
+                
+                let bitmapInfo = CGBitmapInfo(alphaInfo.rawValue)
+                
+                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
