@@ -14,7 +14,7 @@ enum TextureSource {
     case FrameBuffer(Framebuffer)
     case Image(UIImage)
     
-    var width: Int? {
+    var width: Int {
         get {
             switch self {
             case .Image(let image):
@@ -22,12 +22,12 @@ enum TextureSource {
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.width
             default:
-                return nil
+                assertionFailure("not implemented")
             }
         }
     }
     
-    var height: Int? {
+    var height: Int {
         get {
             switch self {
             case .Image(let image):
@@ -35,7 +35,7 @@ enum TextureSource {
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.height
             default:
-                return nil
+                assertionFailure("not implemented")
             }
         }
     }
@@ -43,24 +43,26 @@ enum TextureSource {
 
 struct TextureOptions {
     
-    var source: TextureSource?
+    let source: TextureSource?
     
-    var width: Int?
+    let width: Int
     
-    var height: Int?
+    let height: Int
     
-    var pixelFormat: PixelFormat
+    let pixelFormat: PixelFormat
     
-    var pixelDatatype: PixelDatatype
+    let pixelDatatype: PixelDatatype
     
-    var flipY: Bool
+    let flipY: Bool
     
-    var premultiplyAlpha: Bool
+    let premultiplyAlpha: Bool
     
     init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte, flipY: Bool = true, premultiplyAlpha: Bool = true) {
+        assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
+        
         self.source = source
-        self.width = width
-        self.height = height
+        self.width = source != nil ? source!.width : width!
+        self.height = source != nil ? source!.height : height!
         self.pixelFormat = pixelFormat
         self.pixelDatatype = pixelDatatype
         self.flipY = flipY
@@ -132,14 +134,14 @@ class Texture {
     
         self.options = options
         
-        var source = options.source
+        let source = options.source
         
         if options.source == nil {
-            width = options.width!
-            height = options.height!
+            width = options.width
+            height = options.height
         } else {
-            width = source!.width!
-            height = source!.height!
+            width = source!.width
+            height = source!.height
         }
         
         self.pixelFormat = options.pixelFormat
@@ -148,7 +150,7 @@ class Texture {
         
         self.premultiplyAlpha = options.premultiplyAlpha
         
-        textureName = 0
+        self.textureName = 0
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
@@ -172,7 +174,7 @@ class Texture {
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        /*var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
         glGenTextures(1, &textureName)
@@ -231,7 +233,7 @@ class Texture {
         
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        //self.dimensions = Cartesian2(x: Double(width), y: Double(height))
+        //self.dimensions = Cartesian2(x: Double(width), y: Double(height))*/
     }
     /*
     defineProperties(Texture.prototype, {

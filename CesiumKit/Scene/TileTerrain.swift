@@ -102,8 +102,7 @@ class TileTerrain {
         weak var weakSelf = self
         
         var success = { (terrainData: TerrainData) -> () in
-            weakSelf?.data = terrainData
-            weakSelf?.state = .Received
+
         }
         
         var failure = { (error: String) -> () in
@@ -121,55 +120,61 @@ class TileTerrain {
             doRequest);*/
             println(message)
         }
-        
-        var doRequest = { () -> AsyncResult<TerrainData> in
-            // Request the terrain from the terrain provider.
-            weakSelf?.state = .Receiving
+        Async.background {
+            self.state = .Receiving
             var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
             if let terrainData = terrainData {
-                return AsyncResult(terrainData)
+                Async.main {
+                    self.data = terrainData
+                    self.state = .Received
+                }
+            } else {
+                Async.main {
+                    // Initially assume failure.  handleError may retry, in which case the state will
+                    // change to RECEIVING or UNLOADED.
+                    weakSelf?.state = TerrainState.Failed
+                    
+                    var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
+                    /*terrainProvider._requestError = TileProviderError.handleError(
+                    terrainProvider._requestError,
+                    terrainProvider,
+                    terrainProvider.errorEvent,
+                    message,
+                    x, y, level,
+                    doRequest);*/
+                    println(message)
+
+                }
             }
-            return AsyncResult("terrain data request failed")
         }
-        
-        AsyncResult<TerrainData>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-
-            assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
-            
-            var sourceData = upsampleDetails!.data
-            var sourceX = upsampleDetails!.x
-            var sourceY = upsampleDetails!.y
-            var sourceLevel = upsampleDetails!.level
-            
-            weak var weakSelf = self
         
-            var success = { (terrainData: TerrainData) -> () in
-                weakSelf?.data = terrainData
-                weakSelf?.state = .Received
+        
+        assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
+        
+        var sourceData = upsampleDetails!.data
+        var sourceX = upsampleDetails!.x
+        var sourceY = upsampleDetails!.y
+        var sourceLevel = upsampleDetails!.level
+            /*
+            this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
+            if (!defined(this.data)) {
+                // The upsample request has been deferred - try again later.
+                return;
             }
             
-            var failure = { (error: String) -> () in
-                weakSelf?.state = TerrainState.Failed
-                var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
-                println(message)
-            }
+            this.state = TerrainState.RECEIVING;
             
-            var doRequest = { () -> AsyncResult<TerrainData> in
-                // Upsample the terrain data.
-                weakSelf?.state = .Receiving
-                var terrainData = sourceData.upsample(tilingScheme: terrainProvider.tilingScheme, thisX: sourceX, thisY: sourceY, thisLevel: sourceLevel, descendantX: x, descendantY: y, descendantLevel: level)
-                if let terrainData = terrainData {
-                    return AsyncResult(terrainData)
-                }
-                return AsyncResult("terrain upsample request failed")
-            }
-            
-            AsyncResult<TerrainData>.perform(doRequest, asyncClosures: (success: success, failure: failure))
-            state = TerrainState.Receiving
+            var that = this;
+            when(this.data, function(terrainData) {
+                that.data = terrainData;
+                that.state = TerrainState.RECEIVED;
+                }, function() {
+                    that.state = TerrainState.FAILED;
+                });*/
         }
         
         /*if (this.state === TerrainState.RECEIVED) {
@@ -182,32 +187,24 @@ class TileTerrain {
     }
 
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        self.state = .Transforming
 
-        weak var weakSelf = self
-        
-        var success = { (mesh: TerrainMesh) -> () in
-            weakSelf?.mesh = mesh
-            weakSelf?.state = .Transformed
-        }
-        
-        var failure = { (error: String) -> () in
-            weakSelf?.state = .Failed
-            var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
-            println(message)
-        }
-        
-        var doRequest = { () -> AsyncResult<TerrainMesh> in
-            // Request the terrain from the terrain provider.
-            weakSelf?.state = .Transforming
+        Async.background {
             var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
-
+            
             if let mesh = mesh {
-                return AsyncResult(mesh)
+                Async.main {
+                    self.mesh = mesh
+                    self.state = .Transformed
+                }
+            } else {
+                Async.main {
+                    self.state = .Failed
+                    var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
+                    println(message)
+                }
             }
-            return AsyncResult("terrain data request failed")
         }
-        
-        AsyncResult<TerrainMesh>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
 
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {

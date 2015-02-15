@@ -33,7 +33,7 @@ class CesiumViewController: GLKViewController {
         
         tearDownGL()
         
-        let glView = self.view as GLKView
+        let glView = self.view as! GLKView
         
         if EAGLContext.currentContext() == glView.context {
             EAGLContext.setCurrentContext(nil)
@@ -44,7 +44,7 @@ class CesiumViewController: GLKViewController {
         
         tearDownGL()
         
-        let glView = self.view as GLKView
+        let glView = self.view as! GLKView
         
         if EAGLContext.currentContext() == glView.context {
             EAGLContext.setCurrentContext(nil)
@@ -53,7 +53,7 @@ class CesiumViewController: GLKViewController {
     
     private func setupContext () {
         
-        let view: GLKView = self.view as GLKView
+        let view: GLKView = self.view as! GLKView
        
         view.context = EAGLContext(API: .OpenGLES3)
 
