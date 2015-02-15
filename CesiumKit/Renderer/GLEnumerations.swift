@@ -44,14 +44,14 @@ enum PixelDatatype: GLenum {
 
 
 
-enum PixelFormat: GLenum {
+enum PixelFormat {
     /**
     * 0x1902.  A pixel format containing a depth value.
     *
     * @type {Number}
     * @constant
     */
-    case DepthComponent = 0x1902,
+    case DepthComponent,
     
     /**
     * 0x84F9.  A pixel format containing a depth and stencil value, most often used with {@link PixelDatatype.UNSIGNED_INT_24_8_WEBGL}.
@@ -59,7 +59,7 @@ enum PixelFormat: GLenum {
     * @type {Number}
     * @constant
     */
-    DepthStencil = 0x84F9,
+    DepthStencil,
     
     /**
     * 0x1906.  A pixel format containing an alpha channel.
@@ -67,7 +67,7 @@ enum PixelFormat: GLenum {
     * @type {Number}
     * @constant
     */
-    Alpha = 0x1906,
+    Alpha,
     
     /**
     * 0x1907.  A pixel format containing red, green, and blue channels.
@@ -75,7 +75,7 @@ enum PixelFormat: GLenum {
     * @type {Number}
     * @constant
     */
-    RGB = 0x1907,
+    RGB,
     
     /**
     * 0x1908.  A pixel format containing red, green, blue, and alpha channels.
@@ -83,7 +83,7 @@ enum PixelFormat: GLenum {
     * @type {Number}
     * @constant
     */
-    RGBA = 0x1908,
+    RGBA,
     
     /**
     * 0x1909.  A pixel format containing a luminance (intensity) channel.
@@ -91,7 +91,7 @@ enum PixelFormat: GLenum {
     * @type {Number}
     * @constant
     */
-    Luminance = 0x1909,
+    Luminance,
     
     /**
     * 0x190A.  A pixel format containing luminance (intensity) and alpha channels.
@@ -100,7 +100,7 @@ enum PixelFormat: GLenum {
     * @constant
     * @default 0x190A
     */
-    LuminanceAlpha = 0x190A
+    LuminanceAlpha
     
     func isColorFormat() -> Bool {
         return self == PixelFormat.Alpha ||
@@ -118,6 +118,10 @@ enum PixelFormat: GLenum {
     var byteCount: Int {
         get {
             switch self {
+            case .DepthComponent:
+                return 1
+            case .DepthStencil:
+                return 2
             case .RGB:
                 return 3
             case Alpha:
@@ -131,6 +135,25 @@ enum PixelFormat: GLenum {
             default:
                 return 0
             }
+        }
+    }
+    
+    func toGL() -> GLenum {
+        switch self {
+        case .DepthComponent:
+            return GLenum(GL_DEPTH_COMPONENT)
+        case DepthStencil:
+            return GLenum(GL_DEPTH_STENCIL)
+        case Alpha:
+            return GLenum(GL_ALPHA)
+        case RGB:
+            return GLenum(GL_RGB)
+        case RGBA:
+            return GLenum(GL_RGBA)
+        case Luminance:
+            return GLenum(GL_LUMINANCE)
+        case LuminanceAlpha:
+            return GLenum(GL_LUMINANCE_ALPHA)
         }
     }
 }

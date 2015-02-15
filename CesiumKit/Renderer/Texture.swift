@@ -76,7 +76,7 @@ class Texture {
     
     var height: Int
     
-    var pixelFormat: PixelFormat
+    let pixelFormat: PixelFormat
     
     var pixelDatatype: PixelDatatype
     
@@ -144,7 +144,7 @@ class Texture {
             height = source!.height
         }
         
-        self.pixelFormat = options.pixelFormat
+        self.pixelFormat = PixelFormat.RGBA//options.pixelFormat
         
         self.pixelDatatype = options.pixelDatatype
         
@@ -183,10 +183,10 @@ class Texture {
         glBindTexture(textureTarget, textureName)
         
          if let source = source {
-            //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
+            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, <#param: GLint#>)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
-            //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
+            //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
             
             switch source {
             case .ImageBuffer(let imagebuffer):
@@ -214,7 +214,7 @@ class Texture {
                 // Allocate a textureData with the above properties:
                 var textureData = [UInt8](count: Int(width * height * bytesPerPixel), repeatedValue: 0 as UInt8) // if 4 components per pixel (RGBA)
                 
-                let colorSpace = CGColorSpaceCreateDeviceRGB()
+                let colorSpace = CGImageGetColorSpace(imageRef)
                 let bytesPerRow = bytesPerPixel * width
                 let bitsPerComponent = UInt(pixelDatatype.bytesPerElement) * 8
                 
@@ -229,10 +229,12 @@ class Texture {
                 
                 let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-                CGContextDrawImage(contextRef, imageRect, imageRef)
+                //let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+                //CGContextConcatCTM(contextRef, flipVertical)
+                //CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                glTexImage2D(textureTarget, 0, GLint(pixelFormat.rawValue), GLsizei(width), GLsizei(height), 0, pixelFormat.rawValue, pixelDatatype.rawValue, textureData)
+                glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)
             }
 
         } else {
