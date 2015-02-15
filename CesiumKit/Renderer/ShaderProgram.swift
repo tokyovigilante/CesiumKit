@@ -91,7 +91,7 @@ class ShaderProgram {
     */
     let _fragmentShaderSource: String
     
-    let _attributeLocations: [String: Int]? = nil
+    var _attributeLocations: [String: Int]? = nil
     
     private var _program: GLuint? = nil
     
@@ -350,7 +350,7 @@ class ShaderProgram {
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
         return reverse(dependencyNodes)
-            .reduce("", { $0 + $1.glslSource + "\n" })
+            .reduce("", combine: { $0 + $1.glslSource + "\n" })
             .replace(root.glslSource, "")
     }
     

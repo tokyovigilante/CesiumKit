@@ -10,7 +10,7 @@ import OpenGLES
 
 class VertexArray {
     
-    private let _attributes = [VertexAttributes]()
+    private var _attributes = [VertexAttributes]()
     
     var attributeCount: Int {
         return _attributes.count
@@ -27,6 +27,7 @@ class VertexArray {
         var vaAttributes = [VertexAttributes]()
         var numberOfVertices = 1  // if every attribute is backed by a single value
         self.vertexCount = numberOfVertices
+        self.indexBuffer = indexBuffer
 
         for var i = 0; i < attributes.count; ++i {
             addAttribute(&vaAttributes, attribute: attributes[i], index: i)
@@ -53,9 +54,7 @@ class VertexArray {
             uniqueIndices[index] = true
         }
         
-        self.vertexCount = numberOfVertices
         self._attributes = vaAttributes
-        self.indexBuffer = indexBuffer
         
         // Setup VAO
         var vao: GLuint = 0

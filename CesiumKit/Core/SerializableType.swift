@@ -21,7 +21,7 @@ extension Array: SerializableContainer {
         get {
             if !self.isEmpty {
                 if self.first is SerializedType? {
-                    return (self.first as SerializedType!).elementSize() * self.count
+                    return (self.first as! SerializedType!).elementSize() * self.count
                 }
             }
             return 0
@@ -36,27 +36,27 @@ extension Array: SerializableContainer {
             return NSData()
         }
         
-        let firstValue = self.first! as SerializedType
+        let firstValue = self.first! as! SerializedType
 
         switch firstValue {
         case .UnsignedInt8:
-            let array = self.map ({ ($0 as SerializedType).unsignedInt8Value() })
+            let array = self.map ({ ($0 as! SerializedType).unsignedInt8Value() })
             
             return NSData(bytes: array, length: sizeInBytes)
         case .UnsignedInt16:
-            let array = self.map ({ ($0 as SerializedType).unsignedInt16Value() })
+            let array = self.map ({ ($0 as! SerializedType).unsignedInt16Value() })
             
             return NSData(bytes: array, length: sizeInBytes)
         case .UnsignedInt32:
-            let array = self.map ({ ($0 as SerializedType).unsignedInt32Value() })
+            let array = self.map ({ ($0 as! SerializedType).unsignedInt32Value() })
             
             return NSData(bytes: array, length: sizeInBytes)
         case .Float32(let value):
-            let array = self.map ({ ($0 as SerializedType).floatValue() })
+            let array = self.map ({ ($0 as! SerializedType).floatValue() })
             
             return NSData(bytes: array, length: sizeInBytes)
         case .Float64(let value):
-            let array = self.map ({ ($0 as SerializedType).doubleValue() })
+            let array = self.map ({ ($0 as! SerializedType).doubleValue() })
             
             return NSData(bytes: array, length: sizeInBytes)
         }

@@ -86,7 +86,7 @@ protocol TerrainProvider {
     
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    class func getRegularGridIndices(#width: Int, height: Int) -> [UInt16]
+    static func getRegularGridIndices(#width: Int, height: Int) -> [UInt16]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -96,7 +96,7 @@ protocol TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    class func estimatedLevelZeroGeometricErrorForAHeightmap(#ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(#ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before

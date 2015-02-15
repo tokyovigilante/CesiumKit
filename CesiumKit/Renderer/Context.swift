@@ -511,7 +511,7 @@ class Context {
     
     private var _currentRenderState: RenderState
     private let _defaultRenderState: RenderState
-    private let _defaultPassState: PassState
+    private var _defaultPassState: PassState
     
     var uniformState: UniformState
     
@@ -1541,7 +1541,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
         var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
         
-        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState?, shaderProgram: shaderProgram)
+        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
         continueDraw(drawCommand, shaderProgram: shaderProgram)
     }
 

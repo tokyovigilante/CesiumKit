@@ -70,7 +70,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         let mapStyle: BingMapsStyle = .Aerial
         
-        let tileDiscardPolicy: TileDiscardPolicy = NeverTileDiscardPolicy()
+        let tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()
         
     }
     
@@ -244,7 +244,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         }
     }
     
-    private let _tileDiscardPolicy: TileDiscardPolicy? = nil
+    private var _tileDiscardPolicy: TileDiscardPolicy?
 
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -434,7 +434,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                         metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
                         return
                     }
-                    metadataSuccess(data as NSData!)
+                    metadataSuccess(data as! NSData!)
             }
         }
        

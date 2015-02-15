@@ -643,11 +643,11 @@ func createPotentiallyVisibleSet() {
             if let boundingVolume = command.boundingVolume {
                 if command.cull &&
                    (cullingVolume.visibility(boundingVolume) == .Outside ||
-                    occluder != nil && !(occluder!.isBoundingSphereVisible(boundingVolume as BoundingSphere))) {
+                    occluder != nil && !(occluder!.isBoundingSphereVisible(boundingVolume as! BoundingSphere))) {
                             continue
                 }
                 
-                distances = (boundingVolume as BoundingSphere).computePlaneDistances(position, direction: direction)
+                distances = (boundingVolume as! BoundingSphere).computePlaneDistances(position, direction: direction)
                 near = min(near, distances.start)
                 far = max(far, distances.stop)
             } else {
@@ -847,7 +847,7 @@ function isVisible(command, frameState) {
 }
 */
     func translucentCompare(a: Command, b: Command, position: Cartesian3) -> Bool {
-    return ((b.boundingVolume as BoundingSphere).distanceSquaredTo(position)) > ((a.boundingVolume as BoundingSphere).distanceSquaredTo(position))
+    return ((b.boundingVolume as! BoundingSphere).distanceSquaredTo(position)) > ((a.boundingVolume as! BoundingSphere).distanceSquaredTo(position))
 }
 
     func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [Command]) {

@@ -442,45 +442,26 @@ class ImageryLayer {
     */
     func requestImagery (imagery: Imagery) {
         
-        weak var weakSelf = self
-        weak var weakImagery = imagery
-        func success(image: UIImage) {
-            
-            weakImagery?.image = image
-            weakImagery?.credits = imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+        imagery.state = .Transitioning
 
-            weakImagery?.state = .Received
+        Async.background {
             
-            //TileProviderError.handleSuccess(that._requestImageError);
-        }
-        
-        func failure(error: String) {
-            // Initially assume failure.  handleError may retry, in which case the state will
-            // change to TRANSITIONING.
-            imagery.state = .Failed
-            
-            var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-            /*that._requestImageError = TileProviderError.handleError(
-            that._requestImageError,
-            imageryProvider,
-            imageryProvider.errorEvent,
-            message,
-            imagery.x, imagery.y, imagery.level,
-            doRequest);*/
-            println(message)
-        }
-        
-        func doRequest() -> AsyncResult<UIImage> {
-            
-            weakImagery?.state = .Transitioning
-            
-            if let image = imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
-                return AsyncResult(image)
+            if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
+                Async.main {
+                    imagery.image = image
+                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+                    
+                    imagery.state = .Received
+                }
+            } else {
+                Async.main {
+                    imagery.state = .Failed
+                    
+                    var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                    println(message)
+                }
             }
-            return AsyncResult("image data request failed")
         }
-        
-        AsyncResult<UIImage>.perform(doRequest, asyncClosures: (success: success, failure: failure))
     }
     
     /**
@@ -547,7 +528,7 @@ class ImageryLayer {
 
         // Use mipmaps if this texture has power-of-two dimensions.
         if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
-            var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as Sampler?
+            var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
             if mipmapSampler == nil {
                 mipmapSampler = Sampler()
                 mipmapSampler!.wrapS = .Edge
@@ -561,7 +542,7 @@ class ImageryLayer {
             texture.generateMipmap(.Nicest)
             texture.sampler = mipmapSampler
         } else {
-            var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as Sampler?
+            var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
             if nonMipmapSampler == nil {
                 nonMipmapSampler = Sampler()
                 //nonMipmapSampler?.wrapS = TextureWrap.Edge
