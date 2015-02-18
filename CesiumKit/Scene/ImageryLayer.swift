@@ -528,7 +528,7 @@ class ImageryLayer {
         
         // Use mipmaps if this texture has power-of-two dimensions.
         //FIXME: Mipmap disabled
-        if false {//Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+        if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
             if mipmapSampler == nil {
                 mipmapSampler = Sampler()
