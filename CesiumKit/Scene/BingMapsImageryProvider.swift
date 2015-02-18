@@ -81,7 +81,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultAlpha: Double = 1.0
+    public let defaultAlpha: Double = 1.0
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -89,7 +89,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultBrightness: Double = 1.0
+    public let defaultBrightness: Double = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -98,7 +98,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultContrast: Double = 1.0
+    public let defaultContrast: Double = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -106,7 +106,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultHue: Double = 0.0
+    public let defaultHue: Double = 0.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -115,7 +115,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultSaturation: Double = 0.0
+    public let defaultSaturation: Double = 1.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -123,7 +123,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public var defaultGamma: Double = 0.0
+    public let defaultGamma: Double
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -324,22 +324,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     public init(options: Options = Options()) {
         
-        _key = BingMapsAPI.getKey(options.key)
-        
-        _url = options.url
-        
-        _tileProtocol = options.tileProtocol
-        
-        mapStyle = options.mapStyle
-        
-        _tileDiscardPolicy = options.tileDiscardPolicy
-        //        this._proxy = options.proxy;
-        _credit = Credit(
-            text: "Bing Imagery",
-            imageUrl: nil/*BingMapsImageryProvider._logoData*/,
-            link: "http://www.bing.com"
-        )
-        
+
         /**
         * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
         * By default, this is set to 1.3 for the "aerial" and "aerial with labels" map styles and 1.0 for
@@ -349,16 +334,35 @@ public class BingMapsImageryProvider: ImageryProvider {
         * @type {Number}
         * @default 1.0
         */
-        defaultGamma = 1.0
+        if options.mapStyle == .Aerial || options.mapStyle == .AerialWithLabels {
+            defaultGamma = 1.3
+        } else {
+            defaultGamma = 1.0
+        }
+        
+        mapStyle = options.mapStyle
+        
+        _key = BingMapsAPI.getKey(options.key)
+        
+        _url = options.url
+        
+        _tileProtocol = options.tileProtocol
+        
+        
+        _tileDiscardPolicy = options.tileDiscardPolicy
+        //        this._proxy = options.proxy;
+        _credit = Credit(
+            text: "Bing Imagery",
+            imageUrl: nil/*BingMapsImageryProvider._logoData*/,
+            link: "http://www.bing.com"
+        )
         
         _tilingScheme = WebMercatorTilingScheme(
             numberOfLevelZeroTilesX : 2,
             numberOfLevelZeroTilesY : 2
         )
         
-        if mapStyle == .Aerial || mapStyle == .AerialWithLabels {
-            defaultGamma = 1.3
-        }
+
         
         _errorEvent = Event()
         

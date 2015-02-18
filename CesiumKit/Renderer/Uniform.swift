@@ -237,18 +237,21 @@ class Uniform {
     
     func set() {
         
-        for (index, value) in enumerate(_values) {
-            switch (value) {
+        for (index, location) in enumerate(_locations) {
+            switch (_values[index]) {
             case .FloatVec1(let value):
-                glUniform1f(_locations[index], GLfloat(value))
+                glUniform1f(location, GLfloat(value))
             case .FloatVec2(let value):
-                glUniform2f(_locations[index], GLfloat(value.x), GLfloat(value.y))
+                glUniform2f(location, GLfloat(value.x), GLfloat(value.y))
             case .FloatVec3(let value):
-                glUniform3f(_locations[index], GLfloat(value.x), GLfloat(value.y), GLfloat(value.z))
+                glUniform3f(location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z))
             case .FloatVec4(let value):
-                glUniform4f(_locations[index], GLfloat(value.x), GLfloat(value.y), GLfloat(value.z), GLfloat(value.w))
-                /*case gl.SAMPLER_2D:
-                case gl.SAMPLER_CUBE:
+                glUniform4f(location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z), GLfloat(value.w))
+            case .Sampler2D(let value):
+                let textureIndex = self._textureUnitIndex + index
+                glActiveTexture(GLenum(GL_TEXTURE0 + textureIndex))
+                glBindTexture(value.textureTarget, value.textureName)
+/*                case gl.SAMPLER_CUBE:
                 return function() {
                 var value = uniformArray.value;
                 var length = value.length;
@@ -314,7 +317,7 @@ class Uniform {
                 gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
                 }*/
             case .FloatMatrix4(let value):
-                glUniformMatrix4fv(_locations[index], 1, GLboolean(0), value.toArray())
+                glUniformMatrix4fv(location, 1, GLboolean(0), value.toArray())
                 
                 /*                case gl.FLOAT_MAT4:
                 return function() {

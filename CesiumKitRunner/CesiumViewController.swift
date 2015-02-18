@@ -93,9 +93,10 @@ class CesiumViewController: GLKViewController {
     override func glkView(view: GLKView!, drawInRect rect: CGRect) {
         
         globe?.render()
-                
-        let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
-        println(performanceString)
+        if timeSinceLastDraw > 1000 {
+            let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
+            println(performanceString)
+        }
     }
     
     // MARK: - GLKViewControllerDelegate

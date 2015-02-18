@@ -106,11 +106,11 @@ class GlobeSurfaceShaderSet {
                         fs += "   u_dayTextureTexCoordsRectangle[\(i)],\n"
                         fs += "   u_dayTextureTranslationAndScale[\(i)],\n"
                         fs += (applyAlpha ?      "   u_dayTextureAlpha[\(i)],\n" : "1.0,\n")
-                        fs += (applyBrightness ? "   u_dayTextureBrightness[\(i)],\n" : "0.0,\n")
-                        fs += (applyContrast ?   "   u_dayTextureContrast[\(i)],\n" : "0.0,\n")
-                        fs += (applyHue ?        "   u_dayTextureHue[\(i)],\n" : "0.0,\n")
-                        fs += (applySaturation ? "   u_dayTextureSaturation[\(i)],\n" : "0.0,\n")
-                        fs += (applyGamma ?      "   u_dayTextureOneOverGamma[\(i)])\n" : "0.0);\n")
+                        fs += (applyBrightness ? "   u_dayTextureBrightness[\(i)],\n" : "1.0,\n")
+                        fs += (applyContrast ?   "   u_dayTextureContrast[\(i)],\n" : "1.0,\n")
+                        fs += (applyHue ?        "   u_dayTextureHue[\(i)],\n" : "1.0,\n")
+                        fs += (applySaturation ? "   u_dayTextureSaturation[\(i)],\n" : "1.0,\n")
+                        fs += (applyGamma ?      "   u_dayTextureOneOverGamma[\(i)])\n" : "1.0);\n")
                 }
                 
                 fs +=

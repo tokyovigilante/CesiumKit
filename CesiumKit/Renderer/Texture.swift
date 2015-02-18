@@ -231,7 +231,7 @@ class Texture {
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
                 //let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
                 //CGContextConcatCTM(contextRef, flipVertical)
-                //CGContextDrawImage(contextRef, imageRect, imageRef)
+                CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
                 glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)

@@ -1525,7 +1525,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
             // FIXME: primitiveType toGL()
-            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_LINEAR))
+            //glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_LINEAR))
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             va!._unBind()
         } else {
