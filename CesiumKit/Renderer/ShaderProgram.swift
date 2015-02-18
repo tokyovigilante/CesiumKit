@@ -64,7 +64,7 @@ private func == (left: DependencyNode, right: DependencyNode) -> Bool {
 }
 
 class ShaderProgram {
-
+    
     var _logShaderCompilation: Bool = false
     
     /**
@@ -148,7 +148,7 @@ class ShaderProgram {
     //private let _commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
     //private let _lineRegex = Regex("\\n")
     //private let _czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
-
+    
     private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
     private let _lineRegex = "\\n"
     private let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
@@ -261,7 +261,7 @@ class ShaderProgram {
         var czmMatches: [String]*/
         if czmMatches.count > 0 {
             /*czmMatches = czmMatchRanges.map({
-                currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
+            currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
             })
             czmMatches = deleteDuplicates(czmMatches)*/
             
@@ -371,7 +371,7 @@ class ShaderProgram {
             getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
             "\n#line 0\n" +
             vsSourceVersioned.source
-
+        
         var fsSource = fsSourceVersioned.version +
             getFragmentShaderPrecision() +
             getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
@@ -477,7 +477,7 @@ class ShaderProgram {
     }
     
     typealias VertexAttribute = (name: String, type: GLenum, index: GLint)
-
+    
     private func findVertexAttributes(numberOfAttributes: Int) -> [String: VertexAttributeInfo] {
         
         assert(_program != nil, "no GLSL program")
@@ -519,7 +519,7 @@ class ShaderProgram {
         var maxUniformLength: GLint = 0
         glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
         
-        for var i = 0; i < Int(numberOfUniforms); ++i {
+        for i in 0..<Int(numberOfUniforms) {
             var uniformLength: GLsizei = 0
             var uniformNameBuffer = [GLchar](count: Int(maxUniformLength + 1), repeatedValue: 0)
             var activeUniform = ActiveUniformInfo()
@@ -534,72 +534,76 @@ class ShaderProgram {
                     end: uniformName.endIndex)
                 uniformName.removeRange(suffixRange)
             }
-
+            
             if !uniformName.hasPrefix("gl_") {
+                let uniform: Uniform
                 if activeUniform.name.indexOf("[") == nil {
                     // Single uniform
                     let nameBuffer = UnsafePointer<GLchar>((uniformName as NSString).UTF8String)
                     let location = GLint(glGetUniformLocation(program, nameBuffer))
                     var value: GLfloat = 0.0
                     //glGetUniformfv(program, location, &value)
-                    var uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, location: location, value: .FloatVec1(0.0))
+                    uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, locations: [location], values: [.FloatVec1(0.0)])
                     
                     uniformsByName[activeUniform.name] = uniform
                     uniforms.append(uniform)
                     
-                    if uniform.hasSetSampler {
-                        samplerUniforms.append(uniform)
-                    }
+
                 } else {
                     // Uniform array
                     
-                    /*var uniformArray: UniformArray*/
-                    var locations = [GLint]()
-                    /*var value;
-                    var loc;
+                    //let uniformArray: Uniform
+                    var locations: [GLint]
+                    var values: [UniformValue]
+                    var location: GLint = 0
+
                     
                     // On some platforms - Nexus 4 in Firefox for one - an array of sampler2D ends up being represented
                     // as separate uniforms, one for each array element.  Check for and handle that case.
-                    var indexOfBracket = uniformName.indexOf('[');
-                    if (indexOfBracket >= 0) {
-                    // We're assuming the array elements show up in numerical order - it seems to be true.
-                    uniformArray = uniformsByName[uniformName.slice(0, indexOfBracket)];
-                    
-                    // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
-                    // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
-                    if (typeof uniformArray === 'undefined') {
-                    continue;
-                    }
-                    
-                    locations = uniformArray._locations;
-                    
-                    // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
-                    // but the size is not 1 like it is in Firefox.  So if we push locations here,
-                    // we'll end up adding too many locations.
-                    if (locations.length <= 1) {
-                    value = uniformArray.value;
-                    loc = gl.getUniformLocation(program, uniformName);
-                    locations.push(loc);
-                    value.push(gl.getUniform(program, loc));
-                    }
+                    let indexOfBracket = uniformName.indexOf("[")
+                    if indexOfBracket != nil {
+                        // We're assuming the array elements show up in numerical order - it seems to be true.
+                        uniform = uniformsByName[uniformName[Range(start: uniformName.startIndex, end: indexOfBracket!)]]!
+                        
+                        // Nexus 4 with Android 4.3 needs this check, because it reports a uniform
+                        // with the strange name webgl_3467e0265d05c3c1[1] in our globe surface shader.
+                        /*if (typeof uniformArray === 'undefined') {
+                        continue;
+                        }
+                        
+                        locations = uniformArray._locations;
+                        
+                        // On the Nexus 4 in Chrome, we get one uniform per sampler, just like in Firefox,
+                        // but the size is not 1 like it is in Firefox.  So if we push locations here,
+                        // we'll end up adding too many locations.
+                        if (locations.length <= 1) {
+                        value = uniformArray.value;
+                        loc = gl.getUniformLocation(program, uniformName);
+                        locations.push(loc);
+                        value.push(gl.getUniform(program, loc));
+                        }*/
                     } else {
-                    locations = [];
-                    value = [];
-                    for ( var j = 0; j < activeUniform.size; ++j) {
-                    loc = gl.getUniformLocation(program, uniformName + '[' + j + ']');
-                    locations.push(loc);
-                    value.push(gl.getUniform(program, loc));
+                        locations = [GLint]()
+                        values = [UniformValue]()
+                        for j in  0..<Int(activeUniform.size) {
+                            let nameBuffer = UnsafePointer<GLchar>((uniformName + "[\(j)]" as NSString).UTF8String)
+                            let location = GLint(glGetUniformLocation(program, nameBuffer))
+                            locations.append(location)
+                            values.append(.FloatVec1(0.0))
+                        }
+                        uniform = Uniform(activeUniform: activeUniform, uniformName: uniformName, locations: locations, values: values)
+                        
+                        uniformsByName[uniformName] = uniform
+                        uniforms.append(uniform)
+                        
+                        if uniform.hasSetSampler {
+                            samplerUniforms.append(uniform)
+                        }
                     }
-                    uniformArray = new UniformArray(gl, activeUniform, uniformName, locations, value);
                     
-                    uniformsByName[uniformName] = uniformArray;
-                    uniforms.push(uniformArray);
-                    
-                    if (uniformArray._setSampler) {
-                    samplerUniforms.push(uniformArray);
-                    }
-                    }
-                    }*/
+                }
+                if uniform.hasSetSampler {
+                    samplerUniforms.append(uniform)
                 }
             }
         }
@@ -636,6 +640,7 @@ class ShaderProgram {
         glUseProgram(_program!)
         
         var textureUnitIndex: GLint = 0
+        
         for samplerUniform in samplerUniforms {
             textureUnitIndex = samplerUniform.setSampler!(textureUnitIndex: textureUnitIndex)
         }
@@ -654,7 +659,7 @@ class ShaderProgram {
         _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
         
         glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-
+        
         var uniforms = findUniforms()
         var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
         
@@ -674,11 +679,11 @@ class ShaderProgram {
     
     func setUniforms (uniformMap: TileUniformMap?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
-
+        
         if uniformMap != nil {
             for (name, uniform) in _manualUniforms! {
                 if let uniformFunc: UniformFunc = uniformMap!.uniforms[name] {
-                    uniform.value = uniformFunc(map: uniformMap!)
+                    uniform.values = uniformFunc(map: uniformMap!)
                 } else {
                     assertionFailure("no matching uniform for \(name)")
                 }
@@ -707,7 +712,7 @@ class ShaderProgram {
             }
         }
     }
-
+    
     deinit {
         if _program != nil {
             glDeleteProgram(_program!)
@@ -794,6 +799,3 @@ class ShaderProgram {
     }
     
 }
-
-typealias UniformFunc = ((map: TileUniformMap) -> UniformValue)
-

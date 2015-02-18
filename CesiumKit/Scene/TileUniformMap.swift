@@ -8,6 +8,8 @@
 
 protocol UniformMap {}
 
+typealias UniformFunc = ((map: UniformMap) -> [UniformValue])
+
 class TileUniformMap: UniformMap {
     
     let maxTextureCount: Int
@@ -26,8 +28,8 @@ class TileUniformMap: UniformMap {
     
     var tileRectangle = Cartesian4()
     
-    lazy var dayTextures: [Texture?] = {
-        return Array(count: self.maxTextureCount, repeatedValue: nil as Texture?)
+    lazy var dayTextures: [Texture] = {
+        return [Texture]()
     }()
     
     lazy var dayTextureTranslationAndScale: [Cartesian4] = {
@@ -72,10 +74,10 @@ class TileUniformMap: UniformMap {
     
     var waterMaskTranslationAndScale = Cartesian4()
     
-    var uniforms: [String: ((map: TileUniformMap) -> UniformValue)] = [
+    var uniforms: [String: UniformFunc] = [
     
-        "u_initialColor": { (map: TileUniformMap) -> UniformValue in
-            return .FloatVec4(map.initialColor)
+        "u_initialColor": { (map: UniformMap) -> [UniformValue] in
+            return [.FloatVec4((map as! TileUniformMap).initialColor)]
         },
         /*
         "u_zoomedOutOceanSpecularIntensity": { (map: TileUniformMap) -> Double in
@@ -90,30 +92,30 @@ class TileUniformMap: UniformMap {
             return map.lightingFadeDistance
         },
         */
-        "u_center3D": { (map: TileUniformMap) -> UniformValue in
-            return .FloatVec3(map.center3D)
+        "u_center3D": { (map: UniformMap) -> [UniformValue] in
+            return [.FloatVec3((map as! TileUniformMap).center3D)]
         },
         /*
         "u_tileRectangle": { (map: TileUniformMap) -> Cartesian4 in
             return map.tileRectangle
         },
         */
-        "u_modifiedModelView": { (map: TileUniformMap) -> UniformValue in
-            return .FloatMatrix4(map.modifiedModelView)
+        "u_modifiedModelView": { (map: UniformMap) -> [UniformValue] in
+            return [.FloatMatrix4((map as! TileUniformMap).modifiedModelView)]
         },
         
-        /*"u_dayTextures": { (map: TileUniformMap) -> UniformValue in
-            return map.dayTextures
-        },*/
+        "u_dayTextures": { (map: UniformMap) -> [UniformValue] in
+            return ((map as! TileUniformMap).dayTextures.map { .Sampler2D($0) })
+        },
+        
+        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [UniformValue] in
+            return ((map as! TileUniformMap).dayTextureTranslationAndScale.map { .FloatVec4($0) })
+        },
+        
+        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [UniformValue] in
+            return ((map as! TileUniformMap).dayTextureTexCoordsRectangle.map { UniformValue.FloatVec4($0) })
+        },
         /*
-        "u_dayTextureTranslationAndScale": { (map: TileUniformMap) -> [Cartesian4] in
-            return map.dayTextureTranslationAndScale
-        },
-        
-        "u_dayTextureTexCoordsRectangle": { (map: TileUniformMap) -> [Cartesian4] in
-            return map.dayTextureTexCoordsRectangle
-        },
-        
         "u_dayTextureAlpha": { (map: TileUniformMap) -> [Double]  in
             return map.dayTextureAlpha
         },

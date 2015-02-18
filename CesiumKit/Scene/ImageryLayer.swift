@@ -523,11 +523,12 @@ class ImageryLayer {
         if !isGeographic && pixelGap {
             let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
             texture = reprojectedTexture
-            imagery.texture = texture
+            imagery.texture = texture   
         }
-
+        
         // Use mipmaps if this texture has power-of-two dimensions.
-        if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+        //FIXME: Mipmap disabled
+        if false {//Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
             if mipmapSampler == nil {
                 mipmapSampler = Sampler()

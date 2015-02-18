@@ -827,6 +827,9 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
     */
     func toArray() -> [Float] {
+        return _grid.map({ Float($0) })
+    }
+    /*func toArray() -> [Float] {
         let result = [
             Float(_grid[0]),
             Float(_grid[1]),
@@ -846,7 +849,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             Float(_grid[15]),
         ]
         return result
-    }
+    }*/
 /*
 /**
 * Computes the array index of the element at the provided row and column.
