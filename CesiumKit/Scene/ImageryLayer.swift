@@ -518,7 +518,7 @@ class ImageryLayer {
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
         // no noticeable difference in the georeferencing of the image.
-        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(1, -5)
+        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(10, -5)
         let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
         if !isGeographic && pixelGap {
             let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
@@ -581,7 +581,7 @@ class ImageryLayer {
     }
     
     func getImageryCacheKey(#x: Int, y: Int, level: Int) -> String {
-        return "x:\(x)y\(y)level\(level)"
+        return "x\(x)y\(y)level\(level)"
     }
     /*
     var uniformMap = {

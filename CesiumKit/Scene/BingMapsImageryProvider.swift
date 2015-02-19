@@ -588,7 +588,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         var quadkey = ""
         
         for ( var i = level; i >= 0; --i) {
-            var bitmask = 1 << i;
+            var bitmask = 1 << i
             var digit = 0
             
             if ((x & bitmask) != 0) {

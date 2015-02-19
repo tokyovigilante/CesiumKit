@@ -13,6 +13,8 @@ import CesiumKit
 class CesiumViewController: GLKViewController {
     
     var setup = false
+    
+    private var lastFrameRateUpdate = NSDate()
 
     
     required init(coder aDecoder: NSCoder) {
@@ -93,7 +95,8 @@ class CesiumViewController: GLKViewController {
     override func glkView(view: GLKView!, drawInRect rect: CGRect) {
         
         globe?.render()
-        if timeSinceLastDraw > 1000 {
+        if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
+            lastFrameRateUpdate = NSDate()
             let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
             println(performanceString)
         }

@@ -229,8 +229,8 @@ class Texture {
                 
                 let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-                //let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-                //CGContextConcatCTM(contextRef, flipVertical)
+                let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+                CGContextConcatCTM(contextRef, flipVertical)
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:

@@ -152,7 +152,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
     override func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
-        return false
+        //return false
         var bitNumber = 2 // northwest child
         if childX != thisX * 2 {
             ++bitNumber // east child
