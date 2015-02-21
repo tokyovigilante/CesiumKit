@@ -666,12 +666,12 @@
 				942CEED2199E063E00012DC4 /* SkyBox.swift */,
 				9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */,
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
+				94CA7E081A9892B700FFAD81 /* TileCoordinatesImageryProvider.swift */,
 				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
 				948F4D8D19D7969400FFAD81 /* TileReplacementQueue.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
-				94CA7E081A9892B700FFAD81 /* TileCoordinatesImageryProvider.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
