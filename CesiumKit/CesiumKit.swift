@@ -28,7 +28,7 @@ Describes Globe object options
 public struct CesiumOptions {
     
     public var clock = Clock()
-    public var imageryProvider: BingMapsImageryProvider? = nil // FIXME: mapsBingMapsImageryProvider(/*url : "//dev.virtualearth.net"*/)
+    public var imageryProvider: ImageryProvider? = BingMapsImageryProvider()
     var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
     //public var skyBox: SkyBox? = nil
     public var sceneMode: SceneMode = .Scene3D

@@ -106,7 +106,7 @@ class ImageryLayerCollection {
     * @returns {ImageryLayer} The newly created layer.
     */
     // FIXME: ImageryProvider
-    func addImageryProvider(imageryProvider: BingMapsImageryProvider, index: Int?) -> ImageryLayer {
+    func addImageryProvider(imageryProvider: ImagerProvider, index: Int?) -> ImageryLayer {
         
         var layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)

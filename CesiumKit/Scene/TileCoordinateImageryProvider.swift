@@ -200,7 +200,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     */
     public let hasAlphaChannel: Bool = false
     
-    init (options: TileCoordinatesImageryProvider.Options = TileCoordinatesImageryProvider.Options()) {
+    public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
         
         tilingScheme = options.tilingScheme
         color = options.color
