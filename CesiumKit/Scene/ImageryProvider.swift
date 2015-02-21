@@ -221,19 +221,4 @@ public protocol ImageryProvider {
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
     func requestImage(#x: Int, y: Int, level: Int) -> UIImage?
-
-    
-    /**
-    * Loads an image from a given URL.  If the server referenced by the URL already has
-    * too many requests pending, this function will instead return undefined, indicating
-    * that the request should be retried later.
-    *
-    * @param {String} url The URL of the image.
-    * @returns {Promise} A promise for the image that will resolve when the image is available, or
-    *          undefined if there are too many active requests to the server, and the request
-    *          should be retried later.  The resolved image may be either an
-    *          Image or a Canvas DOM object.
-    */
-    func loadImage (url: String) -> UIImage?
-
 }
