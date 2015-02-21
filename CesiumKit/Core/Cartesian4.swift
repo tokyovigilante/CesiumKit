@@ -23,7 +23,7 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-struct Cartesian4: /*Packable,*/ Equatable, Printable {
+public struct Cartesian4: /*Packable,*/ Equatable, Printable {
     /**
     * The X component.
     * @type {Number}

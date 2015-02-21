@@ -32,12 +32,14 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
         
-        let color: Cartesian4 = Cartesian4.fromColor(red: 1.0, blue: 0.0, green: 1.0, alpha: 1.0)
+        let color: Cartesian4 = Cartesian4.fromColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
         let tileWidth: Int = 256
         
         let tileHeight: Int = 256
     }
+    
+    public let color: Cartesian4
 
     /**
     * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -133,7 +135,7 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public var maximumLevel: Int { get }
+    public let maximumLevel = Int.max
     
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
@@ -181,7 +183,7 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    public var credit: Credit = Credit("CesiumKit")
+    public var credit: Credit = Credit(text: "CesiumKit")
     
     /**
     * Gets the proxy used by this provider.
@@ -205,8 +207,7 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
     init (options: TileCoordinatesImageryProvider.Options = TileCoordinatesImageryProvider.Options()) {
         
         tilingScheme = options.tilingScheme
-        /*this._color = defaultValue(options.color, Color.YELLOW);
-        this._errorEvent = new Event();*/
+        color = options.color
         tileWidth = options.tileWidth
         tileHeight = options.tileHeight
     }
@@ -222,7 +223,9 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit]
+    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+        return [credit]
+    }
     
     /**
     * Requests the image for a given tile.  This function should
@@ -246,7 +249,9 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage {
+    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
+        return nil
+        
         /*var canvas = document.createElement('canvas');
         canvas.width = 256;
         canvas.height = 256;
@@ -266,6 +271,29 @@ public class TileCoordinatesImageryProvider: ImageryProvider {
         context.fillStyle = cssColor;
         context.fillText(label, 124, 124);
         
+        NSLog(@"Creating image");
+        
+        CGSize size = CGSizeMake(240.0f, 240.0f);
+        UIGraphicsBeginImageContext(size);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        CGContextSetStrokeColorWithColor(context, [[UIColor blackColor] CGColor]);
+        CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+        
+        CGContextFillRect(context, CGRectMake(0.0f, 0.0f, 240.0f, 240.0f));
+        
+        CGContextSetLineWidth(context, 5.0f);
+        CGContextMoveToPoint(context, 100.0f, 100.0f);
+        CGContextAddLineToPoint(context, 150.0f, 150.0f);
+        CGContextStrokePath(context);
+        
+        UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        imageView.image = result;
+        [imageView setNeedsDisplay];
+        
+        NSLog(@"Image creation finished");
         return canvas;*/
 
     }
