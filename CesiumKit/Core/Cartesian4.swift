@@ -52,7 +52,7 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
     */
     var w: Double = 0.0
     
-    var description: String {
+    public var description: String {
         return "(\(x), \(y), \(z), \(w))"
     }
     
@@ -476,7 +476,7 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
 * @param {Cartesian4} [right] The second Cartesian.
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func == (left: Cartesian4, right: Cartesian4) -> Bool {
+public func == (left: Cartesian4, right: Cartesian4) -> Bool {
     return (left.x == right.x &&
         left.y == right.y &&
         left.z == right.z &&

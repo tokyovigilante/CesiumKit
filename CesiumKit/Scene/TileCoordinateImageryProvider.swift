@@ -8,10 +8,6 @@
 
 import UIKit.UIImage
 
-public struct TileCoordinatesImageryProviderOptions {
-    
-}
-
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
 * a label inside it indicating the X, Y, Level coordinates of the tile.  This is mostly useful for
@@ -26,7 +22,7 @@ public struct TileCoordinatesImageryProviderOptions {
 * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
 */
-public class TileCoordinatesImageryProvider: ImageryProvider {
+public class TileCoordinateImageryProvider: ImageryProvider {
     
     public struct Options {
         
