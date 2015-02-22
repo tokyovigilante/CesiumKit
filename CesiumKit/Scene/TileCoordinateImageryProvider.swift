@@ -6,7 +6,9 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
+import UIKit
+import CoreGraphics
+import CoreText
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -198,7 +200,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    public let hasAlphaChannel: Bool = false
+    public let hasAlphaChannel: Bool = true
     
     public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
         
@@ -246,7 +248,6 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
     public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
-        return nil
         
         /*var canvas = document.createElement('canvas');
         canvas.width = 256;
@@ -266,32 +267,78 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         context.fillText(label, 127, 127);
         context.fillStyle = cssColor;
         context.fillText(label, 124, 124);
-        
-        NSLog(@"Creating image");
-        
-        CGSize size = CGSizeMake(240.0f, 240.0f);
-        UIGraphicsBeginImageContext(size);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        
-        CGContextSetStrokeColorWithColor(context, [[UIColor blackColor] CGColor]);
-        CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
-        
-        CGContextFillRect(context, CGRectMake(0.0f, 0.0f, 240.0f, 240.0f));
-        
-        CGContextSetLineWidth(context, 5.0f);
-        CGContextMoveToPoint(context, 100.0f, 100.0f);
-        CGContextAddLineToPoint(context, 150.0f, 150.0f);
-        CGContextStrokePath(context);
-        
-        UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        imageView.image = result;
-        [imageView setNeedsDisplay];
-        
-        NSLog(@"Image creation finished");
-        return canvas;*/
+        */
 
+        let size = CGSizeMake(CGFloat(tileWidth), CGFloat(256.0))
+        
+        UIGraphicsBeginImageContext(size)
+        
+        let context = UIGraphicsGetCurrentContext()
+        
+        let drawColor = UIColor(red: CGFloat(color.red), green: CGFloat(color.green), blue: CGFloat(color.blue), alpha: CGFloat(color.alpha))
+        CGContextSetStrokeColorWithColor(context, drawColor.CGColor)
+        
+        // border
+        let rect = CGRectMake(1.0, 1.0, size.width-1.0, size.height-1.0)
+        CGContextClearRect(context, rect)
+        CGContextStrokeRectWithWidth(context, rect, 2.0)
+        
+        // label
+        let string = "L\(level)X\(x)Y\(y)" as NSString
+        let font = UIFont(name: "Helvetica Neue", size: 25.0)
+        assert(font != nil, "Could not create UIFont")
+
+        //CGContextSetFillColorWithColor(context, drawColor)
+
+        let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
+        let textSize = string.sizeWithAttributes(attr)
+        
+        let rectText = CGRectMake((size.width/2)-textSize.width, (size.height/2)-textSize.height, textSize.width, textSize.height)
+        
+        string.drawInRect(rectText, withAttributes: attr)
+        
+        /*let fontAttributes: [String: String] = [
+            kCTFontFamilyNameAttribute: "Helvetica Neue",
+            kCTFontStyleNameAttribute: "Bold",
+            kCTFontSizeAttribute: NSNumber(float: 25.0)]
+
+        // Create a descriptor.
+        let descriptor = CTFontDescriptorCreateWithAttributes(fontAttributes)
+        
+        // Create a font using the descriptor.
+        CTFontRef font = CTFontCreateWithFontDescriptor(descriptor, 0.0, NULL);
+        CFRelease(descriptor);
+
+        
+        CFStringRef string; CTFontRef font; CGContextRef context;
+        // Initialize the string, font, and context
+        
+        CFStringRef keys[] = { kCTFontAttributeName };
+        CFTypeRef values[] = { font };
+        
+        CFDictionaryRef attributes =
+            CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys,
+                (const void**)&values, sizeof(keys) / sizeof(keys[0]),
+                &kCFTypeDictionaryKeyCallBacks,
+                &kCFTypeDictionaryValueCallBacks);
+        
+        CFAttributedStringRef attrString =
+            CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+        CFRelease(string);
+        CFRelease(attributes);
+        
+        CTLineRef line = CTLineCreateWithAttributedString(attrString);
+        
+        // Set text position and draw the line into the graphics context
+        CGContextSetTextPosition(context, 10.0, 10.0);
+        CTLineDraw(line, context);
+        CFRelease(line);*/
+
+        
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return result
     }
     
 }
