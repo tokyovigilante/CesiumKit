@@ -279,7 +279,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         CGContextSetStrokeColorWithColor(context, drawColor.CGColor)
         
         // border
-        let rect = CGRectMake(1.0, 1.0, size.width-1.0, size.height-1.0)
+        let rect = CGRectMake(1.0, 1.0, size.width-2.0, size.height-2.0)
         CGContextClearRect(context, rect)
         CGContextStrokeRectWithWidth(context, rect, 2.0)
         
