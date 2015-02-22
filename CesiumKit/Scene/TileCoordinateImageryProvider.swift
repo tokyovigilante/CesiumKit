@@ -293,9 +293,8 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
         let textSize = string.sizeWithAttributes(attr)
         
-        let rectText = CGRectMake((size.width/2)-textSize.width, (size.height/2)-textSize.height, textSize.width, textSize.height)
-        
-        string.drawInRect(rectText, withAttributes: attr)
+        let textRect = CGRectMake(size.width/2 - textSize.width/2, size.height/2 - textSize.height/2, textSize.width, textSize.height)
+        string.drawInRect(textRect, withAttributes: attr)
         
         /*let fontAttributes: [String: String] = [
             kCTFontFamilyNameAttribute: "Helvetica Neue",

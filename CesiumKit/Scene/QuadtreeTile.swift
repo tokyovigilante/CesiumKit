@@ -142,7 +142,7 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
         
         assert(x >= 0 && y >= 0, "x and y must be greater than or equal to zero")
         assert(level >= 0, "level must be greater than or equal to zero.")
-        
+        println("Creating tile L\(level)X\(x)Y\(y)")
         self.tilingScheme = tilingScheme
         self.x = x
         self.y = y
@@ -167,8 +167,8 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
         
         var result = [QuadtreeTile]()
         
-        for var y = 0; y < numberOfLevelZeroTilesY; ++y {
-            for var x = 0; x < numberOfLevelZeroTilesX; ++x {
+        for y in 0..<numberOfLevelZeroTilesY {
+            for x in 0..<numberOfLevelZeroTilesX {
                 result.append(QuadtreeTile(level: 0, x: x, y: y, tilingScheme: tilingScheme, parent: nil))
             }
         }

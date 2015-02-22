@@ -269,8 +269,8 @@ class ImageryLayer {
             var baseTerrainRectangle = tile.rectangle
             
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
-                rectangle.north = baseImageryRectangle.north
-                rectangle.south = rectangle.north
+                rectangle.south = baseImageryRectangle.north
+                rectangle.north = rectangle.south
             } else if baseTerrainRectangle.north <= baseImageryRectangle.south {
                 rectangle.south = baseImageryRectangle.south
                 rectangle.north = rectangle.south
@@ -567,7 +567,7 @@ class ImageryLayer {
         var imagery = _imageryCache[cacheKey]
         
         if imagery == nil {
-        imagery = Imagery(imageryLayer: self, level: x, x: y, y: level, rectangle: imageryRectangle)
+        imagery = Imagery(imageryLayer: self, level: level, x: x, y: y, rectangle: imageryRectangle)
         _imageryCache[cacheKey] = imagery
         }
         
@@ -581,7 +581,7 @@ class ImageryLayer {
     }
     
     func getImageryCacheKey(#x: Int, y: Int, level: Int) -> String {
-        return "x\(x)y\(y)level\(level)"
+        return "level\(level)x\(x)y\(y)"
     }
     /*
     var uniformMap = {
