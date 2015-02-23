@@ -352,13 +352,13 @@ class GlobeSurfaceTile {
         let westernMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.west, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
         
         // Compute the normal of the plane on the western edge of the tile.
-        surfaceTile.westNormal = westernMidpointCartesian.cross(Cartesian3.unitZ()).normalize()
+        surfaceTile.westNormal = Cartesian3.unitZ().cross(westernMidpointCartesian).normalize()
         
         // The middle latitude on the eastern edge.
         let easternMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.east, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
         
         // Compute the normal of the plane on the eastern edge of the tile.
-        surfaceTile.eastNormal = easternMidpointCartesian.cross(Cartesian3.unitZ()).normalize()
+        surfaceTile.eastNormal = Cartesian3.unitZ().cross(easternMidpointCartesian).normalize()
         
         // Compute the normal of the plane bounding the southern edge of the tile.
         var southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast())

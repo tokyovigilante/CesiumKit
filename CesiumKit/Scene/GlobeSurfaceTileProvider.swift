@@ -400,6 +400,7 @@ var northeastScratch = new Cartesian3();
         var eastNormal = surfaceTile.eastNormal
         var northNormal = surfaceTile.northNormal
         var maximumHeight = surfaceTile.maximumHeight
+        
         if frameState.mode != .Scene3D {
             southwestCornerCartesian = frameState.mapProjection!.project(tile.rectangle.southwest())
             southwestCornerCartesian.z = southwestCornerCartesian.y

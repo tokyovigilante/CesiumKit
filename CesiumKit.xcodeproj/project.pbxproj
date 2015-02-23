@@ -266,6 +266,13 @@
 		9455EB8A1A7D085000FFAD81 /* NSString+URLEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */; };
 		9455EB8B1A7D085000FFAD81 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
+		948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
+		948BA2B11A99F1B900FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
+		948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
+		948BA2B31A99F1EB00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
+		948BA2B41A99F1F500FFAD81 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB861A7D00ED00FFAD81 /* Threading.swift */; };
+		948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
+		948BA2B61A99F21900FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 		94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A691A38444C00FFAD81 /* AppDelegate.swift */; };
 		94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */; };
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
@@ -1159,8 +1166,11 @@
 				9410138E19FB037D00FFAD81 /* CullFace.swift in Sources */,
 				9413B8201A37B94800FFAD81 /* BlendEquation.swift in Sources */,
 				9413113A19F3A09800FFAD81 /* Rectangle.swift in Sources */,
+				948BA2B11A99F1B900FFAD81 /* SwiftyJSON.swift in Sources */,
 				9413B82D1A37B94800FFAD81 /* ImageryLayer.swift in Sources */,
+				948BA2B41A99F1F500FFAD81 /* Threading.swift in Sources */,
 				9413B7F41A37B93D00FFAD81 /* Uniform.swift in Sources */,
+				948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */,
 				9410137E19FB037500FFAD81 /* TerrainMesh.swift in Sources */,
 				9410136B19FB037500FFAD81 /* GeographicTilingScheme.swift in Sources */,
 				9410137819FB037500FFAD81 /* Quaternion.swift in Sources */,
@@ -1170,6 +1180,7 @@
 				9410138419FB037500FFAD81 /* Visibility.swift in Sources */,
 				9413B8361A37B94800FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B8371A37B94800FFAD81 /* QuadtreePrimitive.swift in Sources */,
+				948BA2B61A99F21900FFAD81 /* Alamofire.swift in Sources */,
 				9410136819FB037500FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
 				9413B82C1A37B94800FFAD81 /* Imagery.swift in Sources */,
 				9413B81F1A37B94800FFAD81 /* BlendFunction.swift in Sources */,
@@ -1194,6 +1205,7 @@
 				9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */,
 				9413B83D1A37B94800FFAD81 /* SceneTransitioner.swift in Sources */,
 				9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */,
+				948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */,
 				9413B83E1A37B94800FFAD81 /* ScreenSpaceCameraController.swift in Sources */,
 				9410138B19FB037D00FFAD81 /* Command.swift in Sources */,
 				9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */,
@@ -1205,6 +1217,7 @@
 				9410137B19FB037500FFAD81 /* ScreenSpaceEventHandler.swift in Sources */,
 				9413B8341A37B94800FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,
 				9410137F19FB037500FFAD81 /* TerrainProvider.swift in Sources */,
+				948BA2B31A99F1EB00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
 				946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */,
 				9413B7F31A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */,
 				9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */,
@@ -1213,6 +1226,7 @@
 				9410136119FB034B00FFAD81 /* PassState.swift in Sources */,
 				9413B8261A37B94800FFAD81 /* FrustumCommands.swift in Sources */,
 				9410139219FB037D00FFAD81 /* GLEnumerations.swift in Sources */,
+				948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */,
 				9410137519FB037500FFAD81 /* Matrix.swift in Sources */,
 				9410138619FB037500FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
 				9413B8461A37B94800FFAD81 /* TileUniformMap.swift in Sources */,
@@ -1343,6 +1357,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1360,6 +1375,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

@@ -81,10 +81,10 @@ return new Camera();
     }
 
     func testGetInverseViewMatrix () {
-        let expected = Matrix4.inverse(camera.viewMatrix.inverse()
-        XCTAssertTrue(expected.equalsEpsilon(camera.inverseViewMatrix, Math.Epsilon15)
+        var expected = camera.viewMatrix.inverse()
+        XCTAssertTrue(expected.equalsEpsilon(camera.inverseViewMatrix, epsilon: Math.Epsilon15))
     }
-    
+    /*
 it('get inverse view matrix', function() {
 });
 
@@ -93,7 +93,7 @@ camera.transform = new Matrix4(5.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 2.0, 0.0, 0.0,
 var expected = Matrix4.inverseTransformation(camera.transform, new Matrix4());
 expect(expected).toEqual(camera.inverseTransform);
 });
-/*
+
 it('get heading is undefined when morphing', function() {
 camera._mode = SceneMode.MORPHING;
 expect(camera.heading).not.toBeDefined();

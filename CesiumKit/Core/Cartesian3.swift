@@ -422,18 +422,18 @@ public struct Cartesian3: Packable, Equatable {
     */
     func cross(other: Cartesian3) -> Cartesian3 {
         
-        var leftX = self.x;
-        var leftY = self.y;
-        var leftZ = self.z;
-        var rightX = other.x;
-        var rightY = other.y;
-        var rightZ = other.z;
+        var leftX = self.x
+        var leftY = self.y
+        var leftZ = self.z
+        var rightX = other.x
+        var rightY = other.y
+        var rightZ = other.z
         
-        var x = leftY * rightZ - leftZ * rightY;
-        var y = leftZ * rightX - leftX * rightZ;
-        var z = leftX * rightY - leftY * rightX;
+        var x = leftY * rightZ - leftZ * rightY
+        var y = leftZ * rightX - leftX * rightZ
+        var z = leftX * rightY - leftY * rightX
         
-        return Cartesian3(x: x, y: y, z: z);
+        return Cartesian3(x: x, y: y, z: z)
     }
     
     /**

@@ -249,26 +249,6 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     */
     public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
         
-        /*var canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
-        var context = canvas.getContext('2d');
-        
-        var cssColor = this._color.toCssColorString();
-        
-        context.strokeStyle = cssColor;
-        context.lineWidth = 2;
-        context.strokeRect(1, 1, 255, 255);
-        
-        var label = 'L' + level + 'X' + x + 'Y' + y;
-        context.font = 'bold 25px Arial';
-        context.textAlign = 'center';
-        context.fillStyle = 'black';
-        context.fillText(label, 127, 127);
-        context.fillStyle = cssColor;
-        context.fillText(label, 124, 124);
-        */
-
         let size = CGSizeMake(CGFloat(tileWidth), CGFloat(256.0))
         
         UIGraphicsBeginImageContext(size)
@@ -285,7 +265,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         // label
         let string = "L\(level)X\(x)Y\(y)" as NSString
-        let font = UIFont(name: "Helvetica Neue", size: 25.0)
+        let font = UIFont(name: "Helvetica Neue", size: 36.0)
         assert(font != nil, "Could not create UIFont")
 
         //CGContextSetFillColorWithColor(context, drawColor)

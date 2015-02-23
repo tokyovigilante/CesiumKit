@@ -181,7 +181,7 @@ public class CesiumGlobe {
     //let skyBox: SkyBox
     
     // FIXME: ImageryProvider
-    var imageryProvider: BingMapsImageryProvider? = nil//ImageryProvider? = nil
+    var imageryProvider: ImageryProvider? = nil
     
     var sceneMode: SceneMode
     

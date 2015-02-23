@@ -18,7 +18,7 @@ import UIKit.UIImage
 *
 * @param {ImageryProvider} imageryProvider The imagery provider to use.
 */
-class ImageryLayer {
+public class ImageryLayer {
     
     /**
     * This value is used as the default brightness for the imagery layer if one is not provided during construction

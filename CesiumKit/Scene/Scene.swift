@@ -463,7 +463,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {ImageryLayerCollection}
     */
-    var imageryLayers: ImageryLayerCollection { get { return globe.imageryLayers } }
+    public var imageryLayers: ImageryLayerCollection { get { return globe.imageryLayers } }
 
     /**
     * The terrain provider providing surface geometry for the globe.

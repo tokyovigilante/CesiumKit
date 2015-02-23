@@ -114,9 +114,9 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     var children: [QuadtreeTile] {
         get {
             if _children == nil {
-                var nextlevel = level + 1
-                var nextX = x * 2
-                var nextY = y * 2
+                let nextlevel = level + 1
+                let nextX = x * 2
+                let nextY = y * 2
                 _children = [
                     QuadtreeTile(level: nextlevel, x: nextX, y: nextY, tilingScheme: tilingScheme, parent: self),
                     QuadtreeTile(level: nextlevel, x: nextX + 1, y: nextY, tilingScheme: tilingScheme, parent: self),

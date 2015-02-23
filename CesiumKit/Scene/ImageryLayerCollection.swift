@@ -17,7 +17,7 @@ import Foundation
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Adjustment.html|Cesium Sandcastle Imagery Adjustment Demo}
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
-class ImageryLayerCollection {
+public class ImageryLayerCollection {
     
     private var _layers = [ImageryLayer]()
     
@@ -106,7 +106,7 @@ class ImageryLayerCollection {
     * @returns {ImageryLayer} The newly created layer.
     */
     // FIXME: ImageryProvider
-    func addImageryProvider(imageryProvider: ImageryProvider, index: Int?) -> ImageryLayer {
+    public func addImageryProvider(imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
         
         var layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)
