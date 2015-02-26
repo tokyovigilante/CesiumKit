@@ -168,7 +168,7 @@ class PerspectiveOffCenterFrustum: Frustum {
         planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: rightPlane.z, w: -rightPlane.dot(position)))
         
         //Bottom plane computation
-        let bottomPlane = up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize().cross(right2)
+        let bottomPlane = right2.cross(up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize())
         planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: -bottomPlane.dot(position)))
         
         //Top plane computation
