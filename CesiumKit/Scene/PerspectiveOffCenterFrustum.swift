@@ -151,7 +151,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
-        var right2 = direction.cross(up)
+        let right2 = direction.cross(up)
         
         var nearCenter = direction.multiplyByScalar(near).add(position)
         
@@ -160,27 +160,27 @@ class PerspectiveOffCenterFrustum: Frustum {
         var planes = [Cartesian4]()
         
         //Left plane computation
-        var leftPlane = right2.multiplyByScalar(left).add(nearCenter).subtract(position).normalize().cross(up)
-        planes.append(Cartesian4(x: leftPlane.x, y: leftPlane.y, z: leftPlane.z, w: leftPlane.dot(position)))
+        let leftPlane = right2.multiplyByScalar(left).add(nearCenter).subtract(position).normalize().cross(up)
+        planes.append(Cartesian4(x: leftPlane.x, y: leftPlane.y, z: leftPlane.z, w: -leftPlane.dot(position)))
         
         //Right plane computation
-        var rightPlane = right2.multiplyByScalar(right).add(nearCenter).subtract(position).normalize().cross(up)
-        planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: leftPlane.z, w: leftPlane.dot(position)))
+        let rightPlane = right2.multiplyByScalar(right).add(nearCenter).subtract(position).normalize().cross(up)
+        planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: rightPlane.z, w: -rightPlane.dot(position)))
         
         //Bottom plane computation
-        var bottomPlane = up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize().cross(right2)
-        planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: bottomPlane.dot(position)))
+        let bottomPlane = up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize().cross(right2)
+        planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: -bottomPlane.dot(position)))
         
         //Top plane computation
-        var topPlane = up.multiplyByScalar(top).add(nearCenter).subtract(position).normalize().cross(right2)
+        let topPlane = up.multiplyByScalar(top).add(nearCenter).subtract(position).normalize().cross(right2)
         planes.append(Cartesian4(x: topPlane.x, y: topPlane.y, z: topPlane.z, w: -topPlane.dot(position)))
         
         //Near plane computation
-        var nearPlane = Cartesian4(x: direction.x, y: direction.y, z: direction.z, w: -direction.dot(nearCenter))
+        let nearPlane = Cartesian4(x: direction.x, y: direction.y, z: direction.z, w: -direction.dot(nearCenter))
         planes.append(nearPlane)
         
         //Far plane computation
-        var farPlane = direction.negate()
+        let farPlane = direction.negate()
         planes.append(Cartesian4(x: farPlane.x, y: farPlane.y, z: farPlane.z, w: -farPlane.dot(farCenter)))
         
         _cullingVolume = CullingVolume(planes: planes)

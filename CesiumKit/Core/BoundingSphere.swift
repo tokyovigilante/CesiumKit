@@ -640,7 +640,7 @@ BoundingSphere.expand = function(sphere, point, result) {
 */
     func intersect(plane: Cartesian4) -> Intersect {
 
-        var distanceToPlane = Cartesian3(fromCartesian4: plane).dot(center) + plane.w
+        let distanceToPlane = Cartesian3(fromCartesian4: plane).dot(center) + plane.w
         
         if distanceToPlane < -radius {
             // The center point is negative side of the plane normal
