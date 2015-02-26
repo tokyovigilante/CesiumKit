@@ -256,7 +256,9 @@ class ShaderProgram {
         currentNode.evaluated = true
         
         // identify all dependencies that are referenced from this glsl source code
-        let czmMatches = deleteDuplicates(currentNode.glslSource[_czmRegex].matches())
+        let regex = currentNode.glslSource[_czmRegex]
+        let matches = regex.matches()
+        let czmMatches = deleteDuplicates(matches)
         /*var czmMatchRanges = _czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
         var czmMatches: [String]*/
         if czmMatches.count > 0 {

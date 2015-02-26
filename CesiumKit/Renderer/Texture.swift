@@ -209,14 +209,14 @@ class Texture {
                 let imageRef = image.CGImage
                 let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
-                let bytesPerPixel: UInt = pixelFormat == PixelFormat.RGB ? 4 : UInt(pixelDatatype.bytesPerElement * pixelFormat.byteCount) // RGB CGImage must have Alpha
+                let bytesPerPixel: Int = pixelFormat == PixelFormat.RGB ? 4 : pixelDatatype.bytesPerElement * pixelFormat.byteCount // RGB CGImage must have Alpha
                 
                 // Allocate a textureData with the above properties:
-                var textureData = [UInt8](count: Int(width * height * bytesPerPixel), repeatedValue: 0 as UInt8) // if 4 components per pixel (RGBA)
+                var textureData = [UInt8](count: width * height * bytesPerPixel, repeatedValue: UInt8(0)) // if 4 components per pixel (RGBA)
                 
                 let colorSpace = CGImageGetColorSpace(imageRef)
                 let bytesPerRow = bytesPerPixel * width
-                let bitsPerComponent = UInt(pixelDatatype.bytesPerElement) * 8
+                let bitsPerComponent = pixelDatatype.bytesPerElement * 8
                 
                 let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
                 

@@ -268,52 +268,13 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let font = UIFont(name: "Helvetica Neue", size: 36.0)
         assert(font != nil, "Could not create UIFont")
 
-        //CGContextSetFillColorWithColor(context, drawColor)
-
         let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
         let textSize = string.sizeWithAttributes(attr)
         
         let textRect = CGRectMake(size.width/2 - textSize.width/2, size.height/2 - textSize.height/2, textSize.width, textSize.height)
         string.drawInRect(textRect, withAttributes: attr)
         
-        /*let fontAttributes: [String: String] = [
-            kCTFontFamilyNameAttribute: "Helvetica Neue",
-            kCTFontStyleNameAttribute: "Bold",
-            kCTFontSizeAttribute: NSNumber(float: 25.0)]
 
-        // Create a descriptor.
-        let descriptor = CTFontDescriptorCreateWithAttributes(fontAttributes)
-        
-        // Create a font using the descriptor.
-        CTFontRef font = CTFontCreateWithFontDescriptor(descriptor, 0.0, NULL);
-        CFRelease(descriptor);
-
-        
-        CFStringRef string; CTFontRef font; CGContextRef context;
-        // Initialize the string, font, and context
-        
-        CFStringRef keys[] = { kCTFontAttributeName };
-        CFTypeRef values[] = { font };
-        
-        CFDictionaryRef attributes =
-            CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys,
-                (const void**)&values, sizeof(keys) / sizeof(keys[0]),
-                &kCFTypeDictionaryKeyCallBacks,
-                &kCFTypeDictionaryValueCallBacks);
-        
-        CFAttributedStringRef attrString =
-            CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
-        CFRelease(string);
-        CFRelease(attributes);
-        
-        CTLineRef line = CTLineCreateWithAttributedString(attrString);
-        
-        // Set text position and draw the line into the graphics context
-        CGContextSetTextPosition(context, 10.0, 10.0);
-        CTLineDraw(line, context);
-        CFRelease(line);*/
-
-        
         let result = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         

@@ -169,13 +169,13 @@ class Globe {
 
     private var _lightingFadeDistance: Cartesian2
     
-    lazy var drawUniforms: Dictionary<String, ()->Any> = {
+    lazy var drawUniforms: Dictionary<String, () -> UniformValue> = {
         
         weak var weakSelf = self
         return [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
-            "u_oceanNormalMap" : { return weakSelf!._oceanNormalMap },
-            "u_lightingFadeDistance" :  { return weakSelf!._lightingFadeDistance }
+            "u_oceanNormalMap" : { return .Sampler2D(weakSelf!._oceanNormalMap!) },
+            "u_lightingFadeDistance" :  { return .FloatVec2(weakSelf!._lightingFadeDistance) }
         ]
         }()
     
