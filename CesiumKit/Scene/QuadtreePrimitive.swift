@@ -289,6 +289,7 @@ class QuadtreePrimitive {
             // We may want to revisit this in the future.
             if screenSpaceError(context: context, frameState: frameState, tile: tile) < maximumScreenSpaceError {
                 // This tile meets SSE requirements, so render it.
+                println("will render L\(tile.level)X\(tile.x)Y\(tile.y)")
                 addTileToRenderList(tile)
             } else if queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(tile) {
                 // SSE is not good enough and children are loaded, so refine.
@@ -305,6 +306,7 @@ class QuadtreePrimitive {
                 ++_debug.tilesWaitingForChildren
                 // SSE is not good enough but not all children are loaded, so render this tile anyway.
                 addTileToRenderList(tile)
+                println("will render L\(tile.level)X\(tile.x)Y\(tile.y) - waiting for children")
             }
         }
         
@@ -334,7 +336,7 @@ class QuadtreePrimitive {
         
         let maxGeometricError = _tileProvider.levelMaximumGeometricError(tile.level)
         
-        var distance = _tileProvider.computeDistanceToTile(tile, frameState: frameState)
+        let distance = _tileProvider.computeDistanceToTile(tile, frameState: frameState)
         tile.distance = distance
         
         // PERFORMANCE_IDEA: factor out stuff that's constant across tiles.

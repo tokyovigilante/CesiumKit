@@ -288,9 +288,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @returns {Visibility} The visibility of the tile.
     */
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
-        
-        //var boundingSphereScratch = new BoundingSphere();
-        
         let surfaceTile = tile.data!
         let cullingVolume = frameState.cullingVolume!
         var boundingVolume = surfaceTile.boundingSphere3D
@@ -319,25 +316,14 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if frameState.mode == .Scene3D {
             var occludeePointInScaledSpace = surfaceTile.occludeePointInScaledSpace
             if occludeePointInScaledSpace == nil {
-                if intersection == .Intersecting {
-                    println("L\(tile.level)X\(tile.x)Y\(tile.y) partial")
-                } else {
-                    println("L\(tile.level)X\(tile.x)Y\(tile.y) visible")
-                }
                 return Visibility(rawValue: intersection.rawValue)!
             }
             
             if occluders.ellipsoid.isScaledSpacePointVisible(occludeePointInScaledSpace!) {
-                if intersection == .Intersecting {
-                    println("L\(tile.level)X\(tile.x)Y\(tile.y) partial")
-                } else {
-                    println("L\(tile.level)X\(tile.x)Y\(tile.y) visible")
-                }
                 return Visibility(rawValue: intersection.rawValue)!
             }
             return Visibility.None
         }
-        
         return Visibility(rawValue: intersection.rawValue)!
     }
     

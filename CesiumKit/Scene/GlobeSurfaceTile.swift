@@ -352,7 +352,7 @@ class GlobeSurfaceTile {
         let westernMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.west, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
         
         // Compute the normal of the plane on the western edge of the tile.
-        surfaceTile.westNormal = Cartesian3.unitZ().cross(westernMidpointCartesian).normalize()
+        surfaceTile.westNormal = westernMidpointCartesian.cross(Cartesian3.unitZ()).normalize()
         
         // The middle latitude on the eastern edge.
         let easternMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.east, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
@@ -367,7 +367,7 @@ class GlobeSurfaceTile {
         
         // Compute the normal of the plane bounding the northern edge of the tile.
         var northwestCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.northwest())
-        surfaceTile.northNormal = northwestCornerNormal.cross(westVector).normalize()
+        surfaceTile.northNormal = westVector.cross(northwestCornerNormal).normalize()
     }
 
     class func processTerrainStateMachine(tile: QuadtreeTile, context: Context, terrainProvider: TerrainProvider) {
