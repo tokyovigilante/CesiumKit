@@ -82,7 +82,7 @@ class CesiumViewController: GLKViewController {
             imageryProvider: BingMapsImageryProvider(),
             resolutionScale: 0.5)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(/*BingMapsImageryProvider())*/TileCoordinateImageryProvider())
+        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         
     }

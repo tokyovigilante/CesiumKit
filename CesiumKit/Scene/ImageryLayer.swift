@@ -619,158 +619,158 @@ public class ImageryLayer {
     var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
     */
     func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> Texture {
-        // FIXME: reproject
+        
+        var reproject = context.cache["imageryLayer_reproject"]
+        
+        if reproject == nil {
+        /*    reproject = {
+                framebuffer : undefined,
+                vertexArray : undefined,
+                shaderProgram : undefined,
+                renderState : undefined,
+                sampler : undefined,
+                destroy : function() {
+                    if (defined(this.framebuffer)) {
+                        this.framebuffer.destroy();
+                    }
+                    if (defined(this.vertexArray)) {
+                        this.vertexArray.destroy();
+                    }
+                    if (defined(this.shaderProgram)) {
+                        this.shaderProgram.destroy();
+                    }
+                }
+            }*/
+            
+            // We need a vertex array with close to one vertex per output texel because we're doing
+            // the reprojection by computing texture coordinates in the vertex shader.
+            // If we computed Web Mercator texture coordinate per-fragment instead, we could get away with only
+            // four vertices.  Problem is: fragment shaders have limited precision on many mobile devices,
+            // leading to all kinds of smearing artifacts.  Current browsers (Chrome 26 for example)
+            // do not correctly report the available fragment shader precision, so we can't have different
+            // paths for devices with or without high precision fragment shaders, even if we want to.
+            
+            var positions = [SerializedType]()
+            positions.reserveCapacity(256*256*2)
+            var index = 0
+            for j in 0..<256 {
+                let y = Float(j) / 255.0
+                for i in 0..<256 {
+                    let x = Float(i) / 255.0
+                    positions[index++] = .Float32(x)
+                    positions[index++] = .Float32(y)
+                }
+            }
+            
+            let reprojectGeometry = Geometry(
+                attributes: GeometryAttributes(
+                    position: GeometryAttribute(
+                        componentDatatype: .Float32,
+                        componentsPerAttribute: 2,
+                        values: positions
+                    )
+                ),
+                indices: EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256).map({  Int($0) }),
+                primitiveType : PrimitiveType.Triangles
+            )
+            
+            let reprojectAttribInds = ["position": 0]
+            
+            let vertexArray = context.createVertexArrayFromGeometry(
+                geometry: reprojectGeometry,
+                attributeLocations: reprojectAttribInds,
+                bufferUsage: BufferUsage.StaticDraw
+            )
+            /*
+            reproject.shaderProgram = context.createShaderProgram(
+                ReprojectWebMercatorVS,
+                ReprojectWebMercatorFS,
+                reprojectAttribInds);
+            
+            let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
+            reproject.sampler = context.createSampler({
+                wrapS : TextureWrap.CLAMP_TO_EDGE,
+                wrapT : TextureWrap.CLAMP_TO_EDGE,
+                minificationFilter : TextureMinificationFilter.LINEAR,
+                magnificationFilter : TextureMagnificationFilter.LINEAR,
+                maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
+            });*/
+            context.cache["imageryLayer_reproject"] = reproject
+        }
+        
+        /*texture.sampler = reproject.sampler;
+        
+        var width = texture.width;
+        var height = texture.height;
+        
+        uniformMap.textureDimensions.x = width;
+        uniformMap.textureDimensions.y = height;
+        uniformMap.texture = texture;
+        
+        uniformMap.northLatitude = rectangle.north;
+        uniformMap.southLatitude = rectangle.south;
+        
+        var sinLatitude = Math.sin(rectangle.south);
+        var southMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
+        
+        float32ArrayScratch[0] = southMercatorY;
+        uniformMap.southMercatorYHigh = float32ArrayScratch[0];
+        uniformMap.southMercatorYLow = southMercatorY - float32ArrayScratch[0];
+        
+        sinLatitude = Math.sin(rectangle.north);
+        var northMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
+        uniformMap.oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY);
+        
+        var outputTexture = context.createTexture2D({
+            width : width,
+            height : height,
+            pixelFormat : texture.pixelFormat,
+            pixelDatatype : texture.pixelDatatype,
+            preMultiplyAlpha : texture.preMultiplyAlpha
+        })
+    
+        // Allocate memory for the mipmaps.  Failure to do this before rendering
+        // to the texture via the FBO, and calling generateMipmap later,
+        // will result in the texture appearing blank.  I can't pretend to
+        // understand exactly why this is.
+        outputTexture.generateMipmap(MipmapHint.NICEST);
+        
+        if (defined(reproject.framebuffer)) {
+            reproject.framebuffer.destroy();
+        }
+        
+        reproject.framebuffer = context.createFramebuffer({
+            colorTextures : [outputTexture]
+        });
+        reproject.framebuffer.destroyAttachments = false;
+        
+        var command = new ClearCommand({
+            color : Color.BLACK,
+            framebuffer : reproject.framebuffer
+        });
+        command.execute(context);
+        
+        if ((!defined(reproject.renderState)) ||
+            (reproject.renderState.viewport.width !== width) ||
+            (reproject.renderState.viewport.height !== height)) {
+                
+                reproject.renderState = context.createRenderState({
+                    viewport : new BoundingRectangle(0, 0, width, height)
+                });
+        }
+        
+        var drawCommand = new DrawCommand({
+            framebuffer : reproject.framebuffer,
+            shaderProgram : reproject.shaderProgram,
+            renderState : reproject.renderState,
+            primitiveType : PrimitiveType.TRIANGLES,
+            vertexArray : reproject.vertexArray,
+            uniformMap : uniformMap
+        });
+        drawCommand.execute(context);
+        
+        return outputTexture;*/
         return texture
-    /*var reproject = context.cache.imageryLayer_reproject;
-    
-    if (!defined(reproject)) {
-    reproject = context.cache.imageryLayer_reproject = {
-    framebuffer : undefined,
-    vertexArray : undefined,
-    shaderProgram : undefined,
-    renderState : undefined,
-    sampler : undefined,
-    destroy : function() {
-    if (defined(this.framebuffer)) {
-    this.framebuffer.destroy();
-    }
-    if (defined(this.vertexArray)) {
-    this.vertexArray.destroy();
-    }
-    if (defined(this.shaderProgram)) {
-    this.shaderProgram.destroy();
-    }
-    }
-    };
-    
-    // We need a vertex array with close to one vertex per output texel because we're doing
-    // the reprojection by computing texture coordinates in the vertex shader.
-    // If we computed Web Mercator texture coordinate per-fragment instead, we could get away with only
-    // four vertices.  Problem is: fragment shaders have limited precision on many mobile devices,
-    // leading to all kinds of smearing artifacts.  Current browsers (Chrome 26 for example)
-    // do not correctly report the available fragment shader precision, so we can't have different
-    // paths for devices with or without high precision fragment shaders, even if we want to.
-    
-    var positions = new Array(256 * 256 * 2);
-    var index = 0;
-    for (var j = 0; j < 256; ++j) {
-    var y = j / 255.0;
-    for (var i = 0; i < 256; ++i) {
-    var x = i / 255.0;
-    positions[index++] = x;
-    positions[index++] = y;
-    }
-    }
-    
-    var reprojectGeometry = new Geometry({
-    attributes : {
-    position : new GeometryAttribute({
-    componentDatatype : ComponentDatatype.FLOAT,
-    componentsPerAttribute : 2,
-    values : positions
-    })
-    },
-    indices : TerrainProvider.getRegularGridIndices(256, 256),
-    primitiveType : PrimitiveType.TRIANGLES
-    });
-    
-    var reprojectAttribInds = {
-    position : 0
-    };
-    
-    reproject.vertexArray = context.createVertexArrayFromGeometry({
-    geometry : reprojectGeometry,
-    attributeLocations : reprojectAttribInds,
-    bufferUsage : BufferUsage.STATIC_DRAW
-    });
-    
-    reproject.shaderProgram = context.createShaderProgram(
-    ReprojectWebMercatorVS,
-    ReprojectWebMercatorFS,
-    reprojectAttribInds);
-    
-    var maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy;
-    reproject.sampler = context.createSampler({
-    wrapS : TextureWrap.CLAMP_TO_EDGE,
-    wrapT : TextureWrap.CLAMP_TO_EDGE,
-    minificationFilter : TextureMinificationFilter.LINEAR,
-    magnificationFilter : TextureMagnificationFilter.LINEAR,
-    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
-    });
-    }
-    
-    texture.sampler = reproject.sampler;
-    
-    var width = texture.width;
-    var height = texture.height;
-    
-    uniformMap.textureDimensions.x = width;
-    uniformMap.textureDimensions.y = height;
-    uniformMap.texture = texture;
-    
-    uniformMap.northLatitude = rectangle.north;
-    uniformMap.southLatitude = rectangle.south;
-    
-    var sinLatitude = Math.sin(rectangle.south);
-    var southMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
-    
-    float32ArrayScratch[0] = southMercatorY;
-    uniformMap.southMercatorYHigh = float32ArrayScratch[0];
-    uniformMap.southMercatorYLow = southMercatorY - float32ArrayScratch[0];
-    
-    sinLatitude = Math.sin(rectangle.north);
-    var northMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
-    uniformMap.oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY);
-    
-    var outputTexture = context.createTexture2D({
-    width : width,
-    height : height,
-    pixelFormat : texture.pixelFormat,
-    pixelDatatype : texture.pixelDatatype,
-    preMultiplyAlpha : texture.preMultiplyAlpha
-    })
-    
-    // Allocate memory for the mipmaps.  Failure to do this before rendering
-    // to the texture via the FBO, and calling generateMipmap later,
-    // will result in the texture appearing blank.  I can't pretend to
-    // understand exactly why this is.
-    outputTexture.generateMipmap(MipmapHint.NICEST);
-    
-    if (defined(reproject.framebuffer)) {
-    reproject.framebuffer.destroy();
-    }
-    
-    reproject.framebuffer = context.createFramebuffer({
-    colorTextures : [outputTexture]
-    });
-    reproject.framebuffer.destroyAttachments = false;
-    
-    var command = new ClearCommand({
-    color : Color.BLACK,
-    framebuffer : reproject.framebuffer
-    });
-    command.execute(context);
-    
-    if ((!defined(reproject.renderState)) ||
-    (reproject.renderState.viewport.width !== width) ||
-    (reproject.renderState.viewport.height !== height)) {
-    
-    reproject.renderState = context.createRenderState({
-    viewport : new BoundingRectangle(0, 0, width, height)
-    });
-    }
-    
-    var drawCommand = new DrawCommand({
-    framebuffer : reproject.framebuffer,
-    shaderProgram : reproject.shaderProgram,
-    renderState : reproject.renderState,
-    primitiveType : PrimitiveType.TRIANGLES,
-    vertexArray : reproject.vertexArray,
-    uniformMap : uniformMap
-    });
-    drawCommand.execute(context);
-    
-    return outputTexture;*/
     }
 
     /**

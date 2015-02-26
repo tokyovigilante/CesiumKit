@@ -1780,7 +1780,7 @@ function interleaveAttributes(attributes) {
 * va = va.destroy();
 */
     func createVertexArrayFromGeometry (
-        geometry: Geometry,
+        #geometry: Geometry,
         attributeLocations: [String: Int],
         bufferUsage: BufferUsage = .DynamicDraw,
         interleave: Bool = false) -> VertexArray {

@@ -663,7 +663,7 @@ class Globe {
                     primitiveType : PrimitiveType.Triangles
             )
             _depthCommand.vertexArray = context.createVertexArrayFromGeometry(
-                geometry,
+                geometry: geometry,
                 attributeLocations: ["position": 0],
                 bufferUsage: .DynamicDraw)
         } else {
