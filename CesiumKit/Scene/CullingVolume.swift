@@ -35,6 +35,7 @@ struct CullingVolume {
     */
     func visibility(boundingVolume: Intersectable) -> Intersect {
         var intersecting = false
+        
         for plane in planes {
             var result = boundingVolume.intersect(plane)
             if (result == Intersect.Outside) {

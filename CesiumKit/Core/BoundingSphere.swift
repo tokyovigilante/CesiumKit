@@ -639,18 +639,16 @@ BoundingSphere.expand = function(sphere, point, result) {
 *                      intersects the plane.
 */
     func intersect(plane: Cartesian4) -> Intersect {
-        // FIXME Intersect
+
+        var distanceToPlane = Cartesian3(fromCartesian4: plane).dot(center) + plane.w
         
-        /*
-        var distanceToPlane = plane.dot(center) + plane.w
-        
-        if (distanceToPlane < -radius) {
+        if distanceToPlane < -radius {
             // The center point is negative side of the plane normal
             return Intersect.Outside
-        } else if (distanceToPlane < radius) {
+        } else if distanceToPlane < radius {
             // The center point is positive side of the plane, but radius extends beyond it; partial overlap
             return Intersect.Intersecting
-        }*/
+        }
         return Intersect.Inside
     }
 /*
