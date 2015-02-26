@@ -144,13 +144,13 @@ class Texture {
             height = source!.height
         }
         
-        self.pixelFormat = PixelFormat.RGBA//options.pixelFormat
+        pixelFormat = .RGBA//options.pixelFormat
         
-        self.pixelDatatype = options.pixelDatatype
+        pixelDatatype = options.pixelDatatype
         
-        self.premultiplyAlpha = options.premultiplyAlpha
+        premultiplyAlpha = options.premultiplyAlpha
         
-        self.textureName = 0
+        textureName = 0
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")

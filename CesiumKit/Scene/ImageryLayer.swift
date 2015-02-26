@@ -495,7 +495,7 @@ public class ImageryLayer {
         let texture = context.createTexture2D(TextureOptions(
             source : .Image(imagery.image!),
             pixelFormat : imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
-        
+        println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
         imagery.texture = texture
         imagery.image = nil
         imagery.state = ImageryState.TextureLoaded

@@ -289,7 +289,6 @@ class QuadtreePrimitive {
             // We may want to revisit this in the future.
             if screenSpaceError(context: context, frameState: frameState, tile: tile) < maximumScreenSpaceError {
                 // This tile meets SSE requirements, so render it.
-                println("will render L\(tile.level)X\(tile.x)Y\(tile.y)")
                 addTileToRenderList(tile)
             } else if queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(tile) {
                 // SSE is not good enough and children are loaded, so refine.

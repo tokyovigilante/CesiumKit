@@ -28,9 +28,7 @@ class TileUniformMap: UniformMap {
     
     var tileRectangle = Cartesian4()
     
-    lazy var dayTextures: [Texture] = {
-        return [Texture]()
-    }()
+    var dayTextures: [Texture]
     
     lazy var dayTextureTranslationAndScale: [Cartesian4] = {
         return Array(count: self.maxTextureCount, repeatedValue: Cartesian4())
@@ -163,5 +161,7 @@ class TileUniformMap: UniformMap {
 
     init(maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
+        dayTextures = Array<Texture>()
+        dayTextures.reserveCapacity(maxTextureCount)
     }
 }

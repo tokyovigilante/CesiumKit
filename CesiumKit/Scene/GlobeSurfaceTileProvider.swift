@@ -720,6 +720,8 @@ var northeastScratch = new Cartesian3();
             var applyGamma = false
             var applyAlpha = false
             
+            uniformMap.dayTextures.removeAll()
+
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
                 let tileImagery = tileImageryCollection[imageryIndex]
                 let imagery = tileImagery.readyImagery

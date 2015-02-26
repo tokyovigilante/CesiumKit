@@ -224,9 +224,12 @@ class Uniform {
         
         if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
             setSampler = { (textureUnitIndex: GLint) -> GLint in
+                
+                self._textureUnitIndex = textureUnitIndex
+
                 let count = self._locations.count
                 for i in 0..<count {
-                    let index = self._textureUnitIndex + i
+                    let index = textureUnitIndex + i
                     glUniform1i(self._locations[i], index)
                 }
                 return self._textureUnitIndex + count
