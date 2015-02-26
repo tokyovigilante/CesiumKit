@@ -48,10 +48,10 @@ class Imagery {
         self.y = y
         
         if (level != 0) {
-            var parentX = x / 2 | 0
-            var parentY = y / 2 | 0
-            var parentLevel = level - 1
-            parent = imageryLayer.getImageryFromCache(x: parentX, y: parentY, level: parentLevel)
+            let parentX = x / 2 | 0
+            let parentY = y / 2 | 0
+            let parentLevel = level - 1
+            parent = imageryLayer.getImageryFromCache(level: parentLevel, x: parentX, y: parentY)
         }
         
         if rectangle == nil && imageryLayer.imageryProvider.ready {

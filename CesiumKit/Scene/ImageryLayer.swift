@@ -397,7 +397,7 @@ public class ImageryLayer {
                 }
                 
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
-                let imagery = getImageryFromCache(x: i, y: j, level: imageryLevel, imageryRectangle: imageryRectangle)
+                let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
                 surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), atIndex: insertionPoint!)
                 ++insertionPoint!
             }
@@ -562,8 +562,8 @@ public class ImageryLayer {
         imagery.state = .Ready
     }
 
-    func getImageryFromCache (#x: Int, y: Int, level: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
-        let cacheKey = getImageryCacheKey(x: x, y: y, level: level)
+    func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+        let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
         if imagery == nil {
@@ -576,11 +576,11 @@ public class ImageryLayer {
     }
     
     func removeImageryFromCache (imagery: Imagery) {
-        var cacheKey = getImageryCacheKey(x: imagery.x, y: imagery.y, level: imagery.level)
+        var cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValueForKey(cacheKey)
     }
     
-    func getImageryCacheKey(#x: Int, y: Int, level: Int) -> String {
+    func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     /*
