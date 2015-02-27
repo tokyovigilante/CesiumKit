@@ -150,7 +150,7 @@ public class ImageryLayer {
     *        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
     *        views.
     */
-    let maximumAnisotropy: Int?
+    let maximumAnisotropy: GLint?
     
     /*
     * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
@@ -197,7 +197,7 @@ public class ImageryLayer {
         show: Bool = true,
         minimumTerrainLevel: Int? = nil,
         maximumTerrainLevel: Int? = nil,
-        maximumAnisotropy: Int? = nil
+        maximumAnisotropy: GLint? = nil
         ) {
             self.imageryProvider = imageryProvider
             self._rectangle = rectangle
@@ -518,6 +518,8 @@ public class ImageryLayer {
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
         // no noticeable difference in the georeferencing of the image.
+        
+        // FIXME: disabled texture reprojection
         let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(10, -5)
         let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
         if !isGeographic && pixelGap {
@@ -618,29 +620,35 @@ public class ImageryLayer {
     
     var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
     */
+    
+    class Reproject {
+        var framebuffer: Framebuffer? = nil
+        let vertexArray: VertexArray
+        let shaderProgram: ShaderProgram
+        var renderState: RenderState? = nil
+        let sampler: Sampler
+        
+        init (vertexArray: VertexArray, shaderProgram: ShaderProgram, sampler: Sampler) {
+            self.vertexArray = vertexArray
+            self.shaderProgram = shaderProgram
+            self.sampler = sampler
+        }
+        
+        deinit {
+            // FIXME: destroy
+            if framebuffer != nil {
+                //this.framebuffer.destroy()
+            }
+            //this.vertexArray.destroy();
+            //shaderProgram.destroy();
+        }
+    }
+
     func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> Texture {
         
-        var reproject = context.cache["imageryLayer_reproject"]
+        var reproject = context.cache["imageryLayer_reproject"] as! Reproject?
         
         if reproject == nil {
-        /*    reproject = {
-                framebuffer : undefined,
-                vertexArray : undefined,
-                shaderProgram : undefined,
-                renderState : undefined,
-                sampler : undefined,
-                destroy : function() {
-                    if (defined(this.framebuffer)) {
-                        this.framebuffer.destroy();
-                    }
-                    if (defined(this.vertexArray)) {
-                        this.vertexArray.destroy();
-                    }
-                    if (defined(this.shaderProgram)) {
-                        this.shaderProgram.destroy();
-                    }
-                }
-            }*/
             
             // We need a vertex array with close to one vertex per output texel because we're doing
             // the reprojection by computing texture coordinates in the vertex shader.
@@ -650,27 +658,30 @@ public class ImageryLayer {
             // do not correctly report the available fragment shader precision, so we can't have different
             // paths for devices with or without high precision fragment shaders, even if we want to.
             
-            var positions = [SerializedType]()
-            positions.reserveCapacity(256*256*2)
+            var positions = [Float](count: 256*256*2, repeatedValue: 0.0)
             var index = 0
             for j in 0..<256 {
                 let y = Float(j) / 255.0
                 for i in 0..<256 {
                     let x = Float(i) / 255.0
-                    positions[index++] = .Float32(x)
-                    positions[index++] = .Float32(y)
+                    positions[index++] = x
+                    positions[index++] = y
                 }
             }
-            
+            let indicesInt = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256)
+            var indices = [Int](count: indicesInt.count, repeatedValue: 0)
+            for index in 0..<indicesInt.count {
+                indices[index] = Int(index)
+            }
             let reprojectGeometry = Geometry(
                 attributes: GeometryAttributes(
                     position: GeometryAttribute(
                         componentDatatype: .Float32,
                         componentsPerAttribute: 2,
-                        values: positions
+                        values: positions.map({ .Float32($0) })
                     )
                 ),
-                indices: EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256).map({  Int($0) }),
+                indices: indices,
                 primitiveType : PrimitiveType.Triangles
             )
             
@@ -681,20 +692,27 @@ public class ImageryLayer {
                 attributeLocations: reprojectAttribInds,
                 bufferUsage: BufferUsage.StaticDraw
             )
-            /*
-            reproject.shaderProgram = context.createShaderProgram(
-                ReprojectWebMercatorVS,
-                ReprojectWebMercatorFS,
-                reprojectAttribInds);
+            
+            let shaderProgram = context.createShaderProgram(
+                vertexShaderSource: Shaders["ReprojectWebMercatorVS"]!,
+                fragmentShaderSource: Shaders["ReprojectWebMercatorFS"]!,
+                attributeLocations: reprojectAttribInds
+            )
             
             let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
-            reproject.sampler = context.createSampler({
-                wrapS : TextureWrap.CLAMP_TO_EDGE,
-                wrapT : TextureWrap.CLAMP_TO_EDGE,
-                minificationFilter : TextureMinificationFilter.LINEAR,
-                magnificationFilter : TextureMagnificationFilter.LINEAR,
-                maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
-            });*/
+            var sampler = Sampler()
+            sampler.wrapS = .Edge
+            sampler.wrapT = .Edge
+            sampler.minificationFilter = TextureMinificationFilter.Linear
+            sampler.magnificationFilter = TextureMagnificationFilter.Linear
+            sampler.maximumAnisotropy = min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy)
+            
+            reproject = Reproject(
+                vertexArray: vertexArray,
+                shaderProgram: shaderProgram!,
+                sampler: sampler
+            )
+            
             context.cache["imageryLayer_reproject"] = reproject
         }
         

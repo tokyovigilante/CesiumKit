@@ -16,7 +16,7 @@ class Sampler {
     var maximumAnisotropy: GLint = 1
 }
 
-enum TextureWrap: GLint {
+enum TextureWrap {
     case Edge, Repeat, MirroredRepeat
     
     func toGL() -> GLint {

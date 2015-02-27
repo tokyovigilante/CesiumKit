@@ -87,7 +87,6 @@
 		9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499F1948331C009D1703 /* GeographicProjection.swift */; };
 		9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
-		9413B79E1A37B92900FFAD81 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697D9F1A25C74500FFAD81 /* Regex.swift */; };
 		9413B79F1A37B92900FFAD81 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		9413B7A01A37B92900FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		9413B7A11A37B93100FFAD81 /* BoundingRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC4354194816B8007117F2 /* BoundingRectangle.swift */; };
@@ -255,7 +254,6 @@
 		9413B8451A37B94800FFAD81 /* TileTerrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9454042E199F5C7D00012DC4 /* TileTerrain.swift */; };
 		9413B8461A37B94800FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
-		944787D81A3D8BED00FFAD81 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697D9F1A25C74500FFAD81 /* Regex.swift */; };
 		944787D91A3D8BF200FFAD81 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		944787DA1A3D8BF500FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
@@ -265,6 +263,7 @@
 		9455EB871A7D00ED00FFAD81 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB861A7D00ED00FFAD81 /* Threading.swift */; };
 		9455EB8A1A7D085000FFAD81 /* NSString+URLEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */; };
 		9455EB8B1A7D085000FFAD81 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */; };
+		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
 		948BA2B11A99F1B900FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
@@ -379,6 +378,7 @@
 		9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLEncode.h"; sourceTree = "<group>"; };
 		9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLEncode.m"; sourceTree = "<group>"; };
 		9455EB8C1A7D08D000FFAD81 /* CesiumKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Bridging-Header.h"; sourceTree = "<group>"; };
+		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
 		9460F806194DA5AF00012DC4 /* Visibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Visibility.swift; sourceTree = "<group>"; };
 		9460F808194DA7F800012DC4 /* PassState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassState.swift; sourceTree = "<group>"; };
@@ -394,7 +394,6 @@
 		9465B0231956F5A400355D2C /* UniformState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformState.swift; sourceTree = "<group>"; };
 		9465B0251956F5DE00355D2C /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		9465B0271956F61400355D2C /* CubeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMap.swift; sourceTree = "<group>"; };
-		94697D9F1A25C74500FFAD81 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Regex.swift; path = Platform/Regex.swift; sourceTree = "<group>"; };
 		94697DA11A25CA0E00FFAD81 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Platform/Array.swift; sourceTree = "<group>"; };
 		946D25A919592BFD0080379D /* Ray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
 		946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BoundingSphereTests.swift; path = Core/BoundingSphereTests.swift; sourceTree = "<group>"; };
@@ -626,11 +625,12 @@
 				9465B0211956F53700355D2C /* ShaderCache.swift */,
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
 				9465B0251956F5DE00355D2C /* Texture.swift */,
+				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
+				9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */,
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
 				947A240C19C9911D0040042F /* VertexAttributes.swift */,
 				947A241019C99C860040042F /* WindingOrder.swift */,
-				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -702,7 +702,6 @@
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				9455EB881A7D085000FFAD81 /* NSString+URLEncode.h */,
 				9455EB891A7D085000FFAD81 /* NSString+URLEncode.m */,
-				94697D9F1A25C74500FFAD81 /* Regex.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
@@ -1043,9 +1042,9 @@
 				9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */,
 				9413B7A91A37B93100FFAD81 /* Credit.swift in Sources */,
 				9413B7C41A37B93100FFAD81 /* Projection.swift in Sources */,
+				9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */,
 				9413B8071A37B94500FFAD81 /* ImageryState.swift in Sources */,
 				9413B7E41A37B93D00FFAD81 /* GLEnumerations.swift in Sources */,
-				9413B79E1A37B92900FFAD81 /* Regex.swift in Sources */,
 				9413B7E01A37B93D00FFAD81 /* CullFace.swift in Sources */,
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
@@ -1153,7 +1152,6 @@
 				9413B8441A37B94800FFAD81 /* TileReplacementQueue.swift in Sources */,
 				9413B8431A37B94800FFAD81 /* TileImagery.swift in Sources */,
 				9410138A19FB037D00FFAD81 /* ClearCommand.swift in Sources */,
-				944787D81A3D8BED00FFAD81 /* Regex.swift in Sources */,
 				9413B8411A37B94800FFAD81 /* TerrainState.swift in Sources */,
 				9413113919F3A08800FFAD81 /* Cartographic.swift in Sources */,
 				944787DA1A3D8BF500FFAD81 /* String.swift in Sources */,
@@ -1278,6 +1276,7 @@
 		9413B7981A37B8D900FFAD81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Walklin (JZB26ZTJB7)";
@@ -1309,6 +1308,7 @@
 		9413B7991A37B8D900FFAD81 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Walklin (JZB26ZTJB7)";
@@ -1335,6 +1335,7 @@
 		94985A861A38444C00FFAD81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Walklin (JZB26ZTJB7)";
@@ -1357,6 +1358,7 @@
 		94985A871A38444C00FFAD81 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Walklin (JZB26ZTJB7)";

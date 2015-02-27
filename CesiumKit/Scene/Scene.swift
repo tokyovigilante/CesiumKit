@@ -296,7 +296,7 @@ public class Scene {
     * DOC_TBA
     */
     struct Scene2D {
-        var projection: Projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
+        var projection: Projection? = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
     }
     var scene2D = Scene2D()
     
@@ -491,7 +491,7 @@ public class Scene {
         _passState = PassState()
         _passState.context = context
         camera = Camera(
-            projection: scene2D.projection,
+            projection: scene2D.projection ?? GeographicProjection(),
             mode: mode,
             initialWidth: Double(context.view.frame.width),
             initialHeight: Double(context.view.frame.height)
@@ -1053,8 +1053,8 @@ function callAfterRenderFunctions(frameState) {
         }*/
         
         //animations.update()
-        //camera.update(mode, scene2D)
-        //screenSpaceCameraController.update(mode)
+        camera.update(mode, scene2D: scene2D)
+        screenSpaceCameraController.update()
     }
 
     

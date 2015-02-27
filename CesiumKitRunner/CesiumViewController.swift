@@ -27,6 +27,7 @@ class CesiumViewController: GLKViewController {
     override func viewDidLoad () {
         super.viewDidLoad()
         setupContext()
+        setupGestureRecognisers()
     }
     
     override func didReceiveMemoryWarning() {
@@ -83,8 +84,11 @@ class CesiumViewController: GLKViewController {
             resolutionScale: 0.5)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-        
-        
+    }
+    
+    func setupGestureRecognisers() {
+        let pinch = UIPinchGestureRecognizer(target: self, action: Selector("handlePinchGesture:"))
+        view.addGestureRecognizer(pinch)
     }
     
     func tearDownGL () {
@@ -106,6 +110,27 @@ class CesiumViewController: GLKViewController {
     // MARK: - GLKViewControllerDelegate
     func update () {
         
+    }
+    
+    func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {
+        
+        
+        if recognizer.scale < 1 {
+            println("Pinched")
+        } else {
+            println("Zoomed")
+        }
+        /*if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
+            [gesture setString:kPinchGesture];
+            if (((UIGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
+                if (((UIPinchGestureRecognizer*)sender).scale < 1) {
+                    NSLog(@"Pinched");
+                }
+                else {
+                    NSLog(@"Zoomed");
+                }
+                
+            }*/
     }
 }
 

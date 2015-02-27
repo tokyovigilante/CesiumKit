@@ -682,10 +682,10 @@ class ShaderProgram {
     func setUniforms (uniformMap: TileUniformMap?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
         
-        if uniformMap != nil {
+        if let uniformMap = uniformMap {
             for (name, uniform) in _manualUniforms! {
-                if let uniformFunc: UniformFunc = uniformMap!.uniforms[name] {
-                    uniform.values = uniformFunc(map: uniformMap!)
+                if let uniformFunc = uniformMap[name] {
+                    uniform.values = uniformFunc(map: uniformMap)
                 } else {
                     assertionFailure("no matching uniform for \(name)")
                 }

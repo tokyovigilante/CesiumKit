@@ -289,7 +289,7 @@ public class Camera {
     
     private var _maxCoord = Cartesian3()
     
-    private var _max2Dfrustum: OrthographicFrustum? = nil
+    private var _max2Dfrustum: Frustum? = nil
 
     var transform2D = Matrix4(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)
 
@@ -785,44 +785,50 @@ tilt : {
     }
 }
 });
-
-var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
+*/
+//var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
 /**
 * @private
 */
-Camera.prototype.update = function(mode, scene2D) {
-    var updateFrustum = false;
-    if (mode !== this._mode) {
-        this._mode = mode;
-        this._modeChanged = mode !== SceneMode.MORPHING;
-        updateFrustum = this._mode === SceneMode.SCENE2D;
-    }
-    
-    var projection = scene2D.projection;
-    if (defined(projection) && projection !== this._projection) {
-        this._projection = projection;
-        this._maxCoord = projection.project(scratchUpdateCartographic, this._maxCoord);
-    }
-    
-    if (updateFrustum) {
-        var frustum = this._max2Dfrustum = this.frustum.clone();
+    func update (mode: SceneMode, scene2D: Scene.Scene2D) {
+        var updateFrustum = false
         
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(frustum.left) || !defined(frustum.right) ||
-            !defined(frustum.top) || !defined(frustum.bottom)) {
-                throw new DeveloperError('The camera frustum is expected to be orthographic for 2D camera control.');
+        if mode != self.mode {
+            self.mode = mode
+            _modeChanged = mode != .Morphing
+            updateFrustum = self.mode == .Scene2D
         }
-        //>>includeEnd('debug');
         
-        var maxZoomOut = 2.0;
-        var ratio = frustum.top / frustum.right;
-        frustum.right = this._maxCoord.x * maxZoomOut;
-        frustum.left = -frustum.right;
-        frustum.top = ratio * frustum.right;
-        frustum.bottom = -frustum.top;
+        let projection = scene2D.projection
+        // FIXME: Update projection
+        /*if projection != nil /*&& projection! != _projection*/ {
+            if projection! is _projection.dynamicType {
+                _projection = projection
+                _maxCoord = projection.project(_maxCoord)
+            }
+        }*/
+        
+        if updateFrustum {
+            // FIXME: updateFrustum
+            /*_max2Dfrustum = frustum
+            var frustum = this._max2Dfrustum = this.frustum.clone()
+            
+            //>>includeStart('debug', pragmas.debug);
+            if (!defined(frustum.left) || !defined(frustum.right) ||
+                !defined(frustum.top) || !defined(frustum.bottom)) {
+                    throw new DeveloperError('The camera frustum is expected to be orthographic for 2D camera control.');
+            }
+            //>>includeEnd('debug');
+            
+            var maxZoomOut = 2.0;
+            var ratio = frustum.top / frustum.right;
+            frustum.right = this._maxCoord.x * maxZoomOut;
+            frustum.left = -frustum.right;
+            frustum.top = ratio * frustum.right;
+            frustum.bottom = -frustum.top;*/
+        }
     }
-};
-
+/*
 var setTransformPosition = new Cartesian3();
 var setTransformUp = new Cartesian3();
 var setTransformDirection = new Cartesian3();

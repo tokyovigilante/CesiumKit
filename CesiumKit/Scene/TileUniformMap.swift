@@ -6,10 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-protocol UniformMap {}
-
-typealias UniformFunc = ((map: UniformMap) -> [UniformValue])
-
 class TileUniformMap: UniformMap {
     
     let maxTextureCount: Int
@@ -72,7 +68,7 @@ class TileUniformMap: UniformMap {
     
     var waterMaskTranslationAndScale = Cartesian4()
     
-    var uniforms: [String: UniformFunc] = [
+    private var _uniforms: [String: UniformFunc] = [
     
         "u_initialColor": { (map: UniformMap) -> [UniformValue] in
             return [.FloatVec4((map as! TileUniformMap).initialColor)]
@@ -164,4 +160,16 @@ class TileUniformMap: UniformMap {
         dayTextures = Array<Texture>()
         dayTextures.reserveCapacity(maxTextureCount)
     }
+    
+    subscript(name: String) -> UniformFunc? {
+        get {
+            return uniform(name)
+        }
+    }
+    
+    func uniform(name: String) -> UniformFunc? {
+        return _uniforms[name]
+
+    }
+
 }
