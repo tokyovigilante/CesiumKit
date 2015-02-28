@@ -483,8 +483,6 @@ class Context {
     get {
         var db = checkGLExtension("EXT_draw_buffers")
         if db {
-            glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
-            glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
         }
         return db
     }
@@ -692,6 +690,9 @@ class Context {
         
         glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &GLIntTemp)
         _clearStencil = Int(GLIntTemp)
+        
+        glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
+        glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
     
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)

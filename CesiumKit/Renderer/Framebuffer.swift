@@ -276,6 +276,7 @@ class Framebuffer {
     
     func bind() {
         if defaultFrameBufferObject == nil {
+            // save reference to default framebuffer
             var oldFBO: GLint = 0
             glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
             defaultFrameBufferObject = oldFBO
