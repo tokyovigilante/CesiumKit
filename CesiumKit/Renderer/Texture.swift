@@ -449,9 +449,8 @@ class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    func generateMipmap (mipmapHint: MipmapHint?) {
-        let hint = mipmapHint ?? MipmapHint.DontCare
-        
+    func generateMipmap (hint: MipmapHint = .DontCare) {
+
         assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
         
         assert(width > 1 && Math.isPowerOfTwo(width), "width must be a power of two to call generateMipmap()")

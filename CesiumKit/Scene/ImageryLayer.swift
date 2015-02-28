@@ -185,6 +185,11 @@ public class ImageryLayer {
     */
     var isBaseLayer = false
     
+    /**
+    * Uniform map for texture reprojection
+    */
+    private var uniformMap = ImageryLayerUniformMap()
+    
     init (
         imageryProvider: ImageryProvider,
         rectangle: Rectangle = Rectangle.maxValue(),
@@ -518,8 +523,6 @@ public class ImageryLayer {
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
         // no noticeable difference in the georeferencing of the image.
-        
-        // FIXME: disabled texture reprojection
         let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(10, -5)
         let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
         if !isGeographic && pixelGap {
@@ -529,7 +532,6 @@ public class ImageryLayer {
         }
         
         // Use mipmaps if this texture has power-of-two dimensions.
-        //FIXME: Mipmap disabled
         if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
             if mipmapSampler == nil {
@@ -542,20 +544,12 @@ public class ImageryLayer {
             }
             
             context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
-            texture.generateMipmap(.Nicest)
+            texture.generateMipmap(hint: .Nicest)
             texture.sampler = mipmapSampler
         } else {
             var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
             if nonMipmapSampler == nil {
                 nonMipmapSampler = Sampler()
-                //nonMipmapSampler?.wrapS = TextureWrap.Edge
-                /*nonMipmapSampler = Sampler(
-                wrapS: TextureWrap.Edge,
-                wrapT: .Edge,
-                minificationFilter: .Linear,
-                magnificationFilter: .Linear,
-                maximumAnisotropy: 1.0*/
-                //)
                 context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
             }
             texture.sampler = nonMipmapSampler!
@@ -585,41 +579,6 @@ public class ImageryLayer {
     func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
-    /*
-    var uniformMap = {
-    u_textureDimensions : function() {
-    return this.textureDimensions;
-    },
-    u_texture : function() {
-    return this.texture;
-    },
-    u_northLatitude : function() {
-    return this.northLatitude;
-    },
-    u_southLatitude : function() {
-    return this.southLatitude;
-    },
-    u_southMercatorYLow : function() {
-    return this.southMercatorYLow;
-    },
-    u_southMercatorYHigh : function() {
-    return this.southMercatorYHigh;
-    },
-    u_oneOverMercatorHeight : function() {
-    return this.oneOverMercatorHeight;
-    },
-    
-    textureDimensions : new Cartesian2(),
-    texture : undefined,
-    northLatitude : 0,
-    southLatitude : 0,
-    southMercatorYHigh : 0,
-    southMercatorYLow : 0,
-    oneOverMercatorHeight : 0
-    };
-    
-    var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
-    */
     
     class Reproject {
         var framebuffer: Framebuffer? = nil
@@ -716,79 +675,82 @@ public class ImageryLayer {
             context.cache["imageryLayer_reproject"] = reproject
         }
         
-        /*texture.sampler = reproject.sampler;
+        texture.sampler = reproject!.sampler
         
-        var width = texture.width;
-        var height = texture.height;
+        var width = texture.width
+        var height = texture.height
         
-        uniformMap.textureDimensions.x = width;
-        uniformMap.textureDimensions.y = height;
-        uniformMap.texture = texture;
+        uniformMap.textureDimensions.x = Double(width)
+        uniformMap.textureDimensions.y = Double(height)
+        uniformMap.texture = texture
         
-        uniformMap.northLatitude = rectangle.north;
-        uniformMap.southLatitude = rectangle.south;
+        uniformMap.northLatitude = Float(rectangle.north)
+        uniformMap.southLatitude = Float(rectangle.south)
         
-        var sinLatitude = Math.sin(rectangle.south);
-        var southMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
+        var sinLatitude = sin(rectangle.south)
+        let southMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
+
+        uniformMap.southMercatorYHigh = Float(southMercatorY)
+        uniformMap.southMercatorYLow = Float(southMercatorY - Double(uniformMap.southMercatorYHigh))
         
-        float32ArrayScratch[0] = southMercatorY;
-        uniformMap.southMercatorYHigh = float32ArrayScratch[0];
-        uniformMap.southMercatorYLow = southMercatorY - float32ArrayScratch[0];
+        sinLatitude = sin(rectangle.north)
+        let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
+        uniformMap.oneOverMercatorHeight = Float(1.0 / (northMercatorY - southMercatorY))
         
-        sinLatitude = Math.sin(rectangle.north);
-        var northMercatorY = 0.5 * Math.log((1 + sinLatitude) / (1 - sinLatitude));
-        uniformMap.oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY);
+        var outputTexture = context.createTexture2D(
+            TextureOptions(
+                width: width,
+                height: height,
+                pixelFormat: texture.pixelFormat,
+                pixelDatatype: texture.pixelDatatype,
+                premultiplyAlpha: texture.premultiplyAlpha
+            )
+        )
         
-        var outputTexture = context.createTexture2D({
-            width : width,
-            height : height,
-            pixelFormat : texture.pixelFormat,
-            pixelDatatype : texture.pixelDatatype,
-            preMultiplyAlpha : texture.preMultiplyAlpha
-        })
-    
         // Allocate memory for the mipmaps.  Failure to do this before rendering
         // to the texture via the FBO, and calling generateMipmap later,
         // will result in the texture appearing blank.  I can't pretend to
         // understand exactly why this is.
-        outputTexture.generateMipmap(MipmapHint.NICEST);
+        outputTexture.generateMipmap(hint: .Nicest)
         
-        if (defined(reproject.framebuffer)) {
-            reproject.framebuffer.destroy();
+        /*if reproject.framebuffer != nil {
+            reproject.framebuffer = nil
+        }*/
+        
+        reproject!.framebuffer = context.createFramebuffer(
+            Framebuffer.Options(
+                colorTextures : [outputTexture]
+            )
+        )
+        reproject!.framebuffer!.destroyAttachments = false
+        
+        let command = ClearCommand(
+            color: Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
+            framebuffer : reproject!.framebuffer!
+        )
+        command.execute(context: context)
+        
+        if reproject!.renderState == nil {
+            reproject!.renderState = context.createRenderState()
+            reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }
+        /*if reproject!.renderState!.viewport == nil ||
+            reproject!.renderState!.viewport!.width != width ||
+            reproject!.renderState!.viewport!.height != height {
+                reproject!.renderState.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+        }*/
         
-        reproject.framebuffer = context.createFramebuffer({
-            colorTextures : [outputTexture]
-        });
-        reproject.framebuffer.destroyAttachments = false;
+        let drawCommand = DrawCommand(
+            framebuffer: reproject!.framebuffer,
+            shaderProgram: reproject!.shaderProgram,
+            renderState: reproject!.renderState,
+            primitiveType: PrimitiveType.Triangles,
+            vertexArray: reproject!.vertexArray,
+            uniformMap: uniformMap
+        )
+        drawCommand.execute(context: context)
         
-        var command = new ClearCommand({
-            color : Color.BLACK,
-            framebuffer : reproject.framebuffer
-        });
-        command.execute(context);
-        
-        if ((!defined(reproject.renderState)) ||
-            (reproject.renderState.viewport.width !== width) ||
-            (reproject.renderState.viewport.height !== height)) {
-                
-                reproject.renderState = context.createRenderState({
-                    viewport : new BoundingRectangle(0, 0, width, height)
-                });
-        }
-        
-        var drawCommand = new DrawCommand({
-            framebuffer : reproject.framebuffer,
-            shaderProgram : reproject.shaderProgram,
-            renderState : reproject.renderState,
-            primitiveType : PrimitiveType.TRIANGLES,
-            vertexArray : reproject.vertexArray,
-            uniformMap : uniformMap
-        });
-        drawCommand.execute(context);
-        
-        return outputTexture;*/
-        return texture
+        return outputTexture
     }
 
     /**

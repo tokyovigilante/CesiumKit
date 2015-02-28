@@ -98,7 +98,7 @@ class DrawCommand: Command {
     * @type {Object}
     * @default undefined
     */
-    var uniformMap: TileUniformMap?
+    var uniformMap: UniformMap?
     
     /**
     * The render state.
@@ -187,7 +187,8 @@ class DrawCommand: Command {
         executeInClosestFrustum: Bool = false,
         owner: DrawCommandOwner? = nil,
         debugShowBoundingVolume: Bool = false,
-        debugOverlappingFrustums: Int = 0) {
+        debugOverlappingFrustums: Int = 0,
+        uniformMap: UniformMap? = nil) {
             self.boundingVolume = boundingVolume
             self.cull = cull
             self.primitiveType = primitiveType
@@ -202,7 +203,7 @@ class DrawCommand: Command {
             self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
-            self.uniformMap = nil
+            self.uniformMap = uniformMap
     }
     
     /**
@@ -213,7 +214,7 @@ class DrawCommand: Command {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
     */
-    func execute(#context: Context, passState: PassState, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
+    func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
 
     }

@@ -1168,55 +1168,55 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         */
         return nil
     }
-/*
-/**
-* Creates a framebuffer with optional initial color, depth, and stencil attachments.
-* Framebuffers are used for render-to-texture effects; they allow us to render to
-* textures in one pass, and read from it in a later pass.
-*
-* @memberof Context
-*
-* @param {Object} [options] The initial framebuffer attachments as shown in the examplebelow.  The possible properties are <code>colorTextures</code>, <code>colorRenderbuffers</code>, <code>depthTexture</code>, <code>depthRenderbuffer</code>, <code>stencilRenderbuffer</code>, <code>depthStencilTexture</code>, and <code>depthStencilRenderbuffer</code>.
-*
-* @returns {Framebuffer} The created framebuffer.
-*
-* @exception {DeveloperError} Cannot have both color texture and color renderbuffer attachments.
-* @exception {DeveloperError} Cannot have both a depth texture and depth renderbuffer attachment.
-* @exception {DeveloperError} Cannot have both a depth-stencil texture and depth-stencil renderbuffer attachment.
-* @exception {DeveloperError} Cannot have both a depth and depth-stencil renderbuffer.
-* @exception {DeveloperError} Cannot have both a stencil and depth-stencil renderbuffer.
-* @exception {DeveloperError} Cannot have both a depth and stencil renderbuffer.
-* @exception {DeveloperError} The color-texture pixel-format must be a color format.
-* @exception {DeveloperError} The depth-texture pixel-format must be DEPTH_COMPONENT.
-* @exception {DeveloperError} The depth-stencil-texture pixel-format must be DEPTH_STENCIL.
-* @exception {DeveloperError} The number of color attachments exceeds the number supported.
-*
-* @see Context#createTexture2D
-* @see Context#createCubeMap
-* @see Context#createRenderbuffer
-*
-* @example
-* // Create a framebuffer with color and depth texture attachments.
-* var width = context.canvas.clientWidth;
-* var height = context.canvas.clientHeight;
-* var framebuffer = context.createFramebuffer({
-*   colorTextures : [context.createTexture2D({
-*     width : width,
-*     height : height,
-*     pixelFormat : PixelFormat.RGBA
-*   })],
-*   depthTexture : context.createTexture2D({
-*     width : width,
-*     height : height,
-*     pixelFormat : PixelFormat.DEPTH_COMPONENT,
-*     pixelDatatype : PixelDatatype.UNSIGNED_SHORT
-*   })
-* });
-*/
-Context.prototype.createFramebuffer = function(options) {
-    return new Framebuffer(this._gl, this._maximumColorAttachments, options);
-};
 
+    /**
+    * Creates a framebuffer with optional initial color, depth, and stencil attachments.
+    * Framebuffers are used for render-to-texture effects; they allow us to render to
+    * textures in one pass, and read from it in a later pass.
+    *
+    * @memberof Context
+    *
+    * @param {Object} [options] The initial framebuffer attachments as shown in the examplebelow.  The possible properties are <code>colorTextures</code>, <code>colorRenderbuffers</code>, <code>depthTexture</code>, <code>depthRenderbuffer</code>, <code>stencilRenderbuffer</code>, <code>depthStencilTexture</code>, and <code>depthStencilRenderbuffer</code>.
+    *
+    * @returns {Framebuffer} The created framebuffer.
+    *
+    * @exception {DeveloperError} Cannot have both color texture and color renderbuffer attachments.
+    * @exception {DeveloperError} Cannot have both a depth texture and depth renderbuffer attachment.
+    * @exception {DeveloperError} Cannot have both a depth-stencil texture and depth-stencil renderbuffer attachment.
+    * @exception {DeveloperError} Cannot have both a depth and depth-stencil renderbuffer.
+    * @exception {DeveloperError} Cannot have both a stencil and depth-stencil renderbuffer.
+    * @exception {DeveloperError} Cannot have both a depth and stencil renderbuffer.
+    * @exception {DeveloperError} The color-texture pixel-format must be a color format.
+    * @exception {DeveloperError} The depth-texture pixel-format must be DEPTH_COMPONENT.
+    * @exception {DeveloperError} The depth-stencil-texture pixel-format must be DEPTH_STENCIL.
+    * @exception {DeveloperError} The number of color attachments exceeds the number supported.
+    *
+    * @see Context#createTexture2D
+    * @see Context#createCubeMap
+    * @see Context#createRenderbuffer
+    *
+    * @example
+    * // Create a framebuffer with color and depth texture attachments.
+    * var width = context.canvas.clientWidth;
+    * var height = context.canvas.clientHeight;
+    * var framebuffer = context.createFramebuffer({
+    *   colorTextures : [context.createTexture2D({
+    *     width : width,
+    *     height : height,
+    *     pixelFormat : PixelFormat.RGBA
+    *   })],
+    *   depthTexture : context.createTexture2D({
+    *     width : width,
+    *     height : height,
+    *     pixelFormat : PixelFormat.DEPTH_COMPONENT,
+    *     pixelDatatype : PixelDatatype.UNSIGNED_SHORT
+    *   })
+    * });
+    */
+    func createFramebuffer(options: Framebuffer.Options) -> Framebuffer {
+        return Framebuffer(maximumColorAttachments: maximumColorAttachments, options: options)
+    }
+/*
 Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;
     
@@ -1423,12 +1423,12 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             _currentFramebuffer = framebuffer
             var buffers = [GLuint]()
             
-            if framebuffer != nil {
-                framebuffer!.bind()
-                validateFramebuffer(framebuffer!)
+            if let framebuffer = framebuffer {
+                framebuffer.bind()
+                validateFramebuffer(framebuffer)
                 
                 // TODO: Need a way for a command to give what draw buffers are active.
-                buffers = framebuffer!.activeColorAttachments
+                buffers = framebuffer.activeColorAttachments
             } else {
                 //glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
             }

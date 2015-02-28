@@ -8,32 +8,68 @@
 
 import OpenGLES
 
-struct FramebufferOptions {
-    /**
-    * When true, the framebuffer owns its attachments so they will be destroyed when
-    * {@link Framebuffer#destroy} is called or when a new attachment is assigned
-    * to an attachment point.
-    *
-    * @type {Boolean}
-    * @default true
-    *
-    * @see Framebuffer#destroy
-    */
-    let destroyAttachments: Bool = true
-}
+var defaultFrameBufferObject: GLint? = nil
 
 /**
 * @private
 */
 class Framebuffer {
     
+    struct Options {
+        /**
+        * When true, the framebuffer owns its attachments so they will be destroyed when
+        * {@link Framebuffer#destroy} is called or when a new attachment is assigned
+        * to an attachment point.
+        *
+        * @type {Boolean}
+        * @default true
+        *
+        * @see Framebuffer#destroy
+        */
+        var destroyAttachments: Bool
+        
+        var colorTextures: [Texture]?
+        
+        var colorRenderbuffers: [Renderbuffer]?
+        
+        var depthTexture: Texture?
+        
+        var depthRenderbuffer: Renderbuffer?
+        
+        var stencilRenderbuffer: Renderbuffer?
+        
+        var depthStencilTexture: Texture?
+        
+        var depthStencilRenderbuffer: Renderbuffer?
+        
+        init (
+            destroyAttachments: Bool = true,
+            colorTextures: [Texture]? = nil,
+            colorRenderbuffers: [Renderbuffer]? = nil,
+            depthTexture: Texture? = nil,
+            depthRenderbuffer: Renderbuffer? = nil,
+            stencilRenderbuffer: Renderbuffer? = nil,
+            depthStencilTexture: Texture? = nil,
+            depthStencilRenderbuffer: Renderbuffer? = nil) {
+                
+                self.destroyAttachments = destroyAttachments
+                self.colorTextures = colorTextures
+                self.colorRenderbuffers = colorRenderbuffers
+                self.depthTexture = depthTexture
+                self.depthRenderbuffer = depthRenderbuffer
+                self.stencilRenderbuffer = stencilRenderbuffer
+                self.depthStencilTexture = depthStencilTexture
+                self.depthStencilRenderbuffer = depthStencilRenderbuffer
+        }
+    }
+    
     private var _framebuffer: GLuint = 0
     
-    private var _options = FramebufferOptions()
+    var destroyAttachments: Bool
     
-    private var _colorTextures = [GLuint]()
+    private var _colorTextures: [Texture]? = nil
 
-    private var _colorRenderbuffers = [GLuint]()
+    private var _colorRenderbuffers: [Renderbuffer]? = nil
     
     var activeColorAttachments: [GLuint] {
         get {
@@ -45,26 +81,19 @@ class Framebuffer {
     
     private var _depthTexture: Texture? = nil
     
-    private var _depthRenderBuffer: GLuint = 0
+    private var _depthRenderbuffer: Renderbuffer? = nil
     
-    private var _depthRenderbuffer: Buffer? = nil
-    
-    private var _stencilRenderbuffer: Buffer? = nil
+    private var _stencilRenderbuffer: Renderbuffer? = nil
     
     private var _depthStencilTexture: Texture? = nil
 
     private var _depthStencilRenderbuffer: Buffer? = nil
 
     
-    init (maximumColorAttachments: Int, options: FramebufferOptions = FramebufferOptions()) {
+    init (maximumColorAttachments: GLint, options: Options = Options()) {
         
         glGenFramebuffers(1, &_framebuffer)
         
-        _options = options
-    }
-        /*
-    
-    
         /**
         * When true, the framebuffer owns its attachments so they will be destroyed when
         * {@link Framebuffer#destroy} is called or when a new attachment is assigned
@@ -75,75 +104,51 @@ class Framebuffer {
         *
         * @see Framebuffer#destroy
         */
-        this.destroyAttachments = defaultValue(options.destroyAttachments, true);
+        destroyAttachments = options.destroyAttachments
         
         // Throw if a texture and renderbuffer are attached to the same point.  This won't
         // cause a WebGL error (because only one will be attached), but is likely a developer error.
+        assert(!(options.colorTextures != nil && options.colorRenderbuffers != nil), "Cannot have both color texture and color renderbuffer attachments")
         
-        //>>includeStart('debug', pragmas.debug);
-        if (defined(options.colorTextures) && defined(options.colorRenderbuffers)) {
-            throw new DeveloperError('Cannot have both color texture and color renderbuffer attachments.');
-        }
-        if (defined(options.depthTexture) && defined(options.depthRenderbuffer)) {
-            throw new DeveloperError('Cannot have both a depth texture and depth renderbuffer attachment.');
-        }
-        if (defined(options.depthStencilTexture) && defined(options.depthStencilRenderbuffer)) {
-            throw new DeveloperError('Cannot have both a depth-stencil texture and depth-stencil renderbuffer attachment.');
-        }
-        //>>includeEnd('debug');
+        assert(!(options.depthTexture != nil && options.depthRenderbuffer != nil), "Cannot have both a depth texture and depth renderbuffer attachment")
+        
+        assert(!(options.depthStencilTexture != nil && options.depthStencilRenderbuffer != nil), "Cannot have both a depth-stencil texture and depth-stencil renderbuffer attachment")
         
         // Avoid errors defined in Section 6.5 of the WebGL spec
-        var depthAttachment = (defined(options.depthTexture) || defined(options.depthRenderbuffer));
-        var depthStencilAttachment = (defined(options.depthStencilTexture) || defined(options.depthStencilRenderbuffer));
+        let depthAttachment = options.depthTexture != nil || options.depthRenderbuffer != nil
+        let depthStencilAttachment = options.depthStencilTexture != nil || options.depthStencilRenderbuffer != nil
         
-        //>>includeStart('debug', pragmas.debug);
-        if (depthAttachment && depthStencilAttachment) {
-            throw new DeveloperError('Cannot have both a depth and depth-stencil attachment.');
-        }
-        if (defined(options.stencilRenderbuffer) && depthStencilAttachment) {
-            throw new DeveloperError('Cannot have both a stencil and depth-stencil attachment.');
-        }
-        if (depthAttachment && defined(options.stencilRenderbuffer)) {
-            throw new DeveloperError('Cannot have both a depth and stencil attachment.');
-        }
-        //>>includeEnd('debug');
+        assert(!(depthAttachment && depthStencilAttachment), "Cannot have both a depth and depth-stencil attachment.")
+        
+        assert(!(options.stencilRenderbuffer != nil && depthStencilAttachment), "Cannot have both a stencil and depth-stencil attachment.")
+    
+        assert (!(depthAttachment && options.stencilRenderbuffer != nil), "Cannot have both a depth and stencil attachment.")
         
         ///////////////////////////////////////////////////////////////////
         
-        this._bind();
+        bind()
         
-        var texture;
-        var renderbuffer;
-        var i;
-        var length;
-        var attachmentEnum;
+        /*var renderbuffer;*/
+        var attachmentEnum: GLenum
         
-        if (defined(options.colorTextures)) {
-            var textures = options.colorTextures;
-            length = this._colorTextures.length = this._activeColorAttachments.length = textures.length;
+        if let textures = options.colorTextures {
             
-            //>>includeStart('debug', pragmas.debug);
-            if (length > maximumColorAttachments) {
-                throw new DeveloperError('The number of color attachments exceeds the number supported.');
-            }
-            //>>includeEnd('debug');
+            _colorTextures = [Texture]()
+            _activeColorAttachments = [GLuint](count: textures.count, repeatedValue: GLuint(0))
+
+            assert(textures.count <= Int(maximumColorAttachments), "The number of color attachments exceeds the number supported.")
             
-            for (i = 0; i < length; ++i) {
-                texture = textures[i];
+            for (i, texture) in enumerate(textures) {
+                assert(texture.pixelFormat.isColorFormat(), "The color-texture pixel-format must be a color format.")
                 
-                //>>includeStart('debug', pragmas.debug);
-                if (!PixelFormat.isColorFormat(texture.pixelFormat)) {
-                    throw new DeveloperError('The color-texture pixel-format must be a color format.');
-                }
-                //>>includeEnd('debug');
-                
-                attachmentEnum = this._gl.COLOR_ATTACHMENT0 + i;
-                attachTexture(this, attachmentEnum, texture);
-                this._activeColorAttachments[i] = attachmentEnum;
-                this._colorTextures[i] = texture;
+                attachmentEnum = GLenum(GL_COLOR_ATTACHMENT0 + i)
+                attachTexture(attachmentEnum, texture: texture)
+                _activeColorAttachments[i] = attachmentEnum
+                _colorTextures!.append(texture)
             }
         }
-        
+        // FIXME: Non-color texture framebuffer
+        /*
         if (defined(options.colorRenderbuffers)) {
             var renderbuffers = options.colorRenderbuffers;
             length = this._colorRenderbuffers.length = this._activeColorAttachments.length = renderbuffers.length;
@@ -205,11 +210,11 @@ class Framebuffer {
             renderbuffer = options.depthStencilRenderbuffer;
             attachRenderbuffer(this, this._gl.DEPTH_STENCIL_ATTACHMENT, renderbuffer);
             this._depthStencilRenderbuffer = renderbuffer;
-        }
+        }*/
         
-        this._unBind();
-    };
-    
+        unbind()
+    }
+    /*
     defineProperties(Framebuffer.prototype, {
     /**
     * The status of the framebuffer. If the status is not WebGLRenderingContext.COMPLETE,
@@ -269,13 +274,18 @@ class Framebuffer {
         }
     }
     
-
     func bind() {
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(_framebuffer))
+        if defaultFrameBufferObject == nil {
+            var oldFBO: GLint = 0
+            glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
+            defaultFrameBufferObject = oldFBO
+        }
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
     }
 
     func unbind () {
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+        assert(defaultFrameBufferObject != nil, "Unknown default framebuffer")
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(defaultFrameBufferObject!))
     }
     
     /*
@@ -306,12 +316,11 @@ Framebuffer.prototype.getColorRenderbuffer = function(index) {
 Framebuffer.prototype.isDestroyed = function() {
     return false;
 };
-    
-    function attachTexture(framebuffer, attachment, texture) {
-    var gl = framebuffer._gl;
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, texture._target, texture._texture, 0);
+    */
+    func attachTexture(attachment: GLenum, texture: Texture) {
+        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), attachment, texture.textureTarget, texture.textureName, 0)
     }
-    
+    /*
     function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
     var gl = framebuffer._gl;
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, renderbuffer._getRenderbuffer());

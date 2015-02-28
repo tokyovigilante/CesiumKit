@@ -679,7 +679,7 @@ class ShaderProgram {
         glUseProgram(_program!)
     }
     
-    func setUniforms (uniformMap: TileUniformMap?, uniformState: UniformState, validate: Bool) {
+    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
         
         if let uniformMap = uniformMap {

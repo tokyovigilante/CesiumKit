@@ -71,6 +71,6 @@ protocol Command: class {
     
     var executeInClosestFrustum: Bool { get set }
     
-    func execute(#context: Context, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?)
+    func execute(#context: Context, passState: PassState?, renderState: RenderState?, shaderProgram: ShaderProgram?)
     
 }

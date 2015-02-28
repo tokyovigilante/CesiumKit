@@ -169,7 +169,6 @@ class TileUniformMap: UniformMap {
     
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
-
     }
 
 }
