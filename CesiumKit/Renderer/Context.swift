@@ -1430,7 +1430,9 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 // TODO: Need a way for a command to give what draw buffers are active.
                 buffers = framebuffer.activeColorAttachments
             } else {
-                //glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+                if let defaultFrameBufferObject = defaultFrameBufferObject {
+                    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(defaultFrameBufferObject))
+                }
             }
             
             if drawBuffers && buffers.count > 0 {
