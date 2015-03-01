@@ -327,7 +327,11 @@ Framebuffer.prototype.isDestroyed = function() {
     var gl = framebuffer._gl;
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, renderbuffer._getRenderbuffer());
     }
-
+*/
+    deinit {
+        glDeleteFramebuffers(1, &_framebuffer)
+    }
+    /*
 Framebuffer.prototype.destroy = function() {
     if (this.destroyAttachments) {
         // If the color texture is a cube map face, it is owned by the cube map, and will not be destroyed.

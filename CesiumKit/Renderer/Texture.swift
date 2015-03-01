@@ -465,6 +465,6 @@ class Texture {
 }
 
     deinit {
-        //glDeleteTextures(1, &textureName)
+        glDeleteTextures(1, &textureName)
     }
 }

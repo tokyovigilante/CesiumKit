@@ -629,11 +629,12 @@ public class ImageryLayer {
                     positions[index++] = y
                 }
             }
-            let indicesInt = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256)
+            let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256).map({ Int($0) })
+            /*let indicesInt = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256)
             var indices = [Int](count: indicesInt.count, repeatedValue: 0)
             for index in 0..<indicesInt.count {
                 indices[index] = Int(indicesInt[index])
-            }
+            }*/
             let reprojectGeometry = Geometry(
                 attributes: GeometryAttributes(
                     position: GeometryAttribute(
@@ -713,7 +714,7 @@ public class ImageryLayer {
         // to the texture via the FBO, and calling generateMipmap later,
         // will result in the texture appearing blank.  I can't pretend to
         // understand exactly why this is.
-        //outputTexture.generateMipmap(hint: .Nicest)
+        outputTexture.generateMipmap(hint: .Nicest)
         
         /*if reproject.framebuffer != nil {
             reproject.framebuffer = nil
@@ -734,7 +735,7 @@ public class ImageryLayer {
         
         if reproject!.renderState == nil {
             reproject!.renderState = context.createRenderState()
-            reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+            //reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }
         /*if reproject!.renderState!.viewport == nil ||
             reproject!.renderState!.viewport!.width != width ||
