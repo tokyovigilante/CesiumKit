@@ -500,10 +500,10 @@ public class ImageryLayer {
         let texture = context.createTexture2D(TextureOptions(
             source : .Image(imagery.image!),
             pixelFormat : imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
-        println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
         imagery.texture = texture
         imagery.image = nil
         imagery.state = ImageryState.TextureLoaded
+        println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
     }
     
     /**
@@ -556,6 +556,8 @@ public class ImageryLayer {
         }
         
         imagery.state = .Ready
+        println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+
     }
 
     func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
@@ -630,7 +632,7 @@ public class ImageryLayer {
             let indicesInt = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256)
             var indices = [Int](count: indicesInt.count, repeatedValue: 0)
             for index in 0..<indicesInt.count {
-                indices[index] = Int(index)
+                indices[index] = Int(indicesInt[index])
             }
             let reprojectGeometry = Geometry(
                 attributes: GeometryAttributes(
@@ -722,10 +724,10 @@ public class ImageryLayer {
                 colorTextures : [outputTexture]
             )
         )
-        /*reproject!.framebuffer!.destroyAttachments = false
+        reproject!.framebuffer!.destroyAttachments = false
         
         let command = ClearCommand(
-            color: Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
+            color: Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0),
             framebuffer : reproject!.framebuffer!
         )
         command.execute(context: context)
@@ -734,13 +736,13 @@ public class ImageryLayer {
             reproject!.renderState = context.createRenderState()
             reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }
-        if reproject!.renderState!.viewport == nil ||
+        /*if reproject!.renderState!.viewport == nil ||
             reproject!.renderState!.viewport!.width != width ||
             reproject!.renderState!.viewport!.height != height {
                 reproject!.renderState.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }*/
         
-        /*let drawCommand = DrawCommand(
+        let drawCommand = DrawCommand(
             framebuffer: reproject!.framebuffer,
             shaderProgram: reproject!.shaderProgram,
             renderState: reproject!.renderState,
@@ -748,8 +750,7 @@ public class ImageryLayer {
             vertexArray: reproject!.vertexArray,
             uniformMap: uniformMap
         )
-        drawCommand.execute(context: context)*/
-        
+        drawCommand.execute(context: context)
         return outputTexture
     }
 

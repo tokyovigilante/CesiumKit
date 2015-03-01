@@ -238,7 +238,7 @@ class Texture {
             }
 
         } else {
-            glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, 0)
+            glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
         }
         glBindTexture(textureTarget, GLenum(0))
         
@@ -465,6 +465,6 @@ class Texture {
 }
 
     deinit {
-        glDeleteTextures(1, &textureName)
+        //glDeleteTextures(1, &textureName)
     }
 }

@@ -83,7 +83,7 @@ class CesiumViewController: GLKViewController {
             imageryProvider: BingMapsImageryProvider(),
             resolutionScale: 0.5)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
     }
     
     func setupGestureRecognisers() {
