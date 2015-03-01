@@ -144,7 +144,7 @@ class Context {
     var id: String
     
     // Validation and logging disabled by default for speed.
-    var _validateFramebuffer = false
+    var _validateFramebuffer = true//false
     var _validateShaderProgram = false
     var _logShaderCompilation = false
     
@@ -480,12 +480,9 @@ class Context {
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/'>WEBGL_draw_buffers</a>
     */
     var drawBuffers: Bool {
-    get {
-        var db = checkGLExtension("EXT_draw_buffers")
-        if db {
+        get {
+            return view.context.API == .OpenGLES3 || checkGLExtension("EXT_draw_buffers")
         }
-        return db
-    }
     }
     
     /**
@@ -693,7 +690,7 @@ class Context {
         
         glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
         glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
-    
+        
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
 
@@ -1380,7 +1377,7 @@ var renderStateCache = {};
 
 
     func validateFramebuffer(framebuffer: Framebuffer) {
-        if (_validateFramebuffer) {
+        if _validateFramebuffer {
             var status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
             
             if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
@@ -1398,7 +1395,7 @@ var renderStateCache = {};
                 default:
                     message = "Unknown framebuffer error"
                 }
-                assert(false, message)
+                //assertionFailure(message)
             }
         }
     }
@@ -1430,15 +1427,16 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 
                 // TODO: Need a way for a command to give what draw buffers are active.
                 buffers = framebuffer.activeColorAttachments
+                
+                if drawBuffers && buffers.count > 0 {
+                    //glDrawBuffers(GLsizei(buffers.count), buffers)
+                }
             } else {
                 if let defaultFrameBufferObject = defaultFrameBufferObject {
                     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(defaultFrameBufferObject))
                 }
             }
-            
-            if drawBuffers && buffers.count > 0 {
-                glDrawBuffers(GLsizei(buffers.count), buffers)
-            }
+
         }
     }
 
@@ -1486,8 +1484,8 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
         var framebuffer = clearCommand.framebuffer ?? passState.framebuffer
         
-        //var oldFBO: GLint = 0
-        //glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
+        var oldFBO: GLint = 0
+        glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
         
         bindFramebuffer(framebuffer)
         glClear(GLbitfield(bitmask))
@@ -1528,7 +1526,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
             // FIXME: primitiveType toGL()
-            //glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GLint(GL_LINEAR))
             glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
             va!._unBind()
         } else {

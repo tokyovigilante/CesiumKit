@@ -319,7 +319,14 @@ Framebuffer.prototype.isDestroyed = function() {
 };
     */
     func attachTexture(attachment: GLenum, texture: Texture) {
+        //glActiveTexture(texture.textureTarget)
+        glBindTexture(texture.textureTarget, texture.textureName)
+        
         glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), attachment, texture.textureTarget, texture.textureName, 0)
+        let error = glGetError()
+        assert(glGetError() == GLenum(GL_NO_ERROR))
+        
+        glBindTexture(texture.textureTarget, 0)
     }
     /*
     function attachRenderbuffer(framebuffer, attachment, renderbuffer) {

@@ -59,7 +59,7 @@ struct TextureOptions {
     
     init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte, flipY: Bool = true, premultiplyAlpha: Bool = true) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
-        
+         
         self.source = source
         self.width = source != nil ? source!.width : width!
         self.height = source != nil ? source!.height : height!
@@ -238,7 +238,7 @@ class Texture {
             }
 
         } else {
-            //gl.texImage2D(textureTarget, 0, pixelFormat, width, height, 0, pixelFormat, pixelDatatype, 0)
+            glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, 0)
         }
         glBindTexture(textureTarget, GLenum(0))
         

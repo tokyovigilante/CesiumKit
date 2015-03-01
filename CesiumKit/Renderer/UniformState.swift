@@ -162,14 +162,14 @@ class UniformState {
             return _viewportCartesian4
         }
     }
-    /*
-    viewportOrthographic : {
-    get : function() {
-    cleanViewport(this);
-    return this._viewportOrthographicMatrix;
+    
+    var viewportOrthographic: Matrix4 {
+        get {
+            cleanViewport()
+            return _viewportOrthographicMatrix
+        }
     }
-    },
-    */
+    
     var viewportTransformation: Matrix4 {
         get {
             cleanViewport()

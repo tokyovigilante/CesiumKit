@@ -12,9 +12,9 @@
 var viewerPositionWCScratch = new Cartesian3();
 */
 struct AutomaticUniform {
-    var size: Int
-    var datatype: UniformDataType
-    var getValue: (uniformState: UniformState) -> UniformValue
+    let size: Int
+    let datatype: UniformDataType
+    let getValue: (uniformState: UniformState) -> UniformValue
     
     func declaration (name: String) -> String {
         var declaration = "uniform " + datatype.rawValue + " " + name
@@ -107,12 +107,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     */
     "czm_viewport": AutomaticUniform(
         size: 1,
-        datatype: .FLOAT_VEC4,
+        datatype: UniformDataType.FLOAT_VEC4,
         getValue: { (uniformState: UniformState) -> UniformValue in
-            return .FloatVec4(uniformState.viewportCartesian4)
+            return UniformValue.FloatVec4(uniformState.viewportCartesian4)
         }
     ),
-/*
+
 /**
 * An automatic GLSL uniform representing a 4x4 orthographic projection matrix that
 * transforms window coordinates to clip coordinates.  Clip coordinates is the
@@ -140,14 +140,14 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
 * // Example
 * gl_Position = czm_viewportOrthographic * vec4(windowPosition, 0.0, 1.0);
 */
-czm_viewportOrthographic : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.viewportOrthographic;
-}
-}),
-*/
+    "czm_viewportOrthographic":  AutomaticUniform(
+        size: 1,
+        datatype: UniformDataType.FLOAT_MAT4,
+        getValue: { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.viewportOrthographic)
+        }
+    ),
+
 /**
 * An automatic GLSL uniform representing a 4x4 transformation matrix that
 * transforms normalized device coordinates to window coordinates.  The context's
@@ -182,9 +182,10 @@ return uniformState.viewportOrthographic;
 * q.xyz /= q.w;                                                // clip to normalized device coordinates (ndc)
 * q.xyz = (czm_viewportTransformation * vec4(q.xyz, 1.0)).xyz; // ndc to window coordinates
 */
+    
     "czm_viewportTransformation": AutomaticUniform(
         size: 1,
-        datatype: .FLOAT_MAT4,
+        datatype: UniformDataType.FLOAT_MAT4,
         getValue: { (uniformState: UniformState) in
             return .FloatMatrix4(uniformState.viewportTransformation)
         }
@@ -586,7 +587,7 @@ return uniformState.infiniteProjection;
 */
     "czm_modelView" : AutomaticUniform(
         size : 1,
-        datatype: .FLOAT_MAT4,
+        datatype: UniformDataType.FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> UniformValue in
             return .FloatMatrix4(uniformState.modelView)
         }
@@ -801,7 +802,7 @@ return uniformState.inverseViewProjection;
     */
     "czm_modelViewProjection": AutomaticUniform(
         size : 1,
-        datatype: .FLOAT_MAT4,
+        datatype: UniformDataType.FLOAT_MAT4,
         getValue: { (uniformState: UniformState) -> UniformValue in
             return .FloatMatrix4(uniformState.modelViewProjection)
         }
