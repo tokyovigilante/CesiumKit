@@ -679,8 +679,8 @@ public class ImageryLayer {
         
         texture.sampler = reproject!.sampler
         
-        var width = texture.width
-        var height = texture.height
+        let width = texture.width
+        let height = texture.height
         
         uniformMap.textureDimensions.x = Double(width)
         uniformMap.textureDimensions.y = Double(height)

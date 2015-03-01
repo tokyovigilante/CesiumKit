@@ -1429,7 +1429,7 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 buffers = framebuffer.activeColorAttachments
                 
                 if drawBuffers && buffers.count > 0 {
-                    //glDrawBuffers(GLsizei(buffers.count), buffers)
+                    glDrawBuffers(GLsizei(buffers.count), buffers)
                 }
             } else {
                 if let defaultFrameBufferObject = defaultFrameBufferObject {

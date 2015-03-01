@@ -16,7 +16,7 @@ class VertexArray {
         return _attributes.count
     }
     
-    let vertexCount: Int
+    var vertexCount: Int
     
     private var _vao: GLuint? = nil
     
@@ -53,7 +53,7 @@ class VertexArray {
             }
             uniqueIndices[index] = true
         }
-        
+        self.vertexCount = numberOfVertices
         self._attributes = vaAttributes
         
         // Setup VAO
