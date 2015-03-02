@@ -236,8 +236,6 @@ class ShaderProgram {
                         }
                     }
                     newGLSLSource = newGLSLSource.replace(comment, modifiedComment)
-                    //newGLSLSource = newGLSLSource[comment] ~= modifiedComment
-                    //newGLSLSource[comment] = modifiedComment
                 }
             }
             // create new node
@@ -256,35 +254,24 @@ class ShaderProgram {
         currentNode.evaluated = true
         
         // identify all dependencies that are referenced from this glsl source code
-        let regex = currentNode.glslSource[_czmRegex]
-        let matches = regex.matches()
-        let czmMatches = deleteDuplicates(matches)
-        /*var czmMatchRanges = _czmRegex.matches(currentNode.glslSource) as [NSTextCheckingResult]
-        var czmMatches: [String]*/
-        if czmMatches.count > 0 {
-            /*czmMatches = czmMatchRanges.map({
-            currentNode.glslSource[Range(start: $0.range.location, end: $0.range.location + $0.range.length)]
-            })
-            czmMatches = deleteDuplicates(czmMatches)*/
-            
-            for match in czmMatches {
-                if (match != currentNode.name) {
-                    var elementSource: String? = nil
-                    if let builtin = Builtins[match] {
-                        elementSource = builtin
-                    } else if let uniform = AutomaticUniforms[match] {
-                        elementSource = uniform.declaration(match)
-                    } else {
-                        println("uniform \(match) not found")
-                    }
-                    if elementSource != nil {
-                        var referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
-                        currentNode.dependsOn.append(referencedNode)
-                        referencedNode.requiredBy.append(currentNode)
-                        
-                        // recursive call to find any dependencies of the new node
-                        generateDependencies(referencedNode, dependencyNodes: &dependencyNodes)
-                    }
+        let czmMatches = deleteDuplicates(currentNode.glslSource[_czmRegex].matches())
+        for match in czmMatches {
+            if (match != currentNode.name) {
+                var elementSource: String? = nil
+                if let builtin = Builtins[match] {
+                    elementSource = builtin
+                } else if let uniform = AutomaticUniforms[match] {
+                    elementSource = uniform.declaration(match)
+                } else {
+                    println("uniform \(match) not found")
+                }
+                if elementSource != nil {
+                    var referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
+                    currentNode.dependsOn.append(referencedNode)
+                    referencedNode.requiredBy.append(currentNode)
+                    
+                    // recursive call to find any dependencies of the new node
+                    generateDependencies(referencedNode, dependencyNodes: &dependencyNodes)
                 }
                 
             }

@@ -94,7 +94,7 @@ public class SwiftRegex: NSObject, BooleanType {
         set(newValue) {
             if let mutableTarget = target as? NSMutableString {
                 for match in matchResults().reverse() {
-                    let replacement = regex.replacementStringForResult( match,
+                    let replacement = regex.replacementStringForResult( match as! NSTextCheckingResult,
                         inString: target as! String, offset: 0, template: newValue )
                     mutableTarget.replaceCharactersInRange(match.rangeAtIndex(groupno), withString: replacement)
                 }
@@ -104,8 +104,10 @@ public class SwiftRegex: NSObject, BooleanType {
         }
     }
     
-    func matchResults(options: NSMatchingOptions = nil) -> [NSTextCheckingResult] {
-        return regex.matchesInString(target as! String, options: options, range: targetRange) as! [NSTextCheckingResult]
+    func matchResults(options: NSMatchingOptions = nil) -> [AnyObject] {
+        let result = regex.matchesInString(target as! String, options: options, range: targetRange)
+        println("\(result.count)")
+        return regex.matchesInString(target as! String, options: options, range: targetRange)
     }
     
     public func ranges(options: NSMatchingOptions = nil) -> [NSRange] {
@@ -117,7 +119,7 @@ public class SwiftRegex: NSObject, BooleanType {
     }
     
     public func allGroups(options: NSMatchingOptions = nil) -> [[String]] {
-        return matchResults(options: options).map { self.groupsForMatch($0) }
+        return matchResults(options: options).map { self.groupsForMatch($0 as! NSTextCheckingResult) }
     }
     
     public func dictionary(options: NSMatchingOptions = nil) -> Dictionary<String,String> {
@@ -180,115 +182,4 @@ extension String {
 public func RegexMutable(string: NSString) -> NSMutableString {
     return NSMutableString(string:string as! String)
 }
-/*
-public func ~= (left: SwiftRegex, right: String) -> NSMutableString {
-    return left.substituteMatches {
-        (match: NSTextCheckingResult, stop: UnsafeMutablePointer<ObjCBool>) in
-        return left.regex.replacementStringForResult( match,
-            inString: left.target, offset: 0, template: right )
-    }
-}
 
-public func ~= (left: SwiftRegex, right: [String]) -> NSMutableString {
-    var matchNumber = 0
-    return left.substituteMatches {
-        (match: NSTextCheckingResult, stop: UnsafeMutablePointer<ObjCBool>) in
-        
-        if ++matchNumber == right.count {
-            stop.memory = true
-        }
-        
-        return left.regex.replacementStringForResult( match,
-            inString: left.target, offset: 0, template: right[matchNumber-1] )
-    }
-}
-
-public func ~= (left: SwiftRegex, right: (String) -> String) -> NSMutableString {
-    return left.substituteMatches {
-        (match: NSTextCheckingResult, stop: UnsafeMutablePointer<ObjCBool>) in
-        return right(left.substring(match.range))
-    }
-}
-
-public func ~= (left: SwiftRegex, right: ([String]) -> String) -> NSMutableString {
-    return left.substituteMatches {
-        (match: NSTextCheckingResult, stop: UnsafeMutablePointer<ObjCBool>) in
-        return right(left.groupsForMatch(match))
-    }
-}*/
-/*
-// my take on custom threading operators from
-// http://ijoshsmith.com/2014/07/05/custom-threading-operator-in-swift/
-
-private let _queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-
-public func | (left: () -> Void, right: () -> Void) {
-    dispatch_async(_queue) {
-        left()
-        dispatch_async(dispatch_get_main_queue(), right)
-    }
-}
-
-public func | <R> (left: () -> R, right: (result:R) -> Void) {
-    dispatch_async(_queue) {
-        let result = left()
-        dispatch_async(dispatch_get_main_queue(), {
-            right(result:result)
-        })
-    }
-}
-
-// dispatch groups { block } & { block } | { completion }
-public func & (left: () -> Void, right: () -> Void) -> [() -> Void] {
-    return [left, right];
-}
-
-public func & (left: [() -> Void], right: () -> Void) -> [() -> Void] {
-    var out = left
-    out.append( right )
-    return out
-}
-
-public func | (left: [() -> Void], right: () -> Void) {
-    let group = dispatch_group_create()
-    
-    for block in left {
-        dispatch_group_async(group, _queue, block)
-    }
-    
-    dispatch_group_notify(group, dispatch_get_main_queue(), right)
-}
-
-// parallel blocks with returns
-public func & <R> (left: () -> R, right: () -> R) -> [() -> R] {
-    return [left, right]
-}
-
-public func & <R> (left: [() -> R], right: () -> R) -> [() -> R] {
-    var out = left
-    out.append( right )
-    return out
-}
-
-public func | <R> (left: [() -> R], right: (results:[R!]) -> Void) {
-    let group = dispatch_group_create()
-    
-    var results = Array<R!>()
-    for t in 0..<left.count {
-        results += [nil]
-    }
-    
-    for t in 0..<left.count {
-        //dispatch_retain(group)
-        dispatch_group_enter(group)
-        dispatch_async(_queue, {
-            results[t] = left[t]()
-            dispatch_group_leave(group)
-            //dispatch_release(group)
-        })
-    }
-    
-    dispatch_group_notify(group, dispatch_get_main_queue(), {
-        right(results: results)
-    })
-}*/

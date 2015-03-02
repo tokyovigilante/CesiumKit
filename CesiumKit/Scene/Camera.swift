@@ -1828,7 +1828,7 @@ Camera.prototype.getRectangleCameraCoordinates = function(rectangle, result) {
     * @param {Rectangle} rectangle The rectangle to view.
     * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to view.
     */
-    func viewRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    public func viewRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         if mode == .Scene3D {
             position = rectangleCameraPosition3D(rectangle, ellipsoid: ellipsoid)
         } else { assert(false, "not implemented") }/*if mode == .ColumbusView {

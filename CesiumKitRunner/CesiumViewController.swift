@@ -81,9 +81,12 @@ class CesiumViewController: GLKViewController {
         // create globe
         let options = CesiumOptions(
             imageryProvider: BingMapsImageryProvider(),
-            resolutionScale: 0.5)
+            resolutionScale: 1.0)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
+        
+            //var defaultViewRectangle = Rectangle.fromDegrees(west: -95.0, south: -20.0, east: -70.0, north: 90.0)
     }
     
     func setupGestureRecognisers() {
