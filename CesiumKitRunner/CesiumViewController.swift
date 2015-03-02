@@ -76,17 +76,15 @@ class CesiumViewController: GLKViewController {
         preferredFramesPerSecond = 60
 
         // enable Retina support
-        view.contentScaleFactor = UIScreen.mainScreen().scale
+        
+        view.contentScaleFactor = UIScreen.mainScreen().scale * 0.5
         
         // create globe
         let options = CesiumOptions(
-            imageryProvider: BingMapsImageryProvider(),
-            resolutionScale: 1.0)
+            imageryProvider: BingMapsImageryProvider())
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-        globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
-        
-            //var defaultViewRectangle = Rectangle.fromDegrees(west: -95.0, south: -20.0, east: -70.0, north: 90.0)
+//        globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
     }
     
     func setupGestureRecognisers() {
@@ -102,7 +100,7 @@ class CesiumViewController: GLKViewController {
     
     override func glkView(view: GLKView!, drawInRect rect: CGRect) {
         
-        globe?.render()
+        globe?.render(rect.size)
         if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
             lastFrameRateUpdate = NSDate()
             let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)

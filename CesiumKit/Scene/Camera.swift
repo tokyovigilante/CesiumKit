@@ -333,9 +333,9 @@ public class Camera {
     
     // Testing only
     init(fakeScene: (
-        canvas: (clientWidth: Int, clientHeight: Int),
-        drawingBufferWidth: Int,
-        drawingBufferHeight: Int,
+        canvas: (width: Int, height: Int),
+        width: Int,
+        height: Int,
         mapProjection: Projection//,
         /* tweens = new TweenCollection();*/)) {
         
@@ -345,7 +345,7 @@ public class Camera {
         transform2DInverse = transform2D.inverseTransformation()
         
         frustum = PerspectiveFrustum()
-        frustum.aspectRatio = Double(fakeScene.canvas.clientWidth) / Double(fakeScene.canvas.clientHeight)
+        frustum.aspectRatio = Double(fakeScene.canvas.width) / Double(fakeScene.canvas.height)
         frustum.fov = Math.toRadians(60.0)
         
         updateViewMatrix()

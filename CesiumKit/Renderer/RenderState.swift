@@ -412,8 +412,8 @@ class RenderState/*: Printable*/ {
         var actualViewport = BoundingRectangle()
         var context = passState.context!
         if !(viewport != nil) {
-            actualViewport.width = Double(context.drawingBufferWidth)
-            actualViewport.height = Double(context.drawingBufferHeight)
+            actualViewport.width = Double(context.width)
+            actualViewport.height = Double(context.height)
         } else {
             actualViewport = viewport!
         }

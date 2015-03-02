@@ -613,8 +613,8 @@ class Globe {
             return
         }
 
-        var width = context.drawingBufferWidth
-        var height = context.drawingBufferHeight
+        var width = context.width
+        var height = context.height
         
         if (width == 0 || height == 0) {
             return

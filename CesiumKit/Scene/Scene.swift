@@ -440,7 +440,14 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth|drawingBufferWidth}
     */
-    var drawingBufferHeight: Int { get { return self.context.view.drawableHeight } }
+    var drawableHeight: Int {
+        get {
+            return context.height
+        }
+        set (newValue) {
+            context.height = newValue
+        }
+    }
     
     /**
     * The drawingBufferHeight of the underlying GL context.
@@ -448,7 +455,14 @@ public class Scene {
     * @type {Number}
     * @see {@link https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight|drawingBufferHeight}
     */
-    var drawingBufferWidth: Int { get { return self.context.view.drawableHeight } }
+    var drawableWidth: Int {
+        get {
+            return context.width
+        }
+        set (newValue) {
+            context.width = newValue
+        }
+    }
 
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.

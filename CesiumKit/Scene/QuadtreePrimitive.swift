@@ -339,14 +339,14 @@ class QuadtreePrimitive {
         tile.distance = distance
         
         // PERFORMANCE_IDEA: factor out stuff that's constant across tiles.
-        return (maxGeometricError * Double(context.drawingBufferHeight)) / (2 * distance * tan(0.5 * frameState.camera!.frustum.fovy))
+        return (maxGeometricError * Double(context.height)) / (2 * distance * tan(0.5 * frameState.camera!.frustum.fovy))
     }
     
     func screenSpaceError2D(#context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
         let frustum = frameState.camera!.frustum
 
         let maxGeometricError = _tileProvider.levelMaximumGeometricError(tile.level)
-        let pixelSize = max(frustum.top - frustum.bottom, frustum.right - frustum.left) / max(Double(context.drawingBufferWidth), Double(context.drawingBufferHeight))
+        let pixelSize = max(frustum.top - frustum.bottom, frustum.right - frustum.left) / max(Double(context.width), Double(context.height))
         return maxGeometricError / pixelSize
     }
     

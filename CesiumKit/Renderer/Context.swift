@@ -562,12 +562,17 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth'>drawingBufferWidth</a>
     */
-    var drawingBufferHeight: Int {
-    get
-    {
-        return Int(self.view.drawableHeight)
+    var height: Int {
+        get
+        {
+            return _height ?? Int(self.view.drawableHeight)
+        }
+        set (newValue) {
+            _height  = newValue
+        }
     }
-    }
+    
+    var _height: Int? = nil
     
     /**
     * The drawingBufferHeight of the underlying GL context.
@@ -575,12 +580,17 @@ class Context {
     * @type {Number}
     * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight'>drawingBufferHeight</a>
     */
-    var drawingBufferWidth: Int {
+    var width: Int {
         get
         {
-            return Int(self.view.drawableWidth)
+            return _width ?? Int(self.view.drawableWidth)
+        }
+        set (newValue) {
+            _width = newValue
         }
     }
+    
+    var _width: Int?
     
     var cachedGLESExtensions: [String]?
 
