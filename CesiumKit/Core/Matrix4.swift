@@ -696,10 +696,10 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         c *= -2.0
         
         return Matrix4(
-            a, 0.0, 0.0, 0.0,
-            0.0, b, 0.0, 0.0,
-            0.0, 0.0, c, 0.0,
-            tx, ty, tz, 1.0)
+            a, 0.0, 0.0, tx,
+            0.0, b, 0.0, ty,
+            0.0, 0.0, c, tz,
+            0.0, 0.0, 0.0, 1.0)
     }
 
     /**
@@ -800,10 +800,10 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         let column3Row2 = nearDepthRange + halfDepth
         let column3Row3 = 1.0
         return Matrix4(
-            column0Row0, 0.0, 0.0, 0.0,
-            0.0, column1Row1, 0.0, 0.0,
-            0.0, 0.0, column2Row2, 0.0,
-            column3Row0, column3Row1, column3Row2, column3Row3
+            column0Row0, 0.0, 0.0, column3Row0,
+            0.0, column1Row1, 0.0, column3Row1,
+            0.0, 0.0, column2Row2, column3Row2,
+            0.0, 0.0, 0.0, column3Row3
         )
     }
     

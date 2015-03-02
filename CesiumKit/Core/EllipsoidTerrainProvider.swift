@@ -104,8 +104,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
             
             var index: UInt16 = 0
             var indicesIndex = 0
-            for i in 0..<height-1 {
-                for j in 0..<width-1 {
+            for j in 0..<height-1 {
+                for i in 0..<width-1 {
                     var upperLeft: UInt16 = index
                     var lowerLeft: UInt16 = upperLeft + UInt16(width)
                     var lowerRight: UInt16 = lowerLeft + 1

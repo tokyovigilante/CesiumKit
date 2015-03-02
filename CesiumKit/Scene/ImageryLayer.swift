@@ -59,7 +59,7 @@ public class ImageryLayer {
     * @default 1.0
     */
     let DefaultGamma = 1.0
-
+    
     var imageryProvider: ImageryProvider
     
     /**
@@ -168,7 +168,7 @@ public class ImageryLayer {
     private var _imageryCache = [String: Imagery]()
     
     lazy private var _skeletonPlaceholder: TileImagery = TileImagery(imagery: Imagery.createPlaceholder(self))
-
+    
     // The index of this layer in the ImageryLayerCollection.
     var layerIndex = -1
     
@@ -216,7 +216,7 @@ public class ImageryLayer {
             self._minimumTerrainLevel = minimumTerrainLevel
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
-        }
+    }
     
     
     
@@ -448,7 +448,7 @@ public class ImageryLayer {
     func requestImagery (imagery: Imagery) {
         
         imagery.state = .Transitioning
-
+        
         Async.background {
             
             if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
@@ -528,7 +528,7 @@ public class ImageryLayer {
         if !isGeographic && pixelGap {
             let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
             texture = reprojectedTexture
-            imagery.texture = texture   
+            imagery.texture = texture
         }
         
         // Use mipmaps if this texture has power-of-two dimensions.
@@ -557,16 +557,16 @@ public class ImageryLayer {
         
         imagery.state = .Ready
         println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-
+        
     }
-
+    
     func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
         if imagery == nil {
-        imagery = Imagery(imageryLayer: self, level: level, x: x, y: y, rectangle: imageryRectangle)
-        _imageryCache[cacheKey] = imagery
+            imagery = Imagery(imageryLayer: self, level: level, x: x, y: y, rectangle: imageryRectangle)
+            _imageryCache[cacheKey] = imagery
         }
         
         imagery!.addReference()
@@ -604,8 +604,43 @@ public class ImageryLayer {
             //shaderProgram.destroy();
         }
     }
-
+    
     func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> Texture {
+        
+        // This function has gone through a number of iterations, because GPUs are awesome.
+        //
+        // Originally, we had a very simple vertex shader and computed the Web Mercator texture coordinates
+        // per-fragment in the fragment shader.  That worked well, except on mobile devices, because
+        // fragment shaders have limited precision on many mobile devices.  The result was smearing artifacts
+        // at medium zoom levels because different geographic texture coordinates would be reprojected to Web
+        // Mercator as the same value.
+        //
+        // Our solution was to reproject to Web Mercator in the vertex shader instead of the fragment shader.
+        // This required far more vertex data.  With fragment shader reprojection, we only needed a single quad.
+        // But to achieve the same precision with vertex shader reprojection, we needed a vertex for each
+        // output pixel.  So we used a grid of 256x256 vertices, because most of our imagery
+        // tiles are 256x256.  Fortunately the grid could be created and uploaded to the GPU just once and
+        // re-used for all reprojections, so the performance was virtually unchanged from our original fragment
+        // shader approach.  See https://github.com/AnalyticalGraphicsInc/cesium/pull/714.
+        //
+        // Over a year later, we noticed (https://github.com/AnalyticalGraphicsInc/cesium/issues/2110)
+        // that our reprojection code was creating a rare but severe artifact on some GPUs (Intel HD 4600
+        // for one).  The problem was that the GLSL sin function on these GPUs had a discontinuity at fine scales in
+        // a few places.
+        //
+        // We solved this by implementing a more reliable sin function based on the CORDIC algorithm
+        // (https://github.com/AnalyticalGraphicsInc/cesium/pull/2111).  Even though this was a fair
+        // amount of code to be executing per vertex, the performance seemed to be pretty good on most GPUs.
+        // Unfortunately, on some GPUs, the performance was absolutely terrible
+        // (https://github.com/AnalyticalGraphicsInc/cesium/issues/2258).
+        //
+        // So that brings us to our current solution, the one you see here.  Effectively, we compute the Web
+        // Mercator texture coordinates on the CPU and store the T coordinate with each vertex (the S coordinate
+        // is the same in Geographic and Web Mercator).  To make this faster, we reduced our reprojection mesh
+        // to be only 2 vertices wide and 64 vertices high.  We should have reduced the width to 2 sooner,
+        // because the extra vertices weren't buying us anything.  The height of 64 means we are technically
+        // doing a slightly less accurate reprojection than we were before, but we can't see the difference
+        // so it's worth the 4x speedup.
         
         var reproject = context.cache["imageryLayer_reproject"] as! Reproject?
         
@@ -619,41 +654,44 @@ public class ImageryLayer {
             // do not correctly report the available fragment shader precision, so we can't have different
             // paths for devices with or without high precision fragment shaders, even if we want to.
             
-            var positions = [Float](count: 256*256*2, repeatedValue: 0.0)
+            var positions = [SerializedType]()//count: 2*64*2, repeatedValue: 0.0)
+            let position0 = SerializedType.Float32(0.0)
+            let position1 = SerializedType.Float32(1.0)
+            
             var index = 0
-            for j in 0..<256 {
-                let y = Float(j) / 255.0
-                for i in 0..<256 {
-                    let x = Float(i) / 255.0
-                    positions[index++] = x
-                    positions[index++] = y
-                }
+            for j in 0..<64 {
+                let y = SerializedType.Float32(Float(j) / 63.0)
+                positions.append(position0)
+                positions.append(y)
+                positions.append(position1)
+                positions.append(y)
             }
-            let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256).map({ Int($0) })
-            /*let indicesInt = EllipsoidTerrainProvider.getRegularGridIndices(width: 256, height: 256)
-            var indices = [Int](count: indicesInt.count, repeatedValue: 0)
-            for index in 0..<indicesInt.count {
-                indices[index] = Int(indicesInt[index])
-            }*/
-            let reprojectGeometry = Geometry(
-                attributes: GeometryAttributes(
-                    position: GeometryAttribute(
-                        componentDatatype: .Float32,
-                        componentsPerAttribute: 2,
-                        values: positions.map({ .Float32($0) })
-                    )
-                ),
-                indices: indices,
-                primitiveType : PrimitiveType.Triangles
-            )
             
-            let reprojectAttribInds = ["position": 0]
+            let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ SerializedType.UnsignedInt16(UInt16($0)) })
             
-            let vertexArray = context.createVertexArrayFromGeometry(
-                geometry: reprojectGeometry,
-                attributeLocations: reprojectAttribInds,
-                bufferUsage: BufferUsage.StaticDraw
-            )
+            let indexBuffer = context.createIndexBuffer(array: indices, usage: BufferUsage.StaticDraw, indexDatatype: IndexDatatype.UnsignedShort)
+            
+            let reprojectAttribInds = [
+                "position": 0,
+                "webMercatorT": 1
+            ]
+            
+            let vertexAttributes = [
+                VertexAttributes(
+                    index: reprojectAttribInds["position"]!,
+                    vertexBuffer: context.createVertexBuffer(
+                        array: positions,
+                        usage: .StaticDraw),
+                    componentsPerAttribute: 2),
+                VertexAttributes(
+                    index: reprojectAttribInds["webMercatorT"]!,
+                    vertexBuffer: context.createVertexBuffer(
+                        sizeInBytes: 64 * 2 * 4,
+                        usage: .DynamicDraw),
+                    componentsPerAttribute: 1)
+            ]
+            
+            let vertexArray = context.createVertexArray(vertexAttributes, indexBuffer: indexBuffer)
             
             let shaderProgram = context.createShaderProgram(
                 vertexShaderSource: Shaders["ReprojectWebMercatorVS"]!,
@@ -672,8 +710,7 @@ public class ImageryLayer {
             reproject = Reproject(
                 vertexArray: vertexArray,
                 shaderProgram: shaderProgram!,
-                sampler: sampler
-            )
+                sampler: sampler)
             
             context.cache["imageryLayer_reproject"] = reproject
         }
@@ -687,18 +724,12 @@ public class ImageryLayer {
         uniformMap.textureDimensions.y = Double(height)
         uniformMap.texture = texture
         
-        uniformMap.northLatitude = Float(rectangle.north)
-        uniformMap.southLatitude = Float(rectangle.south)
-        
         var sinLatitude = sin(rectangle.south)
         let southMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
-
-        uniformMap.southMercatorYHigh = Float(southMercatorY)
-        uniformMap.southMercatorYLow = Float(southMercatorY - Double(uniformMap.southMercatorYHigh))
         
         sinLatitude = sin(rectangle.north)
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
-        uniformMap.oneOverMercatorHeight = Float(1.0 / (northMercatorY - southMercatorY))
+        var oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
         
         var outputTexture = context.createTexture2D(
             TextureOptions(
@@ -716,16 +747,30 @@ public class ImageryLayer {
         // understand exactly why this is.
         outputTexture.generateMipmap(hint: .Nicest)
         
-        /*if reproject.framebuffer != nil {
-            reproject.framebuffer = nil
-        }*/
-        
         reproject!.framebuffer = context.createFramebuffer(
             Framebuffer.Options(
                 colorTextures : [outputTexture]
             )
         )
         reproject!.framebuffer!.destroyAttachments = false
+        
+        let south = rectangle.south
+        let north = rectangle.north
+        
+        var webMercatorT = [SerializedType]()
+        
+        //var outputIndex = 0;
+        for webMercatorTIndex in 0..<64 {
+            let fraction = Double(webMercatorTIndex) / 63.0
+            let latitude = Math.lerp(p: south, q: north, time: fraction)
+            sinLatitude = sin(latitude)
+            let mercatorY = 0.5 * log((1.0 + sinLatitude) / (1.0 - sinLatitude))
+            let mercatorFraction = SerializedType.Float32(Float((mercatorY - southMercatorY) * oneOverMercatorHeight))
+            webMercatorT.append(mercatorFraction)
+            webMercatorT.append(mercatorFraction)
+        }
+        
+        reproject!.vertexArray.attribute(1).vertexBuffer!.copyFromArrayView(webMercatorT)
         
         let command = ClearCommand(
             color: Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0),
@@ -735,12 +780,12 @@ public class ImageryLayer {
         
         if reproject!.renderState == nil {
             reproject!.renderState = context.createRenderState()
-            //reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+            reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }
         /*if reproject!.renderState!.viewport == nil ||
-            reproject!.renderState!.viewport!.width != width ||
-            reproject!.renderState!.viewport!.height != height {
-                reproject!.renderState.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+        reproject!.renderState!.viewport!.width != width ||
+        reproject!.renderState!.viewport!.height != height {
+        reproject!.renderState.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         }*/
         
         let drawCommand = DrawCommand(
@@ -753,8 +798,9 @@ public class ImageryLayer {
         )
         drawCommand.execute(context: context)
         return outputTexture
+        
     }
-
+    
     /**
     * Gets the level with the specified world coordinate spacing between texels, or less.
     *

@@ -132,26 +132,16 @@ class UniformState {
     * @memberof UniformState.prototype
     * @type {BoundingRectangle}
     */
-    var viewport = BoundingRectangle() /*
-    viewport: {
-    get : function() {
-    return this._viewport;
-    },
-    set : function(viewport) {
-    if (!BoundingRectangle.equals(viewport, this._viewport)) {
-    BoundingRectangle.clone(viewport, this._viewport);
-    
-    var v = this._viewport;
-    var vc = this._viewportCartesian4;
-    vc.x = v.x;
-    vc.y = v.y;
-    vc.z = v.width;
-    vc.w = v.height;
-    
-    this._viewportDirty = true;
+    var viewport: BoundingRectangle {
+        get {
+            return _viewport
+        }
+        set (value) {
+            _viewport = value
+            _viewportCartesian4 = Cartesian4(x: value.x, y: value.y, z: value.width, w: value.height)
+            _viewportDirty = true
+        }
     }
-    }
-    },*/
     
     /**
     * @memberof UniformState.prototype
