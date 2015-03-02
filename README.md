@@ -4,14 +4,19 @@ iOS/Swift port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
 
 Status
 ------
-Renderer and core are largely complete. Minimal untextured globe support is functional.
-Current efforts are focused on implementing textures and the Bing maps provider, then expanding the camera controls with a view to adding gesture support.
+Renderer and core are largely complete. Textured globe support is functional. The only implemented image providers are the Bing Maps provider and the TileCoordinate provider for debugging, however these can be layered.
+Current efforts are focused on implementing camera controls, touch-based inputs, and will then be looking at terrain support.
 I'm eventually hoping for near complete globe support with CZML interoperability with cesium.js.
 Community contributions and feedback are welcome.
 
+![](https://github.com/tokyovigilante/CesiumKit/blob/master/CurrentStatus.jpg)
+
 Testing
 -------
-Build and run CesiumKitRunner. At the moment the only external API are global object creation and render calls, and I'm hoping to keep things simple for implementation.
+Build and run CesiumKitRunner. Performance in the simulator is poor due to the software OpenGL ES renderer. Performance on devices is much better and is in fact CPU-bound, due to a combination of Swift performance and currently unoptimised code. 
+I've hardcoded resolution to 25% of screen resolution for performance, however performance on device is at or near 60fps at Retina resolutions (iPad Air 2)
+
+At the moment the only external API are global object creation and render calls and minimal camera control. I'm hoping to keep things simple for implementation, but am looking into touch-based controls as a high priority now.
 
 Licence
 -------
