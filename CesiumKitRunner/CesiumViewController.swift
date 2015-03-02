@@ -75,9 +75,14 @@ class CesiumViewController: GLKViewController {
         
         preferredFramesPerSecond = 60
 
-        // enable Retina support
-        
-        view.contentScaleFactor = UIScreen.mainScreen().scale * 0.5
+        // enable Retina support on device
+        #if arch(i386) || arch(x86_64)
+            // render low-res for simulator (Software GL)
+            view.contentScaleFactor = UIScreen.mainScreen().scale * 0.25
+            #else
+            // render at native (screen pixel) scale for retina screens
+            view.contentScaleFactor = UIScreen.mainScreen().nativeScale
+        #endif
         
         // create globe
         let options = CesiumOptions(
@@ -99,8 +104,7 @@ class CesiumViewController: GLKViewController {
     //MARK: - GLKView delegate
     
     override func glkView(view: GLKView!, drawInRect rect: CGRect) {
-        
-        globe?.render(rect.size)
+        globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
         if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
             lastFrameRateUpdate = NSDate()
             let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
