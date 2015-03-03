@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Math {
+public struct Math {
     /**
     * 0.1
     * @type {Number}
@@ -369,7 +369,7 @@ struct Math {
     * @param {Number} degrees The angle to convert in degrees.
     * @returns {Number} The corresponding angle in radians.
     */
-    static func toRadians(degrees: Double) -> Double {
+    public static func toRadians(degrees: Double) -> Double {
         return degrees * RadiansPerDegree
     }
 
@@ -378,7 +378,7 @@ struct Math {
     * @param {Number} radians The angle to convert in radians.
     * @returns {Number} The corresponding angle in degrees.
     */
-    static func toDegrees(radians: Double) -> Double {
+    public static func toDegrees(radians: Double) -> Double {
         return radians * DegreesPerRadian
     }
 /*

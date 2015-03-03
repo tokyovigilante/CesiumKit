@@ -1141,7 +1141,7 @@ Camera.prototype.lookRight = function(amount) {
     amount = defaultValue(amount, this.defaultLookAmount);
     this.look(this.up, amount);
 };
-
+*/
 /**
 * Rotates the camera around its right vector by amount, in radians, in the direction
 * of its up vector.
@@ -1152,11 +1152,10 @@ Camera.prototype.lookRight = function(amount) {
 *
 * @see Camera#lookDown
 */
-Camera.prototype.lookUp = function(amount) {
-    amount = defaultValue(amount, this.defaultLookAmount);
-    this.look(this.right, -amount);
-};
-
+    public func lookUp (amount: Double?) {
+        look(axis: right, angle: -(amount ?? defaultLookAmount))
+    }
+/*
 /**
 * Rotates the camera around its right vector by amount, in radians, in the opposite direction
 * of its up vector.
@@ -1171,42 +1170,32 @@ Camera.prototype.lookDown = function(amount) {
     amount = defaultValue(amount, this.defaultLookAmount);
     this.look(this.right, amount);
 };
-
-var lookScratchQuaternion = new Quaternion();
-var lookScratchMatrix = new Matrix3();
-/**
-* Rotate each of the camera's orientation vectors around <code>axis</code> by <code>angle</code>
-*
-* @memberof Camera
-*
-* @param {Cartesian3} axis The axis to rotate around.
-* @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultLookAmount</code>.
-*
-* @see Camera#lookUp
-* @see Camera#lookDown
-* @see Camera#lookLeft
-* @see Camera#lookRight
 */
-Camera.prototype.look = function(axis, angle) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(axis)) {
-        throw new DeveloperError('axis is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var turnAngle = defaultValue(angle, this.defaultLookAmount);
-    var quaternion = Quaternion.fromAxisAngle(axis, -turnAngle, lookScratchQuaternion);
-    var rotation = Matrix3.fromQuaternion(quaternion, lookScratchMatrix);
-    
-    var direction = this.direction;
-    var up = this.up;
-    var right = this.right;
-    
-    Matrix3.multiplyByVector(rotation, direction, direction);
-    Matrix3.multiplyByVector(rotation, up, up);
-    Matrix3.multiplyByVector(rotation, right, right);
-};
 
+    /**
+    * Rotate each of the camera's orientation vectors around <code>axis</code> by <code>angle</code>
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian3} axis The axis to rotate around.
+    * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultLookAmount</code>.
+    *
+    * @see Camera#lookUp
+    * @see Camera#lookDown
+    * @see Camera#lookLeft
+    * @see Camera#lookRight
+    */
+    public func look (#axis: Cartesian3, angle: Double? = nil) {
+        
+        let turnAngle = angle ?? defaultLookAmount
+        let quaternion = Quaternion(fromAxis: axis, angle: -turnAngle)
+        var rotation = Matrix3(fromQuaternion: quaternion)
+        
+        direction = rotation.multiplyByVector(direction)
+        up = rotation.multiplyByVector(up)
+        right = rotation.multiplyByVector(right)
+    }
+/*
 /**
 * Rotate the camera counter-clockwise around its direction vector by amount, in radians.
 *
