@@ -449,7 +449,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    public static func fromDegrees(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         var lon = Math.toRadians(longitude)
         var lat = Math.toRadians(latitude)
@@ -575,7 +575,7 @@ public struct Cartesian3: Packable, Equatable {
     * @constant
     */
     
-    static func zero() -> Cartesian3 {
+    public static func zero() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 0.0, z: 0.0)
     }
     
@@ -585,7 +585,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    static func unitX() -> Cartesian3 {
+    public static func unitX() -> Cartesian3 {
         return Cartesian3(x: 1.0, y: 0.0, z: 0.0)
     }
     
@@ -595,7 +595,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    static func unitY() -> Cartesian3 {
+    public static func unitY() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 1.0, z: 0.0)
     }
     
@@ -605,7 +605,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    static func unitZ() -> Cartesian3 {
+    public static func unitZ() -> Cartesian3 {
         return Cartesian3(x: 0.0, y: 0.0, z: 1.0)
     }
     

@@ -1556,64 +1556,49 @@ Camera.prototype.setPositionCartographic = function(cartographic) {
         setPositionCartographic3D(this, cartographic);
     }
 };
-
-/**
-* Sets the camera position and orientation with an eye position, target, and up vector.
-* This method is not supported in 2D mode because there is only one direction to look.
-*
-* @memberof Camera
-*
-* @param {Cartesian3} eye The position of the camera.
-* @param {Cartesian3} target The position to look at.
-* @param {Cartesian3} up The up vector.
-*
-* @exception {DeveloperError} lookAt is not supported while morphing.
 */
-Camera.prototype.lookAt = function(eye, target, up) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(eye)) {
-        throw new DeveloperError('eye is required');
-    }
-    if (!defined(target)) {
-        throw new DeveloperError('target is required');
-    }
-    if (!defined(up)) {
-        throw new DeveloperError('up is required');
-    }
-    if (this._mode === SceneMode.MORPHING) {
-        throw new DeveloperError('lookAt is not supported while morphing.');
-    }
-    //>>includeEnd('debug');
-    
-    if (this._mode === SceneMode.SCENE2D) {
-        Cartesian2.clone(target, this.position);
-        Cartesian3.negate(Cartesian3.UNIT_Z, this.direction);
+    /**
+    * Sets the camera position and orientation with an eye position, target, and up vector.
+    * This method is not supported in 2D mode because there is only one direction to look.
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian3} eye The position of the camera.
+    * @param {Cartesian3} target The position to look at.
+    * @param {Cartesian3} up The up vector.
+    *
+    * @exception {DeveloperError} lookAt is not supported while morphing.
+    */
+    public func lookAt (eye: Cartesian3, target: Cartesian3, up: Cartesian3) {
         
-        Cartesian3.clone(up, this.up);
-        this.up.z = 0.0;
+        assert(mode != .Morphing, "lookAt is not supported while morphing.")
         
-        if (Cartesian3.magnitudeSquared(this.up) < CesiumMath.EPSILON10) {
-            Cartesian3.clone(Cartesian3.UNIT_Y, this.up);
+        if mode == .Scene2D {
+            position = target
+            direction = Cartesian3.unitZ().negate()
+            self.up = up
+            self.up.z = 0.0
+            
+            if self.up.magnitudeSquared() < Math.Epsilon10 {
+                self.up = Cartesian3.unitY()
+            }
+            
+            right = direction.cross(self.up)
+            
+            let ratio = frustum.top / frustum.right
+            frustum.right = eye.z
+            frustum.left = -frustum.right
+            frustum.top = ratio * frustum.right
+            frustum.bottom = -frustum.top
+            
+            return
         }
         
-        Cartesian3.cross(this.direction, this.up, this.right);
-        
-        var frustum = this.frustum;
-        var ratio = frustum.top / frustum.right;
-        frustum.right = eye.z;
-        frustum.left = -frustum.right;
-        frustum.top = ratio * frustum.right;
-        frustum.bottom = -frustum.top;
-        
-        return;
+        position = eye
+        direction = target.subtract(eye).normalize()
+        right = direction.cross(up).normalize()
+        self.up = right.cross(direction)
     }
-    
-    this.position = Cartesian3.clone(eye, this.position);
-    this.direction = Cartesian3.normalize(Cartesian3.subtract(target, eye, this.direction), this.direction);
-    this.right = Cartesian3.normalize(Cartesian3.cross(this.direction, up, this.right), this.right);
-    this.up = Cartesian3.cross(this.right, this.direction, this.up);
-};
-*/
 /*var viewRectangle3DCartographic = new Cartographic();
 var viewRectangle3DNorthEast = new Cartesian3();
 var viewRectangle3DSouthWest = new Cartesian3();

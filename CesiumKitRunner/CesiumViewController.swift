@@ -86,10 +86,15 @@ class CesiumViewController: GLKViewController {
         
         // create globe
         let options = CesiumOptions(
-            imageryProvider: BingMapsImageryProvider())
+            imageryProvider: BingMapsImageryProvider(options: BingMapsImageryProvider.Options(mapStyle: .AerialWithLabels)))
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-//        globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
+        
+        //Murrumbeena
+        globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
+        //Wellington
+        //globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
+        //globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
     }
     
     func setupGestureRecognisers() {

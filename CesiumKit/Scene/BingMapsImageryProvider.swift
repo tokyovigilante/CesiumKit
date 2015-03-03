@@ -62,16 +62,23 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     public struct Options {
         
-        let url: String = "//dev.virtualearth.net"
+        public let url: String
         
-        let key: String? = nil
+        public let key: String?
         
-        let tileProtocol: String = "https:"
+        public let tileProtocol: String
         
-        let mapStyle: BingMapsStyle = .Aerial
+        public let mapStyle: BingMapsStyle
         
-        let tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()
+        public let tileDiscardPolicy: TileDiscardPolicy?
         
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+            self.url = url
+            self.key = key
+            self.tileProtocol = tileProtocol
+            self.mapStyle = mapStyle
+            self.tileDiscardPolicy = tileDiscardPolicy
+        }
     }
     
     /**
@@ -504,12 +511,11 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     public func loadImage (url: String) -> UIImage? {
-        let imageData = NSData(contentsOfURL: NSURL(string: url)!)
-        if imageData != nil {
-            return UIImage(data: imageData!)
+        if let imageData = NSData(contentsOfURL: NSURL(string: url)!) {
+            return UIImage(data: imageData)
         }
         /*request(.GET, url)//, //parameters: [
-        //"incl" : "ImageryProviders",
+        //"incl" : "ImageryPrtoviders",
         //"key" : self._key])
         .response { (request, response, data, error) in
         if let error = error {
@@ -645,6 +651,8 @@ public class BingMapsImageryProvider: ImageryProvider {
         var subdomains = _imageUrlSubdomains!.arrayValue
         var subdomainIndex = (x + y + level) % subdomains.count
         imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
+        
+        imageUrl = imageUrl.replace("{culture}", mapStyle.rawValue)
         
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;
