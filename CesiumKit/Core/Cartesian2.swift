@@ -211,7 +211,7 @@ struct Cartesian2 {//: Packable, Equatable {
     
     
     /**
-    * Computes the distance between two points
+    * Computes the distance between two points.
     *
     * @param {Cartesian2} left The first point to compute the distance from.
     * @param {Cartesian2} right The second point to compute the distance to.
@@ -225,6 +225,22 @@ struct Cartesian2 {//: Packable, Equatable {
         return subtract(other).magnitude()
     }
     
+    /**
+    * Computes the squared distance between two points.  Comparing squared distances
+    * using this function is more efficient than comparing distances using {@link Cartesian2#distance}.
+    *
+    * @param {Cartesian2} left The first point to compute the distance from.
+    * @param {Cartesian2} right The second point to compute the distance to.
+    * @returns {Number} The distance between two points.
+    *
+    * @example
+    * // Returns 4.0, not 2.0
+    * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(3.0, 0.0));
+    */
+    func distanceSquared (other: Cartesian2) -> Double {
+        return self.subtract(other).magnitudeSquared()
+    }
+
     /**
     * Computes the normalized form of the supplied Cartesian.
     *
@@ -374,19 +390,26 @@ struct Cartesian2 {//: Packable, Equatable {
         }
         return result;
     }
+        /*
+        Cartesian2.equalsArray = function(cartesian, array, offset) {
+            return cartesian.x === array[offset] &&
+                   cartesian.y === array[offset + 1];
+        };*/
     
     /**
     * Compares the provided Cartesians componentwise and returns
-    * <code>true</code> if they are within the provided epsilon,
+    * <code>true</code> if they pass an absolute or relative tolerance test,
     * <code>false</code> otherwise.
     *
     * @param {Cartesian2} [left] The first Cartesian.
     * @param {Cartesian2} [right] The second Cartesian.
-    * @param {Number} epsilon The epsilon to use for equality testing.
-    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+    * @param {Number} relativeEpsilon The relative epsilon tolerance to use for equality testing.
+    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian2, epsilon: Double) -> Bool {
-        return (abs(x - other.x) <= epsilon) && (abs(y - other.y) <= epsilon)
+    func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
+        return self == other ||
+                (Math.equalsEpsilon(self.x, other.x, relativeEpsilon, absoluteEpsilon) &&
+                Math.equalsEpsilon(self.y, other.y, relativeEpsilon, absoluteEpsilon))
     }
     
     /**
