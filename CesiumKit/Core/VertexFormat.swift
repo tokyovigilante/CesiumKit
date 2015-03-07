@@ -26,6 +26,7 @@ import Foundation
 * });
 *
 * @see Geometry#attributes
+* @see Packable*
 */
 struct VertexFormat {
     
@@ -89,6 +90,17 @@ struct VertexFormat {
     */
     let tangent: Bool = false
     
+    /**
+    * When <code>true</code>, the vertex has an RGB color attribute.
+    * <p>
+    * 8bit unsigned byte.  3 components per attribute.
+    * </p>
+    *
+    * @type Boolean
+    *
+    * @default false
+    */
+    let color: Bool = false
     
     /**
     * An immutable vertex format with only a position attribute.
@@ -98,7 +110,7 @@ struct VertexFormat {
     * @see VertexFormat#position
     */
     static func PositionOnly() -> VertexFormat {
-        return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false)
+        return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false, color: false)
     }
     
     /**
@@ -111,7 +123,7 @@ struct VertexFormat {
     * @see VertexFormat#normal
     */
     static func PositionAndNormal() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: false, binormal: false, tangent: false)
+        return VertexFormat(position: true, normal: true, st: false, binormal: false, tangent: false, color: false)
     }
     
     /**
@@ -126,7 +138,7 @@ struct VertexFormat {
     * @see VertexFormat#st
     */
     static func PositionNormalAndST() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: true, binormal: false, tangent: false)
+        return VertexFormat(position: true, normal: true, st: true, binormal: false, tangent: false, color: false)
     }
     
     /**
@@ -139,10 +151,22 @@ struct VertexFormat {
     * @see VertexFormat#st
     */
     static func PositionAndST() -> VertexFormat {
-        return VertexFormat(position: true, normal: false, st: true, binormal: false, tangent: false)
+        return VertexFormat(position: true, normal: false, st: true, binormal: false, tangent: false, color: false)
     }
     
-    
+    /**
+    * An immutable vertex format with position and color attributes.
+    *
+    * @type {VertexFormat}
+    * @constant
+    *
+    * @see VertexFormat#position
+    * @see VertexFormat#color
+    */
+    static func PositionAndColor() -> VertexFormat {
+        return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false, color: true)
+    }
+
     /**
     * An immutable vertex format with all well-known attributes: position, normal, st, binormal, and tangent.
     *
@@ -155,7 +179,7 @@ struct VertexFormat {
     * @see VertexFormat#tangent
     */
     static func All() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: true, binormal: true, tangent: true)
+        return VertexFormat(position: true, normal: true, st: true, binormal: true, tangent: true, color: false)
     }
     
     /**
@@ -171,6 +195,53 @@ struct VertexFormat {
     */
     static func Default() -> VertexFormat {
         return VertexFormat.PositionNormalAndST()
+    }
+    
+    /**
+    * The number of elements used to pack the object into an array.
+    * @type {Number}
+    */
+    static let packedLength = 6
+    
+    /**
+    * Stores the provided instance into the provided array.
+    * @function
+    *
+    * @param {Object} value The value to pack.
+    * @param {Number[]} array The array to pack into.
+    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+    */
+    func pack (inout array: [Float], startingIndex: Int? = nil) {
+        
+        var startingIndex = startingIndex ?? 0
+        
+        array[startingIndex++] = position ? 1.0 : 0.0
+        array[startingIndex++] = normal ? 1.0 : 0.0
+        array[startingIndex++] = st ? 1.0 : 0.0
+        array[startingIndex++] = binormal ? 1.0 : 0.0
+        array[startingIndex++] = tangent ? 1.0 : 0.0
+        array[startingIndex++] = color ? 1.0 : 0.0
+    }
+    
+    /**
+    * Retrieves an instance from a packed array.
+    *
+    * @param {Number[]} array The packed array.
+    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+    * @param {VertexFormat} [result] The object into which to store the result.
+    */
+    func unpack (array: [Float], startingIndex: Int? = nil) -> VertexFormat {
+        
+        var startingIndex = startingIndex ?? 0
+        
+        return VertexFormat(
+            position: [startingIndex++] == 1.0,
+            normal:   [startingIndex++] == 1.0,
+            st:       [startingIndex++] == 1.0,
+            binormal: [startingIndex++] == 1.0,
+            tangent:  [startingIndex++] == 1.0,
+            color:    [startingIndex++] == 1.0
+        )
     }
     
 }

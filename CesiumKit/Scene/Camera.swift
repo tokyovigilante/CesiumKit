@@ -299,7 +299,7 @@ public class Camera {
     * The default extent the camera will view on creation.
     * @type Rectangle
     */
-    var defaultViewRectangle = Rectangle.fromDegrees(west: -95.0, south: -20.0, east: -70.0, north: 90.0)
+    var defaultViewRectangle = Rectangle(fromDegreesWest: -95.0, south: -20.0, east: -70.0, north: 90.0)
     
     /**
     * A scalar to multiply to the camera position and add it back after setting the camera to view the rectangle.
@@ -1609,7 +1609,7 @@ var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new C
         
         // If we go across the International Date Line
         if (west > east) {
-            east += M_PI * 2
+            east += Math.TwoPi
         }
         
         var cart = Cartographic(longitude: east, latitude: north)

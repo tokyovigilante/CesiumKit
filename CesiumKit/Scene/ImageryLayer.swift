@@ -260,9 +260,13 @@ public class ImageryLayer {
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
-        var rectangle = tile.rectangle.intersectWith(imageryProvider.rectangle).intersectWith(_rectangle)
+        var overlapRectangle = tile.rectangle.intersection(imageryProvider.rectangle)?.intersection(_rectangle)
         
-        if rectangle.east <= rectangle.west || rectangle.north <= rectangle.south {
+        let rectangle: Rectangle
+        
+        if overlapRectangle != nil {
+            rectangle = overlapRectangle!
+        } else {
             // There is no overlap between this terrain tile and this imagery
             // provider.  Unless this is the base layer, no skeletons need to be created.
             // We stretch texels at the edge of the base layer over the entire globe.
@@ -270,24 +274,27 @@ public class ImageryLayer {
                 return false
             }
             
-            let baseImageryRectangle = imageryProvider.rectangle.intersectWith(_rectangle)
+            let baseImageryRectangle = imageryProvider.rectangle.intersection(_rectangle)!
             var baseTerrainRectangle = tile.rectangle
+            overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
             
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
-                rectangle.south = baseImageryRectangle.north
-                rectangle.north = rectangle.south
+                overlapRectangle!.south = baseImageryRectangle.north
+                overlapRectangle!.north = overlapRectangle!.south
             } else if baseTerrainRectangle.north <= baseImageryRectangle.south {
-                rectangle.south = baseImageryRectangle.south
-                rectangle.north = rectangle.south
+                overlapRectangle!.south = baseImageryRectangle.south
+                overlapRectangle!.north = overlapRectangle!.south
             }
             
             if baseTerrainRectangle.west >= baseImageryRectangle.east {
-                rectangle.east = baseImageryRectangle.east
-                rectangle.west = rectangle.east
+                overlapRectangle!.east = baseImageryRectangle.east
+                overlapRectangle!.west = overlapRectangle!.east
             } else if baseTerrainRectangle.east <= baseImageryRectangle.west {
-                rectangle.east = baseImageryRectangle.west
-                rectangle.west = rectangle.east
+                overlapRectangle!.east = baseImageryRectangle.west
+                overlapRectangle!.west = overlapRectangle!.east
             }
+            rectangle = Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.east)
+
         }
         
         var latitudeClosestToEquator = 0.0

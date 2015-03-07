@@ -124,7 +124,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
             _grid[(column * 3) + row] = newValue
         }
     }
-    
+
     /**
     * Stores the provided instance into the provided array.
     *
@@ -1122,6 +1122,21 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     };
     
     /**
+    * @private
+    */
+    Matrix3.equalsArray = function(matrix, array, offset) {
+    return matrix[0] === array[offset] &&
+    matrix[1] === array[offset + 1] &&
+    matrix[2] === array[offset + 2] &&
+    matrix[3] === array[offset + 3] &&
+    matrix[4] === array[offset + 4] &&
+    matrix[5] === array[offset + 5] &&
+    matrix[6] === array[offset + 6] &&
+    matrix[7] === array[offset + 7] &&
+    matrix[8] === array[offset + 8];
+    };
+    */
+    /**
     * Compares the provided matrices componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
     *
@@ -1129,21 +1144,15 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Matrix3} [right] The second matrix.
     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
     */
-    Matrix3.equals = function(left, right) {
-    return (left === right) ||
-    (defined(left) &&
-    defined(right) &&
-    left[0] === right[0] &&
-    left[1] === right[1] &&
-    left[2] === right[2] &&
-    left[3] === right[3] &&
-    left[4] === right[4] &&
-    left[5] === right[5] &&
-    left[6] === right[6] &&
-    left[7] === right[7] &&
-    left[8] === right[8]);
-    };
-    */
+    func equals(other: Matrix3) -> Bool {
+        for i in 0..<9 {
+            if _grid[i] != other[i] {
+                return false
+            }
+        }
+        return true
+    }
+    
     /**
     * Compares the provided matrices componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -1154,15 +1163,19 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equals(other: Matrix3) -> Bool {
-        for var i = 0; i < 9; i++ {
-            if _grid[i] != other[i] {
-                return false
-            }
-        }
-        return true
+    func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
+        return self == other ||
+            (abs(_grid[0] - other[0]) <= epsilon &&
+                abs(_grid[1] - other[1]) <= epsilon &&
+                abs(_grid[2] - other[2]) <= epsilon &&
+                abs(_grid[3] - other[3]) <= epsilon &&
+                abs(_grid[4] - other[4]) <= epsilon &&
+                abs(_grid[5] - other[5]) <= epsilon &&
+                abs(_grid[6] - other[6]) <= epsilon &&
+                abs(_grid[7] - other[7]) <= epsilon &&
+                abs(_grid[8] - other[8]) <= epsilon)
     }
-    
+
     /**
     * An immutable Matrix3 instance initialized to the identity matrix.
     *

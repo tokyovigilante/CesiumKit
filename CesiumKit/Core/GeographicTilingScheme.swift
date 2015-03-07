@@ -32,39 +32,21 @@ class GeographicTilingScheme: TilingScheme {
     * @memberof GeographicTilingScheme.prototype
     * @type {Ellipsoid}
     */
-    private var _ellipsoid: Ellipsoid
-    
-    var ellipsoid: Ellipsoid {
-        get {
-            return _ellipsoid
-        }
-    }
+    let ellipsoid: Ellipsoid
     
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
-    private var _rectangle : Rectangle
-    
-    var rectangle: Rectangle {
-        get {
-             return _rectangle
-        }
-    }
+    let rectangle: Rectangle
     
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    private var _projection : Projection
-    
-    var projection: Projection {
-        get {
-            return _projection
-        }
-    }
+    let projection: Projection
 
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int
@@ -75,9 +57,9 @@ class GeographicTilingScheme: TilingScheme {
         numberOfLevelZeroTilesX: Int = 2,
         numberOfLevelZeroTilesY: Int = 1) {
             
-            _ellipsoid = ellipsoid
-            _rectangle = rectangle
-            _projection = GeographicProjection(ellipsoid: _ellipsoid)
+            self.ellipsoid = ellipsoid
+            self.rectangle = rectangle
+            self.projection = GeographicProjection(ellipsoid: ellipsoid)
 
             self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
             self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
@@ -157,16 +139,16 @@ class GeographicTilingScheme: TilingScheme {
      */
     func tileXYToRectangle(#x: Int, y: Int, level: Int) -> Rectangle {
 
-        var xTiles = numberOfXTilesAtLevel(level)
-        var yTiles = numberOfYTilesAtLevel(level)
+        let xTiles = numberOfXTilesAtLevel(level)
+        let yTiles = numberOfYTilesAtLevel(level)
 
-        var xTileWidth = (_rectangle.east - _rectangle.west) / Double(xTiles)
-        var west = Double(x) * xTileWidth + _rectangle.west
-        var east = Double(x + 1) * xTileWidth + _rectangle.west
+        let xTileWidth = rectangle.width / Double(xTiles)
+        let west = Double(x) * xTileWidth + rectangle.west
+        let east = Double(x + 1) * xTileWidth + rectangle.west
 
-        var yTileHeight = (_rectangle.north - _rectangle.south) / Double(yTiles)
-        var north = _rectangle.north - Double(y) * yTileHeight
-        var south = _rectangle.north - Double(y + 1) * yTileHeight
+        let yTileHeight = rectangle.width / Double(yTiles)
+        let north = rectangle.north - Double(y) * yTileHeight
+        let south = rectangle.north - Double(y + 1) * yTileHeight
 
         return Rectangle(west: west, south: south, east: east, north: north)
     }
@@ -184,24 +166,28 @@ class GeographicTilingScheme: TilingScheme {
      *          if 'result' is undefined.
      */
     func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
-        if (position.latitude > rectangle.north ||
-            position.latitude < rectangle.south ||
-            position.longitude < rectangle.west ||
-            position.longitude > rectangle.east) {
+        if rectangle.contains(position) {
             // outside the bounds of the tiling scheme
             return nil
         }
-        var xTiles = numberOfXTilesAtLevel(level)
-        var yTiles = numberOfYTilesAtLevel(level)
+        let xTiles = numberOfXTilesAtLevel(level)
+        let yTiles = numberOfYTilesAtLevel(level)
 
-        var xTileWidth = (rectangle.east - rectangle.west) / Double(xTiles)
-        var yTileHeight = (rectangle.north - rectangle.south) / Double(yTiles)
+        let xTileWidth = rectangle.width / Double(xTiles)
+        let yTileHeight = rectangle.height / Double(yTiles)
 
-        var xTileCoordinate = Int(round((position.longitude - rectangle.west) / xTileWidth))
+        let longitude: Double
+        if rectangle.east < rectangle.west {
+            longitude = position.longitude + Math.TwoPi
+        } else {
+            longitude = position.longitude
+        }
+        
+        var xTileCoordinate = Int(round((longitude - rectangle.west) / xTileWidth))
         if (xTileCoordinate >= xTiles) {
             xTileCoordinate = xTiles - 1
         }
-        //var
+
         var yTileCoordinate = Int(round((rectangle.north - position.latitude) / yTileHeight))
         if (yTileCoordinate >= yTiles) {
             yTileCoordinate = yTiles - 1

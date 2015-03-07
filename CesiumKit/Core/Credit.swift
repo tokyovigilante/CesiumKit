@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+var nextCreditId = 0
+var creditToId = [String: Int]()
+
 /**
 * A credit contains data pertaining to how to display attributions/credits for certain content on the screen.
 *
@@ -21,9 +24,20 @@
 * var credit = new Cesium.Credit('Cesium', '/images/cesium_logo.png', 'http://cesiumjs.org/');
 */
 public struct Credit: Equatable {
-    var text: String?
-    var imageUrl: String?
-    var link: String?
+    
+    public let text: String?
+    
+    public let imageUrl: String?
+    
+    public let link: String?
+    
+    /**
+    * @memberof Credit.prototype
+    * @type {Number}
+    *
+    * @private
+    */
+    let id: Int
     
     init (text: String? = nil, imageUrl: String? = nil, link: String? = nil) {
         assert(text != nil || imageUrl != nil || link != nil, "text, imageUrl or link is required")
@@ -35,6 +49,15 @@ public struct Credit: Equatable {
         }
         self.imageUrl = imageUrl
         self.link = link
+        
+        // Credits are immutable so generate an id to use to optimize equal()
+        let key = "[\(self.text), \(self.imageUrl), \(self.link)]"
+        if let creditToId = creditToId[key] {
+            id = creditToId
+        } else {
+            id = nextCreditId++
+            creditToId[key] = id
+        }
     }
 }
 /**
@@ -46,6 +69,5 @@ public struct Credit: Equatable {
 */
 
 public func ==(left: Credit, right: Credit) -> Bool {
-    return (left.text == right.text && left.imageUrl == right.imageUrl && left.link == right.link)
+    return left.id == right.id
 }
-

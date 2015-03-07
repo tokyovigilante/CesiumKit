@@ -134,6 +134,28 @@ struct Quaternion {
             z = -quat[2]
         }
     }
+    
+    /**
+    * Computes a rotation from the given heading, pitch and roll angles. Heading is the rotation about the
+    * negative z axis. Pitch is the rotation about the negative y axis. Roll is the rotation about
+    * the positive x axis.
+    *
+    * @param {Number} heading The heading angle in radians.
+    * @param {Number} pitch The pitch angle in radians.
+    * @param {Number} roll The roll angle in radians.
+    * @param {Quaternion} result The object onto which to store the result.
+    * @returns {Quaternion} The modified result parameter or a new Quaternion instance if none was provided.
+    */
+    init(fromHeading heading: Double, pitch: Double, roll: Double) {
+
+        let HPRQuaternion =
+            Quaternion(fromAxis: Cartesian3.unitZ(), angle: -heading) * // heading
+            Quaternion(fromAxis: Cartesian3.unitY(), angle: -pitch) * // pitch
+            Quaternion(fromAxis: Cartesian3.unitX(), angle: roll) // roll
+        
+        self.init(x: HPRQuaternion.x, y: HPRQuaternion.y, z: HPRQuaternion.z, w: HPRQuaternion.w)
+    }
+
     /*
     var sampledQuaternionAxis = new Cartesian3();
     var sampledQuaternionRotation = new Cartesian3();
@@ -477,20 +499,20 @@ struct Quaternion {
     */
     func multiply (other: Quaternion) -> Quaternion {
         
-        var selfX = self.x
-        var selfY = self.y
-        var selfZ = self.z
-        var selfW = self.w
+        let selfX = self.x
+        let selfY = self.y
+        let selfZ = self.z
+        let selfW = self.w
         
-        var otherX = other.x
-        var otherY = other.y
-        var otherZ = other.z
-        var otherW = other.w
+        let otherX = other.x
+        let otherY = other.y
+        let otherZ = other.z
+        let otherW = other.w
         
-        var x = selfW * otherX + selfX * otherW + selfY * otherZ - selfZ * otherY
-        var y = selfW * otherY - selfX * otherZ + selfY * otherW + selfZ * otherX
-        var z = selfW * otherZ + selfX * otherY - selfY * otherX + selfZ * otherW
-        var w = selfW * otherW - selfX * otherX - selfY * otherY - selfZ * otherZ
+        let x = selfW * otherX + selfX * otherW + selfY * otherZ - selfZ * otherY
+        let y = selfW * otherY - selfX * otherZ + selfY * otherW + selfZ * otherX
+        let z = selfW * otherZ + selfX * otherY - selfY * otherX + selfZ * otherW
+        let w = selfW * otherW - selfX * otherX - selfY * otherY - selfZ * otherZ
         
         return Quaternion(x: x, y: y, z: z, w: w)
     }

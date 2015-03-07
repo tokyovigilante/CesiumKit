@@ -149,7 +149,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
-        return tilingScheme.ellipsoid.maximumRadius * 2.0 * M_PI * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
+        return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
     }
     
     /**

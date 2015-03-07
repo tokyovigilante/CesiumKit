@@ -86,7 +86,7 @@ protocol TerrainProvider {
     
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    static func getRegularGridIndices(#width: Int, height: Int) -> [UInt16]
+    static func getRegularGridIndices(#width: Int, height: Int) -> [Int]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.

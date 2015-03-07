@@ -151,8 +151,8 @@ class HeightmapTessellator {
             let elementMultiplier = structure.elementMultiplier
             let isBigEndian = structure.isBigEndian
             
-            let granularityX = (nativeRectangle.east - nativeRectangle.west) / Double(width - 1)
-            let granularityY = (nativeRectangle.north - nativeRectangle.south) / Double(height - 1)
+            let granularityX = nativeRectangle.width / Double(width - 1)
+            let granularityY = nativeRectangle.height / Double(height - 1)
             
             let radiiSquared = ellipsoid.radiiSquared
             let radiiSquaredX = radiiSquared.x

@@ -408,8 +408,8 @@ struct Cartesian2 {//: Packable, Equatable {
     */
     func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
         return self == other ||
-                (Math.equalsEpsilon(self.x, other.x, relativeEpsilon, absoluteEpsilon) &&
-                Math.equalsEpsilon(self.y, other.y, relativeEpsilon, absoluteEpsilon))
+                (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
+                Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon))
     }
     
     /**

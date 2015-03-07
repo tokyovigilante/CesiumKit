@@ -320,15 +320,15 @@ public struct Math {
     * @constant
     */
     CesiumMath.THREE_PI_OVER_TWO = (3.0 * Math.PI) * 0.5;
-    
+    */
     /**
     * 2pi
     *
     * @type {Number}
     * @constant
     */
-    CesiumMath.TWO_PI = 2.0 * Math.PI;
-    
+    static let TwoPi = 2.0 * M_PI
+    /*
     /**
     * 1/2pi
     *
@@ -411,67 +411,64 @@ CesiumMath.convertLongitudeRange = function(angle) {
     
     return simplified;
 };
+*/
+    /**
+    * Produces an angle in the range -Pi <= angle <= Pi which is equivalent to the provided angle.
+    *
+    * @param {Number} angle in radians
+    * @returns {Number} The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
+    */
+    static func negativePiToPi (x: Double) -> Double {
+        return Math.zeroToTwoPi(x + M_PI) - M_PI
+    }
 
-/**
-* Produces an angle in the range -Pi <= angle <= Pi which is equivalent to the provided angle.
-*
-* @param {Number} angle in radians
-* @returns {Number} The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
-*/
-CesiumMath.negativePiToPi = function(x) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(x)) {
-        throw new DeveloperError('x is required.');
+    /**
+    * Produces an angle in the range 0 <= angle <= 2Pi which is equivalent to the provided angle.
+    *
+    * @param {Number} angle in radians
+    * @returns {Number} The angle in the range [0, <code>CesiumMath.TWO_PI</code>].
+    */
+    static func zeroToTwoPi (x: Double) -> Double {
+        let mod = Math.mod(x, Math.TwoPi)
+        if (abs(mod) < Math.Epsilon14 && abs(x) > Math.Epsilon14) {
+            return Math.TwoPi
+        }
+        return mod
     }
-    //>>includeEnd('debug');
-    var epsilon10 = CesiumMath.EPSILON10;
-    var pi = CesiumMath.PI;
-    var two_pi = CesiumMath.TWO_PI;
-    while (x < -(pi + epsilon10)) {
-        x += two_pi;
+    
+    /**
+    * The modulo operation that also works for negative dividends.
+    *
+    * @param {Number} m The dividend.
+    * @param {Number} n The divisor.
+    * @returns {Number} The remainder.
+    */
+    static func mod (m: Double, _ n: Double) -> Double {
+        return fmod(fmod(m, n) + n, n)
     }
-    if (x < -pi) {
-        return -pi;
-    }
-    while (x > pi + epsilon10) {
-        x -= two_pi;
-    }
-    return x > pi ? pi : x;
-};
 
-/**
-* Produces an angle in the range 0 <= angle <= 2Pi which is equivalent to the provided angle.
-*
-* @param {Number} angle in radians
-* @returns {Number} The angle in the range [0, <code>CesiumMath.TWO_PI</code>].
-*/
-CesiumMath.zeroToTwoPi = function(x) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(x)) {
-        throw new DeveloperError('x is required.');
-    }
-    //>>includeEnd('debug');
-    var value = x % CesiumMath.TWO_PI;
-    // We do a second modules here if we add 2Pi to ensure that we don't have any numerical issues with very
-    // small negative values.
-    return (value < 0.0) ? (value + CesiumMath.TWO_PI) % CesiumMath.TWO_PI : value;
-};
-*/
-/**
-* Determines if two values are equal within the provided epsilon.  This is useful
-* to avoid problems due to roundoff error when comparing floating-point values directly.
+    /**
+    * Determines if two values are equal using an absolute or relative tolerance test. This is useful
+    * to avoid problems due to roundoff error when comparing floatingpoint values directly. The values are
+    * first compared using an absolute tolerance test. If that fails, a relative tolerance test is performed.
+    * Use this test if you are unsure of the magnitudes of left and right.
 *
 * @param {Number} left The first value to compare.
 * @param {Number} right The other value to compare.
-* @param {Number} [epsilon=0.0] The maximum inclusive delta between <code>left</code> and <code>right</code> where they will be considered equal.
+* @param {Number} relativeEpsilon The maximum inclusive delta between <code>left</code> and <code>right</code> for the relative tolerance test.
+* @param {Number} [absoluteEpsilon=relativeEpsilon] The maximum inclusive delta between <code>left</code> and <code>right</code> for the absolute tolerance test.
 * @returns {Boolean} <code>true</code> if the values are equal within the epsilon; otherwise, <code>false</code>.
 *
 * @example
-* var b = Cesium.Math.equalsEpsilon(0.0, 0.01, Cesium.Math.EPSILON2); // true
+* var a = Cesium.Math.equalsEpsilon(0.0, 0.01, Cesium.Math.EPSILON2); // true
 * var b = Cesium.Math.equalsEpsilon(0.0, 0.1, Cesium.Math.EPSILON2);  // false
+* var c = Cesium.Math.equalsEpsilon(3699175.1634344, 3699175.2, Cesium.Math.EPSILON7); // true
+* var d = Cesium.Math.equalsEpsilon(3699175.1634344, 3699175.2, Cesium.Math.EPSILON9); // false
 */
-    static func equalsEpsilon(left: Double, _ right: Double, epsilon: Double = 0.0) -> Bool {
-        return abs(left - right) <= epsilon
+    static func equalsEpsilon(left: Double, _ right: Double, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
+        let epsilon = absoluteEpsilon ?? relativeEpsilon
+        var absDiff = abs(left - right)
+        return absDiff <= epsilon || absDiff <= relativeEpsilon * max(abs(left), abs(right))
     }
 /*
 var factorials = [1];
@@ -585,7 +582,7 @@ CesiumMath.nextPowerOfTwo = function(n) {
     * @param {Number} value The value to constrain.
     * @param {Number} min The minimum value.
     * @param {Number} max The maximum value.
-    * @returns The value clamped so that min <= value <= max.
+    * @returns {Number} The value clamped so that min <= value <= max.
     */
     static func clamp (value: Double, min: Double, max: Double) -> Double {
         return value < min ? min : value > max ? max : value
@@ -613,7 +610,7 @@ CesiumMath.setRandomNumberSeed = function(seed) {
 * Generates a random number in the range of [0.0, 1.0)
 * using a Mersenne twister.
 *
-* @returns A random number in the range of [0.0, 1.0).
+* @returns {Number} A random number in the range of [0.0, 1.0).
 *
 * @see CesiumMath.setRandomNumberSeed
 * @see {@link http://en.wikipedia.org/wiki/Mersenne_twister|Mersenne twister on Wikipedia}
@@ -622,29 +619,48 @@ CesiumMath.nextRandomNumber = function() {
     return randomNumberGenerator.random();
 };
 */
-/**
-* Computes <code>Math.acos(value)</acode>, but first clamps <code>value</code> to the range [-1.0, 1.0]
-* so that the function will never return NaN.
-*
-* @param value The value for which to compute acos.
-* @returns {number} The acos of the value if the value is in the range [-1.0, 1.0], or the acos of -1.0 or 1.0,
-*          whichever is closer, if the value is outside the range.
-*/
+    /**
+    * Computes <code>Math.acos(value)</acode>, but first clamps <code>value</code> to the range [-1.0, 1.0]
+    * so that the function will never return NaN.
+    *
+    * @param {Number} value The value for which to compute acos.
+    * @returns {Number} The acos of the value if the value is in the range [-1.0, 1.0], or the acos of -1.0 or 1.0,
+    */
     static func acosClamped(value: Double) -> Double {
         return acos(clamp(value, min: -1.0, max: 1.0))
     }
-/*
+
+    /**
+    * Computes <code>Math.asin(value)</acode>, but first clamps <code>value</code> to the range [-1.0, 1.0]
+    * so that the function will never return NaN.
+    *
+    * @param {Number} value The value for which to compute asin.
+    * @returns {Number} The asin of the value if the value is in the range [-1.0, 1.0], or the asin of -1.0 or 1.0,
+    */
+    static func asinClamped (value: Double) -> Double {
+        return asin(clamp(value, min: -1.0, max: 1.0))
+    }
+    
+    /*
 /**
-* Computes <code>Math.asin(value)</acode>, but first clamps <code>value</code> to the range [-1.0, 1.0]
-* so that the function will never return NaN.
+* Finds the chord length between two points given the circle's radius and the angle between the points.
 *
-* @param value The value for which to compute asin.
-* @returns {number} The asin of the value if the value is in the range [-1.0, 1.0], or the asin of -1.0 or 1.0,
-*          whichever is closer, if the value is outside the range.
+* @param {Number} angle The angle between the two points.
+* @param {Number} radius The radius of the circle.
+* @returns {Number} The chord length.
 */
-CesiumMath.asinClamped = function(value) {
-    return Math.asin(CesiumMath.clamp(value, -1.0, 1.0));
-};*/
+CesiumMath.chordLength = function(angle, radius) {
+//>>includeStart('debug', pragmas.debug);
+if (!defined(angle)) {
+throw new DeveloperError('angle is required.');
+}
+if (!defined(radius)) {
+throw new DeveloperError('radius is required.');
+}
+//>>includeEnd('debug');
+return 2.0 * radius * Math.sin(angle * 0.5);
+};
+*/
 
 }
 

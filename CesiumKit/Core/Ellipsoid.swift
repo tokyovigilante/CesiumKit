@@ -33,7 +33,7 @@ import Foundation
 let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
-public struct Ellipsoid {
+public struct Ellipsoid /* : Packable */{
     let x: Double = 0.0
     let y: Double = 0.0
     let z: Double = 0.0
@@ -68,6 +68,57 @@ public struct Ellipsoid {
         maximumRadius = max(x, y, z)
     }
     
+    /*
+    /**
+    * The number of elements used to pack the object into an array.
+    * @type {Number}
+    */
+    Ellipsoid.packedLength = Cartesian3.packedLength;
+    
+    /**
+    * Stores the provided instance into the provided array.
+    * @function
+    *
+    * @param {Object} value The value to pack.
+    * @param {Number[]} array The array to pack into.
+    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+    */
+    Ellipsoid.pack = function(value, array, startingIndex) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(value)) {
+    throw new DeveloperError('value is required');
+}
+if (!defined(array)) {
+    throw new DeveloperError('array is required');
+}
+//>>includeEnd('debug');
+
+startingIndex = defaultValue(startingIndex, 0);
+
+Cartesian3.pack(value._radii, array, startingIndex);
+};
+
+/**
+* Retrieves an instance from a packed array.
+*
+* @param {Number[]} array The packed array.
+* @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+* @param {Ellipsoid} [result] The object into which to store the result.
+*/
+Ellipsoid.unpack = function(array, startingIndex, result) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(array)) {
+        throw new DeveloperError('array is required');
+    }
+    //>>includeEnd('debug');
+    
+    startingIndex = defaultValue(startingIndex, 0);
+    
+    var radii = Cartesian3.unpack(array, startingIndex);
+    return Ellipsoid.fromCartesian3(radii, result);
+};
+
+*/
     /**
     * Computes an Ellipsoid from a Cartesian specifying the radii in x, y, and z directions.
     *

@@ -189,10 +189,7 @@ class WebMercatorTilingScheme: TilingScheme {
     */
     func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         
-        if (position.latitude > rectangle.north ||
-            position.latitude < rectangle.south ||
-            position.longitude < rectangle.west ||
-            position.longitude > rectangle.east) {
+        if rectangle.contains(position) {
                 // outside the bounds of the tiling scheme
                 return nil
         }

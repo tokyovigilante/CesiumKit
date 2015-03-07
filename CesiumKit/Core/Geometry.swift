@@ -20,7 +20,7 @@
 *
 * @param {Object} options Object with the following properties:
 * @param {GeometryAttributes} options.attributes Attributes, which make up the geometry's vertices.
-* @param {PrimitiveType} options.primitiveType The type of primitives in the geometry.
+* @param {PrimitiveType} [options.primitiveType=PrimitiveType.TRIANGLES] The type of primitives in the geometry.
 * @param {Uint16Array|Uint32Array} [options.indices] Optional index data that determines the primitives in the geometry.
 * @param {BoundingSphere} [options.boundingSphere] An optional bounding sphere that fully enclosed the geometry.
 *
@@ -103,7 +103,7 @@ class Geometry {
     *   values : new Float32Array()
     * });
     */
-    var attributes: GeometryAttributes
+    let attributes: GeometryAttributes
     
     /**
     * Optional index data that - along with {@link Geometry#primitiveType} -
@@ -113,7 +113,7 @@ class Geometry {
     *
     * @default undefined
     */
-    var indices: [Int]?
+    let indices: [Int]?
     
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},
@@ -123,7 +123,7 @@ class Geometry {
     *
     * @default undefined
     */
-    var primitiveType: PrimitiveType
+    let primitiveType: PrimitiveType
     
     /**
     * An optional bounding sphere that fully encloses the geometry.  This is
@@ -133,14 +133,24 @@ class Geometry {
     *
     * @default undefined
     */
-    var boundingSphere: BoundingSphere? = nil
+    let boundingSphere: BoundingSphere?
     
-
-    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: PrimitiveType, boundingSphere: BoundingSphere? = nil) {
+    /**
+    * @private
+    */
+    let geometryType: GeometryType
+    
+    /**
+    * @private
+    */
+    var boundingSphereCV: BoundingSphere? = nil
+    
+    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
         self.attributes = attributes
         self.indices = indices
         self.primitiveType = primitiveType
         self.boundingSphere = boundingSphere
+        self.geometryType = geometryType
     }
     
     /**

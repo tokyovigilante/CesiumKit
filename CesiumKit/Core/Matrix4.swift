@@ -280,11 +280,11 @@ Matrix4.fromRowMajorArray = function(values, result) {
 * and a Cartesian3 representing the translation.
 *
 * @param {Matrix3} rotation The upper left portion of the matrix representing the rotation.
-* @param {Cartesian3} translation The upper right portion of the matrix representing the translation.
+* @param {Cartesian3} [translation=Cartesian3.ZERO] The upper right portion of the matrix representing the translation.
 * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
-Matrix4.fromRotationTranslation = function(rotation, translation, result) {
+Matrix4.fromRotationTranslation = function(rotation, translation = Cartesian3.zero(), result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(rotation)) {
         throw new DeveloperError('rotation is required.');
@@ -413,6 +413,11 @@ Matrix4.fromTranslationQuaternionRotationScale = function(translation, rotation,
 * @see Matrix4.multiplyByTranslation
 */
 Matrix4.fromTranslation = function(translation, result) {
+    //>>includeStart('debug', pragmas.debug);
+    -        if (!defined(translation)) {
+    -            throw new DeveloperError('translation is required.');
+    -        }
+    -        //>>includeEnd('debug');
     return Matrix4.fromRotationTranslation(Matrix3.IDENTITY, translation, result);
 };
 
@@ -973,60 +978,46 @@ Matrix4.getColumn = function(matrix, index, result) {
         result[startIndex + 3] = cartesian.w
         return Matrix4(grid: result)
     }
-/*
-/**
-* Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
-*
-* @param {Matrix4} matrix The matrix to use.
-* @param {Number} index The zero-based index of the row to retrieve.
-* @param {Cartesian4} result The object onto which to store the result.
-* @returns {Cartesian4} The modified result parameter.
-*
-* @exception {DeveloperError} index must be 0, 1, 2, or 3.
-*
-* @example
-* //returns a Cartesian4 instance with values from the specified column
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* //Example 1: Returns an instance of Cartesian
-* var a = Cesium.Matrix4.getRow(m, 2);
-*
-* @example
-* //Example 2: Sets values for a Cartesian instance
-* var a = new Cesium.Cartesian4();
-* Cesium.Matrix4.getRow(m, 2, a);
-*
-* // a.x = 18.0; a.y = 19.0; a.z = 20.0; a.w = 21.0;
-*/
-Matrix4.getRow = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required.');
-    }
-    
-    if (typeof index !== 'number' || index < 0 || index > 3) {
-        throw new DeveloperError('index must be 0, 1, 2, or 3.');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var x = matrix[index];
-    var y = matrix[index + 4];
-    var z = matrix[index + 8];
-    var w = matrix[index + 12];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
 
+    /**
+    * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Number} index The zero-based index of the row to retrieve.
+    * @param {Cartesian4} result The object onto which to store the result.
+    * @returns {Cartesian4} The modified result parameter.
+    *
+    * @exception {DeveloperError} index must be 0, 1, 2, or 3.
+    *
+    * @example
+    * //returns a Cartesian4 instance with values from the specified column
+    * // m = [10.0, 11.0, 12.0, 13.0]
+    * //     [14.0, 15.0, 16.0, 17.0]
+    * //     [18.0, 19.0, 20.0, 21.0]
+    * //     [22.0, 23.0, 24.0, 25.0]
+    *
+    * //Example 1: Returns an instance of Cartesian
+    * var a = Cesium.Matrix4.getRow(m, 2);
+    *
+    * @example
+    * //Example 2: Sets values for a Cartesian instance
+    * var a = new Cesium.Cartesian4();
+    * Cesium.Matrix4.getRow(m, 2, a);
+    *
+    * // a.x = 18.0; a.y = 19.0; a.z = 20.0; a.w = 21.0;
+    */
+    func row (index: Int) -> Cartesian4 {
+        
+        assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
+        
+        return Cartesian4(
+            x: _grid[index],
+            y: _grid[index + 4],
+            z: _grid[index + 8],
+            w: _grid[index + 12])
+    }
+    
+/*
 /**
 * Computes a new matrix that replaces the specified row in the provided matrix with the provided Cartesian4 instance.
 *
@@ -1261,6 +1252,84 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
 /*
 /**
 * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
+    * by a 3x3 rotation matrix.  This is an optimization
+    * for <code>Matrix4.multiply(m, Matrix4.fromRotationTranslation(rotation), m);</code> with less allocations and arithmetic operations.
+    *
+    * @param {Matrix4} matrix The matrix on the left-hand side.
+    * @param {Matrix3} rotation The 3x3 rotation matrix on the right-hand side.
+    * @param {Matrix4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    *
+    * @example
+    * // Instead of Cesium.Matrix4.multiply(m, Cesium.Matrix4.fromRotationTranslation(rotation), m);
+    * Cesium.Matrix4.multiplyByMatrix3(m, rotation, m);
+    */
+    Matrix4.multiplyByMatrix3 = function(matrix, rotation, result) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(matrix)) {
+    throw new DeveloperError('matrix is required');
+    }
+    if (!defined(rotation)) {
+    throw new DeveloperError('rotation is required');
+    }
+    if (!defined(result)) {
+    throw new DeveloperError('result is required,');
+    }
+    //>>includeEnd('debug');
+    
+    var left0 = matrix[0];
+    var left1 = matrix[1];
+    var left2 = matrix[2];
+    var left4 = matrix[4];
+    var left5 = matrix[5];
+    var left6 = matrix[6];
+    var left8 = matrix[8];
+    var left9 = matrix[9];
+    var left10 = matrix[10];
+    
+    var right0 = rotation[0];
+    var right1 = rotation[1];
+    var right2 = rotation[2];
+    var right4 = rotation[3];
+    var right5 = rotation[4];
+    var right6 = rotation[5];
+    var right8 = rotation[6];
+    var right9 = rotation[7];
+    var right10 = rotation[8];
+    
+    var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2;
+    var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2;
+    var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2;
+    
+    var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6;
+    var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6;
+    var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6;
+    
+    var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10;
+    var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10;
+    var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10;
+    
+    result[0] = column0Row0;
+    result[1] = column0Row1;
+    result[2] = column0Row2;
+    result[3] = 0.0;
+    result[4] = column1Row0;
+    result[5] = column1Row1;
+    result[6] = column1Row2;
+    result[7] = 0.0;
+    result[8] = column2Row0;
+    result[9] = column2Row1;
+    result[10] = column2Row2;
+    result[11] = 0.0;
+    result[12] = matrix[12];
+    result[13] = matrix[13];
+    result[14] = matrix[14];
+    result[15] = matrix[15];
+    return result;
+    };
+    
+    /**
+    * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
 * by an implicit translation matrix defined by a {@link Cartesian3}.  This is an optimization
 * for <code>Matrix4.multiply(m, Matrix4.fromTranslation(position), m);</code> with less allocations and arithmetic operations.
 *
@@ -1268,8 +1337,6 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
 * @param {Cartesian3} translation The translation on the right-hand side.
 * @param {Matrix4} result The object onto which to store the result.
 * @returns {Matrix4} The modified result parameter.
-*
-* @see Matrix4.fromTranslation
 *
 * @example
 * // Instead of Cesium.Matrix4.multiply(m, Cesium.Matrix4.fromTranslation(position), m);
@@ -1787,6 +1854,9 @@ Matrix4.abs = function(matrix, result) {
             _grid[2], _grid[6], _grid[10])
     }
 
+    private let scratchMatrix3Zero = Matrix3()
+    private let scratchExpectedBottomRow = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
+    
     /**
     * Computes the inverse of the provided matrix using Cramers Rule.
     * If the determinant is zero, the matrix can not be inverted, and an exception is thrown.
@@ -1800,6 +1870,35 @@ Matrix4.abs = function(matrix, result) {
     * @exception {RuntimeError} matrix is not invertible because its determinate is zero.
     */
     func inverse () -> Matrix4 {
+        // Special case for a zero scale matrix that can occur, for example,
+        // when a model's node has a [0, 0, 0] scale.
+        if self.rotation().equalsEpsilon(scratchMatrix3Zero, epsilon: Math.Epsilon7) &&
+            self.row(3) == scratchExpectedBottomRow {
+                /*result[0] = 0.0;
+                result[1] = 0.0;
+                result[2] = 0.0;
+                result[3] = 0.0;
+                result[4] = 0.0;
+                result[5] = 0.0;
+                result[6] = 0.0;
+                result[7] = 0.0;
+                result[8] = 0.0;
+                result[9] = 0.0;
+                result[10] = 0.0;
+                result[11] = 0.0;
+                result[12] = -matrix[12];
+                result[13] = -matrix[13];
+                result[14] = -matrix[14];
+                result[15] = 1.0;
+                return result;*/
+                return Matrix4(
+                    0.0, 0.0, 0.0, -_grid[12],
+                    0.0, 0.0, 0.0, -_grid[13],
+                    0.0, 0.0, 0.0, -_grid[14],
+                    0.0, 0.0, 0.0, 1.0
+                )
+        }
+        
         //
         // Ported from:
         //   ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
@@ -1955,20 +2054,70 @@ Matrix4.prototype.clone = function(result) {
     return Matrix4.clone(this, result);
 };
 */
-/**
-* Compares this matrix to the provided matrix componentwise and returns
+    /**
+    * @private
+    */
+    /*Matrix4.equalsArray = function(matrix, array, offset) {
+    return matrix[0] === array[offset] &&
+    matrix[1] === array[offset + 1] &&
+    matrix[2] === array[offset + 2] &&
+    matrix[3] === array[offset + 3] &&
+    matrix[4] === array[offset + 4] &&
+    matrix[5] === array[offset + 5] &&
+    matrix[6] === array[offset + 6] &&
+    matrix[7] === array[offset + 7] &&
+    matrix[8] === array[offset + 8] &&
+    matrix[9] === array[offset + 9] &&
+    matrix[10] === array[offset + 10] &&
+    matrix[11] === array[offset + 11] &&
+    matrix[12] === array[offset + 12] &&
+    matrix[13] === array[offset + 13] &&
+    matrix[14] === array[offset + 14] &&
+    matrix[15] === array[offset + 15];
+    };*/
+    
+    /**
+    * Compares this matrix to the provided matrix componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.
 *
 * @param {Matrix4} [right] The right hand side matrix.
 * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
 */
     func equals(other: Matrix4) -> Bool {
-        for var i = 0; i < 16; i++ {
+        // Given that most matrices will be transformation matrices, the elements
+        // are tested in order such that the test is likely to fail as early
+        // as possible.  I _think_ this is just as friendly to the L1 cache
+        // as testing in index order.  It is certainty faster in practice.
+        // Translation
+        // Translation
+        return
+            // Translation
+            _grid[12] == other[12] &&
+            _grid[13] == other[13] &&
+            _grid[14] == other[14] &&
+            
+            // Rotation/scale
+            _grid[0] == other[0] &&
+            _grid[1] == other[1] &&
+            _grid[2] == other[2] &&
+            _grid[4] == other[4] &&
+            _grid[5] == other[5] &&
+            _grid[6] == other[6] &&
+            _grid[8] == other[8] &&
+            _grid[9] == other[9] &&
+            _grid[10] == other[10] &&
+            
+            // Bottom row
+            _grid[3] == other[3] &&
+            _grid[7] == other[7] &&
+            _grid[11] == other[11] &&
+            _grid[15] == other[15]
+        /*for i in 0..<16 {
             if _grid[i] != other[i] {
                 return false
             }
         }
-        return true
+        return true*/
     }
 /*
 /**
