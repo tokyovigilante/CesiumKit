@@ -189,7 +189,7 @@ class WebMercatorTilingScheme: TilingScheme {
     */
     func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         
-        if rectangle.contains(position) {
+        if !rectangle.contains(position) {
                 // outside the bounds of the tiling scheme
                 return nil
         }

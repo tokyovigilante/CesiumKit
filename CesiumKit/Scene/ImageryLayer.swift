@@ -260,8 +260,9 @@ public class ImageryLayer {
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
-        var overlapRectangle = tile.rectangle.intersection(imageryProvider.rectangle)?.intersection(_rectangle)
-        
+        var imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
+        var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
+
         let rectangle: Rectangle
         
         if overlapRectangle != nil {
@@ -274,7 +275,7 @@ public class ImageryLayer {
                 return false
             }
             
-            let baseImageryRectangle = imageryProvider.rectangle.intersection(_rectangle)!
+            let baseImageryRectangle = imageryBounds!
             var baseTerrainRectangle = tile.rectangle
             overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
             
@@ -293,7 +294,7 @@ public class ImageryLayer {
                 overlapRectangle!.east = baseImageryRectangle.west
                 overlapRectangle!.west = overlapRectangle!.east
             }
-            rectangle = Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.east)
+            rectangle = Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.north)
 
         }
         
@@ -355,7 +356,6 @@ public class ImageryLayer {
         
         // Create TileImagery instances for each imagery tile overlapping this terrain tile.
         // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
-        
         var terrainRectangle = tile.rectangle
         var imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         

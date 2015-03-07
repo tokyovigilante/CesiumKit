@@ -146,7 +146,7 @@ class GeographicTilingScheme: TilingScheme {
         let west = Double(x) * xTileWidth + rectangle.west
         let east = Double(x + 1) * xTileWidth + rectangle.west
 
-        let yTileHeight = rectangle.width / Double(yTiles)
+        let yTileHeight = rectangle.height / Double(yTiles)
         let north = rectangle.north - Double(y) * yTileHeight
         let south = rectangle.north - Double(y + 1) * yTileHeight
 
@@ -166,7 +166,7 @@ class GeographicTilingScheme: TilingScheme {
      *          if 'result' is undefined.
      */
     func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
-        if rectangle.contains(position) {
+        if !rectangle.contains(position) {
             // outside the bounds of the tiling scheme
             return nil
         }

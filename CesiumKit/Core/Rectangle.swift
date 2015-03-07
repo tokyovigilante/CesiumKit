@@ -270,34 +270,39 @@ public struct Rectangle/*: Packable*/ {
     */
     func intersection(other: Rectangle) -> Rectangle? {
         
-        var east = self.east
-        var west = self.west
+        var thisEast = self.east
+        var thisWest = self.west
         
         var otherEast = other.east
         var otherWest = other.west
         
-        if (east < west && otherEast > 0.0) {
-            east += Math.TwoPi
-        } else if (otherEast < otherWest && east > 0.0) {
+        if (thisEast < thisWest && otherEast > 0.0) {
+            thisEast += Math.TwoPi
+        } else if (otherEast < otherWest && thisEast > 0.0) {
             otherEast += Math.TwoPi
         }
         
-        if (east < west && otherWest < 0.0) {
+        if (thisEast < thisWest && otherWest < 0.0) {
             otherWest += Math.TwoPi
-        } else if (otherEast < otherWest && west < 0.0) {
-            west += Math.TwoPi
+        } else if (otherEast < otherWest && thisWest < 0.0) {
+            thisWest += Math.TwoPi
         }
         
-        west = Math.negativePiToPi(max(west, otherWest))
-        east = Math.negativePiToPi(min(east, otherEast))
+        let west = Math.negativePiToPi(max(thisWest, otherWest))
+        let east = Math.negativePiToPi(min(thisEast, otherEast))
         
-        if ((self.west < self.east || other.west < other.east) && east <= west) {
+        if (self.west < self.east || other.west < other.east) && east <= west {
             return nil
         }
         
         let south = max(self.south, other.south)
         let north = min(self.north, other.north)
-        return Rectangle(west: west, south: south, east: south, north: north)
+        
+        if south > north {
+            return nil
+        }
+        
+        return Rectangle(west: west, south: south, east: east, north: north)
     }
     
     /**

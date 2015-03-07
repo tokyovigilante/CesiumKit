@@ -245,8 +245,9 @@ class TileTerrain {
         
         var indexBuffer = terrainMesh.indexBuffer
         if indexBuffer == nil {
+            
             indexBuffer = context.createIndexBuffer(
-                array: SerializedType.fromUInt16Array(terrainMesh.indices),
+                array: SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
                 usage: .StaticDraw,
                 indexDatatype: .UnsignedShort)
             terrainMesh.indexBuffer = indexBuffer

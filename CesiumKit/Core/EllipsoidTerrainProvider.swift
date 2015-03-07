@@ -8,7 +8,7 @@
 
 import Foundation
 
-var regularGridIndexArrays: [Int: [Int: [SerializedType]]] = [:]
+var regularGridIndexArrays: [Int: [Int: [Int]]] = [:]
 
 /**
      * A very simple {@link TerrainProvider} that produces geometry by tessellating an ellipsoidal
