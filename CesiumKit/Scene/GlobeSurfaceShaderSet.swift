@@ -117,7 +117,7 @@ class GlobeSurfaceShaderSet {
                     "    return color;\n" +
                 "}"
                 
-                shader = context.createShaderProgram(vertexShaderSource: vs, fragmentShaderSource: fs, attributeLocations: attributeLocations)
+                shader = context.createShaderProgram(vertexShaderString: vs, fragmentShaderString: fs, attributeLocations: attributeLocations)
                 self.shaders[key] = shader
             }
             return shader!

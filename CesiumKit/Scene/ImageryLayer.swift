@@ -701,8 +701,8 @@ public class ImageryLayer {
             let vertexArray = context.createVertexArray(vertexAttributes, indexBuffer: indexBuffer)
             
             let shaderProgram = context.createShaderProgram(
-                vertexShaderSource: Shaders["ReprojectWebMercatorVS"]!,
-                fragmentShaderSource: Shaders["ReprojectWebMercatorFS"]!,
+                vertexShaderString: Shaders["ReprojectWebMercatorVS"]!,
+                fragmentShaderString: Shaders["ReprojectWebMercatorFS"]!,
                 attributeLocations: reprojectAttribInds
             )
             

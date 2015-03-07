@@ -28,76 +28,41 @@ struct VertexAttributeInfo {
     var index: GLenum = 0
 }
 
-
-
-private class DependencyNode: Equatable {
-    
-    var name: String
-    
-    var glslSource: String
-    
-    var dependsOn = [DependencyNode]()
-    
-    var requiredBy = [DependencyNode]()
-    
-    var evaluated: Bool = false
-    
-    init (
-        name: String,
-        glslSource: String,
-        dependsOn: [DependencyNode] = [DependencyNode](),
-        requiredBy: [DependencyNode] = [DependencyNode](),
-        evaluated: Bool = false)
-    {
-        self.name = name
-        self.glslSource = glslSource
-        self.dependsOn = dependsOn
-        self.requiredBy = requiredBy
-        self.evaluated = evaluated
-    }
-    
-}
-
-private func == (left: DependencyNode, right: DependencyNode) -> Bool {
-    return left.name == right.name &&
-        left.glslSource == right.glslSource
-}
-
 class ShaderProgram {
     
     var _logShaderCompilation: Bool = false
     
     /**
-    * GLSL source for the shader program's vertex shader.  This is the version of
-    * the source provided when the shader program was created, not the final
-    * source provided to WebGL, which includes Cesium bulit-ins.
+    * GLSL source for the shader program's vertex shader.
     *
     * @memberof ShaderProgram.prototype
     *
-    * @type {String}
+    * @type {ShaderSource}
     * @readonly
     */
-    let _vertexShaderSource: String
+    let vertexShaderSource: ShaderSource
+    
+    private let _vertexShaderText: String
     
     /**
-    * GLSL source for the shader program's fragment shader.  This is the version of
-    * the source provided when the shader program was created, not the final
-    * source provided to WebGL, which includes Cesium bulit-ins.
+    * GLSL source for the shader program's fragment shader.
     *
     * @memberof ShaderProgram.prototype
     *
-    * @type {String}
+    * @type {ShaderSource}
     * @readonly
     */
-    let _fragmentShaderSource: String
+    let fragmentShaderSource: ShaderSource
     
-    var _attributeLocations: [String: Int]? = nil
+    private let _fragmentShaderText: String
+    
+    let _attributeLocations: [String: Int]
     
     private var _program: GLuint? = nil
     
     var keyword: String {
         get {
-            return _vertexShaderSource + _fragmentShaderSource + (_attributeLocations == nil ? "" :_attributeLocations!.description)
+            return _vertexShaderText + _fragmentShaderText + _attributeLocations.description
         }
     }
     
@@ -131,12 +96,6 @@ class ShaderProgram {
     
     private var _automaticUniforms = [automaticTuple]()
     
-    var manualUniforms: [String: Uniform] {
-        get {
-            initialize()
-            return _manualUniforms!
-        }
-    }
     private var _manualUniforms = [String: Uniform]?()
     
     var maximumTextureUnitIndex: Int = 0
@@ -145,243 +104,35 @@ class ShaderProgram {
     
     let _id: Int
     
-    //private let _commentRegex = Regex("/\\*\\*[\\s\\S]*?\\*/")
-    //private let _lineRegex = Regex("\\n")
-    //private let _czmRegex = Regex("\\bczm_[a-zA-Z0-9_]*")
-    
-    private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
-    private let _lineRegex = "\\n"
-    private let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
-    
-    init(logShaderCompilation: Bool = false, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]? = nil, id: Int) {
+    init(logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
         
         _logShaderCompilation = logShaderCompilation
+        self.vertexShaderSource = vertexShaderSource
+        _vertexShaderText = vertexShaderText
+        self.fragmentShaderSource = fragmentShaderSource
+        _fragmentShaderText = fragmentShaderText
         _attributeLocations = attributeLocations
-        _vertexShaderSource = vertexShaderSource
-        _fragmentShaderSource = fragmentShaderSource
         _id = id
         count = 0
     }
     
-    private func extractShaderVersion(source: String) -> (version: String, source: String) {
-        // This will fail if the first #version is actually in a comment.
-        //var index = source.indexOf("#version")
-        
-        let index = source["version"].range().location
-        //var index = source.indexOf("#version")
-        
-        if index != NSNotFound {
-            let newLineIndex = source["\n"].ranges().filter ({ $0.location >= index }).first!.location
-            // FIXME: Disabled
-            /*
-            // We could throw an exception if there is not a new line after
-            // #version, but the GLSL compiler will catch it.
-            if (newLineIndex != nil) {
-            // Extract #version directive, including the new line.
-            var version = source.substringWithRange(Range(index!, advance(newLineIndex!, 1)))
-            
-            // Comment out original #version directive so the line numbers
-            // are not off by one.  There can be only one #version directive
-            // and it must appear at the top of the source, only preceded by
-            // whitespace and comments.
-            var modified = source.substring(0, index) + '//' + source.substring(index);
-            
-            return {
-            version : version,
-            source : modified
-            };
-            }*/
-        }
-        
-        return (
-            version: "", // defaults to #version 100
-            source : source // no modifications required
-        )
-    }
-    
-    private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode {
-        
-        var dependencyNode: DependencyNode?
-        
-        // check if already loaded
-        for node in nodes {
-            if node.name == name {
-                dependencyNode = node
-            }
-        }
-        
-        if dependencyNode == nil {
-            
-            var newGLSLSource = glslSource
-            // strip doc comments so we don't accidentally try to determine a dependency for something found
-            // in a comment
-            let commentBlocks = glslSource[_commentRegex].ranges()
-            //var commentBlocks = _commentRegex.matches(glslSource)
-            if commentBlocks.count > 0 {
-                // FIXME: shader comments
-                for var i = 0; i < commentBlocks.count; ++i {
-                    
-                    let commentBlockRange = commentBlocks[i]
-                    let matchRange = Range(start: commentBlockRange.location, end: commentBlockRange.location + commentBlockRange.length)
-                    let comment = glslSource[matchRange]
-                    let numberOfLines = comment[_lineRegex].matches().count
-                    
-                    // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
-                    var modifiedComment = ""
-                    for var lineNumber = 0; lineNumber < numberOfLines; ++lineNumber {
-                        if (lineNumber == 0) {
-                            modifiedComment += "// Comment replaced to prevent problems when determining dependencies on built-in functions\n"
-                        } else {
-                            modifiedComment += "//\n"
-                        }
-                    }
-                    newGLSLSource = newGLSLSource.replace(comment, modifiedComment)
-                }
-            }
-            // create new node
-            dependencyNode = DependencyNode(name: name, glslSource: newGLSLSource)
-            nodes << dependencyNode!
-        }
-        
-        return dependencyNode!
-    }
-    
-    private func generateDependencies(currentNode: DependencyNode, inout dependencyNodes: [DependencyNode]) {
-        if currentNode.evaluated {
-            return
-        }
-        
-        currentNode.evaluated = true
-        
-        // identify all dependencies that are referenced from this glsl source code
-        let czmMatches = deleteDuplicates(currentNode.glslSource[_czmRegex].matches())
-        for match in czmMatches {
-            if (match != currentNode.name) {
-                var elementSource: String? = nil
-                if let builtin = Builtins[match] {
-                    elementSource = builtin
-                } else if let uniform = AutomaticUniforms[match] {
-                    elementSource = uniform.declaration(match)
-                } else {
-                    println("uniform \(match) not found")
-                }
-                if elementSource != nil {
-                    var referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
-                    currentNode.dependsOn.append(referencedNode)
-                    referencedNode.requiredBy.append(currentNode)
-                    
-                    // recursive call to find any dependencies of the new node
-                    generateDependencies(referencedNode, dependencyNodes: &dependencyNodes)
-                }
-                
-            }
-        }
-    }
-    
-    
-    private func sortDependencies(inout dependencyNodes: [DependencyNode]) {
-        
-        var nodesWithoutIncomingEdges = [DependencyNode]()
-        var allNodes = [DependencyNode]()
-        
-        while (dependencyNodes.count > 0) {
-            var node = dependencyNodes.removeLast()
-            allNodes.append(node)
-            
-            if node.requiredBy.count == 0 {
-                nodesWithoutIncomingEdges.append(node)
-            }
-        }
-        
-        while nodesWithoutIncomingEdges.count > 0 {
-            var currentNode = nodesWithoutIncomingEdges.removeAtIndex(0)
-            
-            dependencyNodes.append(currentNode)
-            for (var i = 0; i < currentNode.dependsOn.count; ++i) {
-                // remove the edge from the graph
-                var referencedNode = currentNode.dependsOn[i]
-                var index = find(referencedNode.requiredBy, currentNode)
-                if (index != nil) {
-                    referencedNode.requiredBy.removeAtIndex(index!)
-                }
-                
-                // if referenced node has no more incoming edges, add to list
-                if referencedNode.requiredBy.count == 0 {
-                    nodesWithoutIncomingEdges.append(referencedNode)
-                }
-            }
-        }
-        
-        // if there are any nodes left with incoming edges, then there was a circular dependency somewhere in the graph
-        var badNodes = [DependencyNode]()
-        for node in allNodes {
-            if node.requiredBy.count != 0 {
-                badNodes.append(node)
-            }
-        }
-        if badNodes.count != 0 {
-            var message = "A circular dependency was found in the following built-in functions/structs/constants: \n"
-            for node in badNodes {
-                message += node.name + "\n"
-            }
-            assertionFailure(message)
-        }
-    }
-    
-    private func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
-        // generate a dependency graph for builtin functions
-        
-        var dependencyNodes = [DependencyNode]()
-        var root = getDependencyNode("main", glslSource: shaderSource, nodes: &dependencyNodes)
-        generateDependencies(root, dependencyNodes: &dependencyNodes)
-        sortDependencies(&dependencyNodes)
-        
-        // Concatenate the source code for the function dependencies.
-        // Iterate in reverse so that dependent items are declared before they are used.
-        return reverse(dependencyNodes)
-            .reduce("", combine: { $0 + $1.glslSource + "\n" })
-            .replace(root.glslSource, "")
-    }
-    
-    private func getFragmentShaderPrecision() -> String {
-        return "#ifdef GL_FRAGMENT_PRECISION_HIGH \n" +
-            "  precision highp float; \n" +
-            "#else \n" +
-            "  precision mediump float; \n" +
-        "#endif \n\n"
-    }
-    
-    private func createAndLinkProgram(logShaderCompilation: Bool, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]?) -> GLuint {
-        
-        let vsSourceVersioned = extractShaderVersion(vertexShaderSource)
-        let fsSourceVersioned = extractShaderVersion(fragmentShaderSource)
-        
-        var vsSource = vsSourceVersioned.version +
-            getBuiltinsAndAutomaticUniforms(vsSourceVersioned.source) +
-            "\n#line 0\n" +
-            vsSourceVersioned.source
-        
-        var fsSource = fsSourceVersioned.version +
-            getFragmentShaderPrecision() +
-            getBuiltinsAndAutomaticUniforms(fsSourceVersioned.source) +
-            "\n#line 0\n" +
-            fsSourceVersioned.source
+    private func createAndLinkProgram() -> GLuint {
         
         var log: GLint = 0
         
         var shaderCount: GLsizei = 1
         
-        var vertexSourceUTF8 = UnsafePointer<GLchar>((vsSource as NSString).UTF8String)
-        var vertexSourceLength = GLint(vsSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        var vertexSourceUTF8 = UnsafePointer<GLchar>((_vertexShaderText as NSString).UTF8String)
+        var vertexSourceLength = GLint(_vertexShaderText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         
-        var vertexShader: GLuint = glCreateShader(GLenum(GL_VERTEX_SHADER))
+        let vertexShader: GLuint = glCreateShader(GLenum(GL_VERTEX_SHADER))
         glShaderSource(vertexShader, shaderCount, &vertexSourceUTF8, &vertexSourceLength)
         glCompileShader(vertexShader)
         
-        var fragmentSourceUTF8 = UnsafePointer<GLchar>((fsSource as NSString).UTF8String)
-        var fragmentSourceLength = GLint(fsSource.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        var fragmentSourceUTF8 = UnsafePointer<GLchar>((_fragmentShaderText as NSString).UTF8String)
+        var fragmentSourceLength = GLint(_fragmentShaderText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         
-        var fragmentShader: GLuint = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
+        let fragmentShader: GLuint = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
         glShaderSource(fragmentShader, shaderCount, &fragmentSourceUTF8, &fragmentSourceLength)
         glCompileShader(fragmentShader)
         
@@ -392,10 +143,8 @@ class ShaderProgram {
         glDeleteShader(vertexShader)
         glDeleteShader(fragmentShader)
         
-        if _attributeLocations != nil {
-            for (key, value) in _attributeLocations! {
-                glBindAttribLocation(program, GLuint(value), (key as NSString).UTF8String)
-            }
+        for (key, value) in _attributeLocations {
+            glBindAttribLocation(program, GLuint(value), (key as NSString).UTF8String)
         }
         
         glLinkProgram(program)
@@ -416,6 +165,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(vertexShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+                println(_vertexShaderText)
                 assertionFailure("[GL] Vertex shader compile log: " + errorMessage!)
                 
             }
@@ -428,7 +178,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                println(fsSource)
+                println(_fragmentShaderText)
                 assertionFailure("[GL] Fragment shader compile log: " + errorMessage!)
             }
             
@@ -440,28 +190,6 @@ class ShaderProgram {
             let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
             assertionFailure("Program failed to link.  Link log: " + errorMessage!)
         }
-        /*
-        if (logShaderCompilation) {
-        log = gl.getShaderInfoLog(vertexShader);
-        if (defined(log) && (log.length > 0)) {
-        console.log('[GL] Vertex shader compile log: ' + log);
-        }
-        }
-        
-        if (logShaderCompilation) {
-        log = gl.getShaderInfoLog(fragmentShader);
-        if (defined(log) && (log.length > 0)) {
-        console.log('[GL] Fragment shader compile log: ' + log);
-        }
-        }
-        
-        if (logShaderCompilation) {
-        log = gl.getProgramInfoLog(program);
-        if (defined(log) && (log.length > 0)) {
-        console.log('[GL] Shader program link log: ' + log);
-        }
-        }
-        */
         return program
     }
     
@@ -645,7 +373,7 @@ class ShaderProgram {
             return
         }
         
-        _program = createAndLinkProgram(_logShaderCompilation, vertexShaderSource: _vertexShaderSource, fragmentShaderSource: _fragmentShaderSource, attributeLocations: _attributeLocations)
+        _program = createAndLinkProgram()
         
         glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
         

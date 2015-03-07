@@ -40,11 +40,8 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
-    var state: QuadtreeTileLoadState = .Start {
-        didSet {
-            println("L\(level)X\(x)Y\(y) \(state))")
-        }
-    }
+    var state: QuadtreeTileLoadState = .Start
+    
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.
     * @type {Boolean}
@@ -142,7 +139,6 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
         
         assert(x >= 0 && y >= 0, "x and y must be greater than or equal to zero")
         assert(level >= 0, "level must be greater than or equal to zero.")
-        println("Creating tile L\(level)X\(x)Y\(y)")
         self.tilingScheme = tilingScheme
         self.x = x
         self.y = y

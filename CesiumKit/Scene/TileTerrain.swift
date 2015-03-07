@@ -26,11 +26,7 @@ class TileTerrain {
     * @type {TerrainState}
     * @default {@link TerrainState.UNLOADED}
     */
-    var state: TerrainState = TerrainState.Unloaded {
-        didSet {
-            println(state)
-        }
-    }
+    var state: TerrainState = TerrainState.Unloaded
 
     var data: TerrainData? = nil
     
