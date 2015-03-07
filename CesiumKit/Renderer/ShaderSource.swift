@@ -241,8 +241,12 @@ class ShaderSource {
         }
         
         if dependencyNode == nil {
+            // strip doc comments so we don't accidentally try to determine a dependency for something found
+            // in a comment
+            let newGLSLSource = removeComments(glslSource);
+            
             // create new node
-            dependencyNode = DependencyNode(name: name, glslSource: glslSource)
+            dependencyNode = DependencyNode(name: name, glslSource: newGLSLSource)
             nodes.append(dependencyNode!)
         }
         return dependencyNode!
@@ -295,12 +299,12 @@ class ShaderSource {
         }
         
         while nodesWithoutIncomingEdges.count > 0 {
-            var currentNode = nodesWithoutIncomingEdges.removeAtIndex(0)
+            let currentNode = nodesWithoutIncomingEdges.removeAtIndex(0)
             
             dependencyNodes.append(currentNode)
             for (var i = 0; i < currentNode.dependsOn.count; ++i) {
                 // remove the edge from the graph
-                var referencedNode = currentNode.dependsOn[i]
+                let referencedNode = currentNode.dependsOn[i]
                 var index = find(referencedNode.requiredBy, currentNode)
                 if (index != nil) {
                     referencedNode.requiredBy.removeAtIndex(index!)
