@@ -855,9 +855,9 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     */
     func transpose () -> Matrix3 {
         return Matrix3(
-            _grid[0], _grid[3], _grid[6],
-            _grid[1], _grid[4], _grid[7],
-            _grid[2], _grid[5], _grid[8])
+            _grid[0], _grid[1], _grid[2],
+            _grid[3], _grid[4], _grid[5],
+            _grid[6], _grid[7], _grid[8])
     }
     /*
     function computeFrobeniusNorm(matrix) {

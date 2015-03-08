@@ -73,7 +73,6 @@ class ShaderSource {
     let pickColorQualifier: String?
     
     let includeBuiltIns: Bool
-    
     private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
     private let _versionRegex = "/#version\\s+(.*?)\n"
     private let _lineRegex = "\\n"
@@ -160,7 +159,7 @@ class ShaderSource {
         if isFragmentShader {
             result += "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
             "precision highp float;\n" +
-            "else\n" +
+            "#else\n" +
             "precision mediump float;\n" +
             "#endif\n\n"
         }
@@ -190,23 +189,16 @@ class ShaderSource {
         // strip doc comments so we don't accidentally try to determine a dependency for something found
         // in a comment
         var newSource = source
-        let commentBlocks = newSource[_commentRegex].ranges()
+        let commentBlocks = newSource[_commentRegex].matches()
         
         if commentBlocks.count > 0 {
-            for commentBlockRange in commentBlocks {
-                
-                let matchRange = Range(start: commentBlockRange.location, end: commentBlockRange.location + commentBlockRange.length)
-                let comment = newSource[matchRange]
+            for comment in commentBlocks {
                 let numberOfLines = comment[_lineRegex].matches().count
                 
                 // preserve the number of lines in the comment block so the line numbers will be correct when debugging shaders
                 var modifiedComment = ""
                 for lineNumber in 0..<numberOfLines {
-                    if lineNumber == 0 {
-                        modifiedComment += "// Comment replaced to prevent problems when determining dependencies on built-in functions\n"
-                    } else {
-                        modifiedComment += "//\n"
-                    }
+                    modifiedComment += "//\n"
                 }
                 newSource = newSource.replace(comment, modifiedComment)
             }
@@ -243,7 +235,7 @@ class ShaderSource {
         if dependencyNode == nil {
             // strip doc comments so we don't accidentally try to determine a dependency for something found
             // in a comment
-            let newGLSLSource = removeComments(glslSource);
+            let newGLSLSource = removeComments(glslSource)
             
             // create new node
             dependencyNode = DependencyNode(name: name, glslSource: newGLSLSource)

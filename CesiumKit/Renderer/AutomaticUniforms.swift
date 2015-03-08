@@ -465,26 +465,26 @@ return uniformState.inverseViewRotation3D;
 }
 }),
 */
-/**
-* An automatic GLSL uniform representing a 4x4 projection transformation matrix that
-* transforms eye coordinates to clip coordinates.  Clip coordinates is the
-* coordinate system for a vertex shader's <code>gl_Position</code> output.
-*
-* @alias czm_projection
-* @glslUniform
-*
-* @see UniformState#projection
-* @see czm_viewProjection
-* @see czm_modelViewProjection
-* @see czm_infiniteProjection
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_projection;
-*
-* // Example
-* gl_Position = czm_projection * eyePosition;
-*/
+    /**
+    * An automatic GLSL uniform representing a 4x4 projection transformation matrix that
+    * transforms eye coordinates to clip coordinates.  Clip coordinates is the
+    * coordinate system for a vertex shader's <code>gl_Position</code> output.
+    *
+    * @alias czm_projection
+    * @glslUniform
+    *
+    * @see UniformState#projection
+    * @see czm_viewProjection
+    * @see czm_modelViewProjection
+    * @see czm_infiniteProjection
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_projection;
+    *
+    * // Example
+    * gl_Position = czm_projection * eyePosition;
+    */
     "czm_projection": AutomaticUniform(
         size: 1,
         datatype: .FLOAT_MAT4,
@@ -492,33 +492,33 @@ return uniformState.inverseViewRotation3D;
             return .FloatMatrix4(uniformState.projection)
         }
     ),
-/*
-/**
-* An automatic GLSL uniform representing a 4x4 inverse projection transformation matrix that
-* transforms from clip coordinates to eye coordinates. Clip coordinates is the
-* coordinate system for a vertex shader's <code>gl_Position</code> output.
-*
-* @alias czm_inverseProjection
-* @glslUniform
-*
-* @see UniformState#inverseProjection
-* @see czm_projection
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_inverseProjection;
-*
-* // Example
-* vec4 eyePosition = czm_inverseProjection * clipPosition;
-*/
-czm_inverseProjection : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT4,
-getValue : function(uniformState) {
-return uniformState.inverseProjection;
-}
-}),
 
+    /**
+    * An automatic GLSL uniform representing a 4x4 inverse projection transformation matrix that
+    * transforms from clip coordinates to eye coordinates. Clip coordinates is the
+    * coordinate system for a vertex shader's <code>gl_Position</code> output.
+    *
+    * @alias czm_inverseProjection
+    * @glslUniform
+    *
+    * @see UniformState#inverseProjection
+    * @see czm_projection
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_inverseProjection;
+    *
+    * // Example
+    * vec4 eyePosition = czm_inverseProjection * clipPosition;
+    */
+    "czm_inverseProjection": AutomaticUniform(
+        size : 1,
+        datatype : .FLOAT_MAT4,
+        getValue : { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix4(uniformState.inverseProjection)
+        }
+    ),
+/*
 /**
 * @private
 */
@@ -559,32 +559,32 @@ return uniformState.infiniteProjection;
 }
 }),
 */
-/**
-* An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
-* transforms model coordinates to eye coordinates.
-* <br /><br />
-* Positions should be transformed to eye coordinates using <code>czm_modelView</code> and
-* normals should be transformed using {@link czm_normal}.
-*
-* @alias czm_modelView
-* @glslUniform
-*
-* @see UniformState#modelView
-* @see czm_model
-* @see czm_view
-* @see czm_modelViewProjection
-* @see czm_normal
-*
-* @example
-* // GLSL declaration
-* uniform mat4 czm_modelView;
-*
-* // Example
-* vec4 eyePosition = czm_modelView * modelPosition;
-*
-* // The above is equivalent to, but more efficient than:
-* vec4 eyePosition = czm_view * czm_model * modelPosition;
-*/
+    /**
+    * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
+    * transforms model coordinates to eye coordinates.
+    * <br /><br />
+    * Positions should be transformed to eye coordinates using <code>czm_modelView</code> and
+    * normals should be transformed using {@link czm_normal}.
+    *
+    * @alias czm_modelView
+    * @glslUniform
+    *
+    * @see UniformState#modelView
+    * @see czm_model
+    * @see czm_view
+    * @see czm_modelViewProjection
+    * @see czm_normal
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat4 czm_modelView;
+    *
+    * // Example
+    * vec4 eyePosition = czm_modelView * modelPosition;
+    *
+    * // The above is equivalent to, but more efficient than:
+    * vec4 eyePosition = czm_view * czm_model * modelPosition;
+    */
     "czm_modelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FLOAT_MAT4,
@@ -902,36 +902,36 @@ getValue : function(uniformState) {
 return uniformState.modelViewInfiniteProjection;
 }
 }),
+*/
+    /**
+    * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
+    * transforms normal vectors in model coordinates to eye coordinates.
+    * <br /><br />
+    * Positions should be transformed to eye coordinates using {@link czm_modelView} and
+    * normals should be transformed using <code>czm_normal</code>.
+    *
+    * @alias czm_normal
+    * @glslUniform
+    *
+    * @see UniformState#normal
+    * @see czm_inverseNormal
+    * @see czm_modelView
+    *
+    * @example
+    * // GLSL declaration
+    * uniform mat3 czm_normal;
+    *
+    * // Example
+    * vec3 eyeNormal = czm_normal * normal;
+    */
+    "czm_normal": AutomaticUniform(
+        size : 1,
+        datatype : .FLOAT_MAT3,
+        getValue : { (uniformState: UniformState) -> UniformValue in
+            return .FloatMatrix3(uniformState.normal)
+        }
+    ),
 
-/**
-* An automatic GLSL uniform representing a 3x3 normal transformation matrix that
-* transforms normal vectors in model coordinates to eye coordinates.
-* <br /><br />
-* Positions should be transformed to eye coordinates using {@link czm_modelView} and
-* normals should be transformed using <code>czm_normal</code>.
-*
-* @alias czm_normal
-* @glslUniform
-*
-* @see UniformState#normal
-* @see czm_inverseNormal
-* @see czm_modelView
-*
-* @example
-* // GLSL declaration
-* uniform mat3 czm_normal;
-*
-* // Example
-* vec3 eyeNormal = czm_normal * normal;
-*/
-czm_normal : new AutomaticUniform({
-size : 1,
-datatype : WebGLRenderingContext.FLOAT_MAT3,
-getValue : function(uniformState) {
-return uniformState.normal;
-}
-}),
-*/
     /**
     * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
     * transforms normal vectors in 3D model coordinates to eye coordinates.
