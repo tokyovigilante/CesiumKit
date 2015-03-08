@@ -13,6 +13,8 @@ Community contributions and feedback are welcome.
 
 Testing
 -------
+Requires Swift 1.2/Xcode 6.3 beta, will not run in earlier versions.
+
 Build and run CesiumKitRunner. Performance in the simulator is poor due to the software OpenGL ES renderer. Performance on devices is much better and is in fact CPU-bound, due to a combination of Swift performance and currently unoptimised code. 
 I've hardcoded resolution to 25% of screen resolution for performance, however performance on device is at or near 60fps at Retina resolutions (iPad Air 2)
 
