@@ -88,7 +88,7 @@ class CesiumViewController: GLKViewController {
         let options = CesiumOptions(
             imageryProvider: nil)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
         //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         //Murrumbeena
