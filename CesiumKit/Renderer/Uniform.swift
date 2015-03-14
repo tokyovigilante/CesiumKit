@@ -265,6 +265,10 @@ class UniformFloatVec4: Uniform {
     }
     
     override func setValues(newValues: [Any]) {
+        /*_values = [Cartesian4]()
+        for newValue in newValues {
+            _values.append(newValue as! Cartesian4)
+        }*/
         _values = newValues.map({ $0 as! Cartesian4 })
     }
     
