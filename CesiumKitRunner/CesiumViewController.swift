@@ -78,7 +78,7 @@ class CesiumViewController: GLKViewController {
         // enable Retina support on device
         #if arch(i386) || arch(x86_64)
             // render low-res for simulator (Software GL)
-            view.contentScaleFactor = UIScreen.mainScreen().scale
+            view.contentScaleFactor = UIScreen.mainScreen().scale * 0.25
             #else
             // render at native (screen pixel) scale for retina screens
             view.contentScaleFactor = UIScreen.mainScreen().nativeScale

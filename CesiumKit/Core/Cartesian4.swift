@@ -23,7 +23,7 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-public struct Cartesian4: /*Packable,*/ Equatable, Printable {
+public struct Cartesian4: Packable, Equatable, Printable {
     /**
     * The X component.
     * @type {Number}
@@ -84,7 +84,7 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //static let packedLength: Int = 4
+    static let packedLength: Int = 4
     
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
@@ -114,19 +114,11 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int) {
-        if (array.count < startingIndex - 4) {// Int(Cartesian4.packedLength) {
-            array.append(Float(x))
-            array.append(Float(y))
-            array.append(Float(z))
-            array.append(Float(w))
-        }
-        else {
-            array[startingIndex] = Float(x)
-            array[startingIndex+1] = Float(y)
-            array[startingIndex+2] = Float(z)
-            array[startingIndex+3] = Float(w)
-            
-        }
+        assert(array.count - startingIndex >= Cartesian4.packedLength, "Array too short")
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
+        array[startingIndex+2] = Float(z)
+        array[startingIndex+3] = Float(w)
     }
     
     /**
@@ -137,7 +129,7 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
     * @param {Cartesian4} [result] The object into which to store the result.
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian4 {
-        assert(startingIndex + 4 /*Cartesian4.packedLength*/ <= array.count, "Invalid starting index")
+        assert(startingIndex + Cartesian4.packedLength <= array.count, "Invalid starting index")
         
         return Cartesian4(
             x: Double(array[startingIndex]),
@@ -424,12 +416,12 @@ public struct Cartesian4: /*Packable,*/ Equatable, Printable {
         return result;
     }
     
-    /*func equalsArray (cartesian, array, offset) {
-    return cartesian.x === array[offset] &&
-    cartesian.y === array[offset + 1] &&
-    cartesian.z === array[offset + 2] &&
-    cartesian.w === array[offset + 3];
-    };*/
+    func equalsArray (array: [Float], offset: Int) -> Bool {
+    return Float(x) == array[offset] &&
+    Float(y) == array[offset + 1] &&
+    Float(z) == array[offset + 2] &&
+    Float(w) == array[offset + 3]
+    }
     
     /**
     * Compares the provided Cartesians componentwise and returns

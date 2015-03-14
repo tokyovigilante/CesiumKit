@@ -24,32 +24,32 @@ class ImageryLayerUniformMap: UniformMap {
     
     private var _uniforms: [String: UniformFunc] = [
         
-        "u_textureDimensions": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec2((map as! ImageryLayerUniformMap).textureDimensions)]
+        "u_textureDimensions": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).textureDimensions]
         },
         
-        "u_texture": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.Sampler2D((map as! ImageryLayerUniformMap).texture!)]
+        "u_texture": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).texture!]
         },
         
-        "u_northLatitude": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec1((map as! ImageryLayerUniformMap).northLatitude)]
+        "u_northLatitude": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).northLatitude]
         },
         
-        "u_southLatitude": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec1((map as! ImageryLayerUniformMap).southLatitude)]
+        "u_southLatitude": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).southLatitude]
         },
         
-        "u_southMercatorYLow": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec1((map as! ImageryLayerUniformMap).southMercatorYLow)]
+        "u_southMercatorYLow": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).southMercatorYLow]
         },
         
-        "u_southMercatorYHigh": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec1((map as! ImageryLayerUniformMap).southMercatorYHigh)]
+        "u_southMercatorYHigh": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).southMercatorYHigh]
         },
         
-        "u_oneOverMercatorHeight": { (map: UniformMap) -> [UniformValue] in
-            return [UniformValue.FloatVec1((map as! ImageryLayerUniformMap).oneOverMercatorHeight)]
+        "u_oneOverMercatorHeight": { (map: UniformMap) -> [Any] in
+            return [(map as! ImageryLayerUniformMap).oneOverMercatorHeight]
         }
     ]
     

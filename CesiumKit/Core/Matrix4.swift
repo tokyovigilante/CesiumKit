@@ -2057,24 +2057,24 @@ Matrix4.prototype.clone = function(result) {
     /**
     * @private
     */
-    /*Matrix4.equalsArray = function(matrix, array, offset) {
-    return matrix[0] === array[offset] &&
-    matrix[1] === array[offset + 1] &&
-    matrix[2] === array[offset + 2] &&
-    matrix[3] === array[offset + 3] &&
-    matrix[4] === array[offset + 4] &&
-    matrix[5] === array[offset + 5] &&
-    matrix[6] === array[offset + 6] &&
-    matrix[7] === array[offset + 7] &&
-    matrix[8] === array[offset + 8] &&
-    matrix[9] === array[offset + 9] &&
-    matrix[10] === array[offset + 10] &&
-    matrix[11] === array[offset + 11] &&
-    matrix[12] === array[offset + 12] &&
-    matrix[13] === array[offset + 13] &&
-    matrix[14] === array[offset + 14] &&
-    matrix[15] === array[offset + 15];
-    };*/
+    func equalsArray (array: [Float], offset: Int) -> Bool {
+        return Float(_grid[0]) == array[offset] &&
+            Float(_grid[1]) == array[offset + 1] &&
+            Float(_grid[2]) == array[offset + 2] &&
+            Float(_grid[3]) == array[offset + 3] &&
+            Float(_grid[4]) == array[offset + 4] &&
+            Float(_grid[5]) == array[offset + 5] &&
+            Float(_grid[6]) == array[offset + 6] &&
+            Float(_grid[7]) == array[offset + 7] &&
+            Float(_grid[8]) == array[offset + 8] &&
+            Float(_grid[9]) == array[offset + 9] &&
+            Float(_grid[10]) == array[offset + 10] &&
+            Float(_grid[11]) == array[offset + 11] &&
+            Float(_grid[12]) == array[offset + 12] &&
+            Float(_grid[13]) == array[offset + 13] &&
+            Float(_grid[14]) == array[offset + 14] &&
+            Float(_grid[15]) == array[offset + 15]
+    }
     
     /**
     * Compares this matrix to the provided matrix componentwise and returns

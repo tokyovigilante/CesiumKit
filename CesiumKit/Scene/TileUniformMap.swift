@@ -26,37 +26,35 @@ class TileUniformMap: UniformMap {
     
     var dayTextures: [Texture]
     
-    lazy var dayTextureTranslationAndScale: [Cartesian4] = {
-        return Array(count: self.maxTextureCount, repeatedValue: Cartesian4())
-    }()
+    var dayTextureTranslationAndScale: [Cartesian4]
     
     lazy var dayTextureTexCoordsRectangle: [Cartesian4] = {
         return Array(count: self.maxTextureCount, repeatedValue: Cartesian4())
-    }()
+        }()
     
     lazy var dayTextureAlpha: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     lazy var dayTextureBrightness: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     lazy var dayTextureContrast: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     lazy var dayTextureHue: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     lazy var dayTextureSaturation: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     lazy var dayTextureOneOverGamma: [Double] = {
         return Array(count: self.maxTextureCount, repeatedValue: Double())
-    }()
+        }()
     
     var dayIntensity = 0.0
     
@@ -69,96 +67,97 @@ class TileUniformMap: UniformMap {
     var waterMaskTranslationAndScale = Cartesian4()
     
     private var _uniforms: [String: UniformFunc] = [
-    
-        "u_initialColor": { (map: UniformMap) -> [UniformValue] in
-            return [.FloatVec4((map as! TileUniformMap).initialColor)]
-        },
-        /*
-        "u_zoomedOutOceanSpecularIntensity": { (map: TileUniformMap) -> Double in
-            return map.zoomedOutOceanSpecularIntensity
+        
+        "u_initialColor": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).initialColor]
         },
         
-        "u_oceanNormalMap": { (map: TileUniformMap) -> Texture? in
-            return map.oceanNormalMap
+        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap) -> [Any] in
+        return [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity]
         },
         
-        "u_lightingFadeDistance": { (map: TileUniformMap) -> Cartesian2 in
-            return map.lightingFadeDistance
-        },
-        */
-        "u_center3D": { (map: UniformMap) -> [UniformValue] in
-            return [.FloatVec3((map as! TileUniformMap).center3D)]
-        },
-        /*
-        "u_tileRectangle": { (map: TileUniformMap) -> Cartesian4 in
-            return map.tileRectangle
-        },
-        */
-        "u_modifiedModelView": { (map: UniformMap) -> [UniformValue] in
-            return [.FloatMatrix4((map as! TileUniformMap).modifiedModelView)]
+        "u_oceanNormalMap": { (map: UniformMap) -> [Any] in
+        return [(map as! TileUniformMap).oceanNormalMap]
         },
         
-        "u_dayTextures": { (map: UniformMap) -> [UniformValue] in
-            return ((map as! TileUniformMap).dayTextures.map { .Sampler2D($0) })
+        "u_lightingFadeDistance": { (map: UniformMap) -> [Any] in
+        return [(map as! TileUniformMap).lightingFadeDistance]
         },
         
-        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [UniformValue] in
-            return ((map as! TileUniformMap).dayTextureTranslationAndScale.map { .FloatVec4($0) })
+        "u_center3D": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).center3D]
         },
         
-        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [UniformValue] in
-            return ((map as! TileUniformMap).dayTextureTexCoordsRectangle.map { UniformValue.FloatVec4($0) })
-        },
-        /*
-        "u_dayTextureAlpha": { (map: TileUniformMap) -> [Double]  in
-            return map.dayTextureAlpha
+        "u_tileRectangle": { (map: UniformMap) -> [Any] in
+        return [(map as! TileUniformMap).tileRectangle]
         },
         
-        "u_dayTextureBrightness": { (map: TileUniformMap) -> [Double] in
-            return map.dayTextureBrightness
+        "u_modifiedModelView": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).modifiedModelView]
         },
         
-        "u_dayTextureContrast": { (map: TileUniformMap) -> [Double] in
-            return map.dayTextureContrast
+        "u_dayTextures": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextures.map({ $0 as Any })
         },
         
-        "u_dayTextureHue": { (map: TileUniformMap) -> [Double] in
-            return map.dayTextureHue
+        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureTranslationAndScale.map({ $0 as Any })
         },
         
-        "u_dayTextureSaturation": { (map: TileUniformMap) -> [Double] in
-            return map.dayTextureSaturation
+        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureTexCoordsRectangle.map({ $0 as Any })
         },
         
-        "u_dayTextureOneOverGamma": { (map: TileUniformMap) -> [Double] in
-            return map.dayTextureOneOverGamma
+        /*"u_dayTextureAlpha": { (map: UniformMap) -> [Any]  in
+            return (map as! TileUniformMap).dayTextureAlpha
         },
         
-        "u_dayIntensity": { (map: TileUniformMap) -> Double in
-            return map.dayIntensity
+        "u_dayTextureBrightness": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureBrightness
         },
         
-        "u_southAndNorthLatitude": { (map: TileUniformMap) -> Cartesian2 in
-            return map.southAndNorthLatitude
+        "u_dayTextureContrast": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureContrast
         },
         
-        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: TileUniformMap) -> Cartesian3 in
-            return map.southMercatorYLowAndHighAndOneOverHeight
+        "u_dayTextureHue": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureHue
         },
         
-        "u_waterMask": { (map: TileUniformMap) -> Texture? in
-            return map.waterMask
+        "u_dayTextureSaturation": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureSaturation
         },
         
-        "u_waterMaskTranslationAndScale": { (map: TileUniformMap) -> Cartesian4 in
-            return map.waterMaskTranslationAndScale
+        "u_dayTextureOneOverGamma": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextureOneOverGamma
+        },
+        
+        "u_dayIntensity": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).dayIntensity]
+        },
+        
+        "u_southAndNorthLatitude": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).southAndNorthLatitude]
+        },
+        
+        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
+        },
+        
+        "u_waterMask": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).waterMask!]
+        },
+        
+        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [Any] in
+            return [(map as! TileUniformMap).waterMaskTranslationAndScale]
         }*/
     ]
-
+    
     init(maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
-        dayTextures = Array<Texture>()
+        dayTextures = [Texture]()
         dayTextures.reserveCapacity(maxTextureCount)
+        dayTextureTranslationAndScale = [Cartesian4](count: maxTextureCount, repeatedValue: Cartesian4())
     }
     
     subscript(name: String) -> UniformFunc? {
@@ -170,5 +169,5 @@ class TileUniformMap: UniformMap {
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
     }
-
+    
 }

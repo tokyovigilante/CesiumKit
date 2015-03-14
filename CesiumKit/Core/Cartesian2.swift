@@ -22,7 +22,7 @@ import Foundation
 */
 // FIXME: Pack
 
-struct Cartesian2 {//: Packable, Equatable {
+struct Cartesian2: Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
@@ -41,7 +41,7 @@ struct Cartesian2 {//: Packable, Equatable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //static let packedLength: Int = 2
+    static let packedLength: Int = 2
     
     init(x: Double = 0.0, y: Double = 0.0) {
         self.x = x
@@ -84,16 +84,9 @@ struct Cartesian2 {//: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        // FIXME: Pack
-        if array.count < startingIndex - 2 {//Int(Cartesian2.packedLength) {
-            /*array.append(ComponentDatatype.Float32(Float(x)))
-            array.append(ComponentDatatype.Float32(Float(y)))*/
-        }
-        else {
-            /*array[startingIndex] = ComponentDatatype.Float32(Float(x))
-            array[startingIndex+1] = ComponentDatatype.Float32(Float(y))*/
-
-        }
+        assert(array.count - startingIndex >= Cartesian2.packedLength, "Array to short to pack")
+        array[startingIndex] = Float32(Float(x))
+        array[startingIndex+1] = Float32(Float(y))
     }
     
     
@@ -105,22 +98,10 @@ struct Cartesian2 {//: Packable, Equatable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Cartesian2} [result] The object into which to store the result.
     */
-    static func unpack(array: [ComponentDatatype], startingIndex: Int = 0) -> Cartesian2 {
-        assert((startingIndex + /*Cartesian2.packedLength*/2 <= array.count), "Invalid starting index")
-        var x = 0.0, y = 0.0
-        switch array[startingIndex] {
-        case .Float32(let component):
-            x = Double(component)
-        default:
-            assert(false, "Invalid type")
-        }
-        switch array[startingIndex+1] {
-        case .Float32(let component):
-            y = Double(component)
-        default:
-            assert(false, "Invalid type")
-        }
-        return Cartesian2(x: x, y: y)
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian2 {
+        assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
+        
+        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]))
     }
     
     /**
@@ -390,11 +371,10 @@ struct Cartesian2 {//: Packable, Equatable {
         }
         return result;
     }
-        /*
-        Cartesian2.equalsArray = function(cartesian, array, offset) {
-            return cartesian.x === array[offset] &&
-                   cartesian.y === array[offset + 1];
-        };*/
+    
+    func equalsArray (array: [Float], offset: Int) -> Bool {
+        return Float(x) == array[offset] && Float(y) == array[offset + 1]
+    }
     
     /**
     * Compares the provided Cartesians componentwise and returns

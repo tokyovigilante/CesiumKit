@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-typealias UniformFunc = ((map: UniformMap) -> [UniformValue])
+typealias UniformFunc = (map: UniformMap) -> [Any]
 
 protocol UniformMap {
 

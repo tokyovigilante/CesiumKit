@@ -104,16 +104,10 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int) {
-        if array.count < startingIndex + Int(Cartesian3.packedLength) {
-            array.append(Float(x))
-            array.append(Float(y))
-            array.append(Float(z))
-        }
-        else {
-            array[startingIndex] = Float(x)
-            array[startingIndex+1] = Float(y)
-            array[startingIndex+2] = Float(z)
-        }
+        assert(array.count - startingIndex >= Cartesian3.packedLength, "Array too short")
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
+        array[startingIndex+2] = Float(z)
     }
     
     /**
@@ -413,11 +407,11 @@ public struct Cartesian3: Packable, Equatable {
         return result;
     }
     
-/*Cartesian3.equalsArray = function(cartesian, array, offset) {
--        return cartesian.x === array[offset] &&
--               cartesian.y === array[offset + 1] &&
--               cartesian.z === array[offset + 2];
--    };*/
+    func equalsArray (array: [Float], offset: Int) -> Bool {
+        return Float(x) == array[offset] &&
+            Float(y) == array[offset + 1] &&
+            Float(z) == array[offset + 2]
+    }
     
     /**
     * Compares the provided Cartesians componentwise and returns

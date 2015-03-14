@@ -40,7 +40,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let position: Bool = false
+    var position: Bool = false
     
     /**
     * When <code>true</code>, the vertex has a normal attribute (normalized), which is commonly used for lighting.
@@ -52,7 +52,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let normal: Bool = false
+    var normal: Bool = false
     
     /**
     * When <code>true</code>, the vertex has a 2D texture coordinate attribute.
@@ -64,7 +64,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let st: Bool = false
+    var st: Bool = false
     
     /**
     * When <code>true</code>, the vertex has a binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
@@ -76,7 +76,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let binormal: Bool = false
+    var binormal: Bool = false
     
     /**
     * When <code>true</code>, the vertex has a tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
@@ -88,7 +88,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let tangent: Bool = false
+    var tangent: Bool = false
     
     /**
     * When <code>true</code>, the vertex has an RGB color attribute.
@@ -100,7 +100,7 @@ struct VertexFormat {
     *
     * @default false
     */
-    let color: Bool = false
+    var color: Bool = false
     
     /**
     * An immutable vertex format with only a position attribute.
