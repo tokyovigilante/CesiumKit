@@ -820,9 +820,9 @@ class Globe {
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {
-                    //commandList.append(_clearDepthCommand)
+                    commandList.append(_clearDepthCommand)
                     if (mode == .Scene3D) {
-                        //commandList.append(_depthCommand)
+                        commandList.append(_depthCommand)
                     }
                 }
             }
