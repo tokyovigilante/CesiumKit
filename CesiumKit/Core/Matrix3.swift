@@ -491,7 +491,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     
     return column * 3 + row;
     };
-    
+    */
     /**
     * Retrieves a copy of the matrix column at the provided index as a Cartesian3 instance.
     *
@@ -502,31 +502,16 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    Matrix3.getColumn = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required.');
+    func column (index: Int) -> Cartesian3 {
+        assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
+        let startIndex = index * 3
+        
+        return Cartesian3(
+            x: _grid[startIndex],
+            y: _grid[startIndex + 1],
+            z: _grid[startIndex + 2])
     }
-    
-    if (typeof index !== 'number' || index < 0 || index > 2) {
-    throw new DeveloperError('index must be 0, 1, or 2.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var startIndex = index * 3;
-    var x = matrix[startIndex];
-    var y = matrix[startIndex + 1];
-    var z = matrix[startIndex + 2];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
-    };
-    
+    /*
     /**
     * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian3 instance.
     *

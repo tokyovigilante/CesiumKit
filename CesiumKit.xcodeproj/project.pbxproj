@@ -292,6 +292,7 @@
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
 		94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DD011D1AADAF2500FFAD81 /* Matrix2.swift */; };
+		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 /* End PBXBuildFile section */
 
@@ -481,6 +482,7 @@
 		94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridImageryProvider.swift; sourceTree = "<group>"; };
 		94E049E919DC0BB000FFAD81 /* Shaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shaders.swift; sourceTree = "<group>"; };
 		94E4CB2B1950581300F7E37D /* Pass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pass.swift; sourceTree = "<group>"; };
+		94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeadingPitchRange.swift; sourceTree = "<group>"; };
 		94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorTilingScheme.swift; sourceTree = "<group>"; };
 		94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceCameraController.swift; sourceTree = "<group>"; };
 		94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceEventHandler.swift; sourceTree = "<group>"; };
@@ -696,6 +698,7 @@
 				948F4D8D19D7969400FFAD81 /* TileReplacementQueue.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
+				94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1053,6 +1056,7 @@
 				9413B7B91A37B93100FFAD81 /* Intersectable.swift in Sources */,
 				94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */,
 				9413B7F61A37B94500FFAD81 /* BlendFunction.swift in Sources */,
+				94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */,
 				9413B7E31A37B93D00FFAD81 /* Framebuffer.swift in Sources */,
 				9413B7D81A37B93D00FFAD81 /* Buffer.swift in Sources */,
 				9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */,

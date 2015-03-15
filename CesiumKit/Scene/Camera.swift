@@ -148,19 +148,26 @@ public class Camera {
     }
     
     /**
-    * Modifies the camera's reference frame. The inverse of this transformation is appended to the view matrix.
+    * Gets the camera's reference frame. The inverse of this transformation is appended to the view matrix.
+    * @memberof Camera.prototype
     *
     * @type {Matrix4}
-    * @default {@link Matrix4.IDENTITY}
+    * @readonly
     *
-    * @see Transforms
-    * @see Camera#inverseTransform
+    * @default {@link Matrix4.IDENTITY}
     */
-    var transform = Matrix4.identity()
+    var transform: Matrix4 {
+        get {
+            return _transform
+        }
+    }
+    
     private var _transform = Matrix4.identity()
     private var _invTransform = Matrix4.identity()
     private var _actualTransform = Matrix4.identity()
     private var _actualInvTransform = Matrix4.identity()
+    private var _transformChanged = false
+
     
     /**
     * Gets the inverse camera transform.
@@ -281,7 +288,7 @@ public class Camera {
     */
     var maximumZoomFactor = 2.5
 
-    var mode: SceneMode = .Scene3D
+    private var _mode: SceneMode = .Scene3D
     
     private var _modeChanged = true
     
@@ -313,7 +320,7 @@ public class Camera {
         
         _projection = projection
         _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
-        self.mode = mode
+        _mode = mode
         
         transform2DInverse = transform2D.inverseTransformation()
 
@@ -532,15 +539,16 @@ public class Camera {
             _right = right
         }
     
-        let transformChanged = _transform != transform || _modeChanged
+        let transformChanged = _transformChanged || _modeChanged
+        _transformChanged = false
+
         if transformChanged {
-            _transform = transform
             _invTransform = _transform.inverseTransformation()
 
-            if mode == SceneMode.ColumbusView || mode == SceneMode.Scene2D {
+            if _mode == .ColumbusView || _mode == .Scene2D {
                 if _transform.equals(Matrix4.identity()) {
                     _actualTransform = transform2D
-                } else if mode == .ColumbusView {
+                } else if _mode == .ColumbusView {
                     assert(false, "unimplemented")
                     /*convertTransformForColumbusView(camera);
                 } else {
@@ -553,13 +561,11 @@ public class Camera {
             _modeChanged = false
         }
 
-        //var transform = _actualTransform
-
         if positionChanged || transformChanged {
             _positionWC = _actualTransform.multiplyByPoint(_position)
 
             // Compute the Cartographic position of the camera.
-            if mode == .Scene3D || mode == .Morphing {
+            if _mode == .Scene3D || _mode == .Morphing {
                 _positionCartographic = _projection.ellipsoid.cartesianToCartographic(_positionWC)!
             } else {
                 // The camera position is expressed in the 2D coordinate system where the Y axis is to the East,
@@ -569,7 +575,7 @@ public class Camera {
 
                 // In 2D, the camera height is always 12.7 million meters.
                 // The apparent height is equal to half the frustum width.
-                if mode == .Scene2D {
+                if _mode == .Scene2D {
                     positionENU.z = (frustum.right - frustum.left) * 0.5
                 }
 
@@ -609,194 +615,103 @@ public class Camera {
             updateViewMatrix()
         }
     }
-    /*
-    function getHeading2D(camera) {
-    return Math.atan2(camera.right.y, camera.right.x);
-    }
     
-    var scratchHeadingMatrix4 = new Matrix4();
-    var scratchHeadingMatrix3 = new Matrix3();
-    var scratchHeadingCartesian3 = new Cartesian3();
+    var scratchHPRMatrix1 = Matrix4()
+    var scratchHPRMatrix2 = Matrix4()
     
-    function getHeading3D(camera) {
-    var ellipsoid = camera._projection.ellipsoid;
-    var toFixedFrame = Transforms.eastNorthUpToFixedFrame(camera.position, ellipsoid, scratchHeadingMatrix4);
-    var transform = Matrix4.getRotation(toFixedFrame, scratchHeadingMatrix3);
-    Matrix3.transpose(transform, transform);
-    
-    var right = Matrix3.multiplyByVector(transform, camera.right, scratchHeadingCartesian3);
-    return Math.atan2(right.y, right.x);
-    }
-    
-    function setHeading2D(camera, angle) {
-    var rightAngle = getHeading2D(camera);
-    angle = rightAngle - angle;
-    camera.look(Cartesian3.UNIT_Z, angle);
-    }
-    
-    var scratchHeadingAxis = new Cartesian3();
-    
-    function setHeading3D(camera, angle) {
-    var axis = Cartesian3.normalize(camera.position, scratchHeadingAxis);
-    var upAngle = getHeading3D(camera);
-    angle = upAngle - angle;
-    camera.look(axis, angle);
-    }
-    
-    function getTiltCV(camera) {
-    // Math.acos(dot(camera.direction, Cartesian3.negate(Cartesian3.UNIT_Z))
-    return CesiumMath.PI_OVER_TWO - Math.acos(-camera.direction.z);
-    }
-    
-    var scratchTiltCartesian3 = new Cartesian3();
-    
-    function getTilt3D(camera) {
-    var direction = Cartesian3.normalize(camera.position, scratchTiltCartesian3);
-    Cartesian3.negate(direction, direction);
-    
-    return CesiumMath.PI_OVER_TWO - Math.acos(Cartesian3.dot(camera.direction, direction));
-    }
-    
-    defineProperties(Camera.prototype, {
     /**
-    * Gets the inverse camera transform.
+    * Gets the camera heading in radians.
     * @memberof Camera.prototype
     *
-    * @type {Matrix4}
-    * @default {@link Matrix4.IDENTITY}
-    */
-    inverseTransform : {
-    get : function() {
-    updateMembers(this);
-    return this._invTransform;
-    }
-    },
-    
-    /**
-    * Gets the position of the camera in world coordinates.
-    * @memberof Camera.prototype
-    * @type {Cartesian3}
-    */
-    positionWC : {
-    get : function() {
-    updateMembers(this);
-    return this._positionWC;
-    }
-    },
-    
-    /**
-    * Gets the view direction of the camera in world coordinates.
-    * @memberof Camera.prototype
-    * @type {Cartesian3}
-    */
-    directionWC : {
-    get : function() {
-    updateMembers(this);
-    return this._directionWC;
-    }
-    },
-    
-    /**
-    * Gets the up direction of the camera in world coordinates.
-    * @memberof Camera.prototype
-    * @type {Cartesian3}
-    */
-    upWC : {
-    get : function() {
-    updateMembers(this);
-    return this._upWC;
-    }
-    },
-    
-    /**
-    * Gets the right direction of the camera in world coordinates.
-    * @memberof Camera.prototype
-    * @type {Cartesian3}
-    */
-    rightWC : {
-    get : function() {
-    updateMembers(this);
-    return this._rightWC;
-    }
-    },
-    
-    /**
-    * Gets or sets the camera heading in radians.
-    * @memberof Camera.prototype
     * @type {Number}
     */
-    heading : {
-    get : function () {
-    if (this._mode === SceneMode.SCENE2D || this._mode === SceneMode.COLUMBUS_VIEW) {
-    return getHeading2D(this);
-    } else if (this._mode === SceneMode.SCENE3D) {
-    return getHeading3D(this);
-    }
-    
-    return undefined;
-    },
-    //TODO See https://github.com/AnalyticalGraphicsInc/cesium/issues/832
-    set : function (angle) {
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(angle)) {
-    throw new DeveloperError('angle is required.');
-}
-//>>includeEnd('debug');
-
-if (this._mode === SceneMode.SCENE2D || this._mode === SceneMode.COLUMBUS_VIEW) {
-    setHeading2D(this, angle);
-} else if (this._mode === SceneMode.SCENE3D) {
-    setHeading3D(this, angle);
-}
-}
-},
-
-/**
-* Gets or sets the camera tilt in radians
-* @memberof Camera.prototype
-* @type {Number}
-*/
-tilt : {
-    get : function() {
-        if (this._mode === SceneMode.COLUMBUS_VIEW) {
-            return getTiltCV(this);
-        } else if (this._mode === SceneMode.SCENE3D) {
-            return getTilt3D(this);
-        }
-        
-        return undefined;
-    },
-    //TODO See https://github.com/AnalyticalGraphicsInc/cesium/issues/832
-    set : function(angle) {
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(angle)) {
-            throw new DeveloperError('angle is required.');
-        }
-        //>>includeEnd('debug');
-        
-        if (this._mode === SceneMode.COLUMBUS_VIEW || this._mode === SceneMode.SCENE3D) {
-            angle = CesiumMath.clamp(angle, 0.0, CesiumMath.PI_OVER_TWO);
-            angle = angle - this.tilt;
+    var heading: Double {
+        get {
+            if _mode != .Morphing {
+                let origin = positionWC
+                let oldTransform = _transform
+                let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
+                _setTransform(transform)
+                
+                let heading: Double
+                if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
+                    heading = atan2(direction.y, direction.x) - M_PI_2
+                } else {
+                    heading = atan2(up.y, up.x) - M_PI_2
+                }
+                _setTransform(oldTransform)
+                
+                return Math.TwoPi - Math.zeroToTwoPi(heading)
+            }
             
-            this.look(this.right, angle);
+            return Double.NaN
         }
     }
-}
-});
-*/
-//var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
-/**
-* @private
-*/
+    
+    /**
+    * Gets the camera pitch in radians.
+    * @memberof Camera.prototype
+    *
+    * @type {Number}
+    */
+    var pitch: Double {
+        get {
+            if _mode != .Morphing {
+                let origin = positionWC
+                let oldTransform = _transform
+                let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
+                _setTransform(transform)
+                
+                let pitch = M_PI_2 - Math.acosClamped(direction.z)
+                
+                _setTransform(oldTransform)
+                
+                return pitch
+            }
+            
+            return Double.NaN
+        }
+    }
+    
+    /**
+    * Gets the camera roll in radians.
+    * @memberof Camera.prototype
+    *
+    * @type {Number}
+    */
+    var roll: Double {
+        get {
+            if _mode != .Morphing {
+                let origin = positionWC
+                let oldTransform = _transform
+                let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
+                _setTransform(transform)
+                
+                var roll = 0.0
+                if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
+                    roll = atan2(-right.z, up.z)
+                    roll = Math.zeroToTwoPi(roll + Math.TwoPi)
+                }
+                _setTransform(oldTransform)
+                return roll
+            }
+            
+            return Double.NaN
+        }
+    }
+
+
+    //var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
+    /**
+    * @private
+    */
     func update (mode: SceneMode, scene2D: Scene.Scene2D) {
         var updateFrustum = false
         
-        if mode != self.mode {
-            self.mode = mode
+        if mode != _mode {
+            _mode = mode
             _modeChanged = mode != .Morphing
-            updateFrustum = self.mode == .Scene2D
+            updateFrustum = _mode == .Scene2D
         }
         
         let projection = scene2D.projection
@@ -828,33 +743,125 @@ tilt : {
             frustum.bottom = -frustum.top;*/
         }
     }
+
+    /**
+    * Sets the camera's transform without changing the current view.
+    *
+    * @memberof Camera
+    *
+    * @param {Matrix4} transform The camera transform.
+    */
+    func _setTransform (transform: Matrix4) {
+        let position = positionWC
+        let up = upWC
+        let direction = directionWC
+        
+        let
+        _transform = transform
+        updateMembers()
+        let inverse = _actualInvTransform
+        
+        self.position = inverse.multiplyByPoint(position)
+        self.direction = inverse.multiplyByPoint(direction)
+        self.up = inverse.multiplyByPoint(up)
+        self.right = direction.cross(up)
+    }
+    
+    /**
+    * Sets the camera position and orientation with heading, pitch and roll angles.
+    *
+    * The position can be given as either a cartesian or a cartographic. If both are given,
+    * then the cartesian will be used. If neither is given, then the current camera position
+    * will be used.
+    *
+    * @param {Cartesian3} [options.position] The cartesian position of the camera.
+    * @param {Cartographic} [options.positionCartographic] The cartographic position of the camera.
+    * @param {Number} [options.heading] The heading in radians or the current heading will be used if undefined.
+    * @param {Number} [options.pitch] The pitch in radians or the current pitch will be used if undefined.
+    * @param {Number} [options.roll] The roll in radians or the current roll will be used if undefined.
+    *
+    * @example
+    * // 1. Set view with heading, pitch and roll
+    * camera.setView({
+    *     position : cartesianPosition,
+    *     heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
+    *     pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
+    *     roll : 0.0                             // default value
+    * });
+    *
+    * // 2. Set default top-down view with a cartographic position
+    * camera.setView({
+    *     positionCartographic : cartographic
+    * });
+    *
+    * // 3. Change heading, pitch and roll with the camera position remaining the same.
+    * camera.setView({
+    *     heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
+    *     pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
+    *     roll : 0.0                             // default value
+    * });
+    */
+    func setView (
+        position cartesianIn: Cartesian3?,
+        positionCartographic cartographicIn: Cartographic?,
+        heading headingIn: Double?,
+        pitch pitchIn: Double?,
+        roll rollIn: Double?)
+    {
+        if (_mode == .Morphing) {
+            return
+        }
+        var scene2D = _mode == .Scene2D
+        
+        let heading = headingIn ?? self.heading
+        let pitch = scene2D ? -M_PI_2 : (pitchIn ?? self.pitch)
+        let roll = scene2D ? 0.0 : (rollIn ?? self.roll)
+        
+        let cartesian: Cartesian3
+        
+        if cartesianIn == nil {
+            if cartographicIn != nil {
+                cartesian = _projection.ellipsoid.cartographicToCartesian(cartographicIn!)
+            } else {
+                cartesian = positionWC
+            }
+        } else {
+            cartesian = cartesianIn!
+        }
+        
+        let currentTransform = transform
+        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
+        _setTransform(localTransform)
+        
+        if scene2D {
+            position = Cartesian3.zero()
+            
+            var cartographic2D = _projection.ellipsoid.cartesianToCartographic(cartesian)
+            var newLeft = -cartographic2D!.height * 0.5
+            var newRight = -newLeft
+            
+            if (newRight > newLeft) {
+                var ratio = frustum.top / frustum.right
+                frustum.right = newRight
+                frustum.left = newLeft
+                frustum.top = frustum.right * ratio
+                frustum.bottom = -frustum.top
+            }
+        } else {
+            position = Cartesian3.zero()
+        }
+        
+        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
+        let rotMat = Matrix3(fromQuaternion: rotQuat)
+        
+        direction = rotMat.column(0)
+        up = rotMat.column(2)
+        right = direction.cross(up)
+        
+        _setTransform(currentTransform)
+    }
+
 /*
-var setTransformPosition = new Cartesian3();
-var setTransformUp = new Cartesian3();
-var setTransformDirection = new Cartesian3();
-
-/**
-* Sets the camera's transform without changing the current view.
-*
-* @memberof Camera
-*
-* @param {Matrix4} transform The camera transform.
-*/
-Camera.prototype.setTransform = function(transform) {
-    var position = Cartesian3.clone(this.positionWC, setTransformPosition);
-    var up = Cartesian3.clone(this.upWC, setTransformUp);
-    var direction = Cartesian3.clone(this.directionWC, setTransformDirection);
-    
-    Matrix4.clone(transform, this.transform);
-    updateMembers(this);
-    var inverse = this._actualInvTransform;
-    
-    Matrix4.multiplyByPoint(inverse, position, this.position);
-    Matrix4.multiplyByPointAsVector(inverse, direction, this.direction);
-    Matrix4.multiplyByPointAsVector(inverse, up, this.up);
-    Cartesian3.cross(this.direction, this.up, this.right);
-};
-
 /**
 * Transform a vector or point from world coordinates to the camera's reference frame.
 * @memberof Camera
@@ -1560,9 +1567,9 @@ Camera.prototype.setPositionCartographic = function(cartographic) {
     */
     public func lookAt (eye: Cartesian3, target: Cartesian3, up: Cartesian3) {
         
-        assert(mode != .Morphing, "lookAt is not supported while morphing.")
+        assert(_mode != .Morphing, "lookAt is not supported while morphing.")
         
-        if mode == .Scene2D {
+        if _mode == .Scene2D {
             position = target
             direction = Cartesian3.unitZ().negate()
             self.up = up
@@ -1803,7 +1810,7 @@ Camera.prototype.getRectangleCameraCoordinates = function(rectangle, result) {
     * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to view.
     */
     public func viewRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
-        if mode == .Scene3D {
+        if _mode == .Scene3D {
             position = rectangleCameraPosition3D(rectangle, ellipsoid: ellipsoid)
         } else { assert(false, "not implemented") }/*if mode == .ColumbusView {
             rectangleCameraPositionColumbusView( rectangle, _projection, position)

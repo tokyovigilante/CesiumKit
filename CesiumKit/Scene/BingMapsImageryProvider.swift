@@ -687,8 +687,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; !included && areaIndex < areaLength; ++areaIndex) {
     var area = coverageAreas[areaIndex];
     if (level >= area.zoomMin && level <= area.zoomMax) {
-    var intersection = Rectangle.intersectWith(rectangle, area.bbox, intersectionScratch);
-    if (!Rectangle.isEmpty(intersection)) {
+    var intersection = Rectangle.intersection(rectangle, area.bbox, intersectionScratch);
+    if (intersection != nil) {
     included = true;
     }
     }
