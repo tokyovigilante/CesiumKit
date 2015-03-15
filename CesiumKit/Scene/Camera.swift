@@ -801,7 +801,7 @@ public class Camera {
     *     roll : 0.0                             // default value
     * });
     */
-    func setView (
+    public func setView (
         position cartesianIn: Cartesian3?,
         positionCartographic cartographicIn: Cartographic?,
         heading headingIn: Double?,
