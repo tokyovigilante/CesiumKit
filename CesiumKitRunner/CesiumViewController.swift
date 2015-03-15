@@ -104,9 +104,7 @@ class CesiumViewController: GLKViewController {
         view.addGestureRecognizer(pinch)
     }
     
-    func tearDownGL () {
-        
-    }
+
     
     //MARK: - GLKView delegate
     
@@ -122,6 +120,10 @@ class CesiumViewController: GLKViewController {
     // MARK: - GLKViewControllerDelegate
     func update () {
         
+    }
+    
+    func tearDownGL () {
+        globe = nil
     }
     
     func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {

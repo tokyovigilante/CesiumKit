@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>CesiumKit.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>CesiumKitRunner.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
+		<key>CesiumKitTests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>9413B6F31A37B8C700FFAD81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9413B7831A37B8D900FFAD81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9413B78D1A37B8D900FFAD81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>94985A641A38444C00FFAD81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>94985A7C1A38444C00FFAD81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>94DC79211918425300012DC4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>94DC79311918425300012DC4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>
