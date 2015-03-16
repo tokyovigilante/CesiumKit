@@ -566,7 +566,9 @@ public class Camera {
 
             // Compute the Cartographic position of the camera.
             if _mode == .Scene3D || _mode == .Morphing {
-                _positionCartographic = _projection.ellipsoid.cartesianToCartographic(_positionWC)!
+                if let positionCartographic = _projection.ellipsoid.cartesianToCartographic(_positionWC) {
+                    _positionCartographic = positionCartographic
+                }
             } else {
                 // The camera position is expressed in the 2D coordinate system where the Y axis is to the East,
                 // the Z axis is to the North, and the X axis is out of the map.  Express them instead in the ENU axes where
