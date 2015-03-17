@@ -804,11 +804,11 @@ public class Camera {
     * });
     */
     public func setView (
-        position cartesianIn: Cartesian3?,
-        positionCartographic cartographicIn: Cartographic?,
-        heading headingIn: Double?,
-        pitch pitchIn: Double?,
-        roll rollIn: Double?)
+        position cartesianIn: Cartesian3? = nil,
+        positionCartographic cartographicIn: Cartographic? = nil,
+        heading headingIn: Double? = nil,
+        pitch pitchIn: Double? = nil,
+        roll rollIn: Double? = nil)
     {
         if (_mode == .Morphing) {
             return
