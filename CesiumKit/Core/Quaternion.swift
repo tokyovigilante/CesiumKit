@@ -147,11 +147,10 @@ struct Quaternion {
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if none was provided.
     */
     init(fromHeading heading: Double, pitch: Double, roll: Double) {
-
         let HPRQuaternion =
-            Quaternion(fromAxis: Cartesian3.unitZ(), angle: -heading) * // heading
             Quaternion(fromAxis: Cartesian3.unitY(), angle: -pitch) * // pitch
-            Quaternion(fromAxis: Cartesian3.unitX(), angle: roll) // roll
+            Quaternion(fromAxis: Cartesian3.unitX(), angle: roll) * // roll
+            Quaternion(fromAxis: Cartesian3.unitZ(), angle: -heading) // heading
         
         self.init(x: HPRQuaternion.x, y: HPRQuaternion.y, z: HPRQuaternion.z, w: HPRQuaternion.w)
     }

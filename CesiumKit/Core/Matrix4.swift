@@ -1529,13 +1529,13 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     */
     func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
         
-        let vX: Double = cartesian.x
-        let vY: Double = cartesian.y
-        let vZ: Double = cartesian.z
+        let vX = cartesian.x
+        let vY = cartesian.y
+        let vZ = cartesian.z
         
-        let x: Double = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
-        let y: Double = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
-        let z: Double = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
+        let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
+        let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
+        let z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
         
         return Cartesian3(x: x, y: y, z: z)
     }
@@ -1554,20 +1554,13 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
 */
     func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
-        // FIXME: compiler bug
         var vX = cartesian.x
         var vY = cartesian.y
         var vZ = cartesian.z
         
-        let x1 = _grid[0] * vX + _grid[4] * vY
-        let x2 = _grid[8] * vZ + _grid[12]
-        let x = x1 + x2
-        let y1 = _grid[1] * vX + _grid[5] * vY
-        //let y2 = _grid[9] * vZ + _grid[13]
-        let y = y1// + y2
-        let z1 = _grid[2] * vX + _grid[6] * vY
-        let z2 = _grid[10] * vZ + _grid[14]
-        let z = z1 + z2
+        let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12]
+        let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13]
+        let z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ + _grid[14]
         return Cartesian3(x: x, y: y, z: z)
     }
     /*

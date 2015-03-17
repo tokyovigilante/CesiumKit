@@ -758,14 +758,14 @@ public class Camera {
         let up = upWC
         let direction = directionWC
         
-        let
         _transform = transform
+        _transformChanged = true
         updateMembers()
         let inverse = _actualInvTransform
         
         self.position = inverse.multiplyByPoint(position)
-        self.direction = inverse.multiplyByPoint(direction)
-        self.up = inverse.multiplyByPoint(up)
+        self.direction = inverse.multiplyByPointAsVector(direction)
+        self.up = inverse.multiplyByPointAsVector(up)
         self.right = direction.cross(up)
     }
     
