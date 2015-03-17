@@ -813,7 +813,7 @@ public class Camera {
         if (_mode == .Morphing) {
             return
         }
-        var scene2D = _mode == .Scene2D
+        let scene2D = _mode == .Scene2D
         
         let heading = headingIn ?? self.heading
         let pitch = scene2D ? -M_PI_2 : (pitchIn ?? self.pitch)
@@ -836,7 +836,9 @@ public class Camera {
         _setTransform(localTransform)
         
         if scene2D {
-            position = Cartesian3.zero()
+            let zero = Cartesian3.zero()
+            position.x = zero.x
+            position.y = zero.y
             
             var cartographic2D = _projection.ellipsoid.cartesianToCartographic(cartesian)
             var newLeft = -cartographic2D!.height * 0.5
