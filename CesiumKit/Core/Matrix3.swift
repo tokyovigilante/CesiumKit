@@ -33,7 +33,7 @@ import Foundation
 * @see Matrix4
 */
 // FIXME: Packable
-struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
+public struct Matrix3: DebugPrintable, Printable, Packable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -1286,13 +1286,13 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     *
     * @returns {String} A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2)'.
     */
-    var description: String {
+    public var description: String {
         get {
             return String(format: "(%.5f, %.5f, %.5f\n%.5f, %.5f, %.5f\n%.5f,%.5f, %.5f", _grid[0], _grid[3], _grid[6], _grid[1], _grid[4], _grid[7], _grid[2],_grid[5], _grid[8])
         }
     }
     
-    var debugDescription: String { get { return description } }
+    public var debugDescription: String { get { return description } }
     
     
 }

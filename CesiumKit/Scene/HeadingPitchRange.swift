@@ -19,7 +19,7 @@
 * @param {Number} [range=0.0] The distance from the center in meters.
 */
 
-struct HeadingPitchRange {
+public struct HeadingPitchRange {
 
     /**
     * Heading is the rotation from the local north direction where a positive angle is increasing eastward.

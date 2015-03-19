@@ -91,7 +91,7 @@ class CesiumViewController: GLKViewController {
         globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
         globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
-        globe.scene.camera.setView()
+        //globe.scene.camera.setView()
         
         //Murrumbeena
         //globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), target: Cartesian3.zero(), up: Cartesian3.unitZ())

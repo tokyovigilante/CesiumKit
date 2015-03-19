@@ -47,7 +47,7 @@
 * @see Packable
 */
 //FIXME: Packable
-struct Matrix4: Packable, Equatable, Printable {
+public struct Matrix4: Packable, Equatable, Printable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -2138,7 +2138,7 @@ Matrix4.prototype.toString = function() {
     '(' + this[2] + ', ' + this[6] + ', ' + this[10] + ', ' + this[14] +')\n' +
     '(' + this[3] + ', ' + this[7] + ', ' + this[11] + ', ' + this[15] +')';
 };*/
-    var description: String {
+    public var description: String {
         get {
             return _grid.description
         }
@@ -2175,7 +2175,7 @@ Matrix4.prototype.toString = function() {
 *
 * //Prints "Both matrices are equal" on the console
 */
-func == (left: Matrix4, right: Matrix4) -> Bool {
+public func == (left: Matrix4, right: Matrix4) -> Bool {
     return left.equals(right)
 }
 

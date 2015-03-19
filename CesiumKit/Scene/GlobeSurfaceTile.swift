@@ -299,7 +299,7 @@ class GlobeSurfaceTile {
                 (tileImagery.loadingImagery!.state == .Failed || tileImagery.loadingImagery!.state == .Invalid)
         }
         
-        tile.upsampledFromParent = isUpsampledOnly
+        tile.upsampledFromParent = tile.level > 10 //isUpsampledOnly
         
         // The tile becomes renderable when the terrain and all imagery data are loaded.
         if i == len {

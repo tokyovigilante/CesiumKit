@@ -20,7 +20,7 @@ import Foundation
 *
 * @see PackableForInterpolation
 */
-struct Quaternion {
+public struct Quaternion {
     /**
     * The X component.
     * @type {Number}
@@ -487,6 +487,7 @@ struct Quaternion {
     return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w;
     };
     */
+    
     /**
     * Computes the product of two quaternions.
     * @memberof Quaternion
