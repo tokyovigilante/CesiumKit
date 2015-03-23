@@ -792,8 +792,7 @@ public class ImageryLayer {
         command.execute(context: context)
         
         if reproject!.renderState == nil {
-            reproject!.renderState = context.createRenderState()
-            reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+            reproject!.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
         }
         /*if reproject!.renderState!.viewport == nil ||
         reproject!.renderState!.viewport!.width != width ||

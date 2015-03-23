@@ -41,7 +41,7 @@ struct BlendingState {
             functionSourceAlpha: .Zero,
             functionDestinationRgb: .Zero,
             functionDestinationAlpha: .Zero,
-            color: Cartesian4())
+            color: Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0))
     }
     
     /**
@@ -50,7 +50,7 @@ struct BlendingState {
     * @type {Object}
     * @constant
     */
-    static func AlphaBlend() -> BlendingState {
+    static func AlphaBlend(color: Cartesian4) -> BlendingState {
         return BlendingState(enabled: true,
             equationRgb : .Add,
             equationAlpha : .Add,
@@ -58,7 +58,7 @@ struct BlendingState {
             functionSourceAlpha : .SourceAlpha,
             functionDestinationRgb : .OneMinusSourceAlpha,
             functionDestinationAlpha : .OneMinusSourceAlpha,
-            color: Cartesian4())
+            color: color)
     }
     
     /**
@@ -67,7 +67,7 @@ struct BlendingState {
     * @type {Object}
     * @constant
     */
-    static func PremultipliedAlphaBlend() -> BlendingState {
+    static func PremultipliedAlphaBlend(color: Cartesian4) -> BlendingState {
         return BlendingState(enabled : true,
             equationRgb : .Add,
             equationAlpha : .Add,
@@ -75,7 +75,7 @@ struct BlendingState {
             functionSourceAlpha : .One,
             functionDestinationRgb : .OneMinusSourceAlpha,
             functionDestinationAlpha : .OneMinusSourceAlpha,
-            color: Cartesian4())
+            color: color)
     }
     
     /**
@@ -84,7 +84,7 @@ struct BlendingState {
     * @type {Object}
     * @constant
     */
-    static func AdditiveBlend() -> BlendingState {
+    static func AdditiveBlend(color: Cartesian4) -> BlendingState {
         return BlendingState(enabled : true,
             equationRgb : .Add,
             equationAlpha : .Add,
@@ -92,7 +92,7 @@ struct BlendingState {
             functionSourceAlpha : .SourceAlpha,
             functionDestinationRgb : .One,
             functionDestinationAlpha : .One,
-            color: Cartesian4())
+            color: color)
     }
-    
+
 }

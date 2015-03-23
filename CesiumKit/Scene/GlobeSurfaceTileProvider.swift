@@ -228,24 +228,33 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+
         if _renderState == nil {
-            _renderState = context.createRenderState()
-            _renderState!.cull.enabled = true
-            _renderState!.depthTest.enabled = true
+        
+            var cullEnabled = RenderState.Cull()
+            var depthEnabled = RenderState.DepthTest()
+            
+            cullEnabled.enabled = true
+            depthEnabled.enabled = (frameState.mode == .Scene3D || frameState.mode == .ColumbusView)
+
+            _renderState = RenderState(
+                cull: cullEnabled,
+                depthTest: depthEnabled
+            )
         }
         
         if _blendRenderState == nil {
-            _blendRenderState = context.createRenderState()
-            _blendRenderState!.cull.enabled = true
-            _blendRenderState!.depthTest.enabled = true
-            _blendRenderState!.depthTest.function = .LessOrEqual
-            _blendRenderState!.blending = BlendingState.AlphaBlend()
-
+            
+            var cullEnabled = RenderState.Cull()
+            
+            cullEnabled.enabled = true
+            
+            _blendRenderState = RenderState(
+                cull: cullEnabled,
+                depthTest: RenderState.DepthTest(enabled: _renderState!.depthTest.enabled, function: .LessOrEqual),
+                blending: BlendingState.AlphaBlend(Cartesian4())
+            )
         }
-        
-        _renderState!.depthTest.enabled = frameState.mode == .Scene3D || frameState.mode == SceneMode.ColumbusView
-        _blendRenderState!.depthTest.enabled = _renderState!.depthTest.enabled
-        
         // And the tile render commands to the command list, sorted by texture count.
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {

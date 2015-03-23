@@ -639,19 +639,42 @@ class Globe {
         if _mode != mode || _rsColor == nil {
             modeChanged = true
             
-            _rsColor = context.createRenderState() // Write color and depth
-            _rsColor?.cull.enabled = true
-            _rsColor?.depthTest.enabled = true
-            
-            _rsColorWithoutDepthTest = context.createRenderState()
-            _rsColorWithoutDepthTest?.cull.enabled = true
-            _depthCommand.renderState = context.createRenderState()
-            _depthCommand.renderState?.cull.enabled = true
-            
-            if (mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView) {
-                _depthCommand.renderState?.depthTest.enabled = true
-                _depthCommand.renderState?.depthTest.function = .Less
-                _depthCommand.renderState?.colorMask = RenderState.ColorMask(red: false, green: false, blue: false, alpha: false)
+            var cullEnabled = RenderState.Cull()
+
+            if mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView {
+                
+                cullEnabled.enabled = true
+                var depthEnabled = RenderState.DepthTest()
+                depthEnabled.enabled = true
+                
+                _rsColor = RenderState(
+                    cull: cullEnabled,
+                    depthTest: depthEnabled
+                )
+                
+                _rsColorWithoutDepthTest = RenderState(
+                    cull: cullEnabled
+                )
+
+                _depthCommand.renderState = RenderState(
+                    cull: cullEnabled,
+                    depthTest:RenderState.DepthTest(
+                        enabled: true,
+                        function: .Always
+                    ),
+                    colorMask: RenderState.ColorMask(
+                        red: false,
+                        green: false,
+                        blue: false,
+                        alpha: false
+                    )
+                )
+                
+            } else {
+                _rsColor = RenderState(
+                    cull: cullEnabled
+                )
+                _rsColorWithoutDepthTest = _rsColor
             }
         }
         

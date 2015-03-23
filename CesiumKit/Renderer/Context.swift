@@ -1274,9 +1274,9 @@ var renderStateCache = {};
 * @see DrawCommand
 * @see ClearCommand
 */
-    func createRenderState() -> RenderState {
+    /*func createRenderState() -> RenderState {
         return RenderState()
-    }
+    }*/
 
 
     func validateFramebuffer(framebuffer: Framebuffer) {
@@ -1305,7 +1305,7 @@ var renderStateCache = {};
 
     func applyRenderState(renderState: RenderState, passState: PassState) {
         var previousState = _currentRenderState
-        if previousState !== renderState {
+        if previousState.hash != renderState.hash {
             _currentRenderState = renderState
             renderState.partialApply(previousState, passState: passState)
         }
