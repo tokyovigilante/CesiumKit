@@ -217,6 +217,12 @@ public class ScreenSpaceCameraController {
     * @default 7500000.0
     */
     this.minimumTrackBallHeight = 7500000.0;
+    /**
+    * Enables or disables camera collision detection with terrain.
+    * @type {Boolean}
+    * @default true
+    */
+    this.enableCollisionDetection = true;
     
     this._scene = scene;
     this._globe = undefined;

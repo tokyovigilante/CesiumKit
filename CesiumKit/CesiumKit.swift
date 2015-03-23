@@ -195,6 +195,7 @@ public class CesiumGlobe {
             contextOptions : options.contextOptions,
             creditContainer : creditContainer,
             mapProjection : options.mapProjection,*/
+            useOIT: false,
             scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
             /*            }*/)
         scene.globe = globe

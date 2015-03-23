@@ -127,6 +127,17 @@ protocol TerrainProvider {
     func levelMaximumGeometricError(level: Int) -> Double
     
     /**
+    * Determines whether data for a tile is available to be loaded.
+    * @function
+    *
+    * @param {Number} x The X coordinate of the tile for which to request geometry.
+    * @param {Number} y The Y coordinate of the tile for which to request geometry.
+    * @param {Number} level The level of the tile for which to request geometry.
+    * @returns {Boolean} Undefined if not supported by the terrain provider, otherwise true or false.
+    */
+    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool?
+    
+    /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     * indicates which areas of the globe are water rather than land, so they can be rendered
     * as a reflective surface with animated waves.  This function should not be

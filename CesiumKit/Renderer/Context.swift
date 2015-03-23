@@ -628,18 +628,18 @@ class Context {
         _currentRenderState.apply(_defaultPassState)
     }
     
-    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderString: String, fragmentShaderString: String, attributeLocations: [String: Int] = terrainAttributeLocations) -> ShaderProgram? {
+    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
         if _shaderCache == nil {
             _shaderCache = ShaderCache(context: self)
         }
-        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderString: vertexShaderString, fragmentShaderString: fragmentShaderString, attributeLocations: attributeLocations)
+        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
-    func createShaderProgram(#vertexShaderString: String, fragmentShaderString: String, attributeLocations: [String: Int]) -> ShaderProgram? {
+    func createShaderProgram(vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
         if _shaderCache == nil {
             _shaderCache = ShaderCache(context: self)
         }
-        return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, fragmentShaderString: fragmentShaderString, attributeLocations: attributeLocations)
+        return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
     func createBuffer(target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {

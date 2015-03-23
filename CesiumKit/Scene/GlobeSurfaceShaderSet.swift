@@ -8,6 +8,15 @@
 
 import Foundation
 
+struct GlobeSurfaceShader {
+    
+    var numberOfDayTextures: Int
+    
+    var flags: Int
+    
+    var shaderProgram: ShaderProgram
+}
+
 /**
 * Manages the shaders used to shade the surface of a {@link Globe}.
 *
@@ -16,115 +25,158 @@ import Foundation
 */
 class GlobeSurfaceShaderSet {
     
-    var baseVertexShaderString: String? = nil
-    var baseFragmentShaderString: String? = nil
+    var baseVertexShaderSource: ShaderSource
+    var baseFragmentShaderSource: ShaderSource
     
     let attributeLocations: [String: Int]
     
-    var shaders = [String: ShaderProgram]()
+    var _shadersByTexturesFlags = [Int: [Int: GlobeSurfaceShader]]()
     
-    init (attributeLocations: [String: Int]) {
-        self.baseVertexShaderString = nil
-        self.baseFragmentShaderString = nil
-        self.attributeLocations = attributeLocations
+    init (
+        baseVertexShaderSource: ShaderSource,
+        baseFragmentShaderSource: ShaderSource,
+        attributeLocations: [String: Int]) {
+            self.baseVertexShaderSource = baseVertexShaderSource
+            self.baseFragmentShaderSource = baseFragmentShaderSource
+            self.attributeLocations = attributeLocations
     }
     
-    func invalidateShaders() {
-        shaders = [String : ShaderProgram]()
-    }
-    
-    func getShaderKey(#textureCount: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool) -> String {
-        var key = ""
-        key += String(textureCount)
+    func getShaderProgram (#context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> ShaderProgram {
         
-        if (applyBrightness) {
-            key += "_brightness"
+        let flags: Int = Int(sceneMode.rawValue) |
+            (Int(applyBrightness) << 2) |
+            (Int(applyContrast) << 3) |
+            (Int(applyHue) << 4) |
+            (Int(applySaturation) << 5) |
+            (Int(applyGamma) << 6) |
+            (Int(applyAlpha) << 7) |
+            (Int(showReflectiveOcean) << 8) |
+            (Int(showOceanWaves) << 9) |
+            (Int(enableLighting) << 10) |
+            (Int(hasVertexNormals) << 11) |
+            (Int(useWebMercatorProjection) << 12)
+        
+        var surfaceShader = surfaceTile.surfaceShader
+        if surfaceShader != nil && surfaceShader!.numberOfDayTextures == numberOfDayTextures && surfaceShader!.flags == flags {
+            return surfaceShader!.shaderProgram
         }
         
-        if (applyContrast) {
-            key += "_contrast"
+        // New tile, or tile changed number of textures or flags.
+        var shadersByFlags = _shadersByTexturesFlags[numberOfDayTextures]
+        if shadersByFlags == nil {
+            _shadersByTexturesFlags[numberOfDayTextures] = [Int: GlobeSurfaceShader]()
+            shadersByFlags = _shadersByTexturesFlags[numberOfDayTextures]
         }
         
-        if (applyHue) {
-            key += "_hue"
-        }
-        
-        if (applySaturation) {
-            key += "_saturation"
-        }
-        
-        if (applyGamma) {
-            key += "_gamma"
-        }
-        
-        if (applyAlpha) {
-            key += "_alpha"
-        }
-        return key
-    }
-
-    func getShaderProgram(#context: Context,
-        textureCount: Int,
-        applyBrightness: Bool,
-        applyContrast: Bool,
-        applyHue: Bool,
-        applySaturation: Bool,
-        applyGamma: Bool,
-        applyAlpha: Bool) -> ShaderProgram {
-            var key = getShaderKey(
-                textureCount: textureCount,
-                applyBrightness: applyBrightness,
-                applyContrast: applyContrast,
-                applyHue: applyHue,
-                applySaturation: applySaturation,
-                applyGamma: applyGamma,
-                applyAlpha: applyAlpha)
-            var shader = shaders[key]
-            if (shader == nil) {
-                var vs = baseVertexShaderString!
-                //FIXME: compiler bug
-                var fs =
-                (applyBrightness == true ? "#define APPLY_BRIGHTNESS\n" : "") +
-                    (applyContrast == true ? "#define APPLY_CONTRAST\n" : "") +
-                    (applyHue == true ? "#define APPLY_HUE\n" : "") +
-                    (applySaturation == true ? "#define APPLY_SATURATION\n" : "") +
-                    (applyGamma == true ? "#define APPLY_GAMMA\n" : "")
-                var fs2 = (applyAlpha == true ? "#define APPLY_ALPHA\n" : "")
-                fs2 += String("#define TEXTURE_UNITS \(textureCount)\n")
-                fs2 +=
-                    baseFragmentShaderString! + "\n" +
-                    "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n" +
-                    "{\n" +
-                "    vec4 color = initialColor;\n"
-                fs += fs2
-                for i in 0..<textureCount {
-                    //fs +=
-                        fs += "color = sampleAndBlend(\n"
-                        fs += "   color,\n"
-                        fs += String("   u_dayTextures[\(i)],\n")
-                        fs += "   textureCoordinates,\n"
-                        fs += "   u_dayTextureTexCoordsRectangle[\(i)],\n"
-                        fs += "   u_dayTextureTranslationAndScale[\(i)],\n"
-                        fs += (applyAlpha ?      "   u_dayTextureAlpha[\(i)],\n" : "1.0,\n")
-                        fs += (applyBrightness ? "   u_dayTextureBrightness[\(i)],\n" : "1.0,\n")
-                        fs += (applyContrast ?   "   u_dayTextureContrast[\(i)],\n" : "1.0,\n")
-                        fs += (applyHue ?        "   u_dayTextureHue[\(i)],\n" : "1.0,\n")
-                        fs += (applySaturation ? "   u_dayTextureSaturation[\(i)],\n" : "1.0,\n")
-                        fs += (applyGamma ?      "   u_dayTextureOneOverGamma[\(i)])\n" : "1.0);\n")
-                }
-                
-                fs +=
-                    "    return color;\n" +
-                "}"
-                
-                shader = context.createShaderProgram(vertexShaderString: vs, fragmentShaderString: fs, attributeLocations: attributeLocations)
-                self.shaders[key] = shader
+        surfaceShader = shadersByFlags![flags]
+        if surfaceShader == nil {
+            // Cache miss - we've never seen this combination of numberOfDayTextures and flags before.
+            var vs = baseVertexShaderSource
+            var fs = baseFragmentShaderSource
+            
+            fs.defines.append("TEXTURE_UNITS \(numberOfDayTextures)")
+            
+            if applyBrightness {
+                fs.defines.append("APPLY_BRIGHTNESS")
             }
-            return shader!
+            if (applyContrast) {
+                fs.defines.append("APPLY_CONTRAST")
+            }
+            if (applyHue) {
+                fs.defines.append("APPLY_HUE")
+            }
+            if (applySaturation) {
+                fs.defines.append("APPLY_SATURATION")
+            }
+            if (applyGamma) {
+                fs.defines.append("APPLY_GAMMA")
+            }
+            if (applyAlpha) {
+                fs.defines.append("APPLY_ALPHA")
+            }
+            if (showReflectiveOcean) {
+                fs.defines.append("SHOW_REFLECTIVE_OCEAN")
+                vs.defines.append("SHOW_REFLECTIVE_OCEAN")
+            }
+            if (showOceanWaves) {
+                fs.defines.append("SHOW_OCEAN_WAVES")
+            }
+            
+            if enableLighting {
+                if hasVertexNormals {
+                    vs.defines.append("ENABLE_VERTEX_LIGHTING")
+                    fs.defines.append("ENABLE_VERTEX_LIGHTING")
+                } else {
+                    vs.defines.append("ENABLE_DAYNIGHT_SHADING")
+                    fs.defines.append("ENABLE_DAYNIGHT_SHADING")
+                }
+            }
+            
+            var computeDayColor = "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n{    \nvec4 color = initialColor;\n"
+            
+            for i in 0..<numberOfDayTextures {
+                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTextures[\(i)],\n" +
+                    "textureCoordinates,\n" +
+                    "u_dayTextureTexCoordsRectangle[\(i)],\n" +
+                    "u_dayTextureTranslationAndScale[\(i)],\n" +
+                    (applyAlpha ? "u_dayTextureAlpha[\(i)]" : "1.0") + ",\n" +
+                    (applyBrightness ? "u_dayTextureBrightness[\(i)]" : "0.0") + ",\n" +
+                    (applyContrast ? "u_dayTextureContrast[\(i)]" : "0.0") + ",\n" +
+                    (applyHue ? "u_dayTextureHue[\(i)]" : "0.0") + ",\n" +
+                    (applySaturation ? "u_dayTextureSaturation[\(i)]" : "0.0") + ",\n" +
+                    (applyGamma ? "u_dayTextureOneOverGamma[\(i)]" : "0.0") + "\n" +
+                ");\n"
+            }
+            
+            computeDayColor += "return color;\n}"
+            
+            fs.sources.append(computeDayColor)
+            
+            let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
+            let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
+            let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
+            let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
+            
+            let getPositionMode: String
+            
+            switch sceneMode {
+            case .Scene3D:
+                getPositionMode = getPosition3DMode
+            case .Scene2D:
+                getPositionMode = getPosition2DMode
+            case .ColumbusView:
+                getPositionMode = getPositionColumbusViewMode
+            case .Morphing:
+                getPositionMode = getPositionMorphingMode
+            }
+            
+            vs.sources.append(getPositionMode)
+            
+            let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
+            let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
+            
+            let get2DYPositionFraction: String
+            
+            if useWebMercatorProjection {
+                get2DYPositionFraction = get2DYPositionFractionMercatorProjection
+            } else {
+                get2DYPositionFraction = get2DYPositionFractionGeographicProjection
+            }
+            
+            vs.sources.append(get2DYPositionFraction)
+            
+            let shader = context.createShaderProgram(vertexShaderSource: vs, fragmentShaderSource: fs, attributeLocations: attributeLocations)
+            shadersByFlags![flags] = GlobeSurfaceShader(numberOfDayTextures: numberOfDayTextures, flags: flags, shaderProgram: shader!)
+
+            surfaceShader = shadersByFlags![flags]
+        }
+        _shadersByTexturesFlags[numberOfDayTextures] = shadersByFlags!
+        surfaceTile.surfaceShader = surfaceShader
+        return surfaceShader!.shaderProgram
     }
     
     deinit {
-        invalidateShaders()
+        // ARC should deinit shaders
     }
     
 }

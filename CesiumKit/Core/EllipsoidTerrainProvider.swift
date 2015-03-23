@@ -196,4 +196,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
         }
     }
     
+    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool? {
+        return nil
+    }
+    
 }

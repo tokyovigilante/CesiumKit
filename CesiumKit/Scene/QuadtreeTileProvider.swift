@@ -64,7 +64,11 @@ protocol QuadtreeTileProvider {
     */
     var lightingFadeInDistance: Double { get set }
     
+    var hasWaterMask: Bool { get set }
+    
     var oceanNormalMap: Texture? { get set }
+    
+    var enableLighting: Bool { get set }
     
     var zoomedOutOceanSpecularIntensity: Double { get set }
     

@@ -64,13 +64,13 @@ private func == (left: DependencyNode, right: DependencyNode) -> Bool {
 *
 * @private
 */
-class ShaderSource {
+struct ShaderSource {
     
-    let sources: [String]
+    var sources: [String]
     
-    let defines: [String]
+    var defines: [String]
 
-    let pickColorQualifier: String?
+    var pickColorQualifier: String?
     
     let includeBuiltIns: Bool
     private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
@@ -78,18 +78,14 @@ class ShaderSource {
     private let _lineRegex = "\\n"
     private let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
 
-    init (sources: [String], defines: [String]?, pickColorQualifier: String?, includeBuiltIns: Bool) {
+    init (sources: [String] = [String](), defines: [String] = [String](), pickColorQualifier: String? = nil, includeBuiltIns: Bool = true) {
         
         assert(pickColorQualifier == nil || pickColorQualifier == "uniform" || pickColorQualifier == "varying", "options.pickColorQualifier must be 'uniform' or 'varying'.")
     
-        self.defines = defines ?? [String]()
-        self.sources = sources ?? [String]()
+        self.defines = defines
+        self.sources = sources
         self.pickColorQualifier = pickColorQualifier
         self.includeBuiltIns = includeBuiltIns
-    }
-    
-    convenience init (sources: [String]) {
-        self.init(sources: sources, defines: nil, pickColorQualifier: nil, includeBuiltIns: true)
     }
 
     /**

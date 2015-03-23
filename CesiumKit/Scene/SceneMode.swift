@@ -13,7 +13,7 @@
 *
 * @see Scene#mode
 */
-public enum SceneMode {
+public enum SceneMode: Int {
     /**
     * 2D mode.  The map is viewed top-down with an orthographic projection.
     *
