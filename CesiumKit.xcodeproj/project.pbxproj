@@ -662,6 +662,7 @@
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
 				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
 				94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */,
+				94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */,
 				94540436199F63A700012DC4 /* Imagery.swift */,
 				94540438199F649000012DC4 /* ImageryLayer.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
@@ -692,7 +693,6 @@
 				948F4D8D19D7969400FFAD81 /* TileReplacementQueue.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
-				94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";

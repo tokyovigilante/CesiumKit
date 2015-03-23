@@ -213,8 +213,8 @@ class TileTerrain {
         var stride: Int
         var numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
-            stride = 8 * datatype.elementSize()
-            numTexCoordComponents = 4
+            stride = 7 * datatype.elementSize()
+            numTexCoordComponents = 3
         } else {
             stride = 6 * datatype.elementSize()
             numTexCoordComponents = 2
@@ -241,7 +241,10 @@ class TileTerrain {
         
         var indexBuffer = terrainMesh.indexBuffer
         if indexBuffer == nil {
-            
+            // FIXME geometry with > 64k indices
+            //let indices = terrainMesh.indices
+            //let indexDatatype = vertices.= 2) ?  IndexDatatype.UNSIGNED_SHORT : IndexDatatype.UNSIGNED_INT;
+            //indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, indexDatatype);
             indexBuffer = context.createIndexBuffer(
                 array: SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
                 usage: .StaticDraw,
