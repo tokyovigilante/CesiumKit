@@ -73,6 +73,7 @@ public struct CesiumOptions {
 * @param {SkyBox} [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
 * @param {SceneMode} [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
 * @param {Boolean} [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+* @param {Boolean} [options.orderIndependentTranslucency=true] If true and the configuration supports it, use order independent translucency.
 * @param {MapProjection} [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
 * @param {Boolean} [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
 * @param {Number} [options.targetFrameRate] The target frame rate when using the default render loop.
@@ -96,8 +97,7 @@ public struct CesiumOptions {
 * var widget = new Cesium.CesiumWidget('cesiumContainer', {
 *     imageryProvider : new Cesium.OpenStreetMapImageryProvider(),
 *     terrainProvider : new Cesium.CesiumTerrainProvider({
-*         url : '//cesiumjs.org/smallterrain',
-*         credit : 'Terrain data courtesy Analytical Graphics, Inc.'
+*         url : '//cesiumjs.org/stk-terrain/world'
 *     }),
 *     // Use high-res stars downloaded from https://github.com/AnalyticalGraphicsInc/cesium-assets
 *     skyBox : new Cesium.SkyBox({
@@ -164,20 +164,61 @@ public class CesiumGlobe {
     var screenSpaceEventHandler: ScreenSpaceEventHandler
     
     /**
+    * Gets the collection of image layers that will be rendered on the globe.
+    * @memberof Viewer.prototype
+    *
+    * @type {ImageryLayerCollection}
+    * @readonly
+    */
+    var imageryLayers: ImageryLayerCollection {
+        get {
+            return scene.imageryLayers
+        }
+    }
+    
+    /**
+    * The terrain provider providing surface geometry for the globe.
+    * @memberof CesiumWidget.prototype
+    *
+    * @type {TerrainProvider}
+    */
+    var terrainProvider: TerrainProvider {
+        get {
+            return scene.terrainProvider
+        }
+        set (terrainProvider) {
+            scene.terrainProvider = terrainProvider
+        }
+    }
+    
+    /**
+    * Gets the camera.
+    * @memberof CesiumWidget.prototype
+    *
+    * @type {Camera}
+    * @readonly
+    */
+    var camera: Camera {
+        get {
+            return scene.camera
+        }
+    }
+    
+    /**
     * Gets the clock.
     * @memberof CesiumWidget.prototype
     *
     * @type {Clock}
     */
     public let clock: Clock
-    
+
     public init (view: GLKView, options: CesiumOptions) {
-        
+
         self.view = view
         /*
         var creditContainer = document.createElement('div');
         creditContainer.className = 'cesium-widget-credits';
-        
+
         var creditContainerContainer = defined(options.creditContainer) ? getElement(options.creditContainer) : element;
         creditContainerContainer.appendChild(creditContainer);*/
         
