@@ -8,163 +8,96 @@
 
 import OpenGLES
 
-enum UniformValue {
-    case FloatVec1(Float)
-    case FloatVec2(Cartesian2)
-    case FloatVec3(Cartesian3)
-    case FloatVec4(Cartesian4)
-    case Sampler2D(Texture)
-    /*    case gl.SAMPLER_2D:
-    case gl.SAMPLER_CUBE:
-    return function() {
-    gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
-    gl.bindTexture(uniform.value._target, uniform.value._texture);
-    };
-    case gl.INT:
-    case gl.BOOL:
-    return function() {
-    gl.uniform1i(location, uniform.value);
-    };
-    case gl.INT_VEC2:
-    case gl.BOOL_VEC2:
-    return function() {
-    var v = uniform.value;
-    gl.uniform2i(location, v.x, v.y);
-    };
-    case gl.INT_VEC3:
-    case gl.BOOL_VEC3:
-    return function() {
-    var v = uniform.value;
-    gl.uniform3i(location, v.x, v.y, v.z);
-    };
-    case gl.INT_VEC4:
-    case gl.BOOL_VEC4:
-    return function() {
-    var v = uniform.value;
-    gl.uniform4i(location, v.x, v.y, v.z, v.w);
-    };
-    case gl.FLOAT_MAT2:
-    return function() {
-    gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
-    };
-    */
-    case FloatMatrix3(Matrix3)
-    case FloatMatrix4(Matrix4)
-}
-
-/*class Uniform {
-
-private var _activeUniform: ActiveUniformInfo
-
-var name: String {
-get {
-return _uniformName
-}
-}
-private var _uniformName: String
-
-private var _locations: [GLint]
-
-var values: [UniformValue]
-
-private var _textureUnitIndex: GLint = 0
-
-var datatype: GLenum {
-get {
-return self._activeUniform.type
-}
-}
-
-var setSampler: ((textureUnitIndex: GLint) -> GLint)?
-
-var hasSetSampler: Bool {
-get {
-return setSampler != nil
-}
-}
-
-init (activeUniform: ActiveUniformInfo, uniformName: String, location: GLint, value: UniformValue) {
-
-self.value = value
-_activeUniform = activeUniform
-_uniformName = uniformName
-_location = location
-
-if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
-setSampler = { (textureUnitIndex: GLint) -> GLint in
-self._textureUnitIndex = textureUnitIndex
-glUniform1i(self._location, self._textureUnitIndex)
-return textureUnitIndex + 1
-}
-}
-}
-
-func set() {
-switch self.value {
-case .FloatVec1(let value):
-glUniform1f(_location, GLfloat(value))
-case .FloatVec2(let value):
-glUniform2f(_location, GLfloat(value.x), GLfloat(value.y))
-case .FloatVec3(let value):
-glUniform3f(_location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z))
-case .FloatVec4(let value):
-glUniform4f(_location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z), GLfloat(value.w))
-/*
-case gl.SAMPLER_2D:
-case gl.SAMPLER_CUBE:
-return function() {
-gl.activeTexture(gl.TEXTURE0 + uniform.textureUnitIndex);
-gl.bindTexture(uniform.value._target, uniform.value._texture);
-};
-case gl.INT:
-case gl.BOOL:
-return function() {
-gl.uniform1i(location, uniform.value);
-};
-case gl.INT_VEC2:
-case gl.BOOL_VEC2:
-return function() {
-var v = uniform.value;
-gl.uniform2i(location, v.x, v.y);
-};
-case gl.INT_VEC3:
-case gl.BOOL_VEC3:
-return function() {
-var v = uniform.value;
-gl.uniform3i(location, v.x, v.y, v.z);
-};
-case gl.INT_VEC4:
-case gl.BOOL_VEC4:
-return function() {
-var v = uniform.value;
-gl.uniform4i(location, v.x, v.y, v.z, v.w);
-};
-case gl.FLOAT_MAT2:
-return function() {
-gl.uniformMatrix2fv(location, false, Matrix2.toArray(uniform.value, scratchUniformMatrix2));
-};
-*/
-case .FloatMatrix3(let value):
-glUniformMatrix3fv(_location, 1, GLboolean(0), value.toArray())
-case .FloatMatrix4(let value):
-glUniformMatrix4fv(_location, 1, GLboolean(0), value.toArray())
-default:
-assertionFailure("Unrecognized uniform type: \(_activeUniform.type) for uniform '\(_activeUniform.name)")
-}
-}
-}*/
-
-class Uniform {
+enum UniformDataType: GLenum {
     
-    private var _activeUniform: ActiveUniformInfo
+    case FloatVec1 = 5126, // GLenum(GL_FLOAT)
+    FloatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
+    FloatVec3 = 35665, // GLenum(GL_FLOAT_VEC3)
+    FloatVec4 = 35666, // GLenum(GL_FLOAT_VEC4)
+    IntVec1 = 5124, // GLenum(GL_INT)
+    IntVec2 = 35667, // GLenum(GL_INT_VEC2)
+    IntVec3 = 35668, // GLenum(GL_INT_VEC3)
+    IntVec4 = 35669, // GLenum(GL_INT_VEC4)
+    BoolVec1 = 35670, // GLenum(GL_BOOL)
+    BoolVec2 = 35671, // GLenum(GL_BOOL_VEC2)
+    BoolVec3 = 35672, // GLenum(GL_BOOL_VEC3)
+    BoolVec4 = 35673, // GLenum(GL_BOOL_VEC4)
+    FloatMatrix2 = 35674, // GLenum(GL_FLOAT_MAT2)
+    FloatMatrix3 = 35675, // GLenum(GL_FLOAT_MAT3)
+    FloatMatrix4 = 35676, // GLenum(GL_FLOAT_MAT4)
+    Sampler2D = 35678, // GLenum(GL_SAMPLER_2D)
+    SamplerCube = 35680 // GLenum(GL_SAMPLER_CUBE
     
-    var name: String {
-        get {
-            return _uniformName
+    func declarationString() -> String {
+        switch self {
+        case .FloatVec1:
+            return "float"
+        case .FloatVec2:
+            return "vec2"
+        case .FloatVec3:
+            return "vec3"
+        case .FloatVec4:
+            return "vec4"
+        case .IntVec1:
+            return "int"
+        case .IntVec2:
+            return "ivec2"
+        case .IntVec3:
+            return "ivec3"
+        case .IntVec4:
+            return "ivec4"
+        case .BoolVec1:
+            return "bool"
+        case .BoolVec2:
+            return "bvec2"
+        case .BoolVec3:
+            return "bvec3"
+        case .BoolVec4:
+            return "bvec4"
+        case .FloatMatrix2:
+            return "mat2"
+        case .FloatMatrix3:
+            return "mat3"
+        case .FloatMatrix4:
+            return "mat4"
+        case .Sampler2D:
+            return "sampler2D"
+        case .SamplerCube:
+            return "samplerCube"
         }
     }
     
-    private var _uniformName: String
+}
+
+// represents WebGLActiveInfo
+struct ActiveUniformInfo {
+    
+    let name: String
+    
+    let size: GLsizei
+    
+    let type: UniformDataType
+    
+    static func dataType (rawType: GLenum) -> UniformDataType {
+        
+        let dataType = UniformDataType(rawValue: rawType)
+        assert(dataType != nil, "Invalid raw uniform datatype enum")
+        
+        return dataType!
+    }
+}
+
+class Uniform {
+    
+    let name: String
+    
+    private let _activeUniform: ActiveUniformInfo
+    
+    private let _locations: [GLint]
+    
+    private var location: GLint {
+        return _locations[0]
+    }
     
     var isSingle: Bool {
         get {
@@ -172,313 +105,319 @@ class Uniform {
         }
     }
     
-    private var _locations: [GLint]
-    
-    private var location: GLint {
-        return _locations[0]
-    }
-    
-    var values: [UniformValue] {
-        get {
-            return _values
-        }
-        set (newValues) {
-            _values = newValues
-        }
-    }
-    
-    var value: UniformValue {
-        get {
-            return _values[0]
-        }
-        set (newValue) {
-            _values = [newValue]
-        }
-        
-    }
-    
-    private var _values = [UniformValue]()
-    
-    private var _textureUnitIndex: GLint = 0
-    
     var datatype: GLenum {
         get {
-            return self._activeUniform.type
+            return self._activeUniform.type.rawValue
         }
     }
     
-    var setSampler: ((textureUnitIndex: GLint) -> GLint)?
-    
-    var hasSetSampler: Bool {
-        get {
-            return setSampler != nil
-        }
-    }
-    
-    init (activeUniform: ActiveUniformInfo, uniformName: String, locations: [GLint], values: [UniformValue]) {
+    init (activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         
-        _values = values
         _activeUniform = activeUniform
-        _uniformName = uniformName
+        self.name = name
         _locations = locations
         
-        if _activeUniform.type == GLenum(GL_SAMPLER_2D) || activeUniform.type == GLenum(GL_SAMPLER_CUBE) {
-            setSampler = { (textureUnitIndex: GLint) -> GLint in
-                
-                self._textureUnitIndex = textureUnitIndex
+    }
 
-                let count = self._locations.count
-                for i in 0..<count {
-                    let index = textureUnitIndex + i
-                    glUniform1i(self._locations[i], index)
-                }
-                return self._textureUnitIndex + count
-            }
-        }
-        
+    func setValues(newValues: [Any]) {
+        assertionFailure("Invalid base class")
     }
     
     func set() {
-        
-        for (index, location) in enumerate(_locations) {
-            switch (_values[index]) {
-            case .FloatVec1(let value):
-                glUniform1f(location, GLfloat(value))
-            case .FloatVec2(let value):
-                glUniform2f(location, GLfloat(value.x), GLfloat(value.y))
-            case .FloatVec3(let value):
-                glUniform3f(location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z))
-            case .FloatVec4(let value):
-                glUniform4f(location, GLfloat(value.x), GLfloat(value.y), GLfloat(value.z), GLfloat(value.w))
-            case .Sampler2D(let value):
-                let textureIndex = self._textureUnitIndex + index
-                glActiveTexture(GLenum(GL_TEXTURE0 + textureIndex))
-                glBindTexture(value.textureTarget, value.textureName)
-/*                case gl.SAMPLER_CUBE:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                var v = value[i];
-                var index = uniformArray.textureUnitIndex + i;
-                gl.activeTexture(gl.TEXTURE0 + index);
-                gl.bindTexture(v._target, v._texture);
-                }
-                };
-                case gl.INT:
-                case gl.BOOL:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                gl.uniform1i(locations[i], value[i]);
-                }
-                };
-                case gl.INT_VEC2:
-                case gl.BOOL_VEC2:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                var v = value[i];
-                gl.uniform2i(locations[i], v.x, v.y);
-                }
-                };
-                case gl.INT_VEC3:
-                case gl.BOOL_VEC3:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                var v = value[i];
-                gl.uniform3i(locations[i], v.x, v.y, v.z);
-                }
-                };
-                case gl.INT_VEC4:
-                case gl.BOOL_VEC4:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                var v = value[i];
-                gl.uniform4i(locations[i], v.x, v.y, v.z, v.w);
-                }
-                };
-                case gl.FLOAT_MAT2:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                gl.uniformMatrix2fv(locations[i], false, Matrix2.toArray(value[i], scratchUniformMatrix2));
-                }
-                };
-                case gl.FLOAT_MAT3:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
-                }*/
-            case .FloatMatrix4(let value):
-                glUniformMatrix4fv(location, 1, GLboolean(0), value.toArray())
-                
-                /*                case gl.FLOAT_MAT4:
-                return function() {
-                var value = uniformArray.value;
-                var length = value.length;
-                for (var i = 0; i < length; ++i) {
-                gl.uniformMatrix4fv(locations[i], false, Matrix4.toArray(value[i], scratchUniformMatrix4));
-                }*/
-                
-            default:
-                assertionFailure("Unrecognized uniform type: \(_activeUniform.type)")
-            }
+        assertionFailure("Invalid base class")
+    }
+    
+    static func create(#activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
+        switch activeUniform.type {
+            /*case .FloatVec1:
+            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)*/
+            case .FloatVec2:
+            return UniformFloatVec2(activeUniform: activeUniform, name: name, locations: locations)
+            case .FloatVec3:
+            return UniformFloatVec3(activeUniform: activeUniform, name: name, locations: locations)
+            case .FloatVec4:
+            return UniformFloatVec4(activeUniform: activeUniform, name: name, locations: locations)
+            /*case .IntVec1:
+            return UniformIntVec1(activeUniform: activeUniform, name: name, locations: locations)
+            case .IntVec2:
+            return UniformIntVec2(activeUniform: activeUniform, name: name, locations: locations)
+            case .IntVec3:
+            return UniformIntVec3(activeUniform: activeUniform, name: name, locations: locations)
+            case .IntVec4:
+            return UniformIntVec4(activeUniform: activeUniform, name: name, locations: locations)
+            case .BoolVec1:
+            return UniformBoolVec1(activeUniform: activeUniform, name: name, locations: locations)
+            case .BoolVec2:
+            return UniformBoolVec2(activeUniform: activeUniform, name: name, locations: locations)
+            case .BoolVec3:
+            return UniformBoolVec3(activeUniform: activeUniform, name: name, locations: locations)
+            case .BoolVec4:
+            return UniformBoolVec4(activeUniform: activeUniform, name: name, locations: locations)
+            case .FloatMatrix2:
+            return UniformFloatMatrix2(activeUniform: activeUniform, name: name, locations: locations)
+            case .FloatMatrix3:
+            return UniformFloatMatrix3(activeUniform: activeUniform, name: name, locations: locations)*/
+            case .FloatMatrix4:
+            return UniformFloatMatrix4(activeUniform: activeUniform, name: name, locations: locations)
+        case .Sampler2D:
+            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)
+            /*case .SamplerCube:
+            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)*/
+        default:
+            assertionFailure("Unimplemented")
         }
     }
-    //switch (_activeUniform.type) {
     
-    /*case GL_FLOAT:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniform1f(locations[i], value[i]);
-    }
-    };
-    case gl.FLOAT_VEC2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform2f(locations[i], v.x, v.y);
-    }
-    };
-    case gl.FLOAT_VEC3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform3f(locations[i], v.x, v.y, v.z);
-    }
-    };
-    case gl.FLOAT_VEC4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
+}
+
+/*
+for (index, location) in enumerate(_locations) {
+switch _values[index] {
+case .FloatVec1(let value):
+if _isDirty[index] {
+glUniform1f(location, GLfloat(value))
+}*/
+
+class UniformFloatVec2: Uniform {
     
-    if (defined(v.red)) {
-    gl.uniform4f(locations[i], v.red, v.green, v.blue, v.alpha);
-    } else if (defined(v.x)) {
-    gl.uniform4f(locations[i], v.x, v.y, v.z, v.w);
-    } else {
-    throw new DeveloperError('Invalid vec4 value.');
-    }
-    }
-    };
-    case gl.SAMPLER_2D:
-    case gl.SAMPLER_CUBE:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    var index = uniformArray.textureUnitIndex + i;
-    gl.activeTexture(gl.TEXTURE0 + index);
-    gl.bindTexture(v._target, v._texture);
-    }
-    };
-    case gl.INT:
-    case gl.BOOL:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniform1i(locations[i], value[i]);
-    }
-    };
-    case gl.INT_VEC2:
-    case gl.BOOL_VEC2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform2i(locations[i], v.x, v.y);
-    }
-    };
-    case gl.INT_VEC3:
-    case gl.BOOL_VEC3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform3i(locations[i], v.x, v.y, v.z);
-    }
-    };
-    case gl.INT_VEC4:
-    case gl.BOOL_VEC4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    var v = value[i];
-    gl.uniform4i(locations[i], v.x, v.y, v.z, v.w);
-    }
-    };
-    case gl.FLOAT_MAT2:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix2fv(locations[i], false, Matrix2.toArray(value[i], scratchUniformMatrix2));
-    }
-    };
-    case gl.FLOAT_MAT3:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
-    }
-    };
-    case gl.FLOAT_MAT4:
-    return function() {
-    var value = uniformArray.value;
-    var length = value.length;
-    for (var i = 0; i < length; ++i) {
-    gl.uniformMatrix4fv(locations[i], false, Matrix4.toArray(value[i], scratchUniformMatrix4));
-    }
-    };*/
+    private var _values: [Cartesian2]
     
-    //}
+    private var _arrayBuffer: [Float]
     
-    
-    
-    /*
-    
-    defineProperties(UniformArray.prototype, {
-    name : {
-    get : function() {
-    return this._uniformName;
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        
+        _arrayBuffer = [Float](count: locations.count * 2, repeatedValue: 0.0)
+        _values = [Cartesian2]()
+        
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
-    },
-    datatype : {
-    get : function() {
-    return this._activeUniform.type;
+    
+    override func setValues(newValues: [Any]) {
+        _values = newValues.map({ $0 as! Cartesian2 })
     }
+    
+    override func set () {
+        var changed = false
+        
+        for i in 0..<_locations.count {
+            let cartesian = _values[i]
+            if !cartesian.equalsArray(_arrayBuffer, offset: i*2) {
+                cartesian.pack(&_arrayBuffer, startingIndex: i*2)
+                changed = true
+            }
+        }
+        
+        if changed {
+            glUniform2fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+        }
     }
-    });
-    */
+}
+
+
+class UniformFloatVec3: Uniform {
     
+    private var _values: [Cartesian3]
     
+    private var _arrayBuffer: [Float]
     
-    /**
-    * @private
-    */
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        
+        _arrayBuffer = [Float](count: locations.count * 3, repeatedValue: 0.0)
+        _values = [Cartesian3]()
+        
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    }
+    
+    override func setValues(newValues: [Any]) {
+        _values = newValues.map({ $0 as! Cartesian3 })
+    }
+    
+    override func set () {
+        var changed = false
+        
+        for i in 0..<_locations.count {
+            let cartesian = _values[i]
+            if !cartesian.equalsArray(_arrayBuffer, offset: i*3) {
+                cartesian.pack(&_arrayBuffer, startingIndex: i*3)
+                changed = true
+            }
+        }
+        
+        if changed {
+            glUniform3fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+        }
+    }
+    
+}
+
+class UniformFloatVec4: Uniform {
+    
+    private var _values: [Cartesian4]
+    
+    private var _arrayBuffer: [Float]
+    
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        
+        _arrayBuffer = [Float](count: locations.count * 4, repeatedValue: 0.0)
+        _values = [Cartesian4]()
+        
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    }
+    
+    override func setValues(newValues: [Any]) {
+        /*_values = [Cartesian4]()
+        for newValue in newValues {
+            _values.append(newValue as! Cartesian4)
+        }*/
+        _values = newValues.map({ $0 as! Cartesian4 })
+    }
+    
+    override func set () {
+        var changed = false
+        
+        for i in 0..<_locations.count {
+            let cartesian = _values[i]
+            if !cartesian.equalsArray(_arrayBuffer, offset: i*4) {
+                cartesian.pack(&_arrayBuffer, startingIndex: i*4)
+                changed = true
+            }
+        }
+        
+        if changed {
+            glUniform4fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+        }
+    }
+}
+/*
+case gl.INT:
+case gl.BOOL:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+gl.uniform1i(locations[i], value[i]);
+}
+};
+case gl.INT_VEC2:
+case gl.BOOL_VEC2:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+var v = value[i];
+gl.uniform2i(locations[i], v.x, v.y);
+}
+};
+case gl.INT_VEC3:
+case gl.BOOL_VEC3:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+var v = value[i];
+gl.uniform3i(locations[i], v.x, v.y, v.z);
+}
+};
+case gl.INT_VEC4:
+case gl.BOOL_VEC4:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+var v = value[i];
+gl.uniform4i(locations[i], v.x, v.y, v.z, v.w);
+}
+};
+case gl.FLOAT_MAT2:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+gl.uniformMatrix2fv(locations[i], false, Matrix2.toArray(value[i], scratchUniformMatrix2));
+}
+};
+case gl.FLOAT_MAT3:
+return function() {
+var value = uniformArray.value;
+var length = value.length;
+for (var i = 0; i < length; ++i) {
+gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
+}*/
+
+
+class UniformFloatMatrix4: Uniform {
+    
+    private var _values: [Matrix4]
+    
+    private var _arrayBuffer: [Float]
+    
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        
+        _arrayBuffer = [Float](count: locations.count * 16, repeatedValue: 0.0)
+        _values = [Matrix4]()
+        
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    }
+    
+    override func setValues(newValues: [Any]) {
+        _values = newValues.map({ $0 as! Matrix4 })
+    }
+    
+    override func set () {
+        var changed = false
+        
+        for i in 0..<_locations.count {
+            let matrix = _values[i]
+            if !matrix.equalsArray(_arrayBuffer, offset: i*16) {
+                matrix.pack(&_arrayBuffer, startingIndex: i*16)
+                changed = true
+            }
+        }
+        
+        if changed {
+            glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_arrayBuffer))
+        }
+    }
+    
+}
+
+
+class UniformSampler: Uniform {
+    
+    private var _textureUnitIndex: GLint = 0
+    
+    private var _values: [Texture]!
+    
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    }
+    
+    override func setValues(newValues: [Any]) {
+        _values = newValues.map({ $0 as! Texture })
+    }
+    
+    override func set () {
+        
+        let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
+        
+        for (index, location) in enumerate(_locations) {
+            
+            glActiveTexture(textureUnitIndex + GLenum(index))
+            glBindTexture(_values[index].textureTarget, _values[index].textureName)
+        }
+    }
+    
+    func setSampler (textureUnitIndex: GLint) -> GLint {
+        
+        self._textureUnitIndex = textureUnitIndex
+        
+        let count = self._locations.count
+        for i in 0..<count {
+            let index = textureUnitIndex + i
+            glUniform1i(self._locations[i], index)
+        }
+        
+        return self._textureUnitIndex + count
+    }
     
 }

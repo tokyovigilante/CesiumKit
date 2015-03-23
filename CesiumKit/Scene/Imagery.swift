@@ -86,4 +86,20 @@ class Imagery {
         }
         return _referenceCount
     }
+    
+    func processStateMachine (context: Context) {
+        if (state == .Unloaded) {
+            state = .Transitioning
+            imageryLayer.requestImagery(self)
+        }
+        if (state == .Received) {
+            state = .Transitioning
+            imageryLayer.createTexture(context, imagery: self)
+        }
+        if (state == .TextureLoaded) {
+            state = .Transitioning
+            imageryLayer.reprojectTexture(context, imagery: self)
+        }
+    }
+    
 }

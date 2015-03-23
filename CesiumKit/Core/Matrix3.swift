@@ -33,7 +33,7 @@ import Foundation
 * @see Matrix4
 */
 // FIXME: Packable
-struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
+public struct Matrix3: DebugPrintable, Printable, Packable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -124,7 +124,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
             _grid[(column * 3) + row] = newValue
         }
     }
-    
+
     /**
     * Stores the provided instance into the provided array.
     *
@@ -491,7 +491,7 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     
     return column * 3 + row;
     };
-    
+    */
     /**
     * Retrieves a copy of the matrix column at the provided index as a Cartesian3 instance.
     *
@@ -502,31 +502,16 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    Matrix3.getColumn = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required.');
+    func column (index: Int) -> Cartesian3 {
+        assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
+        let startIndex = index * 3
+        
+        return Cartesian3(
+            x: _grid[startIndex],
+            y: _grid[startIndex + 1],
+            z: _grid[startIndex + 2])
     }
-    
-    if (typeof index !== 'number' || index < 0 || index > 2) {
-    throw new DeveloperError('index must be 0, 1, or 2.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var startIndex = index * 3;
-    var x = matrix[startIndex];
-    var y = matrix[startIndex + 1];
-    var z = matrix[startIndex + 2];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
-    };
-    
+    /*
     /**
     * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian3 instance.
     *
@@ -855,9 +840,9 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     */
     func transpose () -> Matrix3 {
         return Matrix3(
-            _grid[0], _grid[3], _grid[6],
-            _grid[1], _grid[4], _grid[7],
-            _grid[2], _grid[5], _grid[8])
+            _grid[0], _grid[1], _grid[2],
+            _grid[3], _grid[4], _grid[5],
+            _grid[6], _grid[7], _grid[8])
     }
     /*
     function computeFrobeniusNorm(matrix) {
@@ -1122,6 +1107,21 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     };
     
     /**
+    * @private
+    */
+    Matrix3.equalsArray = function(matrix, array, offset) {
+    return matrix[0] === array[offset] &&
+    matrix[1] === array[offset + 1] &&
+    matrix[2] === array[offset + 2] &&
+    matrix[3] === array[offset + 3] &&
+    matrix[4] === array[offset + 4] &&
+    matrix[5] === array[offset + 5] &&
+    matrix[6] === array[offset + 6] &&
+    matrix[7] === array[offset + 7] &&
+    matrix[8] === array[offset + 8];
+    };
+    */
+    /**
     * Compares the provided matrices componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
     *
@@ -1129,21 +1129,15 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Matrix3} [right] The second matrix.
     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
     */
-    Matrix3.equals = function(left, right) {
-    return (left === right) ||
-    (defined(left) &&
-    defined(right) &&
-    left[0] === right[0] &&
-    left[1] === right[1] &&
-    left[2] === right[2] &&
-    left[3] === right[3] &&
-    left[4] === right[4] &&
-    left[5] === right[5] &&
-    left[6] === right[6] &&
-    left[7] === right[7] &&
-    left[8] === right[8]);
-    };
-    */
+    func equals(other: Matrix3) -> Bool {
+        for i in 0..<9 {
+            if _grid[i] != other[i] {
+                return false
+            }
+        }
+        return true
+    }
+    
     /**
     * Compares the provided matrices componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -1154,15 +1148,19 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equals(other: Matrix3) -> Bool {
-        for var i = 0; i < 9; i++ {
-            if _grid[i] != other[i] {
-                return false
-            }
-        }
-        return true
+    func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
+        return self == other ||
+            (abs(_grid[0] - other[0]) <= epsilon &&
+                abs(_grid[1] - other[1]) <= epsilon &&
+                abs(_grid[2] - other[2]) <= epsilon &&
+                abs(_grid[3] - other[3]) <= epsilon &&
+                abs(_grid[4] - other[4]) <= epsilon &&
+                abs(_grid[5] - other[5]) <= epsilon &&
+                abs(_grid[6] - other[6]) <= epsilon &&
+                abs(_grid[7] - other[7]) <= epsilon &&
+                abs(_grid[8] - other[8]) <= epsilon)
     }
-    
+
     /**
     * An immutable Matrix3 instance initialized to the identity matrix.
     *
@@ -1288,13 +1286,13 @@ struct Matrix3: DebugPrintable, Printable/*: Packable*/ {
     *
     * @returns {String} A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2)'.
     */
-    var description: String {
+    public var description: String {
         get {
             return String(format: "(%.5f, %.5f, %.5f\n%.5f, %.5f, %.5f\n%.5f,%.5f, %.5f", _grid[0], _grid[3], _grid[6], _grid[1], _grid[4], _grid[7], _grid[2],_grid[5], _grid[8])
         }
     }
     
-    var debugDescription: String { get { return description } }
+    public var debugDescription: String { get { return description } }
     
     
 }

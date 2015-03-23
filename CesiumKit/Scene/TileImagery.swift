@@ -50,20 +50,7 @@ class TileImagery {
         
         var imageryLayer = loadingImagery!.imageryLayer
         
-        if loadingImagery!.state == .Unloaded {
-            loadingImagery!.state = .Transitioning
-            imageryLayer.requestImagery(loadingImagery!)
-        }
-        
-        if loadingImagery!.state == .Received {
-            loadingImagery!.state = .Transitioning
-            imageryLayer.createTexture(context, imagery: loadingImagery!)
-        }
-        
-        if loadingImagery!.state == .TextureLoaded {
-            loadingImagery!.state = .Transitioning
-            imageryLayer.reprojectTexture(context, imagery: loadingImagery!)
-        }
+        loadingImagery!.processStateMachine(context)
         
         if loadingImagery!.state == .Ready {
             if readyImagery != nil {
@@ -74,33 +61,44 @@ class TileImagery {
             textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: self)
             return true // done loading
         }
-        /*
+        
         // Find some ancestor imagery we can use while this imagery is still loading.
-        var ancestor = loadingImagery.parent;
-        var ancestorsAreStillLoading = false;
-        while (defined(ancestor) && ancestor.state !== ImageryState.READY) {
-            ancestorsAreStillLoading = ancestorsAreStillLoading || (ancestor.state !== ImageryState.FAILED && ancestor.state !== ImageryState.INVALID);
-            ancestor = ancestor.parent;
+        var ancestor = loadingImagery!.parent
+        var closestAncestorThatNeedsLoading: Imagery?
+        while ancestor != nil && ancestor!.state != ImageryState.Ready {
+            if ancestor!.state != ImageryState.Failed && ancestor!.state != ImageryState.Invalid {
+                // ancestor is still loading
+                closestAncestorThatNeedsLoading = closestAncestorThatNeedsLoading ?? ancestor!
+            }
+            ancestor = ancestor!.parent
         }
         
-        if (this.readyImagery !== ancestor) {
-            if (defined(this.readyImagery)) {
-                this.readyImagery.releaseReference();
-            }
-            
-            this.readyImagery = ancestor;
-            
-            if (defined(ancestor)) {
-                ancestor.addReference();
-                this.textureTranslationAndScale = imageryLayer._calculateTextureTranslationAndScale(tile, this);
+        if readyImagery !== ancestor {
+                if let readyImagery = readyImagery {
+                    readyImagery.releaseReference()
+                }
+                
+                readyImagery = ancestor
+                
+                if let ancestor = ancestor {
+                    ancestor.addReference()
+                    textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: self)
+                }
+        }
+        
+        if loadingImagery!.state == .Failed || loadingImagery!.state == .Invalid {
+            if let closestAncestorThatNeedsLoading = closestAncestorThatNeedsLoading {
+                // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery
+                // tiles may not be attached directly to a terrain tile.  Such tiles will never load if
+                // we don't do it here.
+                closestAncestorThatNeedsLoading.processStateMachine(context)
+                return false
+            } else {
+                // This imagery tile is failed or invalid, and we have the "best available" substitute.  So we're done loading.
+                return true // done loading
             }
         }
         
-        if (!ancestorsAreStillLoading && (loadingImagery.state === ImageryState.FAILED || loadingImagery.state === ImageryState.INVALID)) {
-            // This imagery tile is failed or invalid, and we have the "best available" substitute.  So we're done loading.
-            return true; // done loading
-        }
-        */
         return false // not done loading
     }
 

@@ -90,6 +90,21 @@ public class Scene {
     private var _passState: PassState
     
     /**
+    * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
+    * @memberof Scene.prototype
+    *
+    * @type {Number}
+    * @readonly
+    *
+    * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>GL_MAX_CUBE_MAP_TEXTURE_SIZE</code>.
+    */
+    var maximumCubeMapSize: Int {
+        get  {
+            return context.maximumCubeMapSize
+        }
+    }
+
+    /**
     * Gets or sets the depth-test ellipsoid.
     * @memberof Scene.prototype
     * @type {Globe}
@@ -156,6 +171,7 @@ public class Scene {
     
     /*
     // TODO: OIT and FXAA
+    if (useOIT)
     this._oit = new OIT(context);
     this._executeOITFunction = undefined;
     
@@ -413,6 +429,21 @@ public class Scene {
     var debugShowFramesPerSecond = false
     
     /**
+    * Gets whether or not the scene has order independent translucency enabled.
+    * Note that this only reflects the original construction option, and there are
+    * other factors that could prevent OIT from functioning on a given system configuration.
+    * @memberof Scene.prototype
+    * @type {Boolean}
+    * @readonly
+    */
+    var orderIndependentTranslucency: Bool {
+        get {
+            return false
+            //return _oit != nil
+        }
+    }
+    
+    /**
     * If <code>true</code>, enables Fast Aproximate Anti-aliasing only if order independent translucency
     * is supported.
     *
@@ -493,7 +524,7 @@ public class Scene {
         }
     }
 
-    init (view: GLKView, globe: Globe, scene3DOnly: Bool?) {
+    init (view: GLKView, globe: Globe, useOIT: Bool, scene3DOnly: Bool?) {
         
         context = Context(view: view)
         self.globe = globe
@@ -510,6 +541,16 @@ public class Scene {
             initialWidth: Double(context.view.frame.width),
             initialHeight: Double(context.view.frame.height)
         )
+        
+        /*
+        // TODO: OIT and FXAA
+        if (useOIT)
+        this._oit = new OIT(context);
+        this._executeOITFunction = undefined;
+        
+        this._fxaa = new FXAA();
+        */
+        
         camera.scene = self
         var near = camera.frustum.near
         var far = camera.frustum.far
@@ -549,7 +590,6 @@ public class Scene {
             direction: camera.directionWC,
             up: camera.upWC)
         _frameState.occluder = getOccluder()
-        _frameState.afterRender.removeAll()
         
         clearPasses(&_frameState.passes)
     }
@@ -588,12 +628,10 @@ public class Scene {
                 break
             }
             
-            if command.pass == .Opaque || command is ClearCommand {
-                frustumCommands.opaqueCommands.append(command)
-
-            } else if command.pass == Pass.Translucent {
-                frustumCommands.translucentCommands.append(command)
-            }
+            let pass: Pass = (command is ClearCommand) ? Pass.Opaque : command.pass!
+            let passIndex = pass.rawValue
+            let index = frustumCommands.indices[pass.rawValue]++
+            frustumCommands.commands[pass.rawValue]!.append(command)
             
             if _debugShowFrustums {
                 command.debugOverlappingFrustums |= (1 << index)
@@ -629,12 +667,8 @@ func createPotentiallyVisibleSet() {
     }
     
     let numberOfFrustums = _frustumCommandsList.count
-    //for (var n = 0; n < numberOfFrustums; ++n) {
     for frustumCommands in _frustumCommandsList {
-        frustumCommands.opaqueCommands.removeAll()
-        frustumCommands.translucentCommands.removeAll()
-        //frustumCommands.opaqueIndex = 0
-        //frustumCommands.translucentIndex = 0
+        frustumCommands.removeAll()
     }
     var near: Double = Double.infinity
     var far: Double = 0.0
@@ -719,8 +753,12 @@ function getAttributeLocations(shaderProgram) {
 function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
     var context = scene.context;
     var sp = defaultValue(shaderProgram, command.shaderProgram);
-    var fragmentShaderSource = sp.fragmentShaderSource;
-    var renamedFS = fragmentShaderSource.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, "void czm_Debug_main()")
+    var fs = sp.fragmentShaderSource.clone();
+    
+    fs.sources = fs.sources.map(function(source) {
+    source = source.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, 'void czm_Debug_main()');
+    return source;
+    });
     
     var newMain =
     'void main() \n' +
@@ -746,9 +784,9 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
         
         newMain += '}';
     
-    var source = renamedFS + '\n' + newMain;
+    fs.sources.push(newMain);
     var attributeLocations = getAttributeLocations(sp);
-    return context.createShaderProgram(sp.vertexShaderSource, source, attributeLocations);
+    return context.createShaderProgram(sp.vertexShaderSource, fs, attributeLocations);
 }
 
 function executeDebugCommand(command, scene, passState, renderState, shaderProgram) {
@@ -880,6 +918,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 */
     func executeCommands(#passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
 
+        var j: Int
+        
         var frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
             frustum = camera.frustum.clone(PerspectiveFrustum())
@@ -912,8 +952,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         _clearColorCommand.color = clearColor
         _clearColorCommand.execute(context: context, passState: passState)
         
-        var renderTranslucentCommands = false
-        //var i;
+        /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
         //var numFrustums = frustumCommandsList.length;
         for frustumCommands in _frustumCommandsList {
@@ -925,7 +964,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
         }
         // FIXME: OIT
-        /*var useOIT = !picking && renderTranslucentCommands && scene._oit.isSupported();
+        var useOIT = !picking && renderTranslucentCommands && defined(scene._oit) && scene._oit.isSupported();
         if (useOIT) {
             scene._oit.update(context);
             scene._oit.clear(context, passState, clearColor);
@@ -989,10 +1028,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             executeTranslucentCommands = executeTranslucentCommandsSorted()
         //}*/
         
+        // Execute commands in each frustum in back to front order
         for (index, frustumCommands) in enumerate(_frustumCommandsList) {
-//        for (i = 0; i < numFrustums; ++i) {
- //           var index = numFrustums - i - 1;
-   //         var frustumCommands = frustumCommandsList[index];
             frustum.near = frustumCommands.near
             frustum.far = frustumCommands.far
             
@@ -1004,15 +1041,21 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             context.uniformState.updateFrustum(frustum)
             _depthClearCommand.execute(context: context, passState: passState)
             
-            for command in frustumCommands.opaqueCommands {
-                executeCommand(command, passState: passState)
+            
+            // Execute commands in order by pass up to the translucent pass.
+            // Translucent geometry needs special handling (sorting/OIT).
+            var numPasses = Pass.Translucent.rawValue
+            for pass in 0..<numPasses {
+                for command in frustumCommands.commands[pass]! {
+                    executeCommand(command, passState: passState)
+                }
             }
             
             frustum.near = frustumCommands.near
             context.uniformState.updateFrustum(frustum)
             // FIXME: translucentcommands
-            /*commands = frustumCommands.translucentCommands;
-            commands.length = frustumCommands.translucentIndex;
+            /*commands = frustumCommands.commands[Pass.TRANSLUCENT];
+            commands.length = frustumCommands.indices[Pass.TRANSLUCENT];
             executeTranslucentCommands(scene, executeCommand, passState, commands);*/
         }
         /*
@@ -1066,7 +1109,7 @@ function callAfterRenderFunctions(frameState) {
             context.shaderCache.destroyReleasedShaderPrograms()
         }*/
         
-        //animations.update()
+        //tweens.update()
         camera.update(mode, scene2D: scene2D)
         screenSpaceCameraController.update()
     }
@@ -1101,7 +1144,7 @@ function callAfterRenderFunctions(frameState) {
 /*            if (!defined(scene._performanceDisplay)) {
                 var performanceContainer = document.createElement('div');
                 performanceContainer.style.position = 'absolute';
-                performanceContainer.style.top = '10px';
+                performanceContainer.style.top = '50px';
                 performanceContainer.style.left = '10px';
                 var container = scene._canvas.parentNode;
                 container.appendChild(performanceContainer);
@@ -1125,12 +1168,20 @@ function callAfterRenderFunctions(frameState) {
 }
 
 /*
+    /**
+    * @private
+    */
+    Scene.prototype.clampLineWidth = function(width) {
+    var context = this._context;
+    return Math.max(context.minimumAliasedLineWidth, Math.min(width, context.maximumAliasedLineWidth));
+    };
 
 var orthoPickingFrustum = new OrthographicFrustum();
 var scratchOrigin = new Cartesian3();
 var scratchDirection = new Cartesian3();
 var scratchBufferDimensions = new Cartesian2();
 var scratchPixelSize = new Cartesian2();
+var scratchPickVolumeMatrix4 = new Matrix4();
 
 function getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, height) {
     var camera = scene._camera;
@@ -1144,11 +1195,16 @@ function getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, h
     var y = (2.0 / drawingBufferHeight) * (drawingBufferHeight - drawingBufferPosition.y) - 1.0;
     y *= (frustum.top - frustum.bottom) * 0.5;
     
+    var transform = Matrix4.clone(camera.transform, scratchPickVolumeMatrix4);
+    camera._setTransform(Matrix4.IDENTITY);
+    
     var origin = Cartesian3.clone(camera.position, scratchOrigin);
     Cartesian3.multiplyByScalar(camera.right, x, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
     Cartesian3.multiplyByScalar(camera.up, y, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
+    
+    camera._setTransform(transform);
     
     Cartesian3.fromElements(origin.z, origin.x, origin.y, origin);
     
@@ -1299,41 +1355,45 @@ Scene.prototype.drillPick = function(windowPosition) {
     }
     //>>includeEnd('debug');
     
-    var pickedObjects = [];
+    var i;
+    var attributes;
+    var result = [];
+    var pickedPrimitives = [];
+    var pickedAttributes = [];
     
     var pickedResult = this.pick(windowPosition);
     while (defined(pickedResult) && defined(pickedResult.primitive)) {
+    result.push(pickedResult);
         var primitive = pickedResult.primitive;
-        pickedObjects.push(pickedResult);
+var hasShowAttribute = false;
         
-        // hide the picked primitive and call picking again to get the next primitive
-        if (defined(primitive.show)) {
-            primitive.show = false;
-        } else if (typeof primitive.getGeometryInstanceAttributes === 'function') {
-            var attributes = primitive.getGeometryInstanceAttributes(pickedResult.id);
+    //If the picked object has a show attribute, use it.
+    +            if (typeof primitive.getGeometryInstanceAttributes === 'function') {
+    +                attributes = primitive.getGeometryInstanceAttributes(pickedResult.id);
             if (defined(attributes) && defined(attributes.show)) {
-                attributes.show = ShowGeometryInstanceAttribute.toValue(false);
-            }
+    +                    hasShowAttribute = true;
+    +                    attributes.show = ShowGeometryInstanceAttribute.toValue(false, attributes.show);
+    +                    pickedAttributes.push(attributes);            }
         }
-        
+    //Otherwise, hide the entire primitive
+    +            if (!hasShowAttribute) {
+    +                primitive.show = false;
+    +                pickedPrimitives.push(primitive);
+    +            }
         pickedResult = this.pick(windowPosition);
     }
     
-    // unhide the picked primitives
-    for (var i = 0; i < pickedObjects.length; ++i) {
-        var p = pickedObjects[i].primitive;
-        if (defined(p.show)) {
-            p.show = true;
-        } else if (typeof p.getGeometryInstanceAttributes === 'function') {
-            var attr = p.getGeometryInstanceAttributes(pickedObjects[i].id);
-            if (defined(attr) && defined(attr.show)) {
-                attr.show = ShowGeometryInstanceAttribute.toValue(true);
-            }
-        }
+    // unhide everything we hid while drill picking
+    +        for (i = 0; i < pickedPrimitives.length; ++i) {
+    +            pickedPrimitives[i].show = true;
     }
     
-    return pickedObjects;
-};
+    for (i = 0; i < pickedAttributes.length; ++i) {
+    +            attributes = pickedAttributes[i];
+    +            attributes.show = ShowGeometryInstanceAttribute.toValue(true, attributes.show);
+    +        }
+    +
+    +        return result;};
 
 /**
 * Instantly completes an active transition.

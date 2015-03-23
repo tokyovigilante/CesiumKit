@@ -21,14 +21,43 @@ import Foundation
 *
 * @see Packable
 */
-// FIXME: Packable
 public struct Rectangle/*: Packable*/ {
     var west: Double
     var south: Double
     var east: Double
     var north: Double
     
-    static var packedLength: Int = 4
+    /**
+    * Gets the width of the rectangle in radians.
+    * @memberof Rectangle.prototype
+    * @type {Number}
+    */
+    var width: Double {
+        get {
+            if (east < west) {
+                return east - west + Math.TwoPi
+            } else {
+                return east - west
+            }
+        }
+    }
+    
+    /**
+    * Gets the height of the rectangle in radians.
+    * @memberof Rectangle.prototype
+    * @type {Number}
+    */
+    var height: Double {
+        get {
+            return north - south
+        }
+    }
+    
+    /**
+    * The number of elements used to pack the object into an array.
+    * @type {Number}
+    */
+    //static let packedLength: Int = 4
     
     init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = west
@@ -36,6 +65,7 @@ public struct Rectangle/*: Packable*/ {
         self.east = east
         self.north = north
     }
+    
     /**
     * Creates an rectangle given the boundary longitude and latitude in degrees.
     *
@@ -49,12 +79,11 @@ public struct Rectangle/*: Packable*/ {
     * @example
     * var rectangle = Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0);
     */
-    public static func fromDegrees(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) -> Rectangle {
-        return Rectangle(
-            west: Math.toRadians(west),
-            south: Math.toRadians(south),
-            east: Math.toRadians(east),
-            north: Math.toRadians(north))
+    init (fromDegreesWest west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
+        self.west = Math.toRadians(west)
+        self.south = Math.toRadians(south)
+        self.east = Math.toRadians(east)
+        self.north = Math.toRadians(north)
     }
     
     
@@ -88,19 +117,19 @@ public struct Rectangle/*: Packable*/ {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [Float], startingIndex: Int = 0)  {
-        
-        if array.count < startingIndex - Int(Rectangle.packedLength)
-        {
-            array.append(Float(west))
-            array.append(Float(south))
-            array.append(Float(east))
-            array.append(Float(north))
-        }
-        array.insert(Float(west), atIndex: startingIndex)
-        array.insert(Float(south), atIndex: startingIndex+1)
-        array.insert(Float(east), atIndex: startingIndex+2)
-        array.insert(Float(north), atIndex: startingIndex+3)
+    /*func pack(inout array: [Float], startingIndex: Int = 0)  {
+    
+    if array.count < startingIndex - Int(Rectangle.packedLength)
+    {
+    array.append(Float(west))
+    array.append(Float(south))
+    array.append(Float(east))
+    array.append(Float(north))
+    }
+    array.insert(Float(west), atIndex: startingIndex)
+    array.insert(Float(south), atIndex: startingIndex+1)
+    array.insert(Float(east), atIndex: startingIndex+2)
+    array.insert(Float(north), atIndex: startingIndex+3)
     }
     
     /**
@@ -111,13 +140,13 @@ public struct Rectangle/*: Packable*/ {
     * @param {Rectangle} [result] The object into which to store the result.
     */
     static func unpack(array: [Float32], startingIndex: Int) -> Rectangle {
-        assert((startingIndex + packedLength < array.count), "Invalid starting index")
-        return Rectangle(
-            west: Double(array[startingIndex]),
-            south: Double(array[startingIndex+1]),
-            east: Double(array[startingIndex+2]),
-            north: Double(array[startingIndex+3]))
-    }
+    assert((startingIndex + packedLength < array.count), "Invalid starting index")
+    return Rectangle(
+    west: Double(array[startingIndex]),
+    south: Double(array[startingIndex+1]),
+    east: Double(array[startingIndex+2]),
+    north: Double(array[startingIndex+3]))
+    }*/
     
     
     /**
@@ -219,7 +248,16 @@ public struct Rectangle/*: Packable*/ {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
     func center() -> Cartographic {
-        return Cartographic(longitude: (west + east) * 0.5, latitude: (south + north) * 0.5, height:0.0)
+        let east: Double
+        if (self.east < west) {
+            east = self.east + Math.TwoPi
+        } else {
+            east = self.east
+        }
+        var longitude = Math.negativePiToPi((west + east) * 0.5)
+        let latitude = (south + north) * 0.5
+        
+        return Cartographic(longitude: longitude, latitude: latitude)
     }
     
     /**
@@ -228,14 +266,43 @@ public struct Rectangle/*: Packable*/ {
     * @param {Rectangle} rectangle On rectangle to find an intersection
     * @param {Rectangle} otherRectangle Another rectangle to find an intersection
     * @param {Rectangle} [result] The object onto which to store the result.
-    * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
+    * @returns {Rectangle|undefined} The modified result parameter, a new Rectangle instance if none was provided or undefined if there is no intersection.
     */
-    func intersectWith(other: Rectangle) -> Rectangle {
-        var westIntersect = max(west, other.west)
-        var southIntersect = max(south, other.south)
-        var eastIntersect = min(east, other.east)
-        var northIntersect = min(north, other.north)
-        return Rectangle(west: westIntersect, south: southIntersect, east: eastIntersect, north: northIntersect)
+    func intersection(other: Rectangle) -> Rectangle? {
+        
+        var thisEast = self.east
+        var thisWest = self.west
+        
+        var otherEast = other.east
+        var otherWest = other.west
+        
+        if (thisEast < thisWest && otherEast > 0.0) {
+            thisEast += Math.TwoPi
+        } else if (otherEast < otherWest && thisEast > 0.0) {
+            otherEast += Math.TwoPi
+        }
+        
+        if (thisEast < thisWest && otherWest < 0.0) {
+            otherWest += Math.TwoPi
+        } else if (otherEast < otherWest && thisWest < 0.0) {
+            thisWest += Math.TwoPi
+        }
+        
+        let west = Math.negativePiToPi(max(thisWest, otherWest))
+        let east = Math.negativePiToPi(min(thisEast, otherEast))
+        
+        if (self.west < self.east || other.west < other.east) && east <= west {
+            return nil
+        }
+        
+        let south = max(self.south, other.south)
+        let north = min(self.north, other.north)
+        
+        if south > north {
+            return nil
+        }
+        
+        return Rectangle(west: west, south: south, east: east, north: north)
     }
     
     /**
@@ -246,21 +313,21 @@ public struct Rectangle/*: Packable*/ {
     * @returns {Boolean} true if the provided cartographic is inside the rectangle, false otherwise.
     */
     func contains(cartographic: Cartographic) -> Bool {
-        return cartographic.longitude >= west &&
-            cartographic.longitude <= east &&
-            cartographic.latitude >= south &&
-            cartographic.latitude <= north
-    }
-    
-    /**
-    * Determines if the rectangle is empty, i.e., if <code>west >= east</code>
-    * or <code>south >= north</code>.
-    *
-    * @param {Rectangle} rectangle The rectangle
-    * @returns {Boolean} True if the rectangle is empty; otherwise, false.
-    */
-    func isEmpty() -> Bool {
-        return west >= east || south >= north
+        var longitude = cartographic.longitude
+        let latitude = cartographic.latitude
+        
+        let west = self.west
+        var east = self.east
+        if east < west {
+            east += Math.TwoPi
+            if longitude < 0.0 {
+                longitude += Math.TwoPi
+            }
+        }
+        return (longitude > west || Math.equalsEpsilon(longitude, west, relativeEpsilon: Math.Epsilon14)) &&
+            (longitude < east || Math.equalsEpsilon(longitude, east, relativeEpsilon: Math.Epsilon14)) &&
+            latitude >= south &&
+            latitude <= north
     }
     
     /**
@@ -295,26 +362,25 @@ public struct Rectangle/*: Packable*/ {
         result.append(ellipsoid.cartographicToCartesian(lla))
         
         if (north < 0.0) {
-            lla.latitude = north;
+            lla.latitude = north
         } else if (south > 0.0) {
-            lla.latitude = south;
+            lla.latitude = south
         } else {
-            lla.latitude = 0.0;
+            lla.latitude = 0.0
         }
         
         for i in 1..<8 {
-            var temp = -M_PI + Double(i) * M_PI_2;
-            if (west < temp && temp < east) {
-                lla.longitude = temp;
+            lla.longitude = -M_PI + Double(i) * M_PI_2
+            if (contains(lla)) {
                 result.append(ellipsoid.cartographicToCartesian(lla))
             }
         }
         
         if (lla.latitude == 0.0) {
-            lla.longitude = west;
+            lla.longitude = west
             result.append(ellipsoid.cartographicToCartesian(lla))
             
-            lla.longitude = east;
+            lla.longitude = east
             result.append(ellipsoid.cartographicToCartesian(lla))
         }
         return result;

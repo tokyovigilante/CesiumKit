@@ -106,7 +106,6 @@ public class SwiftRegex: NSObject, BooleanType {
     
     func matchResults(options: NSMatchingOptions = nil) -> [AnyObject] {
         let result = regex.matchesInString(target as! String, options: options, range: targetRange)
-        println("\(result.count)")
         return regex.matchesInString(target as! String, options: options, range: targetRange)
     }
     

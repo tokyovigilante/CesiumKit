@@ -27,6 +27,12 @@ class Globe {
     
     private var _surface: QuadtreePrimitive
     
+    /**
+    * The terrain provider providing surface geometry for this globe.
+    * @type {TerrainProvider}
+    */
+    var terrainProvider: TerrainProvider
+    
     private var _occluder: Occluder
     
     var _rsColor: RenderState? = nil
@@ -45,12 +51,6 @@ class Globe {
     
     private var _mode = SceneMode.Scene3D
 
-    /**
-    * The terrain provider providing surface geometry for this globe.
-    * @type {TerrainProvider}
-    */
-    var terrainProvider: TerrainProvider
-    
     /**
     * Determines the color of the north pole. If the day tile provider imagery does not
     * extend over the north pole, it will be filled with this color before applying lighting.
@@ -85,8 +85,8 @@ class Globe {
     * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
     */
     var oceanNormalMapUrl: String = /*buildModuleUrl*/("Assets/Textures/waterNormalsSmall.jpg")
-    
-    private var _oceanNormalMapUrl: String = ""
+
+    private var _oceanNormalMapUrl: String? = nil
     private var _oceanNormalMapChanged = false
     
     /**
@@ -129,8 +129,6 @@ class Globe {
     */
     var enableLighting = false
     
-    private var _enableLighting = false
-    
     /**
     * The distance where everything becomes lit. This only takes effect
     * when <code>enableLighting</code> is <code>true</code>.
@@ -138,7 +136,7 @@ class Globe {
     * @type {Number}
     * @default 6500000.0
     */
-    var _lightingFadeOutDistance = 6500000.0
+    var lightingFadeOutDistance = 6500000.0
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -147,7 +145,9 @@ class Globe {
     * @type {Number}
     * @default 9000000.0
     */
-    var _lightingFadeInDistance = 9000000.0
+    var lightingFadeInDistance = 9000000.0
+    
+    private var _lightingFadeDistance: Cartesian2
     
     /**
     * True if an animated wave effect should be shown in areas of the globe
@@ -166,16 +166,14 @@ class Globe {
     private var _hasWaterMask = false
     
     private var _hasVertexNormals = false
-
-    private var _lightingFadeDistance: Cartesian2
     
-    lazy var drawUniforms: Dictionary<String, () -> UniformValue> = {
+    lazy var drawUniforms: Dictionary<String, () -> Any> = {
         
         weak var weakSelf = self
         return [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
-            "u_oceanNormalMap" : { return .Sampler2D(weakSelf!._oceanNormalMap!) },
-            "u_lightingFadeDistance" :  { return .FloatVec2(weakSelf!._lightingFadeDistance) }
+            "u_oceanNormalMap" : { return weakSelf!._oceanNormalMap! as Any },
+            "u_lightingFadeDistance" :  { weakSelf!._lightingFadeDistance as Any }
         ]
         }()
     
@@ -200,8 +198,11 @@ class Globe {
         imageryLayers = ImageryLayerCollection()
         
         _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
-        
-        _surfaceShaderSet = GlobeSurfaceShaderSet(attributeLocations: terrainAttributeLocations)
+        ShaderSource()
+        _surfaceShaderSet = GlobeSurfaceShaderSet(
+            baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
+            baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
+            attributeLocations: terrainAttributeLocations)
         
         _surface = QuadtreePrimitive(
             tileProvider: GlobeSurfaceTileProvider(
@@ -210,13 +211,14 @@ class Globe {
                 surfaceShaderSet: _surfaceShaderSet
             )
         )
-        _lightingFadeDistance = Cartesian2(x: _lightingFadeOutDistance, y: _lightingFadeInDistance)
+        _lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
         
         _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
         _depthCommand = DrawCommand(
             boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84().maximumRadius),
             pass: Pass.Opaque//,
             /*owner: self*/)
+        
         _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
@@ -420,16 +422,26 @@ class Globe {
         return depthQuad
     }
     
+    /*var cartographicScratch = new Cartographic(0.0, 0.0);
+    var pt1Scratch = new Cartesian3();
+    var pt2Scratch = new Cartesian3();*/
+    
     func computePoleQuad(#frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
         //FIXME: PoleQuad
         /*
         let negativeZ = Cartesian3.unitZ().negate()
         
-        var pt1 = ellipsoid.cartographicToCartesian(Cartographic(0.0, maxGivenLat))
-        var pt2 = ellipsoid.cartographicToCartesian(Cartographic(M_PI, maxGivenLat))
+        cartographicScratch.longitude = 0.0;
+        cartographicScratch.latitude = maxGivenLat;
+        var pt1 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
+        
+        cartographicScratch.longitude = Math.PI;
+        var pt2 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt2Scratch);
         var radius = pt1.subtract(pt2).magnitude() * 0.5
         
-        var center = ellipsoid.cartographicToCartesian(Cartographic(0.0, maxLat));
+        cartographicScratch.longitude = 0.0;
+        cartographicScratch.latitude = maxLat;
+        var center = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
         
         var right: Cartesian3
         var dir = frameState.camera.direction
@@ -643,6 +655,8 @@ class Globe {
             }
         }
         
+        _mode = mode
+
         _northPoleCommand.renderState = _rsColorWithoutDepthTest
         _southPoleCommand.renderState = _rsColorWithoutDepthTest
         
@@ -671,120 +685,47 @@ class Globe {
         }
         
         if _depthCommand.shaderProgram == nil {
-             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderSource: Shaders["GlobeVSDepth"]!, fragmentShaderSource: Shaders["GlobeFSDepth"]!, attributeLocations: ["position" : 0])
+             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderString: Shaders["GlobeVSDepth"]!, fragmentShaderString: Shaders["GlobeFSDepth"]!, attributeLocations: ["position" : 0])
         }
         
-        var hasWaterMask = showWaterEffect && _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
-        var hasWaterMaskChanged = _hasWaterMask != hasWaterMask
-        var hasVertexNormals = _surface.tileProvider.ready && _surface.tileProvider.terrainProvider.hasVertexNormals
-        var hasVertexNormalsChanged = _hasVertexNormals != hasVertexNormals
-        var hasEnableLightingChanged = _enableLighting != enableLighting
         
-
+        let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
+        
         if (hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl) {
                 
-/*                // url changed, load new normal map asynchronously
-                var oceanNormalMapUrl = this.oceanNormalMapUrl;
-                this._oceanNormalMapUrl = oceanNormalMapUrl;
-                
-                var that = this;
-                when(loadImage(oceanNormalMapUrl), function(image) {
-                    if (oceanNormalMapUrl !== that.oceanNormalMapUrl) {
-                        // url changed while we were loading
-                        return;
-                    }
-                    
-                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
-                    that._oceanNormalMap = context.createTexture2D({
-                        source : image
-                    });
-                    that._oceanNormalMapChanged = true;
-                    });*/
-        }
-        // Initial compile or re-compile if uber-shader parameters changed
-        
-        if _northPoleCommand.shaderProgram == nil ||
-            _southPoleCommand.shaderProgram == nil ||
-            _oceanNormalMapChanged ||
-            _hasWaterMask != hasWaterMask ||
-            _hasVertexNormals != hasVertexNormals ||
-            _enableLighting != enableLighting  {
-                
-                let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
-                let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
-                let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
-                let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
-                
-                var getPositionMode: String
-                
-                switch mode {
-                case .Scene3D:
-                    getPositionMode = getPosition3DMode
-                case .Scene2D:
-                    getPositionMode = getPosition2DMode
-                case .ColumbusView:
-                    getPositionMode = getPositionColumbusViewMode
-                case .Morphing:
-                    getPositionMode = getPositionMorphingMode
-                }
-                
-                var get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
-                var get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
-                
-                var get2DYPositionFraction: String
-                
-                if (projection is GeographicProjection) {
-                    get2DYPositionFraction = get2DYPositionFractionGeographicProjection
-                } else {
-                    get2DYPositionFraction = get2DYPositionFractionMercatorProjection
-                }
-                
-                var shaderDefines = [String]()
-                
-                if (hasWaterMask) {
-                    shaderDefines.append("SHOW_REFLECTIVE_OCEAN")
-                    
-                    if _oceanNormalMap != nil {
-                        shaderDefines.append("SHOW_OCEAN_WAVES")
-                    }
-                }
-                
-                if (enableLighting) {
-                    if (hasVertexNormals) {
-                        shaderDefines.append("ENABLE_VERTEX_LIGHTING")
-                    } else {
-                        shaderDefines.append("ENABLE_DAYNIGHT_SHADING")
-                    }
-                }
-                
-                _surfaceShaderSet.baseVertexShaderString = ShaderProgram.createShaderSource(
-                    defines : shaderDefines,
-                    sources: [Shaders["GlobeVS"]!, getPositionMode, get2DYPositionFraction]
-                )
-                
-                _surfaceShaderSet.baseFragmentShaderString = ShaderProgram.createShaderSource(
-                    defines: shaderDefines,
-                    sources: [Shaders["GlobeFS"]!]
-                )
-                
-                _surfaceShaderSet.invalidateShaders()
-                
-                var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderSource: Shaders["GlobeVSPole"]!, fragmentShaderSource: Shaders["GlobeFSPole"]!, attributeLocations: terrainAttributeLocations)
-                
-                _northPoleCommand.shaderProgram = poleShaderProgram
-                _southPoleCommand.shaderProgram = poleShaderProgram
-                
-                _hasWaterMask = hasWaterMask
-                _hasVertexNormals = hasVertexNormals
-                _enableLighting = enableLighting
-                _oceanNormalMapChanged = false
+            /*              // url changed, load new normal map asynchronously
+            +            var oceanNormalMapUrl = this.oceanNormalMapUrl;
+            +            this._oceanNormalMapUrl = oceanNormalMapUrl;
+            +
+            +            if (defined(oceanNormalMapUrl)) {
+            +                var that = this;
+            +                when(loadImage(oceanNormalMapUrl), function(image) {
+            +                    if (oceanNormalMapUrl !== that.oceanNormalMapUrl) {
+            +                        // url changed while we were loading
+            +                        return;
+            +                    }
+            
+            +                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
+            +                    that._oceanNormalMap = context.createTexture2D({
+            +                        source : image
+            +                    });
+            +                });
+            } else {
+            +                this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
+            }
+            +        }*/
         }
         
+        if (_northPoleCommand.shaderProgram == nil || _southPoleCommand.shaderProgram == nil) {
+            var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderString: Shaders["GlobeVSPole"]!, fragmentShaderString: Shaders["GlobeFSPole"]!, attributeLocations: terrainAttributeLocations)
+            
+            _northPoleCommand.shaderProgram = poleShaderProgram
+            _southPoleCommand.shaderProgram = poleShaderProgram
+        }
+    
         _occluder.cameraPosition = frameState.camera!.positionWC
-        
+    
         fillPoles(context: context, frameState: frameState)
-        
-        _mode = mode
         
         if (frameState.passes.render) {
             // render quads to fill the poles
@@ -810,25 +751,27 @@ class Globe {
             
             var tileProvider = _surface.tileProvider
             tileProvider.terrainProvider = terrainProvider
-            tileProvider.lightingFadeOutDistance = _lightingFadeOutDistance
-            tileProvider.lightingFadeInDistance = _lightingFadeInDistance
+            tileProvider.lightingFadeOutDistance = lightingFadeOutDistance
+            tileProvider.lightingFadeInDistance = lightingFadeInDistance
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
+            tileProvider.hasWaterMask = hasWaterMask
             tileProvider.oceanNormalMap = _oceanNormalMap
+            tileProvider.enableLighting = enableLighting
             
             _surface.update(context: context, frameState: frameState, commandList: &commandList)
             
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {
-                    //commandList.append(_clearDepthCommand)
+                    commandList.append(_clearDepthCommand)
                     if (mode == .Scene3D) {
-                        //commandList.append(_depthCommand)
+                        commandList.append(_depthCommand)
                     }
                 }
             }
         }
         
-        if (frameState.passes.pick) {
+        if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
             commandList.append(_depthCommand)

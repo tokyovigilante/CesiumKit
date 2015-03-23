@@ -8,7 +8,7 @@
 
 import Foundation
 
-var regularGridIndexArrays: [Int: [Int: [UInt16]]] = [:]
+var regularGridIndexArrays: [Int: [Int: [Int]]] = [:]
 
 /**
      * A very simple {@link TerrainProvider} that produces geometry by tessellating an ellipsoidal
@@ -90,7 +90,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
             height : 16)
     }
 
-    class func getRegularGridIndices(#width: Int, height: Int) -> [UInt16] {
+    class func getRegularGridIndices(#width: Int, height: Int) -> [Int] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
@@ -100,16 +100,16 @@ class EllipsoidTerrainProvider: TerrainProvider {
         }
         var indices = byWidth![height]
         if indices == nil {
-            indices = [UInt16](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            indices = [Int](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
-            var index: UInt16 = 0
+            var index = 0
             var indicesIndex = 0
             for j in 0..<height-1 {
                 for i in 0..<width-1 {
-                    var upperLeft: UInt16 = index
-                    var lowerLeft: UInt16 = upperLeft + UInt16(width)
-                    var lowerRight: UInt16 = lowerLeft + 1
-                    var upperRight: UInt16 = upperLeft + 1
+                    var upperLeft = index
+                    var lowerLeft = upperLeft + width
+                    var lowerRight = lowerLeft + 1
+                    var upperRight = upperLeft + 1
                     
                     indices![indicesIndex++] = upperLeft
                     indices![indicesIndex++] = lowerLeft
@@ -136,7 +136,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             
-            return ellipsoid.maximumRadius * 2 * M_PI * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
+            return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
     
     /**
@@ -194,6 +194,10 @@ class EllipsoidTerrainProvider: TerrainProvider {
         get {
             return false
         }
+    }
+    
+    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool? {
+        return nil
     }
     
 }

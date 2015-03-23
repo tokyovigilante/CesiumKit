@@ -229,7 +229,7 @@ public class ImageryLayer {
     *
     * @param {QuadtreeTile} tile The terrain tile.
     * @param {TerrainProvider} terrainProvider The terrain provider associated with the terrain tile.
-    * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery lsit.
+    * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery list.
     * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
     */
     func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
@@ -260,9 +260,14 @@ public class ImageryLayer {
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
-        var rectangle = tile.rectangle.intersectWith(imageryProvider.rectangle).intersectWith(_rectangle)
+        var imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
+        var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
+
+        let rectangle: Rectangle
         
-        if rectangle.east <= rectangle.west || rectangle.north <= rectangle.south {
+        if overlapRectangle != nil {
+            rectangle = overlapRectangle!
+        } else {
             // There is no overlap between this terrain tile and this imagery
             // provider.  Unless this is the base layer, no skeletons need to be created.
             // We stretch texels at the edge of the base layer over the entire globe.
@@ -270,24 +275,28 @@ public class ImageryLayer {
                 return false
             }
             
-            let baseImageryRectangle = imageryProvider.rectangle.intersectWith(_rectangle)
+            let baseImageryRectangle = imageryBounds!
             var baseTerrainRectangle = tile.rectangle
+            overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
             
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
-                rectangle.south = baseImageryRectangle.north
-                rectangle.north = rectangle.south
+                overlapRectangle!.south = baseImageryRectangle.north
+                overlapRectangle!.north = overlapRectangle!.south
             } else if baseTerrainRectangle.north <= baseImageryRectangle.south {
-                rectangle.south = baseImageryRectangle.south
-                rectangle.north = rectangle.south
+                overlapRectangle!.south = baseImageryRectangle.south
+                overlapRectangle!.north = overlapRectangle!.south
             }
             
             if baseTerrainRectangle.west >= baseImageryRectangle.east {
-                rectangle.east = baseImageryRectangle.east
-                rectangle.west = rectangle.east
+                overlapRectangle!.east = baseImageryRectangle.east
+                overlapRectangle!.west = overlapRectangle!.east
             } else if baseTerrainRectangle.east <= baseImageryRectangle.west {
-                rectangle.east = baseImageryRectangle.west
-                rectangle.west = rectangle.east
+                overlapRectangle!.east = baseImageryRectangle.west
+                overlapRectangle!.west = overlapRectangle!.east
             }
+            rectangle = overlapRectangle!
+            //Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.north)
+
         }
         
         var latitudeClosestToEquator = 0.0
@@ -327,8 +336,8 @@ public class ImageryLayer {
         // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
         
         // We define "very close" as being within 1/512 of the width of the tile.
-        var veryCloseX = (tile.rectangle.north - tile.rectangle.south) / 512.0
-        var veryCloseY = (tile.rectangle.east - tile.rectangle.west) / 512.0
+        var veryCloseX = tile.rectangle.height / 512.0
+        var veryCloseY = tile.rectangle.width / 512.0
         
         var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
@@ -348,9 +357,9 @@ public class ImageryLayer {
         
         // Create TileImagery instances for each imagery tile overlapping this terrain tile.
         // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
-        
-        var terrainRectangle = tile.rectangle
+        let terrainRectangle = tile.rectangle
         var imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
+        var clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
         
         var minU: Double
         var maxU = 0.0
@@ -361,12 +370,12 @@ public class ImageryLayer {
         // If this is the northern-most or western-most tile in the imagery tiling scheme,
         // it may not start at the northern or western edge of the terrain tile.
         // Calculate where it does start.
-        if !isBaseLayer && abs(imageryRectangle.west - tile.rectangle.west) >= veryCloseX {
-            maxU = min(1.0, (imageryRectangle.west - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west))
+        if !isBaseLayer && abs(clippedImageryRectangle.west - tile.rectangle.west) >= veryCloseX {
+            maxU = min(1.0, (clippedImageryRectangle.west - terrainRectangle.west) / terrainRectangle.width)
         }
         
-        if (isBaseLayer && abs(imageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
-            minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south))
+        if (isBaseLayer && abs(clippedImageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
+            minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / terrainRectangle.height)
         }
         
         var initialMinV = minV
@@ -375,13 +384,15 @@ public class ImageryLayer {
             minU = maxU
             
             imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: northwestTileCoordinates.y, level: imageryLevel)
-            maxU = min(1.0, (imageryRectangle.east - terrainRectangle.west) / (terrainRectangle.east - terrainRectangle.west));
+            clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
+
+            maxU = min(1.0, (clippedImageryRectangle.east - terrainRectangle.west) / terrainRectangle.width)
             
             // If this is the eastern-most imagery tile mapped to this terrain tile,
             // and there are more imagery tiles to the east of this one, the maxU
             // should be 1.0 to make sure rounding errors don't make the last
             // image fall shy of the edge of the terrain tile.
-            if i == southeastTileCoordinates.x && (isBaseLayer || abs(imageryRectangle.east - tile.rectangle.east) < veryCloseX) {
+            if i == southeastTileCoordinates.x && (isBaseLayer || abs(clippedImageryRectangle.east - tile.rectangle.east) < veryCloseX) {
                 maxU = 1.0
             }
             
@@ -391,13 +402,15 @@ public class ImageryLayer {
                 maxV = minV
                 
                 imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: j, level: imageryLevel)
-                minV = max(0.0, (imageryRectangle.south - terrainRectangle.south) / (terrainRectangle.north - terrainRectangle.south))
+                clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
+
+                minV = max(0.0, (clippedImageryRectangle.south - terrainRectangle.south) / terrainRectangle.height)
                 
                 // If this is the southern-most imagery tile mapped to this terrain tile,
                 // and there are more imagery tiles to the south of this one, the minV
                 // should be 0.0 to make sure rounding errors don't make the last
                 // image fall shy of the edge of the terrain tile.
-                if j == southeastTileCoordinates.y && (isBaseLayer || abs(imageryRectangle.south - tile.rectangle.south) < veryCloseY) {
+                if j == southeastTileCoordinates.y && (isBaseLayer || abs(clippedImageryRectangle.south - tile.rectangle.south) < veryCloseY) {
                     minV = 0.0
                 }
                 
@@ -424,11 +437,11 @@ public class ImageryLayer {
     func calculateTextureTranslationAndScale (tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4 {
         let imageryRectangle = tileImagery.readyImagery!.rectangle!
         let terrainRectangle = tile.rectangle
-        let terrainWidth = terrainRectangle.east - terrainRectangle.west
-        let terrainHeight = terrainRectangle.north - terrainRectangle.south
+        let terrainWidth = terrainRectangle.width
+        let terrainHeight = terrainRectangle.height
         
-        let scaleX = terrainWidth / (imageryRectangle.east - imageryRectangle.west)
-        let scaleY = terrainHeight / (imageryRectangle.north - imageryRectangle.south)
+        let scaleX = terrainWidth / imageryRectangle.width
+        let scaleY = terrainHeight / imageryRectangle.height
         
         return Cartesian4(
             x: scaleX * (terrainRectangle.west - imageryRectangle.west) / terrainWidth,
@@ -523,7 +536,7 @@ public class ImageryLayer {
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
         // no noticeable difference in the georeferencing of the image.
-        let pixelGap: Bool = (rectangle.east - rectangle.west) / Double(texture.width) > pow(10, -5)
+        let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
         let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
         if !isGeographic && pixelGap {
             let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
@@ -694,8 +707,8 @@ public class ImageryLayer {
             let vertexArray = context.createVertexArray(vertexAttributes, indexBuffer: indexBuffer)
             
             let shaderProgram = context.createShaderProgram(
-                vertexShaderSource: Shaders["ReprojectWebMercatorVS"]!,
-                fragmentShaderSource: Shaders["ReprojectWebMercatorFS"]!,
+                vertexShaderString: Shaders["ReprojectWebMercatorVS"]!,
+                fragmentShaderString: Shaders["ReprojectWebMercatorFS"]!,
                 attributeLocations: reprojectAttribInds
             )
             
@@ -811,10 +824,9 @@ public class ImageryLayer {
     func levelWithMaximumTexelSpacing(#texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
-        let ellipsoid = tilingScheme.ellipsoid
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0
-        let tilingSchemeRectangle = tilingScheme.rectangle
-        let levelZeroMaximumTexelSpacing = ellipsoid.maximumRadius * (tilingSchemeRectangle.east - tilingSchemeRectangle.west) * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAtLevel(0))
+        
+        let levelZeroMaximumTexelSpacing = tilingScheme.ellipsoid.maximumRadius * tilingScheme.rectangle.width * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAtLevel(0))
         
         let twoToTheLevelPower = levelZeroMaximumTexelSpacing / texelSpacing;
         let level = log(twoToTheLevelPower) / log(2)

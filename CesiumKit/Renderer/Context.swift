@@ -10,113 +10,6 @@ import Foundation
 import OpenGLES
 import GLKit
 
-/*
-function _errorToString(gl, error) {
-var message = 'OpenGL Error:  ';
-switch (error) {
-case gl.INVALID_ENUM:
-message += 'Invalid enumeration';
-break;
-case gl.INVALID_VALUE:
-message += 'Invalid value';
-break;
-case gl.INVALID_OPERATION:
-message += 'Invalid operation';
-break;
-case gl.OUT_OF_MEMORY:
-message += 'Out of memory';
-break;
-case gl.CONTEXT_LOST_WEBGL:
-message += 'Context lost';
-break;
-default:
-message += 'Unknown';
-}
-
-return message;
-}
-
-function _createErrorMessage(gl, glFunc, glFuncArguments, error) {
-var message = _errorToString(gl, error) + ': ' + glFunc.name + '(';
-
-for ( var i = 0; i < glFuncArguments.length; ++i) {
-if (i !== 0) {
-message += ', ';
-}
-message += glFuncArguments[i];
-}
-message += ');';
-
-return message;
-}
-
-function throwOnError(gl, glFunc, glFuncArguments) {
-var error = gl.getError();
-if (error !== gl.NO_ERROR) {
-throw new RuntimeError(_createErrorMessage(gl, glFunc, glFuncArguments, error));
-}
-}
-
-function makeGetterSetter(gl, propertyName, logFunc) {
-return {
-get : function() {
-var value = gl[propertyName];
-logFunc(gl, 'get: ' + propertyName, value);
-return gl[propertyName];
-},
-set : function(value) {
-gl[propertyName] = value;
-logFunc(gl, 'set: ' + propertyName, value);
-}
-};
-}
-
-function wrapGL(gl, logFunc) {
-if (!logFunc) {
-return gl;
-}
-
-function wrapFunction(property) {
-return function() {
-var result = property.apply(gl, arguments);
-logFunc(gl, property, arguments);
-return result;
-};
-}
-
-var glWrapper = {};
-
-/*jslint forin: true*/
-/*jshint forin: false*/
-// JSLint normally demands that a for..in loop must directly contain an if,
-// but in our loop below, we actually intend to iterate all properties, including
-// those in the prototype.
-for ( var propertyName in gl) {
-var property = gl[propertyName];
-
-// wrap any functions we encounter, otherwise just copy the property to the wrapper.
-if (typeof property === 'function') {
-glWrapper[propertyName] = wrapFunction(property);
-} else {
-Object.defineProperty(glWrapper, propertyName, makeGetterSetter(gl, propertyName, logFunc));
-}
-}
-
-return glWrapper;
-}
-
-function getExtension(gl, names) {
-var length = names.length;
-for (var i = 0; i < length; ++i) {
-var extension = gl.getExtension(names[i]);
-if (extension) {
-return extension;
-}
-}
-
-return undefined;
-}*/
-
 
 /**
 * @private
@@ -124,7 +17,7 @@ return undefined;
 
 class Context {
     
-    var _debug: (
+    private var _debug: (
         renderCountThisFrame: Int,
         renderCount: Int
     )
@@ -735,102 +628,102 @@ class Context {
         _currentRenderState.apply(_defaultPassState)
     }
     
-    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int] = terrainAttributeLocations) -> ShaderProgram? {
+    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
         if _shaderCache == nil {
             _shaderCache = ShaderCache(context: self)
         }
-        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
+        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
-    func createShaderProgram(#vertexShaderSource: String, fragmentShaderSource: String, attributeLocations: [String: Int]) -> ShaderProgram? {
+    func createShaderProgram(vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
         if _shaderCache == nil {
             _shaderCache = ShaderCache(context: self)
         }
-        return _shaderCache!.getShaderProgram(vertexShaderSource: vertexShaderSource, fragmentShaderSource: fragmentShaderSource, attributeLocations: attributeLocations)
+        return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
     func createBuffer(target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
 
-/**
-* Creates a vertex buffer, which contains untyped vertex data in GPU-controlled memory.
-* <br /><br />
-* A vertex array defines the actual makeup of a vertex, e.g., positions, normals, texture coordinates,
-* etc., by interpreting the raw data in one or more vertex buffers.
-*
-* @memberof Context
-*
-* @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
-* @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
-*
-* @returns {VertexBuffer} The vertex buffer, ready to be attached to a vertex array.
-*
-* @exception {DeveloperError} The size in bytes must be greater than zero.
-* @exception {DeveloperError} Invalid <code>usage</code>.
-*
-* @see Context#createVertexArray
-* @see Context#createIndexBuffer
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ARRAY_BUFFER</code>
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ARRAY_BUFFER</code>
-*
-* @example
-* // Example 1. Create a dynamic vertex buffer 16 bytes in size.
-* var buffer = context.createVertexBuffer(16, BufferUsage.DYNAMIC_DRAW);
-*
-* ////////////////////////////////////////////////////////////////////////////////
-*
-* // Example 2. Create a dynamic vertex buffer from three floating-point values.
-* // The data copied to the vertex buffer is considered raw bytes until it is
-* // interpreted as vertices using a vertex array.
-* var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
-*     BufferUsage.STATIC_DRAW);
-*/
+    /**
+    * Creates a vertex buffer, which contains untyped vertex data in GPU-controlled memory.
+    * <br /><br />
+    * A vertex array defines the actual makeup of a vertex, e.g., positions, normals, texture coordinates,
+    * etc., by interpreting the raw data in one or more vertex buffers.
+    *
+    * @memberof Context
+    *
+    * @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
+    * @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
+    *
+    * @returns {VertexBuffer} The vertex buffer, ready to be attached to a vertex array.
+    *
+    * @exception {DeveloperError} The size in bytes must be greater than zero.
+    * @exception {DeveloperError} Invalid <code>usage</code>.
+    *
+    * @see Context#createVertexArray
+    * @see Context#createIndexBuffer
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ARRAY_BUFFER</code>
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ARRAY_BUFFER</code>
+    *
+    * @example
+    * // Example 1. Create a dynamic vertex buffer 16 bytes in size.
+    * var buffer = context.createVertexBuffer(16, BufferUsage.DYNAMIC_DRAW);
+    *
+    * ////////////////////////////////////////////////////////////////////////////////
+    *
+    * // Example 2. Create a dynamic vertex buffer from three floating-point values.
+    * // The data copied to the vertex buffer is considered raw bytes until it is
+    * // interpreted as vertices using a vertex array.
+    * var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
+    *     BufferUsage.STATIC_DRAW);
+    */
     func createVertexBuffer(array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
         return createBuffer(.ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
     }
 
-/**
-* Creates an index buffer, which contains typed indices in GPU-controlled memory.
-* <br /><br />
-* An index buffer can be attached to a vertex array to select vertices for rendering.
-* <code>Context.draw</code> can render using the entire index buffer or a subset
-* of the index buffer defined by an offset and count.
-*
-* @memberof Context
-*
-* @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
-* @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
-* @param {IndexDatatype} indexDatatype The datatype of indices in the buffer.
-*
-* @returns {IndexBuffer} The index buffer, ready to be attached to a vertex array.
-*
-* @exception {RuntimeError} IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.
-* @exception {DeveloperError} The size in bytes must be greater than zero.
-* @exception {DeveloperError} Invalid <code>usage</code>.
-* @exception {DeveloperError} Invalid <code>indexDatatype</code>.
-*
-* @see Context#createVertexArray
-* @see Context#createVertexBuffer
-* @see Context#draw
-* @see VertexArray
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ELEMENT_ARRAY_BUFFER</code>
-* @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ELEMENT_ARRAY_BUFFER</code>
-*
-* @example
-* // Example 1. Create a stream index buffer of unsigned shorts that is
-* // 16 bytes in size.
-* var buffer = context.createIndexBuffer(16, BufferUsage.STREAM_DRAW,
-*     IndexDatatype.UNSIGNED_SHORT);
-*
-* ////////////////////////////////////////////////////////////////////////////////
-*
-* // Example 2. Create a static index buffer containing three unsigned shorts.
-* var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
-*     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
-*/
+    /**
+    * Creates an index buffer, which contains typed indices in GPU-controlled memory.
+    * <br /><br />
+    * An index buffer can be attached to a vertex array to select vertices for rendering.
+    * <code>Context.draw</code> can render using the entire index buffer or a subset
+    * of the index buffer defined by an offset and count.
+    *
+    * @memberof Context
+    *
+    * @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
+    * @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
+    * @param {IndexDatatype} indexDatatype The datatype of indices in the buffer.
+    *
+    * @returns {IndexBuffer} The index buffer, ready to be attached to a vertex array.
+    *
+    * @exception {RuntimeError} IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.
+    * @exception {DeveloperError} The size in bytes must be greater than zero.
+    * @exception {DeveloperError} Invalid <code>usage</code>.
+    * @exception {DeveloperError} Invalid <code>indexDatatype</code>.
+    *
+    * @see Context#createVertexArray
+    * @see Context#createVertexBuffer
+    * @see Context#draw
+    * @see VertexArray
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ELEMENT_ARRAY_BUFFER</code>
+    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ELEMENT_ARRAY_BUFFER</code>
+    *
+    * @example
+    * // Example 1. Create a stream index buffer of unsigned shorts that is
+    * // 16 bytes in size.
+    * var buffer = context.createIndexBuffer(16, BufferUsage.STREAM_DRAW,
+    *     IndexDatatype.UNSIGNED_SHORT);
+    *
+    * ////////////////////////////////////////////////////////////////////////////////
+    *
+    * // Example 2. Create a static index buffer containing three unsigned shorts.
+    * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
+    *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
+    */
     func createIndexBuffer (array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
     
         if indexDatatype == IndexDatatype.UnsignedInt {

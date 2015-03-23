@@ -86,7 +86,7 @@ protocol TerrainProvider {
     
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    static func getRegularGridIndices(#width: Int, height: Int) -> [UInt16]
+    static func getRegularGridIndices(#width: Int, height: Int) -> [Int]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -125,6 +125,17 @@ protocol TerrainProvider {
     * @returns {Number} The maximum geometric error.
     */
     func levelMaximumGeometricError(level: Int) -> Double
+    
+    /**
+    * Determines whether data for a tile is available to be loaded.
+    * @function
+    *
+    * @param {Number} x The X coordinate of the tile for which to request geometry.
+    * @param {Number} y The Y coordinate of the tile for which to request geometry.
+    * @param {Number} level The level of the tile for which to request geometry.
+    * @returns {Boolean} Undefined if not supported by the terrain provider, otherwise true or false.
+    */
+    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool?
     
     /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask

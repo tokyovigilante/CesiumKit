@@ -93,9 +93,13 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     */
     var lightingFadeInDistance = 9000000.0
     
+    var hasWaterMask = false
+    
     var oceanNormalMap: Texture? = nil
     
     var zoomedOutOceanSpecularIntensity = 0.5
+    
+    var enableLighting = false
     
     private var _renderState: RenderState? = nil
     
@@ -149,7 +153,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
-        return tilingScheme.ellipsoid.maximumRadius * 2.0 * M_PI * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
+        return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
     }
     
     /**
@@ -600,11 +604,17 @@ var northeastScratch = new Cartesian3();
         var viewMatrix = frameState.camera!.viewMatrix
         
         var maxTextures = context.maximumTextureImageUnits
+
+        let waterMaskTexture = surfaceTile.waterMaskTexture
+        let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
+        let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
+        let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
         
-        if oceanNormalMap != nil {
+        
+        if showReflectiveOcean {
             --maxTextures
         }
-        if surfaceTile.waterMaskTexture != nil {
+        if showOceanWaves {
             --maxTextures
         }
         
@@ -622,6 +632,8 @@ var northeastScratch = new Cartesian3();
         var southMercatorYLow = 0.0
         var oneOverMercatorHeight = 0.0
         
+        var useWebMercatorProjection = false
+
         if frameState.mode != .Scene3D {
             var projection = frameState.mapProjection!
             var southwest = projection.project(tile.rectangle.southwest())
@@ -653,6 +665,8 @@ var northeastScratch = new Cartesian3();
                 southMercatorYLow = southMercatorY - Double(scratchArray[0])
                 
                 oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
+                
+                useWebMercatorProjection = true
             }
         }
         
@@ -776,23 +790,31 @@ var northeastScratch = new Cartesian3();
             if uniformMap.dayTextures.count > numberOfDayTextures {
                 uniformMap.dayTextures.removeRange(Range(numberOfDayTextures..<uniformMap.dayTextures.count))
             }
-            uniformMap.waterMask = surfaceTile.waterMaskTexture
+            uniformMap.waterMask = waterMaskTexture
             uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale
             
             command.shaderProgram = surfaceShaderSet.getShaderProgram(
                 context: context,
-                textureCount: numberOfDayTextures,
+                sceneMode: frameState.mode,
+                surfaceTile: surfaceTile,
+                numberOfDayTextures: numberOfDayTextures,
                 applyBrightness: applyBrightness,
                 applyContrast: applyContrast,
                 applyHue: applyHue,
                 applySaturation: applySaturation,
                 applyGamma: applyGamma,
-                applyAlpha: applyAlpha)
+                applyAlpha: applyAlpha,
+                showReflectiveOcean: showReflectiveOcean,
+                showOceanWaves: showOceanWaves,
+                enableLighting: enableLighting,
+                hasVertexNormals: hasVertexNormals,
+                useWebMercatorProjection: useWebMercatorProjection
+            )
             command.renderState = renderState
             command.primitiveType = .Triangles
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
-            command.pass = .Opaque
+            command.pass = .Globe
             
             if _debug.wireframe {
                 // FIXME: Wireframe

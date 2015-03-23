@@ -151,24 +151,22 @@ enum SerializedType {
     }
     
     static func fromIntArray(values: [Int], datatype: ComponentDatatype) -> [SerializedType] {
-        return values.map({
-            switch datatype {
-            case .Byte:
-                return .UnsignedInt8(UInt8($0))
-            case .UnsignedByte:
-                return .UnsignedInt8(UInt8($0))
-            case .Short:
-                return .UnsignedInt16(UInt16($0))
-            case .UnsignedShort:
-                return .UnsignedInt16(UInt16($0))
-            case .UnsignedInt:
-                return .UnsignedInt32(UInt32($0))
-            case .Float32(let value):
-                return .Float32(Float($0))
-            case .Float64(let value):
-                return .Float64(Double($0))
-            }
-        })
+        switch datatype {
+        case .Byte:
+            return values.map({ .UnsignedInt8(UInt8($0)) })
+        case .UnsignedByte:
+            return values.map({ .UnsignedInt8(UInt8($0)) })
+        case .Short:
+            return values.map({ .UnsignedInt16(UInt16($0)) })
+        case .UnsignedShort:
+            return values.map({ .UnsignedInt16(UInt16($0)) })
+        case .UnsignedInt:
+            return values.map({ .UnsignedInt32(UInt32($0)) })
+        case .Float32(let value):
+            return values.map({ .Float32(Float($0)) })
+        case .Float64(let value):
+            return values.map({ .Float64(Double($0)) })
+        }
     }
     
     static func fromUInt16Array(values: [UInt16]) -> [SerializedType] {

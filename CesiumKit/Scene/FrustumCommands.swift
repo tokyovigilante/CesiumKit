@@ -20,14 +20,24 @@
 class FrustumCommands {
     var near = 0.0
     var far = 0.0
-    var opaqueCommands = [Command]()
-    //var opaqueIndex: Int = 0
-    var translucentCommands = [Command]()
-    //var translucentIndex: Int = 0
+
+    var commands = [Int: [Command]]()
+    var indices = [Int](count: Pass.count, repeatedValue: 0)
     
     init (near: Double = 0.0, far: Double = 0.0) {
         self.near = near
         self.far = far
+        
+        for i in 0..<Pass.count {
+            commands[i] = [Command]()
+        }
+    }
+    
+    func removeAll() {
+        indices = [Int](count: Pass.count, repeatedValue: 0)
+        for i in 0..<Pass.count {
+            commands[i] = [Command]()
+        }
     }
     
 }

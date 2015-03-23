@@ -1,5 +1,7 @@
 CesiumKit
 =========
+[![Language](http://img.shields.io/badge/language-swift-brightgreen.svg?style=flat)](https://developer.apple.com/swift)[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 iOS/Swift port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
 
 Status
@@ -28,3 +30,5 @@ Licence
 Feedback
 --------
 [ryan@testtoast.com](mailto:ryan@testtoast.com)
+
+

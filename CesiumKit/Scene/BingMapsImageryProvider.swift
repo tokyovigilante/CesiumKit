@@ -28,6 +28,9 @@ import Foundation
 *        By default, tiles are loaded using the same protocol as the page.
 * @param {String} [options.mapStyle=BingMapsStyle.AERIAL] The type of Bing Maps
 *        imagery to load.
+* @param {String} [options.culture=''] The culture to use when requesting Bing Maps imagery. Not
+*        all cultures are supported. See {@link http://msdn.microsoft.com/en-us/library/hh441729.aspx}
+*        for information on the supported cultures.
 * @param {TileDiscardPolicy} [options.tileDiscardPolicy] The policy that determines if a tile
 *        is invalid and should be discarded.  If this value is not specified, a default
 *        {@link DiscardMissingTileImagePolicy} is used which requests
@@ -70,13 +73,16 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let mapStyle: BingMapsStyle
         
+        public let culture: String
+        
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
             self.mapStyle = mapStyle
+            self.culture = culture
             self.tileDiscardPolicy = tileDiscardPolicy
         }
     }
@@ -325,6 +331,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public var mapStyle: BingMapsStyle
     
+    public let culture: String
+    
     private var _imageUrlTemplate: String? = nil
     
     private var _imageUrlSubdomains: JSON? = nil
@@ -348,13 +356,13 @@ public class BingMapsImageryProvider: ImageryProvider {
         }
         
         mapStyle = options.mapStyle
+        culture = options.culture
         
         _key = BingMapsAPI.getKey(options.key)
         
         _url = options.url
         
         _tileProtocol = options.tileProtocol
-        
         
         _tileDiscardPolicy = options.tileDiscardPolicy
         //        this._proxy = options.proxy;
@@ -384,9 +392,10 @@ public class BingMapsImageryProvider: ImageryProvider {
             self._tileHeight = resource["imageHeight"].intValue
             self._maximumLevel = resource["zoomMax"].intValue - 1
             self._imageUrlSubdomains = resource["imageUrlSubdomains"]
-            
+
+            let imageUrlTemplate = resource["imageUrl"].stringValue.replace("{culture}", self.culture)
+
             // Force HTTPS
-            let imageUrlTemplate = resource["imageUrl"].stringValue
             self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
             
             
@@ -435,7 +444,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         var requestMetadata  = { () -> () in
             
-            let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+            let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + BingMapsStyle.AerialWithLabels.rawValue//self.mapStyle.rawValue
 
             request(.GET, metadataUrl, parameters: [
                 "incl" : "ImageryProviders",
@@ -651,9 +660,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         var subdomains = _imageUrlSubdomains!.arrayValue
         var subdomainIndex = (x + y + level) % subdomains.count
         imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
-        
-        imageUrl = imageUrl.replace("{culture}", mapStyle.rawValue)
-        
+
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;
         if (defined(proxy)) {
@@ -680,8 +687,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; !included && areaIndex < areaLength; ++areaIndex) {
     var area = coverageAreas[areaIndex];
     if (level >= area.zoomMin && level <= area.zoomMax) {
-    var intersection = Rectangle.intersectWith(rectangle, area.bbox, intersectionScratch);
-    if (!Rectangle.isEmpty(intersection)) {
+    var intersection = Rectangle.intersection(rectangle, area.bbox, intersectionScratch);
+    if (intersection != nil) {
     included = true;
     }
     }

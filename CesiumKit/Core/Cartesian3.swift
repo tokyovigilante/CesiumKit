@@ -104,16 +104,10 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int) {
-        if array.count < startingIndex + Int(Cartesian3.packedLength) {
-            array.append(Float(x))
-            array.append(Float(y))
-            array.append(Float(z))
-        }
-        else {
-            array[startingIndex] = Float(x)
-            array[startingIndex+1] = Float(y)
-            array[startingIndex+2] = Float(z)
-        }
+        assert(array.count - startingIndex >= Cartesian3.packedLength, "Array too short")
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
+        array[startingIndex+2] = Float(z)
     }
     
     /**
@@ -222,7 +216,7 @@ public struct Cartesian3: Packable, Equatable {
     }
     
     /**
-    * Computes the distance between two points
+    * Computes the distance between two points.
     *
     * @param {Cartesian3} left The first point to compute the distance from.
     * @param {Cartesian3} right The second point to compute the distance to.
@@ -237,7 +231,22 @@ public struct Cartesian3: Packable, Equatable {
     }
     
     /**
-    * Computes the normalized form of the supplied Cartesian.
+    * Computes the squared distance between two points.  Comparing squared distances
+    * using this function is more efficient than comparing distances using {@link Cartesian3#distance}.
+    *
+    * @param {Cartesian3} left The first point to compute the distance from.
+    * @param {Cartesian3} right The second point to compute the distance to.
+    * @returns {Number} The distance between two points.
+    *
+    * @example
+    * // Returns 4.0, not 2.0
+    * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(3.0, 0.0, 0.0));
+    */
+    func distanceSquared(other: Cartesian3) -> Double {
+        return self.subtract(other).magnitudeSquared()
+    }
+
+    /** Computes the normalized form of the supplied Cartesian.
     *
     * @param {Cartesian3} cartesian The Cartesian to be normalized.
     * @param {Cartesian3} [result] The object onto which to store the result.
@@ -398,18 +407,29 @@ public struct Cartesian3: Packable, Equatable {
         return result;
     }
     
+    func equalsArray (array: [Float], offset: Int) -> Bool {
+        return Float(x) == array[offset] &&
+            Float(y) == array[offset + 1] &&
+            Float(z) == array[offset + 2]
+    }
+    
     /**
     * Compares the provided Cartesians componentwise and returns
-    * <code>true</code> if they are within the provided epsilon,
+    * <code>true</code> if they pass an absolute or relative tolerance test,
     * <code>false</code> otherwise.
     *
     * @param {Cartesian3} [left] The first Cartesian.
     * @param {Cartesian3} [right] The second Cartesian.
+    * @param {Number} relativeEpsilon The relative epsilon tolerance to use for equality testing.
+    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian3, epsilon: Double) -> Bool {
-        return (abs(x - other.x) <= epsilon) && (abs(y - other.y) <= epsilon) && (abs(z - other.z) <= epsilon)
+    func equalsEpsilon(other: Cartesian3, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
+        return self == other ||
+            (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
+                Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
+                Math.equalsEpsilon(self.z, other.z, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon))
     }
     
     /**

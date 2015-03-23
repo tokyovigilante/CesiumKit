@@ -105,6 +105,8 @@ class GlobeSurfaceTile {
     
     var pickTerrain: TileTerrain? = nil
     
+    var surfaceShader: GlobeSurfaceShader? = nil
+    
     /**
     * Gets a value indicating whether or not this tile is eligible to be unloaded.
     * Typically, a tile is ineligible to be unloaded while an asynchronous operation,
@@ -140,8 +142,8 @@ class GlobeSurfaceTile {
     }
     
     /*
-    function getPosition(tile, scene, vertices, index, result) {
-    Cartesian3.unpack(vertices, index * 6, result);
+    function getPosition(tile, scene, vertices, stride, index, result) {
+    Cartesian3.unpack(vertices, index * stride, result);
     Cartesian3.add(tile.center, result, result);
     
     if (defined(scene) && scene.mode !== SceneMode.SCENE3D) {
@@ -172,6 +174,7 @@ class GlobeSurfaceTile {
     }
     
     var vertices = mesh.vertices;
+    var stride = mesh.stride;
     var indices = mesh.indices;
     
     var length = indices.length;
@@ -180,9 +183,9 @@ class GlobeSurfaceTile {
     var i1 = indices[i + 1];
     var i2 = indices[i + 2];
     
-    var v0 = getPosition(this, scene, vertices, i0, scratchV0);
-    var v1 = getPosition(this, scene, vertices, i1, scratchV1);
-    var v2 = getPosition(this, scene, vertices, i2, scratchV2);
+    var v0 = getPosition(this, scene, vertices, stride, i0, scratchV0);
+    var v1 = getPosition(this, scene, vertices, stride, i1, scratchV1);
+    var v2 = getPosition(this, scene, vertices, stride, i2, scratchV2);
     
     var intersection = IntersectionTests.rayTriangle(ray, v0, v1, v2, cullBackFaces, scratchResult);
     if (defined(intersection)) {
@@ -299,7 +302,7 @@ class GlobeSurfaceTile {
                 (tileImagery.loadingImagery!.state == .Failed || tileImagery.loadingImagery!.state == .Invalid)
         }
         
-        tile.upsampledFromParent = isUpsampledOnly
+        tile.upsampledFromParent = tile.level > 10 //isUpsampledOnly
         
         // The tile becomes renderable when the terrain and all imagery data are loaded.
         if i == len {
@@ -326,7 +329,7 @@ class GlobeSurfaceTile {
             surfaceTile.upsampledTerrain = TileTerrain(upsampleDetails: upsampleTileDetails)
         }
         
-        if (isDataAvailable(tile)) {
+        if isDataAvailable(tile, terrainProvider: terrainProvider) {
             surfaceTile.loadedTerrain = TileTerrain()
         }
         
@@ -388,18 +391,7 @@ class GlobeSurfaceTile {
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
                     if let waterMask = surfaceTile.terrainData?.waterMask {
-                        /*if let waterMaskTexture = surfaceTile.waterMaskTexture {
-                        --surfaceTile.waterMaskTexture.referenceCount
-                        if (surfaceTile.waterMaskTexture.referenceCount == 0) {
-                        surfaceTile.waterMaskTexture.destroy()
-                        }
-                        }*/
-                        // FIXME: Disabled
-                        //surfaceTile.waterMaskTexture = createWaterMaskTexture(context: context, waterMask: waterMask)
-                        surfaceTile.waterMaskTranslationAndScale.x = 0.0
-                        surfaceTile.waterMaskTranslationAndScale.y = 0.0
-                        surfaceTile.waterMaskTranslationAndScale.z = 1.0
-                        surfaceTile.waterMaskTranslationAndScale.w = 1.0
+                       // createWaterMaskTextureIfNeeded(context, surfaceTile)
                     }
                     
                     GlobeSurfaceTile.propagateNewLoadedDataToChildren(tile)
@@ -552,7 +544,12 @@ class GlobeSurfaceTile {
         }
     }
 
-    class func isDataAvailable(tile: QuadtreeTile) -> Bool {
+    class func isDataAvailable(tile: QuadtreeTile, terrainProvider: TerrainProvider) -> Bool {
+
+        if let tileDataAvailable = terrainProvider.getTileDataAvailable(x: tile.x, y: tile.y, level: tile.level) {
+            return tileDataAvailable
+        }
+        
         var parent = tile.parent
         if parent == nil {
             // Data is assumed to be available for root tiles.
@@ -566,82 +563,91 @@ class GlobeSurfaceTile {
         return parent!.data!.terrainData!.isChildAvailable(parent!.x, thisY: parent!.y, childX: tile.x, childY: tile.y)
     }
     
-    //func createWaterMaskTexture(#context: Context, waterMask: [UInt8]) -> Texture {
-        /*var result;
+/*    function getContextWaterMaskData(context) {
+var data = context.cache.tile_waterMaskData;
 
-        var waterMaskData = context.cache.tile_waterMaskData;
-        if (!defined(waterMaskData)) {
-            waterMaskData = context.cache.tile_waterMaskData = {
-                    allWaterTexture : undefined,
-                    allLandTexture : undefined,
-                    sampler : undefined,
-                    destroy : function() {
-                        if (defined(this.allWaterTexture)) {
-                            this.allWaterTexture.destroy();
-                        }
-                        if (defined(this.allLandTexture)) {
-                            this.allLandTexture.destroy();
-                        }
-                    }
-            };
-        }
+if (!defined(data)) {
+var allWaterTexture = context.createTexture2D({
+pixelFormat : PixelFormat.LUMINANCE,
+pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
+source : {
+arrayBufferView : new Uint8Array([255]),
+width : 1,
+height : 1
+}
+});
+allWaterTexture.referenceCount = 1;
 
-        var waterMaskSize = Math.sqrt(waterMask.length);
-        if (waterMaskSize === 1 && (waterMask[0] === 0 || waterMask[0] === 255)) {
-            // Tile is entirely land or entirely water.
-            if (!defined(waterMaskData.allWaterTexture)) {
-                waterMaskData.allWaterTexture = context.createTexture2D({
-                    pixelFormat : PixelFormat.LUMINANCE,
-                    pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-                    source : {
-                        arrayBufferView : new Uint8Array([255]),
-                        width : 1,
-                        height : 1
-                    }
-                });
-                waterMaskData.allWaterTexture.referenceCount = 1;
+var sampler = context.createSampler({
+wrapS : TextureWrap.CLAMP_TO_EDGE,
+wrapT : TextureWrap.CLAMP_TO_EDGE,
+minificationFilter : TextureMinificationFilter.LINEAR,
+magnificationFilter : TextureMagnificationFilter.LINEAR
+});
 
-                waterMaskData.allLandTexture = context.createTexture2D({
-                    pixelFormat : PixelFormat.LUMINANCE,
-                    pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-                    source : {
-                        arrayBufferView : new Uint8Array([0]),
-                        width : 1,
-                        height : 1
-                    }
-                });
-                waterMaskData.allLandTexture.referenceCount = 1;
-            }
+data = {
+allWaterTexture : allWaterTexture,
+sampler : sampler,
+destroy : function() {
+this.allWaterTexture.destroy();
+}
+};
 
-            result = waterMask[0] === 0 ? waterMaskData.allLandTexture : waterMaskData.allWaterTexture;
-        } else {
-            result = context.createTexture2D({
-                pixelFormat : PixelFormat.LUMINANCE,
-                pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-                source : {
-                    width : waterMaskSize,
-                    height : waterMaskSize,
-                    arrayBufferView : waterMask
-                }
-            });
+context.cache.tile_waterMaskData = data;
+}
+return data;
+}
 
-            result.referenceCount = 0;
+function createWaterMaskTextureIfNeeded(context, surfaceTile) {
+var previousTexture = surfaceTile.waterMaskTexture;
+if (defined(previousTexture)) {
+--previousTexture.referenceCount;
+if (previousTexture.referenceCount === 0) {
+previousTexture.destroy();
+}
+surfaceTile.waterMaskTexture = undefined;
+}
 
-            if (!defined(waterMaskData.sampler)) {
-                waterMaskData.sampler = context.createSampler({
-                    wrapS : TextureWrap.CLAMP_TO_EDGE,
-                    wrapT : TextureWrap.CLAMP_TO_EDGE,
-                    minificationFilter : TextureMinificationFilter.LINEAR,
-                    magnificationFilter : TextureMagnificationFilter.LINEAR
-                });
-            }
+-            result = waterMask[0] === 0 ? waterMaskData.allLandTexture : waterMaskData.allWaterTexture;
+var waterMask = surfaceTile.terrainData.waterMask;
+if (!defined(waterMask)) {
+return;
+}
 
-            result.sampler = waterMaskData.sampler;
-        }
+var waterMaskData = getContextWaterMaskData(context);
+var texture;
 
-        ++result.referenceCount;
-        return result;*/
-    //}
+var waterMaskLength = waterMask.length;
+if (waterMaskLength === 1) {
+// Length 1 means the tile is entirely land or entirely water.
+// A value of 0 indicates entirely land, a value of 1 indicates entirely water.
+if (waterMask[0] !== 0) {
+texture = waterMaskData.allWaterTexture;
+} else {
+// Leave the texture undefined if the tile is entirely land.
+return;
+}
+} else {
+var textureSize = Math.sqrt(waterMaskLength);
+texture = context.createTexture2D({
+pixelFormat : PixelFormat.LUMINANCE,
+pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
+source : {
+width : textureSize,
+height : textureSize,
+arrayBufferView : waterMask
+}
+});
+
+
+texture.referenceCount = 0;
+texture.sampler = waterMaskData.sampler;
+}
+++texture.referenceCount;
+surfaceTile.waterMaskTexture = texture;
+
+Cartesian4.fromElements(0.0, 0.0, 1.0, 1.0, surfaceTile.waterMaskTranslationAndScale);
+}
     /*
     function upsampleWaterMask(tile) {
         var surfaceTile = tile.data;
@@ -663,11 +669,11 @@ class GlobeSurfaceTile {
         // Compute the water mask translation and scale
         var sourceTileRectangle = sourceTile.rectangle;
         var tileRectangle = tile.rectangle;
-        var tileWidth = tileRectangle.east - tileRectangle.west;
-        var tileHeight = tileRectangle.north - tileRectangle.south;
+        var tileWidth = tileRectangle.width;
+        var tileHeight = tileRectangle.height;
 
-        var scaleX = tileWidth / (sourceTileRectangle.east - sourceTileRectangle.west);
-        var scaleY = tileHeight / (sourceTileRectangle.north - sourceTileRectangle.south);
+        var scaleX = tileWidth / sourceTileRectangle.width;
+        var scaleY = tileHeight / sourceTileRectangle.height;
         surfaceTile.waterMaskTranslationAndScale.x = scaleX * (tileRectangle.west - sourceTileRectangle.west) / tileWidth;
         surfaceTile.waterMaskTranslationAndScale.y = scaleY * (tileRectangle.south - sourceTileRectangle.south) / tileHeight;
         surfaceTile.waterMaskTranslationAndScale.z = scaleX;
@@ -675,6 +681,6 @@ class GlobeSurfaceTile {
     }
 
     return GlobeSurfaceTile;
-});*/
+});*/*/
 
 }

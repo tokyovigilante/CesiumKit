@@ -42,16 +42,17 @@ struct TerrainMesh {
     * The vertex data, including positions, texture coordinates, and heights.
     * The vertex data is in the order [X, Y, Z, H, U, V], where X, Y, and Z represent
     * the Cartesian position of the vertex, H is the height above the ellipsoid, and
-    * U and V are the texture coordinates.
+    * U and V are the texture coordinates.  The vertex data may have additional attributes after those
+    * mentioned above when the {@link TerrainMesh#stride} is greater than 6.    
     * @type {Float32Array}
     */
     let vertices: [Float]
     
     /**
-    * The indices describing how the vertices are connected to form triangles.
+    * @param {Uint16Array|Uint32Array} indices The indices describing how the vertices are connected to form triangles.
     * @type {Uint16Array}
     */
-    let indices: [UInt16]
+    let indices: [Int]
     
     /**
     * Index buffers (if any) generated from indices.
@@ -85,7 +86,15 @@ struct TerrainMesh {
     */
     let occludeePointInScaledSpace: Cartesian3
     
-    init (center: Cartesian3, vertices: [Float], indices: [UInt16], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3) {
+    /**
+    * The number of components in each vertex.  Typically this is 6 for the 6 components
+    * [X, Y, Z, H, U, V], but if each vertex has additional data (such as a vertex normal), this value
+    * may be higher.
+    * @type {Number}
+    */
+    let vertexStride: Int
+    
+    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6) {
         self.center = center
         self.vertices = vertices
         self.indices = indices
@@ -93,5 +102,6 @@ struct TerrainMesh {
         self.maximumHeight = maximumHeight
         self.boundingSphere3D = boundingSphere3D
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
+        self.vertexStride = vertexStride
     }
 }

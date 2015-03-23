@@ -22,7 +22,7 @@ protocol Packable {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //class let packedLength: Int
+    //static let packedLength: Int
     
     /**
     * Stores the provided instance into the provided array.
