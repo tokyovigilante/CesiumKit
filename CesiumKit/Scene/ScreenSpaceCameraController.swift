@@ -156,6 +156,7 @@ public class ScreenSpaceCameraController {
     * @default [{@link CameraEventType.RIGHT_DRAG}, {@link CameraEventType.WHEEL}, {@link CameraEventType.PINCH}]
     */
     this.zoomEventTypes = [CameraEventType.RIGHT_DRAG, CameraEventType.WHEEL, CameraEventType.PINCH];
+    */
     /**
     * The input that allows the user to rotate around the globe or another object. This only applies in 3D and Columbus view modes.
     * <p>
@@ -166,7 +167,9 @@ public class ScreenSpaceCameraController {
     * @type {CameraEventType|Array|undefined}
     * @default {@link CameraEventType.LEFT_DRAG}
     */
-    this.rotateEventTypes = CameraEventType.LEFT_DRAG;
+    var rotateEventTypes = CameraEventType.LEFT_DRAG;
+    
+    /*
     /**
     * The input that allows the user to tilt in 3D and Columbus view or twist in 2D.
     * <p>
