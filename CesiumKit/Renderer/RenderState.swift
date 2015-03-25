@@ -8,7 +8,24 @@
 
 import OpenGLES
 
-struct RenderState/*: Printable*/ {
+private struct FuncsToApply {
+    var frontFace: Bool = false
+    var cull: Bool = false
+    var lineWidth: Bool = false
+    var polygonOffset: Bool = false
+    //var scissorTest: Bool = false
+    var depthRange: Bool = false
+    var depthTest: Bool = false
+    var colorMask: Bool = false
+    var depthMask: Bool = false
+    //var blending: Bool = false
+    var stencilMask: Bool = false
+    var stencilTest: Bool = false
+    var sampleCoverage: Bool = false
+    var viewPort: Bool = false
+}
+
+class RenderState/*: Printable*/ {
     
     let frontFace: WindingOrder
     
@@ -94,6 +111,8 @@ struct RenderState/*: Printable*/ {
     let viewport: BoundingRectangle?
     
     let hash: String
+    
+    private var _applyFunctions = [String : FuncsToApply]()
 
     init(
         frontFace: WindingOrder = WindingOrder.CounterClockwise,
@@ -171,8 +190,6 @@ struct RenderState/*: Printable*/ {
             
             self.hash = hash
     }
-    
-    //var applyFunctions = [((), -> Any)]? = nil
     
     /*var description: String {
         get {
@@ -422,6 +439,62 @@ struct RenderState/*: Printable*/ {
         glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
     }
     
+    private func conditionalApply(funcs: FuncsToApply, passState: PassState) {
+        
+        if funcs.frontFace {
+            applyFrontFace()
+        }
+        
+        if funcs.cull {
+            applyCull()
+        }
+        
+        if funcs.lineWidth {
+            applyLineWidth()
+        }
+        
+        if funcs.polygonOffset {
+            applyPolygonOffset()
+        }
+        
+        // For now, always apply because of passState
+        applyScissorTest(passState)
+        
+        if funcs.depthRange {
+            applyDepthRange()
+        }
+        
+        if funcs.depthTest {
+            applyDepthTest()
+        }
+        
+        if funcs.colorMask {
+            applyColorMask()
+        }
+        
+        if funcs.depthMask {
+            applyDepthMask()
+        }
+        
+        if funcs.stencilMask {
+            applyStencilMask()
+        }
+        
+        // For now, always apply because of passState
+        applyBlending(passState)
+        
+        if funcs.stencilTest {
+            applyStencilTest()
+        }
+        
+        if funcs.sampleCoverage {
+            applySampleCoverage()
+        }
+        
+        // For now, always apply because of passState
+        applyViewport(passState)
+    }
+
     func apply(passState: PassState) {
         applyFrontFace()
         applyCull()
@@ -439,82 +512,60 @@ struct RenderState/*: Printable*/ {
         applyViewport(passState)
     }
     
-    /*
-    func createFunctions(previousState: RenderState, nextState: RenderState) {
-        var funcs = [() -> ()]
+    
+    private func createFunctions(previousState: RenderState) -> FuncsToApply {
+        var funcs = FuncsToApply()
         
-        if (previousState.frontFace !== nextState.frontFace) {
-            funcs.push(applyFrontFace);
-        }
+        funcs.frontFace = previousState.frontFace != frontFace
         
-        if ((previousState.cull.enabled !== nextState.cull.enabled) || (previousState.cull.face !== nextState.cull.face)) {
-            funcs.push(applyCull);
-        }
+        funcs.cull = previousState.cull.enabled != cull.enabled || previousState.cull.face != cull.face
         
-        if (previousState.lineWidth !== nextState.lineWidth) {
-            funcs.push(applyLineWidth);
-        }
+        funcs.lineWidth = previousState.lineWidth != lineWidth
         
-        if ((previousState.polygonOffset.enabled !== nextState.polygonOffset.enabled) ||
-            (previousState.polygonOffset.factor !== nextState.polygonOffset.factor) ||
-            (previousState.polygonOffset.units !== nextState.polygonOffset.units)) {
-                funcs.push(applyPolygonOffset);
-        }
+        funcs.polygonOffset = previousState.polygonOffset.enabled != polygonOffset.enabled ||
+            previousState.polygonOffset.factor != polygonOffset.factor ||
+            previousState.polygonOffset.units != polygonOffset.units
         
         // For now, always apply because of passState
-        funcs.push(applyScissorTest);
+        //funcs.push(applyScissorTest);
         
-        if ((previousState.depthRange.near !== nextState.depthRange.near) || (previousState.depthRange.far !== nextState.depthRange.far)) {
-            funcs.push(applyDepthRange);
-        }
+        funcs.depthRange = previousState.depthRange.near != depthRange.near || previousState.depthRange.far != depthRange.far
         
-        if ((previousState.depthTest.enabled !== nextState.depthTest.enabled) || (previousState.depthTest.func !== nextState.depthTest.func)) {
-            funcs.push(applyDepthTest);
-        }
+        funcs.depthTest =  previousState.depthTest.enabled != depthTest.enabled || previousState.depthTest.function != depthTest.function
         
-        if ((previousState.colorMask.red !== nextState.colorMask.red) ||
-            (previousState.colorMask.green !== nextState.colorMask.green) ||
-            (previousState.colorMask.blue !== nextState.colorMask.blue) ||
-            (previousState.colorMask.alpha !== nextState.colorMask.alpha)) {
-                funcs.push(applyColorMask);
-        }
+        funcs.colorMask = previousState.colorMask.red != colorMask.red ||
+            previousState.colorMask.green != colorMask.green ||
+            previousState.colorMask.blue != colorMask.blue ||
+            previousState.colorMask.alpha != colorMask.alpha
         
-        if (previousState.depthMask !== nextState.depthMask) {
-            funcs.push(applyDepthMask);
-        }
+        funcs.depthMask = previousState.depthMask != depthMask
         
         // For now, always apply because of passState
-        funcs.push(applyBlending);
+        //funcs.push(applyBlending);
         
-        if (previousState.stencilMask !== nextState.stencilMask) {
-            funcs.push(applyStencilMask);
-        }
+        funcs.stencilMask = previousState.stencilMask != stencilMask
         
-        if ((previousState.stencilTest.enabled !== nextState.stencilTest.enabled) ||
-            (previousState.stencilTest.frontFunction !== nextState.stencilTest.frontFunction) ||
-            (previousState.stencilTest.backFunction !== nextState.stencilTest.backFunction) ||
-            (previousState.stencilTest.reference !== nextState.stencilTest.reference) ||
-            (previousState.stencilTest.mask !== nextState.stencilTest.mask) ||
-            (previousState.stencilTest.frontOperation.fail !== nextState.stencilTest.frontOperation.fail) ||
-            (previousState.stencilTest.frontOperation.zFail !== nextState.stencilTest.frontOperation.zFail) ||
-            (previousState.stencilTest.backOperation.fail !== nextState.stencilTest.backOperation.fail) ||
-            (previousState.stencilTest.backOperation.zFail !== nextState.stencilTest.backOperation.zFail) ||
-            (previousState.stencilTest.backOperation.zPass !== nextState.stencilTest.backOperation.zPass)) {
-                funcs.push(applyStencilTest);
-        }
+        funcs.stencilTest = previousState.stencilTest.enabled != stencilTest.enabled ||
+            previousState.stencilTest.frontFunction != stencilTest.frontFunction ||
+            previousState.stencilTest.backFunction != stencilTest.backFunction ||
+            previousState.stencilTest.reference != stencilTest.reference ||
+            previousState.stencilTest.mask != stencilTest.mask ||
+            previousState.stencilTest.frontOperation.fail != stencilTest.frontOperation.fail ||
+            previousState.stencilTest.frontOperation.zFail != stencilTest.frontOperation.zFail ||
+            previousState.stencilTest.backOperation.fail != stencilTest.backOperation.fail ||
+            previousState.stencilTest.backOperation.zFail != stencilTest.backOperation.zFail ||
+            previousState.stencilTest.backOperation.zPass != stencilTest.backOperation.zPass
         
-        if ((previousState.sampleCoverage.enabled !== nextState.sampleCoverage.enabled) ||
-            (previousState.sampleCoverage.value !== nextState.sampleCoverage.value) ||
-            (previousState.sampleCoverage.invert !== nextState.sampleCoverage.invert)) {
-                funcs.push(applySampleCoverage);
-        }
+        funcs.sampleCoverage = previousState.sampleCoverage.enabled != sampleCoverage.enabled ||
+            previousState.sampleCoverage.value != sampleCoverage.value ||
+            previousState.sampleCoverage.invert != sampleCoverage.invert
         
         // For now, always apply because of passState
-        funcs.push(applyViewport);
+        //funcs.push(applyViewport);
         
-        return funcs;
+        return funcs
     }
-    */
+
     func partialApply (previousState: RenderState, passState: PassState) {
         // When a new render state is applied, instead of making WebGL calls for all the states or first
         // comparing the states one-by-one with the previous state (basically a linear search), we take
@@ -523,101 +574,99 @@ struct RenderState/*: Printable*/ {
         // to the other.  In practice, this works well since state-to-state transitions generally only require a
         // few WebGL calls, especially if commands are stored by state.
         // FIXME: PartialApply
-        apply(passState)
-        /*var funcs = applyFunctions[previousState.id]
-        if (!defined(funcs)) {
-            funcs = createFuncs(previousState, nextState);
-            nextState._applyFunctions[previousState.id] = funcs;
+        
+        var funcs = _applyFunctions[previousState.hash]
+        
+        if funcs == nil {
+            funcs = createFunctions(previousState)
+            _applyFunctions[previousState.hash] = funcs
         }
         
-        var len = funcs.length;
-        for (var i = 0; i < len; ++i) {
-            funcs[i](gl, nextState, passState);
-        }*/
+        conditionalApply(funcs!, passState: passState)
     }
-    /*
-    /**
-    * Duplicates a RenderState instance. The object returned must still be created with {@link Context#createRenderState}.
-    *
-    * @param renderState The render state to be cloned.
-    * @returns {Object} The duplicated render state.
-    */
-    RenderState.clone = function(renderState) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(renderState)) {
-    throw new DeveloperError('renderState is required.');
-    }
-    //>>includeEnd('debug');
     
-    return {
-    frontFace : renderState.frontFace,
-    cull : {
-    enabled : renderState.cull.enabled,
-    face : renderState.cull.face
-    },
-    lineWidth : renderState.lineWidth,
-    polygonOffset : {
-    enabled : renderState.polygonOffset.enabled,
-    factor : renderState.polygonOffset.factor,
-    units : renderState.polygonOffset.units
-    },
-    scissorTest : {
-    enabled : renderState.scissorTest.enabled,
-    rectangle : BoundingRectangle.clone(renderState.scissorTest.rectangle)
-    },
-    depthRange : {
-    near : renderState.depthRange.near,
-    far : renderState.depthRange.far
-    },
-    depthTest : {
-    enabled : renderState.depthTest.enabled,
-    func : renderState.depthTest.func
-    },
-    colorMask : {
-    red : renderState.colorMask.red,
-    green : renderState.colorMask.green,
-    blue : renderState.colorMask.blue,
-    alpha : renderState.colorMask.alpha
-    },
-    depthMask : renderState.depthMask,
-    stencilMask : renderState.stencilMask,
-    blending : {
-    enabled : renderState.blending.enabled,
-    color : Color.clone(renderState.blending.color),
-    equationRgb : renderState.blending.equationRgb,
-    equationAlpha : renderState.blending.equationAlpha,
-    functionSourceRgb : renderState.blending.functionSourceRgb,
-    functionSourceAlpha : renderState.blending.functionSourceAlpha,
-    functionDestinationRgb : renderState.blending.functionDestinationRgb,
-    functionDestinationAlpha : renderState.blending.functionDestinationAlpha
-    },
-    stencilTest : {
-    enabled : renderState.stencilTest.enabled,
-    frontFunction : renderState.stencilTest.frontFunction,
-    backFunction : renderState.stencilTest.backFunction,
-    reference : renderState.stencilTest.reference,
-    mask : renderState.stencilTest.mask,
-    frontOperation : {
-    fail : renderState.stencilTest.frontOperation.fail,
-    zFail : renderState.stencilTest.frontOperation.zFail,
-    zPass : renderState.stencilTest.frontOperation.zPass
-    },
-    backOperation : {
-    fail : renderState.stencilTest.backOperation.fail,
-    zFail : renderState.stencilTest.backOperation.zFail,
-    zPass : renderState.stencilTest.backOperation.zPass
-    }
-    },
-    sampleCoverage : {
-    enabled : renderState.sampleCoverage.enabled,
-    value : renderState.sampleCoverage.value,
-    invert : renderState.sampleCoverage.invert
-    },
-    viewport : defined(renderState.viewport) ? BoundingRectangle.clone(renderState.viewport) : undefined
-    };
-    };
-    
-    return RenderState;
-    });
-    */
+/*
+/**
+* Duplicates a RenderState instance. The object returned must still be created with {@link Context#createRenderState}.
+*
+* @param renderState The render state to be cloned.
+* @returns {Object} The duplicated render state.
+*/
+RenderState.clone = function(renderState) {
+//>>includeStart('debug', pragmas.debug);
+if (!defined(renderState)) {
+throw new DeveloperError('renderState is required.');
+}
+//>>includeEnd('debug');
+
+return {
+frontFace : renderState.frontFace,
+cull : {
+enabled : renderState.cull.enabled,
+face : renderState.cull.face
+},
+lineWidth : renderState.lineWidth,
+polygonOffset : {
+enabled : renderState.polygonOffset.enabled,
+factor : renderState.polygonOffset.factor,
+units : renderState.polygonOffset.units
+},
+scissorTest : {
+enabled : renderState.scissorTest.enabled,
+rectangle : BoundingRectangle.clone(renderState.scissorTest.rectangle)
+},
+depthRange : {
+near : renderState.depthRange.near,
+far : renderState.depthRange.far
+},
+depthTest : {
+enabled : renderState.depthTest.enabled,
+func : renderState.depthTest.func
+},
+colorMask : {
+red : renderState.colorMask.red,
+green : renderState.colorMask.green,
+blue : renderState.colorMask.blue,
+alpha : renderState.colorMask.alpha
+},
+depthMask : renderState.depthMask,
+stencilMask : renderState.stencilMask,
+blending : {
+enabled : renderState.blending.enabled,
+color : Color.clone(renderState.blending.color),
+equationRgb : renderState.blending.equationRgb,
+equationAlpha : renderState.blending.equationAlpha,
+functionSourceRgb : renderState.blending.functionSourceRgb,
+functionSourceAlpha : renderState.blending.functionSourceAlpha,
+functionDestinationRgb : renderState.blending.functionDestinationRgb,
+functionDestinationAlpha : renderState.blending.functionDestinationAlpha
+},
+stencilTest : {
+enabled : renderState.stencilTest.enabled,
+frontFunction : renderState.stencilTest.frontFunction,
+backFunction : renderState.stencilTest.backFunction,
+reference : renderState.stencilTest.reference,
+mask : renderState.stencilTest.mask,
+frontOperation : {
+fail : renderState.stencilTest.frontOperation.fail,
+zFail : renderState.stencilTest.frontOperation.zFail,
+zPass : renderState.stencilTest.frontOperation.zPass
+},
+backOperation : {
+fail : renderState.stencilTest.backOperation.fail,
+zFail : renderState.stencilTest.backOperation.zFail,
+zPass : renderState.stencilTest.backOperation.zPass
+}
+},
+sampleCoverage : {
+enabled : renderState.sampleCoverage.enabled,
+value : renderState.sampleCoverage.value,
+invert : renderState.sampleCoverage.invert
+},
+viewport : defined(renderState.viewport) ? BoundingRectangle.clone(renderState.viewport) : undefined
+};
+};
+
+return RenderState;
+});*/
 }
