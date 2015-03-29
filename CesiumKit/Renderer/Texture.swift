@@ -10,9 +10,9 @@ import UIKit.UIImage
 import OpenGLES
 
 enum TextureSource {
+    case Image(UIImage)
     case ImageBuffer(Imagebuffer)
     case FrameBuffer(Framebuffer)
-    case Image(UIImage)
     
     var width: Int {
         get {
@@ -21,8 +21,9 @@ enum TextureSource {
                 return Int(image.size.width)
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.width
-            default:
+            case .FrameBuffer(let framebuffer):
                 assertionFailure("not implemented")
+                return 0
             }
         }
     }
@@ -34,8 +35,9 @@ enum TextureSource {
                 return Int(image.size.height)
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.height
-            default:
+            case .FrameBuffer(let framebuffer):
                 assertionFailure("not implemented")
+                return 0
             }
         }
     }

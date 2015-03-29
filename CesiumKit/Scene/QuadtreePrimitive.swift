@@ -57,6 +57,12 @@ class QuadtreePrimitive {
         suspendLodUpdate: false
     )
     
+    var tilesToRender: [QuadtreeTile] {
+        get {
+            return _tilesToRender
+        }
+    }
+    
     private var _tilesToRender = [QuadtreeTile]()
     
     private var _tileTraversalQueue = Queue<QuadtreeTile>()

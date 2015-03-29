@@ -309,13 +309,16 @@ public class Scene {
     var mode: SceneMode = .Scene3D
     
     /**
-    * DOC_TBA
+    * Get the map projection to use in 2D and Columbus View modes.
+    * @memberof Scene.prototype
+    *
+    * @type {MapProjection}
+    * @readonly
+    *
+    * @default new GeographicProjection()
     */
-    struct Scene2D {
-        var projection: Projection? = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
-    }
-    var scene2D = Scene2D()
-    
+    private(set) var mapProjection: Projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
+
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
     * with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -524,33 +527,32 @@ public class Scene {
         }
     }
 
-    init (view: GLKView, globe: Globe, useOIT: Bool, scene3DOnly: Bool?) {
+    init (view: GLKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
         context = Context(view: view)
         self.globe = globe
         
         _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
-        _frameState.scene3DOnly = scene3DOnly ?? false
+        _frameState.scene3DOnly = scene3DOnly
         
         // initial guess at frustums.
         _passState = PassState()
         _passState.context = context
         camera = Camera(
-            projection: scene2D.projection ?? GeographicProjection(),
+            projection: projection,
             mode: mode,
             initialWidth: Double(context.view.frame.width),
             initialHeight: Double(context.view.frame.height)
         )
         
-        /*
+        
         // TODO: OIT and FXAA
-        if (useOIT)
-        this._oit = new OIT(context);
-        this._executeOITFunction = undefined;
+        if useOIT {
+        //this._oit = new OIT(context);
+        //this._executeOITFunction = undefined;
         
-        this._fxaa = new FXAA();
-        */
-        
+        //this._fxaa = new FXAA();
+        }
         camera.scene = self
         var near = camera.frustum.near
         var far = camera.frustum.far
@@ -572,7 +574,6 @@ public class Scene {
     }
 
     func clearPasses(inout passes: FrameState.Passes ) {
-        // FIXME: Clearpasses
         passes.render = false
         passes.pick = false
     }
@@ -581,7 +582,7 @@ public class Scene {
 
         _frameState.mode = mode
         _frameState.morphTime = morphTime
-        _frameState.mapProjection = scene2D.projection
+        _frameState.mapProjection = mapProjection
         _frameState.frameNumber = frameNumber
         _frameState.time = time
         _frameState.camera = camera
@@ -1110,7 +1111,7 @@ function callAfterRenderFunctions(frameState) {
         }*/
         
         //tweens.update()
-        camera.update(mode, scene2D: scene2D)
+        camera.update(mode)
         screenSpaceCameraController.update()
     }
 

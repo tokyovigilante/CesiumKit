@@ -22,20 +22,20 @@ import Foundation
 */
 // FIXME: Pack
 
-struct Cartesian2: Packable, Equatable {
+public struct Cartesian2: Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The X component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The number of elements used to pack the object into an array.
@@ -43,7 +43,7 @@ struct Cartesian2: Packable, Equatable {
     */
     static let packedLength: Int = 2
     
-    init(x: Double = 0.0, y: Double = 0.0) {
+    public init(x: Double = 0.0, y: Double = 0.0) {
         self.x = x
         self.y = y
     }
@@ -438,7 +438,7 @@ struct Cartesian2: Packable, Equatable {
 * @param {Cartesian2} [right] The second Cartesian.
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func == (left: Cartesian2, right: Cartesian2) -> Bool {
+public func == (left: Cartesian2, right: Cartesian2) -> Bool {
     return (left.x == right.x) && (left.y == right.y)
 }
 

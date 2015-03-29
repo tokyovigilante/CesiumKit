@@ -280,6 +280,10 @@
 		94985A751A38444C00FFAD81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94985A741A38444C00FFAD81 /* Images.xcassets */; };
 		94985A781A38444C00FFAD81 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94985A761A38444C00FFAD81 /* LaunchScreen.xib */; };
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
+		94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */; };
+		94B9DB5E1AC630020095A86F /* KeyboardEventModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */; };
+		94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5F1AC630E10095A86F /* CameraEvent.swift */; };
+		94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */; };
 		94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */; };
 		94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
@@ -290,6 +294,7 @@
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
 		94DC79401918425300012DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 94DC793E1918425300012DC4 /* InfoPlist.strings */; };
 		94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DD011D1AADAF2500FFAD81 /* Matrix2.swift */; };
+		94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */; };
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 /* End PBXBuildFile section */
@@ -446,6 +451,10 @@
 		94B87DCC194D706800012DC4 /* CullingVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CullingVolume.swift; sourceTree = "<group>"; };
 		94B87DCE194D71A200012DC4 /* Intersectable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersectable.swift; sourceTree = "<group>"; };
 		94B87DD0194D75A100012DC4 /* Occluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Occluder.swift; sourceTree = "<group>"; };
+		94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraEventAggregator.swift; sourceTree = "<group>"; };
+		94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardEventModifier.swift; sourceTree = "<group>"; };
+		94B9DB5F1AC630E10095A86F /* CameraEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraEvent.swift; sourceTree = "<group>"; };
+		94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceEventType.swift; sourceTree = "<group>"; };
 		94BA59EE19A695B90049322D /* Frustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		94BA59F019A695DD0049322D /* OrthographicFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrthographicFrustum.swift; sourceTree = "<group>"; };
 		94BA59F219A6DA640049322D /* PerspectiveFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveFrustum.swift; sourceTree = "<group>"; };
@@ -478,6 +487,7 @@
 		94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridImageryProvider.swift; sourceTree = "<group>"; };
 		94E049E919DC0BB000FFAD81 /* Shaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shaders.swift; sourceTree = "<group>"; };
 		94E4CB2B1950581300F7E37D /* Pass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pass.swift; sourceTree = "<group>"; };
+		94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntersectionTests.swift; sourceTree = "<group>"; };
 		94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeadingPitchRange.swift; sourceTree = "<group>"; };
 		94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorTilingScheme.swift; sourceTree = "<group>"; };
 		94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceCameraController.swift; sourceTree = "<group>"; };
@@ -544,6 +554,7 @@
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */,
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
 				94BC43561948189A007117F2 /* Cartesian2.swift */,
@@ -572,6 +583,7 @@
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
 				94540420199F03C300012DC4 /* JulianDate.swift */,
+				94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */,
 				948D55E8194982AB005A4DD6 /* Math.swift */,
 				94DD011D1AADAF2500FFAD81 /* Matrix2.swift */,
 				94D45B2819BDC26300FFE1CB /* Matrix3.swift */,
@@ -597,6 +609,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -655,6 +668,8 @@
 				94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */,
 				94D5AC1B19FBAD1800FFAD81 /* BlendingState.swift */,
 				94B87DCA194D6F5000012DC4 /* Camera.swift */,
+				94B9DB5F1AC630E10095A86F /* CameraEvent.swift */,
+				94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */,
 				946007AD1AC2C97F0095A86F /* CameraEventType.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
@@ -971,6 +986,7 @@
 				9413B80A1A37B94500FFAD81 /* PerspectiveFrustum.swift in Sources */,
 				9413B7B11A37B93100FFAD81 /* Geometry.swift in Sources */,
 				9413B7C11A37B93100FFAD81 /* Occluder.swift in Sources */,
+				94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */,
 				9413B7B51A37B93100FFAD81 /* HeightmapTerrainData.swift in Sources */,
 				9413B7FF1A37B94500FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
 				9413B7B71A37B93100FFAD81 /* IndexDatatype.swift in Sources */,
@@ -989,6 +1005,7 @@
 				9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */,
 				9413B8041A37B94500FFAD81 /* ImageryLayer.swift in Sources */,
 				94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */,
+				94B9DB5E1AC630020095A86F /* KeyboardEventModifier.swift in Sources */,
 				9413B7B41A37B93100FFAD81 /* GeometryPipeline.swift in Sources */,
 				9413B80C1A37B94500FFAD81 /* PrimitiveCollection.swift in Sources */,
 				9413B7A81A37B93100FFAD81 /* ComponentDatatype.swift in Sources */,
@@ -1025,11 +1042,13 @@
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
 				9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */,
 				9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */,
+				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
 				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
 				9413B7DC1A37B93D00FFAD81 /* Command.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
+				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
 				9413B7D71A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */,
 				9413B8141A37B94500FFAD81 /* SceneTransitioner.swift in Sources */,
 				9455EB871A7D00ED00FFAD81 /* Threading.swift in Sources */,
@@ -1091,6 +1110,7 @@
 				9413B8181A37B94500FFAD81 /* TerrainState.swift in Sources */,
 				9413B80D1A37B94500FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */,
+				94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */,
 				9413B7AA1A37B93100FFAD81 /* Ellipsoid.swift in Sources */,
 				9413B7F01A37B93D00FFAD81 /* VertexAttributes.swift in Sources */,
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
@@ -1292,6 +1312,7 @@
 		9413B7981A37B8D900FFAD81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1320,6 +1341,7 @@
 		9413B7991A37B8D900FFAD81 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

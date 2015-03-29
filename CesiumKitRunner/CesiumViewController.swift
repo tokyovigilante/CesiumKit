@@ -10,16 +10,16 @@ import OpenGLES
 import GLKit
 import CesiumKit
 
-class CesiumViewController: GLKViewController {
+class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
     
     var setup = false
     
     private var lastFrameRateUpdate = NSDate()
-
+    
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-
+        
     }
     
     private var globe: CesiumGlobe!
@@ -27,7 +27,7 @@ class CesiumViewController: GLKViewController {
     override func viewDidLoad () {
         super.viewDidLoad()
         setupContext()
-        setupGestureRecognisers()
+        setupMultitouchInput()
     }
     
     override func didReceiveMemoryWarning() {
@@ -43,23 +43,12 @@ class CesiumViewController: GLKViewController {
         }
     }
     
-    deinit {
-        
-        tearDownGL()
-        
-        let glView = self.view as! GLKView
-        
-        if EAGLContext.currentContext() == glView.context {
-            EAGLContext.setCurrentContext(nil)
-        }
-    }
-    
     private func setupContext () {
         
         let view: GLKView = self.view as! GLKView
-       
+        
         view.context = EAGLContext(API: .OpenGLES3)
-
+        
         if !EAGLContext.setCurrentContext(view.context) {
             println("Failed to set current OpenGL context!")
             exit(1)
@@ -74,7 +63,7 @@ class CesiumViewController: GLKViewController {
         //view.drawableMultisample = .Multisample4X
         
         preferredFramesPerSecond = 60
-
+        
         // enable Retina support on device
         #if arch(i386) || arch(x86_64)
             // render low-res for simulator (Software GL)
@@ -101,12 +90,33 @@ class CesiumViewController: GLKViewController {
         //globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
     }
     
-    func setupGestureRecognisers() {
-        let pinch = UIPinchGestureRecognizer(target: self, action: Selector("handlePinchGesture:"))
-        view.addGestureRecognizer(pinch)
+    
+    // MARK: - NSResponder
+    func setupMultitouchInput() {
+        self.view.userInteractionEnabled = true
+        self.view.multipleTouchEnabled = true
+        
+        //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
+        //self.view.addGestureRecognizer(tapRecognizer)
     }
     
-
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        // propagate to CesiumKit
+        globe?.eventHandler.handleTouchStart(touches, scaleFactor: Double(self.view.contentScaleFactor))
+    }
+    
+    
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        globe?.eventHandler.handleTouchMove(touches, scaleFactor: Double(self.view.contentScaleFactor))
+    }
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        globe?.eventHandler.handleTouchEnd(touches)
+    }
+    
+    override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
+        
+    }
     
     //MARK: - GLKView delegate
     
@@ -128,26 +138,17 @@ class CesiumViewController: GLKViewController {
         globe = nil
     }
     
-    func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {
+    deinit {
         
+        tearDownGL()
         
-        if recognizer.scale < 1 {
-            println("Pinched")
-        } else {
-            println("Zoomed")
+        let glView = self.view as! GLKView
+        
+        if EAGLContext.currentContext() == glView.context {
+            EAGLContext.setCurrentContext(nil)
         }
-        /*if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
-            [gesture setString:kPinchGesture];
-            if (((UIGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
-                if (((UIPinchGestureRecognizer*)sender).scale < 1) {
-                    NSLog(@"Pinched");
-                }
-                else {
-                    NSLog(@"Zoomed");
-                }
-                
-            }*/
     }
+    
 }
 
 

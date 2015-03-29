@@ -132,8 +132,8 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     */
     static func fromCartesian3(cartesian: Cartesian3?) -> Ellipsoid {
         
-        if let actualCartesian = cartesian {
-            return Ellipsoid(x: actualCartesian.x, y: actualCartesian.y, z: actualCartesian.z)
+        if let cartesian = cartesian {
+            return Ellipsoid(x: cartesian.x, y: cartesian.y, z: cartesian.z)
         }
         return Ellipsoid()
     }

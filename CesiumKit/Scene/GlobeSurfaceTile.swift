@@ -141,61 +141,50 @@ class GlobeSurfaceTile {
         }
     }
     
-    /*
-    function getPosition(tile, scene, vertices, stride, index, result) {
-    Cartesian3.unpack(vertices, index * stride, result);
-    Cartesian3.add(tile.center, result, result);
     
-    if (defined(scene) && scene.mode !== SceneMode.SCENE3D) {
-    var projection = scene.mapProjection;
-    var ellipsoid = projection.ellipsoid;
-    var positionCart = ellipsoid.cartesianToCartographic(result);
-    projection.project(positionCart, result);
-    Cartesian3.fromElements(result.z, result.x, result.y, result);
+    func getPosition(scene: Scene? = nil, vertices: [Float], stride: Int, index: Int) -> Cartesian3 {
+        var result = Cartesian3.unpack(vertices, startingIndex: index * stride)
+        result = center.add(result)
+        
+        if scene != nil && scene!.mode != .Scene3D {
+            var projection = scene!.mapProjection
+            var ellipsoid = projection.ellipsoid
+            var positionCart = ellipsoid.cartesianToCartographic(result)
+            result = projection.project(positionCart!)
+            result = Cartesian3(x: result.z, y: result.x, z: result.y)
+        }
+        
+        return result
     }
-    
-    return result;
+
+    func pick (ray: Ray, scene: Scene, cullBackFaces: Bool) -> Cartesian3? {
+        
+        let mesh = pickTerrain?.mesh
+        if mesh == nil {
+            return nil
+        }
+        
+        let vertices = mesh!.vertices
+        let stride = mesh!.stride
+        let indices = mesh!.indices
+        
+        let length = indices.count
+        for (var i = 0; i < length; i += 3) {
+            let i0 = indices[i]
+            let i1 = indices[i + 1]
+            let i2 = indices[i + 2]
+            
+            var v0 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i0)
+            var v1 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i1)
+            var v2 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i2)
+            
+            var intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
+            if intersection != nil {
+                return intersection
+            }
+        }
+        return nil
     }
-    
-    var scratchV0 = new Cartesian3();
-    var scratchV1 = new Cartesian3();
-    var scratchV2 = new Cartesian3();
-    var scratchResult = new Cartesian3();
-    
-    GlobeSurfaceTile.prototype.pick = function(ray, scene, cullBackFaces, result) {
-    var terrain = this.pickTerrain;
-    if (!defined(terrain)) {
-    return undefined;
-    }
-    
-    var mesh = terrain.mesh;
-    if (!defined(mesh)) {
-    return undefined;
-    }
-    
-    var vertices = mesh.vertices;
-    var stride = mesh.stride;
-    var indices = mesh.indices;
-    
-    var length = indices.length;
-    for (var i = 0; i < length; i += 3) {
-    var i0 = indices[i];
-    var i1 = indices[i + 1];
-    var i2 = indices[i + 2];
-    
-    var v0 = getPosition(this, scene, vertices, stride, i0, scratchV0);
-    var v1 = getPosition(this, scene, vertices, stride, i1, scratchV1);
-    var v2 = getPosition(this, scene, vertices, stride, i2, scratchV2);
-    
-    var intersection = IntersectionTests.rayTriangle(ray, v0, v1, v2, cullBackFaces, scratchResult);
-    if (defined(intersection)) {
-    return Cartesian3.clone(intersection, result);
-    }
-    }
-    
-    return undefined;
-    };
-    */
     
     func freeResources () {
         /*

@@ -129,8 +129,8 @@ class Uniform {
     
     static func create(#activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
         switch activeUniform.type {
-            /*case .FloatVec1:
-            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)*/
+            case .FloatVec1:
+            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)
             case .FloatVec2:
             return UniformFloatVec2(activeUniform: activeUniform, name: name, locations: locations)
             case .FloatVec3:
@@ -165,6 +165,7 @@ class Uniform {
             return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)*/
         default:
             assertionFailure("Unimplemented")
+            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)
         }
     }
     
@@ -177,6 +178,39 @@ case .FloatVec1(let value):
 if _isDirty[index] {
 glUniform1f(location, GLfloat(value))
 }*/
+class UniformFloatVec1: Uniform {
+    
+    private var _values: [Float]
+    
+    private var _changed = false
+    
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        
+        _values = [Float]()
+        
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    }
+    
+    override func setValues(newValues: [Any]) {
+        var values = newValues.map({ Float($0 as! Double) })
+        for i in 0..<_locations.count {
+            let value = _values[i]
+            if values[i] != _values[i] {
+                _values[i] = values[i]
+                _changed = true
+            }
+        }
+    }
+    
+    override func set () {
+
+        if _changed {
+            _changed = false
+            glUniform1fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
+        }
+    }
+}
+
 
 class UniformFloatVec2: Uniform {
     

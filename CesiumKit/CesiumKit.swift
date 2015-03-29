@@ -161,7 +161,11 @@ public class CesiumGlobe {
     *
     * @type {ScreenSpaceEventHandler}
     */
-    var screenSpaceEventHandler: ScreenSpaceEventHandler
+    public var eventHandler: ScreenSpaceEventHandler {
+        get {
+            return scene.screenSpaceCameraController._aggregator.eventHandler
+        }
+    }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
@@ -275,7 +279,7 @@ public class CesiumGlobe {
         //Set the terrain provider
         scene.terrainProvider = options.terrainProvider
         
-        self.screenSpaceEventHandler = ScreenSpaceEventHandler(/*canvas*/)
+        //self.screenSpaceEventHandler = ScreenSpaceEventHandler(view: view)
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
         

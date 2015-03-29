@@ -119,10 +119,9 @@ public struct Cartesian3: Packable, Equatable {
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
-        var x = 0.0, y = 0.0, z = 0.0
-        x = Double(array[startingIndex])
-        y = Double(array[startingIndex+1])
-        z = Double(array[startingIndex+2])
+        var x = Double(array[startingIndex])
+        var y = Double(array[startingIndex+1])
+        var z = Double(array[startingIndex+2])
         return Cartesian3(x: x, y: y, z: z)
     }
     

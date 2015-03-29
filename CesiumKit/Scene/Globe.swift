@@ -223,11 +223,11 @@ class Globe {
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
     
-    func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Double) {
-        func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Double {
+    func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
+        func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
             var aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
             var bDist = b.pickBoundingSphere.distanceSquaredTo(rayOrigin)
-            return aDist - bDist
+            return aDist < bDist
         }
         return comparePickTileFunction
     }
@@ -246,68 +246,53 @@ class Globe {
     * var intersection = globe.pick(ray, scene);
     */
     func pick(ray: Ray, scene: Scene) -> Cartesian3? {
-        //FIXME: Unimplemented
-        /*
-        var scratchArray = [];
-        var scratchSphereIntersectionResult = Interval)
-        start : 0.0,
-        stop : 0.0
+
+        
+        var scratchSphereIntersectionResult = Interval(
+        start: 0.0,
+        stop: 0.0
         )
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(ray)) {
-        throw new DeveloperError('ray is required');
-        }
-        if (!defined(scene)) {
-        throw new DeveloperError('scene is required');
-        }
-        //>>includeEnd('debug');
         
-        var mode = scene.mode;
-        var projection = scene.mapProjection;
+        let mode = scene.mode
+        let projection = scene.mapProjection
         
-        var sphereIntersections = scratchArray;
-        sphereIntersections.length = 0;
+        var sphereIntersections = [GlobeSurfaceTile]()
         
-        var tilesToRender = this._surface._tilesToRender;
-        var length = tilesToRender.length;
+        var tilesToRender = _surface.tilesToRender
+        //var length = tilesToRender.count
         
-        var tile;
-        var i;
-        
-        for (i = 0; i < length; ++i) {
-        tile = tilesToRender[i];
-        var tileData = tile.data;
-        
-        if (!defined(tileData)) {
-        continue;
-        }
-        
-        var boundingVolume = tileData.pickBoundingSphere;
-        if (mode !== SceneMode.SCENE3D) {
-        BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, projection, tileData.minimumHeight, tileData.maximumHeight, boundingVolume);
-        Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);
-        } else {
-        BoundingSphere.clone(tileData.boundingSphere3D, boundingVolume);
+        for tile in tilesToRender {
+            
+            if tile.data == nil {
+                continue
+            }
+            let tileData = tile.data!
+            
+            var boundingVolume = tileData.pickBoundingSphere
+            if mode != .Scene3D {
+                assertionFailure("unimplemented")
+                /*BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, projection, tileData.minimumHeight, tileData.maximumHeight, boundingVolume);
+                Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);*/
+            } else {
+                boundingVolume = tileData.boundingSphere3D
+            }
+            
+            if let boundingSphereIntersection = IntersectionTests.raySphere(ray, sphere: boundingVolume) {
+                sphereIntersections.append(tileData)
+            }
         }
         
-        var boundingSphereIntersection = IntersectionTests.raySphere(ray, boundingVolume, scratchSphereIntersectionResult);
-        if (defined(boundingSphereIntersection)) {
-        sphereIntersections.push(tileData);
-        }
+        sphereIntersections.sort(createComparePickTileFunction(ray.origin))
+        
+        var intersection: Cartesian3? = nil
+
+        for sphereIntersection in sphereIntersections {
+            if let intersection = sphereIntersection.pick(ray, scene: scene, cullBackFaces: true) {
+                break
+            }
         }
         
-        sphereIntersections.sort(createComparePickTileFunction(ray.origin));
-        
-        var intersection;
-        length = sphereIntersections.length;
-        for (i = 0; i < length; ++i) {
-        intersection = sphereIntersections[i].pick(ray, scene, true, result);
-        if (defined(intersection)) {
-        break;
-        }
-        }
-        
-        return intersection;*/ return Cartesian3()
+        return intersection
     }
     
     /**

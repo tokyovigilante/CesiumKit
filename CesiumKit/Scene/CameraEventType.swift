@@ -12,14 +12,14 @@
 * @namespace
 * @alias CameraEventType
 */
-enum CameraEventType {
+enum CameraEventType: Int {
     /**
     * A left mouse button press followed by moving the mouse and releasing the button.
     *
     * @type {Number}
     * @constant
     */
-    case LeftDrag,
+    case LeftDrag = 0,
     
     /**
     *  A right mouse button press followed by moving the mouse and releasing the button.
@@ -51,5 +51,7 @@ enum CameraEventType {
     * @type {Number}
     * @constant
     */
-    Pinch
+    Pinch,
+    
+    COUNT
 }

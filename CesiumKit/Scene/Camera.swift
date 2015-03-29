@@ -707,7 +707,7 @@ public class Camera {
     /**
     * @private
     */
-    func update (mode: SceneMode, scene2D: Scene.Scene2D) {
+    func update (mode: SceneMode) {
         var updateFrustum = false
         
         if mode != _mode {
@@ -715,16 +715,7 @@ public class Camera {
             _modeChanged = mode != .Morphing
             updateFrustum = _mode == .Scene2D
         }
-        
-        let projection = scene2D.projection
-        // FIXME: Update projection
-        /*if projection != nil /*&& projection! != _projection*/ {
-            if projection! is _projection.dynamicType {
-                _projection = projection
-                _maxCoord = projection.project(_maxCoord)
-            }
-        }*/
-        
+                
         if updateFrustum {
             // FIXME: updateFrustum
             /*_max2Dfrustum = frustum
@@ -1221,79 +1212,67 @@ Camera.prototype.twistLeft = function(amount) {
     this.look(this.direction, amount);
 };
 
-/**
-* Rotate the camera clockwise around its direction vector by amount, in radians.
-*
-* @memberof Camera
-*
-* @param {Number} [amount] The amount, in radians, to rotate by. Defaults to <code>defaultLookAmount</code>.
-*
-* @see Camera#twistLeft
-*/
-Camera.prototype.twistRight = function(amount) {
+    /**
+    * Rotate the camera clockwise around its direction vector by amount, in radians.
+    *
+    * @memberof Camera
+    *
+    * @param {Number} [amount] The amount, in radians, to rotate by. Defaults to <code>defaultLookAmount</code>.
+    *
+    * @see Camera#twistLeft
+    */
+    Camera.prototype.twistRight = function(amount) {
     amount = defaultValue(amount, this.defaultLookAmount);
     this.look(this.direction, -amount);
-};
-
-var appendTransformMatrix = new Matrix4();
-
-function appendTransform(camera, transform) {
-    var oldTransform;
-    if (defined(transform)) {
-        oldTransform = Matrix4.clone(camera.transform, appendTransformMatrix);
-        camera.setTransform(transform);
-    }
-    return oldTransform;
-}
-
-function revertTransform(camera, transform) {
-    if (defined(transform)) {
-        camera.setTransform(transform);
-    }
-}
-
-var rotateScratchQuaternion = new Quaternion();
-var rotateScratchMatrix = new Matrix3();
-/**
-* Rotates the camera around <code>axis</code> by <code>angle</code>. The distance
-* of the camera's position to the center of the camera's reference frame remains the same.
-*
-* @memberof Camera
-*
-* @param {Cartesian3} axis The axis to rotate around given in world coordinates.
-* @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
-* @param {Matrix4} [transform] A transform to append to the camera transform before the rotation. Does not alter the camera's transform.
-*
-* @see Camera#rotateUp
-* @see Camera#rotateDown
-* @see Camera#rotateLeft
-* @see Camera#rotateRight
-*
-* @example
-* // Rotate about a point on the earth.
-* var center = ellipsoid.cartographicToCartesian(cartographic);
-* var transform = Cesium.Matrix4.fromTranslation(center);
-* camera.rotate(axis, angle, transform);
-*/
-Camera.prototype.rotate = function(axis, angle, transform) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(axis)) {
-        throw new DeveloperError('axis is required.');
-    }
-    //>>includeEnd('debug');
+    };
+    */
     
-    var turnAngle = defaultValue(angle, this.defaultRotateAmount);
-    var quaternion = Quaternion.fromAxisAngle(axis, -turnAngle, rotateScratchQuaternion);
-    var rotation = Matrix3.fromQuaternion(quaternion, rotateScratchMatrix);
-    var oldTransform = appendTransform(this, transform);
-    Matrix3.multiplyByVector(rotation, this.position, this.position);
-    Matrix3.multiplyByVector(rotation, this.direction, this.direction);
-    Matrix3.multiplyByVector(rotation, this.up, this.up);
-    Cartesian3.cross(this.direction, this.up, this.right);
-    Cartesian3.cross(this.right, this.direction, this.up);
-    revertTransform(this, oldTransform);
-};
+/*    func appendTransform(transform: Matrix4?) -> Matrix4 {
+        var oldTransform: Matrix4
+        if transform != nil {
+            oldTransform = self.transform
+            _setTransform(transform!)
+        }
+        return oldTransform
+    }
 
+    func revertTransform(transform: Matrix4? = nil) {
+        if transform != nil {
+            _setTransform(transform!)
+        }
+    }*/
+
+    /**
+    * Rotates the camera around <code>axis</code> by <code>angle</code>. The distance
+    * of the camera's position to the center of the camera's reference frame remains the same.
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian3} axis The axis to rotate around given in world coordinates.
+    * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
+    *
+    * @see Camera#rotateUp
+    * @see Camera#rotateDown
+    * @see Camera#rotateLeft
+    * @see Camera#rotateRight
+    *
+    * @example
+    * // Rotate about a point on the earth.
+    * var center = ellipsoid.cartographicToCartesian(cartographic);
+    * camera.rotate(axis, angle);
+    */
+    func rotate (axis: Cartesian3, angle: Double? = nil) {
+        
+        let turnAngle = angle ?? defaultRotateAmount
+        let quaternion = Quaternion(fromAxis: axis, angle: -turnAngle)
+        let rotation = Matrix3(fromQuaternion: quaternion)
+        position = rotation.multiplyByVector(position)
+        direction = rotation.multiplyByVector(direction)
+        up = rotation.multiplyByVector(up)
+        right = direction.cross(up)
+        up = right.cross(direction)
+    }
+    /*
 /**
 * Rotates the camera around the center of the camera's reference frame by angle downwards.
 *
@@ -1309,33 +1288,26 @@ Camera.prototype.rotateDown = function(angle, transform) {
     angle = defaultValue(angle, this.defaultRotateAmount);
     rotateVertical(this, angle, transform);
 };
-
+*/
 /**
 * Rotates the camera around the center of the camera's reference frame by angle upwards.
 *
 * @memberof Camera
 *
 * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
-* @param {Matrix4} [transform] A transform to append to the camera transform before the rotation. Does not alter the camera's transform.
 *
 * @see Camera#rotateDown
 * @see Camera#rotate
 */
-Camera.prototype.rotateUp = function(angle, transform) {
-    angle = defaultValue(angle, this.defaultRotateAmount);
-    rotateVertical(this, -angle, transform);
-};
+    func rotateUp (angle: Double?) {
+        let rotateAngle = angle ?? defaultRotateAmount
+        rotateVertical(-rotateAngle)
+    }
 
-var rotateVertScratchP = new Cartesian3();
-var rotateVertScratchA = new Cartesian3();
-var rotateVertScratchTan = new Cartesian3();
-var rotateVertScratchNegate = new Cartesian3();
-function rotateVertical(camera, angle, transform) {
-    var oldTransform = appendTransform(camera, transform);
-    
-    var position = camera.position;
-    var p = Cartesian3.normalize(position, rotateVertScratchP);
-    if (defined(camera.constrainedAxis)) {
+    func rotateVertical(angle: Double) {
+    /*
+    let p = position.normalize()
+    if (constrainedAxis != nil) {
         var northParallel = Cartesian3.equalsEpsilon(p, camera.constrainedAxis, CesiumMath.EPSILON2);
         var southParallel = Cartesian3.equalsEpsilon(p, Cartesian3.negate(camera.constrainedAxis, rotateVertScratchNegate), CesiumMath.EPSILON2);
         if ((!northParallel && !southParallel)) {
@@ -1360,51 +1332,48 @@ function rotateVertical(camera, angle, transform) {
         }
     } else {
         camera.rotate(camera.right, angle);
+    }*/
+}
+
+    /**
+    * Rotates the camera around the center of the camera's reference frame by angle to the right.
+    *
+    * @memberof Camera
+    *
+    * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
+    * @param {Matrix4} [transform] A transform to append to the camera transform before the rotation. Does not alter the camera's transform.
+    *
+    * @see Camera#rotateLeft
+    * @see Camera#rotate
+    */
+    func rotateRight (angle: Double) {
+        rotateHorizontal(-angle)
     }
+/*
+    /**
+    * Rotates the camera around the center of the camera's reference frame by angle to the left.
+    *
+    * @memberof Camera
+    *
+    * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
+    *
+    * @see Camera#rotateRight
+    * @see Camera#rotate
+    */
+    Camera.prototype.rotateLeft = function(angle) {
+    angle = defaultValue(angle, this.defaultRotateAmount);
+    rotateHorizontal(this, angle);
+    };
+    */
     
-    revertTransform(camera, oldTransform);
-}
-
-/**
-* Rotates the camera around the center of the camera's reference frame by angle to the right.
-*
-* @memberof Camera
-*
-* @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
-* @param {Matrix4} [transform] A transform to append to the camera transform before the rotation. Does not alter the camera's transform.
-*
-* @see Camera#rotateLeft
-* @see Camera#rotate
-*/
-Camera.prototype.rotateRight = function(angle, transform) {
-    angle = defaultValue(angle, this.defaultRotateAmount);
-    rotateHorizontal(this, -angle, transform);
-};
-
-/**
-* Rotates the camera around the center of the camera's reference frame by angle to the left.
-*
-* @memberof Camera
-*
-* @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
-* @param {Matrix4} [transform] A transform to append to the camera transform before the rotation. Does not alter the camera's transform.
-*
-* @see Camera#rotateRight
-* @see Camera#rotate
-*/
-Camera.prototype.rotateLeft = function(angle, transform) {
-    angle = defaultValue(angle, this.defaultRotateAmount);
-    rotateHorizontal(this, angle, transform);
-};
-
-function rotateHorizontal(camera, angle, transform) {
-    if (defined(camera.constrainedAxis)) {
-        camera.rotate(camera.constrainedAxis, angle, transform);
-    } else {
-        camera.rotate(camera.up, angle, transform);
+    func rotateHorizontal(angle: Double) {
+        if constrainedAxis != nil {
+            rotate(constrainedAxis!, angle: angle)
+        } else {
+            rotate(up, angle: angle)
+        }
     }
-}
-
+/*
 function zoom2D(camera, amount) {
     var frustum = camera.frustum;
     
@@ -1846,19 +1815,18 @@ Camera.prototype.getRectangleCameraCoordinates = function(rectangle, result) {
             rectangleCameraPosition2D(rectangle, _projection, position)
         }*/
     }
-/*
-var pickEllipsoid3DRay = new Ray();
-function pickEllipsoid3D(camera, windowPosition, ellipsoid, result) {
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    var ray = camera.getPickRay(windowPosition, pickEllipsoid3DRay);
-    var intersection = IntersectionTests.rayEllipsoid(ray, ellipsoid);
-    if (!intersection) {
-        return undefined;
-    }
     
-    return Ray.getPoint(ray, intersection.start, result);
-}
-
+    func pickEllipsoid3D(windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+        
+        let ray = getPickRay(windowPosition)
+        let intersection = IntersectionTests.rayEllipsoid(ray, ellipsoid: ellipsoid)
+        if intersection == nil {
+            return nil
+        }
+        
+        return ray.getPoint(intersection!.start)
+    }
+/*
 var pickEllipsoid2DRay = new Ray();
 function pickMap2D(camera, windowPosition, projection, result) {
     var ray = camera.getPickRay(windowPosition, pickEllipsoid2DRay);
@@ -1889,72 +1857,58 @@ function pickMapColumbusView(camera, windowPosition, projection, result) {
     
     return projection.ellipsoid.cartographicToCartesian(cart, result);
 }
-
-/**
-* Pick an ellipsoid or map.
-*
-* @memberof Camera
-*
-* @param {Cartesian2} windowPosition The x and y coordinates of a pixel.
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to pick.
-* @param {Cartesian3} [result] The object onto which to store the result.
-*
-* @returns {Cartesian3} If the ellipsoid or map was picked, returns the point on the surface of the ellipsoid or map
-* in world coordinates. If the ellipsoid or map was not picked, returns undefined.
 */
-Camera.prototype.pickEllipsoid = function(windowPosition, ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(windowPosition)) {
-        throw new DeveloperError('windowPosition is required.');
+    /**
+    * Pick an ellipsoid or map.
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian2} windowPosition The x and y coordinates of a pixel.
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to pick.
+    * @param {Cartesian3} [result] The object onto which to store the result.
+    *
+    * @returns {Cartesian3} If the ellipsoid or map was picked, returns the point on the surface of the ellipsoid or map
+    * in world coordinates. If the ellipsoid or map was not picked, returns undefined.
+    */
+    func pickEllipsoid (windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+        
+        if _mode == .Scene3D {
+            return pickEllipsoid3D(windowPosition, ellipsoid: ellipsoid)
+        } else if _mode == .Scene2D {
+            assertionFailure("Unimplemented")
+            //result = pickMap2D(this, windowPosition, this._projection, result);
+        } else if _mode == .ColumbusView {
+            assertionFailure("Unimplemented")
+            //result = pickMapColumbusView(this, windowPosition, this._projection, result);
+        }
+        return nil
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new Cartesian3();
-    }
-    
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    
-    if (this._mode === SceneMode.SCENE3D) {
-        result = pickEllipsoid3D(this, windowPosition, ellipsoid, result);
-    } else if (this._mode === SceneMode.SCENE2D) {
-        result = pickMap2D(this, windowPosition, this._projection, result);
-    } else if (this._mode === SceneMode.COLUMBUS_VIEW) {
-        result = pickMapColumbusView(this, windowPosition, this._projection, result);
-    }
-    
-    return result;
-};
 
-var pickPerspCenter = new Cartesian3();
-var pickPerspXDir = new Cartesian3();
-var pickPerspYDir = new Cartesian3();
-function getPickRayPerspective(camera, windowPosition, result) {
-    var width = camera._scene.canvas.clientWidth;
-    var height = camera._scene.canvas.clientHeight;
-    
-    var tanPhi = Math.tan(camera.frustum.fovy * 0.5);
-    var tanTheta = camera.frustum.aspectRatio * tanPhi;
-    var near = camera.frustum.near;
-    
-    var x = (2.0 / width) * windowPosition.x - 1.0;
-    var y = (2.0 / height) * (height - windowPosition.y) - 1.0;
-    
-    var position = camera.positionWC;
-    Cartesian3.clone(position, result.origin);
-    
-    var nearCenter = Cartesian3.multiplyByScalar(camera.directionWC, near, pickPerspCenter);
-    Cartesian3.add(position, nearCenter, nearCenter);
-    var xDir = Cartesian3.multiplyByScalar(camera.rightWC, x * near * tanTheta, pickPerspXDir);
-    var yDir = Cartesian3.multiplyByScalar(camera.upWC, y * near * tanPhi, pickPerspYDir);
-    var direction = Cartesian3.add(nearCenter, xDir, result.direction);
-    Cartesian3.add(direction, yDir, direction);
-    Cartesian3.subtract(direction, position, direction);
-    Cartesian3.normalize(direction, direction);
-    
-    return result;
-}
-
+    func getPickRayPerspective(windowPosition: Cartesian2) -> Ray {
+        
+        let width = Double(scene!.context.width)
+        let height = Double(scene!.context.height)
+        
+        let tanPhi = tan(frustum.fovy * 0.5)
+        let tanTheta = frustum.aspectRatio * tanPhi
+        let near = frustum.near
+        
+        let x = (2.0 / width) * windowPosition.x - 1.0
+        let y = (2.0 / height) * (height - windowPosition.y) - 1.0
+        
+        let position = positionWC
+        
+        var nearCenter = directionWC.multiplyByScalar(near)
+        nearCenter = position.add(nearCenter)
+        
+        var xDir = rightWC.multiplyByScalar(x * near * tanTheta)
+        var yDir = upWC.multiplyByScalar(y * near * tanPhi)
+        
+        var direction = nearCenter.add(xDir).add(yDir).subtract(position).normalize()
+        
+        return Ray(origin: position, direction: direction)
+    }
+/*
 var scratchDirection = new Cartesian3();
 
 function getPickRayOrthographic(camera, windowPosition, result) {
@@ -1978,37 +1932,28 @@ function getPickRayOrthographic(camera, windowPosition, result) {
     
     return result;
 }
-
-/**
-* Create a ray from the camera position through the pixel at <code>windowPosition</code>
-* in world coordinates.
-*
-* @memberof Camera
-*
-* @param {Cartesian2} windowPosition The x and y coordinates of a pixel.
-* @param {Ray} [result] The object onto which to store the result.
-*
-* @returns {Object} Returns the {@link Cartesian3} position and direction of the ray.
 */
-Camera.prototype.getPickRay = function(windowPosition, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(windowPosition)) {
-        throw new DeveloperError('windowPosition is required.');
-    }
-    //>>includeEnd('debug');
+    /**
+    * Create a ray from the camera position through the pixel at <code>windowPosition</code>
+    * in world coordinates.
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian2} windowPosition The x and y coordinates of a pixel.
+    * @param {Ray} [result] The object onto which to store the result.
+    *
+    * @returns {Object} Returns the {@link Cartesian3} position and direction of the ray.
+    */
+    func getPickRay (windowPosition: Cartesian2) -> Ray {
     
-    if (!defined(result)) {
-        result = new Ray();
+        if frustum.aspectRatio != Double.NaN && frustum.fovy != Double.NaN && frustum.near != Double.NaN {
+            return getPickRayPerspective(windowPosition)
+        }
+        assertionFailure("unimplemented")
+        return Ray()
+        //return getPickRayOrthographic(windowPosition)
     }
-    
-    var frustum = this.frustum;
-    if (defined(frustum.aspectRatio) && defined(frustum.fovy) && defined(frustum.near)) {
-        return getPickRayPerspective(this, windowPosition, result);
-    }
-    
-    return getPickRayOrthographic(this, windowPosition, result);
-};
-
+/*
 function createAnimation2D(camera, duration) {
     var position = camera.position;
     var translateX = position.x < -camera._maxCoord.x || position.x > camera._maxCoord.x;

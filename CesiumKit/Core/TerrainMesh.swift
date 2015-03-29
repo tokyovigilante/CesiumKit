@@ -92,7 +92,7 @@ struct TerrainMesh {
     * may be higher.
     * @type {Number}
     */
-    let vertexStride: Int
+    let stride: Int
     
     init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6) {
         self.center = center
@@ -102,6 +102,6 @@ struct TerrainMesh {
         self.maximumHeight = maximumHeight
         self.boundingSphere3D = boundingSphere3D
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
-        self.vertexStride = vertexStride
+        self.stride = vertexStride
     }
 }
