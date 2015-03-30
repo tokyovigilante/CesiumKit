@@ -21,7 +21,12 @@ import UIKit
 * @see ScreenSpaceEventHandler
 */
 
-struct MouseMovement {
+protocol StartEndPosition {
+    var startPosition: Cartesian2 { get set }
+    var endPosition: Cartesian2 { get set }
+}
+
+struct MouseMovement: StartEndPosition {
     var startPosition: Cartesian2
     var endPosition: Cartesian2
     var valid: Bool
@@ -327,7 +332,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return _movement[key]!
     }
-    /*
+    
     /**
     * Gets the start and end position of the last move event (not the aggregated event).
     *
@@ -335,21 +340,15 @@ class CameraEventAggregator {
     * @param {KeyboardEventModifier} [modifier] The keyboard modifier.
     * @returns {Object|undefined} An object with two {@link Cartesian2} properties: <code>startPosition</code> and <code>endPosition</code> or <code>undefined</code>.
     */
-    CameraEventAggregator.prototype.getLastMovement = function(type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var key = getKey(type, modifier);
-    var lastMovement = this._lastMovement[key];
-    if (lastMovement.valid) {
-    return lastMovement;
+    func getLastMovement (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> MouseMovement? {
+        let key = getKey(type, modifier: modifier)
+        var lastMovement = _lastMovement[key]
+        if lastMovement != nil && lastMovement!.valid {
+            return lastMovement!
+        }
+        return nil
     }
     
-    return undefined;
-    };
     
     /**
     * Gets whether the mouse button is down or a touch has started.
@@ -358,17 +357,11 @@ class CameraEventAggregator {
     * @param {KeyboardEventModifier} [modifier] The keyboard modifier.
     * @returns {Boolean} Whether the mouse button is down or a touch has started.
     */
-    CameraEventAggregator.prototype.isButtonDown = function(type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
+    func isButtonDown (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Bool {
+        let key = getKey(type, modifier: modifier)
+        return _isDown[key]!
     }
-    //>>includeEnd('debug');
     
-    var key = getKey(type, modifier);
-    return this._isDown[key];
-    };
-    */
     /**
     * Gets the mouse position that started the aggregation.
     *
@@ -385,7 +378,7 @@ class CameraEventAggregator {
         var key = getKey(type, modifier: modifier)
         return _eventStartPosition[key]!
     }
-    /*
+    
     /**
     * Gets the time the button was pressed or the touch was started.
     *
@@ -393,16 +386,10 @@ class CameraEventAggregator {
     * @param {KeyboardEventModifier} [modifier] The keyboard modifier.
     * @returns {Date} The time the button was pressed or the touch was started.
     */
-    CameraEventAggregator.prototype.getButtonPressTime = function(type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
+    func getButtonPressTime (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> NSDate? {
+        let key = getKey(type, modifier: modifier)
+        return _pressTime[key]
     }
-    //>>includeEnd('debug');
-    
-    var key = getKey(type, modifier);
-    return this._pressTime[key];
-    };
     
     /**
     * Gets the time the button was released or the touch was ended.
@@ -411,27 +398,18 @@ class CameraEventAggregator {
     * @param {KeyboardEventModifier} [modifier] The keyboard modifier.
     * @returns {Date} The time the button was released or the touch was ended.
     */
-    CameraEventAggregator.prototype.getButtonReleaseTime = function(type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
+    func getButtonReleaseTime (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> NSDate? {
+        let key = getKey(type, modifier: modifier)
+        return _releaseTime[key]
     }
-    //>>includeEnd('debug');
     
-    var key = getKey(type, modifier);
-    return this._releaseTime[key];
-    };
-    */
     /**
     * Signals that all of the events have been handled and the aggregator should be reset to handle new events.
     */
     func reset () {
-        // FIXME: unimplemented
-        /*for ( var name in this._update) {
-        if (this._update.hasOwnProperty(name)) {
-        this._update[name] = true;
+        for (name, update) in _update {
+            _update[name] = true
         }
-        }*/
     }
     /*
     /**

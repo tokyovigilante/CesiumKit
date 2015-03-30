@@ -1227,21 +1227,6 @@ Camera.prototype.twistLeft = function(amount) {
     };
     */
     
-/*    func appendTransform(transform: Matrix4?) -> Matrix4 {
-        var oldTransform: Matrix4
-        if transform != nil {
-            oldTransform = self.transform
-            _setTransform(transform!)
-        }
-        return oldTransform
-    }
-
-    func revertTransform(transform: Matrix4? = nil) {
-        if transform != nil {
-            _setTransform(transform!)
-        }
-    }*/
-
     /**
     * Rotates the camera around <code>axis</code> by <code>angle</code>. The distance
     * of the camera's position to the center of the camera's reference frame remains the same.
@@ -1289,51 +1274,52 @@ Camera.prototype.rotateDown = function(angle, transform) {
     rotateVertical(this, angle, transform);
 };
 */
-/**
-* Rotates the camera around the center of the camera's reference frame by angle upwards.
-*
-* @memberof Camera
-*
-* @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
-*
-* @see Camera#rotateDown
-* @see Camera#rotate
-*/
+    /**
+    * Rotates the camera around the center of the camera's reference frame by angle upwards.
+    *
+    * @memberof Camera
+    *
+    * @param {Number} [angle] The angle, in radians, to rotate by. Defaults to <code>defaultRotateAmount</code>.
+    *
+    * @see Camera#rotateDown
+    * @see Camera#rotate
+    */
     func rotateUp (angle: Double?) {
         let rotateAngle = angle ?? defaultRotateAmount
         rotateVertical(-rotateAngle)
     }
 
     func rotateVertical(angle: Double) {
-    /*
-    let p = position.normalize()
-    if (constrainedAxis != nil) {
-        var northParallel = Cartesian3.equalsEpsilon(p, camera.constrainedAxis, CesiumMath.EPSILON2);
-        var southParallel = Cartesian3.equalsEpsilon(p, Cartesian3.negate(camera.constrainedAxis, rotateVertScratchNegate), CesiumMath.EPSILON2);
-        if ((!northParallel && !southParallel)) {
-            var constrainedAxis = Cartesian3.normalize(camera.constrainedAxis, rotateVertScratchA);
-            
-            var dot = Cartesian3.dot(p, constrainedAxis);
-            var angleToAxis = Math.acos(dot);
-            if (angle > 0 && angle > angleToAxis) {
-                angle = angleToAxis;
+        
+        var angle = angle
+        let p = position.normalize()
+        
+        if constrainedAxis != nil {
+            let northParallel = p.equalsEpsilon(constrainedAxis!, relativeEpsilon: Math.Epsilon2)
+            let southParallel = p.equalsEpsilon(constrainedAxis!.negate(), relativeEpsilon: Math.Epsilon2)
+            if !northParallel && !southParallel {
+                var constrainedAxis = self.constrainedAxis!.normalize()
+                var dot = p.dot(constrainedAxis)
+                var angleToAxis = acos(dot)
+                if angle > 0 && angle > angleToAxis {
+                    angle = angleToAxis
+                }
+                
+                dot = p.dot(constrainedAxis.negate())
+                angleToAxis = acos(dot)
+                if angle < 0 && -angle > angleToAxis {
+                    angle = -angleToAxis
+                }
+                
+                let tangent = constrainedAxis.cross(p)
+                rotate(tangent, angle: angle)
+            } else if (northParallel && angle < 0 || southParallel && angle > 0) {
+                rotate(right, angle: angle)
             }
-            
-            dot = Cartesian3.dot(p, Cartesian3.negate(constrainedAxis, rotateVertScratchNegate));
-            angleToAxis = Math.acos(dot);
-            if (angle < 0 && -angle > angleToAxis) {
-                angle = -angleToAxis;
-            }
-            
-            var tangent = Cartesian3.cross(constrainedAxis, p, rotateVertScratchTan);
-            camera.rotate(tangent, angle);
-        } else if ((northParallel && angle < 0) || (southParallel && angle > 0)) {
-            camera.rotate(camera.right, angle);
+        } else {
+            rotate(right, angle: angle)
         }
-    } else {
-        camera.rotate(camera.right, angle);
-    }*/
-}
+    }
 
     /**
     * Rotates the camera around the center of the camera's reference frame by angle to the right.

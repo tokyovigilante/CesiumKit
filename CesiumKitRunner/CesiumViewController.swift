@@ -102,12 +102,12 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         // propagate to CesiumKit
-        globe?.eventHandler.handleTouchStart(touches, scaleFactor: Double(self.view.contentScaleFactor))
+        globe?.eventHandler.handleTouchStart(touches)
     }
     
     
     override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
-        globe?.eventHandler.handleTouchMove(touches, scaleFactor: Double(self.view.contentScaleFactor))
+        globe?.eventHandler.handleTouchMove(touches)
     }
     
     override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {

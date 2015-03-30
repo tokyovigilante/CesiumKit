@@ -399,14 +399,14 @@ public class ScreenSpaceEventHandler {
     }
     }
     */
-    public func handleTouchStart(touches: Set<NSObject>, scaleFactor: Double = 1.0) {
+    public func handleTouchStart(touches: Set<NSObject>) {
         _seenAnyTouchEvents = true
         
         for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _positions[i] = Cartesian2(x: Double(position.x) * scaleFactor, y: Double(position.y) * scaleFactor)
+                _positions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
             }
         }
         
@@ -416,7 +416,7 @@ public class ScreenSpaceEventHandler {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _previousPositions[i] = Cartesian2(x: Double(position.x) * scaleFactor, y: Double(position.y) * scaleFactor)
+                _previousPositions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
             }
         }
     }
@@ -445,14 +445,14 @@ public class ScreenSpaceEventHandler {
     }
     
     
-    public func handleTouchMove(touches: Set<NSObject>, scaleFactor: Double = 1.0) {
+    public func handleTouchMove(touches: Set<NSObject>) {
         _seenAnyTouchEvents = true
     
         for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _positions[i] = Cartesian2(x: Double(position.x) * scaleFactor, y: Double(position.y) * scaleFactor)
+                _positions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
             }
         }
         

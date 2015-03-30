@@ -230,13 +230,22 @@ public class ScreenSpaceCameraController {
     
     
     let _aggregator: CameraEventAggregator
-    /*
-    this._lastInertiaSpinMovement = undefined;
-    this._lastInertiaZoomMovement = undefined;
-    this._lastInertiaTranslateMovement = undefined;
-    this._lastInertiaWheelZoomMovement = undefined;
-    this._lastInertiaTiltMovement = undefined;
     
+    
+    class MovementState: StartEndPosition {
+        var startPosition = Cartesian2()
+        var endPosition = Cartesian2()
+        var motion = Cartesian2()
+        var active = false
+    }
+    
+    /*var _lastInertiaSpinMovement: MovementState()
+    var _lastInertiaZoomMovement: MovementState()
+    var _lastInertiaTranslateMovement: MovementState()
+    var _lastInertiaWheelZoomMovement: MovementState()
+    var _lastInertiaTiltMovement: MovementState()*/
+    private var _intertiaMovementStates = [String: MovementState]()
+    /*
     this._tweens = new TweenCollection();
     this._tween = undefined;
     */
@@ -269,88 +278,90 @@ public class ScreenSpaceCameraController {
         _scene = scene
         _aggregator = CameraEventAggregator(view: _scene.context.view)
     }
-    /*
-    function decay(time, coefficient) {
-    if (time < 0) {
-    return 0.0;
+    
+    func decay(time: Double, coefficient: Double) -> Double {
+        if (time < 0) {
+            return 0.0
+        }
+        
+        var tau = (1.0 - coefficient) * 25.0
+        return exp(-tau * time)
     }
     
-    var tau = (1.0 - coefficient) * 25.0;
-    return Math.exp(-tau * time);
+    func sameMousePosition(movement: StartEndPosition) -> Bool {
+        return movement.startPosition.equalsEpsilon(movement.endPosition, relativeEpsilon: Math.Epsilon14)
     }
     
-    function sameMousePosition(movement) {
-    return Cartesian2.equalsEpsilon(movement.startPosition, movement.endPosition, CesiumMath.EPSILON14);
-    }
-    */
     // If the time between mouse down and mouse up is not between
     // these thresholds, the camera will not move with inertia.
     // This value is probably dependent on the browser and/or the
     // hardware. Should be investigated further.
-    var inertiaMaxClickTimeThreshold = 0.4;
+    var inertiaMaxClickTimeThreshold = 0.4
     
-    func maintainInertia(type: CameraEventType, modifier: KeyboardEventModifier, decayCoef: Double, action: (Any) -> (), lastMovementName: String) {
-        /*var movementState = object[lastMovementName];
-        if (!defined(movementState)) {
-            movementState = object[lastMovementName] = {
-                startPosition : new Cartesian2(),
-                endPosition : new Cartesian2(),
-                motion : new Cartesian2(),
-                active : false
-            };
+    func maintainInertia(#type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
+        
+        var state = _intertiaMovementStates[lastMovementName]
+        if state == nil {
+            state = MovementState()
+            _intertiaMovementStates[lastMovementName] = state!
         }
+        var movementState = state!
         
-        var ts = aggregator.getButtonPressTime(type, modifier);
-        var tr = aggregator.getButtonReleaseTime(type, modifier);
+        let ts = _aggregator.getButtonPressTime(type, modifier: modifier)
+        let tr = _aggregator.getButtonReleaseTime(type, modifier: modifier)
         
-        var threshold = ts && tr && ((tr.getTime() - ts.getTime()) / 1000.0);
-        var now = new Date();
-        var fromNow = tr && ((now.getTime() - tr.getTime()) / 1000.0);
-        
-        if (ts && tr && threshold < inertiaMaxClickTimeThreshold) {
-            var d = decay(fromNow, decayCoef);
+        if let ts = ts, tr = tr {
+            var threshold = tr.timeIntervalSinceReferenceDate - ts.timeIntervalSinceReferenceDate
+            var now = NSDate()
+            var fromNow = now.timeIntervalSinceReferenceDate - tr.timeIntervalSinceReferenceDate
             
-            if (!movementState.active) {
-                var lastMovement = aggregator.getLastMovement(type, modifier);
-                if (!defined(lastMovement) || sameMousePosition(lastMovement)) {
-                    return;
+            if threshold < inertiaMaxClickTimeThreshold {
+                let d = decay(fromNow, coefficient: decayCoef)
+                if !movementState.active {
+                    let lastMovement = _aggregator.getLastMovement(type, modifier: modifier)
+                    if lastMovement == nil || sameMousePosition(lastMovement!) {
+                        return
+                    }
+                    
+                    movementState.motion.x = (lastMovement!.endPosition.x - lastMovement!.startPosition.x) * 0.5
+                    movementState.motion.y = (lastMovement!.endPosition.y - lastMovement!.startPosition.y) * 0.5
+                    
+                    movementState.startPosition = lastMovement!.startPosition
+                    
+                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyByScalar(d))
+                    
+                    movementState.active = true
+                } else {
+                    movementState.startPosition = movementState.endPosition
+                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyByScalar(d))
+                    
+                    movementState.motion = Cartesian2.zero()
                 }
                 
-                movementState.motion.x = (lastMovement.endPosition.x - lastMovement.startPosition.x) * 0.5;
-                movementState.motion.y = (lastMovement.endPosition.y - lastMovement.startPosition.y) * 0.5;
+                // If value from the decreasing exponential function is close to zero,
+                // the end coordinates may be NaN.
+                if (movementState.endPosition.x == Double.NaN || movementState.endPosition.y == Double.NaN) || sameMousePosition(movementState) {
+                    movementState.active = false
+                    return
+                }
                 
-                movementState.startPosition = Cartesian2.clone(lastMovement.startPosition, movementState.startPosition);
-                
-                movementState.endPosition = Cartesian2.multiplyByScalar(movementState.motion, d, movementState.endPosition);
-                movementState.endPosition = Cartesian2.add(movementState.startPosition, movementState.endPosition, movementState.endPosition);
-                
-                movementState.active = true;
-            } else {
-                movementState.startPosition = Cartesian2.clone(movementState.endPosition, movementState.startPosition);
-                
-                movementState.endPosition = Cartesian2.multiplyByScalar(movementState.motion, d, movementState.endPosition);
-                movementState.endPosition = Cartesian2.add(movementState.startPosition, movementState.endPosition, movementState.endPosition);
-                
-                movementState.motion = Cartesian2.clone(Cartesian2.ZERO, movementState.motion);
-            }
-            
-            // If value from the decreasing exponential function is close to zero,
-            // the end coordinates may be NaN.
-            if (isNaN(movementState.endPosition.x) || isNaN(movementState.endPosition.y) || sameMousePosition(movementState)) {
-                movementState.active = false;
-                return;
-            }
-            
-            if (!aggregator.isButtonDown(type, modifier)) {
-                var startPosition = aggregator.getStartMousePosition(type, modifier);
-                action(object, startPosition, movementState);
+                if !_aggregator.isButtonDown(type, modifier: modifier) {
+                    let startPosition = _aggregator.getStartMousePosition(type, modifier: modifier)
+                    action(
+                        startPosition: startPosition,
+                        movement: MouseMovement(
+                            startPosition: movementState.startPosition,
+                            endPosition: movementState.endPosition,
+                            valid: true
+                        )
+                    )
+                }
             }
         } else {
-            movementState.active = false;
-        }*/
+            movementState.active = false
+        }
+        
     }
-    
-    var scratchEventTypeArray = [];
     
     func reactToInput(enabled: Bool, eventTypes: [CameraEvent], action: (startPosition: Cartesian2, movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
 
@@ -368,9 +379,8 @@ public class ScreenSpaceCameraController {
             if enableInputs && enabled {
                 if movement != nil {
                     action(startPosition: startPosition, movement: movement!)
-                } else if (inertiaConstant < 1.0) {
-                    // FIXME: maintainInertia
-                    //maintainInertia(_aggregator, type, modifier, inertiaConstant, action, controller, inertiaStateName);
+                } else if inertiaConstant < 1.0 && inertiaStateName != nil {
+                    maintainInertia(type: type, modifier: modifier, decayCoef: inertiaConstant, action: action, lastMovementName: inertiaStateName!)
                 }
             }
         }
