@@ -97,17 +97,23 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
         self.view.multipleTouchEnabled = true
         
         //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        //self.view.addGestureRecognizer(tapRecognizer)
+        var panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        //self.view.addGestureRecognizer(panRecognizer)
+    }
+    
+    func handlePanGesture(recognizer: UIPanGestureRecognizer) {
+        let location = recognizer.locationInView(self.view)
+        globe?.eventHandler.handlePanStart(Cartesian2(x: Double(location.x), y: Double(location.y)))
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         // propagate to CesiumKit
-        globe?.eventHandler.handleTouchStart(touches)
+        globe?.eventHandler.handleTouchStart(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
     
     
     override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
-        globe?.eventHandler.handleTouchMove(touches)
+        globe?.eventHandler.handleTouchMove(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
     
     override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {

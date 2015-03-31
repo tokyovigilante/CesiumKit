@@ -73,6 +73,8 @@ class CameraEventAggregator {
                 }
             }
         }*/
+        
+        //listenTouchPanStart()
     }
     
     func getKey(type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> String {

@@ -399,14 +399,14 @@ public class ScreenSpaceEventHandler {
     }
     }
     */
-    public func handleTouchStart(touches: Set<NSObject>) {
+    public func handleTouchStart(touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
         for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _positions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
+                _positions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
             }
         }
         
@@ -416,7 +416,7 @@ public class ScreenSpaceEventHandler {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _previousPositions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
+                _previousPositions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
             }
         }
     }
@@ -445,14 +445,14 @@ public class ScreenSpaceEventHandler {
     }
     
     
-    public func handleTouchMove(touches: Set<NSObject>) {
+    public func handleTouchMove(touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
     
         for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
                 
                 let position = touch.locationInView(_view)
-                _positions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
+                _positions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
             }
         }
         
@@ -531,19 +531,19 @@ public class ScreenSpaceEventHandler {
         
         if numberOfTouches == 1 {
             // transitioning to single touch, trigger DOWN
-            let position = _positions[0]!
-            _primaryPosition = position
-            _primaryStartPosition = position
-            _primaryPreviousPosition = position
-            
-            _buttonDown = .Left
-            
-            action = getInputAction(ScreenSpaceEventType.LeftDown, modifier: modifier)
-            
-            if action != nil {
-                action!(geometry: TouchStartEventGeometry(position: position))
+            if let position = _positions[0] {
+                _primaryPosition = position
+                _primaryStartPosition = position
+                _primaryPreviousPosition = position
+                
+                _buttonDown = .Left
+                
+                action = getInputAction(ScreenSpaceEventType.LeftDown, modifier: modifier)
+                
+                if action != nil {
+                    action!(geometry: TouchStartEventGeometry(position: position))
+                }
             }
-            
         }
         
         if numberOfTouches == 2 {
@@ -572,21 +572,21 @@ public class ScreenSpaceEventHandler {
 
         if numberOfTouches == 1 && _buttonDown == .Left {
             // moving single touch
-            let position = _positions[0]!
-            _primaryPosition = position
-            let previousPosition = _primaryPreviousPosition
-            
-            action = getInputAction(.MouseMove, modifier: modifier)
-            
-            if action != nil {
-                action!(geometry: TouchMoveEventGeometry(
-                    startPosition: previousPosition,
-                    endPosition: position)
-                )
+            if let position = _positions[0] {
+                _primaryPosition = position
+                let previousPosition = _primaryPreviousPosition
+                
+                action = getInputAction(.MouseMove, modifier: modifier)
+                
+                if action != nil {
+                    action!(geometry: TouchMoveEventGeometry(
+                        startPosition: previousPosition,
+                        endPosition: position)
+                    )
+                }
+                
+                _primaryPreviousPosition = position
             }
-            
-            _primaryPreviousPosition = position
-            
         } else if numberOfTouches == 2 && _isPinching {
             // moving pinch
             
@@ -709,6 +709,27 @@ public class ScreenSpaceEventHandler {
     var key = getInputEventKey(type, modifier);
     delete this._inputEvents[key];
     };
+    
+    */
+    public func handlePanStart(position: Cartesian2) {
+        if let action = getInputAction(.TouchPanStart, modifier: nil) {
+            action(geometry: TouchStartEventGeometry(position: position))
+        }
+    }
+    
+    public func handlePanMove(position: Cartesian2) {
+        if let action = getInputAction(.TouchPanMove, modifier: nil) {
+            action(geometry: TouchStartEventGeometry(position: position))
+        }
+    }
+    
+    public func handlePanEnd(position: Cartesian2) {
+        if let action = getInputAction(.TouchPanEnd, modifier: nil) {
+            action(geometry: TouchStartEventGeometry(position: position))
+        }
+    }
+
+    /*
     
     /**
     * Returns true if this object was destroyed; otherwise, false.

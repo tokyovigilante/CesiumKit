@@ -1033,7 +1033,7 @@ public class ScreenSpaceCameraController {
         if rotateRate < _minimumRotateRate {
             rotateRate = _minimumRotateRate
         }
-    
+        println("\(movement.startPosition.x - movement.endPosition.x), \(_scene.context.width)")
         var phiWindowRatio = (movement.startPosition.x - movement.endPosition.x) / Double(_scene.context.width)
         var thetaWindowRatio = (movement.startPosition.y - movement.endPosition.y) / Double(_scene.context.width)
         phiWindowRatio = min(phiWindowRatio, maximumMovementRatio)
