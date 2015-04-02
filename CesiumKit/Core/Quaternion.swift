@@ -49,7 +49,7 @@ public struct Quaternion {
     */
     var w: Double = 0.0
     
-    init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
+    public init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
         self.x = x
         self.y = y
         self.z = z
@@ -65,7 +65,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    init(fromAxis axis: Cartesian3, angle: Double) {
+    public init(fromAxis axis: Cartesian3, angle: Double) {
         var halfAngle = angle / 2.0
         var s = sin(halfAngle)
         var normAxis = axis.normalize()
@@ -359,7 +359,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    func normalize () -> Quaternion {
+    public func normalize () -> Quaternion {
         let inverseMagnitude: Double = 1.0 / magnitude()
         return Quaternion(
             x: x * inverseMagnitude,
@@ -1066,7 +1066,7 @@ public struct Quaternion {
 * @param {Quaternion} [result] The object onto which to store the result.
 * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
 */
-func * (lhs: Quaternion, rhs: Quaternion) -> Quaternion {
+public func * (lhs: Quaternion, rhs: Quaternion) -> Quaternion {
     return rhs.multiply(lhs)
 }
 

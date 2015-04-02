@@ -43,7 +43,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     
     private var _grid: [Double] = [Double](count: packedLength, repeatedValue: 0.0)
     
-    init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0,
+    public init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0,
         _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0,
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0) {
             _grid[0] = column0Row0
@@ -63,7 +63,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @param {Quaternion} quaternion the quaternion to use.
     * @returns {Matrix3} The 3x3 rotation matrix from this quaternion.
     */
-    init(fromQuaternion quaternion: Quaternion) {
+    public init(fromQuaternion quaternion: Quaternion) {
         
         let x2 = quaternion.x * quaternion.x
         let xy = quaternion.x * quaternion.y
@@ -756,7 +756,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter.
     */
-    func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
+    public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
         
         let vX = cartesian.x
         let vY = cartesian.y
@@ -1167,7 +1167,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @type {Matrix3}
     * @constant
     */
-    static func identity() -> Matrix3 {
+    public static func identity() -> Matrix3 {
         return Matrix3(
             1.0, 0.0, 0.0,
             0.0, 1.0, 0.0,

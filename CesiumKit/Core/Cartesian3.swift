@@ -27,21 +27,21 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0
+    public var z: Double = 0.0
     
     /**
     * The number of elements used to pack the object into an array.
@@ -75,7 +75,7 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
-    init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
+    public init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
         self.x = x
         self.y = y
         self.z = z
