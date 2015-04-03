@@ -1577,7 +1577,7 @@ public class ScreenSpaceCameraController {
     * @private
     */
     func update () {
-        if _scene.camera.transform == Matrix4.identity() {
+        if _scene.camera.transform != Matrix4.identity() {
             _globe = nil
             _ellipsoid = Ellipsoid.unitSphere()
         } else {
