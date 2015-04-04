@@ -272,7 +272,7 @@ public class Camera {
     * @type {Cartesian3}
     * @default undefined
     */
-    var constrainedAxis: Cartesian3? = nil
+    public var constrainedAxis: Cartesian3? = nil
     /**
     * The factor multiplied by the the map size used to determine where to clamp the camera position
     * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
@@ -856,27 +856,21 @@ public class Camera {
         _setTransform(currentTransform)
     }
 
-/*
-/**
-* Transform a vector or point from world coordinates to the camera's reference frame.
-* @memberof Camera
-*
-* @param {Cartesian4} cartesian The vector or point to transform.
-* @param {Cartesian4} [result] The object onto which to store the result.
-*
-* @returns {Cartesian4} The transformed vector or point.
-*/
-Camera.prototype.worldToCameraCoordinates = function(cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(cartesian)) {
-        throw new DeveloperError('cartesian is required.');
-    }
-    //>>includeEnd('debug');
-    
-    updateMembers(this);
-    return Matrix4.multiplyByVector(this._actualInvTransform, cartesian, result);
-};
 
+    /**
+    * Transform a vector or point from world coordinates to the camera's reference frame.
+    * @memberof Camera
+    *
+    * @param {Cartesian4} cartesian The vector or point to transform.
+    * @param {Cartesian4} [result] The object onto which to store the result.
+    *
+    * @returns {Cartesian4} The transformed vector or point.
+    */
+    func worldToCameraCoordinates(cartesian: Cartesian4) -> Cartesian4 {
+        updateMembers()
+        return _actualInvTransform.multiplyByVector(cartesian)
+    }
+/*
 /**
 * Transform a point from world coordinates to the camera's reference frame.
 * @memberof Camera

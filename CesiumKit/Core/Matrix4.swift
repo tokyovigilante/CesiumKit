@@ -1494,20 +1494,10 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
         let vZ: Double = cartesian.z
         let vW: Double = cartesian.w
         
-        //FIXME: compiler bug
-        let x1: Double = _grid[0] * vX + _grid[4] * vY
-        let x2: Double = _grid[8] * vZ + _grid[12] * vW
-        let x: Double = x1 + x2
-        let y1: Double = _grid[1] * vX + _grid[5] * vY
-        let y2: Double = _grid[9] * vZ + _grid[13] * vW
-        let y: Double = y1 + y2
-        let z1: Double = _grid[2] * vX + _grid[6] * vY
-        let z2: Double = _grid[10] * vZ + _grid[14] * vW
-        let z: Double = z1 + z2
-        let w1: Double = _grid[3] * vX + _grid[7] * vY
-        let w2: Double = _grid[11] * vZ + _grid[15] * vW
-        let w: Double = w1 + w2
-
+        let x: Double = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12] * vW
+        let y: Double = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13] * vW
+        let z: Double = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ + _grid[14] * vW
+        let w: Double = _grid[3] * vX + _grid[7] * vY + _grid[11] * vZ + _grid[15] * vW
         return Cartesian4(x: x, y: y, z: z, w: w)
     }
 

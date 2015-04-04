@@ -244,7 +244,7 @@ public class CesiumGlobe {
             scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
             /*            }*/)
         scene.globe = globe
-        //scene.camera.constrainedAxis = Cartesian3.unitZ()
+        scene.camera.constrainedAxis = Cartesian3.unitZ()
         scene.backgroundColor = Cartesian4.fromColor(red: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
         
         /*var creditDisplay = scene.frameState.creditDisplay;

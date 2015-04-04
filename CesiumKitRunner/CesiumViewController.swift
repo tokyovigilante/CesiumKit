@@ -77,9 +77,9 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
         let options = CesiumOptions(
             imageryProvider: nil)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
-        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-        
+        //globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
+        globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         //globe.scene.camera.setView()
         
         //Murrumbeena
@@ -89,7 +89,6 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
         //globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
         //globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
     }
-    
     
     // MARK: - NSResponder
     func setupMultitouchInput() {

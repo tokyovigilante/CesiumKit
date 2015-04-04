@@ -34,10 +34,6 @@ let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
 public struct Ellipsoid /* : Packable */{
-    let x: Double = 0.0
-    let y: Double = 0.0
-    let z: Double = 0.0
-    
     let radii: Cartesian3
     let radiiSquared: Cartesian3
     let radiiToTheFourth: Cartesian3
@@ -180,7 +176,7 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     func geodeticSurfaceNormalCartographic(cartographic: Cartographic) -> Cartesian3 {
         var longitude = cartographic.longitude
         var latitude = cartographic.latitude
-        var cosLatitude = cos(latitude);
+        var cosLatitude = cos(latitude)
         
         return Cartesian3(
             x: cosLatitude * cos(longitude),
