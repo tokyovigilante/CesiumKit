@@ -27,9 +27,12 @@ protocol StartEndPosition {
 }
 
 struct MouseMovement: StartEndPosition {
-    var startPosition: Cartesian2
-    var endPosition: Cartesian2
-    var valid: Bool
+    var startPosition = Cartesian2()
+    var endPosition = Cartesian2()
+    var angleStartPosition = Cartesian2()
+    var angleEndPosition = Cartesian2()
+    var prevAngle = 0.0
+    var valid: Bool = false
 }
 
 class CameraEventAggregator {
@@ -48,16 +51,20 @@ class CameraEventAggregator {
     
     var _currentMousePosition = Cartesian2()
     
+    private var _view: UIView!
+    
     init (view: UIView) {
         
         eventHandler = ScreenSpaceEventHandler(view: view)
         
+        _view = view
         //listenToWheel(this, undefined);
-        //listenToPinch(this, undefined, canvas);
+        listenToPinch()
         listenMouseButtonDownUp(CameraEventType.LeftDrag)
         //listenMouseButtonDownUp(this, undefined, CameraEventType.RIGHT_DRAG);
         //listenMouseButtonDownUp(this, undefined, CameraEventType.MIDDLE_DRAG);
         listenMouseMove()
+        //listenTouchEvents()
         
         // FIXME: Modifiers disabled
         /*for ( var modifierName in KeyboardEventModifier) {
@@ -88,75 +95,68 @@ class CameraEventAggregator {
     Cartesian2.clone(pinchMovement.angleAndHeight.startPosition, result.angleAndHeight.startPosition);
     Cartesian2.clone(pinchMovement.angleAndHeight.endPosition, result.angleAndHeight.endPosition);
     }
-    
-    function listenToPinch(aggregator, modifier, canvas) {
-    var key = getKey(CameraEventType.PINCH, modifier);
-    
-    var update = aggregator._update;
-    var isDown = aggregator._isDown;
-    var eventStartPosition = aggregator._eventStartPosition;
-    var pressTime = aggregator._pressTime;
-    var releaseTime = aggregator._releaseTime;
-    
-    update[key] = true;
-    isDown[key] = false;
-    eventStartPosition[key] = new Cartesian2();
-    
-    var movement = aggregator._movement[key];
-    if (!defined(movement)) {
-    movement = aggregator._movement[key] = {};
+    */
+    func listenToPinch(modifier: KeyboardEventModifier? = nil) {
+        let key = getKey(.Pinch, modifier: modifier)
+        
+        _update[key] = true
+        _isDown[key] = false
+        _eventStartPosition[key] = Cartesian2()
+        
+        var movement = _movement[key]
+        if movement == nil {
+            movement = MouseMovement()
+            _movement[key] = movement
+        }
+        
+        eventHandler.setInputAction(.PinchStart, modifier: modifier, action: { (geometry: EventGeometry) in
+            self._buttonsDown++
+            self._isDown[key] = true
+            self._pressTime[key] = NSDate()
+            self._eventStartPosition[key] = (geometry as! Touch2StartEventGeometry).position1
+        })
+        
+        eventHandler.setInputAction(.PinchEnd, modifier: modifier, action: { (geometry: EventGeometry) in
+            self._buttonsDown = max(self._buttonsDown - 1, 0)
+            self._isDown[key] = false
+            self._releaseTime[key] = NSDate()
+        })
+        
+        eventHandler.setInputAction(.PinchMove, modifier: modifier, action: { (geometry: EventGeometry) in
+            if self._isDown[key]! {
+                // Aggregate several input events into a single animation frame.
+                let geometry = (geometry as! TouchPinchMovementEventGeometry)
+                var movement = self._movement[key]
+                if movement == nil {
+                    movement = MouseMovement()
+                }
+                if !self._update[key]! {
+                    movement!.endPosition = geometry.distance.endPosition
+                    movement!.angleEndPosition = geometry.angleAndHeight.endPosition
+                } else {
+                    movement!.startPosition = geometry.distance.startPosition
+                    movement!.endPosition = geometry.distance.startPosition
+                    movement!.angleStartPosition = geometry.angleAndHeight.startPosition
+                    movement!.angleEndPosition = geometry.angleAndHeight.startPosition
+                    self._update[key] = false
+                    movement!.prevAngle = movement!.angleStartPosition.x
+                }
+                // Make sure our aggregation of angles does not "flip" over 360 degrees.
+                var angle = movement!.angleEndPosition.x
+                let prevAngle = movement!.prevAngle
+                while angle >= (prevAngle + M_PI) {
+                    angle -= Math.TwoPi
+                }
+                while angle < (prevAngle - M_PI) {
+                    angle += Math.TwoPi
+                }
+                //movement.angleAndHeight.endPosition.x = -angle * canvas.clientWidth / 12
+                //movement.angleAndHeight.startPosition.x = -prevAngle * canvas.clientWidth / 12
+                self._movement[key] = movement!
+            }
+        })
     }
-    
-    movement.distance = {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    };
-    movement.angleAndHeight = {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    };
-    movement.prevAngle = 0.0;
-    
-    aggregator._eventHandler.setInputAction(function(event) {
-    aggregator._buttonsDown++;
-    isDown[key] = true;
-    pressTime[key] = new Date();
-    Cartesian2.clone(event.position, eventStartPosition[key]);
-    }, ScreenSpaceEventType.PINCH_START, modifier);
-    
-    aggregator._eventHandler.setInputAction(function() {
-    aggregator._buttonsDown = Math.max(aggregator._buttonsDown - 1, 0);
-    isDown[key] = false;
-    releaseTime[key] = new Date();
-    }, ScreenSpaceEventType.PINCH_END, modifier);
-    
-    aggregator._eventHandler.setInputAction(function(mouseMovement) {
-    if (isDown[key]) {
-    // Aggregate several input events into a single animation frame.
-    if (!update[key]) {
-    Cartesian2.clone(mouseMovement.distance.endPosition, movement.distance.endPosition);
-    Cartesian2.clone(mouseMovement.angleAndHeight.endPosition, movement.angleAndHeight.endPosition);
-    } else {
-    clonePinchMovement(mouseMovement, movement);
-    update[key] = false;
-    movement.prevAngle = movement.angleAndHeight.startPosition.x;
-    }
-    // Make sure our aggregation of angles does not "flip" over 360 degrees.
-    var angle = movement.angleAndHeight.endPosition.x;
-    var prevAngle = movement.prevAngle;
-    var TwoPI = Math.PI * 2;
-    while (angle >= (prevAngle + Math.PI)) {
-    angle -= TwoPI;
-    }
-    while (angle < (prevAngle - Math.PI)) {
-    angle += TwoPI;
-    }
-    movement.angleAndHeight.endPosition.x = -angle * canvas.clientWidth / 12;
-    movement.angleAndHeight.startPosition.x = -prevAngle * canvas.clientWidth / 12;
-    }
-    }, ScreenSpaceEventType.PINCH_MOVE, modifier);
-    }
-    
+    /*
     function listenToWheel(aggregator, modifier) {
     var key = getKey(CameraEventType.WHEEL, modifier);
     
@@ -193,11 +193,7 @@ class CameraEventAggregator {
         
         var lastMovement = _lastMovement[key]
         if lastMovement == nil {
-            lastMovement = MouseMovement(
-                startPosition: Cartesian2(),
-                endPosition:  Cartesian2(),
-                valid: false
-            )
+            lastMovement = MouseMovement()
             _lastMovement[key] = lastMovement
         }
         
@@ -217,10 +213,13 @@ class CameraEventAggregator {
         
         eventHandler.setInputAction(down, modifier: modifier, action: { (geometry: EventGeometry) in
             self._buttonsDown++
-            var lastMovement = self._lastMovement[key]
+            //var lastMovement = self._lastMovement[key]
             self._lastMovement[key] = MouseMovement(
                 startPosition: lastMovement!.startPosition,
                 endPosition:  lastMovement!.endPosition,
+                angleStartPosition: Cartesian2(),
+                angleEndPosition: Cartesian2(),
+                prevAngle: 0.0,
                 valid: false)
             self._isDown[key] = true
             self._pressTime[key] = NSDate()
@@ -248,14 +247,19 @@ class CameraEventAggregator {
                 _lastMovement[key] = MouseMovement(
                     startPosition: Cartesian2(),
                     endPosition: Cartesian2(),
+                    angleStartPosition: Cartesian2(),
+                    angleEndPosition: Cartesian2(),
+                    prevAngle: 0.0,
                     valid: false)
             }
-
-                    
+            
             if _movement[key] == nil {
                 _movement[key] = MouseMovement(
                     startPosition: Cartesian2(),
                     endPosition: Cartesian2(),
+                    angleStartPosition: Cartesian2(),
+                    angleEndPosition: Cartesian2(),
+                    prevAngle: 0.0,
                     valid: true)
             }
         }
@@ -274,7 +278,13 @@ class CameraEventAggregator {
                         var movement = self._movement[key]!
                         movement.valid = true
                         self._lastMovement[key] = movement
-                        self._movement[key] = MouseMovement(startPosition: geometry.startPosition, endPosition: geometry.endPosition, valid: true)
+                        self._movement[key] = MouseMovement(
+                            startPosition: geometry.startPosition,
+                            endPosition: geometry.endPosition,
+                            angleStartPosition: Cartesian2(),
+                            angleEndPosition: Cartesian2(),
+                            prevAngle: 0.0,
+                            valid: true)
                         self._update[key] = false
                     }
                 }
@@ -412,6 +422,7 @@ class CameraEventAggregator {
         for (name, update) in _update {
             _update[name] = true
         }
+        //_touchEvents.removeAll()
     }
     /*
     /**

@@ -988,38 +988,31 @@ function clampMove2D(camera, position) {
         position.y = -maxY;
     }
 }
-
-var moveScratch = new Cartesian3();
-/**
-* Translates the camera's position by <code>amount</code> along <code>direction</code>.
-*
-* @memberof Camera
-*
-* @param {Cartesian3} direction The direction to move.
-* @param {Number} [amount] The amount, in meters, to move. Defaults to <code>defaultMoveAmount</code>.
-*
-* @see Camera#moveBackward
-* @see Camera#moveForward
-* @see Camera#moveLeft
-* @see Camera#moveRight
-* @see Camera#moveUp
-* @see Camera#moveDown
 */
-Camera.prototype.move = function(direction, amount) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(direction)) {
-        throw new DeveloperError('direction is required.');
+
+    /**
+    * Translates the camera's position by <code>amount</code> along <code>direction</code>.
+    *
+    * @memberof Camera
+    *
+    * @param {Cartesian3} direction The direction to move.
+    * @param {Number} [amount] The amount, in meters, to move. Defaults to <code>defaultMoveAmount</code>.
+    *
+    * @see Camera#moveBackward
+    * @see Camera#moveForward
+    * @see Camera#moveLeft
+    * @see Camera#moveRight
+    * @see Camera#moveUp
+    * @see Camera#moveDown
+    */
+    func move (direction: Cartesian3, amount: Double) {
+        var cameraPosition = position
+        position = position.add(direction.multiplyByScalar(amount))
+        if _mode == SceneMode.Scene2D {
+            assertionFailure("unimplemented")
+            //clampMove2D(this, cameraPosition);
+        }
     }
-    //>>includeEnd('debug');
-    
-    var cameraPosition = this.position;
-    Cartesian3.multiplyByScalar(direction, amount, moveScratch);
-    Cartesian3.add(cameraPosition, moveScratch, cameraPosition);
-    
-    if (this._mode === SceneMode.SCENE2D) {
-        clampMove2D(this, cameraPosition);
-    }
-};
 
 /**
 * Translates the camera's position by <code>amount</code> along the camera's view vector.
@@ -1030,10 +1023,10 @@ Camera.prototype.move = function(direction, amount) {
 *
 * @see Camera#moveBackward
 */
-Camera.prototype.moveForward = function(amount) {
+/*Camera.prototype.moveForward = function(amount) {
     amount = defaultValue(amount, this.defaultMoveAmount);
     this.move(this.direction, amount);
-};
+};*/
 
 /**
 * Translates the camera's position by <code>amount</code> along the opposite direction
@@ -1045,7 +1038,7 @@ Camera.prototype.moveForward = function(amount) {
 *
 * @see Camera#moveForward
 */
-Camera.prototype.moveBackward = function(amount) {
+/*Camera.prototype.moveBackward = function(amount) {
     amount = defaultValue(amount, this.defaultMoveAmount);
     this.move(this.direction, -amount);
 };
@@ -1353,59 +1346,60 @@ Camera.prototype.rotateDown = function(angle, transform) {
             rotate(up, angle: angle)
         }
     }
-/*
-function zoom2D(camera, amount) {
-    var frustum = camera.frustum;
     
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(frustum.left) || !defined(frustum.right) || !defined(frustum.top) || !defined(frustum.bottom)) {
+    func zoom2D(amount: Double) {
+        assertionFailure("unimplemented")
+        /*var frustum = camera.frustum;
+        
+        //>>includeStart('debug', pragmas.debug);
+        if (!defined(frustum.left) || !defined(frustum.right) || !defined(frustum.top) || !defined(frustum.bottom)) {
         throw new DeveloperError('The camera frustum is expected to be orthographic for 2D camera control.');
-    }
-    //>>includeEnd('debug');
-    
-    amount = amount * 0.5;
-    var newRight = frustum.right - amount;
-    var newLeft = frustum.left + amount;
-    
-    var maxRight = camera._maxCoord.x * camera.maximumZoomFactor;
-    if (newRight > maxRight) {
+        }
+        //>>includeEnd('debug');
+        
+        amount = amount * 0.5;
+        var newRight = frustum.right - amount;
+        var newLeft = frustum.left + amount;
+        
+        var maxRight = camera._maxCoord.x * camera.maximumZoomFactor;
+        if (newRight > maxRight) {
         newRight = maxRight;
         newLeft = -maxRight;
-    }
-    
-    if (newRight <= newLeft) {
+        }
+        
+        if (newRight <= newLeft) {
         newRight = 1.0;
         newLeft = -1.0;
+        }
+        
+        var ratio = frustum.top / frustum.right;
+        frustum.right = newRight;
+        frustum.left = newLeft;
+        frustum.top = frustum.right * ratio;
+        frustum.bottom = -frustum.top;*/
     }
     
-    var ratio = frustum.top / frustum.right;
-    frustum.right = newRight;
-    frustum.left = newLeft;
-    frustum.top = frustum.right * ratio;
-    frustum.bottom = -frustum.top;
-}
-
-function zoom3D(camera, amount) {
-    camera.move(camera.direction, amount);
-}
-
-/**
-* Zooms <code>amount</code> along the camera's view vector.
-*
-* @memberof Camera
-*
-* @param {Number} [amount] The amount to move. Defaults to <code>defaultZoomAmount</code>.
-*
-* @see Camera#zoomOut
-*/
-Camera.prototype.zoomIn = function(amount) {
-    amount = defaultValue(amount, this.defaultZoomAmount);
-    if (this._mode === SceneMode.SCENE2D) {
-        zoom2D(this, amount);
-    } else {
-        zoom3D(this, amount);
+    func zoom3D(amount: Double) {
+        move(direction, amount: amount)
     }
-};
+
+    /**
+    * Zooms <code>amount</code> along the camera's view vector.
+    *
+    * @memberof Camera
+    *
+    * @param {Number} [amount] The amount to move. Defaults to <code>defaultZoomAmount</code>.
+    *
+    * @see Camera#zoomOut
+    */
+    public func zoomIn (amount: Double? = nil) {
+        var amount = amount ?? defaultZoomAmount
+        if _mode == .Scene2D {
+            zoom2D(amount)
+        } else {
+            zoom3D(amount)
+        }
+    }
 
 /**
 * Zooms <code>amount</code> along the opposite direction of
@@ -1417,7 +1411,7 @@ Camera.prototype.zoomIn = function(amount) {
 *
 * @see Camera#zoomIn
 */
-Camera.prototype.zoomOut = function(amount) {
+/*Camera.prototype.zoomOut = function(amount) {
     amount = defaultValue(amount, this.defaultZoomAmount);
     if (this._mode === SceneMode.SCENE2D) {
         zoom2D(this, -amount);

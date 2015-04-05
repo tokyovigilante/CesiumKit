@@ -46,6 +46,14 @@ enum CameraEventType: Int {
     Wheel,
     
     /**
+    * A possibly (multi)-finger drag on a touch surface
+    *
+    * @type {Number}
+    * @constant
+    */
+    Pan,
+    
+    /**
     * A two-finger touch on a touch surface.
     *
     * @type {Number}

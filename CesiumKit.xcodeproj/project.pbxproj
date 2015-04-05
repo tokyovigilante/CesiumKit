@@ -297,6 +297,7 @@
 		94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */; };
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
+		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -497,6 +498,7 @@
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
 		94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Alamofire.swift; path = Platform/Alamofire.swift; sourceTree = "<group>"; };
+		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
@@ -711,6 +713,7 @@
 				948F4D8D19D7969400FFAD81 /* TileReplacementQueue.swift */,
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
+				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -997,6 +1000,7 @@
 				9413B7EB1A37B93D00FFAD81 /* ShaderCache.swift in Sources */,
 				9413B7B31A37B93100FFAD81 /* GeometryAttributes.swift in Sources */,
 				9413B80B1A37B94500FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,
+				94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */,
 				9413B7C01A37B93100FFAD81 /* MergeSort.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
 				9413B7CA1A37B93100FFAD81 /* SerializableType.swift in Sources */,

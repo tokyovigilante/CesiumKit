@@ -22,7 +22,7 @@ import Foundation
 */
 // FIXME: Pack
 
-public struct Cartesian2: Packable, Equatable {
+public struct Cartesian2: Printable, Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
@@ -42,6 +42,12 @@ public struct Cartesian2: Packable, Equatable {
     * @type {Number}
     */
     static let packedLength: Int = 2
+    
+    public var description: String {
+        get {
+            return self.toString()
+        }
+    }
     
     public init(x: Double = 0.0, y: Double = 0.0) {
         self.x = x
@@ -202,7 +208,7 @@ public struct Cartesian2: Packable, Equatable {
     * // Returns 1.0
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(2.0, 0.0));
     */
-    func distance(other: Cartesian2) -> Double {
+    public func distance(other: Cartesian2) -> Double {
         return subtract(other).magnitude()
     }
     
@@ -426,7 +432,7 @@ public struct Cartesian2: Packable, Equatable {
     * @returns {String} A string representing the provided Cartesian in the format '(x, y)'.
     */
     func toString() -> String {
-        return "(\(x), \(y))"
+        return "(x:\(x), y:\(y))"
     }
 }
 

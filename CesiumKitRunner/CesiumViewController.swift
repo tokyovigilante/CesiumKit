@@ -10,12 +10,11 @@ import OpenGLES
 import GLKit
 import CesiumKit
 
-class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
+class CesiumViewController: GLKViewController {
     
     var setup = false
     
-    private var lastFrameRateUpdate = NSDate()
-    
+    private var lastFrameRateUpdate = NSDate()    
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,8 +76,8 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
         let options = CesiumOptions(
             imageryProvider: nil)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        //globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
-        globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         //globe.scene.camera.setView()
         
@@ -92,24 +91,13 @@ class CesiumViewController: GLKViewController, UIGestureRecognizerDelegate {
     
     // MARK: - NSResponder
     func setupMultitouchInput() {
-        self.view.userInteractionEnabled = true
-        self.view.multipleTouchEnabled = true
         
-        //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        var panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-        //self.view.addGestureRecognizer(panRecognizer)
-    }
-    
-    func handlePanGesture(recognizer: UIPanGestureRecognizer) {
-        let location = recognizer.locationInView(self.view)
-        globe?.eventHandler.handlePanStart(Cartesian2(x: Double(location.x), y: Double(location.y)))
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         // propagate to CesiumKit
         globe?.eventHandler.handleTouchStart(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
-    
     
     override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
         globe?.eventHandler.handleTouchMove(touches, screenScaleFactor: Double(view.contentScaleFactor))

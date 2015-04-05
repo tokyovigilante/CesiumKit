@@ -137,8 +137,6 @@ public class ScreenSpaceCameraController {
     */
     //var translateEventTypes = CameraEventType.LEFT_DRAG
     
-    /*
-
     /**
     * The input that allows the user to zoom in/out.
     * <p>
@@ -149,8 +147,8 @@ public class ScreenSpaceCameraController {
     * @type {CameraEventType|Array|undefined}
     * @default [{@link CameraEventType.RIGHT_DRAG}, {@link CameraEventType.WHEEL}, {@link CameraEventType.PINCH}]
     */
-    this.zoomEventTypes = [CameraEventType.RIGHT_DRAG, CameraEventType.WHEEL, CameraEventType.PINCH];
-    */
+    var zoomEventTypes: [CameraEvent] = [/*CameraEvent(type: .RightDrag), CameraEvent(type: .Wheel),*/ CameraEvent(type: .Pinch)]
+    
     /**
     * The input that allows the user to rotate around the globe or another object. This only applies in 3D and Columbus view modes.
     * <p>
@@ -239,12 +237,8 @@ public class ScreenSpaceCameraController {
         var active = false
     }
     
-    /*var _lastInertiaSpinMovement: MovementState()
-    var _lastInertiaZoomMovement: MovementState()
-    var _lastInertiaTranslateMovement: MovementState()
-    var _lastInertiaWheelZoomMovement: MovementState()
-    var _lastInertiaTiltMovement: MovementState()*/
     private var _intertiaMovementStates = [String: MovementState]()
+    
     /*
     this._tweens = new TweenCollection();
     this._tween = undefined;
@@ -262,18 +256,16 @@ public class ScreenSpaceCameraController {
     var projection = scene.mapProjection;
     this._maxCoord = projection.project(new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO));
     
-    // Constants, Make any of these public?
-    this._zoomFactor = 5.0;*/
+    // Constants, Make any of these public?*/
+    private var _zoomFactor = 5.0
     private var _rotateFactor = 0.0
     private var _rotateRateRangeAdjustment = 0.0
     private var _maximumRotateRate = 1.77
     private var _minimumRotateRate = 1.0 / 5000.0
-    /*this._translateFactor = 1.0;
-    this._minimumZoomRate = 20.0;
-    this._maximumZoomRate = 5906376272000.0;  // distance from the Sun to Pluto in meters.
-    };
+    /*this._translateFactor = 1.0;*/
+    private var _minimumZoomRate = 20.0
+    private var _maximumZoomRate = 5906376272000.0  // distance from the Sun to Pluto in meters.
     
-    */
     init(scene: Scene) {
         _scene = scene
         _aggregator = CameraEventAggregator(view: _scene.context.view)
@@ -289,7 +281,7 @@ public class ScreenSpaceCameraController {
     }
     
     func sameMousePosition(movement: StartEndPosition) -> Bool {
-        return movement.startPosition.equalsEpsilon(movement.endPosition, relativeEpsilon: Math.Epsilon14)
+        return movement.startPosition.equalsEpsilon(movement.endPosition, relativeEpsilon: Math.Epsilon5)
     }
     
     // If the time between mouse down and mouse up is not between
@@ -352,6 +344,9 @@ public class ScreenSpaceCameraController {
                         movement: MouseMovement(
                             startPosition: movementState.startPosition,
                             endPosition: movementState.endPosition,
+                            angleStartPosition: Cartesian2(),
+                            angleEndPosition: Cartesian2(),
+                            prevAngle: 0.0,
                             valid: true
                         )
                     )
@@ -362,7 +357,7 @@ public class ScreenSpaceCameraController {
         }
         
     }
-    
+        
     func reactToInput(enabled: Bool, eventTypes: [CameraEvent], action: (startPosition: Cartesian2, movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
 
         var movement: MouseMovement? = nil
@@ -384,46 +379,45 @@ public class ScreenSpaceCameraController {
                 }
             }
         }
+    }
+    
+    func handleZoom(startPosition: Cartesian2, movement: MouseMovement, zoomFactor: Double, distanceMeasure: Double, unitPositionDotDirection: Double? = nil) {
+        var percentage = 1.0
+        if unitPositionDotDirection != nil {
+            percentage = Math.clamp(abs(unitPositionDotDirection!), min: 0.25, max: 1.0)
+        }
         
+        // distanceMeasure should be the height above the ellipsoid.
+        // The zoomRate slows as it approaches the surface and stops minimumZoomDistance above it.
+        let minHeight = minimumZoomDistance * percentage
+        var maxHeight = maximumZoomDistance
+        
+        let minDistance = distanceMeasure - minHeight
+        var zoomRate = zoomFactor * minDistance
+        zoomRate = Math.clamp(zoomRate, min: _minimumZoomRate, max: _maximumZoomRate)
+        
+        let diff = movement.endPosition.y - movement.startPosition.y
+        var rangeWindowRatio = diff / Double(_scene.drawableHeight)
+        rangeWindowRatio = min(rangeWindowRatio, maximumMovementRatio)
+        var distance = zoomRate * rangeWindowRatio
+        
+        if distance > 0.0 && abs(distanceMeasure - minHeight) < 1.0 {
+            return
+        }
+        
+        if distance < 0.0 && abs(distanceMeasure - maxHeight) < 1.0 {
+            return;
+        }
+        
+        if distanceMeasure - distance < minHeight {
+            distance = distanceMeasure - minHeight - 1.0
+        } else if distanceMeasure - distance > maxHeight {
+            distance = distanceMeasure - maxHeight
+        }
+        
+        _scene.camera.zoomIn(amount: distance)
     }
     /*
-    function handleZoom(object, startPosition, movement, zoomFactor, distanceMeasure, unitPositionDotDirection) {
-    var percentage = 1.0;
-    if (defined(unitPositionDotDirection)) {
-    percentage = CesiumMath.clamp(Math.abs(unitPositionDotDirection), 0.25, 1.0);
-    }
-    
-    // distanceMeasure should be the height above the ellipsoid.
-    // The zoomRate slows as it approaches the surface and stops minimumZoomDistance above it.
-    var minHeight = object.minimumZoomDistance * percentage;
-    var maxHeight = object.maximumZoomDistance;
-    
-    var minDistance = distanceMeasure - minHeight;
-    var zoomRate = zoomFactor * minDistance;
-    zoomRate = CesiumMath.clamp(zoomRate, object._minimumZoomRate, object._maximumZoomRate);
-    
-    var diff = movement.endPosition.y - movement.startPosition.y;
-    var rangeWindowRatio = diff / object._scene.canvas.clientHeight;
-    rangeWindowRatio = Math.min(rangeWindowRatio, object.maximumMovementRatio);
-    var distance = zoomRate * rangeWindowRatio;
-    
-    if (distance > 0.0 && Math.abs(distanceMeasure - minHeight) < 1.0) {
-    return;
-    }
-    
-    if (distance < 0.0 && Math.abs(distanceMeasure - maxHeight) < 1.0) {
-    return;
-    }
-    
-    if (distanceMeasure - distance < minHeight) {
-    distance = distanceMeasure - minHeight - 1.0;
-    } else if (distanceMeasure - distance > maxHeight) {
-    distance = distanceMeasure - maxHeight;
-    }
-    
-    object._scene.camera.zoomIn(distance);
-    }
-    
     var translate2DStart = new Ray();
     var translate2DEnd = new Ray();
     var scratchTranslateP0 = new Cartesian3();
@@ -958,7 +952,7 @@ public class ScreenSpaceCameraController {
     var scratchLookUp = new Cartesian3();*/
     
     func spin3D(startPosition: Cartesian2, movement: MouseMovement) {
-        
+        println("\(startPosition), \(movement.startPosition), \(movement.endPosition)")
         let camera = _scene.camera
         
         if camera.transform != Matrix4.identity() {
@@ -1155,40 +1149,35 @@ public class ScreenSpaceCameraController {
             camera.rotateUp(deltaTheta)
         }
     }
+    
+    func zoom3D(startPosition: Cartesian2, movement: MouseMovement) {
+        
+/*        var ellipsoid = controller._ellipsoid;
+        var scene = controller._scene;
+        var camera = scene.camera;
+        var canvas = scene.canvas;*/
+        
+        var windowPosition = Cartesian2()
+        windowPosition.x = Double(_scene.drawableWidth) / 2.0
+        windowPosition.y = Double(_scene.drawableHeight) / 2.0
+        let ray = _scene.camera.getPickRay(windowPosition)
+        
+        var intersection: Cartesian3? = nil
+        let height = _ellipsoid.cartesianToCartographic(_scene.camera.position)!.height
+        if _globe != nil && height < minimumPickingTerrainHeight {
+            intersection = _globe?.pick(ray, scene: _scene)
+        }
+        
+        let distance: Double
+        if intersection != nil {
+            distance = ray.origin.distance(intersection!)
+        } else {
+            distance = height
+        }
+        let unitPosition = _scene.camera.position.normalize()
+        handleZoom(startPosition, movement: movement, zoomFactor: _zoomFactor, distanceMeasure: distance, unitPositionDotDirection: unitPosition.dot(_scene.camera.direction))
+    }
     /*
-    var zoom3DUnitPosition = new Cartesian3();
-    function zoom3D(controller, startPosition, movement) {
-    if (defined(movement.distance)) {
-    movement = movement.distance;
-    }
-    
-    var ellipsoid = controller._ellipsoid;
-    var scene = controller._scene;
-    var camera = scene.camera;
-    var canvas = scene.canvas;
-    
-    var windowPosition = zoomCVWindowPos;
-    windowPosition.x = canvas.clientWidth / 2;
-    windowPosition.y = canvas.clientHeight / 2;
-    var ray = camera.getPickRay(windowPosition, zoomCVWindowRay);
-    
-    var intersection;
-    var height = ellipsoid.cartesianToCartographic(camera.position).height;
-    if (defined(controller._globe) && height < controller.minimumPickingTerrainHeight) {
-    intersection = controller._globe.pick(ray, scene, zoomCVIntersection);
-    }
-    
-    var distance;
-    if (defined(intersection)) {
-    distance = Cartesian3.distance(ray.origin, intersection);
-    } else {
-    distance = height;
-    }
-    
-    var unitPosition = Cartesian3.normalize(camera.position, zoom3DUnitPosition);
-    handleZoom(controller, startPosition, movement, controller._zoomFactor, distance, Cartesian3.dot(unitPosition, camera.direction));
-    }
-    
     var tilt3DWindowPos = new Cartesian2();
     var tilt3DRay = new Ray();
     var tilt3DCenter = new Cartesian3();
@@ -1521,8 +1510,8 @@ public class ScreenSpaceCameraController {
 
     func update3D() {
         reactToInput(enableRotate, eventTypes: rotateEventTypes, action: spin3D, inertiaConstant: inertiaSpin, inertiaStateName: "_lastInertiaSpinMovement")
-        /*reactToInput(enableZoom, zoomEventTypes, zoom3D, controller.inertiaZoom, "_lastInertiaZoomMovement");
-        reactToInput(enableTilt, tiltEventTypes, tilt3D, controller.inertiaSpin, "_lastInertiaTiltMovement");
+        //reactToInput(enableZoom, eventTypes: zoomEventTypes, action: zoom3D, inertiaConstant: inertiaZoom, inertiaStateName: "_lastInertiaZoomMovement")
+        /*reactToInput(enableTilt, tiltEventTypes, tilt3D, controller.inertiaSpin, "_lastInertiaTiltMovement");
         reactToInput(enableLook, lookEventTypes, look3D)*/
     }
     

@@ -131,6 +131,7 @@ public class Scene {
     // TODO: setCamera
     public var camera: Camera
 
+    var touchEventHandler: TouchEventHandler? = nil
     
     /**
     * Gets the controller for camera input handling.
@@ -545,6 +546,7 @@ public class Scene {
             initialHeight: Double(context.view.frame.height)
         )
         
+        touchEventHandler = TouchEventHandler(scene: self, view: view)
         
         // TODO: OIT and FXAA
         if useOIT {

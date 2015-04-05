@@ -147,12 +147,5 @@ enum ScreenSpaceEventType: Int {
     * @type {Number}
     * @constant
     */
-    PinchMove,
-    
-    /// Extra for iOS Gesture Recognisers
-    TouchPanStart,
-    
-    TouchPanMove,
-    
-    TouchPanEnd
+    PinchMove
 }
