@@ -246,20 +246,12 @@ class Globe {
     * var intersection = globe.pick(ray, scene);
     */
     func pick(ray: Ray, scene: Scene) -> Cartesian3? {
-
-        
-        var scratchSphereIntersectionResult = Interval(
-        start: 0.0,
-        stop: 0.0
-        )
-        
         let mode = scene.mode
         let projection = scene.mapProjection
         
         var sphereIntersections = [GlobeSurfaceTile]()
         
         var tilesToRender = _surface.tilesToRender
-        //var length = tilesToRender.count
         
         for tile in tilesToRender {
             
@@ -284,15 +276,13 @@ class Globe {
         
         sphereIntersections.sort(createComparePickTileFunction(ray.origin))
         
-        var intersection: Cartesian3? = nil
-
         for sphereIntersection in sphereIntersections {
             if let intersection = sphereIntersection.pick(ray, scene: scene, cullBackFaces: true) {
-                break
+                return intersection
             }
         }
         
-        return intersection
+        return nil
     }
     
     /**
