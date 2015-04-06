@@ -6,10 +6,9 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIScreen
+import UIKit
 import Foundation
 import OpenGLES
-import GLKit
 
 /**
 Describes Globe object options
@@ -124,7 +123,7 @@ public class CesiumGlobe {
     
     var _lastFrameTime: NSDate?
         
-    let view: GLKView
+    let view: UIView
     
     /**
     * Gets the scene.
@@ -216,7 +215,7 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (view: GLKView, options: CesiumOptions) {
+    public init (view: UIView, options: CesiumOptions) {
 
         self.view = view
         /*
@@ -290,7 +289,7 @@ public class CesiumGlobe {
             self.scene.morphToColumbusView(duration: 0)
         }
         
-        configureCanvasSize(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
+        configureCanvasSize(CGSizeMake(CGFloat(view.frame.size.width * view.contentScaleFactor), CGFloat(view.frame.size.height * view.contentScaleFactor)))
         configureCameraFrustum()
 
         // FIXME: Render errors

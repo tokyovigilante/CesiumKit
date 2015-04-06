@@ -746,11 +746,11 @@
 			children = (
 				94985A691A38444C00FFAD81 /* AppDelegate.swift */,
 				94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */,
+				94CB9E161AD22DE50095A86F /* AsyncGLView.swift */,
 				94985A711A38444C00FFAD81 /* Main.storyboard */,
 				94985A741A38444C00FFAD81 /* Images.xcassets */,
 				94985A761A38444C00FFAD81 /* LaunchScreen.xib */,
 				94985A671A38444C00FFAD81 /* Supporting Files */,
-				94CB9E161AD22DE50095A86F /* AsyncGLView.swift */,
 			);
 			path = CesiumKitRunner;
 			sourceTree = "<group>";

@@ -8,7 +8,6 @@
 
 import Foundation
 import OpenGLES
-import GLKit
 
 
 /**
@@ -21,8 +20,8 @@ class Context {
         renderCountThisFrame: Int,
         renderCount: Int
     )
-    
-    var view: GLKView
+
+    var view: UIView
     
     var allowTextureFilterAnisotropic = true
     
@@ -291,9 +290,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/'>OES_element_index_uint</a>
     */
-    var elementIndexUint: Bool {
-    get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
-    }
+    let elementIndexUint: Bool = true/* {
+    //get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
+    }*/
     
     /**
     * <code>true</code> if WEBGL_depth_texture is supported.  This extension provides
@@ -302,9 +301,9 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/'>WEBGL_depth_texture</a>
     */
-    var depthTexture: Bool {
+    var depthTexture: Bool = true /*{
     get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_depth_texture") }
-    }
+    }*/
     
     /**
     * <code>true</code> if OES_texture_float is supported.  This extension provides
@@ -372,11 +371,11 @@ class Context {
     * @type {Boolean}
     * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/'>WEBGL_draw_buffers</a>
     */
-    var drawBuffers: Bool {
+    let drawBuffers: Bool = true /*{
         get {
             return view.context.API == .OpenGLES3 || checkGLExtension("EXT_draw_buffers")
         }
-    }
+    }*/
     
     /**
     * The maximum number of simultaneous outputs that may be written in a fragment shader.
@@ -458,7 +457,7 @@ class Context {
     var height: Int {
         get
         {
-            return _height ?? Int(self.view.drawableHeight)
+            return _height ?? Int(view.frame.size.height * view.contentScaleFactor)
         }
         set (newValue) {
             _height  = newValue
@@ -476,7 +475,7 @@ class Context {
     var width: Int {
         get
         {
-            return _width ?? Int(self.view.drawableWidth)
+            return _width ?? Int(view.frame.size.width * view.contentScaleFactor)
         }
         set (newValue) {
             _width = newValue
@@ -503,7 +502,7 @@ class Context {
     */
     var defaultFramebuffer: Framebuffer? = nil
 
-    init (view: GLKView) {
+    init (view: UIView) {
         
         self.view = view
         

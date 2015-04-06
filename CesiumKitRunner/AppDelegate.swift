@@ -7,15 +7,31 @@
 //
 
 import UIKit
+import CesiumKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
-
+    var globe: CesiumGlobe!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        // create globe
+        let options = CesiumOptions(
+            imageryProvider: nil)
+        if let view = self.window?.rootViewController?.view as? AsyncGLView {
+
+            globe = CesiumGlobe(view: view, options: options)
+            globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+            //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+            globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
+            
+            view.renderCallback = {
+                self.globe?.render(CGSizeMake(CGFloat(view.frame.size.width), CGFloat(CGFloat(view.frame.size.height))))
+            }
+        }
+       
         return true
     }
 
