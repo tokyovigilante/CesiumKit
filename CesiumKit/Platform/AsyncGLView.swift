@@ -21,6 +21,7 @@ public class AsyncGLView: UIView {
     
     private var _colorRenderBuffer: GLuint = 0
     private var _depthRenderBuffer: GLuint = 0
+    private var _stencilRenderBuffer: GLuint = 0
     
     private var _rendererDimensions: CGSize? = nil
     
@@ -44,6 +45,7 @@ public class AsyncGLView: UIView {
         setupContext()
         setupRenderbuffer()
         setupDepthBuffer()
+        setupStencilBuffer()
         setupFramebuffer()
         render = true
     }
@@ -112,8 +114,8 @@ public class AsyncGLView: UIView {
         _rendererDimensions = _eaglLayer.bounds.size
         glGenRenderbuffers(1, &_colorRenderBuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
-        //self.layer.bounds = CGRectMake(0, 0,
-            //self.drawableWidth, self.drawableHeight)
+        self.layer.bounds = CGRectMake(0, 0,
+            self.drawableWidth, self.drawableHeight)
         println(self.layer.bounds)
         _context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer)
     }
@@ -124,6 +126,12 @@ public class AsyncGLView: UIView {
         glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH_COMPONENT16), GLsizei(drawableWidth), GLsizei(drawableHeight))
     }
     
+    private func setupStencilBuffer () {
+        glGenRenderbuffers(1, &_stencilRenderBuffer)
+        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _stencilRenderBuffer)
+        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_STENCIL_INDEX8), GLsizei(drawableWidth), GLsizei(drawableHeight))
+    }
+    
     private func setupFramebuffer () {
         var framebuffer: GLuint = 0
         glGenFramebuffers(1, &framebuffer)
@@ -131,6 +139,7 @@ public class AsyncGLView: UIView {
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0),
             GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthRenderBuffer)
+        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), _stencilRenderBuffer)
 
     }
     
