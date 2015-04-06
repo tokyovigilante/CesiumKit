@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             view.renderCallback = { (drawRect: CGRect) in
                 self.globe?.render(Cartesian2(x: Double(drawRect.width), y: Double(drawRect.height)))
             }
+            view.render = true
         }
        
         return true

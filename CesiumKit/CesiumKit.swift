@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import GLKit
+import UIKit
 import OpenGLES
 
 /**
@@ -122,7 +122,7 @@ public class CesiumGlobe {
     
     var _lastFrameTime: NSDate?
         
-    let view: GLKView
+    let view: UIView
     
     /**
     * Gets the scene.

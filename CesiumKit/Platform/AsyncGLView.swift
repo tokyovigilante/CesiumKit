@@ -22,6 +22,8 @@ public class AsyncGLView: UIView {
     private var _colorRenderBuffer: GLuint = 0
     private var _depthRenderBuffer: GLuint = 0
     
+    private var _rendererDimensions: CGSize? = nil
+    
     public var render: Bool = false
     
     public var renderCallback: ((drawRect: CGRect) -> ())? = nil
@@ -30,16 +32,30 @@ public class AsyncGLView: UIView {
         return CAEAGLLayer.self
     }
     
-    required public init(coder aDecoder: NSCoder) {
+    public required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-       
+        setupDisplayLink()
+        createRenderer()
+        setupMultitouchInput()
+    }
+    
+    private func createRenderer () {
         setupLayer()
         setupContext()
         setupRenderbuffer()
         setupDepthBuffer()
         setupFramebuffer()
-        setupMultitouchInput()
-        setupDisplayLink()
+        render = true
+    }
+    
+    private func destroyRenderer () {
+        render = false
+        setupLayer()
+        setupContext()
+        setupRenderbuffer()
+        setupDepthBuffer()
+        setupFramebuffer()
+        _rendererDimensions = nil
     }
     
     private func setupDisplayLink () {
@@ -50,6 +66,11 @@ public class AsyncGLView: UIView {
         _renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
         _renderSemaphore = dispatch_semaphore_create(1)
         render = true
+    }
+    
+    private func destroyDisplayLink () {
+        
+        _renderQueue = nil
     }
     
     private func setupLayer () {
@@ -83,13 +104,17 @@ public class AsyncGLView: UIView {
             contentScaleFactor = UIScreen.mainScreen().scale * 0.25
             #else
             // render at native (screen pixel) scale for retina screens
-            contentScaleFactor = 1.0// UIScreen.mainScreen().nativeScale
+            contentScaleFactor = UIScreen.mainScreen().nativeScale
         #endif
     }
     
     private func setupRenderbuffer () {
+        _rendererDimensions = _eaglLayer.bounds.size
         glGenRenderbuffers(1, &_colorRenderBuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
+        //self.layer.bounds = CGRectMake(0, 0,
+            //self.drawableWidth, self.drawableHeight)
+        println(self.layer.bounds)
         _context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer)
     }
     
@@ -117,9 +142,15 @@ public class AsyncGLView: UIView {
     // MARK: render
     func render (displayLink: CADisplayLink) {
         
-        if render {
+        if render && _rendererDimensions != nil {
+            
             if dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW) != 0 {
                 return
+            }
+            
+            if self._rendererDimensions != nil && self._rendererDimensions! != self._eaglLayer.bounds.size {
+                destroyRenderer()
+                createRenderer()
             }
             
             dispatch_async(_renderQueue, {
