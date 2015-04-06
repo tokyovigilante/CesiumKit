@@ -19,9 +19,9 @@ public class AsyncGLView: UIView {
     
     private var _displayLink: CADisplayLink!
     
-    private var _colorRenderBuffer: GLuint = 0
-    private var _depthRenderBuffer: GLuint = 0
-    private var _stencilRenderBuffer: GLuint = 0
+    private var _framebuffer: GLuint = 0
+    private var _colorRenderbuffer: GLuint = 0
+    private var _depthStencilRenderbuffer: GLuint = 0
     
     private var _rendererDimensions: CGSize? = nil
     
@@ -44,19 +44,15 @@ public class AsyncGLView: UIView {
         setupLayer()
         setupContext()
         setupRenderbuffer()
-        setupDepthBuffer()
-        setupStencilBuffer()
+        setupDepthStencilBuffer()
         setupFramebuffer()
         render = true
     }
     
     private func destroyRenderer () {
         render = false
-        setupLayer()
-        setupContext()
-        setupRenderbuffer()
-        setupDepthBuffer()
-        setupFramebuffer()
+        destroyContext()
+        destroyBuffers()
         _rendererDimensions = nil
     }
     
@@ -68,11 +64,6 @@ public class AsyncGLView: UIView {
         _renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
         _renderSemaphore = dispatch_semaphore_create(1)
         render = true
-    }
-    
-    private func destroyDisplayLink () {
-        
-        _renderQueue = nil
     }
     
     private func setupLayer () {
@@ -110,36 +101,37 @@ public class AsyncGLView: UIView {
         #endif
     }
     
+    private func destroyContext () {
+        _context = nil
+    }
+    
     private func setupRenderbuffer () {
         _rendererDimensions = _eaglLayer.bounds.size
-        glGenRenderbuffers(1, &_colorRenderBuffer)
-        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
-        self.layer.bounds = CGRectMake(0, 0,
-            self.drawableWidth, self.drawableHeight)
-        println(self.layer.bounds)
+        glGenRenderbuffers(1, &_colorRenderbuffer)
+        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderbuffer)
+        _eaglLayer.drawableProperties = [kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8, kEAGLDrawablePropertyRetainedBacking: NSNumber(bool: false)]
         _context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer)
     }
     
-    private func setupDepthBuffer () {
-        glGenRenderbuffers(1, &_depthRenderBuffer)
-        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _depthRenderBuffer)
-        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH_COMPONENT16), GLsizei(drawableWidth), GLsizei(drawableHeight))
+    private func destroyBuffers () {
+        //glDeleteFramebuffers(1, &_framebuffer)
+        glDeleteRenderbuffers(1, &_depthStencilRenderbuffer)
+        glDeleteRenderbuffers(1, &_colorRenderbuffer)
     }
     
-    private func setupStencilBuffer () {
-        glGenRenderbuffers(1, &_stencilRenderBuffer)
-        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _stencilRenderBuffer)
-        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_STENCIL_INDEX8), GLsizei(drawableWidth), GLsizei(drawableHeight))
+    private func setupDepthStencilBuffer () {
+        glGenRenderbuffers(1, &_depthStencilRenderbuffer)
+        glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
+        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH24_STENCIL8), GLsizei(drawableWidth), GLsizei(drawableHeight))
     }
     
     private func setupFramebuffer () {
-        var framebuffer: GLuint = 0
-        glGenFramebuffers(1, &framebuffer)
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), framebuffer)
+        glGenFramebuffers(1, &_framebuffer)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0),
-            GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
-        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthRenderBuffer)
-        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), _stencilRenderBuffer)
+            GLenum(GL_RENDERBUFFER), _colorRenderbuffer)
+        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
+        glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
 
     }
     
@@ -166,8 +158,8 @@ public class AsyncGLView: UIView {
                 
                 EAGLContext.setCurrentContext(self._context)
                 
-                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthRenderBuffer)
-                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderBuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthStencilRenderbuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderbuffer)
                 
                 if self.renderCallback != nil {
                     self.renderCallback!(drawRect: CGRectMake(0, 0, self.drawableWidth, self.drawableHeight))
