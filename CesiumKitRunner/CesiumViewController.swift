@@ -106,12 +106,12 @@ class CesiumViewController: UIViewController {
     //MARK: - GLKView delegate
     
     func glkView(view: GLKView!, drawInRect rect: CGRect) {
-        globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
-        if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
+        //globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
+        //if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
             lastFrameRateUpdate = NSDate()
             //let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
             //println(performanceString)
-        }
+        //}
     }
     
     // MARK: - GLKViewControllerDelegate

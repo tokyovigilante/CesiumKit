@@ -9,7 +9,7 @@
 import UIKit
 import OpenGLES
 
-class AsyncGLView: UIView {
+public class AsyncGLView: UIView {
     
     private var _renderQueue: dispatch_queue_t!
     private var _eaglLayer: CAEAGLLayer!
@@ -19,14 +19,14 @@ class AsyncGLView: UIView {
     private var _colorRenderBuffer: GLuint = 0
     private var _depthRenderBuffer: GLuint = 0
     
-    var render: Bool = false
+    public var render: Bool = false
     
-    var renderCallback: ((drawRect: CGRect) -> ())? = nil
+    public var renderCallback: ((drawRect: CGRect) -> ())? = nil
     
     override class func layerClass() -> AnyClass {
         return CAEAGLLayer.self
     }
-    required init(coder aDecoder: NSCoder) {
+    public required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
        
         setupLayer()
@@ -81,19 +81,19 @@ class AsyncGLView: UIView {
         #endif
     }
     
-    func setupRenderbuffer () {
+    private func setupRenderbuffer () {
         glGenRenderbuffers(1, &_colorRenderBuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderBuffer)
         _context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer)
     }
     
-    func setupDepthBuffer () {
+    private func setupDepthBuffer () {
         glGenRenderbuffers(1, &_depthRenderBuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _depthRenderBuffer)
         glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH_COMPONENT16), GLsizei(frame.size.width * contentScaleFactor), GLsizei(self.frame.size.height * contentScaleFactor))
     }
     
-    func setupFramebuffer () {
+    private func setupFramebuffer () {
         var framebuffer: GLuint = 0
         glGenFramebuffers(1, &framebuffer)
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), framebuffer)
@@ -104,12 +104,12 @@ class AsyncGLView: UIView {
     }
     
     // MARK: - NSResponder
-    func setupMultitouchInput() {
+    private func setupMultitouchInput() {
         
     }
     
     // MARK: render
-    func render (displayLink: CADisplayLink) {
+    private func render (displayLink: CADisplayLink) {
         
         if render {
             dispatch_async(_renderQueue, {
@@ -119,7 +119,7 @@ class AsyncGLView: UIView {
                 glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderBuffer)
                 
                 if self.renderCallback != nil {
-                    self.renderCallback!()
+                    self.renderCallback!(drawRect: CGRectMake(0, 0, self.drawableWidth, self.drawableHeight))
                 }
                 self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
             })
@@ -130,13 +130,13 @@ class AsyncGLView: UIView {
 
 extension UIView {
     
-    var drawableWidth: CGFloat {
+    public var drawableWidth: CGFloat {
         get {
             return CGFloat(frame.width) * contentScaleFactor
         }
     }
     
-    var drawableHeight: CGFloat {
+    public var drawableHeight: CGFloat {
         get {
             return CGFloat(frame.height) * contentScaleFactor
         }
