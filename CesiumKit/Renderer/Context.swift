@@ -447,42 +447,21 @@ class Context {
     * @type {Object}
     */
     var cache = [String: AnyObject]()
-    
-    /**
-    * The drawingBufferWidth of the underlying GL context.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferWidth'>drawingBufferWidth</a>
-    */
-    var height: Int {
-        get
-        {
-            return _height ?? Int(view.frame.size.height * view.contentScaleFactor)
-        }
-        set (newValue) {
-            _height  = newValue
-        }
-    }
-    
-    var _height: Int? = nil
+   
     
     /**
     * The drawingBufferHeight of the underlying GL context.
     * @memberof Context.prototype
     * @type {Number}
-    * @see <a href='https://www.khronos.org/registry/webgl/specs/1.0/#DOM-WebGLRenderingContext-drawingBufferHeight'>drawingBufferHeight</a>
     */
-    var width: Int {
-        get
-        {
-            return _width ?? Int(view.frame.size.width * view.contentScaleFactor)
-        }
-        set (newValue) {
-            _width = newValue
-        }
-    }
     
-    var _width: Int?
+    var height: Int = 0
+    /**
+    * The drawingBufferWidth of the underlying GL context.
+    * @memberof Context.prototype
+    * @type {Number}
+    */
+    var width: Int = 0
     
     var cachedGLESExtensions: [String]?
 

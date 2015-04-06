@@ -19,7 +19,9 @@ class AsyncGLView: UIView {
     private var _colorRenderBuffer: GLuint = 0
     private var _depthRenderBuffer: GLuint = 0
     
-    var renderCallback: (() -> ())? = nil
+    var render: Bool = false
+    
+    var renderCallback: ((drawRect: CGRect) -> ())? = nil
     
     override class func layerClass() -> AnyClass {
         return CAEAGLLayer.self
@@ -27,13 +29,13 @@ class AsyncGLView: UIView {
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
        
-        setupDisplayLink()
         setupLayer()
         setupContext()
         setupRenderbuffer()
         setupDepthBuffer()
         setupFramebuffer()
         setupMultitouchInput()
+        setupDisplayLink()
     }
     
     private func setupDisplayLink () {
@@ -41,6 +43,7 @@ class AsyncGLView: UIView {
         _displayLink = CADisplayLink(target: self, selector: "render:")
         _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         _renderQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
+        render = true
     }
     
     private func setupLayer () {
@@ -108,16 +111,34 @@ class AsyncGLView: UIView {
     // MARK: render
     func render (displayLink: CADisplayLink) {
         
-        dispatch_async(_renderQueue, {
-            EAGLContext.setCurrentContext(self._context)
-            
-            glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthRenderBuffer)
-            glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderBuffer)
-            
-            if self.renderCallback != nil {
-                self.renderCallback!()
-            }
-             self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
-        })
+        if render {
+            dispatch_async(_renderQueue, {
+                EAGLContext.setCurrentContext(self._context)
+                
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthRenderBuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderBuffer)
+                
+                if self.renderCallback != nil {
+                    self.renderCallback!()
+                }
+                self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
+            })
+        }
+
+    }
+}
+
+extension UIView {
+    
+    var drawableWidth: CGFloat {
+        get {
+            return CGFloat(frame.width) * contentScaleFactor
+        }
+    }
+    
+    var drawableHeight: CGFloat {
+        get {
+            return CGFloat(frame.height) * contentScaleFactor
+        }
     }
 }

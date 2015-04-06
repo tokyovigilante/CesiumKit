@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Foundation
 import OpenGLES
 
 /**
@@ -289,7 +288,7 @@ public class CesiumGlobe {
             self.scene.morphToColumbusView(duration: 0)
         }
         
-        configureCanvasSize(CGSizeMake(CGFloat(view.frame.size.width * view.contentScaleFactor), CGFloat(view.frame.size.height * view.contentScaleFactor)))
+        configureCanvasSize(Cartesian2(x: Double(view.drawableWidth), y: Double(view.drawableHeight)))
         configureCameraFrustum()
 
         // FIXME: Render errors
@@ -346,10 +345,10 @@ public class CesiumGlobe {
         requestAnimationFrame(render)*/
     }
 
-    func configureCanvasSize(size: CGSize) {
+    func configureCanvasSize(size: Cartesian2) {
         
-        scene.drawableWidth = Int(size.width)
-        scene.drawableHeight = Int(size.height)
+        scene.drawableWidth = Int(rect.width)
+        scene.drawableHeight = Int(rect.height)
         
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
         
@@ -472,8 +471,8 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * This function is called automatically as needed unless
     * <code>useDefaultRenderLoop</code> is set to false.
     */
-    func resize(size: CGSize) {
-        if scene.drawableWidth == Int(size.width) && scene.drawableHeight == Int(size.height) {
+    func resize(size: Cartesian2) {
+        if scene.drawableWidth == Int(size.x) && scene.drawableHeight == Int(size.y) {
             return
         }
         configureCanvasSize(size)
@@ -483,7 +482,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
-    public func render(size: CGSize) {
+    public func render(size: Cartesian2) {
         
         /*if _lastFrameTime != nil {
             let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
