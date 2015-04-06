@@ -12,8 +12,11 @@ import OpenGLES
 public class AsyncGLView: UIView {
     
     private var _renderQueue: dispatch_queue_t!
+    private var _renderSemaphore: dispatch_semaphore_t!
+    
     private var _eaglLayer: CAEAGLLayer!
     private var _context: EAGLContext!
+    
     private var _displayLink: CADisplayLink!
     
     private var _colorRenderBuffer: GLuint = 0
@@ -23,10 +26,11 @@ public class AsyncGLView: UIView {
     
     public var renderCallback: ((drawRect: CGRect) -> ())? = nil
     
-    override class func layerClass() -> AnyClass {
+    override public class func layerClass() -> AnyClass {
         return CAEAGLLayer.self
     }
-    public required init(coder aDecoder: NSCoder) {
+    
+    required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
        
         setupLayer()
@@ -42,7 +46,9 @@ public class AsyncGLView: UIView {
         
         _displayLink = CADisplayLink(target: self, selector: "render:")
         _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        _renderQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
+        
+        _renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
+        _renderSemaphore = dispatch_semaphore_create(1)
         render = true
     }
     
@@ -77,7 +83,7 @@ public class AsyncGLView: UIView {
             contentScaleFactor = UIScreen.mainScreen().scale * 0.25
             #else
             // render at native (screen pixel) scale for retina screens
-            contentScaleFactor = UIScreen.mainScreen().nativeScale
+            contentScaleFactor = 1.0// UIScreen.mainScreen().nativeScale
         #endif
     }
     
@@ -90,7 +96,7 @@ public class AsyncGLView: UIView {
     private func setupDepthBuffer () {
         glGenRenderbuffers(1, &_depthRenderBuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _depthRenderBuffer)
-        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH_COMPONENT16), GLsizei(frame.size.width * contentScaleFactor), GLsizei(self.frame.size.height * contentScaleFactor))
+        glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH_COMPONENT16), GLsizei(drawableWidth), GLsizei(drawableHeight))
     }
     
     private func setupFramebuffer () {
@@ -109,10 +115,15 @@ public class AsyncGLView: UIView {
     }
     
     // MARK: render
-    private func render (displayLink: CADisplayLink) {
+    func render (displayLink: CADisplayLink) {
         
         if render {
+            if dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW) != 0 {
+                return
+            }
+            
             dispatch_async(_renderQueue, {
+                
                 EAGLContext.setCurrentContext(self._context)
                 
                 glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthRenderBuffer)
@@ -122,9 +133,10 @@ public class AsyncGLView: UIView {
                     self.renderCallback!(drawRect: CGRectMake(0, 0, self.drawableWidth, self.drawableHeight))
                 }
                 self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
+            
+                dispatch_semaphore_signal(self._renderSemaphore)
             })
         }
-
     }
 }
 

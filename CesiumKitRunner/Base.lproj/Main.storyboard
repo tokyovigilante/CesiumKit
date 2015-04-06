@@ -7,12 +7,12 @@
         <!--View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" sceneMemberID="viewController">
+                <viewController id="BV1-FR-VrT" customClass="GLKViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ZPU-08-LUH"/>
                         <viewControllerLayoutGuide type="bottom" id="3sS-9D-TVk"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="FfQ-C1-hHW" customClass="AsyncGLView" customModule="CesiumKitRunner" customModuleProvider="target">
+                    <view key="view" contentMode="scaleToFill" id="FfQ-C1-hHW" customClass="GLKView">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

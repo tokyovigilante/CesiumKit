@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
             globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
             
-            view.renderCallback = (drawRect: CGRect) {
-                self.globe?.render(Cartesian2(x: Double(drawRect.width), y: Double(drawWidth.height)))
+            view.renderCallback = { (drawRect: CGRect) in
+                self.globe?.render(Cartesian2(x: Double(drawRect.width), y: Double(drawRect.height)))
             }
         }
        

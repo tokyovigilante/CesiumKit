@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit
+import GLKit
 import OpenGLES
 
 /**
@@ -122,7 +122,7 @@ public class CesiumGlobe {
     
     var _lastFrameTime: NSDate?
         
-    let view: UIView
+    let view: GLKView
     
     /**
     * Gets the scene.
@@ -347,7 +347,7 @@ public class CesiumGlobe {
 
     func configureCanvasSize(size: Cartesian2) {
         
-        scene.drawableWidth = Int(size.y)
+        scene.drawableWidth = Int(size.x)
         scene.drawableHeight = Int(size.y)
         
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
@@ -363,7 +363,7 @@ public class CesiumGlobe {
                 scene.camera.frustum.aspectRatio = Double(width) / Double(height)
             } else {
                 scene.camera.frustum.top = scene.camera.frustum.right * (Double(height) / Double(width))
-                scene.camera.frustum.bottom = -scene.camera.frustum.top;
+                scene.camera.frustum.bottom = -scene.camera.frustum.top
             }
         }
     }

@@ -10,7 +10,10 @@ import OpenGLES
 import GLKit
 import CesiumKit
 
-class CesiumViewController: UIViewController {
+class CesiumViewController: GLKViewController {
+    
+    private var _renderQueue: dispatch_queue_t!
+    private var _renderSemaphore: dispatch_semaphore_t!
     
     private var lastFrameRateUpdate = NSDate()    
     
@@ -106,12 +109,33 @@ class CesiumViewController: UIViewController {
     //MARK: - GLKView delegate
     
     func glkView(view: GLKView!, drawInRect rect: CGRect) {
-        //globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
+        if render {
+            if dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW) != 0 {
+                return
+            }
+            
+            dispatch_async(_renderQueue, {
+                
+                EAGLContext.setCurrentContext(self._context)
+                
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthRenderBuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderBuffer)
+                
+                if self.renderCallback != nil {
+                    self.renderCallback!(drawRect: CGRectMake(0, 0, self.drawableWidth, self.drawableHeight))
+                }
+                self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
+                
+                dispatch_semaphore_signal(self._renderSemaphore)
+            })
+        }
+
+        globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
         //if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
             lastFrameRateUpdate = NSDate()
             //let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
             //println(performanceString)
-        //}
+        }
     }
     
     // MARK: - GLKViewControllerDelegate
