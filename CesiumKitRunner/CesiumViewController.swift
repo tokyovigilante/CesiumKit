@@ -47,6 +47,7 @@ class CesiumViewController: GLKViewController {
         let view: GLKView = self.view as! GLKView
         
         view.context = EAGLContext(API: .OpenGLES3)
+        view.context.multiThreaded = true
         
         if !EAGLContext.setCurrentContext(view.context) {
             println("Failed to set current OpenGL context!")
