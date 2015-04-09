@@ -463,7 +463,7 @@ public class ImageryLayer {
         imagery.state = .Transitioning
         
         //Async.background {
-        dispatch_async(_imageRequestQueue, {
+        dispatch_async(context.networkQueue, {
             if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
                 dispatch_async(context.renderQueue, {
                     imagery.image = image
@@ -475,7 +475,7 @@ public class ImageryLayer {
                 dispatch_async(context.renderQueue, {
                     imagery.state = .Failed
                     
-                    var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
                     println(message)
                 })
             }
