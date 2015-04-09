@@ -90,7 +90,7 @@ class Imagery {
     func processStateMachine (context: Context) {
         if (state == .Unloaded) {
             state = .Transitioning
-            imageryLayer.requestImagery(self)
+            imageryLayer.requestImagery(context, imagery: self)
         }
         if (state == .Received) {
             state = .Transitioning

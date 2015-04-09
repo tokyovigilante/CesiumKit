@@ -26,7 +26,7 @@
 //	IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //	CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
+/*
 import Foundation
 
 
@@ -52,7 +52,6 @@ private class GCD {
         return dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
     }
 }
-
 
 // MARK: - Async – Struct
 
@@ -262,7 +261,7 @@ public struct Apply {
         dispatch_apply(iterations, queue, block)
     }
 }
-
+*/
 
 // MARK: - qos_class_t
 

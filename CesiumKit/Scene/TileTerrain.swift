@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 /**
 * Manages details of the terrain load or upsample process.
 *
@@ -81,7 +82,7 @@ class TileTerrain {
     
     func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-            requestTileGeometry(terrainProvider: terrainProvider, x: x, y: y, level: level)
+            requestTileGeometry(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
         
         if state == .Received {
@@ -94,55 +95,28 @@ class TileTerrain {
     }
     
     
-    func requestTileGeometry(#terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        weak var weakSelf = self
-        
-        var success = { (terrainData: TerrainData) -> () in
+    func requestTileGeometry(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
 
-        }
-        
-        var failure = { (error: String) -> () in
-            // Initially assume failure.  handleError may retry, in which case the state will
-            // change to RECEIVING or UNLOADED.
-            weakSelf?.state = TerrainState.Failed
-            
-            var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
-            /*terrainProvider._requestError = TileProviderError.handleError(
-            terrainProvider._requestError,
-            terrainProvider,
-            terrainProvider.errorEvent,
-            message,
-            x, y, level,
-            doRequest);*/
-            println(message)
-        }
-        Async.background {
+        dispatch_async(context.processorQueue, {
             self.state = .Receiving
             var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
             if let terrainData = terrainData {
-                Async.main {
+                dispatch_async(context.renderQueue, {
                     self.data = terrainData
                     self.state = .Received
-                }
+                })
             } else {
-                Async.main {
+                dispatch_async(context.renderQueue, {
                     // Initially assume failure.  handleError may retry, in which case the state will
                     // change to RECEIVING or UNLOADED.
-                    weakSelf?.state = TerrainState.Failed
+                    self.state = TerrainState.Failed
                     
-                    var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                    /*terrainProvider._requestError = TileProviderError.handleError(
-                    terrainProvider._requestError,
-                    terrainProvider,
-                    terrainProvider.errorEvent,
-                    message,
-                    x, y, level,
-                    doRequest);*/
+                    let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
                     println(message)
-
-                }
+                    
+                })
             }
-        }
+        })
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
@@ -185,22 +159,22 @@ class TileTerrain {
     func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
-        Async.background {
+        dispatch_async(context.processorQueue, {
             var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
-                Async.main {
+                dispatch_async(context.renderQueue, {
                     self.mesh = mesh
                     self.state = .Transformed
-                }
+                })
             } else {
-                Async.main {
+                dispatch_async(context.processorQueue, {
                     self.state = .Failed
                     var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
                     println(message)
-                }
+                })
             }
-        }
+        })
     }
 
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {

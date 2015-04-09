@@ -458,28 +458,28 @@ public class ImageryLayer {
     *
     * @param {Imagery} imagery The imagery to request.
     */
-    func requestImagery (imagery: Imagery) {
+    func requestImagery (context: Context, imagery: Imagery) {
         
         imagery.state = .Transitioning
         
-        Async.background {
-            
+        //Async.background {
+        dispatch_async(_imageRequestQueue, {
             if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
-                Async.main {
+                dispatch_async(context.renderQueue, {
                     imagery.image = image
                     imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                     
                     imagery.state = .Received
-                }
+                })
             } else {
-                Async.main {
+                dispatch_async(context.renderQueue, {
                     imagery.state = .Failed
                     
                     var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
                     println(message)
-                }
+                })
             }
-        }
+        })
     }
     
     /**

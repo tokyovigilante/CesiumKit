@@ -21,7 +21,15 @@ class Context {
         renderCount: Int
     )
 
-    var view: UIView
+    var view: AsyncGLView
+    
+    var renderQueue: dispatch_queue_t {
+        get {
+            return view.renderQueue
+        }
+    }
+    let networkQueue: dispatch_queue_t
+    let processorQueue: dispatch_queue_t
     
     var allowTextureFilterAnisotropic = true
     
@@ -481,11 +489,14 @@ class Context {
     */
     var defaultFramebuffer: Framebuffer? = nil
 
-    init (view: UIView) {
+    init (view: AsyncGLView) {
         
         self.view = view
         
         id = NSUUID().UUIDString
+        
+        networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
+        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_CONCURRENT)
         
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
@@ -579,7 +590,6 @@ class Context {
 
         var us = UniformState()
         var rs = RenderState()
-        //var ps = PassState()
         
         _defaultRenderState = rs
         uniformState = us

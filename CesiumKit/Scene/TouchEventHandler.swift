@@ -169,7 +169,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             let view = _view as! AsyncGLView
             let scale = Double(recognizer.scale)
             recognizer.scale = 1
-            dispatch_async(view._renderQueue, {
+            dispatch_async(view.renderQueue, {
                 self.zoomToPosition(Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.y)), scale: scale)
             })
             //globe?.eventHandler.handlePanMove(Cartesian2(x: Double(location.x), y: Double(location.y)))

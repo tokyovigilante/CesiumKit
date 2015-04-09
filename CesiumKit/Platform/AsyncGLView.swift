@@ -11,7 +11,8 @@ import GLKit
 
 public class AsyncGLView: GLKView {
     
-    var _renderQueue: dispatch_queue_t!
+    internal var renderQueue: dispatch_queue_t!
+    
     private var _renderSemaphore: dispatch_semaphore_t!
     
     //private var _eaglLayer: CAEAGLLayer!
@@ -62,7 +63,7 @@ public class AsyncGLView: GLKView {
         _displayLink = CADisplayLink(target: self, selector: "render:")
         _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         
-        _renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
+        renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
         _renderSemaphore = dispatch_semaphore_create(1)
         render = true
     }
@@ -155,7 +156,7 @@ public class AsyncGLView: GLKView {
                 createRenderer()
             }*/
             
-            dispatch_async(_renderQueue, {
+            dispatch_async(renderQueue, {
                 
                 EAGLContext.setCurrentContext(self.context)
                 
