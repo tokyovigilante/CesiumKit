@@ -122,7 +122,7 @@ public class CesiumGlobe {
     
     var _lastFrameTime: NSDate?
         
-    let view: UIView
+    let view: AsyncGLView
     
     /**
     * Gets the scene.
@@ -214,7 +214,7 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (view: UIView, options: CesiumOptions) {
+    public init (view: AsyncGLView, options: CesiumOptions) {
 
         self.view = view
         /*

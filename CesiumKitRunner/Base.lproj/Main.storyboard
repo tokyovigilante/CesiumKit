@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7518.3"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Cesium View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" sceneMemberID="viewController">
+                <viewController id="BV1-FR-VrT" customClass="CesiumViewController" customModule="CesiumKitRunner" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ZPU-08-LUH"/>
                         <viewControllerLayoutGuide type="bottom" id="3sS-9D-TVk"/>

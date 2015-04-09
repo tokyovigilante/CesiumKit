@@ -166,8 +166,12 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             //globe?.eventHandler.handlePanStart(Cartesian2(x: Double(location.x), y: Double(location.y)))
         case .Changed:
             //println("pinchchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-            zoomToPosition(Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.y)), scale: Double(recognizer.scale))
+            let view = _view as! AsyncGLView
+            let scale = Double(recognizer.scale)
             recognizer.scale = 1
+            dispatch_async(view._renderQueue, {
+                self.zoomToPosition(Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.y)), scale: scale)
+            })
             //globe?.eventHandler.handlePanMove(Cartesian2(x: Double(location.x), y: Double(location.y)))
         //case .Ended:
             //println("pinchended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
