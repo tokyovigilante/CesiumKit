@@ -113,7 +113,7 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [Float], startingIndex: Int) {
+    func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian4.packedLength, "Array too short")
         array[startingIndex] = Float(x)
         array[startingIndex+1] = Float(y)

@@ -14,7 +14,8 @@ var viewerPositionWCScratch = new Cartesian3();
 struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
-    let getValue: (uniformState: UniformState) -> Any
+    //let getValue: (uniformState: UniformState) -> Any
+    let getValue: (uniformState: UniformState) -> [Float]
     
     func declaration (name: String) -> String {
         var declaration = "uniform \(datatype.declarationString()) \(name)"
@@ -29,43 +30,10 @@ struct AutomaticUniform {
     }
 }
 
-/*
-
-// this check must use typeof, not defined, because defined doesn't work with undeclared variables.
-if (typeof WebGLRenderingContext === 'undefined') {
-return {}; as Any
-}
-
-var datatypeToGlsl = {};
-datatypeToGlsl[WebGLRenderingContext.FLOAT] = 'float';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC2] = 'vec2';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC3] = 'vec3';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_VEC4] = 'vec4';
-datatypeToGlsl[WebGLRenderingContext.INT] = 'int';
-datatypeToGlsl[WebGLRenderingContext.INT_VEC2] = 'ivec2';
-datatypeToGlsl[WebGLRenderingContext.INT_VEC3] = 'ivec3';
-datatypeToGlsl[WebGLRenderingContext.INT_VEC4] = 'ivec4';
-datatypeToGlsl[WebGLRenderingContext.BOOL] = 'bool';
-datatypeToGlsl[WebGLRenderingContext.BOOL_VEC2] = 'bvec2';
-datatypeToGlsl[WebGLRenderingContext.BOOL_VEC3] = 'bvec3';
-datatypeToGlsl[WebGLRenderingContext.BOOL_VEC4] = 'bvec4';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT2] = 'mat2';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT3] = 'mat3';
-datatypeToGlsl[WebGLRenderingContext.FLOAT_MAT4] = 'mat4';
-datatypeToGlsl[WebGLRenderingContext.SAMPLER_2D] = 'sampler2D';
-datatypeToGlsl[WebGLRenderingContext.SAMPLER_CUBE] = 'samplerCube';
-*/
 /**
 * @private
 */
 
-
-
-/*size: 1,
-datatype: UniformDataType.FLOAT_VEC4,
-getValue: {() -> [Float]  in
-}
-)*/
 
 let AutomaticUniforms: [String: AutomaticUniform] = [
     /**
@@ -89,8 +57,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewport": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.viewportCartesian4
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 4, repeatedValue: 0.0)
+            uniformState.viewportCartesian4.pack(&result)
+            return result
         }
     ),
     
@@ -124,8 +94,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportOrthographic":  AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.viewportOrthographic as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.viewportOrthographic.pack(&result)
+            return result
         }
     ),
     
@@ -167,8 +139,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportTransformation": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.viewportTransformation as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.viewportOrthographic.pack(&result)
+            return result
         }
     ),
     /*
@@ -249,8 +223,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_view": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.view as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.view.pack(&result)
+            return result
         }
     ),
     /*
@@ -469,8 +445,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_projection": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.projection as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.projection.pack(&result)
+            return result
         }
     ),
     
@@ -495,8 +473,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_inverseProjection": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix4,
-        getValue : { (uniformState: UniformState) -> Any in
-            return uniformState.inverseProjection as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.inverseProjection.pack(&result)
+            return result
         }
     ),
     /*
@@ -569,9 +549,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.modelView as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.modelView.pack(&result)
+            return result
         }
+        
     ),
     
     /**
@@ -603,9 +586,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelView3D": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.modelView3D as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.modelView3D.pack(&result)
+            return result
         }
+        
     ),
     /*
     /**
@@ -662,8 +648,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_inverseModelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.inverseModelView as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.inverseModelView.pack(&result)
+            return result
         }
     ),
     /*
@@ -784,8 +772,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelViewProjection": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.modelViewProjection as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 16, repeatedValue: 0.0)
+            uniformState.modelViewProjection.pack(&result)
+            return result
         }
     ),
     /*
@@ -908,8 +898,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_normal": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix3,
-        getValue : { (uniformState: UniformState) -> Any in
-            return uniformState.normal as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 9, repeatedValue: 0.0)
+            uniformState.normal.pack(&result)
+            return result
         }
     ),
     
@@ -940,8 +932,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_normal3D": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix3,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.normal3D as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 9, repeatedValue: 0.0)
+            uniformState.normal3D.pack(&result)
+            return result
         }
     ),
     
@@ -1137,8 +1131,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_sunDirectionEC": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec3,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.sunDirectionEC as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 3, repeatedValue: 0.0)
+            uniformState.sunDirectionEC.pack(&result)
+            return result
         }
     ),
     /*
@@ -1185,8 +1181,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_moonDirectionEC": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatVec3,
-        getValue: { (uniformState: UniformState) -> Any in
-            return uniformState.moonDirectionEC as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            var result = [Float](count: 3, repeatedValue: 0.0)
+            uniformState.moonDirectionEC.pack(&result)
+            return result
         }
     ),
     /*
@@ -1270,8 +1268,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_frameNumber": AutomaticUniform(
         size: 1,
         datatype : UniformDataType.FloatVec1,
-        getValue: { (uniformState: UniformState) -> Any in
-            return Float(uniformState.frameState.frameNumber) as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            return [Float(uniformState.frameState.frameNumber)]
         }
     ),
     
@@ -1292,8 +1290,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_morphTime": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec1,
-        getValue: { (uniformState: UniformState) -> Any in
-            return Float(uniformState.frameState.morphTime) as Any
+        getValue: { (uniformState: UniformState) -> [Float] in
+            return [Float(uniformState.frameState.morphTime)]
         }
     ),
     

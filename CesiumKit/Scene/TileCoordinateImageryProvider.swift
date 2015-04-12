@@ -46,7 +46,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultAlpha: Double = 1.0
+    public let defaultAlpha: Float = 1.0
     
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
@@ -55,7 +55,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultBrightness: Double = 1.0
+    public let defaultBrightness: Float = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -64,7 +64,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultContrast: Double = 1.0
+    public let defaultContrast: Float = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -72,7 +72,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultHue: Double = 1.0
+    public let defaultHue: Float = 1.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -81,7 +81,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultSaturation: Double = 1.0
+    public let defaultSaturation: Float = 1.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -89,7 +89,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultGamma: Double = 1.0
+    public let defaultGamma: Float = 1.0
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.

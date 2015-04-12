@@ -32,6 +32,38 @@ class CesiumViewController: UIViewController {
     override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
         
     }*/
+
+    
+    //MARK: - GLKView delegate
+    
+    override func glkView(view: GLKView!, drawInRect rect: CGRect) {
+        globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
+        if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
+            lastFrameRateUpdate = NSDate()
+            let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
+            println(performanceString)
+        }
+    }
+    
+    // MARK: - GLKViewControllerDelegate
+    func update () {
+        
+    }
+    
+    func tearDownGL () {
+        globe = nil
+    }
+    
+    deinit {
+        
+        tearDownGL()
+        
+        let glView = self.view as! GLKView
+        
+        if EAGLContext.currentContext() == glView.context {
+            EAGLContext.setCurrentContext(nil)
+        }
+    }
     
 }
 

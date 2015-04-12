@@ -67,6 +67,85 @@ enum UniformDataType: GLenum {
         }
     }
     
+    func elementCount () -> Int {
+        switch self {
+        case .FloatVec1:
+            return 1
+        case .FloatVec2:
+            return 2
+        case .FloatVec3:
+            return 3
+        case .FloatVec4:
+            return 4
+        case .IntVec1:
+            return 1
+        case .IntVec2:
+            return 2
+        case .IntVec3:
+            return 3
+        case .IntVec4:
+            return 4
+        case .BoolVec1:
+            return 1
+        case .BoolVec2:
+            return 2
+        case .BoolVec3:
+            return 3
+        case .BoolVec4:
+            return 4
+        case .FloatMatrix2:
+            return 4
+        case .FloatMatrix3:
+            return 9
+        case .FloatMatrix4:
+            return 16
+        case .Sampler2D:
+            return 1
+        case .SamplerCube:
+            return 1
+        }
+    }
+    
+    func isFloat () -> Bool {
+        switch self {
+        case .FloatVec1:
+            return true
+        case .FloatVec2:
+            return true
+        case .FloatVec3:
+            return true
+        case .FloatVec4:
+            return true
+        case .IntVec1:
+            return false
+        case .IntVec2:
+            return false
+        case .IntVec3:
+            return false
+        case .IntVec4:
+            return false
+        case .BoolVec1:
+            return false
+        case .BoolVec2:
+            return false
+        case .BoolVec3:
+            return false
+        case .BoolVec4:
+            return false
+        case .FloatMatrix2:
+            return true
+        case .FloatMatrix3:
+            return true
+        case .FloatMatrix4:
+            return true
+        case .Sampler2D:
+            return false
+        case .SamplerCube:
+            return false
+        }
+    }
+
+    
 }
 
 // represents WebGLActiveInfo
@@ -99,6 +178,12 @@ class Uniform {
         return _locations[0]
     }
     
+    var isFloat: Bool {
+        get {
+            return _activeUniform.type.isFloat()
+        }
+    }
+    
     var isSingle: Bool {
         get {
             return _activeUniform.name.indexOf("[") == nil
@@ -116,9 +201,8 @@ class Uniform {
         _activeUniform = activeUniform
         self.name = name
         _locations = locations
-        
     }
-
+    
     func setValues(newValues: [Any]) {
         assertionFailure("Invalid base class")
     }
@@ -171,35 +255,37 @@ class Uniform {
     
 }
 
-/*
-for (index, location) in enumerate(_locations) {
-switch _values[index] {
-case .FloatVec1(let value):
-if _isDirty[index] {
-glUniform1f(location, GLfloat(value))
-}*/
-class UniformFloatVec1: Uniform {
+class FloatUniform: Uniform {
     
     private var _values: [Float]
     
-    private var _changed = false
+    override var isFloat: Bool {
+        get {
+            return true
+        }
+    }
+    
+    func setFloatValues(newValues: [Float]) {
+        assert(isFloat, "Not float")
+        assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
+        _values = newValues
+    }
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
         _values = [Float]()
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
-    override func setValues(newValues: [Any]) {
-        var values = newValues.map({ Float($0 as! Double) })
-        for i in 0..<_locations.count {
-            let value = _values[i]
-            if values[i] != _values[i] {
-                _values[i] = values[i]
-                _changed = true
-            }
-        }
+}
+
+class UniformFloatVec1: FloatUniform {
+    
+    
+    private var _changed = false
+    
+    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+        super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
@@ -212,31 +298,23 @@ class UniformFloatVec1: Uniform {
 }
 
 
-class UniformFloatVec2: Uniform {
-    
-    private var _values: [Cartesian2]
+class UniformFloatVec2: FloatUniform {
     
     private var _arrayBuffer: [Float]
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         
         _arrayBuffer = [Float](count: locations.count * 2, repeatedValue: 0.0)
-        _values = [Cartesian2]()
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Cartesian2 })
     }
     
     override func set () {
         var changed = false
         
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*2) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*2)
+        for i in 0..<_locations.count * 2 {
+            if _arrayBuffer[i] != _values[i] {
+                _arrayBuffer[i] = _values[i]
                 changed = true
             }
         }
@@ -248,31 +326,23 @@ class UniformFloatVec2: Uniform {
 }
 
 
-class UniformFloatVec3: Uniform {
-    
-    private var _values: [Cartesian3]
+class UniformFloatVec3: FloatUniform {
     
     private var _arrayBuffer: [Float]
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         
         _arrayBuffer = [Float](count: locations.count * 3, repeatedValue: 0.0)
-        _values = [Cartesian3]()
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Cartesian3 })
     }
     
     override func set () {
         var changed = false
         
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*3) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*3)
+        for i in 0..<_locations.count * 3 {
+            if _arrayBuffer[i] != _values[i] {
+                _arrayBuffer[i] = _values[i]
                 changed = true
             }
         }
@@ -284,35 +354,23 @@ class UniformFloatVec3: Uniform {
     
 }
 
-class UniformFloatVec4: Uniform {
-    
-    private var _values: [Cartesian4]
+class UniformFloatVec4: FloatUniform {
     
     private var _arrayBuffer: [Float]
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         
         _arrayBuffer = [Float](count: locations.count * 4, repeatedValue: 0.0)
-        _values = [Cartesian4]()
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        /*_values = [Cartesian4]()
-        for newValue in newValues {
-            _values.append(newValue as! Cartesian4)
-        }*/
-        _values = newValues.map({ $0 as! Cartesian4 })
     }
     
     override func set () {
         var changed = false
         
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*4) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*4)
+        for i in 0..<_locations.count * 4 {
+            if _arrayBuffer[i] != _values[i] {
+                _arrayBuffer[i] = _values[i]
                 changed = true
             }
         }
@@ -379,31 +437,23 @@ gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUnifor
 }*/
 
 
-class UniformFloatMatrix4: Uniform {
-    
-    private var _values: [Matrix4]
+class UniformFloatMatrix4: FloatUniform {
     
     private var _arrayBuffer: [Float]
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         
         _arrayBuffer = [Float](count: locations.count * 16, repeatedValue: 0.0)
-        _values = [Matrix4]()
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Matrix4 })
     }
     
     override func set () {
         var changed = false
         
-        for i in 0..<_locations.count {
-            let matrix = _values[i]
-            if !matrix.equalsArray(_arrayBuffer, offset: i*16) {
-                matrix.pack(&_arrayBuffer, startingIndex: i*16)
+        for i in 0..<_locations.count * 16 {
+            if _arrayBuffer[i] != _values[i] {
+                _arrayBuffer[i] = _values[i]
                 changed = true
             }
         }

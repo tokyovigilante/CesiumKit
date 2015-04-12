@@ -26,7 +26,7 @@ public class ImageryLayer {
     * @type {Number}
     * @default 1.0
     */
-    let DefaultBrightness = 1.0
+    let defaultBrightness: Float = 1.0
     
     /**
     * This value is used as the default contrast for the imagery layer if one is not provided during construction
@@ -34,7 +34,7 @@ public class ImageryLayer {
     * @type {Number}
     * @default 1.0
     */
-    let DefaultContrast = 1.0
+    let defaultContrast: Float = 1.0
     
     /**
     * This value is used as the default hue for the imagery layer if one is not provided during construction
@@ -42,7 +42,7 @@ public class ImageryLayer {
     * @type {Number}
     * @default 0.0
     */
-    let DefaultHue = 0.0
+    let defaultHue: Float = 0.0
     
     /**
     * This value is used as the default saturation for the imagery layer if one is not provided during construction
@@ -50,7 +50,7 @@ public class ImageryLayer {
     * @type {Number}
     * @default 1.0
     */
-    let DefaultSaturation = 1.0
+    let defaultSaturation: Float = 1.0
     
     /**
     * This value is used as the default gamma for the imagery layer if one is not provided during construction
@@ -58,7 +58,7 @@ public class ImageryLayer {
     * @type {Number}
     * @default 1.0
     */
-    let DefaultGamma = 1.0
+    let defaultGamma: Float = 1.0
     
     var imageryProvider: ImageryProvider
     
@@ -76,7 +76,7 @@ public class ImageryLayer {
     *                          imagery tile for which the alpha is required, and it is expected to return
     *                          the alpha value to use for the tile.
     */
-    let alpha: (() -> Double)
+    let alpha: (() -> Float)
     
     /**
     * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
@@ -88,7 +88,7 @@ public class ImageryLayer {
     *                          the brightness value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let brightness: (() -> Double)
+    let brightness: (() -> Float)
     
     /**
     * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
@@ -100,7 +100,7 @@ public class ImageryLayer {
     *                          the contrast value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let contrast: (() -> Double)
+    let contrast: (() -> Float)
     
     /*
     * @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
@@ -111,7 +111,7 @@ public class ImageryLayer {
     *                          the contrast value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let hue: (() -> Double)
+    let hue: (() -> Float)
     
     /**
     * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
@@ -123,7 +123,7 @@ public class ImageryLayer {
     *                          the contrast value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let saturation: (() -> Double)
+    let saturation: (() -> Float)
     
     /**
     * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
@@ -134,7 +134,7 @@ public class ImageryLayer {
     *                          the gamma value to use for the tile.  The function is executed for every
     *                          frame and for every tile, so it must be fast.
     */
-    let gamma: (() -> Double)
+    let gamma: (() -> Float)
     
     /**
     * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
@@ -193,12 +193,12 @@ public class ImageryLayer {
     init (
         imageryProvider: ImageryProvider,
         rectangle: Rectangle = Rectangle.maxValue(),
-        alpha: (() -> Double) = { return 1.0 },
-        brightness: (() -> Double) = { return 1.0 },
-        contrast: (() -> Double) = { return 1.0 },
-        hue: (() -> Double) = { return 0.0 },
-        saturation: (() -> Double) = { return 1.0 },
-        gamma: (() -> Double) = { return 1.0 },
+        alpha: (() -> Float) = { return 1.0 },
+        brightness: (() -> Float) = { return 1.0 },
+        contrast: (() -> Float) = { return 1.0 },
+        hue: (() -> Float) = { return 0.0 },
+        saturation: (() -> Float) = { return 1.0 },
+        gamma: (() -> Float) = { return 1.0 },
         show: Bool = true,
         minimumTerrainLevel: Int? = nil,
         maximumTerrainLevel: Int? = nil,
@@ -733,8 +733,7 @@ public class ImageryLayer {
         let width = texture.width
         let height = texture.height
         
-        uniformMap.textureDimensions.x = Double(width)
-        uniformMap.textureDimensions.y = Double(height)
+        uniformMap.textureDimensions = [Float(width), Float(height)]
         uniformMap.texture = texture
         
         var sinLatitude = sin(rectangle.south)

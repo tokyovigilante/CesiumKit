@@ -34,7 +34,7 @@ public protocol ImageryProvider {
 * @type {Number}
 * @default undefined
 */
-    var defaultAlpha: Double { get }
+    var defaultAlpha: Float { get }
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -42,7 +42,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultBrightness: Double { get }
+    var defaultBrightness: Float { get }
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -51,7 +51,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultContrast: Double { get }
+    var defaultContrast: Float { get }
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -59,7 +59,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultHue: Double { get }
+    var defaultHue: Float { get }
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -68,7 +68,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultSaturation: Double { get }
+    var defaultSaturation: Float { get }
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -76,7 +76,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultGamma: Double { get }
+    var defaultGamma: Float { get }
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.

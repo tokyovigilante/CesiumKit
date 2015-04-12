@@ -345,17 +345,27 @@ class ShaderProgram {
         // TODO: Performance
         if let uniformMap = uniformMap {
             for uniform in _manualUniforms! {
-                if let uniformFunc = uniformMap[uniform.name] {
-                    uniform.setValues(uniformFunc(map: uniformMap))
+                if uniform.isFloat {
+                    if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
+                        (uniform as! FloatUniform).setFloatValues(uniformFloatFunc(map: uniformMap))
+                    }
                 } else {
+                    if let uniformFunc = uniformMap[uniform.name] {
+                        uniform.setValues(uniformFunc(map: uniformMap))
+                    }
+                    /*} else {
                     assertionFailure("no matching uniform for \(uniform.name)")
+                    }*/
                 }
             }
         }
 
         for automaticUniform in _automaticUniforms {
-            automaticUniform.uniform.setValues([automaticUniform.automaticUniform.getValue(uniformState: uniformState)])
+            if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
+                uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
+            }
         }
+        
         
         // It appears that assigning the uniform values above and then setting them here
         // (which makes the GL calls) is faster than removing this loop and making

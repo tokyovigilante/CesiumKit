@@ -116,29 +116,29 @@ class GlobeSurfaceTile {
     * @memberof GlobeSurfaceTile.prototype
     * @type {Boolean}
     */
-    var eligibleForUnloading: Bool {
-        get {
-            // Do not remove tiles that are transitioning or that have
-            // imagery that is transitioning.
-            
-            //FIXME: Unimplemented
-            /*var loadingIsTransitioning = loadedTerrain != nil &&
-                (loadedTerrain.state == TerrainState.Receiving || loadedTerrain.state == TerrainState.Transforming)
-            
-            var upsampledTerrain = this.upsampledTerrain
-            var upsamplingIsTransitioning = upsampledTerrain != nil &&
-                (upsampledTerrain.state == TerrainState.Receiving || upsampledTerrain.state == TerrainState.Transforming);
-            
-            var shouldRemoveTile = !loadingIsTransitioning && !upsamplingIsTransitioning
-            
-            for (var i = 0, len = imagery.length; shouldRemoveTile && i < len; ++i) {
-                var tileImagery = imagery[i];
-                shouldRemoveTile = !defined(tileImagery.loadingImagery) || tileImagery.loadingImagery.state !== ImageryState.TRANSITIONING;
-            }
-            
-            return shouldRemoveTile;*/
+    func eligibleForUnloading() -> Bool {
+        // Do not remove tiles that are transitioning or that have
+        // imagery that is transitioning.
+        
+        let loadingIsTransitioning = loadedTerrain != nil &&
+            (loadedTerrain!.state == .Receiving || loadedTerrain!.state == .Transforming)
+        
+        var upsamplingIsTransitioning = upsampledTerrain != nil &&
+            (upsampledTerrain!.state == .Receiving || upsampledTerrain!.state == .Transforming)
+        
+        var shouldRemoveTile = !loadingIsTransitioning && !upsamplingIsTransitioning
+        
+        if !shouldRemoveTile {
             return false
         }
+        for tileImagery in imagery {
+            shouldRemoveTile = tileImagery.loadingImagery == nil || tileImagery.loadingImagery!.state != .Transitioning
+            if !shouldRemoveTile {
+                break
+            }
+        }
+        
+        return shouldRemoveTile
     }
     
     
@@ -218,10 +218,10 @@ class GlobeSurfaceTile {
         var imageryList = this.imagery;
         for (i = 0, len = imageryList.length; i < len; ++i) {
             imageryList[i].freeResources();
-        }
-        this.imagery.length = 0;
-        
-        this.freeVertexArray();*/
+        }*/
+        imagery.removeAll()
+
+        freeVertexArray()
     }
     
     func freeVertexArray() {

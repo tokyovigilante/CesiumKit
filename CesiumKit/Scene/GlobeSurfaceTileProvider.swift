@@ -82,7 +82,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance = 6500000.0
+    var lightingFadeOutDistance: Float = 6500000
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -91,13 +91,13 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance = 9000000.0
+    var lightingFadeInDistance: Float = 9000000
     
     var hasWaterMask = false
     
     var oceanNormalMap: Texture? = nil
     
-    var zoomedOutOceanSpecularIntensity = 0.5
+    var zoomedOutOceanSpecularIntensity: Float = 0.5
     
     var enableLighting = false
     
@@ -721,21 +721,19 @@ var northeastScratch = new Cartesian3();
             
             command.debugShowBoundingVolume = (tile == _debug.boundingSphereTile)
             
-            uniformMap.initialColor = initialColor
+            initialColor.pack(&uniformMap.initialColor)
             uniformMap.oceanNormalMap = oceanNormalMap
-            uniformMap.lightingFadeDistance.x = lightingFadeOutDistance
-            uniformMap.lightingFadeDistance.y = lightingFadeInDistance
+            uniformMap.lightingFadeDistance = [lightingFadeOutDistance, lightingFadeInDistance]
+
             uniformMap.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
             
-            uniformMap.center3D = surfaceTile.center
+            surfaceTile.center.pack(&uniformMap.center3D)
             
-            uniformMap.tileRectangle = tileRectangle
-            uniformMap.southAndNorthLatitude.x = southLatitude
-            uniformMap.southAndNorthLatitude.y = northLatitude
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight.x = southMercatorYLow
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight.y = southMercatorYHigh;
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight.z = oneOverMercatorHeight
-            uniformMap.modifiedModelView = modifiedModelView
+            tileRectangle.pack(&uniformMap.tileRectangle)
+            
+            uniformMap.southAndNorthLatitude = [Float(southLatitude), Float(northLatitude)]
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight = [Float(southMercatorYLow), Float(southMercatorYHigh), Float(oneOverMercatorHeight)]
+            modifiedModelView.pack(&uniformMap.modifiedModelView)
             var applyBrightness = false
             var applyContrast = false
             var applyHue = false
@@ -761,26 +759,26 @@ var northeastScratch = new Cartesian3();
                 }
                 
                 uniformMap.dayTextures.append(imagery!.texture!)
-                uniformMap.dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale!
-                uniformMap.dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle!
+                tileImagery.textureTranslationAndScale!.pack(&uniformMap.dayTextureTranslationAndScale, startingIndex: numberOfDayTextures * 4)
+                tileImagery.textureCoordinateRectangle!.pack(&uniformMap.dayTextureTexCoordsRectangle, startingIndex: numberOfDayTextures * 4)
                 
-                uniformMap.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha()
+                uniformMap.dayTextureAlpha[numberOfDayTextures] = Float(imageryLayer.alpha())
                 applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] != 1.0
                 
-                uniformMap.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness()
-                applyBrightness = applyBrightness || uniformMap.dayTextureBrightness[numberOfDayTextures] != imageryLayer.DefaultBrightness
+                uniformMap.dayTextureBrightness[numberOfDayTextures] = Float(imageryLayer.brightness())
+                applyBrightness = applyBrightness || (uniformMap.dayTextureBrightness[numberOfDayTextures] != imageryLayer.defaultBrightness)
                 
                 uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast()
-                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] != imageryLayer.DefaultContrast
+                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] != imageryLayer.defaultContrast
                 
                 uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue()
-                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] != imageryLayer.DefaultHue
+                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] != imageryLayer.defaultHue
                 
                 uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation()
-                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] != imageryLayer.DefaultSaturation
+                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] != imageryLayer.defaultSaturation
                 
                 uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma()
-                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.DefaultGamma
+                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.defaultGamma
                 
                 // FIXME: Credits
                 /*if imagery!.credits.count > 0 {
@@ -800,7 +798,7 @@ var northeastScratch = new Cartesian3();
                 uniformMap.dayTextures.removeRange(Range(numberOfDayTextures..<uniformMap.dayTextures.count))
             }
             uniformMap.waterMask = waterMaskTexture
-            uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale
+            surfaceTile.waterMaskTranslationAndScale.pack(&uniformMap.waterMaskTranslationAndScale)
             
             command.shaderProgram = surfaceShaderSet.getShaderProgram(
                 context: context,
