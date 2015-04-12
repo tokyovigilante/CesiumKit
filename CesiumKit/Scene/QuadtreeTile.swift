@@ -96,7 +96,7 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     var eligibleForUnloading: Bool {
         get {
             if data != nil {
-                return data!.eligibleForUnloading
+                return data!.eligibleForUnloading()
             }
             return true
         }

@@ -94,7 +94,7 @@ class CesiumViewController: GLKViewController {
         
     }
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+    /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         // propagate to CesiumKit
         globe?.eventHandler.handleTouchStart(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
@@ -109,7 +109,7 @@ class CesiumViewController: GLKViewController {
     
     override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
         
-    }
+    }*/
     
     //MARK: - GLKView delegate
     

@@ -8,43 +8,30 @@
 
 import UIKit
 
-public protocol TouchEvent {}
+protocol TouchEvent {}
 
-public struct PanStartEvent: TouchEvent {
+struct PanEvent: TouchEvent {
     
     let tapCount: Int
     let startPosition: Cartesian2
+    let endPosition: Cartesian2
     
-    public init (tapCount: Int, startPosition: Cartesian2) {
+    init (tapCount: Int, startPosition: Cartesian2, endPosition: Cartesian2) {
         self.tapCount = tapCount
         self.startPosition = startPosition
-    }
-}
-
-public struct PanMoveEvent: TouchEvent {
-    
-    let tapCount: Int
-    let offset: Cartesian2
-    
-    public init (tapCount: Int, offset: Cartesian2) {
-        self.tapCount = tapCount
-        self.offset = offset
-    }
-}
-
-
-public struct PanEndEvent: TouchEvent {
-    
-    var tapCount: Int
-    
-    public init (tapCount: Int) {
-        self.tapCount = tapCount
+        self.endPosition = endPosition
     }
 }
 
 protocol EventAggregator {
     
     func reset ()
+}
+
+class TouchEventAggregator: EventAggregator {
+    func reset() {
+        
+    }
 }
 
 class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
@@ -111,51 +98,54 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _view.multipleTouchEnabled = true
         
         //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        //_panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-        //_panRecognizer.delegate = self
-        //self.view.addGestureRecognizer(_panRecognizer)
+        _panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        _panRecognizer.delegate = self
+        _view.addGestureRecognizer(_panRecognizer)
         
         _pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePinchGesture:")
         _pinchRecognizer.delegate = self
         _view.addGestureRecognizer(_pinchRecognizer)
     }
     
-    /*func handlePanGesture(recognizer: UIPanGestureRecognizer) {
-    let location = recognizer.locationInView(self.view)
-    let offset = recognizer.translationInView(self.view)
+    func handlePanGesture(recognizer: UIPanGestureRecognizer) {
+        let location = recognizer.locationInView(_view)
+        let offset = recognizer.translationInView(_view)
+        
+        var event: TouchEvent? = nil
+        switch recognizer.state {
+        case .Began:
+            println("panstart, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+            /*event = PanStartEvent(
+            tapCount: recognizer.numberOfTouches(),
+            startPosition: [Cartesian2(x: Double(location.x), y: Double(location.y))])*/
+        case .Changed:
+            println("panchanged, x: \(location.x) - \(offset.x), y: \(location.y) - \(offset.y), fingers: \(recognizer.numberOfTouches())")
+            //println("panchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+            var movement = MouseMovement()
+            movement.startPosition = Cartesian2(x: Double((location.x - offset.x) * _view.contentScaleFactor), y: Double((location.y - offset.y) * _view.contentScaleFactor))
+            movement.endPosition = Cartesian2(x: Double(location.x * _view.contentScaleFactor), y: Double(location.y * _view.contentScaleFactor))
+            _scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
+            
+            /*event = PanMoveEvent(
+            tapCount: recognizer.numberOfTouches(),
+            startPosition: Cartesian2(x: Double(location.x), y: Double(location.y)),
+            endPosition: Cartesian2(x: Double(location.x + offset.x), y: Double(location.y + offset.y)))*/
+        case .Ended:
+            println("panended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+            // do velocity here
+            //globe?.eventHandler.handlePanEnd(Cartesian2(x: Double(location.x), y: Double(location.y)))
+            //let event = PanEndEvent(tapCount: recognizer.numberOfTouches())
+        case .Cancelled:
+            println("pancancelled, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+        default:
+            return
+        }
+        recognizer.setTranslation(CGPointZero, inView: _view)
+        /*if let touchHandler = globe?.eventAggregator as? TouchEventAggregator {
+        touchHander.addEvent(event)
+        }*/
+    }
     
-    println("pan, x: \(location.x)-\(offset.x), y: \(location.y)-\(offset.y), fingers: \(recognizer.numberOfTouches())")
-    var event: TouchEvent? = nil
-    switch recognizer.state {
-    case .Began:
-    println("panstart, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-    /*event = PanStartEvent(
-    tapCount: recognizer.numberOfTouches(),
-    startPosition: [Cartesian2(x: Double(location.x), y: Double(location.y))])*/
-    case .Changed:
-    println("panchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-    var movement = MouseMovement()
-    movement.startPosition = Cartesian2(x: Double(location.x), y: Double(location.y)))
-    movement.endPosition = Cartesian2(x: Double(location.x + offset.x), y: Double(location.y + offset.y))
-    globe?.scene.screenSpaceCameraController.spin3D(Cartesian2(x: Double(location.x), y: Double(location.y)), movement: movement)
-    /*event = PanMoveEvent(
-    tapCount: recognizer.numberOfTouches(),
-    startPosition: Cartesian2(x: Double(location.x), y: Double(location.y)),
-    endPosition: Cartesian2(x: Double(location.x + offset.x), y: Double(location.y + offset.y)))*/
-    case .Ended:
-    println("panended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-    //globe?.eventHandler.handlePanEnd(Cartesian2(x: Double(location.x), y: Double(location.y)))
-    let event = PanEndEvent(tapCount: recognizer.numberOfTouches())
-    case .Cancelled:
-    println("pancancelled, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-    default:
-    return
-    }
-    /*if let touchHandler = globe?.eventAggregator as? TouchEventAggregator {
-    touchHander.addEvent(event)
-    }*/
-    }
-    */
     func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {
         let fingerOne = recognizer.locationOfTouch(0, inView: _view)
         /*let fingerTwo = recognizer.locationOfTouch(1, inView: view)
@@ -178,13 +168,13 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             return
         }
     }
-    /*
+    
     func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    if gestureRecognizer == _panRecognizer && otherGestureRecognizer == _pinchRecognizer {
-    return true
+        if gestureRecognizer == _panRecognizer && otherGestureRecognizer == _pinchRecognizer {
+            return true
+        }
+        return false
     }
-    return false
-    }*/
 
     // MARK: Zoom
     

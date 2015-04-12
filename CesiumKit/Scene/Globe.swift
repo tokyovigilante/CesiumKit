@@ -136,7 +136,7 @@ class Globe {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance = 6500000.0
+    var lightingFadeOutDistance: Float = 6500000
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -145,10 +145,8 @@ class Globe {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance = 9000000.0
-    
-    private var _lightingFadeDistance: Cartesian2
-    
+    var lightingFadeInDistance: Float = 9000000
+        
     /**
     * True if an animated wave effect should be shown in areas of the globe
     * covered by water; otherwise, false.  This property is ignored if the
@@ -161,7 +159,7 @@ class Globe {
     
     var _oceanNormalMap: Texture? = nil
     
-    var _zoomedOutOceanSpecularIntensity = 0.5
+    var _zoomedOutOceanSpecularIntensity: Float = 0.5
     
     private var _hasWaterMask = false
     
@@ -173,7 +171,7 @@ class Globe {
         return [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
             "u_oceanNormalMap" : { return weakSelf!._oceanNormalMap! as Any },
-            "u_lightingFadeDistance" :  { weakSelf!._lightingFadeDistance as Any }
+            //"u_lightingFadeDistance" :  { weakSelf!._lightingFadeDistance as Any }
         ]
         }()
     
@@ -211,7 +209,6 @@ class Globe {
                 surfaceShaderSet: _surfaceShaderSet
             )
         )
-        _lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
         
         _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
         _depthCommand = DrawCommand(
