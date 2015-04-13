@@ -51,13 +51,9 @@ class CesiumViewController: UIViewController {
         
     }
     
-    func tearDownGL () {
-        globe = nil
-    }
-    
     deinit {
         
-        tearDownGL()
+        globe = nil
         
         let glView = self.view as! GLKView
         

@@ -36,7 +36,13 @@ class TileImagery {
     * Frees the resources held by this instance.
     */
     deinit {
+        if readyImagery != nil {
+            readyImagery!.releaseReference()
+        }
         
+        if loadingImagery != nil {
+            loadingImagery!.releaseReference()
+        }
     }
     
     /**
