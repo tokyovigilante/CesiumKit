@@ -258,6 +258,7 @@ class Uniform {
 class FloatUniform: Uniform {
     
     private var _values: [Float]
+    private var _newValues: [Float]
     
     override var isFloat: Bool {
         get {
@@ -268,30 +269,37 @@ class FloatUniform: Uniform {
     func setFloatValues(newValues: [Float]) {
         assert(isFloat, "Not float")
         assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
-        _values = newValues
+        memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
+        //_newValues = newValues
     }
     
+    func isChanged () -> Bool {
+        if (memcmp(&_values, &_newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))) != 0 {
+            memcpy(&_values, _newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
+            return true
+        }
+        return false
+    }
+
+    
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        _values = [Float]()
+        _values = [Float](count: locations.count * activeUniform.type.elementCount(), repeatedValue: 0.0)
+        _newValues = _values
         
         super.init(activeUniform: activeUniform, name: name, locations: locations)
+
     }
     
 }
 
 class UniformFloatVec1: FloatUniform {
     
-    
-    private var _changed = false
-    
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
-
-        if _changed {
-            _changed = false
+        if isChanged() {
             glUniform1fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
         }
     }
@@ -300,27 +308,15 @@ class UniformFloatVec1: FloatUniform {
 
 class UniformFloatVec2: FloatUniform {
     
-    private var _arrayBuffer: [Float]
     
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 2, repeatedValue: 0.0)
-        
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count * 2 {
-            if _arrayBuffer[i] != _values[i] {
-                _arrayBuffer[i] = _values[i]
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniform2fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+       
+        if isChanged() {
+            glUniform2fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
         }
     }
 }
@@ -328,27 +324,13 @@ class UniformFloatVec2: FloatUniform {
 
 class UniformFloatVec3: FloatUniform {
     
-    private var _arrayBuffer: [Float]
-    
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 3, repeatedValue: 0.0)
-        
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count * 3 {
-            if _arrayBuffer[i] != _values[i] {
-                _arrayBuffer[i] = _values[i]
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniform3fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+        if isChanged() {
+            glUniform3fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
         }
     }
     
@@ -356,27 +338,13 @@ class UniformFloatVec3: FloatUniform {
 
 class UniformFloatVec4: FloatUniform {
     
-    private var _arrayBuffer: [Float]
-    
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 4, repeatedValue: 0.0)
-        
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count * 4 {
-            if _arrayBuffer[i] != _values[i] {
-                _arrayBuffer[i] = _values[i]
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniform4fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
+        if isChanged() {
+            glUniform4fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
         }
     }
 }
@@ -436,30 +404,15 @@ for (var i = 0; i < length; ++i) {
 gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
 }*/
 
-
 class UniformFloatMatrix4: FloatUniform {
     
-    private var _arrayBuffer: [Float]
-    
     override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 16, repeatedValue: 0.0)
-        
         super.init(activeUniform: activeUniform, name: name, locations: locations)
     }
     
     override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count * 16 {
-            if _arrayBuffer[i] != _values[i] {
-                _arrayBuffer[i] = _values[i]
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_arrayBuffer))
+        if isChanged() {
+            glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_values))
         }
     }
     

@@ -77,7 +77,7 @@ class CesiumViewController: GLKViewController {
             imageryProvider: nil)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
         globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         //globe.scene.camera.setView()
         

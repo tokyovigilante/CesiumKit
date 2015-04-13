@@ -187,35 +187,32 @@ class GlobeSurfaceTile {
     }
     
     func freeResources () {
-        /*
-        if (defined(this.waterMaskTexture)) {
-            --this.waterMaskTexture.referenceCount;
-            if (this.waterMaskTexture.referenceCount === 0) {
-                this.waterMaskTexture.destroy();
-            }
-            this.waterMaskTexture = undefined;
+        
+        waterMaskTexture = nil
+        terrainData = nil
+        
+        if loadedTerrain != nil {
+            loadedTerrain!.freeResources()
+            loadedTerrain = nil
         }
         
-        this.terrainData = undefined;
-        
-        if (defined(this.loadedTerrain)) {
-            this.loadedTerrain.freeResources();
-            this.loadedTerrain = undefined;
+        if upsampledTerrain != nil {
+            upsampledTerrain!.freeResources()
+            upsampledTerrain = nil
         }
         
-        if (defined(this.upsampledTerrain)) {
-            this.upsampledTerrain.freeResources();
-            this.upsampledTerrain = undefined;
+        if pickTerrain != nil {
+            pickTerrain!.freeResources()
+            pickTerrain = nil
         }
-        
-        if (defined(this.pickTerrain)) {
-            this.pickTerrain.freeResources();
-            this.pickTerrain = undefined;
+        // FIXME:             tileImagery.freeResources()
+
+        /*for tileImagery in imagery {
+            tileImagery.freeResources()
         }
+        var i, len;*/
         
-        var i, len;
-        
-        var imageryList = this.imagery;
+        /*var imageryList = this.imagery;
         for (i = 0, len = imageryList.length; i < len; ++i) {
             imageryList[i].freeResources();
         }*/
