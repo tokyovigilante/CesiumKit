@@ -32,14 +32,6 @@ class CesiumViewController: GLKViewController {
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        
-        tearDownGL()
-        
-        let glView = self.view as! GLKView
-        
-        if EAGLContext.currentContext() == glView.context {
-            EAGLContext.setCurrentContext(nil)
-        }
     }
     
     private func setupContext () {
@@ -127,13 +119,9 @@ class CesiumViewController: GLKViewController {
         
     }
     
-    func tearDownGL () {
-        globe = nil
-    }
-    
     deinit {
         
-        tearDownGL()
+        globe = nil
         
         let glView = self.view as! GLKView
         

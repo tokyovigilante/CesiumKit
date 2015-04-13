@@ -366,9 +366,6 @@ class QuadtreePrimitive {
         var allRenderable = true
         var allUpsampledOnly = true
         
-        //var children = tile.children
-        //for (var i = 0, len = children.length; i < len; ++i) {
-        //    var child = children[i];
         for child in tile.children {
             _tileReplacementQueue.markTileRendered(child)
             

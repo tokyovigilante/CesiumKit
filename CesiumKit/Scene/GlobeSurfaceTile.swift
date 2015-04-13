@@ -210,9 +210,9 @@ class GlobeSurfaceTile {
         /*for tileImagery in imagery {
             tileImagery.freeResources()
         }
-        var i, len;*/
+        var i, len;
         
-        /*var imageryList = this.imagery;
+        var imageryList = this.imagery;
         for (i = 0, len = imageryList.length; i < len; ++i) {
             imageryList[i].freeResources();
         }*/
