@@ -40,27 +40,27 @@ class TileTerrain {
     init (upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)? = nil) {
         self.upsampleDetails = upsampleDetails
     }
-    /*
-    TileTerrain.prototype.freeResources = function() {
-    this.state = TerrainState.UNLOADED;
-    this.data = undefined;
-    this.mesh = undefined;
     
-    if (defined(this.vertexArray)) {
-    var indexBuffer = this.vertexArray.indexBuffer;
-    
-    this.vertexArray.destroy();
-    this.vertexArray = undefined;
-    
-    if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
-    --indexBuffer.referenceCount;
-    if (indexBuffer.referenceCount === 0) {
-    indexBuffer.destroy();
+    func freeResources () {
+        state = .Unloaded
+        data = nil
+        mesh = nil
+        
+        var indexBuffer: IndexBuffer? = nil
+        if vertexArray != nil {
+            let indexBuffer = vertexArray!.indexBuffer
+            vertexArray = nil
+        }
+        
+        /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
+        --indexBuffer.referenceCount;
+        if (indexBuffer.referenceCount === 0) {
+        indexBuffer.destroy();
+        }
+        }*/
     }
-    }
-    }
-    };
-    */
+
+
     func publishToTile(tile: QuadtreeTile) {
         var surfaceTile = tile.data!
         assert(mesh != nil, "mesh not created")

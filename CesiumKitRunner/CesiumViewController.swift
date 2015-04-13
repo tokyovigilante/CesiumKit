@@ -15,6 +15,7 @@ class CesiumViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+
     
     /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         // propagate to CesiumKit
