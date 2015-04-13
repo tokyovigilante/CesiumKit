@@ -132,12 +132,10 @@ public struct Matrix4: Packable, Equatable, Printable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        for var index = 0; index < Matrix4.packedLength; ++index {
-            if array.count < startingIndex - Matrix4.packedLength {
-                array.append(Float(_grid[index]))
-            } else {
-                array[startingIndex + index] = Float(_grid[index])
-            }
+        assert(array.count >= startingIndex + Matrix4.packedLength, "target array too short")
+        for index in
+            0..<Matrix4.packedLength {
+            array[startingIndex + index] = Float(_grid[index])
         }
     }
 
