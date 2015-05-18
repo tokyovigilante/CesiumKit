@@ -8,6 +8,7 @@
 
 import UIKit.UIImage
 import OpenGLES
+import GLKit
 
 enum TextureSource {
     case Image(UIImage)
@@ -179,13 +180,10 @@ class Texture {
         var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
-        glGenTextures(1, &textureName)
-        
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(textureTarget, textureName)
+
         
          if let source = source {
-            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
+            //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, <#param: GLint#>)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
@@ -209,7 +207,17 @@ class Texture {
                 
                 //Extract info for your image
                 let imageRef = image.CGImage
-                let width = CGImageGetWidth(imageRef)
+                let options: [NSObject: AnyObject] = [
+                    GLKTextureLoaderApplyPremultiplication: NSNumber(bool: preMultiplyAlpha),
+                    GLKTextureLoaderOriginBottomLeft: NSNumber(bool: flipY)
+                ]
+                var err: NSError? = nil
+                let textureInfo = GLKTextureLoader.textureWithCGImage(imageRef, options: options, error: &err)
+                
+                textureName = textureInfo.name
+                //textureTarget = textureInfo.target
+                
+                /*let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
                 let bytesPerPixel: Int = pixelFormat == PixelFormat.RGB ? 4 : pixelDatatype.bytesPerElement * pixelFormat.byteCount // RGB CGImage must have Alpha
                 
@@ -236,13 +244,18 @@ class Texture {
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)
+                //glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)*/
             }
 
         } else {
+            glGenTextures(1, &textureName)
+            
+            glActiveTexture(GLenum(GL_TEXTURE0))
+            glBindTexture(textureTarget, textureName)
             glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
+            glBindTexture(textureTarget, GLenum(0))
         }
-        glBindTexture(textureTarget, GLenum(0))
+        
         
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic

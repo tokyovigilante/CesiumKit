@@ -682,7 +682,8 @@ var northeastScratch = new Cartesian3();
         var centerEye = Cartesian4(x: rtc.x, y: rtc.y, z: rtc.z, w: 1.0)
         
         centerEye = viewMatrix.multiplyByVector(centerEye)
-        let modifiedModelView = viewMatrix.setColumn(3, cartesian: centerEye)
+        var modifiedModelView = viewMatrix
+        modifiedModelView.setColumn(3, cartesian: centerEye)
 
         let tileImageryCollection = surfaceTile.imagery
         var imageryIndex = 0

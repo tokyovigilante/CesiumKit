@@ -56,6 +56,9 @@ public struct Matrix4: Packable, Equatable, Printable {
     static let packedLength = 16
     
     var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
+    
+    private var _floatRepresentation: [Float]
+    private let _floatPackedSize: Int
 
     init(
         _ column0Row0: Double = 0.0,
@@ -91,11 +94,15 @@ public struct Matrix4: Packable, Equatable, Printable {
                 column3Row1,
                 column3Row2,
                 column3Row3]
+            _floatRepresentation = _grid.map({ Float($0) })
+            _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     init(grid: [Double]) {
         assert(grid.count == 16, "invalid grid length")
         _grid = grid
+        _floatRepresentation = _grid.map({ Float($0) })
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     subscript(index: Int) -> Double {
@@ -106,6 +113,7 @@ public struct Matrix4: Packable, Equatable, Printable {
         set {
             assert(index < Matrix4.packedLength, "Index out of range")
             _grid[index] = newValue
+            _floatRepresentation[index] = Float(newValue)
         }
     }
     
@@ -121,6 +129,7 @@ public struct Matrix4: Packable, Equatable, Printable {
         set {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
             _grid[(column * 4) + row] = newValue
+            _floatRepresentation[(column * 4) + row] = Float(newValue)
         }
     }
 
@@ -132,11 +141,12 @@ public struct Matrix4: Packable, Equatable, Printable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        assert(array.count >= startingIndex + Matrix4.packedLength, "target array too short")
-        for index in
+        assert(array.count - startingIndex >= Matrix4.packedLength, "Array too short")
+        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
+        /*for index in
             0..<Matrix4.packedLength {
             array[startingIndex + index] = Float(_grid[index])
-        }
+        }*/
     }
 
     /**
@@ -963,18 +973,18 @@ Matrix4.getColumn = function(matrix, index, result) {
 * //     [18.0, 19.0, 97.0, 21.0]
 * //     [22.0, 23.0, 96.0, 25.0]
 */
-    func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
+    mutating func setColumn (index: Int, cartesian: Cartesian4) {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        
-        var result = self._grid
-        
         let startIndex = index * 4
-        result[startIndex] = cartesian.x
-        result[startIndex + 1] = cartesian.y
-        result[startIndex + 2] = cartesian.z
-        result[startIndex + 3] = cartesian.w
-        return Matrix4(grid: result)
+        _grid[startIndex] = cartesian.x
+        _grid[startIndex + 1] = cartesian.y
+        _grid[startIndex + 2] = cartesian.z
+        _grid[startIndex + 3] = cartesian.w
+        _floatRepresentation[startIndex] = Float(cartesian.x)
+        _floatRepresentation[startIndex + 1] = Float(cartesian.y)
+        _floatRepresentation[startIndex + 2] = Float(cartesian.z)
+        _floatRepresentation[startIndex + 3] = Float(cartesian.w)
     }
 
     /**

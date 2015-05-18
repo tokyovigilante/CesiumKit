@@ -29,28 +29,47 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    var x: Double = 0.0 {
+        didSet {
+            _floatRepresentation[0] = Float(x)
+        }
+    }
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    var y: Double = 0.0 {
+        didSet {
+            _floatRepresentation[1] = Float(y)
+        }
+    }
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0
+    var z: Double = 0.0 {
+        didSet {
+            _floatRepresentation[2] = Float(z)
+        }
+    }
     
     /**
     * The W component.
     * @type {Number}
     * @default 0.0
     */
-    var w: Double = 0.0
+    var w: Double = 0.0 {
+        didSet {
+            _floatRepresentation[3] = Float(w)
+        }
+    }
+    
+    private var _floatRepresentation: [Float]
+    private let _floatPackedSize: Int
     
     public var description: String {
         return "(\(x), \(y), \(z), \(w))"
@@ -92,6 +111,8 @@ public struct Cartesian4: Packable, Equatable, Printable {
         self.y = y
         self.z = z
         self.w = w
+        _floatRepresentation = [Float(x), Float(y), Float(z), Float(w)]
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     /**
@@ -115,10 +136,11 @@ public struct Cartesian4: Packable, Equatable, Printable {
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian4.packedLength, "Array too short")
-        array[startingIndex] = Float(x)
+        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
+        /*array[startingIndex] = Float(x)
         array[startingIndex+1] = Float(y)
         array[startingIndex+2] = Float(z)
-        array[startingIndex+3] = Float(w)
+        array[startingIndex+3] = Float(w)*/
     }
     
     /**
