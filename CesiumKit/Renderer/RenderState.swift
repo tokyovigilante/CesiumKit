@@ -428,14 +428,14 @@ class RenderState/*: Printable*/ {
         
         var actualViewport = BoundingRectangle()
         var context = passState.context!
-        if !(viewport != nil) {
+        if viewport == nil {
             actualViewport.width = Double(context.width)
             actualViewport.height = Double(context.height)
+            context.uniformState.viewport = actualViewport
         } else {
             actualViewport = viewport!
         }
         
-        context.uniformState.viewport = actualViewport
         glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
     }
     

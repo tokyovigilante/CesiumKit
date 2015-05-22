@@ -439,10 +439,10 @@ public struct Cartesian4: Packable, Equatable, Printable {
     }
     
     func equalsArray (array: [Float], offset: Int) -> Bool {
-    return Float(x) == array[offset] &&
-    Float(y) == array[offset + 1] &&
-    Float(z) == array[offset + 2] &&
-    Float(w) == array[offset + 3]
+        return Float(x) == array[offset] &&
+            Float(y) == array[offset + 1] &&
+            Float(z) == array[offset + 2] &&
+            Float(w) == array[offset + 3]
     }
     
     /**

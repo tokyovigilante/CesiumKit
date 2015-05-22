@@ -30,6 +30,7 @@ class Context {
     }
     let networkQueue: dispatch_queue_t
     let processorQueue: dispatch_queue_t
+    let textureLoadQueue: dispatch_queue_t = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
     
     var allowTextureFilterAnisotropic = true
     
@@ -492,6 +493,8 @@ class Context {
     init (view: AsyncGLView) {
         
         self.view = view
+        
+        textureLoadContext = EAGLContext(API: .OpenGLES3, sharegroup: view.context.sharegroup)
         
         id = NSUUID().UUIDString
         

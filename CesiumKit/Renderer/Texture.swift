@@ -73,6 +73,8 @@ struct TextureOptions {
     }
 }
 
+private var textureLoadContext: EAGLContext! = nil
+
 class Texture {
     
     var width: Int
@@ -83,7 +85,7 @@ class Texture {
     
     var pixelDatatype: PixelDatatype
     
-    var options: TextureOptions
+    //var options: TextureOptions
     
     var textureFilterAnisotropic = true
     
@@ -134,8 +136,7 @@ class Texture {
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
-    
-        self.options = options
+        //self.options = options
         
         let source = options.source
         
@@ -184,7 +185,7 @@ class Texture {
         
          if let source = source {
             //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
-            //glPixelStorei(GL_UNPACK, <#param: GLint#>)
+            //glPixelStorei(GL_UNPACK, param: GLint)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
             

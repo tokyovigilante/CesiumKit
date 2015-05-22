@@ -491,32 +491,39 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery for which to create a texture.
     */
     func createTexture (context: Context, imagery: Imagery) {
-        
-        // If this imagery provider has a discard policy, use it to check if this
-        // image should be discarded.
-        if let discardPolicy = imageryProvider.tileDiscardPolicy {
-            // If the discard policy is not ready yet, transition back to the
-            // RECEIVED state and we'll try again next time.
-            if !discardPolicy.isReady {
-                imagery.state = .Received
-                return
+        glFlush()
+        dispatch_async(context.textureLoadQueue, {
+            EAGLContext.setCurrentContext(context.textureLoadContext)
+            // If this imagery provider has a discard policy, use it to check if this
+            // image should be discarded.
+            if let discardPolicy = self.imageryProvider.tileDiscardPolicy {
+                // If the discard policy is not ready yet, transition back to the
+                // RECEIVED state and we'll try again next time.
+                if !discardPolicy.isReady {
+                    imagery.state = .Received
+                    return
+                }
+                
+                // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
+                if (discardPolicy.shouldDiscardImage(imagery.image!)) {
+                    imagery.state = .Invalid
+                    return
+                }
             }
             
-            // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
-            if (discardPolicy.shouldDiscardImage(imagery.image!)) {
-                imagery.state = .Invalid
-                return
-            }
-        }
-        
-        // Imagery does not need to be discarded, so upload it to GL.
-        let texture = context.createTexture2D(TextureOptions(
-            source : .Image(imagery.image!),
-            pixelFormat : imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
-        imagery.texture = texture
-        imagery.image = nil
-        imagery.state = ImageryState.TextureLoaded
-        println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            // Imagery does not need to be discarded, so upload it to GL.
+            
+            let texture = context.createTexture2D(TextureOptions(
+                source : .Image(imagery.image!),
+                pixelFormat : self.imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
+            imagery.texture = texture
+            imagery.image = nil
+            println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            glFlush()
+            dispatch_async(dispatch_get_main_queue(), {
+                imagery.state = ImageryState.TextureLoaded
+            })
+        })
     }
     
     /**
@@ -529,48 +536,55 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery instance to reproject.
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
-        var texture = imagery.texture!
-        let rectangle = imagery.rectangle!
         
-        // Reproject this texture if it is not already in a geographic projection and
-        // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
-        // avoids precision problems in the reprojection transformation while making
-        // no noticeable difference in the georeferencing of the image.
-        let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
-        let isGeographic = imageryProvider.tilingScheme is GeographicTilingScheme
-        if !isGeographic && pixelGap {
-            let reprojectedTexture = reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
-            texture = reprojectedTexture
-            imagery.texture = texture
-        }
-        
-        // Use mipmaps if this texture has power-of-two dimensions.
-        if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
-            var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
-            if mipmapSampler == nil {
-                mipmapSampler = Sampler()
-                mipmapSampler!.wrapS = .Edge
-                mipmapSampler!.wrapT = .Edge
-                mipmapSampler!.minificationFilter = TextureMinificationFilter.LinearMipmapLinear
-                mipmapSampler!.magnificationFilter = TextureMagnificationFilter.Linear
-                mipmapSampler!.maximumAnisotropy = context.maximumTextureFilterAnisotropy
+        glFlush()
+        dispatch_async(context.textureLoadQueue, {
+            EAGLContext.setCurrentContext(context.textureLoadContext)
+            var texture = imagery.texture!
+            let rectangle = imagery.rectangle!
+            
+            // Reproject this texture if it is not already in a geographic projection and
+            // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
+            // avoids precision problems in the reprojection transformation while making
+            // no noticeable difference in the georeferencing of the image.
+            let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
+            let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
+            if !isGeographic && pixelGap {
+                let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
+                texture = reprojectedTexture
+                imagery.texture = texture
             }
             
-            context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
-            texture.generateMipmap(hint: .Nicest)
-            texture.sampler = mipmapSampler
-        } else {
-            var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
-            if nonMipmapSampler == nil {
-                nonMipmapSampler = Sampler()
-                context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
+            // Use mipmaps if this texture has power-of-two dimensions.
+            if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+                var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
+                if mipmapSampler == nil {
+                    mipmapSampler = Sampler()
+                    mipmapSampler!.wrapS = .Edge
+                    mipmapSampler!.wrapT = .Edge
+                    mipmapSampler!.minificationFilter = TextureMinificationFilter.LinearMipmapLinear
+                    mipmapSampler!.magnificationFilter = TextureMagnificationFilter.Linear
+                    mipmapSampler!.maximumAnisotropy = context.maximumTextureFilterAnisotropy
+                }
+                
+                context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
+                texture.generateMipmap(hint: .Nicest)
+                texture.sampler = mipmapSampler
+            } else {
+                var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
+                if nonMipmapSampler == nil {
+                    nonMipmapSampler = Sampler()
+                    context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
+                }
+                texture.sampler = nonMipmapSampler!
             }
-            texture.sampler = nonMipmapSampler!
-        }
-        
-        imagery.state = .Ready
-        println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-        
+            
+            println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            glFlush()
+            dispatch_async(dispatch_get_main_queue(), {
+                imagery.state = .Ready
+            })
+        })
     }
     
     func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
