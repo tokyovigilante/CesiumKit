@@ -528,7 +528,7 @@ public class Scene {
         }
     }
 
-    init (view: UIView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (view: AsyncGLView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
         context = Context(view: view)
         self.globe = globe

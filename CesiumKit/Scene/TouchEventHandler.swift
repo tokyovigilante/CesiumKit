@@ -120,11 +120,14 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             startPosition: [Cartesian2(x: Double(location.x), y: Double(location.y))])*/
         case .Changed:
             println("panchanged, x: \(location.x) - \(offset.x), y: \(location.y) - \(offset.y), fingers: \(recognizer.numberOfTouches())")
-            //println("panchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+            
             var movement = MouseMovement()
             movement.startPosition = Cartesian2(x: Double((location.x - offset.x) * _view.contentScaleFactor), y: Double((location.y - offset.y) * _view.contentScaleFactor))
             movement.endPosition = Cartesian2(x: Double(location.x * _view.contentScaleFactor), y: Double(location.y * _view.contentScaleFactor))
-            _scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
+            let view = _view as! AsyncGLView
+            dispatch_async(view.renderQueue, {
+                self._scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
+            })
             
             /*event = PanMoveEvent(
             tapCount: recognizer.numberOfTouches(),

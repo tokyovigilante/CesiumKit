@@ -428,14 +428,15 @@ class RenderState/*: Printable*/ {
         
         var actualViewport = BoundingRectangle()
         var context = passState.context!
+        
         if viewport == nil {
             actualViewport.width = Double(context.width)
             actualViewport.height = Double(context.height)
-            context.uniformState.viewport = actualViewport
         } else {
             actualViewport = viewport!
         }
-        
+        //context.uniformState.viewport = actualViewport
+
         glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
     }
     
@@ -541,7 +542,7 @@ class RenderState/*: Printable*/ {
         funcs.depthMask = previousState.depthMask != depthMask
         
         // For now, always apply because of passState
-        //funcs.push(applyBlending);
+        //funcs.push(applyBlending)
         
         funcs.stencilMask = previousState.stencilMask != stencilMask
         
@@ -561,7 +562,7 @@ class RenderState/*: Printable*/ {
             previousState.sampleCoverage.invert != sampleCoverage.invert
         
         // For now, always apply because of passState
-        //funcs.push(applyViewport);
+        funcs.viewPort = true
         
         return funcs
     }

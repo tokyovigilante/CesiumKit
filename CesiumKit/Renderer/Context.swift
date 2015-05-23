@@ -30,7 +30,9 @@ class Context {
     }
     let networkQueue: dispatch_queue_t
     let processorQueue: dispatch_queue_t
-    let textureLoadQueue: dispatch_queue_t = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
+    let textureLoadQueue: dispatch_queue_t
+    
+    let textureLoadContext: EAGLContext
     
     var allowTextureFilterAnisotropic = true
     
@@ -493,13 +495,13 @@ class Context {
     init (view: AsyncGLView) {
         
         self.view = view
-        
-        textureLoadContext = EAGLContext(API: .OpenGLES3, sharegroup: view.context.sharegroup)
-        
+       
         id = NSUUID().UUIDString
         
         networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
-        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_CONCURRENT)
+        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
+        textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
+        textureLoadContext = EAGLContext(API: .OpenGLES3, sharegroup: view.context.sharegroup)
         
         glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
         shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
@@ -1438,15 +1440,16 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         
         beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
         continueDraw(drawCommand, shaderProgram: shaderProgram)
+        ///framebuffer?.unbind()
     }
 
     func endFrame () {
         glUseProgram(0)
-        
         _currentFramebuffer = nil
-        //glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
         /*
-        var buffers = scratchBackBufferArray;
+        var
+        buffers = scratchBackBufferArray;
         if (this.drawBuffers) {
             this._drawBuffers.drawBuffersWEBGL(scratchBackBufferArray);
         }*/

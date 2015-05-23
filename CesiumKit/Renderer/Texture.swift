@@ -8,7 +8,6 @@
 
 import UIKit.UIImage
 import OpenGLES
-import GLKit
 
 enum TextureSource {
     case Image(UIImage)
@@ -85,15 +84,13 @@ class Texture {
     
     var pixelDatatype: PixelDatatype
     
-    //var options: TextureOptions
-    
     var textureFilterAnisotropic = true
     
     var premultiplyAlpha = true
 
     weak var context: Context?
     
-    var textureName: GLuint
+    var textureName: GLuint = 0
     
     let textureTarget = GLenum(GL_TEXTURE_2D)
 
@@ -136,8 +133,7 @@ class Texture {
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
-        //self.options = options
-        
+
         let source = options.source
         
         if options.source == nil {
@@ -154,8 +150,6 @@ class Texture {
         
         premultiplyAlpha = options.premultiplyAlpha
         
-        textureName = 0
-
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
@@ -181,10 +175,12 @@ class Texture {
         var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
-
+        glGenTextures(1, &textureName)
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(textureTarget, textureName)
         
          if let source = source {
-            //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
+            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, param: GLint)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
@@ -208,17 +204,8 @@ class Texture {
                 
                 //Extract info for your image
                 let imageRef = image.CGImage
-                let options: [NSObject: AnyObject] = [
-                    GLKTextureLoaderApplyPremultiplication: NSNumber(bool: preMultiplyAlpha),
-                    GLKTextureLoaderOriginBottomLeft: NSNumber(bool: flipY)
-                ]
-                var err: NSError? = nil
-                let textureInfo = GLKTextureLoader.textureWithCGImage(imageRef, options: options, error: &err)
                 
-                textureName = textureInfo.name
-                //textureTarget = textureInfo.target
-                
-                /*let width = CGImageGetWidth(imageRef)
+                let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
                 let bytesPerPixel: Int = pixelFormat == PixelFormat.RGB ? 4 : pixelDatatype.bytesPerElement * pixelFormat.byteCount // RGB CGImage must have Alpha
                 
@@ -231,10 +218,10 @@ class Texture {
                 
                 let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
                 
-                /*var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
+                var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
                 
                 rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-                rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue*/
+                rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue
                 
                 let bitmapInfo = CGBitmapInfo(alphaInfo.rawValue)
                 
@@ -245,19 +232,13 @@ class Texture {
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                //glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)*/
+                glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)
             }
 
         } else {
-            glGenTextures(1, &textureName)
-            
-            glActiveTexture(GLenum(GL_TEXTURE0))
-            glBindTexture(textureTarget, textureName)
             glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
-            glBindTexture(textureTarget, GLenum(0))
         }
-        
-        
+        glBindTexture(textureTarget, GLenum(0))
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
         //self.dimensions = Cartesian2(x: Double(width), y: Double(height))*/
@@ -478,7 +459,7 @@ class Texture {
         glBindTexture(textureTarget, textureName)
         glGenerateMipmap(textureTarget)
         glBindTexture(textureTarget, 0)
-}
+    }
 
     deinit {
         glDeleteTextures(1, &textureName)

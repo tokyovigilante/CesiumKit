@@ -1,3 +1,4 @@
+
 //
 //  AppDelegate.swift
 //  CesiumKitRunner
@@ -21,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let options = CesiumOptions(
             imageryProvider: nil)
         if let view = self.window?.rootViewController?.view as? AsyncGLView {
-
+            EAGLContext.setCurrentContext(view.context)
             globe = CesiumGlobe(view: view, options: options)
             globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
             //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())

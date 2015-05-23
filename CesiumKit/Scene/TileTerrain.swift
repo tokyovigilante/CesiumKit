@@ -160,7 +160,7 @@ class TileTerrain {
         self.state = .Transforming
 
         dispatch_async(context.processorQueue, {
-            var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
+            var mesh = self.data?.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
                 dispatch_async(context.renderQueue, {

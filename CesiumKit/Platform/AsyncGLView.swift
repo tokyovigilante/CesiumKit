@@ -6,56 +6,42 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-//import UIKit
-import GLKit
+import UIKit
+import OpenGLES
 
-public class AsyncGLView: GLKView {
+public class AsyncGLView: UIView {
     
     internal var renderQueue: dispatch_queue_t!
     
     private var _renderSemaphore: dispatch_semaphore_t!
     
-    //private var _eaglLayer: CAEAGLLayer!
-    //private var _context: EAGLContext!
+    private var _eaglLayer: CAEAGLLayer!
+    public private(set) var context: EAGLContext!
     
     private var _displayLink: CADisplayLink!
     
-    //private var _framebuffer: GLuint = 0
-    //private var _colorRenderbuffer: GLuint = 0
-    //private var _depthStencilRenderbuffer: GLuint = 0
+    private var _framebuffer: GLuint = 0
+    private var _colorRenderbuffer: GLuint = 0
+    private var _depthStencilRenderbuffer: GLuint = 0
     
-    //private var _rendererDimensions: CGSize? = nil
+    private var _rendererDimensions: CGSize? = nil
     
     public var render: Bool = false
     
     public var renderCallback: ((drawRect: CGRect) -> ())? = nil
     
-    /*override public class func layerClass() -> AnyClass {
+    override public class func layerClass() -> AnyClass {
         return CAEAGLLayer.self
-    }*/
+    }
     
     public required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setupDisplayLink()
+        setupLayer()
+        
         createRenderer()
+        
         setupMultitouchInput()
-    }
-    
-    private func createRenderer () {
-        //setupLayer()
-        setupContext()
-        //setupRenderbuffer()
-        //setupDepthStencilBuffer()
-        //setupFramebuffer()
-        render = true
-    }
-    
-    private func destroyRenderer () {
-        render = false
-        deleteDrawable()
-        //destroyContext()
-        //destroyBuffers()
-        //_rendererDimensions = nil
     }
     
     private func setupDisplayLink () {
@@ -68,10 +54,19 @@ public class AsyncGLView: GLKView {
         render = true
     }
     
-    /*private func setupLayer () {
+    private func setupLayer () {
         _eaglLayer = self.layer as! CAEAGLLayer
         _eaglLayer.opaque = true
-    }*/
+    }
+    
+    //MARK: -Renderer creation
+    private func createRenderer () {
+        setupContext()
+        setupRenderbuffer()
+        setupDepthStencilBuffer()
+        setupFramebuffer()
+        render = true
+    }
     
     private func setupContext () {
         
@@ -82,7 +77,7 @@ public class AsyncGLView: GLKView {
             println("Failed to set current OpenGL context!")
             exit(1)
         }
-        
+        /*
         // Configure renderbuffers created by the view
         drawableColorFormat = .RGBA8888
         drawableDepthFormat = .Format24
@@ -90,7 +85,7 @@ public class AsyncGLView: GLKView {
         
         // Enable multisampling
         //view.drawableMultisample = .Multisample4X
-        
+        */
         //preferredFramesPerSecond = 60
         
         // enable Retina support on device
@@ -103,39 +98,48 @@ public class AsyncGLView: GLKView {
         #endif
     }
     
-    /*private func destroyContext () {
-        _context = nil
-    }*/
-    
-    /*private func setupRenderbuffer () {
+    private func setupRenderbuffer () {
         _rendererDimensions = _eaglLayer.bounds.size
         glGenRenderbuffers(1, &_colorRenderbuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _colorRenderbuffer)
         _eaglLayer.drawableProperties = [kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8, kEAGLDrawablePropertyRetainedBacking: NSNumber(bool: false)]
-        _context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer)
-    }*/
-    
-    private func destroyBuffers () {
-        //glDeleteFramebuffers(1, &_framebuffer)
-        //glDeleteRenderbuffers(1, &_depthStencilRenderbuffer)
-        //glDeleteRenderbuffers(1, &_colorRenderbuffer)
+        assert(context.renderbufferStorage(Int(GL_RENDERBUFFER), fromDrawable: _eaglLayer), "Attach drawable failed")
     }
     
-    /*private func setupDepthStencilBuffer () {
+    private func setupDepthStencilBuffer () {
         glGenRenderbuffers(1, &_depthStencilRenderbuffer)
         glBindRenderbuffer(GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
         glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH24_STENCIL8), GLsizei(drawableWidth), GLsizei(drawableHeight))
-    }*/
+    }
     
-    /*private func setupFramebuffer () {
+    private func setupFramebuffer () {
         glGenFramebuffers(1, &_framebuffer)
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
+        
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0),
             GLenum(GL_RENDERBUFFER), _colorRenderbuffer)
+        
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
         glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), _depthStencilRenderbuffer)
-
-    }*/
+    }
+    
+    //MARK: -Destroy renderer
+    private func destroyRenderer () {
+        render = false
+        destroyContext()
+        destroyBuffers()
+        _rendererDimensions = nil
+    }
+    
+    private func destroyContext () {
+        context = nil
+    }
+    
+    private func destroyBuffers () {
+        glDeleteFramebuffers(1, &_framebuffer)
+        glDeleteRenderbuffers(1, &_depthStencilRenderbuffer)
+        glDeleteRenderbuffers(1, &_colorRenderbuffer)
+    }
     
     // MARK: - NSResponder
     private func setupMultitouchInput() {
@@ -151,35 +155,36 @@ public class AsyncGLView: GLKView {
                 return
             }
             
-            /*if self._rendererDimensions != nil && self._rendererDimensions! != self._eaglLayer.bounds.size {
+            if self._rendererDimensions != nil && self._rendererDimensions! != self._eaglLayer.bounds.size {
                 destroyRenderer()
                 createRenderer()
-            }*/
+            }
             
             dispatch_async(renderQueue, {
                 
                 EAGLContext.setCurrentContext(self.context)
                 
-                //glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthStencilRenderbuffer)
-                //glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderbuffer)
+                glBindFramebuffer(GLenum(GL_FRAMEBUFFER), self._framebuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._depthStencilRenderbuffer)
+                glBindRenderbuffer(GLenum(GL_RENDERBUFFER), self._colorRenderbuffer)
                 
                 if self.renderCallback != nil {
                     self.renderCallback!(drawRect: CGRectMake(0, 0, CGFloat(self.drawableWidth), CGFloat(self.drawableHeight)))
                 }
-                //self._context.presentRenderbuffer(Int(GL_RENDERBUFFER))
+                self.context.presentRenderbuffer(Int(GL_RENDERBUFFER))
 
                 dispatch_semaphore_signal(self._renderSemaphore)
 
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.display()
-                })
+                //dispatch_async(dispatch_get_main_queue(), {
+                    //self.display()
+                //})
                 
             })
         }
     }
 }
 
-/*extension UIView {
+extension UIView {
     
     public var drawableWidth: CGFloat {
         get {
@@ -192,4 +197,4 @@ public class AsyncGLView: GLKView {
             return CGFloat(frame.height) * contentScaleFactor
         }
     }
-}*/
+}

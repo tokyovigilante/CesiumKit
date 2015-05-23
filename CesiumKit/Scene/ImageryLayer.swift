@@ -520,7 +520,8 @@ public class ImageryLayer {
             imagery.image = nil
             println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             glFlush()
-            dispatch_async(dispatch_get_main_queue(), {
+            dispatch_async(context.renderQueue, {
+                EAGLContext.setCurrentContext(context.view.context)
                 imagery.state = ImageryState.TextureLoaded
             })
         })
@@ -536,7 +537,6 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery instance to reproject.
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
-        
         glFlush()
         dispatch_async(context.textureLoadQueue, {
             EAGLContext.setCurrentContext(context.textureLoadContext)
@@ -568,8 +568,8 @@ public class ImageryLayer {
                 }
                 
                 context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
-                texture.generateMipmap(hint: .Nicest)
-                texture.sampler = mipmapSampler
+                texture.generateMipmap(hint: .Fastest)
+                texture.sampler = mipmapSampler!
             } else {
                 var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
                 if nonMipmapSampler == nil {
@@ -581,7 +581,7 @@ public class ImageryLayer {
             
             println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             glFlush()
-            dispatch_async(dispatch_get_main_queue(), {
+            dispatch_async(context.renderQueue, {
                 imagery.state = .Ready
             })
         })
@@ -807,11 +807,12 @@ public class ImageryLayer {
         if reproject!.renderState == nil {
             reproject!.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
         }
+        
         /*if reproject!.renderState!.viewport == nil ||
         reproject!.renderState!.viewport!.width != width ||
-        reproject!.renderState!.viewport!.height != height {
-        reproject!.renderState.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
-        }*/
+        reproject!.renderState!.viewport!.height != height {*/
+        //  reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
+        //}
         
         let drawCommand = DrawCommand(
             framebuffer: reproject!.framebuffer,

@@ -14,7 +14,6 @@ var viewerPositionWCScratch = new Cartesian3();
 struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
-    //let getValue: (uniformState: UniformState) -> Any
     let getValue: (uniformState: UniformState) -> [Float]
     
     func declaration (name: String) -> String {
