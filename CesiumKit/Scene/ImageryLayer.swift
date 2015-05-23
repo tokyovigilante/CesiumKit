@@ -217,10 +217,7 @@ public class ImageryLayer {
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
     }
-    
-    
-    
-    
+
     /**
     * Create skeletons for the imagery tiles that partially or completely overlap a given terrain
     * tile.
@@ -465,14 +462,16 @@ public class ImageryLayer {
         //Async.background {
         dispatch_async(context.networkQueue, {
             if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
-                dispatch_async(context.renderQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     imagery.image = image
                     imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                     
                     imagery.state = .Received
                 })
             } else {
-                dispatch_async(context.renderQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     imagery.state = .Failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
@@ -491,9 +490,9 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery for which to create a texture.
     */
     func createTexture (context: Context, imagery: Imagery) {
-        glFlush()
-        dispatch_async(context.textureLoadQueue, {
-            EAGLContext.setCurrentContext(context.textureLoadContext)
+        //glFlush()
+        //dispatch_async(context.textureLoadQueue, {
+          //  EAGLContext.setCurrentContext(context.textureLoadContext)
             // If this imagery provider has a discard policy, use it to check if this
             // image should be discarded.
             if let discardPolicy = self.imageryProvider.tileDiscardPolicy {
@@ -519,12 +518,12 @@ public class ImageryLayer {
             imagery.texture = texture
             imagery.image = nil
             println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-            glFlush()
-            dispatch_async(context.renderQueue, {
-                EAGLContext.setCurrentContext(context.view.context)
-                imagery.state = ImageryState.TextureLoaded
-            })
-        })
+            //glFlush()
+            //dispatch_async(context.renderQueue, {
+            //    EAGLContext.setCurrentContext(context.view.context)
+               imagery.state = ImageryState.TextureLoaded
+            //})
+        //})
     }
     
     /**
@@ -537,9 +536,9 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery instance to reproject.
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
-        glFlush()
-        dispatch_async(context.textureLoadQueue, {
-            EAGLContext.setCurrentContext(context.textureLoadContext)
+        //glFlush()
+        //dispatch_async(context.textureLoadQueue, {
+          //  EAGLContext.setCurrentContext(context.textureLoadContext)
             var texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
@@ -580,11 +579,11 @@ public class ImageryLayer {
             }
             
             println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-            glFlush()
-            dispatch_async(context.renderQueue, {
+            //glFlush()
+            //dispatch_async(context.renderQueue, {
                 imagery.state = .Ready
-            })
-        })
+            //})
+        //})
     }
     
     func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {

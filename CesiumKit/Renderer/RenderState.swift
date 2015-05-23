@@ -435,7 +435,7 @@ class RenderState/*: Printable*/ {
         } else {
             actualViewport = viewport!
         }
-        //context.uniformState.viewport = actualViewport
+        context.uniformState.viewport = actualViewport
 
         glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
     }

@@ -101,12 +101,14 @@ class TileTerrain {
             self.state = .Receiving
             var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
             if let terrainData = terrainData {
-                dispatch_async(context.renderQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     self.data = terrainData
                     self.state = .Received
                 })
             } else {
-                dispatch_async(context.renderQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     // Initially assume failure.  handleError may retry, in which case the state will
                     // change to RECEIVING or UNLOADED.
                     self.state = TerrainState.Failed
@@ -163,12 +165,14 @@ class TileTerrain {
             var mesh = self.data?.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
-                dispatch_async(context.renderQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     self.mesh = mesh
                     self.state = .Transformed
                 })
             } else {
-                dispatch_async(context.processorQueue, {
+                dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
                     self.state = .Failed
                     var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
                     println(message)

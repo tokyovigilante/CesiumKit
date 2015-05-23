@@ -49,8 +49,8 @@ public class AsyncGLView: UIView {
         _displayLink = CADisplayLink(target: self, selector: "render:")
         _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         
-        renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
-        _renderSemaphore = dispatch_semaphore_create(1)
+        //renderQueue = dispatch_queue_create("com.testtoast.cesiumkit.renderqueue", DISPATCH_QUEUE_SERIAL)
+        //_renderSemaphore = dispatch_semaphore_create(1)
         render = true
     }
     
@@ -149,18 +149,18 @@ public class AsyncGLView: UIView {
     // MARK: render
     func render (displayLink: CADisplayLink) {
         
-        if render /*&& _rendererDimensions != nil*/ {
+        if render && _rendererDimensions != nil {
             
-            if dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW) != 0 {
-                return
-            }
+            //if dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW) != 0 {
+            //    return
+            //}
             
             if self._rendererDimensions != nil && self._rendererDimensions! != self._eaglLayer.bounds.size {
                 destroyRenderer()
                 createRenderer()
             }
             
-            dispatch_async(renderQueue, {
+            //dispatch_async(renderQueue, {
                 
                 EAGLContext.setCurrentContext(self.context)
                 
@@ -173,13 +173,8 @@ public class AsyncGLView: UIView {
                 }
                 self.context.presentRenderbuffer(Int(GL_RENDERBUFFER))
 
-                dispatch_semaphore_signal(self._renderSemaphore)
-
-                //dispatch_async(dispatch_get_main_queue(), {
-                    //self.display()
-                //})
-                
-            })
+                //dispatch_semaphore_signal(self._renderSemaphore)
+            //})
         }
     }
 }

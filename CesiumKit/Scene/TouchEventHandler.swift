@@ -125,9 +125,9 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             movement.startPosition = Cartesian2(x: Double((location.x - offset.x) * _view.contentScaleFactor), y: Double((location.y - offset.y) * _view.contentScaleFactor))
             movement.endPosition = Cartesian2(x: Double(location.x * _view.contentScaleFactor), y: Double(location.y * _view.contentScaleFactor))
             let view = _view as! AsyncGLView
-            dispatch_async(view.renderQueue, {
+            //dispatch_async(view.renderQueue, {
                 self._scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
-            })
+            //})
             
             /*event = PanMoveEvent(
             tapCount: recognizer.numberOfTouches(),
@@ -162,9 +162,9 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             let view = _view as! AsyncGLView
             let scale = Double(recognizer.scale)
             recognizer.scale = 1
-            dispatch_async(view.renderQueue, {
+            //dispatch_async(view.renderQueue, {
                 self.zoomToPosition(Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.y)), scale: scale)
-            })
+            //})
             //globe?.eventHandler.handlePanMove(Cartesian2(x: Double(location.x), y: Double(location.y)))
         //case .Ended:
             //println("pinchended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
