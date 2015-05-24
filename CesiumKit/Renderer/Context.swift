@@ -33,6 +33,8 @@ class Context {
 
     var layer: CAMetalLayer
     
+    private let _device: MTLDevice!
+    
     private let _commandQueue: MTLCommandQueue
     
     private var _drawable: CAMetalDrawable!
@@ -43,8 +45,6 @@ class Context {
     var pipeline: MTLRenderPipelineState
     var uniformBuffer: MTLBuffer
     var depthTexture: MTLTexture
-    var checkerTexture: MTLTexture
-    var vibrantCheckerTexture: MTLTexture
     var depthState: MTLDepthStencilState
     var notMipSamplerState: MTLSamplerState
     var nearestMipSamplerState: MTLSamplerState
@@ -63,8 +63,6 @@ class Context {
         
     var id: String
     
-    // Validation and logging disabled by default for speed.
-    var _validateFramebuffer = true//false
     var _validateShaderProgram = false
     var _logShaderCompilation = false
     
@@ -142,8 +140,6 @@ class Context {
     */
     var width: Int = 0
     
-    var cachedGLESExtensions: [String]?
-
     var cachedState: RenderState? = nil
     
     private var _maxFrameTextureUnitIndex = 0
@@ -164,7 +160,12 @@ class Context {
         
         self.layer = layer
         
-        _commandQueue = layer.device.newCommandQueue()
+        _device = MTLCreateSystemDefaultDevice()
+        layer.device = _device
+        layer.pixelFormat = MTLPixelFormat.BGRA8Unorm
+        layer.framebufferOnly = true
+        
+        _commandQueue = _device.newCommandQueue()
        
         id = NSUUID().UUIDString
         

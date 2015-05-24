@@ -19,6 +19,8 @@ class CesiumViewController: UIViewController {
     
     override func viewDidLoad() {
         
+        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
+
         // create globe
         let options = CesiumOptions(imageryProvider: nil)
         
