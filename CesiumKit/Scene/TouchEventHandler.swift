@@ -124,7 +124,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             var movement = MouseMovement()
             movement.startPosition = Cartesian2(x: Double((location.x - offset.x) * _view.contentScaleFactor), y: Double((location.y - offset.y) * _view.contentScaleFactor))
             movement.endPosition = Cartesian2(x: Double(location.x * _view.contentScaleFactor), y: Double(location.y * _view.contentScaleFactor))
-            let view = _view as! AsyncGLView
+            //let view = _view as! MetalView
             //dispatch_async(view.renderQueue, {
                 self._scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
             //})
@@ -159,7 +159,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             //globe?.eventHandler.handlePanStart(Cartesian2(x: Double(location.x), y: Double(location.y)))
         case .Changed:
             //println("pinchchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
-            let view = _view as! AsyncGLView
+            //let view = _view as! MetalView
             let scale = Double(recognizer.scale)
             recognizer.scale = 1
             //dispatch_async(view.renderQueue, {

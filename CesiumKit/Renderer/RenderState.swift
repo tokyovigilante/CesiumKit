@@ -426,7 +426,7 @@ class RenderState/*: Printable*/ {
     
     func applyViewport(passState: PassState) {
         
-        var actualViewport = BoundingRectangle()
+        /*var actualViewport = BoundingRectangle()
         var context = passState.context!
         
         if viewport == nil {
@@ -437,7 +437,7 @@ class RenderState/*: Printable*/ {
         }
         context.uniformState.viewport = actualViewport
 
-        glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
+        glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))*/
     }
     
     private func conditionalApply(funcs: FuncsToApply, passState: PassState) {

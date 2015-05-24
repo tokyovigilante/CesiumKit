@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit
-import OpenGLES
+import QuartzCore.CAMetalLayer
 
 /**
 Describes Globe object options
@@ -122,7 +121,7 @@ public class CesiumGlobe {
     
     var _lastFrameTime: NSDate?
         
-    let view: AsyncGLView
+    //let view: MetalView
     
     /**
     * Gets the scene.
@@ -214,9 +213,8 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (view: AsyncGLView, options: CesiumOptions) {
+    public init (layer: CAMetalLayer, options: CesiumOptions) {
 
-        self.view = view
         /*
         var creditContainer = document.createElement('div');
         creditContainer.className = 'cesium-widget-credits';
@@ -232,7 +230,7 @@ public class CesiumGlobe {
         
         globe = Globe(ellipsoid: ellipsoid)
         scene = Scene(
-            view: view,
+            layer: layer,
             globe: self.globe,
             /*canvas : canvas,
             contextOptions : options.contextOptions,
@@ -288,7 +286,7 @@ public class CesiumGlobe {
             self.scene.morphToColumbusView(duration: 0)
         }
         
-        configureCanvasSize(Cartesian2(x: Double(view.drawableWidth), y: Double(view.drawableHeight)))
+        configureCanvasSize(Cartesian2(x: Double(layer.bounds.width), y: Double(layer.bounds.height)))
         configureCameraFrustum()
 
         // FIXME: Render errors
@@ -482,7 +480,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
-    public func render(size: Cartesian2) {
+    public func render() {
         
         /*if _lastFrameTime != nil {
             let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
@@ -491,7 +489,8 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
             println(performanceString)
         }*/
 
-        resize(size)
+
+        //resize(size)
         scene.initializeFrame()
         var currentTime = clock.tick()
         if _canRender {

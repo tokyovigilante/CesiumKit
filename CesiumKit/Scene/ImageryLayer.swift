@@ -512,12 +512,12 @@ public class ImageryLayer {
             
             // Imagery does not need to be discarded, so upload it to GL.
             
-            let texture = context.createTexture2D(TextureOptions(
-                source : .Image(imagery.image!),
-                pixelFormat : self.imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
-            imagery.texture = texture
+            //let texture = context.createTexture2D(TextureOptions(
+                //source : .Image(imagery.image!),
+                //pixelFormat : self.imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
+            //imagery.texture = texture
             imagery.image = nil
-            println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             //glFlush()
             //dispatch_async(context.renderQueue, {
             //    EAGLContext.setCurrentContext(context.view.context)
@@ -539,7 +539,7 @@ public class ImageryLayer {
         //glFlush()
         //dispatch_async(context.textureLoadQueue, {
           //  EAGLContext.setCurrentContext(context.textureLoadContext)
-            var texture = imagery.texture!
+            /*var texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
             // Reproject this texture if it is not already in a geographic projection and
@@ -556,7 +556,7 @@ public class ImageryLayer {
             
             // Use mipmaps if this texture has power-of-two dimensions.
             if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
-                var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
+                /*var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
                     mipmapSampler = Sampler()
                     mipmapSampler!.wrapS = .Edge
@@ -564,9 +564,9 @@ public class ImageryLayer {
                     mipmapSampler!.minificationFilter = TextureMinificationFilter.LinearMipmapLinear
                     mipmapSampler!.magnificationFilter = TextureMagnificationFilter.Linear
                     mipmapSampler!.maximumAnisotropy = context.maximumTextureFilterAnisotropy
-                }
+                }*/
                 
-                context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
+                /*context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
                 texture.generateMipmap(hint: .Fastest)
                 texture.sampler = mipmapSampler!
             } else {
@@ -575,12 +575,12 @@ public class ImageryLayer {
                     nonMipmapSampler = Sampler()
                     context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
                 }
-                texture.sampler = nonMipmapSampler!
+                texture.sampler = nonMipmapSampler!*/
             }
             
             println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             //glFlush()
-            //dispatch_async(context.renderQueue, {
+            //dispatch_async(context.renderQueue, {*/
                 imagery.state = .Ready
             //})
         //})
@@ -668,7 +668,7 @@ public class ImageryLayer {
         // doing a slightly less accurate reprojection than we were before, but we can't see the difference
         // so it's worth the 4x speedup.
         
-        var reproject = context.cache["imageryLayer_reproject"] as! Reproject?
+        /*var reproject = context.cache["imageryLayer_reproject"] as! Reproject?
         
         if reproject == nil {
             
@@ -725,13 +725,13 @@ public class ImageryLayer {
                 attributeLocations: reprojectAttribInds
             )
             
-            let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
+            /*let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
             var sampler = Sampler()
             sampler.wrapS = .Edge
             sampler.wrapT = .Edge
             sampler.minificationFilter = TextureMinificationFilter.Linear
             sampler.magnificationFilter = TextureMagnificationFilter.Linear
-            sampler.maximumAnisotropy = min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy)
+            sampler.maximumAnisotropy = min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy)*/
             
             reproject = Reproject(
                 vertexArray: vertexArray,
@@ -822,7 +822,8 @@ public class ImageryLayer {
             uniformMap: uniformMap
         )
         drawCommand.execute(context: context)
-        return outputTexture
+        return outputTexture*/
+        return texture
         
     }
     

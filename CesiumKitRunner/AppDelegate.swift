@@ -14,35 +14,17 @@ import CesiumKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    var globe: CesiumGlobe!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
-        // create globe
-        let options = CesiumOptions(
-            imageryProvider: nil)
-        if let view = self.window?.rootViewController?.view as? AsyncGLView {
-            EAGLContext.setCurrentContext(view.context)
-            globe = CesiumGlobe(view: view, options: options)
-            globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-            //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-            globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
-            
-            view.renderCallback = { (drawRect: CGRect) in
-                self.globe?.render(Cartesian2(x: Double(drawRect.width), y: Double(drawRect.height)))
-            }
-            view.render = true
-        }
-       
         return true
     }
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-        if let view = self.window?.rootViewController?.view as? AsyncGLView {
-            view.render = false
-        }
+        //if let view = self.window?.rootViewController?.view as? MetalView {
+        //    view.render = false
+        //}
     }
 
     func applicationDidEnterBackground(application: UIApplication) {
@@ -56,9 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        if let view = self.window?.rootViewController?.view as? AsyncGLView {
-            view.render = true
-        }
+        //if let view = self.window?.rootViewController?.view as? MetalView {
+          //  view.render = true
+        //}
     }
 
     func applicationWillTerminate(application: UIApplication) {

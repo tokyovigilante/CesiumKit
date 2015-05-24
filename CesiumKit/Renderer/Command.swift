@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-
 /**
 * Renderer command protocol
 */
@@ -57,7 +56,7 @@ protocol Command: class {
     *
     * @default undefined
     */
-    var framebuffer: Framebuffer? { get set }
+    //var framebuffer: Framebuffer? { get set }
     
     /**
     * The pass when to render.

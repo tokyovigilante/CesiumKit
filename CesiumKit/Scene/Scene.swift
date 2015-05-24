@@ -7,7 +7,6 @@
 //
 
 import OpenGLES
-import GLKit
 
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -100,7 +99,7 @@ public class Scene {
     */
     var maximumCubeMapSize: Int {
         get  {
-            return context.maximumCubeMapSize
+            return 0//context.maximumCubeMapSize
         }
     }
 
@@ -505,7 +504,7 @@ public class Scene {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var maximumAliasedLineWidth: Int { get { return context.maximumAliasedLineWidth } }
+    var maximumAliasedLineWidth: Int { get { return 1/*context.maximumAliasedLineWidth*/ } }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
@@ -528,9 +527,9 @@ public class Scene {
         }
     }
 
-    init (view: AsyncGLView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
-        context = Context(view: view)
+        context = Context(layer: layer)
         self.globe = globe
         
         _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
@@ -542,11 +541,11 @@ public class Scene {
         camera = Camera(
             projection: projection,
             mode: mode,
-            initialWidth: Double(context.view.frame.width),
-            initialHeight: Double(context.view.frame.height)
+            initialWidth: Double(layer.bounds.width),
+            initialHeight: Double(layer.bounds.height)
         )
         
-        touchEventHandler = TouchEventHandler(scene: self, view: view)
+        //touchEventHandler = TouchEventHandler(scene: self, view: view)
         
         // TODO: OIT and FXAA
         if useOIT {
@@ -920,7 +919,7 @@ var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
     func executeCommands(#passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
-
+        
         var j: Int
         
         var frustum: Frustum
@@ -952,8 +951,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunVisible = isVisible(sunCommand, frameState);*/
         
-        _clearColorCommand.color = clearColor
-        _clearColorCommand.execute(context: context, passState: passState)
+        _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
+        _clearColorCommand.execute(context: context, passState: nil)
         
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
@@ -1042,7 +1041,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            _depthClearCommand.execute(context: context, passState: passState)
+            //_depthClearCommand.execute(context: context, passState: passState)
             
             
             // Execute commands in order by pass up to the translucent pass.
@@ -1050,7 +1049,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             var numPasses = Pass.Translucent.rawValue
             for pass in 0..<numPasses {
                 for command in frustumCommands.commands[pass]! {
-                    executeCommand(command, passState: passState)
+                    //executeCommand(command, passState: passState)
                 }
             }
             
@@ -1137,6 +1136,7 @@ function callAfterRenderFunctions(frameState) {
     
         updatePrimitives()
         createPotentiallyVisibleSet()
+        context.beginFrame()
         executeCommands(passState: _passState, clearColor: backgroundColor)
         executeOverlayCommands(_passState)
         
@@ -1162,6 +1162,7 @@ function callAfterRenderFunctions(frameState) {
             scene._performanceContainer.parentNode.removeChild(scene._performanceContainer);*/
         }
         */
+        
         context.endFrame()
         //callAfterRenderFunctions(frameState);
         

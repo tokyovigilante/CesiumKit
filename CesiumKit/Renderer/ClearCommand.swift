@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import Metal
 
 /**
 * Represents a command to the renderer for clearing a framebuffer.
@@ -25,7 +25,7 @@ class ClearCommand: Command {
     *
     * @default undefined
     */
-    var color: Cartesian4?
+    var color: MTLClearColor?
     
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
@@ -43,7 +43,7 @@ class ClearCommand: Command {
     *
     * @default undefined
     */
-    var stencil: Int?
+    var stencil: UInt32?
     
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
@@ -57,15 +57,6 @@ class ClearCommand: Command {
     * @see Context#createRenderState
     */
     var renderState: RenderState?
-    
-    /**
-    * The framebuffer to clear.
-    *
-    * @type {Framebuffer}
-    *
-    * @default undefined
-    */
-    var framebuffer: Framebuffer?
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -99,12 +90,12 @@ class ClearCommand: Command {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Int? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
-        self.color = color
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
+        
+        self.color = color == nil ? nil : MTLClearColorMake(color!.red, color!.green, color!.blue, color!.alpha)
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
-        self.framebuffer = framebuffer
         //self.owner = owner
     }
     

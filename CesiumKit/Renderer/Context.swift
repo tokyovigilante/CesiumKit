@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import OpenGLES
+import Metal
+import QuartzCore.CAMetalLayer
 
 
 /**
@@ -20,19 +21,34 @@ class Context {
         renderCountThisFrame: Int,
         renderCount: Int
     )
-
-    var view: AsyncGLView
-    
-    var renderQueue: dispatch_queue_t {
+   
+    /*var renderQueue: dispatch_queue_t {
         get {
             return view.renderQueue
         }
-    }
+    }*/
     let networkQueue: dispatch_queue_t
     let processorQueue: dispatch_queue_t
     let textureLoadQueue: dispatch_queue_t
+
+    var layer: CAMetalLayer
     
-    let textureLoadContext: EAGLContext
+    private let _commandQueue: MTLCommandQueue
+    
+    private var _drawable: CAMetalDrawable!
+    private var _commandBuffer: MTLCommandBuffer!
+
+    /*var library: MTLLibrary
+    var pipeline: MTLRenderPipelineState
+    var uniformBuffer: MTLBuffer
+    var depthTexture: MTLTexture
+    var checkerTexture: MTLTexture
+    var vibrantCheckerTexture: MTLTexture
+    var depthState: MTLDepthStencilState
+    var notMipSamplerState: MTLSamplerState
+    var nearestMipSamplerState: MTLSamplerState
+    var linearMipSamplerState: MTLSamplerState*/
+    
     
     var allowTextureFilterAnisotropic = true
     
@@ -53,359 +69,10 @@ class Context {
     
     var _shaderCache: ShaderCache? = nil
     
-    /**
-    * The WebGL version or release number of the form &lt;WebGL&gt;&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
-    * @memberof Context.prototype
-    * @type {String}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>VERSION</code>.
-    */
-    let glVersion: String
-    /**
-    * The version or release number for the shading language of the form WebGL&lt;space&gt;GLSL&lt;space&gt;ES&lt;space&gt;&lt;version number&gt;&lt;space&gt;&lt;vendor-specific information&gt;.
-    * @memberof Context.prototype
-    * @type {String}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>SHADING_LANGUAGE_VERSION</code>.
-    */
-    let shadingLanguageVersion: String
-    
-    /**
-    * The company responsible for the WebGL implementation.
-    * @memberof Context.prototype
-    * @type {String}
-    */
-    let vendor: String
-    
-    /**
-    * The name of the renderer/configuration/hardware platform. For example, this may be the model of the
-    * video card, e.g., 'GeForce 8800 GTS/PCI/SSE2', or the browser-dependent name of the GL implementation, e.g.
-    * 'Mozilla' or 'ANGLE.'
-    * @memberof Context.prototype
-    * @type {String}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGetString.xml'>glGetString</a> with <code>RENDERER</code>.
-    * @see <a href='http://code.google.com/p/angleproject/'>ANGLE</a>
-    */
-    let renderer: String
-    
-    /**
-    * The number of red bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>RED_BITS</code>.
-    */
-    let redBits: Int
-    
-    /**
-    * The number of green bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>GREEN_BITS</code>.
-    */
-    let greenBits: Int
-    
-    /**
-    * The number of blue bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>BLUE_BITS</code>.
-    */
-    let blueBits: Int
-    
-    /**
-    * The number of alpha bits per component in the default framebuffer's color buffer.  The minimum is eight.
-    * <br /><br />
-    * The alpha channel is used for GL destination alpha operations and by the HTML compositor to combine the color buffer
-    * with the rest of the page.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>ALPHA_BITS</code>.
-    */
-    let alphaBits: Int
-    
-    /**
-    * The number of depth bits per pixel in the default bound framebuffer.  The minimum is 16 bits; most
-    * implementations will have 24 bits.
-    * @memberof Context.protoytpe
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>DEPTH_BITS</code>.
-    */
-    var depthBits = 0
-    
-    /**
-    * The number of stencil bits per pixel in the default bound framebuffer.  The minimum is eight bits.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>STENCIL_BITS</code>.
-    */
-    var stencilBits = 0
-    
-    /**
-    * The maximum number of texture units that can be used from the vertex and fragment
-    * shader with this WebGL implementation.  The minimum is eight.  If both shaders access the
-    * same texture unit, this counts as two texture units.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_COMBINED_TEXTURE_IMAGE_UNITS</code>.
-    */
-    var maximumCombinedTextureImageUnits = 0// min 8
-    
-    /**
-    * The approximate maximum cube mape width and height supported by this WebGL implementation.
-    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_CUBE_MAP_TEXTURE_SIZE</code>.
-    */
-    var maximumCubeMapSize = 0 // min 16
-    
-    /**
-    * Rhe maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
-    * uniforms that can be used by a fragment shader with this WebGL implementation.  The minimum is 16.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_FRAGMENT_UNIFORM_VECTORS</code>.
-    */
-    var maximumFragmentUniformVectors = 0 // min 16
-    
-    /**
-    * The maximum number of texture units that can be used from the fragment shader with this WebGL implementation.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_IMAGE_UNITS</code>.
-    */
-    var maximumTextureImageUnits = 0 // min 8
-    
-    /**
-    * The maximum renderbuffer width and height supported by this WebGL implementation.
-    * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_RENDERBUFFER_SIZE</code>.
-    */
-    var maximumRenderBufferSize = 0 // min 16
-    
-    /**
-    * The approximate maximum texture width and height supported by this WebGL implementation.
-    * The minimum is 64, but most desktop and laptop implementations will support much larger sizes like 8,192.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_TEXTURE_SIZE</code>.
-    */
-    var maximumTextureSize = 0 // min 64
-    
-    /**
-    * The maximum number of <code>vec4</code> varying variables supported by this WebGL implementation.
-    * The minimum is eight.  Matrices and arrays count as multiple <code>vec4</code>s.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VARYING_VECTORS</code>.
-    */
-    var maximumVaryingVectors = 0 // min 8
-    
-    /**
-    * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_ATTRIBS</code>.
-    */
-    var maximumVertexAttributes = 0 // min 8
-    
-    /**
-    * The maximum number of texture units that can be used from the vertex shader with this WebGL implementation.
-    * The minimum is zero, which means the GL does not support vertex texture fetch.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_TEXTURE_IMAGE_UNITS</code>.
-    */
-    var maximumVertexTextureImageUnits = 0 // min 0
-    
-    /**
-    * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
-    * uniforms that can be used by a vertex shader with this WebGL implementation.  The minimum is 16.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see <a href='http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml'>glGet</a> with <code>MAX_VERTEX_UNIFORM_VECTORS</code>.
-    */
-    var maximumVertexUniformVectors = 0
-    
-    /**
-    * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
-    */
-    var minimumAliasedLineWidth = 0
-    /**
-    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
-    */
-    var maximumAliasedLineWidth = 0
-    
-    /**
-    * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
-    */
-    var minimumAliasedPointSize: Int
-    /**
-    * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
-    */
-    var maximumAliasedPointSize: Int
-    
-    /**
-    * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
-    */
-    var maximumViewportWidth: Int
-    /**
-    * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
-    * @memberof Context.prototype
-    * @type {Number}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
-    */
-    var maximumViewportHeight: Int
-    
-    /**
-    * <code>true</code> if the WebGL context supports antialiasing.  By default
-    * antialiasing is requested, but it is not supported by all systems.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    */
-    var antialias: Bool = true
-    
-    /**
-    * <code>true</code> if the OES_standard_derivatives extension is supported.  This
-    * extension provides access to <code>dFdx<code>, <code>dFdy<code>, and <code>fwidth<code>
-    * functions from GLSL.  A shader using these functions still needs to explicitly enable the
-    * extension with <code>#extension GL_OES_standard_derivatives : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_standard_derivatives.txt'>OES_standard_derivatives</a>
-    */
-    var standardDerivatives: Bool {
-        get { return checkGLExtension("OES_standard_derivatives") }
-    }
-    
-    /**
-    * <code>true</code> if the OES_element_index_uint extension is supported.  This
-    * extension allows the use of unsigned int indices, which can improve performance by
-    * eliminating batch breaking caused by unsigned short indices.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_element_index_uint/'>OES_element_index_uint</a>
-    */
-    let elementIndexUint: Bool = true/* {
-    //get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_element_index_uint") }
-    }*/
-    
-    /**
-    * <code>true</code> if WEBGL_depth_texture is supported.  This extension provides
-    * access to depth textures that, for example, can be attached to framebuffers for shadow mapping.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/'>WEBGL_depth_texture</a>
-    */
-    var depthTexture: Bool = true /*{
-    get { return view.context.API == .OpenGLES3 || checkGLExtension("GL_OES_depth_texture") }
-    }*/
-    
-    /**
-    * <code>true</code> if OES_texture_float is supported.  This extension provides
-    * access to floating point textures that, for example, can be attached to framebuffers for high dynamic range.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/gles/extensions/OES/OES_texture_float.txt'>OES_texture_float</a>
-    */
-    var floatingPointTexture: Bool {
-    get { return checkGLExtension("OES_texture_float") }
-    }
-
-    
-    /**
-    * DOC_TBA
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/'>EXT_texture_filter_anisotropic</a>
-    */
-    var textureFilterAnisotropic: Bool {
-    get {
-        var result = checkGLExtension("EXT_texture_filter_anisotropic")
-        if result {
-            glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
-        }
-        return result
-    }
-    }
-    
-    var maximumTextureFilterAnisotropy: GLint = 0
-    
-    /**
-    * <code>true</code> if the OES_vertex_array_object extension is supported.  This
-    * extension can improve performance by reducing the overhead of switching vertex arrays.
-    * When enabled, this extension is automatically used by {@link VertexArray}.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/OES_vertex_array_object/'>OES_vertex_array_object</a>
-    */
-    /*var vertexArrayObject: Bool {
-        get { return self.view.context.API == .OpenGLES3 || checkGLExtension("OES_vertex_array_object") }
-    }*/
-    
-    
-    /**
-    * <code>true</code> if the EXT_frag_depth extension is supported.  This
-    * extension provides access to the <code>gl_FragDepthEXT<code> built-in output variable
-    * from GLSL fragment shaders.  A shader using these functions still needs to explicitly enable the
-    * extension with <code>#extension GL_EXT_frag_depth : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/'>EXT_frag_depth</a>
-    */
-    var fragmentDepth: Bool {
-        get { return checkGLExtension("EXT_frag_depth") }
-    }
-    
-    /**
-    * <code>true</code> if the WEBGL_draw_buffers extension is supported. This
-    * extensions provides support for multiple render targets. The framebuffer object can have mutiple
-    * color attachments and the GLSL fragment shader can write to the built-in output array <code>gl_FragData</code>.
-    * A shader using this feature needs to explicitly enable the extension with
-    * <code>#extension GL_EXT_draw_buffers : enable</code>.
-    * @memberof Context.prototype
-    * @type {Boolean}
-    * @see <a href='http://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/'>WEBGL_draw_buffers</a>
-    */
-    let drawBuffers: Bool = true /*{
-        get {
-            return view.context.API == .OpenGLES3 || checkGLExtension("EXT_draw_buffers")
-        }
-    }*/
-    
-    /**
-    * The maximum number of simultaneous outputs that may be written in a fragment shader.
-    * @memberof Context.prototype
-    * @type {Number}
-    */
-    var maximumDrawBuffers: GLint = 0
-    
-    /**
-    * The maximum number of color attachments supported.
-    * @memberof Context.prototype
-    * @type {Number}
-    */
-    var maximumColorAttachments: GLint = 0
-    
-    private var _clearColor = Cartesian4()
+    private var _clearColor: MTLClearColor = MTLClearColorMake(1.0, 0.0, 0.0, 1.0)
     
     private var _clearDepth: Double = 0.0
-    private var _clearStencil: Int = 0
+    private var _clearStencil: UInt32 = 0
     
     private var _currentRenderState: RenderState
     private let _defaultRenderState: RenderState
@@ -421,12 +88,12 @@ class Context {
     * @memberof Context.prototype
     * @type {Texture}
     */
-    lazy var defaultTexture: Texture = {
+    /*lazy var defaultTexture: Texture = {
         var imageBuffer = Imagebuffer(width: 1, height: 1, arrayBufferView: [255, 255, 255, 255])
         var source = TextureSource.ImageBuffer(imageBuffer)
-        var options = TextureOptions(source: source, width: nil, height: nil, pixelFormat: .RGBA, pixelDatatype: .UnsignedByte, flipY: false, premultiplyAlpha: true)
+        //var options = TextureOptions(source: source, width: nil, height: nil, pixelFormat: .RGBA, pixelDatatype: .UnsignedByte, flipY: false, premultiplyAlpha: true)
         return self.createTexture2D(options)
-        }()
+        }()*/
     
     /**
     * A cube map, where each face is a 1x1 RGBA texture initialized to
@@ -492,102 +159,20 @@ class Context {
     */
     var defaultFramebuffer: Framebuffer? = nil
 
-    init (view: AsyncGLView) {
+    init (layer: CAMetalLayer) {
         
-        self.view = view
+        self.layer = layer
+        
+        _commandQueue = layer.device.newCommandQueue()
        
         id = NSUUID().UUIDString
         
         networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
         textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
-        textureLoadContext = EAGLContext(API: .OpenGLES3, sharegroup: view.context.sharegroup)
         
-        glVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VERSION)))) ?? "Unknown GL version"
-        shadingLanguageVersion = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_SHADING_LANGUAGE_VERSION)))) ?? "Unknown GLSL version"
-        vendor = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_VENDOR)))) ?? "Unknown GL vendor"
-        renderer = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_RENDERER)))) ?? "Unknown GL renderer"
-        
-        var GLIntTemp: GLint = 0
-        glGetIntegerv(GLenum(GL_RED_BITS), &GLIntTemp)
-        redBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_GREEN_BITS), &GLIntTemp)
-        greenBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_BLUE_BITS), &GLIntTemp)
-        blueBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_ALPHA_BITS), &GLIntTemp)
-        alphaBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_DEPTH_BITS), &GLIntTemp)
-        depthBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_STENCIL_BITS), &GLIntTemp)
-        stencilBits = Int(GLIntTemp)
-
-        glGetIntegerv(GLenum(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min 8
-        maximumCombinedTextureImageUnits = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_CUBE_MAP_TEXTURE_SIZE), &GLIntTemp) // min: 16
-        maximumCubeMapSize = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_FRAGMENT_UNIFORM_VECTORS), &GLIntTemp) // min: 16
-        maximumFragmentUniformVectors = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min: 8
-        maximumTextureImageUnits = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_RENDERBUFFER_SIZE), &GLIntTemp) // min: 1
-        maximumRenderBufferSize = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &GLIntTemp) // min: 64
-        maximumTextureSize = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_VARYING_VECTORS), &GLIntTemp) // min: 8
-        maximumVaryingVectors = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_ATTRIBS), &GLIntTemp) // min: 8
-        maximumVertexAttributes = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), &GLIntTemp) // min: 0
-        maximumTextureImageUnits = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_VERTEX_UNIFORM_VECTORS), &GLIntTemp) // min: 128
-        maximumVertexUniformVectors = Int(GLIntTemp)
-
-        var aliasedLineWidthRange = Array<GLint>(count: 2, repeatedValue: 0) // must include 1
-        glGetIntegerv(GLenum(GL_ALIASED_LINE_WIDTH_RANGE), &aliasedLineWidthRange) // must include 1
-        minimumAliasedLineWidth = Int(aliasedLineWidthRange[0])
-        maximumAliasedLineWidth = Int(aliasedLineWidthRange[1])
-        
-        var aliasedPointSizeRange = Array<GLint>(count: 2, repeatedValue: 0)
-        glGetIntegerv(GLenum(GL_ALIASED_POINT_SIZE_RANGE), &aliasedPointSizeRange) // must include 1
-        minimumAliasedPointSize = Int(aliasedPointSizeRange[0])
-        maximumAliasedPointSize = Int(aliasedPointSizeRange[1])
-
-        var maximumViewportDimensions = Array<GLint>(count: 2, repeatedValue: 0)
-        glGetIntegerv(GLenum(GL_MAX_VIEWPORT_DIMS), &maximumViewportDimensions)
-        maximumViewportWidth = Int(maximumViewportDimensions[0])
-        maximumViewportHeight = Int(maximumViewportDimensions[1])
-        
-        antialias = true
-    
-        var cc = [GLfloat](count: 4, repeatedValue: 0.0)
-        glGetFloatv(GLenum(GL_COLOR_CLEAR_VALUE), &cc)
-        _clearColor = Cartesian4.fromColor(red: Double(cc[0]), green: Double(cc[1]), blue: Double(cc[2]), alpha: Double(cc[3]))
-        
-        var clearDepthTemp: GLfloat = 0.0
-        glGetFloatv(GLenum(GL_DEPTH_CLEAR_VALUE), &clearDepthTemp)
-        _clearDepth = Double(clearDepthTemp)
-        
-        glGetIntegerv(GLenum(GL_STENCIL_CLEAR_VALUE), &GLIntTemp)
-        _clearStencil = Int(GLIntTemp)
-        
-        glGetIntegerv(GLenum(GL_MAX_DRAW_BUFFERS), &maximumDrawBuffers)
-        glGetIntegerv(GLenum(GL_MAX_COLOR_ATTACHMENTS), &maximumColorAttachments)
-        
+        //antialias = true
+       
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
 
@@ -600,7 +185,7 @@ class Context {
         uniformState = us
         _currentRenderState = rs
         _defaultPassState = PassState()
-        _defaultPassState.context = self
+        //_defaultPassState.context = self
     
         /**
         * @example
@@ -720,7 +305,7 @@ class Context {
     func createIndexBuffer (array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
     
         if indexDatatype == IndexDatatype.UnsignedInt {
-            assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
+            //assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
         }
         return IndexBuffer(array: array, sizeInBytes: sizeInBytes, usage: usage, indexDatatype: indexDatatype)
     }
@@ -945,7 +530,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
 * @see Context#createSampler
 */
 
-    func createCubeMap (faces: [Imagebuffer]?, width: Int?, height: Int?, pixelFormat: PixelFormat?, pixelDatatype: PixelDatatype?) -> CubeMap? {
+    func createCubeMap (faces: [Imagebuffer]?, width: Int?, height: Int?/*, pixelDatatype: PixelDatatype?*/) -> CubeMap? {
         // FIXME: cubemap
         /*
         Context.prototype.createCubeMap = function(options) {
@@ -1108,7 +693,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
     * });
     */
     func createFramebuffer(options: Framebuffer.Options) -> Framebuffer {
-        return Framebuffer(maximumColorAttachments: maximumColorAttachments, options: options)
+        return Framebuffer(maximumColorAttachments: 16, options: options)
     }
 /*
 Context.prototype.createRenderbuffer = function(options) {
@@ -1296,6 +881,13 @@ var renderStateCache = {};
         }
     }
 
+    func beginFrame() {
+        _drawable = layer.nextDrawable()
+        _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
+        _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
+        _commandBuffer = _commandQueue.commandBuffer()
+    }
+    
     func applyRenderState(renderState: RenderState, passState: PassState) {
         var previousState = _currentRenderState
         if previousState.hash != renderState.hash {
@@ -1324,9 +916,9 @@ if (typeof WebGLRenderingContext !== 'undefined') {
                 // TODO: Need a way for a command to give what draw buffers are active.
                 buffers = framebuffer.activeColorAttachments
                 
-                if drawBuffers && buffers.count > 0 {
+                /*if drawBuffers && buffers.count > 0 {
                     glDrawBuffers(GLsizei(buffers.count), buffers)
-                }
+                }*/
             } else {
                 if let defaultFrameBufferObject = defaultFrameBufferObject {
                     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(defaultFrameBufferObject))
@@ -1336,70 +928,56 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         }
     }
 
-    func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState?) {
+    func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState? = nil) {
         
-        var passState = passState ?? _defaultPassState
-        
-        var bitmask: Int32 = 0
+        let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
         
         var c = clearCommand.color
         var d = clearCommand.depth
         var s = clearCommand.stencil
         
-        if c != nil {
-            if _clearColor != c {
-                _clearColor = c!
-                glClearColor(
-                    GLfloat(_clearColor.red),
-                    GLfloat(_clearColor.green),
-                    GLfloat(_clearColor.blue),
-                    GLfloat(_clearColor.alpha)
-                )
-            }
-            bitmask = bitmask | GL_COLOR_BUFFER_BIT
+        if let c = c {
+            let attachment = passDescriptor.colorAttachments[0]
+            attachment.loadAction = .Clear
+            attachment.storeAction = .Store
+            attachment.clearColor = c
+        } else {
+            passDescriptor.colorAttachments[0] = nil
         }
     
-        if d != nil {
-            if (d! != _clearDepth) {
-                _clearDepth = d!
-                glClearDepthf(GLfloat(_clearDepth))
-            }
-            bitmask = bitmask | GL_DEPTH_BUFFER_BIT
+        if let d = d {
+            let attachment = passDescriptor.depthAttachment
+            attachment.loadAction = .Clear
+            attachment.storeAction = .Store
+            attachment.clearDepth = d
+        } else {
+            passDescriptor.depthAttachment = nil
         }
         
-        if s != nil {
-            if (s! != _clearStencil) {
-                _clearStencil = s!
-                glClearStencil(GLint(_clearStencil))
-            }
-            bitmask = bitmask | GL_STENCIL_BUFFER_BIT
+        if let s = s {
+            let attachment = passDescriptor.stencilAttachment
+            attachment.loadAction = .Clear
+            attachment.storeAction = .Store
+            attachment.clearStencil = s
+        } else {
+            passDescriptor.stencilAttachment = nil
         }
-        var rs = clearCommand.renderState ?? _defaultRenderState
-        applyRenderState(rs, passState: passState)
-        
-        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        var framebuffer = clearCommand.framebuffer ?? passState.framebuffer
-        
-        var oldFBO: GLint = 0
-        glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
-        
-        bindFramebuffer(framebuffer)
-        glClear(GLbitfield(bitmask))
     }
 
     func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
         
-        var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
+        /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
         
         if framebuffer != nil && rs.depthTest.enabled {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
-        }
+        }*/
+        
         bindFramebuffer(framebuffer)
         var sp = shaderProgram ?? drawCommand.shaderProgram
-        sp!.bind()
+        //sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
-        applyRenderState(rs, passState: passState)
+        //applyRenderState(rs, passState: passState)
     }
 
     func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {
@@ -1417,7 +995,8 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         let sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
     
-        if let indexBuffer = va!.indexBuffer {
+        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
+        /*if let indexBuffer = va!.indexBuffer {
             offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
             count = count ?? indexBuffer.numberOfIndices
             va!._bind()
@@ -1429,7 +1008,8 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             va!._bind()
             glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
             va!._unBind()
-        }
+        }*/
+        commandEncoder!.endEncoding()
     }
 
     func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
@@ -1444,9 +1024,14 @@ if (typeof WebGLRenderingContext !== 'undefined') {
     }
 
     func endFrame () {
-        glUseProgram(0)
-        _currentFramebuffer = nil
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
+        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
+
+        commandEncoder!.endEncoding()
+
+        _commandBuffer.presentDrawable(_drawable)
+        _commandBuffer.commit()
+        
+        
         /*
         var
         buffers = scratchBackBufferArray;
@@ -1754,7 +1339,7 @@ function interleaveAttributes(attributes) {
             
             var indexBuffer: IndexBuffer? = nil
             if geometry.indices != nil {
-                if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
+                /*if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
                     
                     indexBuffer = createIndexBuffer(
                         // FIXME: combine datatype
@@ -1764,7 +1349,7 @@ function interleaveAttributes(attributes) {
                     indexBuffer = createIndexBuffer(
                         array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedShort),
                         indexDatatype: IndexDatatype.UnsignedShort)
-                }
+                }*/
             }
             return createVertexArray(vaAttributes, indexBuffer: indexBuffer)
     }
@@ -1948,23 +1533,5 @@ Context.prototype.isDestroyed = function() {
     */
     }
 
-    func getGLExtensions() -> [String] {
-        var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS)))) ?? ""
-        return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-    }
-
-    func checkGLExtension(glExtension: String) -> Bool {
-        
-        if (cachedGLESExtensions == nil) {
-            cachedGLESExtensions = getGLExtensions()
-        }
-        
-        for cachedExtension in cachedGLESExtensions! {
-            if cachedExtension == glExtension {
-                return true
-            }
-        }
-        return false
-    }
     
 }

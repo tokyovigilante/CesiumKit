@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
+import Metal
 
 /**
 * The state for a particular rendering pass.  This is used to supplement the state
@@ -31,7 +30,24 @@ struct PassState {
     * @type {Framebuffer}
     * @default undefined
     */
-    var framebuffer: Framebuffer? = nil
+    weak var framebuffer: Framebuffer? = nil
+    
+    /**
+    * The texture to render to.  This texture is used unless a {@link DrawCommand}
+    * or {@link ClearCommand} explicitly define a texture, which is used for off-screen
+    * rendering.
+    *
+    * @type {MTLTexture}
+    * @default undefined
+    */
+    var texture: MTLTexture? = nil
+    
+    /**
+    * The pass descriptor to use for rendering.
+    *
+    * @type {MTLRenderPassDescriptor}
+    */
+    var passDescriptor: MTLRenderPassDescriptor! = nil
     
     /**
     * When defined, this overrides the blending property of a {@link DrawCommand}'s render state.

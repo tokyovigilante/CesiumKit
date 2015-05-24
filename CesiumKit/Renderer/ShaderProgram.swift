@@ -371,6 +371,7 @@ class ShaderProgram {
         // (which makes the GL calls) is faster than removing this loop and making
         // the GL calls above.  I suspect this is because each GL call pollutes the
         // L2 cache making our JavaScript and the browser/driver ping-pong cache lines.
+        return
         for uniform in _uniforms! {
             uniform.set()
             if validate {

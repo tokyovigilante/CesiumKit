@@ -7,7 +7,7 @@
 //
 
 import UIKit.UIImage
-import OpenGLES
+import Metal
 
 enum TextureSource {
     case Image(UIImage)
@@ -51,22 +51,22 @@ struct TextureOptions {
     
     let height: Int
     
-    let pixelFormat: PixelFormat
+    //let pixelFormat: PixelFormat
     
-    let pixelDatatype: PixelDatatype
+    //let pixelDatatype: PixelDatatype
     
     let flipY: Bool
     
     let premultiplyAlpha: Bool
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte, flipY: Bool = true, premultiplyAlpha: Bool = true) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, /*pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte*/ flipY: Bool = true, premultiplyAlpha: Bool = true) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
         self.width = source != nil ? source!.width : width!
         self.height = source != nil ? source!.height : height!
-        self.pixelFormat = pixelFormat
-        self.pixelDatatype = pixelDatatype
+        //self.pixelFormat = pixelFormat
+        //self.pixelDatatype = pixelDatatype
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
     }
@@ -80,9 +80,9 @@ class Texture {
     
     var height: Int
     
-    let pixelFormat: PixelFormat
+    //let pixelFormat: PixelFormat
     
-    var pixelDatatype: PixelDatatype
+    //var pixelDatatype: PixelDatatype
     
     var textureFilterAnisotropic = true
     
@@ -105,7 +105,7 @@ class Texture {
     */
     var sampler: Sampler! {
         didSet {
-            if pixelDatatype == .Float {
+            /*if pixelDatatype == .Float {
                 if (sampler.minificationFilter != .Nearest &&
                     sampler.minificationFilter != .NearestMipmapNearest) {
                         assertionFailure("Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.")
@@ -126,7 +126,7 @@ class Texture {
             if textureFilterAnisotropic {
                 glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAX_ANISOTROPY_EXT), sampler.maximumAnisotropy)
             }
-            glBindTexture(textureTarget, 0)
+            glBindTexture(textureTarget, 0)*/
         }
     }
 
@@ -144,14 +144,14 @@ class Texture {
             height = source!.height
         }
         
-        pixelFormat = .RGBA//options.pixelFormat
+        //pixelFormat = .RGBA//options.pixelFormat
         
-        pixelDatatype = options.pixelDatatype
+        //pixelDatatype = options.pixelDatatype
         
         premultiplyAlpha = options.premultiplyAlpha
         
         assert(width > 0, "Width must be greater than zero.")
-        assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
+        /*assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         
@@ -171,16 +171,16 @@ class Texture {
         }
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
-        // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        // http://media.tojicode.com/webglCamp4/#20*/
+        //var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
-        glGenTextures(1, &textureName)
+        /*glGenTextures(1, &textureName)
         glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(textureTarget, textureName)
+        glBindTexture(textureTarget, textureName)*/
         
          if let source = source {
-            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
+            //glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
             //glPixelStorei(GL_UNPACK, param: GLint)
             //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
             //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
@@ -205,7 +205,7 @@ class Texture {
                 //Extract info for your image
                 let imageRef = image.CGImage
                 
-                let width = CGImageGetWidth(imageRef)
+                /*let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
                 let bytesPerPixel: Int = pixelFormat == PixelFormat.RGB ? 4 : pixelDatatype.bytesPerElement * pixelFormat.byteCount // RGB CGImage must have Alpha
                 
@@ -232,15 +232,15 @@ class Texture {
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Set-up your texture:
-                glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)
+                //glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)*/
             }
 
         } else {
-            glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
+            //glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
         }
-        glBindTexture(textureTarget, GLenum(0))
+        //glBindTexture(textureTarget, GLenum(0))
         self.context = context
-        self.textureFilterAnisotropic = context.textureFilterAnisotropic
+        //self.textureFilterAnisotropic = context.textureFilterAnisotropic
         //self.dimensions = Cartesian2(x: Double(width), y: Double(height))*/
     }
     /*
@@ -448,20 +448,20 @@ class Texture {
     */
     func generateMipmap (hint: MipmapHint = .DontCare) {
 
-        assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
+        //assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
         
         assert(width > 1 && Math.isPowerOfTwo(width), "width must be a power of two to call generateMipmap()")
 
         assert(height > 1 && Math.isPowerOfTwo(height), "height must be a power of two to call generateMipmap")
         
-        glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
+        /*glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
         glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(textureTarget, textureName)
         glGenerateMipmap(textureTarget)
-        glBindTexture(textureTarget, 0)
+        glBindTexture(textureTarget, 0)*/
     }
 
     deinit {
-        glDeleteTextures(1, &textureName)
+        //glDeleteTextures(1, &textureName)
     }
 }

@@ -63,7 +63,7 @@ typealias EventAction = (geometry: EventGeometry) -> ()
 
 public class ScreenSpaceEventHandler {
     
-    private weak var _view: UIView!
+    //private weak var _layer: CAMetalLayer!
     
     private var _inputEvents: [String: EventAction]
     var _buttonDown: MouseButton? = nil
@@ -83,8 +83,8 @@ public class ScreenSpaceEventHandler {
     // or determined based on the platform?
     private var _clickPixelTolerance = 5
     
-    init(view: UIView) {
-        self._view = view
+    init(/*view: UIView*/) {
+        //self._view = view
         _inputEvents = Dictionary<String, EventAction>()
         
         registerListeners()
@@ -409,9 +409,9 @@ public class ScreenSpaceEventHandler {
     public func handleTouchStart(touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
-        for (i, touch) in enumerate(touches) {
+        /*for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
-                
+        
                 let position = touch.locationInView(_view)
                 _positions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
             }
@@ -425,13 +425,13 @@ public class ScreenSpaceEventHandler {
                 let position = touch.locationInView(_view)
                 _previousPositions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
             }
-        }
+        }*/
     }
     
     public func handleTouchMove(touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
-        for (i, touch) in enumerate(touches) {
+        /*for (i, touch) in enumerate(touches) {
             if let touch = touch as? UITouch {
                 let position = touch.locationInView(_view)
                 println("\(i): \(position.x):\(position.y)")
@@ -447,7 +447,7 @@ public class ScreenSpaceEventHandler {
                 let position = touch.locationInView(_view)
                 _previousPositions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
             }
-        }
+        }*/
     }
     
     public func handleTouchEnd(touches: Set<NSObject>) {

@@ -268,7 +268,7 @@ public class ScreenSpaceCameraController {
     
     init(scene: Scene) {
         _scene = scene
-        _aggregator = CameraEventAggregator(view: _scene.context.view)
+        _aggregator = CameraEventAggregator(/*layer: _scene.context.layer*/)
     }
     
     func decay(time: Double, coefficient: Double) -> Double {

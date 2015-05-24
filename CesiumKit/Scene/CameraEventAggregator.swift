@@ -53,11 +53,11 @@ class CameraEventAggregator {
     
     private var _view: UIView!
     
-    init (view: UIView) {
+    init (/*view: UIView*/) {
         
-        eventHandler = ScreenSpaceEventHandler(view: view)
-        
-        _view = view
+        eventHandler = ScreenSpaceEventHandler(/*layer: layer*/)
+        // FIXME: eventaggregator view
+        //_view = view
         //listenToWheel(this, undefined);
         listenToPinch()
         listenMouseButtonDownUp(CameraEventType.LeftDrag)

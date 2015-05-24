@@ -13,18 +13,18 @@ class CubeMapFace {
     let texture: Int
     let target: Int
     let targetFace: Int
-    let pixelFormat: PixelFormat
-    let pixelDatatype: PixelDatatype
+    //let pixelFormat: PixelFormat
+    //let pixelDatatype: PixelDatatype
     private let size: Int
     private let preMultiplyAlpha: Bool
     private let flipY: Bool
     
-    init(texture: Int, target: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
+    init(texture: Int, target: Int, targetFace: Int/*, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype*/, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
         self.texture = texture
         self.target = target
         self.targetFace = targetFace
-        self.pixelFormat = pixelFormat
-        self.pixelDatatype = pixelDatatype
+        //self.pixelFormat = pixelFormat
+        //self.pixelDatatype = pixelDatatype
         self.size = size
         self.preMultiplyAlpha = preMultiplyAlpha
         self.flipY = flipY
@@ -110,12 +110,12 @@ class CubeMapFace {
         assert(xOffset + copyWidth <= size, "xOffset + source.width must be less than or equal to width")
         assert(yOffset + copyHeight <= size, "yOffset + source.height must be less than or equal to height")
     
-        assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
+        //assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
         
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(GLenum(target), GLuint(texture))
+        //glActiveTexture(GLenum(GL_TEXTURE0))
+        //glBindTexture(GLenum(target), GLuint(texture))
         // FIXME: glCopyTexSubImage2D(GLenum(targetFace), 0, GLsizei(xOffset), GLsizei(yOffset), GLsizei(framebufferXOffset), GLsizei(framebufferYOffset), GLsizei(copyWidth), GLsizei(copyHeight))
-        glBindTexture(GLenum(target), 0)
+        //glBindTexture(GLenum(target), 0)
     }
 
 }

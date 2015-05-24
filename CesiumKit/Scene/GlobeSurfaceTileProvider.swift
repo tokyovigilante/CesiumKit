@@ -258,6 +258,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         // And the tile render commands to the command list, sorted by texture count.
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {
+                // FIXME: Tileprovider
+                continue
                 addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
             }
         }
@@ -612,7 +614,7 @@ var northeastScratch = new Cartesian3();
         
         var viewMatrix = frameState.camera!.viewMatrix
         
-        var maxTextures = context.maximumTextureImageUnits
+        var maxTextures = 16//context.maximumTextureImageUnits
 
         let waterMaskTexture = surfaceTile.waterMaskTexture
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil

@@ -7,12 +7,30 @@
 //
 
 import UIKit
+import CesiumKit
 
 class CesiumViewController: UIViewController {
     
-    override func didReceiveMemoryWarning() {
+    private var _globe: CesiumGlobe!
+
+    private var _displayLink: CADisplayLink!
+    
+    @IBOutlet var metalView: MetalView!
+    
+    override func viewDidLoad() {
         
-        super.didReceiveMemoryWarning()
+        // create globe
+        let options = CesiumOptions(imageryProvider: nil)
+        
+        _globe = CesiumGlobe(layer: metalView.metalLayer, options: options)
+        
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        
+        _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
+        
+        _displayLink = CADisplayLink(target: self, selector: "render:")
+        _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
     }
     
     /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
@@ -31,15 +49,15 @@ class CesiumViewController: UIViewController {
     override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
         
     }*/
-}
-
-
-
-//helper extensions to pass arguments to GL land
-extension Array {
-    func size () -> Int {
-        return self.count * sizeofValue(self[0])
+    
+    func render (displayLink: CADisplayLink) {
+        _globe.render()
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
     }
 }
+
 
 
