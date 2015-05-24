@@ -648,54 +648,17 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         */
         return nil
     }
-
-    /**
-    * Creates a framebuffer with optional initial color, depth, and stencil attachments.
-    * Framebuffers are used for render-to-texture effects; they allow us to render to
-    * textures in one pass, and read from it in a later pass.
-    *
-    * @memberof Context
-    *
-    * @param {Object} [options] The initial framebuffer attachments as shown in the examplebelow.  The possible properties are <code>colorTextures</code>, <code>colorRenderbuffers</code>, <code>depthTexture</code>, <code>depthRenderbuffer</code>, <code>stencilRenderbuffer</code>, <code>depthStencilTexture</code>, and <code>depthStencilRenderbuffer</code>.
-    *
-    * @returns {Framebuffer} The created framebuffer.
-    *
-    * @exception {DeveloperError} Cannot have both color texture and color renderbuffer attachments.
-    * @exception {DeveloperError} Cannot have both a depth texture and depth renderbuffer attachment.
-    * @exception {DeveloperError} Cannot have both a depth-stencil texture and depth-stencil renderbuffer attachment.
-    * @exception {DeveloperError} Cannot have both a depth and depth-stencil renderbuffer.
-    * @exception {DeveloperError} Cannot have both a stencil and depth-stencil renderbuffer.
-    * @exception {DeveloperError} Cannot have both a depth and stencil renderbuffer.
-    * @exception {DeveloperError} The color-texture pixel-format must be a color format.
-    * @exception {DeveloperError} The depth-texture pixel-format must be DEPTH_COMPONENT.
-    * @exception {DeveloperError} The depth-stencil-texture pixel-format must be DEPTH_STENCIL.
-    * @exception {DeveloperError} The number of color attachments exceeds the number supported.
-    *
-    * @see Context#createTexture2D
-    * @see Context#createCubeMap
-    * @see Context#createRenderbuffer
-    *
-    * @example
-    * // Create a framebuffer with color and depth texture attachments.
-    * var width = context.canvas.clientWidth;
-    * var height = context.canvas.clientHeight;
-    * var framebuffer = context.createFramebuffer({
-    *   colorTextures : [context.createTexture2D({
-    *     width : width,
-    *     height : height,
-    *     pixelFormat : PixelFormat.RGBA
-    *   })],
-    *   depthTexture : context.createTexture2D({
-    *     width : width,
-    *     height : height,
-    *     pixelFormat : PixelFormat.DEPTH_COMPONENT,
-    *     pixelDatatype : PixelDatatype.UNSIGNED_SHORT
-    *   })
-    * });
-    */
-    func createFramebuffer(options: Framebuffer.Options) -> Framebuffer {
-        return Framebuffer(maximumColorAttachments: 16, options: options)
+    
+    func createCommandEncoder(passState: PassState? = nil) {
+        if _commandEncoder != nil {
+            _commandEncoder.endEncoding()
+        }
+        let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
+        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
+        assert(commandEncoder != nil, "Could not create command encoder")
+        _commandEncoder = commandEncoder!
     }
+    
 /*
 Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;
@@ -733,163 +696,15 @@ Context.prototype.createRenderbuffer = function(options) {
 var nextRenderStateId = 0;
 var renderStateCache = {};
 */
-/**
-* Validates and then finds or creates an immutable render state, which defines the pipeline
-* state for a {@link DrawCommand} or {@link ClearCommand}.  All inputs states are optional.  Omitted states
-* use the defaults shown in the example below.
-*
-* @memberof Context
-*
-* @param {Object} [renderState] The states defining the render state as shown in the example below.
-*
-* @exception {RuntimeError} renderState.lineWidth is out of range.
-* @exception {DeveloperError} Invalid renderState.frontFace.
-* @exception {DeveloperError} Invalid renderState.cull.face.
-* @exception {DeveloperError} scissorTest.rectangle.width and scissorTest.rectangle.height must be greater than or equal to zero.
-* @exception {DeveloperError} renderState.depthRange.near can't be greater than renderState.depthRange.far.
-* @exception {DeveloperError} renderState.depthRange.near must be greater than or equal to zero.
-* @exception {DeveloperError} renderState.depthRange.far must be less than or equal to zero.
-* @exception {DeveloperError} Invalid renderState.depthTest.func.
-* @exception {DeveloperError} renderState.blending.color components must be greater than or equal to zero and less than or equal to one
-* @exception {DeveloperError} Invalid renderState.blending.equationRgb.
-* @exception {DeveloperError} Invalid renderState.blending.equationAlpha.
-* @exception {DeveloperError} Invalid renderState.blending.functionSourceRgb.
-* @exception {DeveloperError} Invalid renderState.blending.functionSourceAlpha.
-* @exception {DeveloperError} Invalid renderState.blending.functionDestinationRgb.
-* @exception {DeveloperError} Invalid renderState.blending.functionDestinationAlpha.
-* @exception {DeveloperError} Invalid renderState.stencilTest.frontFunction.
-* @exception {DeveloperError} Invalid renderState.stencilTest.backFunction.
-* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.fail.
-* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.zFail.
-* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.zPass.
-* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.fail.
-* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.zFail.
-* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.zPass.
-* @exception {DeveloperError} renderState.viewport.width must be greater than or equal to zero.
-* @exception {DeveloperError} renderState.viewport.width must be less than or equal to the maximum viewport width.
-* @exception {DeveloperError} renderState.viewport.height must be greater than or equal to zero.
-* @exception {DeveloperError} renderState.viewport.height must be less than or equal to the maximum viewport height.
-*
-* @example
-* var defaults = {
-*     frontFace : WindingOrder.COUNTER_CLOCKWISE,
-*     cull : {
-*         enabled : false,
-*         face : CullFace.BACK
-*     },
-*     lineWidth : 1,
-*     polygonOffset : {
-*         enabled : false,
-*         factor : 0,
-*         units : 0
-*     },
-*     scissorTest : {
-*         enabled : false,
-*         rectangle : {
-*             x : 0,
-*             y : 0,
-*             width : 0,
-*             height : 0
-*         }
-*     },
-*     depthRange : {
-*         near : 0,
-*         far : 1
-*     },
-*     depthTest : {
-*         enabled : false,
-*         func : DepthFunction.LESS
-*      },
-*     colorMask : {
-*         red : true,
-*         green : true,
-*         blue : true,
-*         alpha : true
-*     },
-*     depthMask : true,
-*     stencilMask : ~0,
-*     blending : {
-*         enabled : false,
-*         color : {
-*             red : 0.0,
-*             green : 0.0,
-*             blue : 0.0,
-*             alpha : 0.0
-*         },
-*         equationRgb : BlendEquation.ADD,
-*         equationAlpha : BlendEquation.ADD,
-*         functionSourceRgb : BlendFunction.ONE,
-*         functionSourceAlpha : BlendFunction.ONE,
-*         functionDestinationRgb : BlendFunction.ZERO,
-*         functionDestinationAlpha : BlendFunction.ZERO
-*     },
-*     stencilTest : {
-*         enabled : false,
-*         frontFunction : StencilFunction.ALWAYS,
-*         backFunction : StencilFunction.ALWAYS,
-*         reference : 0,
-*         mask : ~0,
-*         frontOperation : {
-*             fail : StencilOperation.KEEP,
-*             zFail : StencilOperation.KEEP,
-*             zPass : StencilOperation.KEEP
-*         },
-*         backOperation : {
-*             fail : StencilOperation.KEEP,
-*             zFail : StencilOperation.KEEP,
-*             zPass : StencilOperation.KEEP
-*         }
-*     },
-*     sampleCoverage : {
-*         enabled : false,
-*         value : 1.0,
-*         invert : false
-*      }
-* };
-*
-* // Same as just context.createRenderState().
-* var rs = context.createRenderState(defaults);
-*
-* @see DrawCommand
-* @see ClearCommand
-*/
-    /*func createRenderState() -> RenderState {
-        return RenderState()
-    }*/
 
 
-    func validateFramebuffer(framebuffer: Framebuffer) {
-        if _validateFramebuffer {
-            var status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
-            
-            if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
-                var message: String
-                
-                switch (status) {
-                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT):
-                    message = "Framebuffer is not complete.  Incomplete attachment: at least one attachment point with a renderbuffer or texture attached has its attached object no longer in existence or has an attached image with a width or height of zero, or the color attachment point has a non-color-renderable image attached, or the depth attachment point has a non-depth-renderable image attached, or the stencil attachment point has a non-stencil-renderable image attached.  Color-renderable formats include GL_RGBA4, GL_RGB5_A1, and GL_RGB565. GL_DEPTH_COMPONENT16 is the only depth-renderable format. GL_STENCIL_INDEX8 is the only stencil-renderable format."
-                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS):
-                    message = "Framebuffer is not complete.  Incomplete dimensions: not all attached images have the same width and height."
-                case GLenum(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT):
-                    message = "Framebuffer is not complete.  Missing attachment: no images are attached to the framebuffer."
-                case GLenum(GL_FRAMEBUFFER_UNSUPPORTED):
-                    message = "Framebuffer is not complete.  Unsupported: the combination of internal formats of the attached images violates an implementation-dependent set of restrictions."
-                default:
-                    message = "Unknown framebuffer error"
-                }
-                //assertionFailure(message)
-            }
-        }
-    }
-
+    
     func beginFrame() {
         _drawable = layer.nextDrawable()
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
         
         _commandBuffer = _commandQueue.commandBuffer()
-        _commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
-
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
@@ -899,37 +714,6 @@ var renderStateCache = {};
             renderState.partialApply(previousState, passState: passState)
         }
         // else same render state as before so state is already applied.
-    }
-/*
-var scratchBackBufferArray;
-// this check must use typeof, not defined, because defined doesn't work with undeclared variables.
-if (typeof WebGLRenderingContext !== 'undefined') {
-    scratchBackBufferArray = [WebGLRenderingContext.BACK];
-}
-*/
-    func bindFramebuffer(framebuffer: Framebuffer?) {
-
-        if (framebuffer !== _currentFramebuffer) {
-            _currentFramebuffer = framebuffer
-            var buffers = [GLuint]()
-            
-            if let framebuffer = framebuffer {
-                framebuffer.bind()
-                validateFramebuffer(framebuffer)
-                
-                // TODO: Need a way for a command to give what draw buffers are active.
-                buffers = framebuffer.activeColorAttachments
-                
-                /*if drawBuffers && buffers.count > 0 {
-                    glDrawBuffers(GLsizei(buffers.count), buffers)
-                }*/
-            } else {
-                if let defaultFrameBufferObject = defaultFrameBufferObject {
-                    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLuint(defaultFrameBufferObject))
-                }
-            }
-
-        }
     }
 
     func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState? = nil) {
@@ -967,16 +751,16 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             passDescriptor.stencilAttachment = nil
         }
     }
-
+    
     func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
         
+
         /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
         
         if framebuffer != nil && rs.depthTest.enabled {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
         
-        bindFramebuffer(framebuffer)
         var sp = shaderProgram ?? drawCommand.shaderProgram
         //sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
@@ -1025,11 +809,10 @@ if (typeof WebGLRenderingContext !== 'undefined') {
     }
 
     func endFrame () {
-        commandEncoder!.endEncoding()
-
+        _commandEncoder.endEncoding()
         _commandBuffer.presentDrawable(_drawable)
         _commandBuffer.commit()
-        
+        _commandEncoder = nil
         
         /*
         var

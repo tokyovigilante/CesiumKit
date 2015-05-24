@@ -954,6 +954,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
         _clearColorCommand.execute(context: context, passState: nil)
         
+        context.createCommandEncoder(passState: nil)
+        
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
         //var numFrustums = frustumCommandsList.length;
@@ -979,6 +981,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             scene._fxaa.clear(context, passState, clearColor);
         }
         */
+        
         var opaqueFramebuffer = passState.framebuffer
         /*if (useOIT) {
             opaqueFramebuffer = scene._oit.getColorFramebuffer();
@@ -1029,7 +1032,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         } else {*/
             executeTranslucentCommands = executeTranslucentCommandsSorted()
         //}*/
-        
+
         // Execute commands in each frustum in back to front order
         for (index, frustumCommands) in enumerate(_frustumCommandsList) {
             frustum.near = frustumCommands.near
@@ -1042,8 +1045,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             
             context.uniformState.updateFrustum(frustum)
             //_depthClearCommand.execute(context: context, passState: passState)
-            
-            
+            //context.createCommandEncoder(passState: nil)
+
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
             var numPasses = Pass.Translucent.rawValue
@@ -1073,6 +1076,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     }
 
     func executeOverlayCommands(passState: PassState) {
+        context.createCommandEncoder(passState: nil)
         for command in _overlayCommandList {
             command.execute(context: context, passState: passState, renderState: nil, shaderProgram: nil)
         }
