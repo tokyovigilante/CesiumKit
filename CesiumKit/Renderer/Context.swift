@@ -37,6 +37,7 @@ class Context {
     
     private var _drawable: CAMetalDrawable!
     private var _commandBuffer: MTLCommandBuffer!
+    private var _commandEncoder: MTLCommandEncoder!
 
     /*var library: MTLLibrary
     var pipeline: MTLRenderPipelineState
@@ -885,7 +886,10 @@ var renderStateCache = {};
         _drawable = layer.nextDrawable()
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
+        
         _commandBuffer = _commandQueue.commandBuffer()
+        _commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
+
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
@@ -995,7 +999,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         let sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
     
-        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         /*if let indexBuffer = va!.indexBuffer {
             offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
             count = count ?? indexBuffer.numberOfIndices
@@ -1009,7 +1012,6 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
             va!._unBind()
         }*/
-        commandEncoder!.endEncoding()
     }
 
     func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
@@ -1020,12 +1022,9 @@ if (typeof WebGLRenderingContext !== 'undefined') {
         
         beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
         continueDraw(drawCommand, shaderProgram: shaderProgram)
-        ///framebuffer?.unbind()
     }
 
     func endFrame () {
-        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
-
         commandEncoder!.endEncoding()
 
         _commandBuffer.presentDrawable(_drawable)
