@@ -25,7 +25,7 @@ class CesiumViewController: UIViewController {
         _globe = CesiumGlobe(layer: metalView.metalLayer, options: options)
         
         //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         

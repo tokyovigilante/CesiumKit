@@ -652,11 +652,11 @@ class Globe {
         
         _mode = mode
 
-        _northPoleCommand.renderState = _rsColorWithoutDepthTest
-        _southPoleCommand.renderState = _rsColorWithoutDepthTest
+        /*_northPoleCommand.renderState = _rsColorWithoutDepthTest
+        _southPoleCommand.renderState = _rsColorWithoutDepthTest*/
         
         // update depth plane
-        var depthQuad = computeDepthQuad(frameState: frameState)
+        /*var depthQuad = computeDepthQuad(frameState: frameState)
         var depthIndices = [0, 1, 2, 2, 1, 3]
         
         // depth plane
@@ -681,7 +681,7 @@ class Globe {
         
         if _depthCommand.shaderProgram == nil {
              _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderString: Shaders["GlobeVSDepth"]!, fragmentShaderString: Shaders["GlobeFSDepth"]!, attributeLocations: ["position" : 0])
-        }
+        }*/
         
         
         let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
@@ -711,12 +711,12 @@ class Globe {
             +        }*/
         }
         
-        if (_northPoleCommand.shaderProgram == nil || _southPoleCommand.shaderProgram == nil) {
+        /*if (_northPoleCommand.shaderProgram == nil || _southPoleCommand.shaderProgram == nil) {
             var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderString: Shaders["GlobeVSPole"]!, fragmentShaderString: Shaders["GlobeFSPole"]!, attributeLocations: terrainAttributeLocations)
             
             _northPoleCommand.shaderProgram = poleShaderProgram
             _southPoleCommand.shaderProgram = poleShaderProgram
-        }
+        }*/
     
         _occluder.cameraPosition = frameState.camera!.positionWC
     
@@ -758,9 +758,9 @@ class Globe {
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {
-                    commandList.append(_clearDepthCommand)
+                    //commandList.append(_clearDepthCommand)
                     if (mode == .Scene3D) {
-                        commandList.append(_depthCommand)
+                        //commandList.append(_depthCommand)
                     }
                 }
             }
@@ -769,7 +769,7 @@ class Globe {
         if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            commandList.append(_depthCommand)
+            //commandList.append(_depthCommand)
         }
     }
 

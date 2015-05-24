@@ -259,7 +259,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {
                 // FIXME: Tileprovider
-                continue
                 addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
             }
         }
@@ -747,8 +746,13 @@ var northeastScratch = new Cartesian3();
             uniformMap.dayTextures.removeAll()
 
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
+
                 let tileImagery = tileImageryCollection[imageryIndex]
                 let imagery = tileImagery.readyImagery
+                // fixme remove
+                if imagery!.texture == nil {
+                    return
+                }
                 ++imageryIndex
                 
                 if imagery == nil || imagery!.state != .Ready || imagery!.imageryLayer.alpha() == 0.0 {

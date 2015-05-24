@@ -344,7 +344,8 @@ class ShaderProgram {
     func setUniforms (uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
         // TODO: Performance
         if let uniformMap = uniformMap {
-            for uniform in _manualUniforms! {
+            // FIXME: uniforms
+            /*for uniform in _manualUniforms! {
                 if uniform.isFloat {
                     if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
                         (uniform as! FloatUniform).setFloatValues(uniformFloatFunc(map: uniformMap))
@@ -357,7 +358,7 @@ class ShaderProgram {
                     assertionFailure("no matching uniform for \(uniform.name)")
                     }*/
                 }
-            }
+            }*/
         }
 
         for automaticUniform in _automaticUniforms {

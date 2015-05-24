@@ -1049,7 +1049,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             var numPasses = Pass.Translucent.rawValue
             for pass in 0..<numPasses {
                 for command in frustumCommands.commands[pass]! {
-                    //executeCommand(command, passState: passState)
+                    executeCommand(command, passState: passState)
                 }
             }
             

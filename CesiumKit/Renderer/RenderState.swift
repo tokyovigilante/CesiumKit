@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  RenderState.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 15/06/14.
