@@ -660,6 +660,60 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         _commandEncoder = commandEncoder!
     }
     
+    struct
+    
+    struct Vertex {
+        var position3DAndHeight: Cartesian4
+        var texCoordsAndEncodedNormals: Cartesian3
+    }
+    
+    func createRenderPipeline() {
+        let library = _device.newDefaultLibrary()!
+        let vertexFunction = library.newFunctionWithName("globeVS")
+        let fragmentFunction = library.newFunctionWithName("globeFS")
+        
+        // position3DandHeight
+        let vertexDescriptor = MTLVertexDescriptor()
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].format = .Float4
+        vertexDescriptor.attributes[0].bufferIndex = 0
+        
+        // texCoordandEncodedNormals
+        vertexDescriptor.attributes[1].offset = sizeof(Float32) * 4
+        vertexDescriptor.attributes[1].format = .Float3
+        vertexDescriptor.attributes[1].bufferIndex = 0
+        
+        vertexDescriptor.layouts[0].stepFunction = .PerVertex
+        vertexDescriptor.layouts[0].stride = sizeof(Vertex)
+        
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        
+        var error: NSErrorPointer = nil
+        pipeline = device.newRenderPipelineStateWithDescriptor(pipelineDescriptor, error:error)
+        if (pipeline == nil) {
+            print("Error occurred when creating pipeline \(error)")
+        }
+        
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.depthCompareFunction = .Less
+        depthStencilDescriptor.depthWriteEnabled = true
+        depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
+        
+        commandQueue = device.newCommandQueue()
+        
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.minFilter = .Nearest
+        samplerDescriptor.magFilter = .Linear
+        
+        samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
+    }
+
+    
 /*
 Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;

@@ -197,6 +197,7 @@ class Globe {
         
         _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         ShaderSource()
+        
         _surfaceShaderSet = GlobeSurfaceShaderSet(
             baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
             baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),

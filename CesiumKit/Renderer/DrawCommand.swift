@@ -14,7 +14,7 @@ protocol DrawCommandOwner: class {}
 * @private
 */
 class DrawCommand: Command {
-    
+        
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
     * <p>
