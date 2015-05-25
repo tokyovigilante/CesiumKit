@@ -55,7 +55,6 @@
 		9410139019FB037D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		9410139119FB037D00FFAD81 /* Framebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F80A194DA8A400012DC4 /* Framebuffer.swift */; };
 		9410139419FB037D00FFAD81 /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
-		9410139519FB037D00FFAD81 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
 		9410139619FB037D00FFAD81 /* RenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F818194DB80500012DC4 /* RenderState.swift */; };
 		9410139719FB037D00FFAD81 /* Sampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540426199F478F00012DC4 /* Sampler.swift */; };
 		9410139819FB037D00FFAD81 /* ShaderCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0211956F53700355D2C /* ShaderCache.swift */; };
@@ -147,7 +146,6 @@
 		9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		9413B7E31A37B93D00FFAD81 /* Framebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F80A194DA8A400012DC4 /* Framebuffer.swift */; };
 		9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
-		9413B7E71A37B93D00FFAD81 /* IndexBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */; };
 		9413B7E81A37B93D00FFAD81 /* PassState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F808194DA7F800012DC4 /* PassState.swift */; };
 		9413B7E91A37B93D00FFAD81 /* RenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F818194DB80500012DC4 /* RenderState.swift */; };
 		9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540426199F478F00012DC4 /* Sampler.swift */; };
@@ -496,7 +494,6 @@
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
-		94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexBuffer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -634,7 +631,6 @@
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				941E2162199EDC3600012DC4 /* ImageBuffer.swift */,
-				94FC57D319CCEBFE00012DC4 /* IndexBuffer.swift */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
 				94540426199F478F00012DC4 /* Sampler.swift */,
@@ -1022,7 +1018,6 @@
 				9413B79F1A37B92900FFAD81 /* Array.swift in Sources */,
 				9413B7D41A37B93100FFAD81 /* WebMercatorProjection.swift in Sources */,
 				9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */,
-				9413B7E71A37B93D00FFAD81 /* IndexBuffer.swift in Sources */,
 				9413B7A31A37B93100FFAD81 /* Cartesian2.swift in Sources */,
 				9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */,
 				9413B7AF1A37B93100FFAD81 /* GeographicProjection.swift in Sources */,
@@ -1170,7 +1165,6 @@
 				9410136019FB033C00FFAD81 /* Cartesian2.swift in Sources */,
 				9410136619FB037500FFAD81 /* ComponentDatatype.swift in Sources */,
 				94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */,
-				9410139519FB037D00FFAD81 /* IndexBuffer.swift in Sources */,
 				9413B8421A37B94800FFAD81 /* TileDiscardPolicy.swift in Sources */,
 				9410136A19FB037500FFAD81 /* Event.swift in Sources */,
 				9413B8291A37B94800FFAD81 /* GlobeSurfaceTile.swift in Sources */,
