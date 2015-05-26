@@ -222,8 +222,38 @@ class Context {
         return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
-    func createBuffer(target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
-        return Buffer(target: target, array: array, sizeInBytes: sizeInBytes, usage: usage)
+    func createBuffer(array: [SerializedType]? = nil, sizeInBytes: Int? = nil) -> MTLBuffer {
+        
+        assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
+        
+        let bufferSize: Int
+        if array != nil {
+            bufferSize = array!.sizeInBytes
+        } else {
+            bufferSize = sizeInBytes!
+        }
+        assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
+        
+        let buffer: MTLBuffer
+
+        if array != nil {
+            buffer = _device.newBufferWithBytesNoCopy(array!.data().bytes, length: bufferSize, options: nil, deallocator: nil)
+        } else {
+            buffer = _device.newBufferWithLength(bufferSize, options: nil)
+        }
+        /*
+        
+
+        -
+        -    func copyFromArrayView (arrayView: [SerializedType], offsetInBytes: Int = 0) {
+            -
+            -        assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
+            -        
+            -        glBindBuffer(target.toGL(), buffer)
+            -        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.data().bytes)
+            -        glBindBuffer(target.toGL(), 0)
+            -    }*/
+        return buffer
     }
 
     /**
@@ -659,8 +689,6 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
     }
-    
-    struct
     
     struct Vertex {
         var position3DAndHeight: Cartesian4

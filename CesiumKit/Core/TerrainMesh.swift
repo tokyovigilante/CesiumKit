@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import Metal
 
 /**
 * A mesh plus related metadata for a single tile of terrain.  Instances of this type are
@@ -58,7 +58,7 @@ struct TerrainMesh {
     * Index buffers (if any) generated from indices.
     * @type {Dictionary<String, IndexBuffer>}
     */
-    var indexBuffer: IndexBuffer? = nil //s = [String: IndexBuffer]()
+    var indexBuffer: MTLBuffer? = nil //s = [String: IndexBuffer]()
     
     /**
     * The lowest height in the tile, in meters above the ellipsoid.

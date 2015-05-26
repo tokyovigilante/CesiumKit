@@ -87,7 +87,7 @@ class Framebuffer {
     
     private var _depthStencilTexture: Texture? = nil
 
-    private var _depthStencilRenderbuffer: Buffer? = nil
+    //private var _depthStencilRenderbuffer: Buffer? = nil
 
     
     init (maximumColorAttachments: GLint, options: Options = Options()) {
@@ -270,7 +270,7 @@ class Framebuffer {
     */
     var hasDepthAttachment: Bool {
         get {
-            return _depthTexture != nil || _depthRenderbuffer != nil || _depthStencilTexture != nil || _depthStencilRenderbuffer != nil
+            return false//return _depthTexture != nil || _depthRenderbuffer != nil || _depthStencilTexture != nil || _depthStencilRenderbuffer != nil
         }
     }
     
