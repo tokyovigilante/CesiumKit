@@ -98,8 +98,7 @@ class HeightmapTessellator {
     * });
     */
     class func computeVertices (
-        inout vertices: [Float],
-        heightmap: [SerializedType],
+        #heightmap: [UInt16],
         height: Int,
         width: Int,
         skirtHeight: Double,
@@ -109,7 +108,7 @@ class HeightmapTessellator {
         relativeToCenter: Cartesian3 = Cartesian3.zero(),
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
-        ) () -> (maximumHeight: Double, minimumHeight: Double) {
+        ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
         
             // This function tends to be a performance hotspot for terrain rendering,
             // so it employs a lot of inlining and unrolling as an optimization.
@@ -176,6 +175,10 @@ class HeightmapTessellator {
                 ++endCol
             }
             
+            let vertexCount = (endRow - startRow) * (endCol - startCol) * 6
+            
+            var vertices = [Float](count: vertexCount, repeatedValue: 0.0)
+            
             for (var rowIndex = startRow; rowIndex < endRow; ++rowIndex) {
                 var row = rowIndex
                 if (row < 0) {
@@ -220,17 +223,17 @@ class HeightmapTessellator {
                     
                     var heightSample: Double
                     if (elementsPerHeight == 1) {
-                        heightSample = heightmap[terrainOffset].doubleValue()
+                        heightSample = Double(heightmap[terrainOffset])
                     } else {
                         heightSample = 0
                         
                         if isBigEndian {
                             for (var elementOffset = 0; elementOffset < elementsPerHeight; ++elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
+                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         } else {
                             for (var elementOffset = elementsPerHeight - 1; elementOffset >= 0; --elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
+                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         }
                     }
@@ -272,7 +275,8 @@ class HeightmapTessellator {
             
             return (
                 maximumHeight : maximumHeight,
-                minimumHeight : minimumHeight
+                minimumHeight : minimumHeight,
+                vertices: vertices
             )
     }
 

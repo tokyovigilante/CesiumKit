@@ -28,9 +28,9 @@ class VertexAttributes {
     
     var strideInBytes: Int
     
-    var vertexAttrib: (attr: VertexAttributes) -> ()
+    //var vertexAttrib: (attr: VertexAttributes) -> ()
     
-    var disableVertexAttribArray: (attr: VertexAttributes) -> ()
+    //var disableVertexAttribArray: (attr: VertexAttributes) -> ()
     
     init (
         index: Int,
@@ -51,8 +51,8 @@ class VertexAttributes {
             self.offsetInBytes = offsetInBytes
             self.strideInBytes = strideInBytes
             
-            vertexAttrib = { (attr: VertexAttributes) in }
-            disableVertexAttribArray = { (attr: VertexAttributes) in }
+            //vertexAttrib = { (attr: VertexAttributes) in }
+            //disableVertexAttribArray = { (attr: VertexAttributes) in }
     }
     
     func copy() -> VertexAttributes {

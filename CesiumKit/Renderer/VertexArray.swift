@@ -18,11 +18,9 @@ class VertexArray {
     
     var vertexCount: Int
     
-    private var _vao: GLuint? = nil
-    
-    let indexBuffer: IndexBuffer?
+    let indexBuffer: Buffer?
 
-    init(attributes: [VertexAttributes], indexBuffer: IndexBuffer?) {
+    init(attributes: [VertexAttributes], indexBuffer: Buffer?) {
         
         var vaAttributes = [VertexAttributes]()
         var numberOfVertices = 1  // if every attribute is backed by a single value
@@ -38,8 +36,9 @@ class VertexArray {
             
             if attribute.vertexBuffer != nil {
                 // This assumes that each vertex buffer in the vertex array has the same number of vertices.
-                var bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize()
-                numberOfVertices = attribute.vertexBuffer!.sizeInBytes / bytes
+                var bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize
+                
+                numberOfVertices = attribute.vertexBuffer!.length / bytes
                 break
             }
         }
@@ -57,12 +56,12 @@ class VertexArray {
         self._attributes = vaAttributes
         
         // Setup VAO
-        var vao: GLuint = 0
+        /*var vao: GLuint = 0
         glGenVertexArrays(1, &vao)
         glBindVertexArray(vao)
         bind()
         glBindVertexArray(0)
-        _vao = vao
+        _vao = vao*/
     }
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
@@ -82,24 +81,24 @@ class VertexArray {
         }*/
         var attr = attribute.copy()
         
-        if (hasVertexBuffer) {
+        if hasVertexBuffer {
             // Common case: vertex buffer for per-vertex data
-            attr.vertexAttrib = { (attr: VertexAttributes) in
-                glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
+            //attr.vertexAttrib = { (attr: VertexAttributes) in
+                /*glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
                 glVertexAttribPointer(
                     GLuint(attr.index),
                     GLint(attr.componentsPerAttribute),
                     attr.componentDatatype.toGL(),
                     attr.normalize ? GLboolean(GL_TRUE) : GLboolean(GL_FALSE),
                     GLsizei(attr.strideInBytes),
-                    UnsafePointer<Void>(bitPattern: attr.offsetInBytes)
-                )
-                glEnableVertexAttribArray(GLuint(attr.index))
-            }
+                    UnsafePointer<Void>(bitPattern: attr.offsetInBytes)*/
+                //)
+                //glEnableVertexAttribArray(GLuint(attr.index))
+            //}
             
-            attr.disableVertexAttribArray = { (attr: VertexAttributes) in
-                glDisableVertexAttribArray(GLuint(attr.index))
-            }
+            //attr.disableVertexAttribArray = { (attr: VertexAttributes) in
+            //    glDisableVertexAttribArray(GLuint(attr.index))
+            //}
         } else {
             // Less common case: value array for the same data for each vertex
             /*switch (attr.componentsPerAttribute) {
@@ -134,14 +133,14 @@ class VertexArray {
     
     private func bind() {
         
-        for attribute in _attributes {
+        /*for attribute in _attributes {
             if attribute.enabled {
                 attribute.vertexAttrib(attr: attribute)
             }
-        }
+        }*/
 
         if indexBuffer != nil {
-            glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
+            //glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
         }
     }
 
@@ -168,15 +167,15 @@ return this._indexBuffer;
     }
 
     func _bind() {
-        if _vao != nil {
+        /*if _vao != nil {
             glBindVertexArray(_vao!)
         } else {
                 bind()
-            }
+            }*/
     }
 
     func _unBind() {
-        if _vao != nil {
+        /*if _vao != nil {
             glBindVertexArray(0)
         } else {
             for attribute in _attributes {
@@ -185,15 +184,15 @@ return this._indexBuffer;
                 }
             }
             if indexBuffer != nil {
-                glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), 0)
+                //glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), 0)
             }
-        }
+        }*/
     }
 
     deinit {
-        if _vao != nil {
+        /*if _vao != nil {
             glDeleteVertexArrays(1, &_vao!)
-        }
+        }*/
     }
 }
 

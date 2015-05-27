@@ -167,11 +167,11 @@ class Geometry {
         var numberOfVertices = -1
         
         for i in 0...5 {
-            if let attributeComponentCount = attributes[i]?.values?.count, componentsPerAttribute = attributes[i]?.componentsPerAttribute {
+            /*if let attributeComponentCount = attributes[i]?.values?.count, componentsPerAttribute = attributes[i]?.componentsPerAttribute {
                 let num = attributeComponentCount / componentsPerAttribute
                 assert(numberOfVertices == num || numberOfVertices == -1, "All attribute lists must have the same number of attributes")
                 numberOfVertices = num
-            }
+            }*/
         }
         return numberOfVertices
     }

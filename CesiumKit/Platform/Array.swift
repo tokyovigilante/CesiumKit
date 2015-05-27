@@ -16,8 +16,8 @@ public func deleteDuplicates<S:ExtensibleCollectionType where S.Generator.Elemen
 }
 
 extension Array {
-    func size () -> Int {
-        return self.count * sizeofValue(self[0])
+    var sizeInBytes: Int {
+        return self.count * strideofValue(self[0])
     }
 }
 

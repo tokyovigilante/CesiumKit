@@ -46,7 +46,7 @@ class TileTerrain {
         data = nil
         mesh = nil
         
-        var indexBuffer: IndexBuffer? = nil
+        var indexBuffer: Buffer? = nil
         if vertexArray != nil {
             let indexBuffer = vertexArray!.indexBuffer
             vertexArray = nil
@@ -184,17 +184,14 @@ class TileTerrain {
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
         var terrainMesh = mesh!
-        let buffer = context.createVertexBuffer(
-            array: SerializedType.fromFloatArray(terrainMesh.vertices),
-            usage: BufferUsage.StaticDraw)
-
+        let buffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: terrainMesh.vertices.sizeInBytes)
         var stride: Int
         var numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
-            stride = 7 * datatype.elementSize()
+            stride = 7 * datatype.elementSize
             numTexCoordComponents = 3
         } else {
-            stride = 6 * datatype.elementSize()
+            stride = 6 * datatype.elementSize
             numTexCoordComponents = 2
         }
         
@@ -213,7 +210,7 @@ class TileTerrain {
                 vertexBuffer: buffer,
                 componentsPerAttribute : numTexCoordComponents,
                 componentDatatype: datatype,
-                offsetInBytes : position3DAndHeightLength * datatype.elementSize(),
+                offsetInBytes : position3DAndHeightLength * datatype.elementSize,
                 strideInBytes : stride)
         ]
         
@@ -223,10 +220,11 @@ class TileTerrain {
             //let indices = terrainMesh.indices
             //let indexDatatype = vertices.= 2) ?  IndexDatatype.UNSIGNED_SHORT : IndexDatatype.UNSIGNED_INT;
             //indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, indexDatatype);
-            indexBuffer = context.createIndexBuffer(
-                array: SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
-                usage: .StaticDraw,
-                indexDatatype: .UnsignedShort)
+            indexBuffer = context.createBuffer(
+                array: terrainMesh.indices,
+                componentDatatype: ComponentDatatype.UnsignedShort,
+                sizeInBytes: terrainMesh.indices.sizeInBytes
+            )
             terrainMesh.indexBuffer = indexBuffer
         }
         vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)

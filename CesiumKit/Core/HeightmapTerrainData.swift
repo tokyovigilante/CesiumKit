@@ -83,7 +83,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     * @type {Uint8Array|Image|Canvas}
     */
     
-    private let _buffer: [SerializedType]
+    private let _buffer: [UInt16]
     
     private let _width: Int
     
@@ -94,7 +94,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     private let _structure: HeightmapTessellator.Structure
         
     init (
-        buffer: [SerializedType],
+        buffer: [UInt16],
         width: Int,
         height: Int,
         childTileMask: Int = 15,
@@ -202,11 +202,8 @@ class HeightmapTerrainData: TerrainData, Equatable {
             arrayWidth += 2
             arrayHeight += 2
         }
-        
-        var vertices = [Float](count: arrayWidth * arrayHeight * numberOfAttributes, repeatedValue: 0.0)
-        
+                
         let statistics = HeightmapTessellator.computeVertices(
-            &vertices,
             heightmap: _buffer,
             height: _height,
             width: _width,
@@ -216,14 +213,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
             isGeographic: tilingScheme is GeographicTilingScheme,
             relativeToCenter: center,
             ellipsoid: ellipsoid,
-            structure: _structure)()
-        let boundingSphere3D = BoundingSphere.fromVertices(vertices, center: center, stride: numberOfAttributes)
+            structure: _structure)
+        let boundingSphere3D = BoundingSphere.fromVertices(statistics.vertices, center: center, stride: numberOfAttributes)
         
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
-        let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: vertices, stride: numberOfAttributes, center: center)
+        let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: statistics.vertices, stride: numberOfAttributes, center: center)
         return TerrainMesh(
             center: center,
-            vertices: vertices,
+            vertices: statistics.vertices,
             indices: EllipsoidTerrainProvider.getRegularGridIndices(width: arrayWidth, height: arrayHeight),
             minimumHeight: statistics.minimumHeight,
             maximumHeight: statistics.maximumHeight,
@@ -303,7 +300,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         // Copy the relevant posts.
         var numberOfHeights = upsampledWidth * upsampledHeight
         var numberOfElements = numberOfHeights * _structure.stride
-        var heights = [SerializedType](count: numberOfElements, repeatedValue: .Float32(0.0))
+        var heights = [UInt16](count: numberOfElements, repeatedValue: 0)
         
         var outputIndex = 0
         
@@ -312,14 +309,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
                 for j in leftInteger...rightInteger {
                     var index = (j * _width + i) * _structure.stride
                     for k in 0..<_structure.stride {
-                        heights[outputIndex++] = .Float32(sourceHeights[index + k].floatValue())
+                        heights[outputIndex++] = sourceHeights[index + k]
                     }
                 }
             }
         } else {
             for j in topInteger...bottomInteger {
                 for i in leftInteger...rightInteger {
-                    heights[outputIndex++] = .Float32(sourceHeights[j * _width + i].floatValue())
+                    heights[outputIndex++] = sourceHeights[j * _width + i]
                 }
             }
         }
@@ -339,7 +336,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
 
         let numberOfElements = _width * _height * _structure.stride
         
-        var heights = [SerializedType](count: numberOfElements, repeatedValue: .Float64(0.0))
+        var heights = [Double](count: numberOfElements, repeatedValue: 0.0)
 
         // PERFORMANCE_IDEA: don't recompute these rectangles - the caller already knows them.
         let sourceRectangle = tilingScheme.tileXYToRectangle(x: thisX, y: thisY, level: thisLevel)
@@ -403,19 +400,19 @@ class HeightmapTerrainData: TerrainData, Equatable {
                         time: Double(i) / Double(_width - 1)
                     )
 
-                    heights[j * _width + i] = .Float64(interpolateHeight2(
+                    heights[j * _width + i] = interpolateHeight2(
                         sourceHeights: sourceHeights,
                         sourceRectangle: sourceRectangle,
                         width: _width,
                         height: _height,
                         longitude: longitude,
-                        latitude: latitude)
+                        latitude: latitude
                     )
                 }
             }
         }
         return HeightmapTerrainData(
-            buffer: heights,
+            buffer: heights.map({ UInt16($0) }),
             width: _width,
             height: _height,
             childTileMask: 0,
@@ -424,7 +421,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         )
     }
     
-    private func interpolateHeight2(#sourceHeights: [SerializedType], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
+    private func interpolateHeight2(#sourceHeights: [UInt16], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
         let fromWest = (longitude - sourceRectangle.west) * Double(width - 1) / (sourceRectangle.east - sourceRectangle.west)
         let fromSouth = (latitude - sourceRectangle.south) * Double(height - 1) / (sourceRectangle.north - sourceRectangle.south)
         
@@ -448,15 +445,15 @@ class HeightmapTerrainData: TerrainData, Equatable {
         southInteger = height - 1 - southInteger
         northInteger = height - 1 - northInteger
         
-        let southwestHeight = (sourceHeights[southInteger * width + westInteger]).doubleValue()
-        let southeastHeight = (sourceHeights[southInteger * width + eastInteger]).doubleValue()
-        let northwestHeight = (sourceHeights[northInteger * width + westInteger]).doubleValue()
-        let northeastHeight = (sourceHeights[northInteger * width + eastInteger]).doubleValue()
+        let southwestHeight = Double(sourceHeights[southInteger * width + westInteger])
+        let southeastHeight = Double(sourceHeights[southInteger * width + eastInteger])
+        let northwestHeight = Double(sourceHeights[northInteger * width + westInteger])
+        let northeastHeight = Double(sourceHeights[northInteger * width + eastInteger])
         
         return triangleInterpolateHeight(dX: dx, dY: dy, southwestHeight: southwestHeight, southeastHeight: southeastHeight, northwestHeight: northwestHeight, northeastHeight: northeastHeight)
     }
     
-    private func interpolateHeightWithStride(#sourceHeights: [SerializedType], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
+    private func interpolateHeightWithStride(#sourceHeights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
         let fromWest = (longitude - sourceRectangle.west) * (Double(width) - 1.0) / (sourceRectangle.east - sourceRectangle.west)
         let fromSouth = (latitude - sourceRectangle.south) * (Double(height) - 1.0) / (sourceRectangle.north - sourceRectangle.south)
         
@@ -533,25 +530,25 @@ class HeightmapTerrainData: TerrainData, Equatable {
         return southwestHeight + (dX * (northeastHeight - northwestHeight)) + (dY * (northwestHeight - southwestHeight))
     }
     
-    private func getHeight(#heights: [SerializedType], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, index: Int) -> Double {
+    private func getHeight(#heights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, index: Int) -> Double {
         let trueIndex = index * stride
         
         var height = 0.0
         
         if isBigEndian {
             for i in 0..<elementsPerHeight {
-                height = height * elementMultiplier + heights[trueIndex + i].doubleValue()
+                height = Double(height) * elementMultiplier + Double(heights[trueIndex + i])
             }
         } else {
             for var i = elementsPerHeight - 1; i >= 0; --i {
-                height = height * elementMultiplier + heights[trueIndex + i].doubleValue()
+                height = height * elementMultiplier + Double(heights[trueIndex + i])
             }
         }
         
         return height
     }
     
-    private func setHeight(inout #heights: [SerializedType], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double) {
+    private func setHeight(inout #heights: [Double], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double) {
         
         let trueIndex = index * stride
         
@@ -559,14 +556,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
         var workingDivisor = divisor
         if (isBigEndian) {
             for i in 0..<elementsPerHeight {
-                heights[trueIndex + i] = .Float32(Float(floor(workingHeight / workingDivisor)))
-                workingHeight -= heights[trueIndex + i].doubleValue() * workingDivisor
+                heights[trueIndex + i] = floor(workingHeight / workingDivisor)
+                workingHeight -= heights[trueIndex + i] * workingDivisor
                 workingDivisor /= elementMultiplier
             }
         } else {
             for var i = elementsPerHeight - 1; i >= 0; --i {
-                heights[trueIndex + i] = .Float32(Float(floor(workingHeight / workingDivisor)))
-                workingHeight -= heights[trueIndex + i].doubleValue() * workingDivisor
+                heights[trueIndex + i] = floor(workingHeight / workingDivisor)
+                workingHeight -= heights[trueIndex + i] * workingDivisor
                 workingDivisor /= elementMultiplier
             }
         }

@@ -33,7 +33,7 @@ class Context {
 
     var layer: CAMetalLayer
     
-    private let _device: MTLDevice!
+    internal let device: MTLDevice!
     
     private let _commandQueue: MTLCommandQueue
     
@@ -160,12 +160,12 @@ class Context {
         
         self.layer = layer
         
-        _device = MTLCreateSystemDefaultDevice()
-        layer.device = _device
+        device = MTLCreateSystemDefaultDevice()
+        layer.device = device
         layer.pixelFormat = MTLPixelFormat.BGRA8Unorm
         layer.framebufferOnly = true
         
-        _commandQueue = _device.newCommandQueue()
+        _commandQueue = device.newCommandQueue()
        
         id = NSUUID().UUIDString
         
@@ -221,125 +221,12 @@ class Context {
         }
         return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
-
-    func createBuffer(array: [SerializedType]? = nil, sizeInBytes: Int? = nil) -> MTLBuffer {
-        
-        assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
-        
-        let bufferSize: Int
-        if array != nil {
-            bufferSize = array!.sizeInBytes
-        } else {
-            bufferSize = sizeInBytes!
-        }
-        assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
-        
-        let buffer: MTLBuffer
-
-        if array != nil {
-            buffer = _device.newBufferWithBytesNoCopy(array!.data().bytes, length: bufferSize, options: nil, deallocator: nil)
-        } else {
-            buffer = _device.newBufferWithLength(bufferSize, options: nil)
-        }
-        /*
-        
-
-        -
-        -    func copyFromArrayView (arrayView: [SerializedType], offsetInBytes: Int = 0) {
-            -
-            -        assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
-            -        
-            -        glBindBuffer(target.toGL(), buffer)
-            -        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.data().bytes)
-            -        glBindBuffer(target.toGL(), 0)
-            -    }*/
-        return buffer
-    }
-
-    /**
-    * Creates a vertex buffer, which contains untyped vertex data in GPU-controlled memory.
-    * <br /><br />
-    * A vertex array defines the actual makeup of a vertex, e.g., positions, normals, texture coordinates,
-    * etc., by interpreting the raw data in one or more vertex buffers.
-    *
-    * @memberof Context
-    *
-    * @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
-    * @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
-    *
-    * @returns {VertexBuffer} The vertex buffer, ready to be attached to a vertex array.
-    *
-    * @exception {DeveloperError} The size in bytes must be greater than zero.
-    * @exception {DeveloperError} Invalid <code>usage</code>.
-    *
-    * @see Context#createVertexArray
-    * @see Context#createIndexBuffer
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ARRAY_BUFFER</code>
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ARRAY_BUFFER</code>
-    *
-    * @example
-    * // Example 1. Create a dynamic vertex buffer 16 bytes in size.
-    * var buffer = context.createVertexBuffer(16, BufferUsage.DYNAMIC_DRAW);
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 2. Create a dynamic vertex buffer from three floating-point values.
-    * // The data copied to the vertex buffer is considered raw bytes until it is
-    * // interpreted as vertices using a vertex array.
-    * var positionBuffer = context.createVertexBuffer(new Float32Array([0, 0, 0]),
-    *     BufferUsage.STATIC_DRAW);
+    /** 
+    * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be 
+    * copied to the buffer and can be released (or automatically released via ARC)
     */
-    func createVertexBuffer(array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
-        return createBuffer(.ArrayBuffer, array: array, sizeInBytes: sizeInBytes, usage: usage)
-    }
-
-    /**
-    * Creates an index buffer, which contains typed indices in GPU-controlled memory.
-    * <br /><br />
-    * An index buffer can be attached to a vertex array to select vertices for rendering.
-    * <code>Context.draw</code> can render using the entire index buffer or a subset
-    * of the index buffer defined by an offset and count.
-    *
-    * @memberof Context
-    *
-    * @param {ArrayBufferView|Number} typedArrayOrSizeInBytes A typed array containing the data to copy to the buffer, or a <code>Number</code> defining the size of the buffer in bytes.
-    * @param {BufferUsage} usage Specifies the expected usage pattern of the buffer.  On some GL implementations, this can significantly affect performance.  See {@link BufferUsage}.
-    * @param {IndexDatatype} indexDatatype The datatype of indices in the buffer.
-    *
-    * @returns {IndexBuffer} The index buffer, ready to be attached to a vertex array.
-    *
-    * @exception {RuntimeError} IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.
-    * @exception {DeveloperError} The size in bytes must be greater than zero.
-    * @exception {DeveloperError} Invalid <code>usage</code>.
-    * @exception {DeveloperError} Invalid <code>indexDatatype</code>.
-    *
-    * @see Context#createVertexArray
-    * @see Context#createVertexBuffer
-    * @see Context#draw
-    * @see VertexArray
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGenBuffer.xml|glGenBuffer}
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBindBuffer.xml|glBindBuffer} with <code>ELEMENT_ARRAY_BUFFER</code>
-    * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml|glBufferData} with <code>ELEMENT_ARRAY_BUFFER</code>
-    *
-    * @example
-    * // Example 1. Create a stream index buffer of unsigned shorts that is
-    * // 16 bytes in size.
-    * var buffer = context.createIndexBuffer(16, BufferUsage.STREAM_DRAW,
-    *     IndexDatatype.UNSIGNED_SHORT);
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 2. Create a static index buffer containing three unsigned shorts.
-    * var buffer = context.createIndexBuffer(new Uint16Array([0, 1, 2]),
-    *     BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT)
-    */
-    func createIndexBuffer (array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw, indexDatatype: IndexDatatype) -> IndexBuffer {
-    
-        if indexDatatype == IndexDatatype.UnsignedInt {
-            //assert(elementIndexUint == true, "IndexDatatype.UNSIGNED_INT requires OES_element_index_uint, which is not supported on this system.")
-        }
-        return IndexBuffer(array: array, sizeInBytes: sizeInBytes, usage: usage, indexDatatype: indexDatatype)
+    func createBuffer(array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) -> Buffer {
+        return Buffer(context: self, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
     }
 
     /**
@@ -429,7 +316,7 @@ class Context {
     * var va = context.createVertexArray(attributes);
     */
     
-    func createVertexArray (attributes: [VertexAttributes], indexBuffer: IndexBuffer?) -> VertexArray {
+    func createVertexArray (attributes: [VertexAttributes], indexBuffer: Buffer?) -> VertexArray {
         return VertexArray(attributes: attributes, indexBuffer: indexBuffer)
         
     }
@@ -690,56 +577,6 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         _commandEncoder = commandEncoder!
     }
     
-    struct Vertex {
-        var position3DAndHeight: Cartesian4
-        var texCoordsAndEncodedNormals: Cartesian3
-    }
-    
-    func createRenderPipeline() {
-        let library = _device.newDefaultLibrary()!
-        let vertexFunction = library.newFunctionWithName("globeVS")
-        let fragmentFunction = library.newFunctionWithName("globeFS")
-        
-        // position3DandHeight
-        let vertexDescriptor = MTLVertexDescriptor()
-        vertexDescriptor.attributes[0].offset = 0
-        vertexDescriptor.attributes[0].format = .Float4
-        vertexDescriptor.attributes[0].bufferIndex = 0
-        
-        // texCoordandEncodedNormals
-        vertexDescriptor.attributes[1].offset = sizeof(Float32) * 4
-        vertexDescriptor.attributes[1].format = .Float3
-        vertexDescriptor.attributes[1].bufferIndex = 0
-        
-        vertexDescriptor.layouts[0].stepFunction = .PerVertex
-        vertexDescriptor.layouts[0].stride = sizeof(Vertex)
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.vertexDescriptor = vertexDescriptor
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        
-        var error: NSErrorPointer = nil
-        pipeline = device.newRenderPipelineStateWithDescriptor(pipelineDescriptor, error:error)
-        if (pipeline == nil) {
-            print("Error occurred when creating pipeline \(error)")
-        }
-        
-        let depthStencilDescriptor = MTLDepthStencilDescriptor()
-        depthStencilDescriptor.depthCompareFunction = .Less
-        depthStencilDescriptor.depthWriteEnabled = true
-        depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
-        
-        commandQueue = device.newCommandQueue()
-        
-        let samplerDescriptor = MTLSamplerDescriptor()
-        samplerDescriptor.minFilter = .Nearest
-        samplerDescriptor.magFilter = .Linear
-        
-        samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
-    }
 
     
 /*
@@ -1129,7 +966,6 @@ function interleaveAttributes(attributes) {
     func createVertexArrayFromGeometry (
         #geometry: Geometry,
         attributeLocations: [String: Int],
-        bufferUsage: BufferUsage = .DynamicDraw,
         interleave: Bool = false) -> VertexArray {
             
             
@@ -1187,10 +1023,7 @@ function interleaveAttributes(attributes) {
                             componentDatatype = ComponentDatatype.Float32
                         }
                         
-                        vertexBuffer = nil
-                        if attribute.values != nil {
-                            vertexBuffer = createVertexBuffer(array: attribute.values, usage: bufferUsage)
-                        }
+                        vertexBuffer = attribute.buffer/*createBuffer(array: UnsafeMutablePointer<Void>(attribute.values!.data().bytes), componentDatatype: componentDatatype, sizeInBytes: attribute.values!.sizeInBytes)*/
                         
                         vaAttributes.append(VertexAttributes(
                             index: attributeLocations[attributes.name(i)]!,
@@ -1202,7 +1035,7 @@ function interleaveAttributes(attributes) {
                 }
             }
             
-            var indexBuffer: IndexBuffer? = nil
+            var indexBuffer: Buffer? = nil
             if geometry.indices != nil {
                 /*if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
                     

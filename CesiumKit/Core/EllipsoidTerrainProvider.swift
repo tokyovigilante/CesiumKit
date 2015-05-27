@@ -85,7 +85,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
 
         // FIXME: terraindata
         _terrainData = HeightmapTerrainData(
-            buffer: SerializedType.fromUInt16Array([UInt16](count: 16 * 16, repeatedValue: 0)),
+            buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
             width : 16,
             height : 16)
     }
