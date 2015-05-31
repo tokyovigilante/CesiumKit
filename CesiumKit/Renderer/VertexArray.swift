@@ -17,6 +17,10 @@ class VertexArray {
     var vertexCount: Int
     
     let indexBuffer: Buffer?
+    
+    var numberOfIndices: Int {
+        return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
+    }
 
     init(vertexBuffer: Buffer, vertexCount: Int, attributes: [VertexAttributes], indexBuffer: Buffer?) {
         
@@ -62,15 +66,7 @@ class VertexArray {
             // WebGL limit.  Not in GL ES.
             throw new DeveloperError('attribute must have a strideInBytes less than or equal to 255 or not specify it.');
         }*/
-
     }
-    
-/**
-* index is the location in the array of attributes, not the index property of an attribute.
-*/
-    /*func attribute(index: Int) -> VertexAttributes {
-        return _attributes[index]
-    }*/
 
 }
 

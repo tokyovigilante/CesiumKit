@@ -39,7 +39,7 @@ class Context {
     
     private var _drawable: CAMetalDrawable!
     private var _commandBuffer: MTLCommandBuffer!
-    private var _commandEncoder: MTLCommandEncoder!
+    private var _commandEncoder: MTLRenderCommandEncoder!
 
     /*var library: MTLLibrary
     var pipeline: MTLRenderPipelineState
@@ -703,19 +703,18 @@ var renderStateCache = {};
         let sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
     
-        /*if let indexBuffer = va!.indexBuffer {
+        if let indexBuffer = va!.indexBuffer {
             offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
-            count = count ?? indexBuffer.numberOfIndices
-            va!._bind()
+            count = count ?? va!.numberOfIndices
+            _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: <#Int#>, indexType: <#MTLIndexType#>, indexBuffer: <#MTLBuffer#>, indexBufferOffset: <#Int#>)
             // FIXME: primitiveType toGL()
-            glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
-            va!._unBind()
+            //glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
         } else {
             count = count ?? va!.vertexCount
-            va!._bind()
+            /*va!._bind()
             glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
-            va!._unBind()
-        }*/
+            va!._unBind()*/
+        }
     }
 
     func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {

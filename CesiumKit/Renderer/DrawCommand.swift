@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Metal
+
 protocol DrawCommandOwner: class {}
 
 /**
@@ -57,7 +59,7 @@ class DrawCommand: Command {
     * @type {PrimitiveType}
     * @default PrimitiveType.TRIANGLES
     */
-    var primitiveType: PrimitiveType
+    var primitiveType: MTLPrimitiveType
     
     /**
     * The vertex array.
