@@ -201,7 +201,7 @@ class Globe {
         _surfaceShaderSet = GlobeSurfaceShaderSet(
             baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
             baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
-            attributeLocations: terrainAttributeLocations)
+            attributeLocations: ["String": 0])
         
         _surface = QuadtreePrimitive(
             tileProvider: GlobeSurfaceTileProvider(

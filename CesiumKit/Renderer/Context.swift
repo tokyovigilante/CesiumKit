@@ -316,8 +316,8 @@ class Context {
     * var va = context.createVertexArray(attributes);
     */
     
-    func createVertexArray (attributes: [VertexAttributes], indexBuffer: Buffer?) -> VertexArray {
-        return VertexArray(attributes: attributes, indexBuffer: indexBuffer)
+    func createVertexArray (#vertexBuffer: Buffer, vertexCount: Int, attributes: [VertexAttributes], indexBuffer: Buffer?) -> VertexArray {
+        return VertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, attributes: attributes, indexBuffer: indexBuffer)
         
     }
 /**
@@ -963,6 +963,7 @@ function interleaveAttributes(attributes) {
 * // attached vertex buffer(s) and index buffer.
 * va = va.destroy();
 */
+    /*
     func createVertexArrayFromGeometry (
         #geometry: Geometry,
         attributeLocations: [String: Int],
@@ -1050,7 +1051,7 @@ function interleaveAttributes(attributes) {
                 }*/
             }
             return createVertexArray(vaAttributes, indexBuffer: indexBuffer)
-    }
+    }*/
 /*
 var viewportQuadAttributeLocations = {
     position : 0,

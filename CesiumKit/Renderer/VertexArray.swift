@@ -6,67 +6,50 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class VertexArray {
     
-    private var _attributes = [VertexAttributes]()
+    var vertexDescriptor: MTLVertexDescriptor
     
-    var attributeCount: Int {
-        return _attributes.count
-    }
+    var vertexBuffer: Buffer
     
     var vertexCount: Int
     
     let indexBuffer: Buffer?
 
-    init(attributes: [VertexAttributes], indexBuffer: Buffer?) {
+    init(vertexBuffer: Buffer, vertexCount: Int, attributes: [VertexAttributes], indexBuffer: Buffer?) {
         
-        var vaAttributes = [VertexAttributes]()
-        var numberOfVertices = 1  // if every attribute is backed by a single value
-        self.vertexCount = numberOfVertices
+        self.vertexDescriptor = MTLVertexDescriptor()
+        self.vertexBuffer = vertexBuffer
+        self.vertexCount = vertexCount
         self.indexBuffer = indexBuffer
+        
+        // Set up layout descriptor
+        var layout = vertexDescriptor.layouts[0]
+        layout.stepFunction = .PerVertex
 
-        for var i = 0; i < attributes.count; ++i {
-            addAttribute(&vaAttributes, attribute: attributes[i], index: i)
-        }
-        
-        for var i = 0; i < vaAttributes.count; ++i {
-            var attribute = vaAttributes[i]
-            
-            if attribute.vertexBuffer != nil {
-                // This assumes that each vertex buffer in the vertex array has the same number of vertices.
-                var bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize
-                
-                numberOfVertices = attribute.vertexBuffer!.length / bytes
-                break
-            }
-        }
-        
         // Verify all attribute names are unique
-        var uniqueIndices = [Bool](count: vaAttributes.count, repeatedValue: false)
-        for var j = 0; j < vaAttributes.count; ++j {
-            var index = vaAttributes[j].index
-            if (uniqueIndices[index]) {
-                assert(!uniqueIndices[index], "Index \(index) is used by more than one attribute.")
+        var uniqueIndices = [Bool](count: attributes.count, repeatedValue: false)
+        for (i, va) in enumerate(attributes) {
+            let index = va.bufferIndex
+            if uniqueIndices[index] {
+                assertionFailure("Index \(index) is used by more than one attribute.")
             }
             uniqueIndices[index] = true
+            addAttribute(va, index: i)
         }
-        self.vertexCount = numberOfVertices
-        self._attributes = vaAttributes
-        
-        // Setup VAO
-        /*var vao: GLuint = 0
-        glGenVertexArrays(1, &vao)
-        glBindVertexArray(vao)
-        bind()
-        glBindVertexArray(0)
-        _vao = vao*/
     }
     
-    private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
+    func addAttribute(attribute: VertexAttributes, index: Int) {
         
-        var hasVertexBuffer = attribute.vertexBuffer != nil
+        vertexDescriptor.attributes[index].bufferIndex = attribute.bufferIndex
+        vertexDescriptor.attributes[index].format = attribute.format.metalVertexFormat
+        vertexDescriptor.attributes[index].offset = attribute.offset
+        
+        vertexDescriptor.layouts[0].stride += attribute.size
+        
+        /*var hasVertexBuffer = attribute.vertexBuffer != nil
         var hasValue = attribute.value != nil
         var componentsPerAttribute = (attribute.value != nil) ? attribute.value!.length : attribute.componentsPerAttribute
         
@@ -75,124 +58,19 @@ class VertexArray {
         
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4, "attribute.value.length must be in the range [1, 4]")
 
-        /*if (defined(attribute.strideInBytes) && (attribute.strideInBytes > 255)) {
+        if (defined(attribute.strideInBytes) && (attribute.strideInBytes > 255)) {
             // WebGL limit.  Not in GL ES.
             throw new DeveloperError('attribute must have a strideInBytes less than or equal to 255 or not specify it.');
         }*/
-        var attr = attribute.copy()
-        
-        if hasVertexBuffer {
-            // Common case: vertex buffer for per-vertex data
-            //attr.vertexAttrib = { (attr: VertexAttributes) in
-                /*glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
-                glVertexAttribPointer(
-                    GLuint(attr.index),
-                    GLint(attr.componentsPerAttribute),
-                    attr.componentDatatype.toGL(),
-                    attr.normalize ? GLboolean(GL_TRUE) : GLboolean(GL_FALSE),
-                    GLsizei(attr.strideInBytes),
-                    UnsafePointer<Void>(bitPattern: attr.offsetInBytes)*/
-                //)
-                //glEnableVertexAttribArray(GLuint(attr.index))
-            //}
-            
-            //attr.disableVertexAttribArray = { (attr: VertexAttributes) in
-            //    glDisableVertexAttribArray(GLuint(attr.index))
-            //}
-        } else {
-            // Less common case: value array for the same data for each vertex
-            /*switch (attr.componentsPerAttribute) {
-            case 1:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib1fv(this.index, this.value);
-                };
-                break;
-            case 2:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib2fv(this.index, this.value);
-                };
-                break;
-            case 3:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib3fv(this.index, this.value);
-                };
-                break;
-            case 4:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib4fv(this.index, this.value);
-                };
-                break;
-            }
-            
-            attr.disableVertexAttribArray = function(gl) {
-            };*/
-        }
-        
-        attributes.append(attr)
+
     }
     
-    private func bind() {
-        
-        /*for attribute in _attributes {
-            if attribute.enabled {
-                attribute.vertexAttrib(attr: attribute)
-            }
-        }*/
-
-        if indexBuffer != nil {
-            //glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
-        }
-    }
-
-/*
-defineProperties(VertexArray.prototype, {
-numberOfAttributes : {
-get : function() {
-return this._attributes.length;
-}
-
-},
-indexBuffer : {
-get : function() {
-return this._indexBuffer;
-}
-}
-});
-*/
 /**
 * index is the location in the array of attributes, not the index property of an attribute.
 */
-    func attribute(index: Int) -> VertexAttributes {
+    /*func attribute(index: Int) -> VertexAttributes {
         return _attributes[index]
-    }
+    }*/
 
-    func _bind() {
-        /*if _vao != nil {
-            glBindVertexArray(_vao!)
-        } else {
-                bind()
-            }*/
-    }
-
-    func _unBind() {
-        /*if _vao != nil {
-            glBindVertexArray(0)
-        } else {
-            for attribute in _attributes {
-                if attribute.enabled {
-                    attribute.disableVertexAttribArray(attr: attribute)
-                }
-            }
-            if indexBuffer != nil {
-                //glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), 0)
-            }
-        }*/
-    }
-
-    deinit {
-        /*if _vao != nil {
-            glDeleteVertexArrays(1, &_vao!)
-        }*/
-    }
 }
 

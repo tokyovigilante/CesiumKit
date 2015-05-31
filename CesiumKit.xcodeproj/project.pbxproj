@@ -61,7 +61,6 @@
 		9410139A19FB037D00FFAD81 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0251956F5DE00355D2C /* Texture.swift */; };
 		9410139B19FB037D00FFAD81 /* UniformState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0231956F5A400355D2C /* UniformState.swift */; };
 		9410139C19FB037D00FFAD81 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
-		9410139D19FB037D00FFAD81 /* VertexAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240C19C9911D0040042F /* VertexAttributes.swift */; };
 		9410139E19FB037D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
 		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
@@ -152,7 +151,6 @@
 		9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0251956F5DE00355D2C /* Texture.swift */; };
 		9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0231956F5A400355D2C /* UniformState.swift */; };
 		9413B7EF1A37B93D00FFAD81 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
-		9413B7F01A37B93D00FFAD81 /* VertexAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240C19C9911D0040042F /* VertexAttributes.swift */; };
 		9413B7F11A37B93D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DCAA641A36F0B800FFAD81 /* Uniform.swift */; };
 		9413B7F31A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */; };
@@ -191,7 +189,6 @@
 		9413B8141A37B94500FFAD81 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
 		9413B8151A37B94500FFAD81 /* ScreenSpaceCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */; };
 		9413B8161A37B94500FFAD81 /* SkyBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942CEED2199E063E00012DC4 /* SkyBox.swift */; };
-		9413B8171A37B94500FFAD81 /* TerrainAttributeLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */; };
 		9413B8181A37B94500FFAD81 /* TerrainState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540430199F5D0900012DC4 /* TerrainState.swift */; };
 		9413B8191A37B94500FFAD81 /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
 		9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540432199F5F3F00012DC4 /* TileImagery.swift */; };
@@ -232,7 +229,6 @@
 		9413B83D1A37B94800FFAD81 /* SceneTransitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */; };
 		9413B83E1A37B94800FFAD81 /* ScreenSpaceCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */; };
 		9413B83F1A37B94800FFAD81 /* SkyBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942CEED2199E063E00012DC4 /* SkyBox.swift */; };
-		9413B8401A37B94800FFAD81 /* TerrainAttributeLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */; };
 		9413B8411A37B94800FFAD81 /* TerrainState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540430199F5D0900012DC4 /* TerrainState.swift */; };
 		9413B8421A37B94800FFAD81 /* TileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */; };
 		9413B8431A37B94800FFAD81 /* TileImagery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540432199F5F3F00012DC4 /* TileImagery.swift */; };
@@ -255,6 +251,7 @@
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
 		945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6461AA9C00000FFAD81 /* GeometryType.swift */; };
 		945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */; };
+		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
 		946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946007AD1AC2C97F0095A86F /* CameraEventType.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
@@ -288,6 +285,7 @@
 		94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DD011D1AADAF2500FFAD81 /* Matrix2.swift */; };
 		94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */; };
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
+		94E6BAE91B188EA00095A86F /* VertexAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E6BAE81B188EA00095A86F /* VertexAttributes.swift */; };
 		94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 /* End PBXBuildFile section */
@@ -380,6 +378,7 @@
 		945BF6461AA9C00000FFAD81 /* GeometryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryType.swift; sourceTree = "<group>"; };
 		945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderSource.swift; sourceTree = "<group>"; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
+		945E45031B17387E0095A86F /* VertexType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexType.swift; sourceTree = "<group>"; };
 		946007AD1AC2C97F0095A86F /* CameraEventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraEventType.swift; sourceTree = "<group>"; };
 		9460F806194DA5AF00012DC4 /* Visibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Visibility.swift; sourceTree = "<group>"; };
 		9460F808194DA7F800012DC4 /* PassState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassState.swift; sourceTree = "<group>"; };
@@ -387,7 +386,6 @@
 		9460F80C194DAA6200012DC4 /* Globe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globe.swift; sourceTree = "<group>"; };
 		9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerCollection.swift; sourceTree = "<group>"; };
 		9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeSurfaceShaderSet.swift; sourceTree = "<group>"; };
-		9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainAttributeLocations.swift; sourceTree = "<group>"; };
 		9460F816194DB0ED00012DC4 /* ShaderProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderProgram.swift; sourceTree = "<group>"; };
 		9460F818194DB80500012DC4 /* RenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderState.swift; sourceTree = "<group>"; };
 		9460F81A194DB87400012DC4 /* ClearCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClearCommand.swift; sourceTree = "<group>"; };
@@ -401,7 +399,6 @@
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
 		94786824194A95B800B3F462 /* TerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainData.swift; sourceTree = "<group>"; };
-		947A240C19C9911D0040042F /* VertexAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexAttributes.swift; sourceTree = "<group>"; };
 		947A240E19C9919D0040042F /* CullFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CullFace.swift; sourceTree = "<group>"; };
 		947A241019C99C860040042F /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
 		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
@@ -482,6 +479,7 @@
 		94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntersectionTests.swift; sourceTree = "<group>"; };
 		94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeadingPitchRange.swift; sourceTree = "<group>"; };
 		94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorTilingScheme.swift; sourceTree = "<group>"; };
+		94E6BAE81B188EA00095A86F /* VertexAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexAttributes.swift; sourceTree = "<group>"; };
 		94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceCameraController.swift; sourceTree = "<group>"; };
 		94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpaceEventHandler.swift; sourceTree = "<group>"; };
 		94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsImageryProvider.swift; sourceTree = "<group>"; };
@@ -619,6 +617,7 @@
 			isa = PBXGroup;
 			children = (
 				94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */,
+				94C6E5571B1475BF0095A86F /* Buffer.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
 				940899F019CE6C3600012DC4 /* Command.swift */,
 				94B87DC4194D699400012DC4 /* Context.swift */,
@@ -630,20 +629,20 @@
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
 				941E2162199EDC3600012DC4 /* ImageBuffer.swift */,
 				9460F808194DA7F800012DC4 /* PassState.swift */,
+				941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
 				94540426199F478F00012DC4 /* Sampler.swift */,
 				9465B0211956F53700355D2C /* ShaderCache.swift */,
-				945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */,
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
+				945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */,
 				9465B0251956F5DE00355D2C /* Texture.swift */,
 				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
 				9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */,
 				9465B0231956F5A400355D2C /* UniformState.swift */,
 				942D02EF194DBDDF00012DC4 /* VertexArray.swift */,
-				947A240C19C9911D0040042F /* VertexAttributes.swift */,
+				94E6BAE81B188EA00095A86F /* VertexAttributes.swift */,
+				945E45031B17387E0095A86F /* VertexType.swift */,
 				947A241019C99C860040042F /* WindingOrder.swift */,
-				941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */,
-				94C6E5571B1475BF0095A86F /* Buffer.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -693,7 +692,6 @@
 				940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */,
 				94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */,
 				942CEED2199E063E00012DC4 /* SkyBox.swift */,
-				9460F814194DAF7000012DC4 /* TerrainAttributeLocations.swift */,
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */,
 				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
@@ -1007,6 +1005,7 @@
 				9413B7B61A37B93100FFAD81 /* HeightmapTessellator.swift in Sources */,
 				9413B7A41A37B93100FFAD81 /* Cartesian3.swift in Sources */,
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
+				94E6BAE91B188EA00095A86F /* VertexAttributes.swift in Sources */,
 				945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */,
 				9413B7A51A37B93100FFAD81 /* Cartesian4.swift in Sources */,
 				9413B7B01A37B93100FFAD81 /* GeographicTilingScheme.swift in Sources */,
@@ -1028,7 +1027,6 @@
 				941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */,
 				9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */,
 				9413B7F71A37B94500FFAD81 /* BlendEquation.swift in Sources */,
-				9413B8171A37B94500FFAD81 /* TerrainAttributeLocations.swift in Sources */,
 				9413B8191A37B94500FFAD81 /* TileDiscardPolicy.swift in Sources */,
 				9413B7BB1A37B93100FFAD81 /* JulianDate.swift in Sources */,
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
@@ -1037,6 +1035,7 @@
 				94CE0EB01B11F1470095A86F /* Globe.metal in Sources */,
 				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
 				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
+				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
 				9413B7DC1A37B93D00FFAD81 /* Command.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
@@ -1102,7 +1101,6 @@
 				9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */,
 				94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */,
 				9413B7AA1A37B93100FFAD81 /* Ellipsoid.swift in Sources */,
-				9413B7F01A37B93D00FFAD81 /* VertexAttributes.swift in Sources */,
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
 				9413B8121A37B94500FFAD81 /* Scene.swift in Sources */,
 				9413B7C31A37B93100FFAD81 /* PrimitiveType.swift in Sources */,
@@ -1131,7 +1129,6 @@
 				9410138119FB037500FFAD81 /* TilingScheme.swift in Sources */,
 				9410137A19FB037500FFAD81 /* Ray.swift in Sources */,
 				9413B82F1A37B94800FFAD81 /* ImageryProvider.swift in Sources */,
-				9410139D19FB037D00FFAD81 /* VertexAttributes.swift in Sources */,
 				9410136719FB037500FFAD81 /* Credit.swift in Sources */,
 				9413B8331A37B94800FFAD81 /* PerspectiveFrustum.swift in Sources */,
 				9410139019FB037D00FFAD81 /* DrawCommand.swift in Sources */,
@@ -1197,7 +1194,6 @@
 				9410137819FB037500FFAD81 /* Quaternion.swift in Sources */,
 				9413B8211A37B94800FFAD81 /* BlendingState.swift in Sources */,
 				9413B8391A37B94800FFAD81 /* QuadtreeTileLoadState.swift in Sources */,
-				9413B8401A37B94800FFAD81 /* TerrainAttributeLocations.swift in Sources */,
 				9410138419FB037500FFAD81 /* Visibility.swift in Sources */,
 				9413B8361A37B94800FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B8371A37B94800FFAD81 /* QuadtreePrimitive.swift in Sources */,

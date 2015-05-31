@@ -180,13 +180,14 @@ class TileTerrain {
             }
         })
     }
-
+    
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
         var terrainMesh = mesh!
-        let buffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: terrainMesh.vertices.sizeInBytes)
-        var stride: Int
-        var numTexCoordComponents: Int
+        let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: terrainMesh.vertices.sizeInBytes)
+        
+        let stride: Int
+        let numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
             stride = 7 * datatype.elementSize
             numTexCoordComponents = 3
@@ -194,40 +195,44 @@ class TileTerrain {
             stride = 6 * datatype.elementSize
             numTexCoordComponents = 2
         }
+        let vertexCount = terrainMesh.vertices.sizeInBytes / stride
         
-        var position3DAndHeightLength = 4
+        let position3DAndHeightLength = 4
         
-        var attributes = [
+        let attributes = [
+            //position3DAndHeight
             VertexAttributes(
-                index: terrainAttributeLocations["position3DAndHeight"]!,
-                vertexBuffer: buffer,
-                componentsPerAttribute: position3DAndHeightLength,
-                componentDatatype: datatype,
-                offsetInBytes: 0,
-                strideInBytes: stride),
+                bufferIndex: 0,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
             VertexAttributes(
-                index: terrainAttributeLocations["textureCoordAndEncodedNormals"]!,
-                vertexBuffer: buffer,
-                componentsPerAttribute : numTexCoordComponents,
-                componentDatatype: datatype,
-                offsetInBytes : position3DAndHeightLength * datatype.elementSize,
-                strideInBytes : stride)
+                bufferIndex: 1,
+                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
         ]
         
         var indexBuffer = terrainMesh.indexBuffer
         if indexBuffer == nil {
             // FIXME geometry with > 64k indices
-            //let indices = terrainMesh.indices
-            //let indexDatatype = vertices.= 2) ?  IndexDatatype.UNSIGNED_SHORT : IndexDatatype.UNSIGNED_INT;
-            //indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, indexDatatype);
-            indexBuffer = context.createBuffer(
-                array: terrainMesh.indices,
-                componentDatatype: ComponentDatatype.UnsignedShort,
-                sizeInBytes: terrainMesh.indices.sizeInBytes
-            )
-            terrainMesh.indexBuffer = indexBuffer
+            let indices = terrainMesh.indices
+            if indices.count < Math.SixtyFourKilobytes {
+                let indicesShort = indices.map({ UInt16($0) })
+                indexBuffer = context.createBuffer(
+                    array: indicesShort,
+                    componentDatatype: ComponentDatatype.UnsignedShort,
+                    sizeInBytes: indicesShort.sizeInBytes)
+            } else {
+                let indicesInt = indices.map({ UInt32($0) })
+                indexBuffer = context.createBuffer(
+                    array: indicesInt,
+                    componentDatatype: ComponentDatatype.UnsignedInt,
+                    sizeInBytes: indicesInt.sizeInBytes)
+            }
+            terrainMesh.indexBuffer = indexBuffer!
         }
-        vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)
+        vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, attributes: attributes, indexBuffer: indexBuffer)
         state = .Ready
     }
     

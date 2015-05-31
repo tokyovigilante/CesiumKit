@@ -130,8 +130,7 @@ public class SwiftRegex: NSObject, BooleanType {
         return out
     }
     
-    func substituteMatches(substitution: (NSTextCheckingResult, UnsafeMutablePointer<ObjCBool>) -> String,
-        options: NSMatchingOptions = nil) -> String {
+    func substituteMatches(options: NSMatchingOptions = nil, substitution: (NSTextCheckingResult, UnsafeMutablePointer<ObjCBool>) -> String) -> String {
             var out = "" //NSMutableString()
             var pos = 0
             
