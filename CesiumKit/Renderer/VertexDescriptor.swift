@@ -24,8 +24,7 @@ class VertexDescriptor {
         metalDescriptor = MTLVertexDescriptor()
 
         // Set up layout descriptor
-        var layout = metalDescriptor.layouts[0]
-        layout.stepFunction = .PerVertex
+        metalDescriptor.layouts[0].stepFunction = .PerVertex
         
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](count: attributes.count, repeatedValue: false)

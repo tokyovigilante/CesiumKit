@@ -582,6 +582,8 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
+        _commandEncoder.setTriangleFillMode(.Lines)
+        _commandEncoder.setCullMode(.Back)
     }
     
     func createRenderPipeline(#vsName: String, fsName: String, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
@@ -724,16 +726,6 @@ var renderStateCache = {};
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
         
-        // Create uniform buffer 
-        /*struct Uniforms
-        {
-            float3 u_center3D; 3x4 = 12
-            float4x4 u_modifiedModelView; 16x4 = 64
-            float4 u_tileRectangle; = 16
-            float4x4 czm_projection; = 64
-            float4 u_initialColor; = 16
-        };*/
-        
         var uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
 
         sp!.setUniforms(uniformBuffer, uniformMap: drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
@@ -786,11 +778,6 @@ var renderStateCache = {};
             this._drawBuffers.drawBuffersWEBGL(scratchBackBufferArray);
         }*/
     
-        for var i = 0; i < _maxFrameTextureUnitIndex; ++i {
-            glActiveTexture(GLenum(GL_TEXTURE0 + i))
-            glBindTexture(GLenum(GL_TEXTURE_2D), 0)
-            glBindTexture(GLenum(GL_TEXTURE_CUBE_MAP), 0)
-        }
         _maxFrameTextureUnitIndex = 0
         _debug.renderCountThisFrame = 0
     }

@@ -28,13 +28,12 @@ struct Uniforms
     float4 u_initialColor;
 };
 
-vertex OutVertex globeVS(constant InVertex *vert [[buffer(0)]],
-                         constant Uniforms &uniforms [[buffer(1)]],
-                         uint vid [[vertex_id]])
+vertex OutVertex globeVS(InVertex vert [[stage_in]],
+                         constant Uniforms &uniforms [[buffer(1)]])
 {
     OutVertex outVertex;
-    outVertex.position3DAndHeight = uniforms.czm_projection * (uniforms.u_modifiedModelView * float4(vert[vid].position3DAndHeight.xyz, 1.0));
-    outVertex.textureCoordAndEncodedNormals = vert[vid].textureCoordAndEncodedNormals;
+    outVertex.position3DAndHeight = uniforms.czm_projection * (uniforms.u_modifiedModelView * float4(vert.position3DAndHeight.xyz, 1.0));
+    outVertex.textureCoordAndEncodedNormals = vert.textureCoordAndEncodedNormals;
     return outVertex;
 }
 

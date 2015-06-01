@@ -142,7 +142,6 @@ class HeightmapTessellator {
                 geographicNorth = rectangle!.north
             }
             
-            //var structure = defaultValue(options.structure, HeightmapTessellator.DEFAULT_STRUCTURE);
             let heightScale = structure.heightScale
             let heightOffset = structure.heightOffset
             let elementsPerHeight = structure.elementsPerHeight
