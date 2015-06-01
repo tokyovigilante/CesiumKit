@@ -583,7 +583,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
         _commandEncoder.setTriangleFillMode(.Lines)
-        _commandEncoder.setCullMode(.Back)
+        _commandEncoder.setCullMode(.None)
     }
     
     func createRenderPipeline(#vsName: String, fsName: String, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
