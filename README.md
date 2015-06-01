@@ -15,10 +15,9 @@ Community contributions and feedback are welcome.
 
 Testing
 -------
-Requires Swift 1.2/Xcode 6.3 beta, will not run in earlier versions.
+Requires Swift 1.2/Xcode 6.3 beta and an iOS 8 device with a minimum A7 processor, will not run in earlier versions.
 
-Build and run CesiumKitRunner. Performance in the simulator is poor due to the software OpenGL ES renderer. Performance on devices is much better and is in fact CPU-bound, due to a combination of Swift performance and currently unoptimised code.
-I've hardcoded resolution in the simulator to 25% of screen resolution for performance, however performance on device is at or near 60fps at Retina resolutions (iPad Air 2)
+Build and run CesiumKitRunner. Due to the (in-progress) Metal renderer, the framework won't work in the Simulator. Performance on device is at or near 60fps at Retina resolutions (iPad Air 2)
 
 At the moment the only external API are global object creation and render calls and minimal camera control. I'm hoping to keep things simple for implementation, but am looking into touch-based controls as a high priority now.
 

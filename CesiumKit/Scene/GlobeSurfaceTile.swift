@@ -531,7 +531,6 @@ class GlobeSurfaceTile {
     }
 
     class func isDataAvailable(tile: QuadtreeTile, terrainProvider: TerrainProvider) -> Bool {
-        return false
         if let tileDataAvailable = terrainProvider.getTileDataAvailable(x: tile.x, y: tile.y, level: tile.level) {
             return tileDataAvailable
         }
