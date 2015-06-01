@@ -749,10 +749,6 @@ var northeastScratch = new Cartesian3();
 
                 let tileImagery = tileImageryCollection[imageryIndex]
                 let imagery = tileImagery.readyImagery
-                // fixme remove
-                if imagery!.texture == nil {
-                    return
-                }
                 ++imageryIndex
                 
                 if imagery == nil || imagery!.state != .Ready || imagery!.imageryLayer.alpha() == 0.0 {

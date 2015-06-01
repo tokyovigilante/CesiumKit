@@ -40,7 +40,7 @@ class QuadtreePrimitive {
     private var _tileProvider: QuadtreeTileProvider
     
     private var _debug = (
-        enableDebugOutput : false,
+        enableDebugOutput : true,
         
         maxDepth: 0,
         tilesVisited: 0,
@@ -311,7 +311,6 @@ class QuadtreePrimitive {
                 ++_debug.tilesWaitingForChildren
                 // SSE is not good enough but not all children are loaded, so render this tile anyway.
                 addTileToRenderList(tile)
-                println("will render L\(tile.level)X\(tile.x)Y\(tile.y) - waiting for children")
             }
         }
         
@@ -391,7 +390,7 @@ class QuadtreePrimitive {
     
     func processTileLoadQueue(#context: Context, frameState: FrameState) {
         
-        if (_tileLoadQueue.count == 0) {
+        if _tileLoadQueue.count == 0 {
             return
         }
         

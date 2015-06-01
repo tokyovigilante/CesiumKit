@@ -223,7 +223,7 @@ class Globe {
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
     
-    func createGlobeRenderPipeline () {
+    func createGlobeRenderPipeline (context: Context) {
         let datatype = ComponentDatatype.Float32
         let numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
@@ -632,7 +632,7 @@ class Globe {
         }
         
         if _pipeline == nil {
-
+            createGlobeRenderPipeline(context)
         }
 
         var width = context.width
