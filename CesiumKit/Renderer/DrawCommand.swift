@@ -102,6 +102,8 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
+    var uniformBuffer: Buffer?
+    
     /**
     * The render state.
     *
@@ -111,6 +113,8 @@ class DrawCommand: Command {
     * @see Context#createRenderState
     */
     var renderState: RenderState?
+    
+    var renderPipeline: RenderPipeline?
     
     /**
     * The framebuffer to draw to.
@@ -178,12 +182,13 @@ class DrawCommand: Command {
         boundingVolume: Intersectable? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
-        primitiveType: PrimitiveType = PrimitiveType.Triangles,
+        primitiveType: MTLPrimitiveType = .Triangle,
         vertexArray: VertexArray? = nil,
         count: Int? = nil,
         offset: Int = 0,
         shaderProgram: ShaderProgram? = nil,
         renderState: RenderState? = nil,
+        renderPipeline: RenderPipeline? = nil,
         framebuffer: Framebuffer? = nil,
         pass: Pass? = nil,
         executeInClosestFrustum: Bool = false,
@@ -198,6 +203,7 @@ class DrawCommand: Command {
             self.count = count
             self.offset = offset
             self.shaderProgram = shaderProgram
+            self.renderPipeline = renderPipeline
             self.renderState = renderState
             self.framebuffer = framebuffer
             self.pass = pass

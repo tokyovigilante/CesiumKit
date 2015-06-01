@@ -7,7 +7,10 @@
 //
 
 import Foundation
-import OpenGLES
+import Metal
+import simd
+
+
 
 struct VertexAttributeInfo {
     
@@ -320,9 +323,9 @@ class ShaderProgram {
             return
         }
         
-        _program = createAndLinkProgram()
+        _program = 0///createAndLinkProgram()
         
-        glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
+        //glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
         
         var uniforms = findUniforms()
         var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
@@ -341,7 +344,33 @@ class ShaderProgram {
         glUseProgram(_program!)
     }
     
-    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
+    
+    struct Uniforms
+    {
+        //var u_modifiedModelView: matrix_float4x4
+        //float4x4 czm_projection
+        //float4 u_initialColor
+    }
+    
+    func setUniforms (buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
+        
+        var uniforms = Uniforms()
+        if let uniformMap = uniformMap {
+            let czm_projection = AutomaticUniforms["czm_projection"]!
+            var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
+            
+            let u_modifiedModelView = uniformMap.floatUniform("u_modifiedModelView")!
+            var floatMMV = u_modifiedModelView(map: uniformMap)
+            
+            let u_initialColor = uniformMap.floatUniform("u_initialColor")!
+            var floatUIC = u_initialColor(map: uniformMap)
+            
+            var bufferData = buffer.data
+            memcpy(bufferData, floatCZMPR, sizeof(Float) * 16)
+            memcpy(bufferData+64, floatMMV, sizeof(Float) * 16)
+            memcpy(bufferData+128, floatUIC, sizeof(Float) * 4)
+            
+        }
         // TODO: Performance
         if let uniformMap = uniformMap {
             // FIXME: uniforms
@@ -373,7 +402,7 @@ class ShaderProgram {
         // the GL calls above.  I suspect this is because each GL call pollutes the
         // L2 cache making our JavaScript and the browser/driver ping-pong cache lines.
         return
-        for uniform in _uniforms! {
+        /*for uniform in _uniforms! {
             uniform.set()
             if validate {
                 glValidateProgram(_program!)
@@ -390,7 +419,7 @@ class ShaderProgram {
                     assertionFailure("Program validation failed.  Program info log: " + errorMessage!)
                 }
             }
-        }
+        }*/
     }
     
     deinit {

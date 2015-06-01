@@ -11,35 +11,30 @@ using namespace metal;
 
 struct InVertex
 {
-    packed_float4 position3DAndHeight [[attribute(0)]];
-    packed_float3 textureCoordAndEncodedNormals [[attribute(1)]];
+    float4 position3DAndHeight [[attribute(0)]];
+    float2 textureCoordAndEncodedNormals [[attribute(1)]];
 };
 
 struct OutVertex
 {
-    float4 position3DAndHeight [[attribute(0)]];
-    float3 textureCoordAndEncodedNormals [[attribute(1)]];
+    float4 position3DAndHeight [[position]];
+    float2 textureCoordAndEncodedNormals;
 };
 
 struct Uniforms
 {
-    float3 u_center3D;
-    float4x4 u_modifiedModelView;
-    float4 u_tileRectangle;
     float4x4 czm_projection;
+    float4x4 u_modifiedModelView;
     float4 u_initialColor;
 };
 
-vertex OutVertex globeVS(device InVertex *vert [[buffer(0)]],
+vertex OutVertex globeVS(constant InVertex *vert [[buffer(0)]],
                          constant Uniforms &uniforms [[buffer(1)]],
                          uint vid [[vertex_id]])
 {
     OutVertex outVertex;
-    float4 unpackedPosition = float4(vert[vid].position3DAndHeight);
-    unpackedPosition.w = 1.0;
-    outVertex.position3DAndHeight = uniforms.czm_projection * (uniforms.u_modifiedModelView * unpackedPosition);
+    outVertex.position3DAndHeight = uniforms.czm_projection * (uniforms.u_modifiedModelView * float4(vert[vid].position3DAndHeight.xyz, 1.0));
     outVertex.textureCoordAndEncodedNormals = vert[vid].textureCoordAndEncodedNormals;
-   
     return outVertex;
 }
 

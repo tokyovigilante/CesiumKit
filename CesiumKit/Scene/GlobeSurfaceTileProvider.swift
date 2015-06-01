@@ -227,7 +227,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func endUpdate (#context: Context, pipeline: RenderPipeline, frameState: FrameState, inout commandList: [Command]) {
 
         if _renderState == nil {
         
@@ -259,7 +259,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {
                 // FIXME: Tileprovider
-                addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
+                addDrawCommandsForTile(tile, context: context, pipeline: pipeline, frameState: frameState, commandList: &commandList)
             }
         }
     }
@@ -606,7 +606,7 @@ var northeastScratch = new Cartesian3();
     }
     
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, pipeline: RenderPipeline, frameState: FrameState, inout commandList: [Command]) {
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
@@ -825,10 +825,11 @@ var northeastScratch = new Cartesian3();
                 useWebMercatorProjection: useWebMercatorProjection
             )
             command.renderState = renderState
-            command.primitiveType = .Triangles
+            command.primitiveType = .Triangle
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             command.pass = .Globe
+            command.renderPipeline = pipeline
             
             if _debug.wireframe {
                 // FIXME: Wireframe

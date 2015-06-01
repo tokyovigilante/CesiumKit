@@ -175,12 +175,12 @@ class QuadtreePrimitive {
     * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
     *        commands to this array during the update call.
     */
-    func update (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update (#context: Context, pipeline: RenderPipeline, frameState: FrameState, inout commandList: [Command]) {
         _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
         selectTilesForRendering(context: context, frameState: frameState)
         processTileLoadQueue(context: context, frameState: frameState)
         createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
-        _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList);
+        _tileProvider.endUpdate(context: context, pipeline: pipeline, frameState: frameState, commandList: &commandList)
     }
     
     /*

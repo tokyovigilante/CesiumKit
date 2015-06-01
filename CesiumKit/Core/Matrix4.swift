@@ -58,6 +58,11 @@ public struct Matrix4: Packable, Equatable, Printable {
     var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
     
     private var _floatRepresentation: [Float]
+    
+    var floatRepresentation: [Float] {
+        return _floatRepresentation
+    }
+    
     private let _floatPackedSize: Int
 
     init(
@@ -242,7 +247,7 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     
     return Matrix4.clone(values, result);
 };
-
+*/
 /**
 * Computes a Matrix4 instance from a row-major order array.
 * The resulting matrix will be in column-major order.
@@ -251,38 +256,30 @@ Matrix4.fromColumnMajorArray = function(values, result) {
 * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
-Matrix4.fromRowMajorArray = function(values, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(values)) {
-        throw new DeveloperError('values is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Matrix4(values[0], values[1], values[2], values[3],
-            values[4], values[5], values[6], values[7],
-            values[8], values[9], values[10], values[11],
-            values[12], values[13], values[14], values[15]);
-    }
-    result[0] = values[0];
-    result[1] = values[4];
-    result[2] = values[8];
-    result[3] = values[12];
-    result[4] = values[1];
-    result[5] = values[5];
-    result[6] = values[9];
-    result[7] = values[13];
-    result[8] = values[2];
-    result[9] = values[6];
-    result[10] = values[10];
-    result[11] = values[14];
-    result[12] = values[3];
-    result[13] = values[7];
-    result[14] = values[11];
-    result[15] = values[15];
-    return result;
-};
+    init(rowMajorArray: [Double]) {
+        assert(rowMajorArray.count == 16, "Invalid source array")
+        _grid = [Double](count: 16, repeatedValue: 0.0)
 
+        _grid[0] = rowMajorArray[0]
+        _grid[1] = rowMajorArray[4]
+        _grid[2] = rowMajorArray[8]
+        _grid[3] = rowMajorArray[12]
+        _grid[4] = rowMajorArray[1]
+        _grid[5] = rowMajorArray[5]
+        _grid[6] = rowMajorArray[9]
+        _grid[7] = rowMajorArray[13]
+        _grid[8] = rowMajorArray[2]
+        _grid[9] = rowMajorArray[6]
+        _grid[10] = rowMajorArray[10]
+        _grid[11] = rowMajorArray[14]
+        _grid[12] = rowMajorArray[3]
+        _grid[13] = rowMajorArray[7]
+        _grid[14] = rowMajorArray[11]
+        _grid[15] = rowMajorArray[15]
+        _floatRepresentation = _grid.map({ Float($0) })
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
+}
+/*
 /**
 * Computes a Matrix4 instance from a Matrix3 representing the rotation
 * and a Cartesian3 representing the translation.

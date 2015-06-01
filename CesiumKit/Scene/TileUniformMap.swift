@@ -22,7 +22,7 @@ class TileUniformMap: UniformMap {
     
     var modifiedModelView = [Float](count: 16, repeatedValue: 0.0) // Matrix4
     
-    var tileRectangle = [Float](count: 16, repeatedValue: 0.0) // Matrix4
+    var tileRectangle = [Float](count: 4, repeatedValue: 0.0) // Cartesian4
     
     var dayTextures: [Texture]
     

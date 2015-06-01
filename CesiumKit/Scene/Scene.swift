@@ -1076,10 +1076,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     }
 
     func executeOverlayCommands(passState: PassState) {
+/*
         context.createCommandEncoder(passState: nil)
         for command in _overlayCommandList {
-            command.execute(context: context, passState: passState, renderState: nil, shaderProgram: nil)
-        }
+            command.execute(context: context, passState: passState, renderState: nil, shaderProgram: nil)*/
+        //}
     }
 
     func updatePrimitives() {

@@ -123,7 +123,7 @@ class Geometry {
     *
     * @default undefined
     */
-    let primitiveType: PrimitiveType
+    let primitiveType: MTLPrimitiveType
     
     /**
     * An optional bounding sphere that fully encloses the geometry.  This is
@@ -145,7 +145,7 @@ class Geometry {
     */
     var boundingSphereCV: BoundingSphere? = nil
     
-    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
+    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: MTLPrimitiveType = .Triangle, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
         self.attributes = attributes
         self.indices = indices
         self.primitiveType = primitiveType

@@ -41,8 +41,8 @@ class Context {
     private var _commandBuffer: MTLCommandBuffer!
     private var _commandEncoder: MTLRenderCommandEncoder!
 
-    /*var library: MTLLibrary
-    var pipeline: MTLRenderPipelineState
+    private var _library: MTLLibrary
+/*    var pipeline: MTLRenderPipelineState
     var uniformBuffer: MTLBuffer
     var depthTexture: MTLTexture
     var depthState: MTLDepthStencilState
@@ -75,7 +75,11 @@ class Context {
     
     private var _currentRenderState: RenderState
     private let _defaultRenderState: RenderState
+    
+    private var _currentPassState: PassState? = nil
     private var _defaultPassState: PassState
+    
+    private var _passStates = [Pass: PassState]()
     
     var uniformState: UniformState
     
@@ -166,7 +170,10 @@ class Context {
         layer.framebufferOnly = true
         
         _commandQueue = device.newCommandQueue()
-       
+        
+        var library = device.newDefaultLibrary()
+        _library = library!
+        
         id = NSUUID().UUIDString
         
         networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
@@ -316,8 +323,8 @@ class Context {
     * var va = context.createVertexArray(attributes);
     */
     
-    func createVertexArray (#vertexBuffer: Buffer, vertexCount: Int, attributes: [VertexAttributes], indexBuffer: Buffer?) -> VertexArray {
-        return VertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, attributes: attributes, indexBuffer: indexBuffer)
+    func createVertexArray (#vertexBuffer: Buffer, vertexCount: Int, indexBuffer: Buffer?) -> VertexArray {
+        return VertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
         
     }
 /**
@@ -577,8 +584,19 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         _commandEncoder = commandEncoder!
     }
     
+    func createRenderPipeline(#vsName: String, fsName: String, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
+        var pipelineDescriptor = MTLRenderPipelineDescriptor()
+        
+        pipelineDescriptor.vertexFunction = _library.newFunctionWithName(vsName)
+        pipelineDescriptor.fragmentFunction = _library.newFunctionWithName(fsName)
+        
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
+        
+        return RenderPipeline(device: device, descriptor: pipelineDescriptor)
+    }
 
-    
 /*
 Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;
@@ -681,36 +699,55 @@ var renderStateCache = {};
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
         
+        _commandEncoder.setRenderPipelineState(drawCommand.renderPipeline!.state)
+        
+        
         var sp = shaderProgram ?? drawCommand.shaderProgram
-        //sp!.bind()
-        _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
+        sp!.bind()
+        //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
         //applyRenderState(rs, passState: passState)
     }
 
     func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {
         let primitiveType = drawCommand.primitiveType
-        let va = drawCommand.vertexArray
+        
+        assert(drawCommand.vertexArray != nil, "drawCommand.vertexArray is required")
+        let va = drawCommand.vertexArray!
         var offset = drawCommand.offset
         var count = drawCommand.count
         
-        assert(va != nil, "drawCommand.vertexArray is required")
         assert(offset >= 0, "drawCommand.offset must be omitted or greater than or equal to zero")
         assert(count == nil || count! >= 0, "drawCommand.count must be omitted or greater than or equal to zero")
         
         
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
-        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
+        
+        // Create uniform buffer 
+        /*struct Uniforms
+        {
+            float3 u_center3D; 3x4 = 12
+            float4x4 u_modifiedModelView; 16x4 = 64
+            float4 u_tileRectangle; = 16
+            float4x4 czm_projection; = 64
+            float4 u_initialColor; = 16
+        };*/
+        
+        var uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
+
+        sp!.setUniforms(uniformBuffer, uniformMap: drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
     
-        if let indexBuffer = va!.indexBuffer {
-            offset *= indexBuffer.bytesPerIndex // offset in vertices to offset in bytes
-            count = count ?? va!.numberOfIndices
-            _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: <#Int#>, indexType: <#MTLIndexType#>, indexBuffer: <#MTLBuffer#>, indexBufferOffset: <#Int#>)
-            // FIXME: primitiveType toGL()
-            //glDrawElements(GLenum(primitiveType.rawValue), GLsizei(count!), indexBuffer.indexDatatype.toGL(), UnsafePointer<Void>(bitPattern: offset))
+        if let indexBuffer = va.indexBuffer {
+            let indexType = va.indexType
+            offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
+            let indexCount = count ?? va.numberOfIndices
+            _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
+            _commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
-            count = count ?? va!.vertexCount
+            count = count ?? va.vertexCount
             /*va!._bind()
             glDrawArrays(GLenum(primitiveType.rawValue), GLint(offset), GLsizei(count!))
             va!._unBind()*/
@@ -719,7 +756,16 @@ var renderStateCache = {};
 
     func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         
-        var activePassState = passState ?? _defaultPassState
+        let activePassState: PassState
+        if let pass = drawCommand.pass {
+            var commandPassState = _passStates[pass]
+            activePassState = commandPassState ?? _defaultPassState
+        } else {
+            activePassState = _currentPassState ?? _defaultPassState
+        }
+        if _currentPassState == nil /*|| _currentPassState! != activePassState*/ {
+            _currentPassState = activePassState
+        }
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
         var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
         

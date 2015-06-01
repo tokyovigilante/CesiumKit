@@ -184,35 +184,19 @@ class TileTerrain {
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
         var terrainMesh = mesh!
-        let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: terrainMesh.vertices.sizeInBytes)
+        let meshBufferSize = terrainMesh.vertices.sizeInBytes
         
         let stride: Int
-        let numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
             stride = 7 * datatype.elementSize
-            numTexCoordComponents = 3
         } else {
             stride = 6 * datatype.elementSize
-            numTexCoordComponents = 2
         }
-        let vertexCount = terrainMesh.vertices.sizeInBytes / stride
-        
-        let position3DAndHeightLength = 4
-        
-        let attributes = [
-            //position3DAndHeight
-            VertexAttributes(
-                bufferIndex: 0,
-                format: .Float4,
-                offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize),
-            VertexAttributes(
-                bufferIndex: 1,
-                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
-                offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize)
-        ]
-        
+
+        let vertexCount = meshBufferSize / stride
+
+        let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
+
         var indexBuffer = terrainMesh.indexBuffer
         if indexBuffer == nil {
             // FIXME geometry with > 64k indices
@@ -232,7 +216,7 @@ class TileTerrain {
             }
             terrainMesh.indexBuffer = indexBuffer!
         }
-        vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, attributes: attributes, indexBuffer: indexBuffer)
+        vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
         state = .Ready
     }
     
