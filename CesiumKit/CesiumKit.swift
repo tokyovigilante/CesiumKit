@@ -480,7 +480,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
-    public func render() {
+    public func render(size: CGSize) {
         
         /*if _lastFrameTime != nil {
             let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
@@ -490,7 +490,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         }*/
 
 
-        //resize(size)
+        resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
         scene.initializeFrame()
         var currentTime = clock.tick()
         if _canRender {

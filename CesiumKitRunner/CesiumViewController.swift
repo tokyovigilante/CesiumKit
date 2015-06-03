@@ -53,7 +53,20 @@ class CesiumViewController: UIViewController {
     }*/
     
     func render (displayLink: CADisplayLink) {
-        _globe.render()
+        _globe.render(metalView.metalLayer.drawableSize)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if let window = metalView.window {
+            let scale = window.screen.nativeScale
+            let layerSize = view.bounds.size
+            
+            metalView.contentScaleFactor = scale
+            metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
+            metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)
+        }    
     }
     
     override func prefersStatusBarHidden() -> Bool {

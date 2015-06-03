@@ -578,7 +578,7 @@ public class ImageryLayer {
                 texture.sampler = nonMipmapSampler!*/
             }
             
-            println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            //println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             //glFlush()
             //dispatch_async(context.renderQueue, {*/
                 imagery.state = .Ready

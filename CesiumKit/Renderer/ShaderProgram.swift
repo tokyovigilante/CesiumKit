@@ -8,9 +8,7 @@
 
 import Foundation
 import Metal
-import simd
-
-
+import GLSLOptimizer
 
 struct VertexAttributeInfo {
     
@@ -19,7 +17,7 @@ struct VertexAttributeInfo {
     var type: GLenum = 0
     
     var index: GLenum = 0
-    
+        
 }
 
 class ShaderProgram {
@@ -62,7 +60,7 @@ class ShaderProgram {
     
     var numberOfVertexAttributes: Int {
         get {
-            initialize()
+            //initialize()
             return Int(_numberOfVertexAttributes)
         }
         
@@ -71,7 +69,7 @@ class ShaderProgram {
     
     var vertexAttributes: [String: VertexAttributeInfo] {
         get {
-            initialize()
+            //initialize()
             return _vertexAttributes
         }
     }
@@ -80,7 +78,7 @@ class ShaderProgram {
     
     var uniformsByName: [String: Uniform] {
         get {
-            initialize()
+            //initialize()
             return _uniformsByName!
         }
     }
@@ -98,7 +96,7 @@ class ShaderProgram {
     
     let _id: Int
     
-    init(logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
+    init(optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
         
         _logShaderCompilation = logShaderCompilation
         self.vertexShaderSource = vertexShaderSource
@@ -108,10 +106,17 @@ class ShaderProgram {
         _attributeLocations = attributeLocations
         _id = id
         count = 0
+        
+        initialize(optimizer)
     }
     
-    private func createAndLinkProgram() -> GLuint {
+    private func createAndLinkProgram(optimizer: GLSLOptimizer) -> GLuint {
         
+        optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, options: 0)
+        optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
+
+        return 0
+        /*
         var log: GLint = 0
         
         var shaderCount: GLsizei = 1
@@ -183,8 +188,8 @@ class ShaderProgram {
             glDeleteProgram(program)
             let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
             assertionFailure("Program failed to link.  Link log: " + errorMessage!)
-        }
-        return program
+        }*/
+        return 0
     }
     
     typealias VertexAttribute = (name: String, type: GLenum, index: GLint)
@@ -317,15 +322,16 @@ class ShaderProgram {
         return textureUnitIndex
     }
     
-    func initialize() {
+    func initialize(optimizer: GLSLOptimizer) {
         
         if _program != nil {
             return
         }
-        
-        _program = 0///createAndLinkProgram()
-        
+        _program = createAndLinkProgram(optimizer)
+
         //glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
+        /*
+        glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
         
         var uniforms = findUniforms()
         var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
@@ -336,11 +342,11 @@ class ShaderProgram {
         _automaticUniforms = partitionedUniforms.automaticUniforms
         _manualUniforms = partitionedUniforms.manualUniforms
         
-        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))
+        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
     
     func bind () {
-        initialize()
+        //initialize()
         glUseProgram(_program!)
     }
     

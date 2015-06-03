@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GLSLOptimizer
 
 class ShaderCache {
 
@@ -15,13 +16,15 @@ class ShaderCache {
     */
     weak var context: Context?
     
-    private var _shaders = [String: ShaderProgram]()
+    private var _optimizer: GLSLOptimizer!
     
+    private var _shaders = [String: ShaderProgram]()
     
     var nextShaderProgramId = 0
     
     init (context: Context) {
         self.context = context
+        _optimizer = GLSLOptimizer(.Metal)
     }
     
     /**
@@ -97,6 +100,7 @@ class ShaderCache {
         
         if cachedShader == nil {
             cachedShader = ShaderProgram(
+                optimizer: _optimizer,
                 logShaderCompilation: context!._logShaderCompilation,
                 vertexShaderSource: vertexShaderSource,
                 vertexShaderText: vertexShaderText,
