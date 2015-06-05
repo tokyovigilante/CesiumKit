@@ -191,14 +191,14 @@ class ShaderProgram {
 
         
         var vertexUniformDescArray = [GLSLShaderVariableDescription]()
-        let uniformCount = _vertexShader.uniformCount()
-        for i in 0..<uniformCount {
+        let vertexUniformCount = _vertexShader.uniformCount()
+        for i in 0..<vertexUniformCount {
             vertexUniformDescArray.append(_vertexShader.uniformDescription(i))
         }
         
         var fragmentUniformDescArray = [GLSLShaderVariableDescription]()
         let fragmentUniformCount = _fragmentShader.uniformCount()
-        for i in 0..<uniformCount {
+        for i in 0..<fragmentUniformCount {
             fragmentUniformDescArray.append(_fragmentShader.uniformDescription(i))
         }
 
