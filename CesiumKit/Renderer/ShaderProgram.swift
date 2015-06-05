@@ -199,7 +199,7 @@ class ShaderProgram {
         var fragmentUniformDescArray = [GLSLShaderVariableDescription]()
         let fragmentUniformCount = _fragmentShader.uniformCount()
         for i in 0..<uniformCount {
-            fragmentUniformDescArray.append(_vertexShader.uniformDescription(i))
+            fragmentUniformDescArray.append(_fragmentShader.uniformDescription(i))
         }
 
         var uniformsByName = Dictionary<String, Uniform>()
