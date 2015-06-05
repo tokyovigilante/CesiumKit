@@ -23,8 +23,9 @@ class VertexDescriptor {
         
         metalDescriptor = MTLVertexDescriptor()
 
+        let bufferIndex = attributes.first?.bufferIndex ?? 0
         // Set up layout descriptor
-        metalDescriptor.layouts[0].stepFunction = .PerVertex
+        metalDescriptor.layouts[bufferIndex].stepFunction = .PerVertex
         
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](count: attributes.count, repeatedValue: false)
@@ -43,20 +44,6 @@ class VertexDescriptor {
         metalDescriptor.attributes[index].format = attribute.format.metalVertexFormat
         metalDescriptor.attributes[index].offset = attribute.offset
         
-        metalDescriptor.layouts[0].stride += attribute.size
-        
-        /*var hasVertexBuffer = attribute.vertexBuffer != nil
-        var hasValue = attribute.value != nil
-        var componentsPerAttribute = (attribute.value != nil) ? attribute.value!.length : attribute.componentsPerAttribute
-        
-        // FIXME: vertexbuffer.value
-        assert(hasVertexBuffer != hasValue, "attribute must have a vertexBuffer or a value. It must have either a vertexBuffer property defining per-vertex data or a value property defining data for all vertices")
-        
-        assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4, "attribute.value.length must be in the range [1, 4]")
-        
-        if (defined(attribute.strideInBytes) && (attribute.strideInBytes > 255)) {
-        // WebGL limit.  Not in GL ES.
-        throw new DeveloperError('attribute must have a strideInBytes less than or equal to 255 or not specify it.');
-        }*/
+        metalDescriptor.layouts[attribute.bufferIndex].stride += attribute.size
     }
 }

@@ -129,10 +129,13 @@ class Uniform {
         return Int(_desc.location)
     }
     
+    var rawSize: Int {
+        return Int(_desc.rawSize())
+    }
+    
     var isSingle: Bool {
         return _desc.arraySize == -1
     }
-    
     
     var datatype: GLSLOptBasicType {
         return self._desc.type
@@ -183,6 +186,10 @@ class UniformFloat: Uniform {
         /*assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
         memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))*/
         //_newValues = newValues
+    }
+    
+    override func set(buffer: Buffer) {
+        memcpy(buffer.data+Int(_desc.location), _values, Int(_desc.rawSize()))
     }
     
     func isChanged () -> Bool {

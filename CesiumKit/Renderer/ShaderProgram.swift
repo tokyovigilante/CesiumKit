@@ -22,8 +22,6 @@ struct VertexAttributeInfo {
 
 class ShaderProgram {
     
-    var uniformBuffer: Buffer!
-    
     var _logShaderCompilation: Bool = false
     
     /**
@@ -72,6 +70,10 @@ class ShaderProgram {
     
     private var _samplerUniforms: [Uniform]!
     
+    private (set) var vertexUniformBuffer: Buffer!
+    private (set) var fragmentUniformBuffer: Buffer!
+    private (set) var samplerUniformBuffer: Buffer!
+    
     let _attributeLocations: [String: Int]
     
     var keyword: String {
@@ -94,7 +96,7 @@ class ShaderProgram {
     
     let _id: Int
     
-    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
+    init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
 
         _logShaderCompilation = logShaderCompilation
         self.vertexShaderSource = vertexShaderSource
@@ -105,25 +107,19 @@ class ShaderProgram {
         _id = id
         count = 0
         
-        initialize(device, optimizer: optimizer)
+        initialize(context, optimizer: optimizer)
     }
     
-    private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
+    private func initialize(context: Context, optimizer: GLSLOptimizer) {
 
         createMetalProgram(optimizer)
-        compileMetalProgram(device)
+        compileMetalProgram(context.device)
         
         findVertexAttributes()
         findUniforms()
-        //samplers =
-        //var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
+        createUniformBuffers(context)
         
-        /*_uniformsByName = uniforms.uniformsByName
-        _uniforms = uniforms.uniforms
-        _automaticUniforms = partitionedUniforms.automaticUniforms
-        _manualUniforms = partitionedUniforms.manualUniforms
-        
-        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
+       /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
 
     
@@ -189,30 +185,29 @@ class ShaderProgram {
         let samplerUniformCount = _fragmentShader.textureCount()
         for i in 0..<samplerUniformCount {
             let desc =  _fragmentShader.textureDescription(i)
-            _fragmentUniforms.append(Uniform.create(desc: desc, type: .Sampler))
+            _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler))
         }
     }
-    /*
-    typealias automaticTuple = (uniform: Uniform, automaticUniform: AutomaticUniform)
     
-    private func partitionUniforms(uniforms: [String: Uniform]) -> (automaticUniforms: [automaticTuple], manualUniforms: [Uniform]) {
-        var automaticUniforms = [automaticTuple]()
-        var manualUniforms = [Uniform]()
-        
-        for (name, uniform) in uniforms {
-            // FIXME: could use filter/map
-            if let automaticUniform = AutomaticUniforms[name] {
-                automaticUniforms.append((
-                    uniform : uniform,
-                    automaticUniform : automaticUniform
-                ))
-            } else {
-                manualUniforms.append(uniform)
-            }
+    func createUniformBuffers(context: Context) {
+        let vertexUniformBufferSize = Int(_vertexShader.uniformTotalSize())
+        if vertexUniformBufferSize > 0 {
+            vertexUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: vertexUniformBufferSize)
         }
-        return (automaticUniforms: automaticUniforms, manualUniforms: manualUniforms)
+        
+        let fragmentUniformBufferSize = Int(_fragmentShader.uniformTotalSize())
+        if fragmentUniformBufferSize > 0 {
+            
+            fragmentUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: fragmentUniformBufferSize)
+        }
+        
+        let samplerUniformBufferSize = Int(_fragmentShader.textureCount())
+        if samplerUniformBufferSize > 0 {
+            samplerUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: samplerUniformBufferSize)
+        }
+
     }
-    */
+    
     private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
         
         
@@ -227,9 +222,25 @@ class ShaderProgram {
         return textureUnitIndex
     }
     
-    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
+    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState) {
+        
+        for uniform in _vertexUniforms {
+            setUniform(uniform, buffer: vertexUniformBuffer, uniformMap: uniformMap, uniformState: uniformState)
+        }
+    
+        for uniform in _fragmentUniforms {
+            setUniform(uniform, buffer: fragmentUniformBuffer, uniformMap: uniformMap, uniformState: uniformState)
+        }
+        
+        for uniform in _samplerUniforms {
+            //setUniform(uniform, uniformMap: uniformMap, uniformState: uniformState)
+        }
+        /*
         
         if let uniformMap = uniformMap {
+            
+            
+            
             let czm_projection = AutomaticUniforms["czm_projection"]!
             var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
             
@@ -292,9 +303,24 @@ class ShaderProgram {
                     assertionFailure("Program validation failed.  Program info log: " + errorMessage!)
                 }
             }
-        }*/
+        }*/*/
     }
     
+    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState) {
+        switch (uniform.type) {
+        case .Automatic:
+            if let automaticUniform = AutomaticUniforms[uniform.name] {
+                memcpy(buffer.data+uniform.location, automaticUniform.getValue(uniformState: uniformState), uniform.rawSize)
+            }
+        case .Manual:
+            if let uniformFloatFunc = uniformMap!.floatUniform(uniform.name) {
+                memcpy(buffer.data+uniform.location, uniformFloatFunc(map: uniformMap!), uniform.rawSize)
+            }
+        case .Sampler:
+            assertionFailure("Sampler not implemented")
+        }
+        //uniform.set(buffer)
+    }
     /**
     * Creates a GLSL shader source string by sending the input through three stages:
     * <ul>

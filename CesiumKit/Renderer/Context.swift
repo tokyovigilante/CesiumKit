@@ -63,7 +63,6 @@ class Context {
         
     var id: String
     
-    var _validateShaderProgram = false
     var _logShaderCompilation = false
     
     var _shaderCache: ShaderCache? = nil
@@ -730,17 +729,18 @@ var renderStateCache = {};
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
         
-        sp!.uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
+        //sp!.uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
 
-        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
+        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState)
     
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
-            _commandEncoder.setVertexBuffer(sp!.uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
-            _commandEncoder.setFragmentBuffer(sp!.uniformBuffer.metalBuffer, offset: 0, atIndex: 0)
+            _commandEncoder.setVertexBuffer(sp!.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            
+            _commandEncoder.setFragmentBuffer(sp!.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
             _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount
