@@ -76,6 +76,17 @@ class GlobeSurfaceShaderSet {
             
             fs.defines.append("TEXTURE_UNITS \(numberOfDayTextures)")
             
+            // Account for Metal not supporting sampler arrays
+            if numberOfDayTextures > 0 {
+                var textureArrayDefines = "\n"
+                for i in 0..<numberOfDayTextures {
+                    textureArrayDefines += "uniform sampler2D u_dayTexture\(i);\n"
+                }
+                textureArrayDefines += "uniform vec4 u_dayTextureTranslationAndScale[TEXTURE_UNITS];\n\n#ifdef APPLY_ALPHA\nuniform float u_dayTextureAlpha[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_BRIGHTNESS\nuniform float u_dayTextureBrightness[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_CONTRAST\nuniform float u_dayTextureContrast[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_HUE\nuniform float u_dayTextureHue[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_SATURATION\nuniform float u_dayTextureSaturation[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_GAMMA\nuniform float u_dayTextureOneOverGamma[TEXTURE_UNITS];\n#endif\n\nuniform vec4 u_dayTextureTexCoordsRectangle[TEXTURE_UNITS];\n\n"
+                
+                fs.sources.insert(textureArrayDefines, atIndex: 0)
+            }
+            
             if applyBrightness {
                 fs.defines.append("APPLY_BRIGHTNESS")
             }
@@ -115,7 +126,7 @@ class GlobeSurfaceShaderSet {
             var computeDayColor = "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n{    \nvec4 color = initialColor;\n"
             
             for i in 0..<numberOfDayTextures {
-                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTextures[\(i)],\n" +
+                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTexture\(i),\n" +
                     "textureCoordinates,\n" +
                     "u_dayTextureTexCoordsRectangle[\(i)],\n" +
                     "u_dayTextureTranslationAndScale[\(i)],\n" +

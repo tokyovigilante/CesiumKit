@@ -24,9 +24,7 @@ class Globe {
     var imageryLayers: ImageryLayerCollection
     
     private var _surfaceShaderSet: GlobeSurfaceShaderSet
-    
-    private var _pipeline: RenderPipeline!
-    
+        
     private var _surface: QuadtreePrimitive
     
     /**
@@ -221,37 +219,6 @@ class Globe {
         
         _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
-    }
-    
-    func createGlobeRenderPipeline (context: Context) {
-        let datatype = ComponentDatatype.Float32
-        let numTexCoordComponents: Int
-        if terrainProvider.hasVertexNormals {
-            numTexCoordComponents = 3
-        } else {
-            numTexCoordComponents = 2
-        }
-        
-        let position3DAndHeightLength = 4
-        
-        let attributes = [
-            //position3DAndHeight
-            VertexAttributes(
-                bufferIndex: 0,
-                format: .Float4,
-                offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize),
-            // texCoordAndEncodedNormals
-            VertexAttributes(
-                bufferIndex: 0,
-                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
-                offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize)
-        ]
-        
-        let vertexDescriptor = VertexDescriptor(attributes: attributes)
-        
-        _pipeline = context.createRenderPipeline(vsName: "globeVS", fsName: "globeFS", vertexDescriptor: vertexDescriptor)
     }
     
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
@@ -630,10 +597,6 @@ class Globe {
         if !show {
             return
         }
-        
-        if _pipeline == nil {
-            createGlobeRenderPipeline(context)
-        }
 
         var width = context.width
         var height = context.height
@@ -791,7 +754,7 @@ class Globe {
             tileProvider.oceanNormalMap = _oceanNormalMap
             tileProvider.enableLighting = enableLighting
             
-            _surface.update(context: context, pipeline: _pipeline!, frameState: frameState, commandList: &commandList)
+            _surface.update(context: context, frameState: frameState, commandList: &commandList)
             
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {

@@ -22,6 +22,8 @@ struct VertexAttributeInfo {
 
 class ShaderProgram {
     
+    var uniformBuffer: Buffer!
+    
     var _logShaderCompilation: Bool = false
     
     /**
@@ -36,6 +38,14 @@ class ShaderProgram {
     
     private let _vertexShaderText: String
     
+    private var _vertexShader: GLSLShader!
+    
+    private var _vertexLibrary: MTLLibrary!
+    
+    private var _metalVertexShaderSource: String!
+
+    var metalVertexFunction: MTLFunction!
+    
     /**
     * GLSL source for the shader program's fragment shader.
     *
@@ -48,6 +58,14 @@ class ShaderProgram {
     
     private let _fragmentShaderText: String
     
+    private var _fragmentShader: GLSLShader!
+
+    private var _fragmentLibrary: MTLLibrary!
+    
+    private var _metalFragmentShaderSource: String!
+
+    var metalFragmentFunction: MTLFunction!
+    
     let _attributeLocations: [String: Int]
     
     private var _program: GLuint? = nil
@@ -57,24 +75,12 @@ class ShaderProgram {
             return _vertexShaderText + _fragmentShaderText + _attributeLocations.description
         }
     }
-    
+
     var numberOfVertexAttributes: Int {
-        get {
-            //initialize()
-            return Int(_numberOfVertexAttributes)
-        }
-        
+        return vertexAttributes.count
     }
-    private var _numberOfVertexAttributes: GLint = 0
     
-    var vertexAttributes: [String: VertexAttributeInfo] {
-        get {
-            //initialize()
-            return _vertexAttributes
-        }
-    }
-    private var _vertexAttributes = [String: VertexAttributeInfo]()
-    
+    private (set) var vertexAttributes: [String: GLSLShaderVariableDescription]!
     
     var uniformsByName: [String: Uniform] {
         get {
@@ -96,8 +102,8 @@ class ShaderProgram {
     
     let _id: Int
     
-    init(optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
-        
+    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
+
         _logShaderCompilation = logShaderCompilation
         self.vertexShaderSource = vertexShaderSource
         _vertexShaderText = vertexShaderText
@@ -107,134 +113,100 @@ class ShaderProgram {
         _id = id
         count = 0
         
-        initialize(optimizer)
+        initialize(device, optimizer: optimizer)
     }
     
-    private func createAndLinkProgram(optimizer: GLSLOptimizer) -> GLuint {
+    func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
         
-        optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, options: 0)
-        optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
-
-        return 0
-        /*
-        var log: GLint = 0
-        
-        var shaderCount: GLsizei = 1
-        
-        var vertexSourceUTF8 = UnsafePointer<GLchar>((_vertexShaderText as NSString).UTF8String)
-        var vertexSourceLength = GLint(_vertexShaderText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
-        
-        let vertexShader: GLuint = glCreateShader(GLenum(GL_VERTEX_SHADER))
-        glShaderSource(vertexShader, shaderCount, &vertexSourceUTF8, &vertexSourceLength)
-        glCompileShader(vertexShader)
-        
-        var fragmentSourceUTF8 = UnsafePointer<GLchar>((_fragmentShaderText as NSString).UTF8String)
-        var fragmentSourceLength = GLint(_fragmentShaderText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
-        
-        let fragmentShader: GLuint = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
-        glShaderSource(fragmentShader, shaderCount, &fragmentSourceUTF8, &fragmentSourceLength)
-        glCompileShader(fragmentShader)
-        
-        let program = glCreateProgram()
-        glAttachShader(program, vertexShader)
-        glAttachShader(program, fragmentShader)
-        
-        glDeleteShader(vertexShader)
-        glDeleteShader(fragmentShader)
-        
-        for (key, value) in _attributeLocations {
-            glBindAttribLocation(program, GLuint(value), (key as NSString).UTF8String)
+        if _program != nil {
+            return
         }
+        _program = createMetalProgram(optimizer)
+        compileMetalProgram(device)
         
-        glLinkProgram(program)
+        vertexAttributes = findVertexAttributes()
+
+        var uniforms = findUniforms()
+        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
         
-        var status: GLint = 0
-        glGetProgramiv(program, GLenum(GL_LINK_STATUS), &status)
+        /*_uniformsByName = uniforms.uniformsByName
+        _uniforms = uniforms.uniforms
+        _automaticUniforms = partitionedUniforms.automaticUniforms
+        _manualUniforms = partitionedUniforms.manualUniforms
         
-        if status == 0 {
-            // For performance, only check compile errors if there is a linker error.
-            
-            var infoLogLength: GLint = 0
-            
-            glGetShaderiv(vertexShader, GLenum(GL_COMPILE_STATUS), &status)
-            
-            if status == 0 {
-                glGetShaderiv(vertexShader, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
-                var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
-                var actualLength: GLsizei = 0
-                glGetShaderInfoLog(vertexShader, infoLogLength, &actualLength, &strInfoLog)
-                let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                println(_vertexShaderText)
-                assertionFailure("[GL] Vertex shader compile log: " + errorMessage!)
-                
-            }
-            
-            glGetShaderiv(fragmentShader, GLenum(GL_COMPILE_STATUS), &status)
-            
-            if status == 0 {
-                glGetShaderiv(fragmentShader, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
-                var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
-                var actualLength: GLsizei = 0
-                glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
-                let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                println(_fragmentShaderText)
-                assertionFailure("[GL] Fragment shader compile log: " + errorMessage!)
-            }
-            
-            glGetProgramiv(program, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
-            var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
-            var actualLength: GLsizei = 0
-            glGetProgramInfoLog(program, infoLogLength, &actualLength, &strInfoLog)
-            glDeleteProgram(program)
-            let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-            assertionFailure("Program failed to link.  Link log: " + errorMessage!)
-        }*/
+        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
+    }
+
+    
+    private func createMetalProgram(optimizer: GLSLOptimizer) -> GLuint {
+        
+        _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, options: 0)
+        assert(_vertexShader.status(), _vertexShader.log())
+        _metalVertexShaderSource = _vertexShader.output()
+        
+        _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
+        assert(_vertexShader.status(), _vertexShader.log())
+        _metalFragmentShaderSource = _fragmentShader.output()
+    
         return 0
     }
     
-    typealias VertexAttribute = (name: String, type: GLenum, index: GLint)
+    private func compileMetalProgram(device: MTLDevice) {
+        var error: NSError?
+        _vertexLibrary = device.newLibraryWithSource(_metalVertexShaderSource, options: nil, error: &error)
+        if _vertexLibrary == nil {
+            println(error!.localizedDescription)
+            assertionFailure("_vertexLibrary == nil")
+        }
+        metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
+        
+        _fragmentLibrary = device.newLibraryWithSource(_metalFragmentShaderSource, options: nil, error: &error)
+        if _fragmentLibrary == nil {
+            println(_fragmentShaderText)
+            println(_metalFragmentShaderSource)
+            println(error!.localizedDescription)
+            assertionFailure("_library == nil")
+        }
+        metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
+        
+    }
     
-    private func findVertexAttributes(numberOfAttributes: Int) -> [String: VertexAttributeInfo] {
+    private func findVertexAttributes() -> [String: GLSLShaderVariableDescription] {
         
         assert(_program != nil, "no GLSL program")
-        let program = _program!
         
-        var attributes = [String: VertexAttributeInfo]()
+        let attributeCount = _vertexShader.inputCount()
         
-        for var i = 0; i < numberOfAttributes; ++i {
-            
-            var maxVertexAttribLength: GLint = 0
-            glGetProgramiv(program, GLenum(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH), &maxVertexAttribLength)
-            
-            var vertexAttribNameBuffer = [GLchar](count: Int(maxVertexAttribLength), repeatedValue: 0)
-            var attr = VertexAttributeInfo()
-            var vertexAttribSize: GLint = 0
-            var vertexAttribLength: GLsizei = 0
-            
-            glGetActiveAttrib(program, GLuint(i), GLsizei(maxVertexAttribLength), &vertexAttribLength, &vertexAttribSize, &attr.type, &vertexAttribNameBuffer)
-            attr.name = String.fromCString(UnsafePointer<CChar>(vertexAttribNameBuffer))!
-            attr.index = GLenum(i)
-            
-            attributes[attr.name] = attr
+        var attributes = [String: GLSLShaderVariableDescription]()
+        
+        for i in 0..<attributeCount {
+            var attribute = _vertexShader.inputDescription(i)
+            attributes[attribute.name] = attribute
         }
         return attributes
     }
     
     private func findUniforms() -> (uniformsByName: [String: Uniform], uniforms : [Uniform], samplerUniforms : [Uniform]) {
-        
         assert(_program != nil, "no GLSL program")
-        let program = _program!
+
         
-        var numberOfUniforms: GLint = 0
-        glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORMS), &numberOfUniforms)
+        var vertexUniformDescArray = [GLSLShaderVariableDescription]()
+        let uniformCount = _vertexShader.uniformCount()
+        for i in 0..<uniformCount {
+            vertexUniformDescArray.append(_vertexShader.uniformDescription(i))
+        }
         
+        var fragmentUniformDescArray = [GLSLShaderVariableDescription]()
+        let fragmentUniformCount = _fragmentShader.uniformCount()
+        for i in 0..<uniformCount {
+            fragmentUniformDescArray.append(_vertexShader.uniformDescription(i))
+        }
+
         var uniformsByName = Dictionary<String, Uniform>()
         var uniforms = [Uniform]()
         var samplerUniforms = [Uniform]()
         
-        var maxUniformLength: GLint = 0
-        glGetProgramiv(program, GLenum(GL_ACTIVE_UNIFORM_MAX_LENGTH), &maxUniformLength)
-        
+        /*
         for i in 0..<Int(numberOfUniforms) {
             var uniformLength: GLsizei = 0
             var uniformNameBuffer = [GLchar](count: Int(maxUniformLength + 1), repeatedValue: 0)
@@ -277,7 +249,7 @@ class ShaderProgram {
             }
             
         }
-        
+        */
         return (
             uniformsByName : uniformsByName,
             uniforms : uniforms,
@@ -322,45 +294,8 @@ class ShaderProgram {
         return textureUnitIndex
     }
     
-    func initialize(optimizer: GLSLOptimizer) {
+    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
         
-        if _program != nil {
-            return
-        }
-        _program = createAndLinkProgram(optimizer)
-
-        //glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-        /*
-        glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
-        
-        var uniforms = findUniforms()
-        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
-        
-        _vertexAttributes = findVertexAttributes(numberOfVertexAttributes)
-        _uniformsByName = uniforms.uniformsByName
-        _uniforms = uniforms.uniforms
-        _automaticUniforms = partitionedUniforms.automaticUniforms
-        _manualUniforms = partitionedUniforms.manualUniforms
-        
-        maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
-    }
-    
-    func bind () {
-        //initialize()
-        glUseProgram(_program!)
-    }
-    
-    
-    struct Uniforms
-    {
-        //var u_modifiedModelView: matrix_float4x4
-        //float4x4 czm_projection
-        //float4 u_initialColor
-    }
-    
-    func setUniforms (buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState, validate: Bool) {
-        
-        var uniforms = Uniforms()
         if let uniformMap = uniformMap {
             let czm_projection = AutomaticUniforms["czm_projection"]!
             var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
@@ -371,11 +306,10 @@ class ShaderProgram {
             let u_initialColor = uniformMap.floatUniform("u_initialColor")!
             var floatUIC = u_initialColor(map: uniformMap)
             
-            var bufferData = buffer.data
+            var bufferData = uniformBuffer.data
             memcpy(bufferData, floatCZMPR, sizeof(Float) * 16)
             memcpy(bufferData+64, floatMMV, sizeof(Float) * 16)
             memcpy(bufferData+128, floatUIC, sizeof(Float) * 4)
-            
         }
         // TODO: Performance
         if let uniformMap = uniformMap {
@@ -397,9 +331,9 @@ class ShaderProgram {
         }
 
         for automaticUniform in _automaticUniforms {
-            if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
+         /*   if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
                 uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
-            }
+            }*/
         }
         
         

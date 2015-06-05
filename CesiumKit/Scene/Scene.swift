@@ -1044,8 +1044,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            //_depthClearCommand.execute(context: context, passState: passState)
-            //context.createCommandEncoder(passState: nil)
+            _depthClearCommand.execute(context: context, passState: passState)
+            context.createCommandEncoder(passState: nil)
 
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).

@@ -12,10 +12,13 @@ class RenderPipeline {
     
     let state: MTLRenderPipelineState
     
-    init (device: MTLDevice, descriptor: MTLRenderPipelineDescriptor) {
+    let shaderKeyword: String
+    
+    init (device: MTLDevice, shaderKeyword: String, descriptor: MTLRenderPipelineDescriptor) {
         var error: NSError?
         var metalPipeline = device.newRenderPipelineStateWithDescriptor(descriptor, error: &error)
         assert(error == nil, "Metal Error: \(error!.description)")
         self.state = metalPipeline!
+        self.shaderKeyword = shaderKeyword
     }
 }

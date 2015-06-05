@@ -582,21 +582,21 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
-        _commandEncoder.setTriangleFillMode(.Lines)
+        _commandEncoder.setTriangleFillMode(.Fill)
         _commandEncoder.setCullMode(.None)
     }
     
-    func createRenderPipeline(#vsName: String, fsName: String, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
+    func createRenderPipeline(shaderProgram: ShaderProgram, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
         var pipelineDescriptor = MTLRenderPipelineDescriptor()
         
-        pipelineDescriptor.vertexFunction = _library.newFunctionWithName(vsName)
-        pipelineDescriptor.fragmentFunction = _library.newFunctionWithName(fsName)
+        pipelineDescriptor.vertexFunction = shaderProgram.metalVertexFunction
+        pipelineDescriptor.fragmentFunction = shaderProgram.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         
-        return RenderPipeline(device: device, descriptor: pipelineDescriptor)
+        return RenderPipeline(device: device, shaderKeyword: shaderProgram.keyword, descriptor: pipelineDescriptor)
     }
 
 /*
@@ -643,7 +643,8 @@ var renderStateCache = {};
         _drawable = layer.nextDrawable()
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        
+        //_defaultPassState.passDescriptor.depthAttachment.texture = _drawable.texture
+        //_defaultPassState.passDescriptor.stencilAttachment.texture = _drawable.texture
         _commandBuffer = _commandQueue.commandBuffer()
     }
     
@@ -664,31 +665,35 @@ var renderStateCache = {};
         var d = clearCommand.depth
         var s = clearCommand.stencil
         
+        let colorAttachment = passDescriptor.colorAttachments[0]
         if let c = c {
-            let attachment = passDescriptor.colorAttachments[0]
-            attachment.loadAction = .Clear
-            attachment.storeAction = .Store
-            attachment.clearColor = c
+            colorAttachment.loadAction = .Clear
+            colorAttachment.storeAction = .Store
+            colorAttachment.clearColor = c
         } else {
-            passDescriptor.colorAttachments[0] = nil
-        }
-    
-        if let d = d {
-            let attachment = passDescriptor.depthAttachment
-            attachment.loadAction = .Clear
-            attachment.storeAction = .Store
-            attachment.clearDepth = d
-        } else {
-            passDescriptor.depthAttachment = nil
+            colorAttachment.loadAction = .DontCare
+            colorAttachment.storeAction = .DontCare
+
         }
         
-        if let s = s {
-            let attachment = passDescriptor.stencilAttachment
-            attachment.loadAction = .Clear
-            attachment.storeAction = .Store
-            attachment.clearStencil = s
+        let depthAttachment = passDescriptor.depthAttachment
+        if let d = d {
+            depthAttachment.loadAction = .Clear
+            depthAttachment.storeAction = .Store
+            depthAttachment.clearDepth = d
         } else {
-            passDescriptor.stencilAttachment = nil
+            depthAttachment.loadAction = .DontCare
+            depthAttachment.storeAction = .DontCare
+        }
+        
+        let stencilAttachment = passDescriptor.stencilAttachment
+        if let s = s {
+            stencilAttachment.loadAction = .Clear
+            stencilAttachment.storeAction = .Store
+            stencilAttachment.clearStencil = s
+        } else {
+            stencilAttachment.loadAction = .DontCare
+            stencilAttachment.storeAction = .DontCare
         }
     }
     
@@ -705,7 +710,6 @@ var renderStateCache = {};
         
         
         var sp = shaderProgram ?? drawCommand.shaderProgram
-        sp!.bind()
         //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
         //applyRenderState(rs, passState: passState)
@@ -726,17 +730,17 @@ var renderStateCache = {};
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
         
-        var uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
+        sp!.uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
 
-        sp!.setUniforms(uniformBuffer, uniformMap: drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
+        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState, validate: _validateShaderProgram)
     
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
-            _commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
-            _commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setVertexBuffer(sp!.uniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setFragmentBuffer(sp!.uniformBuffer.metalBuffer, offset: 0, atIndex: 0)
             _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount

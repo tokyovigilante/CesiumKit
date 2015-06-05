@@ -67,6 +67,11 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     var surfaceShaderSet: GlobeSurfaceShaderSet
     
     /**
+    * Stores Metal renderer pipeline. Updated if/when shaders changed (add/remove tile provider etc)
+    */
+    private var _pipeline: RenderPipeline!
+    
+    /**
     * Gets an event that is raised when the geometry provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
     * are passed an instance of {@link TileProviderError}.
@@ -125,6 +130,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
 
     private var _drawCommands = [DrawCommand]()
     
+    private var _vertexDescriptor: VertexDescriptor!
+    
     private var _uniformMaps = [TileUniformMap]()
     
     private var _usedDrawCommands = 0
@@ -150,6 +157,37 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         _baseColor = Cartesian4()
         _firstPassInitialColor = Cartesian4()
         baseColor = Cartesian4.fromColor(red: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
+        
+        updateVertexDescriptor()
+    }
+    
+    func updateVertexDescriptor () {
+        let datatype = ComponentDatatype.Float32
+        let numTexCoordComponents: Int
+        if terrainProvider.hasVertexNormals {
+            numTexCoordComponents = 3
+        } else {
+            numTexCoordComponents = 2
+        }
+        
+        let position3DAndHeightLength = 4
+        
+        let attributes = [
+            //position3DAndHeight
+            VertexAttributes(
+                bufferIndex: 0,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
+            // texCoordAndEncodedNormals
+            VertexAttributes(
+                bufferIndex: 0,
+                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
+        ]
+        
+        _vertexDescriptor = VertexDescriptor(attributes: attributes)
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
@@ -227,7 +265,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, pipeline: RenderPipeline, frameState: FrameState, inout commandList: [Command]) {
+    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
 
         if _renderState == nil {
         
@@ -259,7 +297,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {
                 // FIXME: Tileprovider
-                addDrawCommandsForTile(tile, context: context, pipeline: pipeline, frameState: frameState, commandList: &commandList)
+                addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
             }
         }
     }
@@ -606,7 +644,7 @@ var northeastScratch = new Cartesian3();
     }
     
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, pipeline: RenderPipeline, frameState: FrameState, inout commandList: [Command]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
@@ -761,7 +799,7 @@ var northeastScratch = new Cartesian3();
                     tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: tileImagery)
                 }
                 
-                uniformMap.dayTextures.append(imagery!.texture!)
+                //uniformMap.dayTextures.append(imagery!.texture!)
                 tileImagery.textureTranslationAndScale!.pack(&uniformMap.dayTextureTranslationAndScale, startingIndex: numberOfDayTextures * 4)
                 tileImagery.textureCoordinateRectangle!.pack(&uniformMap.dayTextureTexCoordsRectangle, startingIndex: numberOfDayTextures * 4)
                 
@@ -825,7 +863,13 @@ var northeastScratch = new Cartesian3();
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             command.pass = .Globe
-            command.renderPipeline = pipeline
+            
+            // update pipline if required
+            if _pipeline == nil || command.shaderProgram!.keyword != _pipeline.shaderKeyword {
+                    updateVertexDescriptor()
+                    _pipeline = context.createRenderPipeline(command.shaderProgram!, vertexDescriptor: _vertexDescriptor)
+            }
+            command.renderPipeline = _pipeline
             
             if _debug.wireframe {
                 // FIXME: Wireframe
@@ -835,6 +879,7 @@ var northeastScratch = new Cartesian3();
                     command.vertexArray = surfaceTile.wireframeVertexArray;
                     command.primitiveType = PrimitiveType.LINES;
                 }*/
+                
             }
             
             var boundingSphere: BoundingSphere

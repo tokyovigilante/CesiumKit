@@ -100,6 +100,7 @@ class ShaderCache {
         
         if cachedShader == nil {
             cachedShader = ShaderProgram(
+                device: context!.device,
                 optimizer: _optimizer,
                 logShaderCompilation: context!._logShaderCompilation,
                 vertexShaderSource: vertexShaderSource,

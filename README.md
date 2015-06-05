@@ -26,6 +26,12 @@ Licence
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
+Credits
+-------
+
+CesiumKit is based on the [Cesium WebGL Virtual Globe and Map Engine](http://cesiumjs.org) by AGI.
+GLSL->Metal shader real-time translation performed by the [glsl-optimizer library](https://github.com/aras-p/glsl-optimizer) by Brian Paul, Aras Pranckevičius and Unity Technologies.
+
 Feedback
 --------
 [ryan@testtoast.com](mailto:ryan@testtoast.com)

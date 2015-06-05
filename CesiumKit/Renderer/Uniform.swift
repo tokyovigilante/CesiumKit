@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import GLSLOptimizer
 
 enum UniformDataType: GLenum {
     
@@ -144,63 +144,33 @@ enum UniformDataType: GLenum {
             return false
         }
     }
-
-    
-}
-
-// represents WebGLActiveInfo
-struct ActiveUniformInfo {
-    
-    let name: String
-    
-    let size: GLsizei
-    
-    let type: UniformDataType
-    
-    static func dataType (rawType: GLenum) -> UniformDataType {
-        
-        let dataType = UniformDataType(rawValue: rawType)
-        assert(dataType != nil, "Invalid raw uniform datatype enum")
-        
-        return dataType!
-    }
 }
 
 class Uniform {
     
-    let name: String
-    
-    private let _activeUniform: ActiveUniformInfo
-    
-    private let _locations: [GLint]
-    
-    private var location: GLint {
-        return _locations[0]
+    var name: String {
+        return _variableDesc.name
     }
     
-    var isFloat: Bool {
-        get {
-            return _activeUniform.type.isFloat()
-        }
+    private let _variableDesc: GLSLShaderVariableDescription
+    
+    //private let _locations: [GLint]
+    
+    private var location: Int {
+        return Int(_variableDesc.location)
     }
     
     var isSingle: Bool {
-        get {
-            return _activeUniform.name.indexOf("[") == nil
-        }
+        return _variableDesc.arraySize == -1
+        //return _variableDesc.name.indexOf("[") == nil
     }
     
-    var datatype: GLenum {
-        get {
-            return self._activeUniform.type.rawValue
-        }
+    var datatype: GLSLOptBasicType {
+        return self._variableDesc.type
     }
     
-    init (activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _activeUniform = activeUniform
-        self.name = name
-        _locations = locations
+    init (variableDescription: GLSLShaderVariableDescription) {
+        _variableDesc = variableDescription
     }
     
     func setValues(newValues: [Any]) {
@@ -211,143 +181,57 @@ class Uniform {
         assertionFailure("Invalid base class")
     }
     
-    static func create(#activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
-        switch activeUniform.type {
-            case .FloatVec1:
-            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatVec2:
-            return UniformFloatVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatVec3:
-            return UniformFloatVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatVec4:
-            return UniformFloatVec4(activeUniform: activeUniform, name: name, locations: locations)
-            /*case .IntVec1:
-            return UniformIntVec1(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec2:
-            return UniformIntVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec3:
-            return UniformIntVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec4:
-            return UniformIntVec4(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec1:
-            return UniformBoolVec1(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec2:
-            return UniformBoolVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec3:
-            return UniformBoolVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec4:
-            return UniformBoolVec4(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatMatrix2:
-            return UniformFloatMatrix2(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatMatrix3:
-            return UniformFloatMatrix3(activeUniform: activeUniform, name: name, locations: locations)*/
-            case .FloatMatrix4:
-            return UniformFloatMatrix4(activeUniform: activeUniform, name: name, locations: locations)
-        case .Sampler2D:
-            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)
-            /*case .SamplerCube:
-            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)*/
+    static func create(#variableDescription: GLSLShaderVariableDescription, name: String, locations: [GLint]) -> Uniform {
+        switch variableDescription.type {
+        case .Float:
+            return UniformFloat(variableDescription: variableDescription)
+            /*case Int // kGlslTypeInt,
+            return UniformFloat(variableDescription: variableDescription)
+            case Bool // kGlslTypeBool,
+            return UniformBool(variableDescription: variableDescription)*/
+        case .Tex2D: // kGlslTypeTex2D,
+            return UniformSampler(variableDescription: variableDescription)
+        case .Tex3D: // kGlslTypeTex3D,
+            return UniformSampler(variableDescription: variableDescription)
+        case .TexCube: // kGlslTypeTexCube,
+            return UniformSampler(variableDescription: variableDescription)
         default:
             assertionFailure("Unimplemented")
-            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)
+            return UniformFloat(variableDescription: variableDescription)
         }
     }
     
 }
 
-class FloatUniform: Uniform {
+class UniformFloat: Uniform {
     
     private var _values: [Float]
     private var _newValues: [Float]
     
-    override var isFloat: Bool {
-        get {
-            return true
-        }
-    }
-    
     func setFloatValues(newValues: [Float]) {
-        assert(isFloat, "Not float")
-        assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
-        memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
+        /*assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
+        memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))*/
         //_newValues = newValues
     }
     
     func isChanged () -> Bool {
-        if (memcmp(&_values, &_newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))) != 0 {
-            memcpy(&_values, _newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
-            return true
-        }
+        /*    if (memcmp(&_values, &_newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))) != 0 {
+        memcpy(&_values, _newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
+        return true
+        }*/
         return false
     }
-
     
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        _values = [Float](count: locations.count * activeUniform.type.elementCount(), repeatedValue: 0.0)
+    override init(variableDescription: GLSLShaderVariableDescription) {
+        
+        _values = [Float](count: Int(variableDescription.vecSize * variableDescription.matSize), repeatedValue: 0.0)
         _newValues = _values
         
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-
+        super.init(variableDescription: variableDescription)
     }
     
 }
 
-class UniformFloatVec1: FloatUniform {
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func set () {
-        if isChanged() {
-            glUniform1fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
-        }
-    }
-}
-
-
-class UniformFloatVec2: FloatUniform {
-    
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func set () {
-       
-        if isChanged() {
-            glUniform2fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
-        }
-    }
-}
-
-
-class UniformFloatVec3: FloatUniform {
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func set () {
-        if isChanged() {
-            glUniform3fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
-        }
-    }
-    
-}
-
-class UniformFloatVec4: FloatUniform {
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func set () {
-        if isChanged() {
-            glUniform4fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_values))
-        }
-    }
-}
 /*
 case gl.INT:
 case gl.BOOL:
@@ -403,20 +287,20 @@ var length = value.length;
 for (var i = 0; i < length; ++i) {
 gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
 }*/
-
+/*
 class UniformFloatMatrix4: FloatUniform {
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func set () {
-        if isChanged() {
-            glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_values))
-        }
-    }
-    
+
+override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+super.init(activeUniform: activeUniform, name: name, locations: locations)
 }
+
+override func set () {
+if isChanged() {
+glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_values))
+}
+}
+
+}*/
 
 
 class UniformSampler: Uniform {
@@ -424,10 +308,6 @@ class UniformSampler: Uniform {
     private var _textureUnitIndex: GLint = 0
     
     private var _values: [Texture]!
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
     
     override func setValues(newValues: [Any]) {
         _values = newValues.map({ $0 as! Texture })
@@ -437,24 +317,24 @@ class UniformSampler: Uniform {
         
         let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
         
-        for (index, location) in enumerate(_locations) {
-            
-            glActiveTexture(textureUnitIndex + GLenum(index))
-            glBindTexture(_values[index].textureTarget, _values[index].textureName)
-        }
+        /*for (index, location) in enumerate(_locations) {
+        
+        glActiveTexture(textureUnitIndex + GLenum(index))
+        glBindTexture(_values[index].textureTarget, _values[index].textureName)
+        }*/
     }
     
     func setSampler (textureUnitIndex: GLint) -> GLint {
         
         self._textureUnitIndex = textureUnitIndex
         
-        let count = self._locations.count
+        /*let count = self._locations.count
         for i in 0..<count {
-            let index = textureUnitIndex + i
-            glUniform1i(self._locations[i], index)
+        let index = textureUnitIndex + i
+        glUniform1i(self._locations[i], index)
         }
-        
-        return self._textureUnitIndex + count
+        */
+        return self._textureUnitIndex// + count
     }
     
 }

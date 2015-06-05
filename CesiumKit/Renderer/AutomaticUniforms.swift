@@ -7,6 +7,7 @@
 //
 
 
+import GLSLOptimizer
 /*
 
 var viewerPositionWCScratch = new Cartesian3();
