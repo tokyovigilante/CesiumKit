@@ -46,6 +46,8 @@ class ShaderProgram {
 
     var metalVertexFunction: MTLFunction!
     
+    private var _vertexUniforms: [Uniform]!
+    
     /**
     * GLSL source for the shader program's fragment shader.
     *
@@ -66,9 +68,11 @@ class ShaderProgram {
 
     var metalFragmentFunction: MTLFunction!
     
-    let _attributeLocations: [String: Int]
+    private var _fragmentUniforms: [Uniform]!
     
-    private var _program: GLuint? = nil
+    private var _samplerUniforms: [Uniform]!
+    
+    let _attributeLocations: [String: Int]
     
     var keyword: String {
         get {
@@ -82,19 +86,7 @@ class ShaderProgram {
     
     private (set) var vertexAttributes: [String: GLSLShaderVariableDescription]!
     
-    var uniformsByName: [String: Uniform] {
-        get {
-            //initialize()
-            return _uniformsByName!
-        }
-    }
-    private var _uniformsByName = [String: Uniform]?()
-    
-    private var _uniforms: [Uniform]? = nil
-    
-    private var _automaticUniforms = [automaticTuple]()
-    
-    private var _manualUniforms = [Uniform]?()
+    private var _uniforms: [Uniform]!
     
     var maximumTextureUnitIndex: Int = 0
     
@@ -116,18 +108,15 @@ class ShaderProgram {
         initialize(device, optimizer: optimizer)
     }
     
-    func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
-        
-        if _program != nil {
-            return
-        }
-        _program = createMetalProgram(optimizer)
+    private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
+
+        createMetalProgram(optimizer)
         compileMetalProgram(device)
         
-        vertexAttributes = findVertexAttributes()
-
-        var uniforms = findUniforms()
-        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
+        findVertexAttributes()
+        findUniforms()
+        //samplers =
+        //var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
         
         /*_uniformsByName = uniforms.uniformsByName
         _uniforms = uniforms.uniforms
@@ -138,7 +127,7 @@ class ShaderProgram {
     }
 
     
-    private func createMetalProgram(optimizer: GLSLOptimizer) -> GLuint {
+    private func createMetalProgram(optimizer: GLSLOptimizer) {
         
         _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, options: 0)
         assert(_vertexShader.status(), _vertexShader.log())
@@ -147,8 +136,6 @@ class ShaderProgram {
         _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
         assert(_vertexShader.status(), _vertexShader.log())
         _metalFragmentShaderSource = _fragmentShader.output()
-    
-        return 0
     }
     
     private func compileMetalProgram(device: MTLDevice) {
@@ -168,95 +155,44 @@ class ShaderProgram {
             assertionFailure("_library == nil")
         }
         metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
-        
     }
     
-    private func findVertexAttributes() -> [String: GLSLShaderVariableDescription] {
-        
-        assert(_program != nil, "no GLSL program")
-        
+    private func findVertexAttributes() {
         let attributeCount = _vertexShader.inputCount()
         
-        var attributes = [String: GLSLShaderVariableDescription]()
+        vertexAttributes = [String: GLSLShaderVariableDescription]()
         
         for i in 0..<attributeCount {
             var attribute = _vertexShader.inputDescription(i)
-            attributes[attribute.name] = attribute
+            vertexAttributes[attribute.name] = attribute
         }
-        return attributes
     }
     
-    private func findUniforms() -> (uniformsByName: [String: Uniform], uniforms : [Uniform], samplerUniforms : [Uniform]) {
-        assert(_program != nil, "no GLSL program")
-
-        
-        var vertexUniformDescArray = [GLSLShaderVariableDescription]()
+    private func findUniforms() {
+        _vertexUniforms = [Uniform]()
         let vertexUniformCount = _vertexShader.uniformCount()
         for i in 0..<vertexUniformCount {
-            vertexUniformDescArray.append(_vertexShader.uniformDescription(i))
+            let desc =  _vertexShader.uniformDescription(i)
+            let type: UniformType = desc.name.hasPrefix("czm_") ? .Automatic : .Manual
+            _vertexUniforms.append(Uniform.create(desc: desc, type: type))
         }
         
-        var fragmentUniformDescArray = [GLSLShaderVariableDescription]()
+        _fragmentUniforms = [Uniform]()
         let fragmentUniformCount = _fragmentShader.uniformCount()
         for i in 0..<fragmentUniformCount {
-            fragmentUniformDescArray.append(_fragmentShader.uniformDescription(i))
+            let desc =  _fragmentShader.uniformDescription(i)
+            let type: UniformType = desc.name.hasPrefix("czm_") ? .Automatic : .Manual
+            _fragmentUniforms.append(Uniform.create(desc: desc, type: type))
         }
 
-        var uniformsByName = Dictionary<String, Uniform>()
-        var uniforms = [Uniform]()
-        var samplerUniforms = [Uniform]()
-        
-        /*
-        for i in 0..<Int(numberOfUniforms) {
-            var uniformLength: GLsizei = 0
-            var uniformNameBuffer = [GLchar](count: Int(maxUniformLength + 1), repeatedValue: 0)
-            var uniformType: GLenum = 0
-            var uniformSize: GLsizei = 0
-            glGetActiveUniform(program, GLuint(i), GLsizei(maxUniformLength), &uniformLength, &uniformSize, &uniformType, &uniformNameBuffer)
-            let activeUniform = ActiveUniformInfo(name: String.fromCString(UnsafePointer<CChar>(uniformNameBuffer))!, size: uniformSize, type: ActiveUniformInfo.dataType(uniformType))
-            
-            let suffix = "[0]"
-            var uniformName = activeUniform.name
-            if uniformName.hasSuffix(suffix) {
-                let suffixRange = Range(
-                    start: advance(uniformName.endIndex, -3),
-                    end: uniformName.endIndex)
-                uniformName.removeRange(suffixRange)
-            }
-            
-            let uniform: Uniform
-            if activeUniform.name.indexOf("[") == nil {
-                // Single uniform
-                let nameBuffer = UnsafePointer<GLchar>((uniformName as NSString).UTF8String)
-                let location = GLint(glGetUniformLocation(program, nameBuffer))
-                
-                uniform = Uniform.create(activeUniform: activeUniform, name: uniformName, locations: [location])
-
-            } else {
-                var locations = [GLint]()
-                for j in  0..<Int(activeUniform.size) {
-                    let nameBuffer = UnsafePointer<GLchar>((uniformName + "[\(j)]" as NSString).UTF8String)
-                    let location = GLint(glGetUniformLocation(program, nameBuffer))
-                    locations.append(location)
-                }
-                uniform = Uniform.create(activeUniform: activeUniform, name: uniformName, locations: locations)
-            }
-            uniformsByName[uniformName] = uniform
-            uniforms.append(uniform)
-            
-            if uniform is UniformSampler {
-                samplerUniforms.append(uniform)
-            }
-            
+        _samplerUniforms = [Uniform]()
+        let samplerUniformCount = _fragmentShader.textureCount()
+        for i in 0..<samplerUniformCount {
+            let desc =  _fragmentShader.textureDescription(i)
+            _fragmentUniforms.append(Uniform.create(desc: desc, type: .Sampler))
         }
-        */
-        return (
-            uniformsByName : uniformsByName,
-            uniforms : uniforms,
-            samplerUniforms : samplerUniforms
-        )
     }
-    
+    /*
     typealias automaticTuple = (uniform: Uniform, automaticUniform: AutomaticUniform)
     
     private func partitionUniforms(uniforms: [String: Uniform]) -> (automaticUniforms: [automaticTuple], manualUniforms: [Uniform]) {
@@ -276,10 +212,9 @@ class ShaderProgram {
         }
         return (automaticUniforms: automaticUniforms, manualUniforms: manualUniforms)
     }
-    
+    */
     private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
         
-        glUseProgram(_program!)
         
         var textureUnitIndex: GLint = 0
         
@@ -288,9 +223,7 @@ class ShaderProgram {
                 textureUnitIndex = samplerUniform.setSampler(textureUnitIndex)
             }
         }
-        
-        glUseProgram(0)
-        
+            
         return textureUnitIndex
     }
     
@@ -330,11 +263,11 @@ class ShaderProgram {
             }*/
         }
 
-        for automaticUniform in _automaticUniforms {
+        /*for automaticUniform in _automaticUniforms {
          /*   if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
                 uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
             }*/
-        }
+        }*/
         
         
         // It appears that assigning the uniform values above and then setting them here
@@ -360,12 +293,6 @@ class ShaderProgram {
                 }
             }
         }*/
-    }
-    
-    deinit {
-        if _program != nil {
-            glDeleteProgram(_program!)
-        }
     }
     
     /**

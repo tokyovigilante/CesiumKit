@@ -105,99 +105,70 @@ enum UniformDataType: GLenum {
             return 1
         }
     }
-    
-    func isFloat () -> Bool {
-        switch self {
-        case .FloatVec1:
-            return true
-        case .FloatVec2:
-            return true
-        case .FloatVec3:
-            return true
-        case .FloatVec4:
-            return true
-        case .IntVec1:
-            return false
-        case .IntVec2:
-            return false
-        case .IntVec3:
-            return false
-        case .IntVec4:
-            return false
-        case .BoolVec1:
-            return false
-        case .BoolVec2:
-            return false
-        case .BoolVec3:
-            return false
-        case .BoolVec4:
-            return false
-        case .FloatMatrix2:
-            return true
-        case .FloatMatrix3:
-            return true
-        case .FloatMatrix4:
-            return true
-        case .Sampler2D:
-            return false
-        case .SamplerCube:
-            return false
-        }
-    }
+}
+
+enum UniformType {
+    case Manual, // u_
+    Automatic, // czm_
+    Sampler
 }
 
 class Uniform {
     
+    private let _desc: GLSLShaderVariableDescription
+
+    var type: UniformType
+
+    let elementCount: Int
+
     var name: String {
-        return _variableDesc.name
+        return _desc.name
     }
     
-    private let _variableDesc: GLSLShaderVariableDescription
-    
-    //private let _locations: [GLint]
-    
-    private var location: Int {
-        return Int(_variableDesc.location)
+    var location: Int {
+        return Int(_desc.location)
     }
     
     var isSingle: Bool {
-        return _variableDesc.arraySize == -1
-        //return _variableDesc.name.indexOf("[") == nil
+        return _desc.arraySize == -1
     }
+    
     
     var datatype: GLSLOptBasicType {
-        return self._variableDesc.type
+        return self._desc.type
     }
     
-    init (variableDescription: GLSLShaderVariableDescription) {
-        _variableDesc = variableDescription
+    init (desc: GLSLShaderVariableDescription, type: UniformType) {
+        _desc = desc
+        self.type = type
+        elementCount = Int(desc.elementCount())
     }
     
     func setValues(newValues: [Any]) {
         assertionFailure("Invalid base class")
     }
     
-    func set() {
+    func set(buffer: Buffer) {
         assertionFailure("Invalid base class")
     }
     
-    static func create(#variableDescription: GLSLShaderVariableDescription, name: String, locations: [GLint]) -> Uniform {
-        switch variableDescription.type {
+    static func create(#desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+        switch desc.type {
         case .Float:
-            return UniformFloat(variableDescription: variableDescription)
+            return UniformFloat(desc: desc, type: type)
             /*case Int // kGlslTypeInt,
             return UniformFloat(variableDescription: variableDescription)
             case Bool // kGlslTypeBool,
             return UniformBool(variableDescription: variableDescription)*/
         case .Tex2D: // kGlslTypeTex2D,
-            return UniformSampler(variableDescription: variableDescription)
+            return UniformSampler(desc: desc, type: type)
         case .Tex3D: // kGlslTypeTex3D,
-            return UniformSampler(variableDescription: variableDescription)
+            return UniformSampler(desc: desc, type: type)
         case .TexCube: // kGlslTypeTexCube,
-            return UniformSampler(variableDescription: variableDescription)
+            return UniformSampler(desc: desc, type: type)
         default:
             assertionFailure("Unimplemented")
-            return UniformFloat(variableDescription: variableDescription)
+            return UniformFloat(desc: desc, type: type)
         }
     }
     
@@ -222,12 +193,12 @@ class UniformFloat: Uniform {
         return false
     }
     
-    override init(variableDescription: GLSLShaderVariableDescription) {
+    override init(desc: GLSLShaderVariableDescription, type: UniformType) {
         
-        _values = [Float](count: Int(variableDescription.vecSize * variableDescription.matSize), repeatedValue: 0.0)
+        _values = [Float](count: Int(desc.elementCount()), repeatedValue: 0.0)
         _newValues = _values
         
-        super.init(variableDescription: variableDescription)
+        super.init(desc: desc, type: type)
     }
     
 }
@@ -313,7 +284,7 @@ class UniformSampler: Uniform {
         _values = newValues.map({ $0 as! Texture })
     }
     
-    override func set () {
+    override func set(buffer: Buffer) {
         
         let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
         
