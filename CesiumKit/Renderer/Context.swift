@@ -581,8 +581,8 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
-        _commandEncoder.setTriangleFillMode(.Fill)
-        _commandEncoder.setCullMode(.None)
+        _commandEncoder.setTriangleFillMode(.Lines)
+        _commandEncoder.setCullMode(.Back)
     }
     
     func createRenderPipeline(shaderProgram: ShaderProgram, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
@@ -729,18 +729,23 @@ var renderStateCache = {};
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         let sp = shaderProgram ?? drawCommand.shaderProgram
         
-        //sp!.uniformBuffer = createBuffer(componentDatatype: .Byte, sizeInBytes: 144)
-
-        sp!.setUniforms(drawCommand.uniformMap, uniformState: uniformState)
+        if drawCommand.vertexUniformBuffer == nil ||
+            drawCommand.fragmentUniformBuffer == nil ||
+            drawCommand.samplerUniformBuffer == nil {
+                let uniformBuffers = sp!.createUniformBuffers(self)
+                drawCommand.setUniformBuffers(vertex: uniformBuffers.vertex, fragment: uniformBuffers.fragment, sampler: uniformBuffers.sampler)
+        }
+        
+        sp!.setUniforms(drawCommand, uniformState: uniformState)
     
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
-            _commandEncoder.setVertexBuffer(sp!.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setVertexBuffer(drawCommand.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
             
-            _commandEncoder.setFragmentBuffer(sp!.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setFragmentBuffer(drawCommand.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
             _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount

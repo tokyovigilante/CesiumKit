@@ -70,10 +70,6 @@ class ShaderProgram {
     
     private var _samplerUniforms: [Uniform]!
     
-    private (set) var vertexUniformBuffer: Buffer!
-    private (set) var fragmentUniformBuffer: Buffer!
-    private (set) var samplerUniformBuffer: Buffer!
-    
     let _attributeLocations: [String: Int]
     
     var keyword: String {
@@ -110,6 +106,19 @@ class ShaderProgram {
         initialize(context, optimizer: optimizer)
     }
     
+    func createUniformBuffers(context: Context) -> (vertex: Buffer, fragment: Buffer, sampler: Buffer) {
+        let vSize = Int(_vertexShader.uniformTotalSize())
+        let v = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: vSize > 0 ? vSize : 1)
+        
+        let fSize = Int(_fragmentShader.uniformTotalSize())
+        let f = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: fSize > 0 ? fSize : 1)
+        
+        let sSize = Int(_fragmentShader.textureCount())
+        let s = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: sSize > 0 ? sSize : 1)
+        
+        return (vertex: v, fragment: f, sampler: s)
+    }
+    
     private func initialize(context: Context, optimizer: GLSLOptimizer) {
 
         createMetalProgram(optimizer)
@@ -121,7 +130,6 @@ class ShaderProgram {
         
        /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
-
     
     private func createMetalProgram(optimizer: GLSLOptimizer) {
         
@@ -188,26 +196,7 @@ class ShaderProgram {
             _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler))
         }
     }
-    
-    func createUniformBuffers(context: Context) {
-        let vertexUniformBufferSize = Int(_vertexShader.uniformTotalSize())
-        if vertexUniformBufferSize > 0 {
-            vertexUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: vertexUniformBufferSize)
-        }
         
-        let fragmentUniformBufferSize = Int(_fragmentShader.uniformTotalSize())
-        if fragmentUniformBufferSize > 0 {
-            
-            fragmentUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: fragmentUniformBufferSize)
-        }
-        
-        let samplerUniformBufferSize = Int(_fragmentShader.textureCount())
-        if samplerUniformBufferSize > 0 {
-            samplerUniformBuffer = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: samplerUniformBufferSize)
-        }
-
-    }
-    
     private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
         
         
@@ -222,18 +211,19 @@ class ShaderProgram {
         return textureUnitIndex
     }
     
-    func setUniforms (uniformMap: UniformMap?, uniformState: UniformState) {
+    func setUniforms (command: DrawCommand, uniformState: UniformState) {
         
         for uniform in _vertexUniforms {
-            setUniform(uniform, buffer: vertexUniformBuffer, uniformMap: uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: command.vertexUniformBuffer, uniformMap: command.uniformMap, uniformState: uniformState)
         }
     
         for uniform in _fragmentUniforms {
-            setUniform(uniform, buffer: fragmentUniformBuffer, uniformMap: uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: command.fragmentUniformBuffer, uniformMap: command.uniformMap, uniformState: uniformState)
         }
         
         for uniform in _samplerUniforms {
-            //setUniform(uniform, uniformMap: uniformMap, uniformState: uniformState)
+            //setUniform(uniform, buffer: command.samplerUniformBuffer, uniformMap: command.uniformMap?, uniformState: uniformState)
+
         }
         /*
         

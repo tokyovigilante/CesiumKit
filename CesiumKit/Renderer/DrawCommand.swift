@@ -102,7 +102,9 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
-    var uniformBuffer: Buffer?
+    private (set) var vertexUniformBuffer: Buffer! = nil
+    private (set) var fragmentUniformBuffer: Buffer! = nil
+    private (set) var samplerUniformBuffer: Buffer! = nil
     
     /**
     * The render state.
@@ -214,6 +216,13 @@ class DrawCommand: Command {
             self.uniformMap = uniformMap
     }
     
+    func setUniformBuffers (#vertex: Buffer, fragment: Buffer, sampler: Buffer) {
+        vertexUniformBuffer = vertex
+        fragmentUniformBuffer = fragment
+        samplerUniformBuffer = sampler
+    }
+
+    
     /**
     * Executes the draw command.
     *
@@ -224,6 +233,5 @@ class DrawCommand: Command {
     */
     func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
-
     }
 }
