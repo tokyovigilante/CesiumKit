@@ -24,7 +24,7 @@ class CesiumViewController: UIViewController {
         // create globe
         let options = CesiumOptions(imageryProvider: nil)
         
-        _globe = CesiumGlobe(layer: metalView.metalLayer, options: options)
+        _globe = CesiumGlobe(view: view, layer: metalView.metalLayer, options: options)
         
         //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
