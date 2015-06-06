@@ -582,6 +582,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
         _commandEncoder.setTriangleFillMode(.Lines)
+        _commandEncoder.setFrontFacingWinding(.CounterClockwise)
         _commandEncoder.setCullMode(.Back)
     }
     
