@@ -72,11 +72,7 @@ class ShaderProgram {
     
     let _attributeLocations: [String: Int]
     
-    var keyword: String {
-        get {
-            return _vertexShaderText + _fragmentShaderText + _attributeLocations.description
-        }
-    }
+    let keyword: String
 
     var numberOfVertexAttributes: Int {
         return vertexAttributes.count
@@ -102,7 +98,7 @@ class ShaderProgram {
         _attributeLocations = attributeLocations
         _id = id
         count = 0
-        
+        keyword = _vertexShaderText + _fragmentShaderText + _attributeLocations.description
         initialize(context, optimizer: optimizer)
     }
     

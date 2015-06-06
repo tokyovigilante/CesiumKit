@@ -176,7 +176,6 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          be retried later.
     */
     override func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh {
-        
         let ellipsoid = tilingScheme.ellipsoid
         let nativeRectangle = tilingScheme.tileXYToNativeRectangle(x: x, y: y, level: level)
         var rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)

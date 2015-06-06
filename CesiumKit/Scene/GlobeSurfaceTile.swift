@@ -441,13 +441,13 @@ class GlobeSurfaceTile {
         // Find the nearest ancestor with loaded terrain.
         var sourceTile = tile.parent
         while sourceTile != nil &&
-            sourceTile?.data != nil &&
-            sourceTile?.data?.terrainData == nil {
+            sourceTile!.data != nil &&
+            sourceTile!.data!.terrainData == nil {
             sourceTile = sourceTile?.parent
         }
         
         if sourceTile == nil ||
-            sourceTile?.data == nil {
+            sourceTile!.data == nil {
             // No ancestors have loaded terrain - try again later.
             return nil
         }
