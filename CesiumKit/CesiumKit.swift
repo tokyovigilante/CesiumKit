@@ -213,7 +213,7 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (layer: CAMetalLayer, options: CesiumOptions) {
+    public init (view: UIView, layer: CAMetalLayer, options: CesiumOptions) {
 
         /*
         var creditContainer = document.createElement('div');
@@ -230,6 +230,7 @@ public class CesiumGlobe {
         
         globe = Globe(ellipsoid: ellipsoid)
         scene = Scene(
+            view: view,
             layer: layer,
             globe: self.globe,
             /*canvas : canvas,

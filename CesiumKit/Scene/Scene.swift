@@ -527,7 +527,7 @@ public class Scene {
         }
     }
 
-    init (layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (view: UIView, layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
         context = Context(layer: layer)
         self.globe = globe
@@ -545,7 +545,7 @@ public class Scene {
             initialHeight: Double(layer.bounds.height)
         )
         
-        //touchEventHandler = TouchEventHandler(scene: self, view: view)
+        touchEventHandler = TouchEventHandler(scene: self, view: view)
         
         // TODO: OIT and FXAA
         if useOIT {

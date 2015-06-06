@@ -126,7 +126,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             movement.endPosition = Cartesian2(x: Double(location.x * _view.contentScaleFactor), y: Double(location.y * _view.contentScaleFactor))
             //let view = _view as! MetalView
             //dispatch_async(view.renderQueue, {
-                self._scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
+            self._scene.screenSpaceCameraController.spin3D(movement.startPosition, movement: movement)
             //})
             
             /*event = PanMoveEvent(
