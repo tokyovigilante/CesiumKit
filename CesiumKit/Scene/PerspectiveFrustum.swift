@@ -207,18 +207,15 @@ class PerspectiveFrustum: Frustum {
         
         var result = target ?? PerspectiveFrustum()
         
+        // force update of clone to compute matrices
         result.aspectRatio = aspectRatio
         result.fov = fov
         result.near = near
         result.far = far
         
-        // force update of clone to compute matrices
-        /*result._aspectRatio = Double.NaN
-        result._fov = Double.NaN
-        result._near = Double.NaN
-        result._far = Double.NaN*/
-        
-        //result._offCenterFrustum = _offCenterFrustum.clone()
+        if let result = result as? PerspectiveFrustum {
+            result._offCenterFrustum = _offCenterFrustum.clone(PerspectiveOffCenterFrustum()) as! PerspectiveOffCenterFrustum
+        }
 
         return result
     }

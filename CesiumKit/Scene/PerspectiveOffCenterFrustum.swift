@@ -243,20 +243,13 @@ class PerspectiveOffCenterFrustum: Frustum {
 
         var result = target ?? PerspectiveOffCenterFrustum()
         
+        // force update of clone to compute matrices
         result.right = right
         result.left = left
         result.top = top
         result.bottom = bottom
         result.near = near
         result.far = far
-        
-        // force update of clone to compute matrices
-        /*result._left = Double.NaN
-        result._right = Double.NaN
-        result._top = Double.NaN
-        result._bottom = Double.NaN
-        result._near = Double.NaN
-        result._far = Double.NaN*/
         
         return result
     }
