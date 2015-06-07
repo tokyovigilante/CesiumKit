@@ -82,7 +82,8 @@ class Context {
     
     var uniformState: UniformState
     
-    var _currentFramebuffer: Framebuffer? = nil
+    private var _depthTexture: MTLTexture!
+    //var _currentFramebuffer: Framebuffer? = nil
     
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -193,6 +194,7 @@ class Context {
         uniformState = us
         _currentRenderState = rs
         _defaultPassState = PassState()
+        
         //_defaultPassState.context = self
     
         /**
@@ -573,17 +575,27 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         return nil
     }
     
+    func createDepthTexture() {
+        
+        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(.Depth32Float,
+            width: Int(width),
+            height: Int(height),
+            mipmapped: false)
+        _depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
+    }
     func createCommandEncoder(passState: PassState? = nil) {
         if _commandEncoder != nil {
             _commandEncoder.endEncoding()
         }
         let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
+        
         let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
         _commandEncoder.setTriangleFillMode(.Lines)
         _commandEncoder.setFrontFacingWinding(.CounterClockwise)
-        _commandEncoder.setCullMode(.Back)
+        _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
+        _commandEncoder.setCullMode(.None)
     }
     
     func createRenderPipeline(shaderProgram: ShaderProgram, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
@@ -593,7 +605,8 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         pipelineDescriptor.fragmentFunction = shaderProgram.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         
         return RenderPipeline(device: device, shaderKeyword: shaderProgram.keyword, descriptor: pipelineDescriptor)
@@ -643,6 +656,9 @@ var renderStateCache = {};
         _drawable = layer.nextDrawable()
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
+        
+        _defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
+
         //_defaultPassState.passDescriptor.depthAttachment.texture = _drawable.texture
         //_defaultPassState.passDescriptor.stencilAttachment.texture = _drawable.texture
         _commandBuffer = _commandQueue.commandBuffer()
@@ -679,7 +695,7 @@ var renderStateCache = {};
         let depthAttachment = passDescriptor.depthAttachment
         if let d = d {
             depthAttachment.loadAction = .Clear
-            depthAttachment.storeAction = .Store
+            depthAttachment.storeAction = .DontCare
             depthAttachment.clearDepth = d
         } else {
             depthAttachment.loadAction = .DontCare

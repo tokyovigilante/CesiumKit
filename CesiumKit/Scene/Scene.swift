@@ -954,7 +954,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
         _clearColorCommand.execute(context: context, passState: nil)
         
-        context.createCommandEncoder(passState: nil)
+        context.createCommandEncoder(passState: passState)
         
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
@@ -1044,8 +1044,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            //_depthClearCommand.execute(context: context, passState: passState)
-            //context.createCommandEncoder(passState: nil)
+            _depthClearCommand.execute(context: context, passState: passState)
+            context.createCommandEncoder(passState: passState)
 
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
@@ -1105,6 +1105,11 @@ function callAfterRenderFunctions(frameState) {
     functions.length = 0;
 }
 */
+    func resize(size: Cartesian2) {
+        drawableWidth = Int(size.x)
+        drawableHeight = Int(size.y)
+        context.createDepthTexture()
+    }
     /**
     * @private
     */

@@ -346,8 +346,7 @@ public class CesiumGlobe {
 
     func configureCanvasSize(size: Cartesian2) {
         
-        scene.drawableWidth = Int(size.x)
-        scene.drawableHeight = Int(size.y)
+        scene.resize(size)
         
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
         
