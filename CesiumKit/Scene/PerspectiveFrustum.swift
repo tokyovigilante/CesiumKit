@@ -101,7 +101,7 @@ class PerspectiveFrustum: Frustum {
                 _aspectRatio = aspectRatio
                 _fov = fov
                 _fovy = aspectRatio <= 1.0 ? _fov : atan(tan(_fov * 0.5) / _aspectRatio) * 2.0
-                _near = near
+                _near = 0.1//near
                 _far = far
                 
                 _offCenterFrustum.top = _near * tan(0.5 * _fovy)
