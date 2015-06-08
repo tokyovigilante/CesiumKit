@@ -592,7 +592,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
         assert(commandEncoder != nil, "Could not create command encoder")
         _commandEncoder = commandEncoder!
-        _commandEncoder.setTriangleFillMode(.Fill)
+        _commandEncoder.setTriangleFillMode(.Lines)
         _commandEncoder.setFrontFacingWinding(.CounterClockwise)
         _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
         _commandEncoder.setCullMode(.None)

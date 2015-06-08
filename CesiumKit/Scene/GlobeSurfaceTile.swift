@@ -186,23 +186,23 @@ class GlobeSurfaceTile {
         return nil
     }
     
-    func freeResources () {
+    func freeResources (context: Context? = nil) {
         
         waterMaskTexture = nil
         terrainData = nil
         
         if loadedTerrain != nil {
-            loadedTerrain!.freeResources()
+            loadedTerrain!.freeResources(context: context)
             loadedTerrain = nil
         }
         
         if upsampledTerrain != nil {
-            upsampledTerrain!.freeResources()
+            upsampledTerrain!.freeResources(context: context)
             upsampledTerrain = nil
         }
         
         if pickTerrain != nil {
-            pickTerrain!.freeResources()
+            pickTerrain!.freeResources(context: context)
             pickTerrain = nil
         }
         // FIXME:             tileImagery.freeResources()

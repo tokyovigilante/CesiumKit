@@ -396,7 +396,7 @@ class QuadtreePrimitive {
         
         // Remove any tiles that were not used this frame beyond the number
         // we're allowed to keep.
-        _tileReplacementQueue.trimTiles(tileCacheSize)
+        _tileReplacementQueue.trimTiles(context, maximumTiles: tileCacheSize)
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         

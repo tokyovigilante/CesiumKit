@@ -41,15 +41,23 @@ class TileTerrain {
         self.upsampleDetails = upsampleDetails
     }
     
-    func freeResources () {
-        state = .Unloaded
-        data = nil
-        mesh = nil
+    func freeResources (context: Context? = nil) {
+        self.state = .Unloaded
         
-        var indexBuffer: Buffer? = nil
-        if vertexArray != nil {
-            let indexBuffer = vertexArray!.indexBuffer
-            vertexArray = nil
+        let freeResourcesRaw = { () -> () in
+            self.data = nil
+            self.mesh = nil
+            
+            var indexBuffer: Buffer? = nil
+            if self.vertexArray != nil {
+                let indexBuffer = self.vertexArray!.indexBuffer
+                self.vertexArray = nil
+            }
+        }
+        if let context = context {
+            dispatch_async(context.processorQueue, freeResourcesRaw)
+        } else {
+            freeResourcesRaw()
         }
         
         /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
@@ -83,13 +91,9 @@ class TileTerrain {
     func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
             requestTileGeometry(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
-        }
-        
-        if state == .Received {
+        } else if state == .Received {
             transform(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
-        }
-        
-        if state == .Transformed {
+        } else if state == .Transformed {
             createResources(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
     }
@@ -182,42 +186,49 @@ class TileTerrain {
     }
     
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        let datatype = ComponentDatatype.Float32
-        var terrainMesh = mesh!
-        let meshBufferSize = terrainMesh.vertices.sizeInBytes
-        
-        let stride: Int
-        if terrainProvider.hasVertexNormals {
-            stride = 7 * datatype.elementSize
-        } else {
-            stride = 6 * datatype.elementSize
-        }
-
-        let vertexCount = meshBufferSize / stride
-
-        let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
-
-        var indexBuffer = terrainMesh.indexBuffer
-        if indexBuffer == nil {
-            // FIXME geometry with > 64k indices
-            let indices = terrainMesh.indices
-            if indices.count < Math.SixtyFourKilobytes {
-                let indicesShort = indices.map({ UInt16($0) })
-                indexBuffer = context.createBuffer(
-                    array: indicesShort,
-                    componentDatatype: ComponentDatatype.UnsignedShort,
-                    sizeInBytes: indicesShort.sizeInBytes)
+        self.state = .Buffering
+        dispatch_async(context.processorQueue, {
+            let datatype = ComponentDatatype.Float32
+            var terrainMesh = self.mesh!
+            let meshBufferSize = terrainMesh.vertices.sizeInBytes
+            
+            let stride: Int
+            if terrainProvider.hasVertexNormals {
+                stride = 7 * datatype.elementSize
             } else {
-                let indicesInt = indices.map({ UInt32($0) })
-                indexBuffer = context.createBuffer(
-                    array: indicesInt,
-                    componentDatatype: ComponentDatatype.UnsignedInt,
-                    sizeInBytes: indicesInt.sizeInBytes)
+                stride = 6 * datatype.elementSize
             }
-            terrainMesh.indexBuffer = indexBuffer!
-        }
-        vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
-        state = .Ready
+            
+            let vertexCount = meshBufferSize / stride
+            
+            let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
+            
+            var indexBuffer = terrainMesh.indexBuffer
+            if indexBuffer == nil {
+                // FIXME geometry with > 64k indices
+                let indices = terrainMesh.indices
+                if indices.count < Math.SixtyFourKilobytes {
+                    let indicesShort = indices.map({ UInt16($0) })
+                    indexBuffer = context.createBuffer(
+                        array: indicesShort,
+                        componentDatatype: ComponentDatatype.UnsignedShort,
+                        sizeInBytes: indicesShort.sizeInBytes)
+                } else {
+                    let indicesInt = indices.map({ UInt32($0) })
+                    indexBuffer = context.createBuffer(
+                        array: indicesInt,
+                        componentDatatype: ComponentDatatype.UnsignedInt,
+                        sizeInBytes: indicesInt.sizeInBytes)
+                }
+                terrainMesh.indexBuffer = indexBuffer!
+            }
+            let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
+                self.vertexArray = vertexArray
+                self.state = .Ready
+            })
+        })
     }
     
 }

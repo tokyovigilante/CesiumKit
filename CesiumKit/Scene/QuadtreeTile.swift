@@ -178,16 +178,16 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
     *
     * @memberof QuadtreeTile
     */
-    func freeResources () {
+    func freeResources (context: Context? = nil) {
         state = .Start
         renderable = false
         upsampledFromParent = false
         
-        data?.freeResources()
+        data?.freeResources(context: context)
         
         if _children != nil {
             for tile in _children! {
-                tile.freeResources()
+                tile.freeResources(context: context)
             }
             _children = nil
         }

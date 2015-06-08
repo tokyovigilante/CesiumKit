@@ -14,6 +14,7 @@ enum TerrainState: Int, Printable {
     Received,
     Transforming,
     Transformed,
+    Buffering,
     Ready
     
     var description: String {
@@ -31,6 +32,8 @@ enum TerrainState: Int, Printable {
                 return "Transforming"
             case .Transformed:
                 return "Transformed"
+            case .Buffering:
+                return "Buffering"
             case .Ready:
                 return "Ready"
             }
