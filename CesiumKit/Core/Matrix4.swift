@@ -725,7 +725,6 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @returns The modified result parameter.
     */
     static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
-        
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
         let column2Row0 = (right + left) / (right - left)
@@ -765,8 +764,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             column0Row0, 0.0, column2Row0, 0.0,
             0.0, column1Row1, column2Row1, 0.0,
             0.0, 0.0, column2Row2, column3Row2,
-            0.0, 0.0, column2Row3, 0.0
-        )
+            0.0, 0.0, column2Row3, 0.0)
     }
 
     /**
@@ -2031,6 +2029,7 @@ Matrix4.abs = function(matrix, result) {
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0)
     }
+
 /*
 /**
 * Duplicates the provided Matrix4 instance.
