@@ -113,13 +113,13 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         
         var event: TouchEvent? = nil
         switch recognizer.state {
-        case .Began:
-            println("panstart, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+        //case .Began:
+            //println("panstart, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
             /*event = PanStartEvent(
             tapCount: recognizer.numberOfTouches(),
             startPosition: [Cartesian2(x: Double(location.x), y: Double(location.y))])*/
         case .Changed:
-            println("panchanged, x: \(location.x) - \(offset.x), y: \(location.y) - \(offset.y), fingers: \(recognizer.numberOfTouches())")
+            //println("panchanged, x: \(location.x) - \(offset.x), y: \(location.y) - \(offset.y), fingers: \(recognizer.numberOfTouches())")
             
             var movement = MouseMovement()
             movement.startPosition = Cartesian2(x: Double((location.x - offset.x) * _view.contentScaleFactor), y: Double((location.y - offset.y) * _view.contentScaleFactor))
@@ -133,13 +133,13 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             tapCount: recognizer.numberOfTouches(),
             startPosition: Cartesian2(x: Double(location.x), y: Double(location.y)),
             endPosition: Cartesian2(x: Double(location.x + offset.x), y: Double(location.y + offset.y)))*/
-        case .Ended:
-            println("panended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+        //case .Ended:
+            //println("panended, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
             // do velocity here
             //globe?.eventHandler.handlePanEnd(Cartesian2(x: Double(location.x), y: Double(location.y)))
             //let event = PanEndEvent(tapCount: recognizer.numberOfTouches())
-        case .Cancelled:
-            println("pancancelled, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
+        //case .Cancelled:
+            //println("pancancelled, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
         default:
             return
         }
