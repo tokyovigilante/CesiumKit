@@ -116,7 +116,7 @@ class DrawCommand: Command {
     */
     var renderState: RenderState?
     
-    weak var renderPipeline: RenderPipeline?
+    var renderPipeline: RenderPipeline?
     
     /**
     * The framebuffer to draw to.

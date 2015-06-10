@@ -651,7 +651,7 @@ var northeastScratch = new Cartesian3();
         
         var viewMatrix = frameState.camera!.viewMatrix
         
-        var maxTextures = 16//context.maximumTextureImageUnits
+        var maxTextures = context.maximumTextureUnits
 
         let waterMaskTexture = surfaceTile.waterMaskTexture
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
