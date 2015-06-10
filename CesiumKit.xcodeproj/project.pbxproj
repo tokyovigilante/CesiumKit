@@ -265,7 +265,6 @@
 		949A45E51B1145510095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949A45E41B1145510095A86F /* MetalView.swift */; };
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */; };
-		94ACAF271B1AC69A0095A86F /* Globe.metal in Sources */ = {isa = PBXBuildFile; fileRef = 94CE0EAF1B11F1470095A86F /* Globe.metal */; };
 		94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */; };
 		94B9DB5E1AC630020095A86F /* KeyboardEventModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */; };
 		94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5F1AC630E10095A86F /* CameraEvent.swift */; };
@@ -275,7 +274,6 @@
 		94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */; };
 		94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
-		94CE0EB01B11F1470095A86F /* Globe.metal in Sources */ = {isa = PBXBuildFile; fileRef = 94CE0EAF1B11F1470095A86F /* Globe.metal */; };
 		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
 		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
@@ -489,7 +487,6 @@
 		94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMapFace.swift; sourceTree = "<group>"; };
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
 		94CD3FAE199B6F8A00012DC4 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
-		94CE0EAF1B11F1470095A86F /* Globe.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Globe.metal; sourceTree = "<group>"; };
 		94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomaticUniforms.swift; sourceTree = "<group>"; };
 		94D45B2819BDC26300FFE1CB /* Matrix3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix3.swift; sourceTree = "<group>"; };
 		94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodedCartesian3.swift; sourceTree = "<group>"; };
@@ -754,7 +751,6 @@
 			isa = PBXGroup;
 			children = (
 				94E049E919DC0BB000FFAD81 /* Shaders.swift */,
-				94CE0EAF1B11F1470095A86F /* Globe.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -1105,7 +1101,6 @@
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
 				9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */,
 				9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */,
-				94CE0EB01B11F1470095A86F /* Globe.metal in Sources */,
 				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
 				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
 				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
@@ -1187,7 +1182,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				949A45E51B1145510095A86F /* MetalView.swift in Sources */,
-				94ACAF271B1AC69A0095A86F /* Globe.metal in Sources */,
 				94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */,
 				94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */,
 			);
