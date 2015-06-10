@@ -6,76 +6,47 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class Sampler {
-    var wrapS = TextureWrap.Edge
-    var wrapT = TextureWrap.Edge
-    var minificationFilter = TextureMinificationFilter.Linear
-    var magnificationFilter = TextureMagnificationFilter.Linear
-    var maximumAnisotropy: GLint = 1
+    let wrapS: TextureWrap = .ClampToEdge
+    let wrapT: TextureWrap  = .ClampToEdge
+    let minFilter: TextureMinMagFilter = .Linear
+    let magFilter: TextureMinMagFilter = .Linear
+    let mipMagFilter: TextureMipFilter = .NotMipmapped
+    let maximumAnisotropy: Int = 1
 }
 
-enum TextureWrap {
-    case Edge, Repeat, MirroredRepeat
+enum TextureWrap: UInt {
+
+    case ClampToEdge
+    case Repeat
+    case MirrorRepeat
+    case ClampToZero
     
-    func toGL() -> GLint {
-        switch self {
-        case .Edge:
-            return GLint(GL_CLAMP_TO_EDGE)
-        case .Repeat:
-            return GLint(GL_REPEAT)
-        case .MirroredRepeat:
-            return GLint(GL_MIRRORED_REPEAT)
-        }
+    func toMetal() -> MTLSamplerAddressMode {
+        return MTLSamplerAddressMode(rawValue: self.rawValue)!
     }
 }
 
-enum TextureMagnificationFilter {
-    case Nearest, Linear
+enum TextureMinMagFilter: UInt {
     
-    func toGL() -> GLint {
-        switch self {
-        case .Nearest:
-            return GLint(GL_NEAREST)
-        case .Linear:
-            return GLint(GL_LINEAR)
-        }
+    case Nearest
+    case Linear
+    
+    func toMetal() -> MTLSamplerMinMagFilter {
+        return MTLSamplerMinMagFilter(rawValue: self.rawValue)!
     }
 }
 
-enum TextureMinificationFilter {
-    case Nearest, Linear, NearestMipmapNearest, LinearMipmapNearest, NearestMipmapLinear, LinearMipmapLinear
+enum TextureMipFilter: UInt {
     
-    func toGL() -> GLint {
-        switch self {
-        case .Nearest:
-            return GLint(GL_NEAREST)
-        case .Linear:
-            return GLint(GL_LINEAR)
-        case .NearestMipmapNearest:
-            return GLint(GL_NEAREST_MIPMAP_NEAREST)
-        case .LinearMipmapLinear:
-            return GLint(GL_LINEAR_MIPMAP_LINEAR)
-        case .NearestMipmapLinear:
-            return GLint(GL_NEAREST_MIPMAP_LINEAR)
-        case .LinearMipmapNearest:
-            return GLint(GL_LINEAR_MIPMAP_NEAREST)
-        }
+    case NotMipmapped
+    case Nearest
+    case Linear
+    
+    func toMetal() -> MTLSamplerMipFilter {
+        return MTLSamplerMipFilter(rawValue: self.rawValue)!
     }
 }
 
-enum MipmapHint {
-    case DontCare, Fastest, Nicest
-    
-    func toGL() -> GLenum {
-        switch self {
-        case .DontCare:
-            return GLenum(GL_DONT_CARE)
-        case .Fastest:
-            return GLenum(GL_FASTEST)
-        case .Nicest:
-            return GLenum(GL_NICEST)
-        }
-    }
-}

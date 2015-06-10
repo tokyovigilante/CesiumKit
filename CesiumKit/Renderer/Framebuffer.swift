@@ -142,9 +142,9 @@ class Framebuffer {
                 //assert(texture.pixelFormat.isColorFormat(), "The color-texture pixel-format must be a color format.")
                 
                 attachmentEnum = GLenum(GL_COLOR_ATTACHMENT0 + i)
-                attachTexture(attachmentEnum, texture: texture)
+                //attachTexture(attachmentEnum, texture: texture)
                 _activeColorAttachments[i] = attachmentEnum
-                _colorTextures!.append(texture)
+                //_colorTextures!.append(texture)
             }
         }
         // FIXME: Non-color texture framebuffer
@@ -318,10 +318,7 @@ Framebuffer.prototype.isDestroyed = function() {
     return false;
 };
     */
-    func attachTexture(attachment: GLenum, texture: Texture) {
-        
-        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), attachment, texture.textureTarget, texture.textureName, 0)
-    }
+
     /*
     function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
     var gl = framebuffer._gl;

@@ -41,7 +41,6 @@ class Context {
     private var _commandBuffer: MTLCommandBuffer!
     private var _commandEncoder: MTLRenderCommandEncoder!
 
-    private var _library: MTLLibrary
 /*    var pipeline: MTLRenderPipelineState
     var uniformBuffer: MTLBuffer
     var depthTexture: MTLTexture
@@ -50,8 +49,13 @@ class Context {
     var nearestMipSamplerState: MTLSamplerState
     var linearMipSamplerState: MTLSamplerState*/
     
+    var maximumTextureSize: Int = 4096
+    
+    var maximumTextureUnits: Int = 16 // techically maximum sampler state attachment
     
     var allowTextureFilterAnisotropic = true
+    
+    var textureFilterAnisotropic = true
     
     struct glOptions {
         
@@ -170,9 +174,6 @@ class Context {
         layer.framebufferOnly = true
         
         _commandQueue = device.newCommandQueue()
-        
-        var library = device.newDefaultLibrary()
-        _library = library!
         
         id = NSUUID().UUIDString
         
@@ -763,7 +764,7 @@ var renderStateCache = {};
             _commandEncoder.setVertexBuffer(drawCommand.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
             
             _commandEncoder.setFragmentBuffer(drawCommand.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
-            _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
+            //t_commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount
             /*va!._bind()
