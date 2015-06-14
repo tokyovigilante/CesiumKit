@@ -49,6 +49,9 @@ class Context {
     var nearestMipSamplerState: MTLSamplerState
     var linearMipSamplerState: MTLSamplerState*/
     
+    private var _commandsExecutedThisFrame = [DrawCommand]()
+
+    
     var maximumTextureSize: Int = 4096
     
     var maximumTextureUnits: Int = 16 // techically maximum sampler state attachment
@@ -69,7 +72,7 @@ class Context {
     
     var _logShaderCompilation = false
     
-    var _shaderCache: ShaderCache? = nil
+    var _pipelineCache: PipelineCache!
     
     private var _clearColor: MTLClearColor = MTLClearColorMake(1.0, 0.0, 0.0, 1.0)
     
@@ -217,25 +220,34 @@ class Context {
         _currentRenderState.apply(_defaultPassState)
     }
     
-    func replaceShaderProgram(shaderProgram: ShaderProgram?, vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
-        if _shaderCache == nil {
-            _shaderCache = ShaderCache(context: self)
-        }
-        return _shaderCache!.replaceShaderProgram(shaderProgram, vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
+    func replaceRenderPipeline(
+        pipeline: RenderPipeline?,
+        vertexShaderSource vss: ShaderSource,
+        fragmentShaderSource fss: ShaderSource,
+        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline? {
+            
+            if _pipelineCache == nil {
+                _pipelineCache = PipelineCache(context: self)
+            }
+            return _pipelineCache!.replaceRenderPipeline(pipeline, context: self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
     }
-
-    func createShaderProgram(vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
-        if _shaderCache == nil {
-            _shaderCache = ShaderCache(context: self)
-        }
-        return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
+    
+    func createRenderPipeline(
+        vertexShaderSource vss: ShaderSource,
+        fragmentShaderSource fss: ShaderSource,
+        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline {
+            
+            if _pipelineCache == nil {
+                _pipelineCache = PipelineCache(context: self)
+            }
+            return _pipelineCache.getRenderPipeline(self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
     }
     /** 
     * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be 
     * copied to the buffer and can be released (or automatically released via ARC)
     */
     func createBuffer(array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) -> Buffer {
-        return Buffer(context: self, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
+        return Buffer(device: device, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
     }
 
     /**
@@ -598,20 +610,6 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
         _commandEncoder.setCullMode(.None)
     }
-    
-    func createRenderPipeline(shaderProgram: ShaderProgram, vertexDescriptor: VertexDescriptor? = nil) -> RenderPipeline {
-        var pipelineDescriptor = MTLRenderPipelineDescriptor()
-        
-        pipelineDescriptor.vertexFunction = shaderProgram.metalVertexFunction
-        pipelineDescriptor.fragmentFunction = shaderProgram.metalFragmentFunction
-        
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-
-        pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
-        
-        return RenderPipeline(device: device, shaderKeyword: shaderProgram.keyword, descriptor: pipelineDescriptor)
-    }
 
 /*
 Context.prototype.createRenderbuffer = function(options) {
@@ -663,6 +661,11 @@ var renderStateCache = {};
         //_defaultPassState.passDescriptor.depthAttachment.texture = _drawable.texture
         //_defaultPassState.passDescriptor.stencilAttachment.texture = _drawable.texture
         _commandBuffer = _commandQueue.commandBuffer()
+        _commandBuffer.addCompletedHandler({ (buffer) in
+            for command in self._commandsExecutedThisFrame {
+                // FIXME clear uniform buffer semaphore
+            }
+        })
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
@@ -714,7 +717,7 @@ var renderStateCache = {};
         }
     }
     
-    func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
+    func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, renderPipeline: RenderPipeline?) {
         
 
         /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
@@ -722,17 +725,16 @@ var renderStateCache = {};
         if framebuffer != nil && rs.depthTest.enabled {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
+        let renderPipeline = renderPipeline ?? drawCommand.pipeline!
+        _commandEncoder.setRenderPipelineState(renderPipeline.state)
         
-        _commandEncoder.setRenderPipelineState(drawCommand.renderPipeline!.state)
         
-        
-        var sp = shaderProgram ?? drawCommand.shaderProgram
         //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
         //applyRenderState(rs, passState: passState)
     }
 
-    func continueDraw(drawCommand: DrawCommand, shaderProgram: ShaderProgram?) {
+    func continueDraw(drawCommand: DrawCommand, renderPipeline: RenderPipeline?) {
         let primitiveType = drawCommand.primitiveType
         
         assert(drawCommand.vertexArray != nil, "drawCommand.vertexArray is required")
@@ -745,16 +747,9 @@ var renderStateCache = {};
         
         
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
-        let sp = shaderProgram ?? drawCommand.shaderProgram
-        
-        if drawCommand.vertexUniformBuffer == nil ||
-            drawCommand.fragmentUniformBuffer == nil ||
-            drawCommand.samplerUniformBuffer == nil {
-                let uniformBuffers = sp!.createUniformBuffers(self)
-                drawCommand.setUniformBuffers(vertex: uniformBuffers.vertex, fragment: uniformBuffers.fragment, sampler: uniformBuffers.sampler)
-        }
-        
-        sp!.setUniforms(drawCommand, uniformState: uniformState)
+
+        let renderPipeline = renderPipeline ?? drawCommand.pipeline!
+        renderPipeline.setUniforms(drawCommand, uniformState: uniformState)
     
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
@@ -764,7 +759,7 @@ var renderStateCache = {};
             _commandEncoder.setVertexBuffer(drawCommand.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
             
             _commandEncoder.setFragmentBuffer(drawCommand.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
-            //t_commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
+            //_commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount
             /*va!._bind()
@@ -773,7 +768,9 @@ var renderStateCache = {};
         }
     }
 
-    func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
+    func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
+        
+        _commandsExecutedThisFrame.append(drawCommand)
         
         let activePassState: PassState
         if let pass = drawCommand.pass {
@@ -788,8 +785,8 @@ var renderStateCache = {};
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
         var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
         
-        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
-        continueDraw(drawCommand, shaderProgram: shaderProgram)
+        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, renderPipeline: renderPipeline)
+        continueDraw(drawCommand, renderPipeline: renderPipeline)
     }
 
     func endFrame () {

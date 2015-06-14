@@ -22,14 +22,14 @@ class Buffer {
         return metalBuffer.length
     }
     
-    init (context: Context, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
+    init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
         
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         if array != nil {
-            metalBuffer = context.device.newBufferWithBytes(array, length: sizeInBytes, options: nil)
+            metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: nil)
         } else {
-            metalBuffer = context.device.newBufferWithLength(sizeInBytes, options: nil)
+            metalBuffer = device.newBufferWithLength(sizeInBytes, options: nil)
         }
         
         self.componentDatatype = componentDatatype

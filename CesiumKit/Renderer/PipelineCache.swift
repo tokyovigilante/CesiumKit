@@ -1,5 +1,5 @@
 //
-//  ShaderCache.swift
+//  PipelineCache.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 22/06/14.
@@ -8,6 +8,7 @@
 
 import Foundation
 import GLSLOptimizer
+import Metal
 
 class PipelineCache {
 
@@ -18,9 +19,9 @@ class PipelineCache {
     
     private var _optimizer: GLSLOptimizer!
     
-    private var _shaders = [String: ShaderProgram]()
+    private var _pipelines = [String: RenderPipeline]()
     
-    var nextShaderProgramId = 0
+    var nextRenderPipelineId = 0
     
     init (context: Context) {
         self.context = context
@@ -47,14 +48,18 @@ class PipelineCache {
     * this._shaderProgram = context.shaderCache.replaceShaderProgram(
     *     this._shaderProgram, vs, fs, attributeLocations);
     */
-    func replaceShaderProgram (shaderProgram: ShaderProgram?, vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram? {
+    func replaceRenderPipeline (
+        pipeline: RenderPipeline?,
+        context: Context,
+        vertexShaderSource vss: ShaderSource,
+        fragmentShaderSource fss: ShaderSource,
+        vertexDescriptor: VertexDescriptor?) -> RenderPipeline? {
         
-        if let existingShader = shaderProgram {
-            existingShader.count = 0
-            releaseShaderProgram(existingShader)
+        if let existingPipeline = pipeline {
+            existingPipeline.count = 0
+            releasePipeline(existingPipeline)
         }
-        
-        return getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
+            return getRenderPipeline(context, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor)
     }
     
     /**
@@ -67,53 +72,27 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getShaderProgram (vertexShaderString: String? = nil, vertexShaderSource vss: ShaderSource? = nil, fragmentShaderString: String? = nil, fragmentShaderSource fss: ShaderSource? = nil, attributeLocations: [String: Int]) -> ShaderProgram {
+    func getRenderPipeline (context: Context, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?) -> RenderPipeline {
 
-        assert((vertexShaderString == nil && vss != nil) ||
-        (vertexShaderString != nil && vss == nil), "Must provide only one of vertexShaderString or vertexShaderSource")
-        assert((fragmentShaderString == nil && fss != nil) ||
-        (fragmentShaderString != nil && fss == nil), "Must provide only one of vertexShaderString or vertexShaderSource")
-
-        let vertexShaderSource: ShaderSource
-        let fragmentShaderSource: ShaderSource
+        let shader = ShaderProgram(
+            context: context,
+            optimizer: _optimizer,
+            logShaderCompilation: context._logShaderCompilation,
+            vertexShaderSource: vss,
+            fragmentShaderSource: fss
+        )
         
-        // convert shaders which are provided as strings into ShaderSource objects
-        // because ShaderSource handles all the automatic including of built-in functions, etc.
-        if vertexShaderString != nil {
-            vertexShaderSource = ShaderSource(sources: [vertexShaderString!])
-        } else {
-            vertexShaderSource = vss!
-        }
+        var pipelineDescriptor = MTLRenderPipelineDescriptor()
         
-        if fragmentShaderString != nil {
-            fragmentShaderSource = ShaderSource(sources: [fragmentShaderString!])
-        } else {
-            fragmentShaderSource = fss!
-        }
+        pipelineDescriptor.vertexFunction = shader.metalVertexFunction
+        pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
-        let vertexShaderText = vertexShaderSource.createCombinedVertexShader()
-        let fragmentShaderText = fragmentShaderSource.createCombinedFragmentShader()
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
         
-        var keyword = vertexShaderText + fragmentShaderText + attributeLocations.description
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         
-        var cachedShader: ShaderProgram? = _shaders[keyword]
-        
-        if cachedShader == nil {
-            cachedShader = ShaderProgram(
-                context: context!,
-                optimizer: _optimizer,
-                logShaderCompilation: context!._logShaderCompilation,
-                vertexShaderSource: vertexShaderSource,
-                vertexShaderText: vertexShaderText,
-                fragmentShaderSource: fragmentShaderSource,
-                fragmentShaderText: fragmentShaderText,
-                attributeLocations: attributeLocations,
-                id: nextShaderProgramId++
-            )
-            _shaders[cachedShader!.keyword] = cachedShader!
-        }
-        cachedShader!.count++
-        return cachedShader!
+        return RenderPipeline(device: context.device, shaderProgram: shader, descriptor: pipelineDescriptor)
     }
     
     /**
@@ -125,9 +104,9 @@ class PipelineCache {
     *
     * @param {ShaderProgram} shader The shader to decrement
     */
-    func releaseShaderProgram(shader: ShaderProgram) {
-        if --shader.count < 1 {
-            _shaders.removeValueForKey(shader.keyword)
+    func releasePipeline(pipeline: RenderPipeline) {
+        if --pipeline.count < 1 {
+            _pipelines.removeValueForKey(pipeline.keyword)
         }
     }
 

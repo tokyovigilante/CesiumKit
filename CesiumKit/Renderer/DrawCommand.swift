@@ -86,14 +86,6 @@ class DrawCommand: Command {
     var offset: Int = 0
     
     /**
-    * The shader program to apply.
-    *
-    * @type {ShaderProgram}
-    * @default undefined
-    */
-    var shaderProgram: ShaderProgram?
-    
-    /**
     * An object with functions whose names match the uniforms in the shader program
     * and return values to set those uniforms.
     *
@@ -116,7 +108,13 @@ class DrawCommand: Command {
     */
     var renderState: RenderState?
     
-    var renderPipeline: RenderPipeline?
+    /**
+    * The render pipeline to apply.
+    *
+    * @type {RenderPipeline}
+    * @default undefined
+    */
+    var pipeline: RenderPipeline? = nil
     
     /**
     * The framebuffer to draw to.
@@ -188,7 +186,6 @@ class DrawCommand: Command {
         vertexArray: VertexArray? = nil,
         count: Int? = nil,
         offset: Int = 0,
-        shaderProgram: ShaderProgram? = nil,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
         framebuffer: Framebuffer? = nil,
@@ -204,8 +201,7 @@ class DrawCommand: Command {
             self.vertexArray = vertexArray
             self.count = count
             self.offset = offset
-            self.shaderProgram = shaderProgram
-            self.renderPipeline = renderPipeline
+            self.pipeline = renderPipeline
             self.renderState = renderState
             self.framebuffer = framebuffer
             self.pass = pass
@@ -231,7 +227,7 @@ class DrawCommand: Command {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
     */
-    func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
-        context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
+    func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
+        context.draw(self, passState: passState, renderState: renderState, renderPipeline: renderPipeline)
     }
 }

@@ -12,13 +12,28 @@ class RenderPipeline {
     
     let state: MTLRenderPipelineState
     
-    let shaderKeyword: String
+    let shaderProgram: ShaderProgram
     
-    init (device: MTLDevice, shaderKeyword: String, descriptor: MTLRenderPipelineDescriptor) {
+    var keyword: String {
+        return shaderProgram.keyword
+    }
+    
+    var count: Int = 0
+    
+    init (device: MTLDevice, shaderProgram: ShaderProgram, descriptor: MTLRenderPipelineDescriptor) {
         var error: NSError?
         var metalPipeline = device.newRenderPipelineStateWithDescriptor(descriptor, error: &error)
         assert(error == nil, "Metal Error: \(error!.description)")
         self.state = metalPipeline!
-        self.shaderKeyword = shaderKeyword
+        self.shaderProgram = shaderProgram
+    }
+    
+    func setUniforms(drawCommand: DrawCommand, context: Context, uniformState: UniformState) {
+        if drawCommand.vertexUniformBuffer == nil ||
+            drawCommand.fragmentUniformBuffer == nil ||
+            drawCommand.samplerUniformBuffer == nil {
+                let uniformBuffers = shaderProgram.createUniformBuffers(context)
+                drawCommand.setUniformBuffers(vertex: uniformBuffers.vertex, fragment: uniformBuffers.fragment, sampler: uniformBuffers.sampler)
+        }
     }
 }

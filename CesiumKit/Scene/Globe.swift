@@ -196,12 +196,38 @@ class Globe {
         imageryLayers = ImageryLayerCollection()
         
         _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
-        ShaderSource()
+        
+        let datatype = ComponentDatatype.Float32
+        let numTexCoordComponents: Int
+        if terrainProvider.hasVertexNormals {
+            numTexCoordComponents = 3
+        } else {
+            numTexCoordComponents = 2
+        }
+        
+        let position3DAndHeightLength = 4
+        
+        let attributes = [
+            //position3DAndHeight
+            VertexAttributes(
+                bufferIndex: 0,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
+            // texCoordAndEncodedNormals
+            VertexAttributes(
+                bufferIndex: 0,
+                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
+        ]
+        
+        let vertexDescriptor = VertexDescriptor(attributes: attributes)
         
         _surfaceShaderSet = GlobeSurfaceShaderSet(
             baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
             baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
-            attributeLocations: ["String": 0])
+            vertexDescriptor: vertexDescriptor)
         
         _surface = QuadtreePrimitive(
             tileProvider: GlobeSurfaceTileProvider(
@@ -220,6 +246,36 @@ class Globe {
         _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
+    
+    func updateVertexDescriptor () -> VertexDescriptor {
+        let datatype = ComponentDatatype.Float32
+        let numTexCoordComponents: Int
+        if terrainProvider.hasVertexNormals {
+            numTexCoordComponents = 3
+        } else {
+            numTexCoordComponents = 2
+        }
+        
+        let position3DAndHeightLength = 4
+        
+        let attributes = [
+            //position3DAndHeight
+            VertexAttributes(
+                bufferIndex: 0,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
+            // texCoordAndEncodedNormals
+            VertexAttributes(
+                bufferIndex: 0,
+                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
+        ]
+        
+        return VertexDescriptor(attributes: attributes)
+    }
+
     
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
         func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {

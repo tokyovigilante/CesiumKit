@@ -8,13 +8,13 @@
 
 import Foundation
 
-struct GlobeSurfaceShader {
+struct GlobeSurfacePipeline {
     
     var numberOfDayTextures: Int
     
     var flags: Int
     
-    var shaderProgram: ShaderProgram
+    var pipeline: RenderPipeline
 }
 
 /**
@@ -25,23 +25,23 @@ struct GlobeSurfaceShader {
 */
 class GlobeSurfaceShaderSet {
     
-    var baseVertexShaderSource: ShaderSource
-    var baseFragmentShaderSource: ShaderSource
+    let baseVertexShaderSource: ShaderSource
+    let baseFragmentShaderSource: ShaderSource
     
-    let attributeLocations: [String: Int]
+    let vertexDescriptor: VertexDescriptor
     
-    var _shadersByTexturesFlags = [Int: [Int: GlobeSurfaceShader]]()
+    private var _pipelinesByTexturesFlags = [Int: [Int: GlobeSurfacePipeline]]()
     
     init (
         baseVertexShaderSource: ShaderSource,
         baseFragmentShaderSource: ShaderSource,
-        attributeLocations: [String: Int]) {
+        vertexDescriptor: VertexDescriptor) {
             self.baseVertexShaderSource = baseVertexShaderSource
             self.baseFragmentShaderSource = baseFragmentShaderSource
-            self.attributeLocations = attributeLocations
+            self.vertexDescriptor = vertexDescriptor
     }
     
-    func getShaderProgram (#context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> ShaderProgram {
+    func getRenderPipeline (#context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> RenderPipeline {
         
         let flags: Int = Int(sceneMode.rawValue) |
             (Int(applyBrightness) << 2) |
@@ -56,20 +56,20 @@ class GlobeSurfaceShaderSet {
             (Int(hasVertexNormals) << 11) |
             (Int(useWebMercatorProjection) << 12)
         
-        var surfaceShader = surfaceTile.surfaceShader
-        if surfaceShader != nil && surfaceShader!.numberOfDayTextures == numberOfDayTextures && surfaceShader!.flags == flags {
-            return surfaceShader!.shaderProgram
+        var surfacePipeline = surfaceTile.pipeline
+        if surfacePipeline != nil && surfacePipeline!.numberOfDayTextures == numberOfDayTextures && surfacePipeline!.flags == flags {
+            return surfacePipeline!.pipeline
         }
         
         // New tile, or tile changed number of textures or flags.
-        var shadersByFlags = _shadersByTexturesFlags[numberOfDayTextures]
-        if shadersByFlags == nil {
-            _shadersByTexturesFlags[numberOfDayTextures] = [Int: GlobeSurfaceShader]()
-            shadersByFlags = _shadersByTexturesFlags[numberOfDayTextures]
+        var pipelinesByFlags = _pipelinesByTexturesFlags[numberOfDayTextures]
+        if pipelinesByFlags == nil {
+            _pipelinesByTexturesFlags[numberOfDayTextures] = [Int: GlobeSurfacePipeline]()
+            pipelinesByFlags = _pipelinesByTexturesFlags[numberOfDayTextures]
         }
         
-        surfaceShader = shadersByFlags![flags]
-        if surfaceShader == nil {
+        surfacePipeline = pipelinesByFlags![flags]
+        if surfacePipeline == nil {
             // Cache miss - we've never seen this combination of numberOfDayTextures and flags before.
             var vs = baseVertexShaderSource
             var fs = baseFragmentShaderSource
@@ -176,14 +176,14 @@ class GlobeSurfaceShaderSet {
             
             vs.sources.append(get2DYPositionFraction)
             
-            let shader = context.createShaderProgram(vertexShaderSource: vs, fragmentShaderSource: fs, attributeLocations: attributeLocations)
-            shadersByFlags![flags] = GlobeSurfaceShader(numberOfDayTextures: numberOfDayTextures, flags: flags, shaderProgram: shader!)
+            let pipeline = context.createRenderPipeline(vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
+            pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 
-            surfaceShader = shadersByFlags![flags]
+            surfacePipeline = pipelinesByFlags![flags]
         }
-        _shadersByTexturesFlags[numberOfDayTextures] = shadersByFlags!
-        surfaceTile.surfaceShader = surfaceShader
-        return surfaceShader!.shaderProgram
+        _pipelinesByTexturesFlags[numberOfDayTextures] = pipelinesByFlags!
+        surfaceTile.pipeline = surfacePipeline
+        return surfacePipeline!.pipeline
     }
     
     deinit {

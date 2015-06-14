@@ -70,8 +70,6 @@ class ShaderProgram {
     
     private var _samplerUniforms: [Uniform]!
     
-    let _attributeLocations: [String: Int]
-    
     let keyword: String
 
     var numberOfVertexAttributes: Int {
@@ -80,25 +78,16 @@ class ShaderProgram {
     
     private (set) var vertexAttributes: [String: GLSLShaderVariableDescription]!
     
-    private var _uniforms: [Uniform]!
-    
     var maximumTextureUnitIndex: Int = 0
     
-    var count: Int = 0
-    
-    let _id: Int
-    
-    init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource: ShaderSource, vertexShaderText: String, fragmentShaderSource: ShaderSource, fragmentShaderText: String, attributeLocations: [String: Int], id: Int) {
+    init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
 
         _logShaderCompilation = logShaderCompilation
-        self.vertexShaderSource = vertexShaderSource
-        _vertexShaderText = vertexShaderText
-        self.fragmentShaderSource = fragmentShaderSource
-        _fragmentShaderText = fragmentShaderText
-        _attributeLocations = attributeLocations
-        _id = id
-        count = 0
-        keyword = _vertexShaderText + _fragmentShaderText + _attributeLocations.description
+        vertexShaderSource = vss
+        fragmentShaderSource = fss
+        _vertexShaderText = vss.createCombinedVertexShader()
+        _fragmentShaderText = fss.createCombinedFragmentShader()
+        keyword = _vertexShaderText + _fragmentShaderText
         initialize(context, optimizer: optimizer)
     }
     
@@ -142,6 +131,8 @@ class ShaderProgram {
         var error: NSError?
         _vertexLibrary = device.newLibraryWithSource(_metalVertexShaderSource, options: nil, error: &error)
         if _vertexLibrary == nil {
+            println(_fragmentShaderText)
+            println(_metalFragmentShaderSource)
             println(error!.localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }

@@ -806,7 +806,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 0.0, 0.0, 1.0));
 */
     
-    func executeCommand(command: Command, passState: PassState, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil, debugFramebuffer: Framebuffer? = nil) {
+    func executeCommand(command: Command, passState: PassState, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil, debugFramebuffer: Framebuffer? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
             return;
@@ -816,7 +816,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         if (scene.debugShowCommands || scene.debugShowFrustums) {
             executeDebugCommand(command, scene, passState, renderState, shaderProgram);
         } else {*/
-        command.execute(context: context, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
+        command.execute(context: context, passState: passState, renderState: renderState, renderPipeline: renderPipeline)
         //}
         
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {

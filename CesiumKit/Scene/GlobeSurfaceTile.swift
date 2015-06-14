@@ -105,7 +105,7 @@ class GlobeSurfaceTile {
     
     var pickTerrain: TileTerrain? = nil
     
-    var surfaceShader: GlobeSurfaceShader? = nil
+    var pipeline: GlobeSurfacePipeline? = nil
     
     /**
     * Gets a value indicating whether or not this tile is eligible to be unloaded.
