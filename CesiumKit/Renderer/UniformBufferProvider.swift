@@ -11,39 +11,29 @@ import Metal
 
 class UniformBufferProvider {
     
-    let inflightBuffersCount: Int
+    let capacity: Int
     
     private var buffers = [Buffer]()
     
-    private var availableBufferIndex: Int = 0
+    private var memBarrierIndex: Int = 0
     
-    let resourceSemaphore: dispatch_semaphore_t
-    
-    init (device: MTLDevice, inflightBuffersCount: Int, sizeInBytes: Int) {
+    init (device: MTLDevice, capacity: Int, sizeInBytes: Int) {
         
-        self.inflightBuffersCount = inflightBuffersCount
+        self.capacity = capacity
         
-        resourceSemaphore = dispatch_semaphore_create(inflightBuffersCount)
-
-        for i in 0..<inflightBuffersCount {
+        for i in 0..<capacity {
             buffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: sizeInBytes))
         }
     }
     
     func nextBuffer() -> Buffer {
         
-        dispatch_semaphore_wait(resourceSemaphore, DISPATCH_TIME_FOREVER)
-        
-        if availableBufferIndex == inflightBuffersCount {
-            availableBufferIndex = 0
-        }
-        return buffers[availableBufferIndex++]
+        let buffer = buffers[memBarrierIndex]
+
+        memBarrierIndex = (memBarrierIndex + 1) % capacity
+
+        return buffer
     }
-    
-    deinit {
-        for i in 0..<inflightBuffersCount {
-            dispatch_semaphore_signal(resourceSemaphore)
-        }
-    }
+
 }
 

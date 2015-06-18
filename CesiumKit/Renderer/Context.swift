@@ -250,8 +250,8 @@ class Context {
         return Buffer(device: device, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
     }
     
-    func createUniformBufferProvider(bufferCount: Int, sizeInBytes: Int) -> UniformBufferProvider {
-        return UniformBufferProvider(device: self.device, inflightBuffersCount: bufferCount, sizeInBytes: sizeInBytes)
+    func createUniformBufferProvider(capacity: Int, sizeInBytes: Int) -> UniformBufferProvider {
+        return UniformBufferProvider(device: self.device, capacity: capacity, sizeInBytes: sizeInBytes)
     }
 
     /**
@@ -662,15 +662,7 @@ var renderStateCache = {};
         
         _defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
 
-        //_defaultPassState.passDescriptor.depthAttachment.texture = _drawable.texture
-        //_defaultPassState.passDescriptor.stencilAttachment.texture = _drawable.texture
         _commandBuffer = _commandQueue.commandBuffer()
-        
-        _commandBuffer.addCompletedHandler({ (buffer) in
-            for command in self._commandsExecutedThisFrame {
-                dispatch_semaphore_signal(command.uniformBufferProvider.resourceSemaphore)
-            }
-        })
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
