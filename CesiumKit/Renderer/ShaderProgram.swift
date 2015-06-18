@@ -91,17 +91,15 @@ class ShaderProgram {
         initialize(context, optimizer: optimizer)
     }
     
-    func createUniformBuffers(context: Context) -> (vertex: Buffer, fragment: Buffer, sampler: Buffer) {
+    func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
         let vSize = Int(_vertexShader.uniformTotalSize())
-        let v = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: vSize > 0 ? vSize : 1)
-        
         let fSize = Int(_fragmentShader.uniformTotalSize())
-        let f = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: fSize > 0 ? fSize : 1)
+        let sSize = Int(_fragmentShader.textureCount()) 
+        let totalSize = vSize + fSize + sSize
         
-        let sSize = Int(_fragmentShader.textureCount())
-        let s = context.createBuffer(componentDatatype: .UnsignedByte, sizeInBytes: sSize > 0 ? sSize : 1)
+        let provider = context.createUniformBufferProvider(3, sizeInBytes: totalSize > 0 ? totalSize : 1)
         
-        return (vertex: v, fragment: f, sampler: s)
+        return provider
     }
     
     private func initialize(context: Context, optimizer: GLSLOptimizer) {
@@ -111,7 +109,7 @@ class ShaderProgram {
         
         findVertexAttributes()
         findUniforms()
-        createUniformBuffers(context)
+        //createUniformBuffers(context)
         
        /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
@@ -186,7 +184,6 @@ class ShaderProgram {
         
     private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
         
-        
         var textureUnitIndex: GLint = 0
         
         for uniform in samplerUniforms {
@@ -198,63 +195,70 @@ class ShaderProgram {
         return textureUnitIndex
     }
     
-    func setUniforms (command: DrawCommand, uniformState: UniformState) {
+    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int) {
+        
+        let buffer = command.uniformBufferProvider.nextBuffer()
+
+        let vSize = Int(_vertexShader.uniformTotalSize())
+        let fSize = Int(_fragmentShader.uniformTotalSize())
+        let sSize = Int(_fragmentShader.textureCount())
         
         for uniform in _vertexUniforms {
-            setUniform(uniform, buffer: command.vertexUniformBuffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffer, offset: uniform.location, uniformMap: command.uniformMap, uniformState: uniformState)
         }
-    
+        
         for uniform in _fragmentUniforms {
-            setUniform(uniform, buffer: command.fragmentUniformBuffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffer, offset: vSize + uniform.location, uniformMap: command.uniformMap, uniformState: uniformState)
         }
         
         for uniform in _samplerUniforms {
             //setUniform(uniform, buffer: command.samplerUniformBuffer, uniformMap: command.uniformMap?, uniformState: uniformState)
-
+            
         }
+        
         /*
         
         if let uniformMap = uniformMap {
-            
-            
-            
-            let czm_projection = AutomaticUniforms["czm_projection"]!
-            var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
-            
-            let u_modifiedModelView = uniformMap.floatUniform("u_modifiedModelView")!
-            var floatMMV = u_modifiedModelView(map: uniformMap)
-            
-            let u_initialColor = uniformMap.floatUniform("u_initialColor")!
-            var floatUIC = u_initialColor(map: uniformMap)
-            
-            var bufferData = uniformBuffer.data
-            memcpy(bufferData, floatCZMPR, sizeof(Float) * 16)
-            memcpy(bufferData+64, floatMMV, sizeof(Float) * 16)
-            memcpy(bufferData+128, floatUIC, sizeof(Float) * 4)
+        
+        
+        
+        let czm_projection = AutomaticUniforms["czm_projection"]!
+        var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
+        
+        let u_modifiedModelView = uniformMap.floatUniform("u_modifiedModelView")!
+        var floatMMV = u_modifiedModelView(map: uniformMap)
+        
+        let u_initialColor = uniformMap.floatUniform("u_initialColor")!
+        var floatUIC = u_initialColor(map: uniformMap)
+        
+        var bufferData = uniformBuffer.data
+        memcpy(bufferData, floatCZMPR, sizeof(Float) * 16)
+        memcpy(bufferData+64, floatMMV, sizeof(Float) * 16)
+        memcpy(bufferData+128, floatUIC, sizeof(Float) * 4)
         }
         // TODO: Performance
         if let uniformMap = uniformMap {
-            // FIXME: uniforms
-            /*for uniform in _manualUniforms! {
-                if uniform.isFloat {
-                    if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
-                        (uniform as! FloatUniform).setFloatValues(uniformFloatFunc(map: uniformMap))
-                    }
-                } else {
-                    if let uniformFunc = uniformMap[uniform.name] {
-                        uniform.setValues(uniformFunc(map: uniformMap))
-                    }
-                    /*} else {
-                    assertionFailure("no matching uniform for \(uniform.name)")
-                    }*/
-                }
-            }*/
+        // FIXME: uniforms
+        /*for uniform in _manualUniforms! {
+        if uniform.isFloat {
+        if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
+        (uniform as! FloatUniform).setFloatValues(uniformFloatFunc(map: uniformMap))
         }
-
+        } else {
+        if let uniformFunc = uniformMap[uniform.name] {
+        uniform.setValues(uniformFunc(map: uniformMap))
+        }
+        /*} else {
+        assertionFailure("no matching uniform for \(uniform.name)")
+        }*/
+        }
+        }*/
+        }
+        
         /*for automaticUniform in _automaticUniforms {
-         /*   if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
-                uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
-            }*/
+        /*   if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
+        uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
+        }*/
         }*/
         
         
@@ -264,34 +268,36 @@ class ShaderProgram {
         // L2 cache making our JavaScript and the browser/driver ping-pong cache lines.
         return
         /*for uniform in _uniforms! {
-            uniform.set()
-            if validate {
-                glValidateProgram(_program!)
-                var err: GLenum
-                var status: GLint = 0
-                glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
-                if status != GLint(GL_TRUE) {
-                    var infoLogLength: GLsizei = 0
-                    glGetProgramiv(_program!, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
-                    var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
-                    var actualLength: GLsizei = 0
-                    glGetProgramInfoLog(_program!, infoLogLength, &actualLength, &strInfoLog)
-                    let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                    assertionFailure("Program validation failed.  Program info log: " + errorMessage!)
-                }
-            }
+        uniform.set()
+        if validate {
+        glValidateProgram(_program!)
+        var err: GLenum
+        var status: GLint = 0
+        glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
+        if status != GLint(GL_TRUE) {
+        var infoLogLength: GLsizei = 0
+        glGetProgramiv(_program!, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
+        var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
+        var actualLength: GLsizei = 0
+        glGetProgramInfoLog(_program!, infoLogLength, &actualLength, &strInfoLog)
+        let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
+        assertionFailure("Program validation failed.  Program info log: " + errorMessage!)
+        }
+        }
         }*/*/
+        
+        return (buffer: buffer, fragmentOffset: vSize, samplerOffset: vSize + fSize)
     }
     
-    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState) {
+    func setUniform (uniform: Uniform, buffer: Buffer, offset: Int, uniformMap: UniformMap?, uniformState: UniformState) {
         switch (uniform.type) {
         case .Automatic:
             if let automaticUniform = AutomaticUniforms[uniform.name] {
-                memcpy(buffer.data+uniform.location, automaticUniform.getValue(uniformState: uniformState), uniform.rawSize)
+                memcpy(buffer.data+offset, automaticUniform.getValue(uniformState: uniformState), uniform.rawSize)
             }
         case .Manual:
             if let uniformFloatFunc = uniformMap!.floatUniform(uniform.name) {
-                memcpy(buffer.data+uniform.location, uniformFloatFunc(map: uniformMap!), uniform.rawSize)
+                memcpy(buffer.data+offset, uniformFloatFunc(map: uniformMap!), uniform.rawSize)
             }
         case .Sampler:
             assertionFailure("Sampler not implemented")

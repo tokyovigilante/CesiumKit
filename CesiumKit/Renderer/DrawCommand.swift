@@ -94,9 +94,7 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
-    private (set) var vertexUniformBuffer: Buffer! = nil
-    private (set) var fragmentUniformBuffer: Buffer! = nil
-    private (set) var samplerUniformBuffer: Buffer! = nil
+    var uniformBufferProvider: UniformBufferProvider! = nil
     
     /**
     * The render state.
@@ -211,14 +209,7 @@ class DrawCommand: Command {
             self.debugOverlappingFrustums = debugOverlappingFrustums
             self.uniformMap = uniformMap
     }
-    
-    func setUniformBuffers (#vertex: Buffer, fragment: Buffer, sampler: Buffer) {
-        vertexUniformBuffer = vertex
-        fragmentUniformBuffer = fragment
-        samplerUniformBuffer = sampler
-    }
 
-    
     /**
     * Executes the draw command.
     *

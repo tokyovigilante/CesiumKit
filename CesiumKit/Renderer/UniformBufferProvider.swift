@@ -9,7 +9,7 @@
 import Foundation
 import Metal
 
-class BufferProvider {
+class UniformBufferProvider {
     
     let inflightBuffersCount: Int
     
@@ -17,7 +17,7 @@ class BufferProvider {
     
     private var availableBufferIndex: Int = 0
     
-    private let resourceSemaphore: dispatch_semaphore_t
+    let resourceSemaphore: dispatch_semaphore_t
     
     init (device: MTLDevice, inflightBuffersCount: Int, sizeInBytes: Int) {
         

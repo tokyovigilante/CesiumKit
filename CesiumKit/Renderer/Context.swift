@@ -249,6 +249,10 @@ class Context {
     func createBuffer(array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) -> Buffer {
         return Buffer(device: device, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
     }
+    
+    func createUniformBufferProvider(bufferCount: Int, sizeInBytes: Int) -> UniformBufferProvider {
+        return UniformBufferProvider(device: self.device, inflightBuffersCount: bufferCount, sizeInBytes: sizeInBytes)
+    }
 
     /**
     * Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
@@ -563,7 +567,7 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
         }
         
         if (defined(source)) {
-        // TODO: _gl.pixelStorei(_gl._UNPACK_ALIGNMENT, 4);
+        gl.pixelStorei(_gl._UNPACK_ALIGNMENT, 4);
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
         
@@ -661,9 +665,10 @@ var renderStateCache = {};
         //_defaultPassState.passDescriptor.depthAttachment.texture = _drawable.texture
         //_defaultPassState.passDescriptor.stencilAttachment.texture = _drawable.texture
         _commandBuffer = _commandQueue.commandBuffer()
+        
         _commandBuffer.addCompletedHandler({ (buffer) in
             for command in self._commandsExecutedThisFrame {
-                // FIXME clear uniform buffer semaphore
+                dispatch_semaphore_signal(command.uniformBufferProvider.resourceSemaphore)
             }
         })
     }
@@ -749,17 +754,17 @@ var renderStateCache = {};
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
 
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
-        renderPipeline.setUniforms(drawCommand, uniformState: uniformState)
-    
+        let bufferParams = renderPipeline.setUniforms(drawCommand, context: self, uniformState: uniformState)
+        
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
-            _commandEncoder.setVertexBuffer(drawCommand.vertexUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
+            _commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 1)
             
-            _commandEncoder.setFragmentBuffer(drawCommand.fragmentUniformBuffer.metalBuffer, offset: 0, atIndex: 1)
-            //_commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
+            _commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 1)
+            _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount
             /*va!._bind()

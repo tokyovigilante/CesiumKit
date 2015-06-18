@@ -28,12 +28,10 @@ class RenderPipeline {
         self.shaderProgram = shaderProgram
     }
     
-    func setUniforms(drawCommand: DrawCommand, context: Context, uniformState: UniformState) {
-        if drawCommand.vertexUniformBuffer == nil ||
-            drawCommand.fragmentUniformBuffer == nil ||
-            drawCommand.samplerUniformBuffer == nil {
-                let uniformBuffers = shaderProgram.createUniformBuffers(context)
-                drawCommand.setUniformBuffers(vertex: uniformBuffers.vertex, fragment: uniformBuffers.fragment, sampler: uniformBuffers.sampler)
+    func setUniforms(command: DrawCommand, context: Context, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int) {
+        if command.uniformBufferProvider == nil {
+            command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(context)
         }
+        return shaderProgram.setUniforms(command, uniformState: uniformState)
     }
 }
