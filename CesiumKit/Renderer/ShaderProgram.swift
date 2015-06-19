@@ -181,19 +181,6 @@ class ShaderProgram {
             _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler))
         }
     }
-        
-    private func setSamplerUniforms(samplerUniforms: [Uniform]) -> GLint {
-        
-        var textureUnitIndex: GLint = 0
-        
-        for uniform in samplerUniforms {
-            if let samplerUniform = uniform as? UniformSampler {
-                textureUnitIndex = samplerUniform.setSampler(textureUnitIndex)
-            }
-        }
-            
-        return textureUnitIndex
-    }
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int) {
         
@@ -212,79 +199,9 @@ class ShaderProgram {
         }
         
         for uniform in _samplerUniforms {
-            //setUniform(uniform, buffer: command.samplerUniformBuffer, uniformMap: command.uniformMap?, uniformState: uniformState)
+            setUniform(uniform, buffer: command.samplerUniformBuffer, uniformMap: command.uniformMap?, uniformState: uniformState)
             
         }
-        
-        /*
-        
-        if let uniformMap = uniformMap {
-        
-        
-        
-        let czm_projection = AutomaticUniforms["czm_projection"]!
-        var floatCZMPR = czm_projection.getValue(uniformState: uniformState)
-        
-        let u_modifiedModelView = uniformMap.floatUniform("u_modifiedModelView")!
-        var floatMMV = u_modifiedModelView(map: uniformMap)
-        
-        let u_initialColor = uniformMap.floatUniform("u_initialColor")!
-        var floatUIC = u_initialColor(map: uniformMap)
-        
-        var bufferData = uniformBuffer.data
-        memcpy(bufferData, floatCZMPR, sizeof(Float) * 16)
-        memcpy(bufferData+64, floatMMV, sizeof(Float) * 16)
-        memcpy(bufferData+128, floatUIC, sizeof(Float) * 4)
-        }
-        // TODO: Performance
-        if let uniformMap = uniformMap {
-        // FIXME: uniforms
-        /*for uniform in _manualUniforms! {
-        if uniform.isFloat {
-        if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
-        (uniform as! FloatUniform).setFloatValues(uniformFloatFunc(map: uniformMap))
-        }
-        } else {
-        if let uniformFunc = uniformMap[uniform.name] {
-        uniform.setValues(uniformFunc(map: uniformMap))
-        }
-        /*} else {
-        assertionFailure("no matching uniform for \(uniform.name)")
-        }*/
-        }
-        }*/
-        }
-        
-        /*for automaticUniform in _automaticUniforms {
-        /*   if let uniform: FloatUniform = automaticUniform.uniform as? FloatUniform {
-        uniform.setFloatValues(automaticUniform.automaticUniform.getValue(uniformState: uniformState))
-        }*/
-        }*/
-        
-        
-        // It appears that assigning the uniform values above and then setting them here
-        // (which makes the GL calls) is faster than removing this loop and making
-        // the GL calls above.  I suspect this is because each GL call pollutes the
-        // L2 cache making our JavaScript and the browser/driver ping-pong cache lines.
-        return
-        /*for uniform in _uniforms! {
-        uniform.set()
-        if validate {
-        glValidateProgram(_program!)
-        var err: GLenum
-        var status: GLint = 0
-        glGetProgramiv(_program!, GLenum(GL_VALIDATE_STATUS), &status)
-        if status != GLint(GL_TRUE) {
-        var infoLogLength: GLsizei = 0
-        glGetProgramiv(_program!, GLenum(GL_INFO_LOG_LENGTH), &infoLogLength)
-        var strInfoLog = [GLchar](count: Int(infoLogLength + 1), repeatedValue: 0)
-        var actualLength: GLsizei = 0
-        glGetProgramInfoLog(_program!, infoLogLength, &actualLength, &strInfoLog)
-        let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-        assertionFailure("Program validation failed.  Program info log: " + errorMessage!)
-        }
-        }
-        }*/*/
         
         return (buffer: buffer, fragmentOffset: vSize, samplerOffset: vSize + fSize)
     }
@@ -303,6 +220,20 @@ class ShaderProgram {
             assertionFailure("Sampler not implemented")
         }
         //uniform.set(buffer)
+    }
+    
+    
+    private func setSamplerUniform(samplerUniforms: [Uniform]) -> GLint {
+        
+        /*var textureUnitIndex: Int = 0
+        
+        for uniform in samplerUniforms {
+            if let samplerUniform = uniform as? UniformSampler {
+                textureUnitIndex = samplerUniform.setSampler(textureUnitIndex)
+            }
+        }
+        
+        return textureUnitIndex*/
     }
     /**
     * Creates a GLSL shader source string by sending the input through three stages:
