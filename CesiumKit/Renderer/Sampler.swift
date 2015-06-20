@@ -9,12 +9,20 @@
 import Metal
 
 class Sampler {
-    let wrapS: TextureWrap = .ClampToEdge
-    let wrapT: TextureWrap  = .ClampToEdge
-    let minFilter: TextureMinMagFilter = .Linear
-    let magFilter: TextureMinMagFilter = .Linear
-    let mipMagFilter: TextureMipFilter = .NotMipmapped
-    let maximumAnisotropy: Int = 1
+    let state: MTLSamplerState
+    
+    init (context: Context, wrapS: TextureWrap = .ClampToEdge, wrapT: TextureWrap  = .ClampToEdge, minFilter: TextureMinMagFilter = .Linear, magFilter: TextureMinMagFilter = .Linear, mipMagFilter: TextureMipFilter = .NotMipmapped, maximumAnisotropy: Int = 1) {
+        
+        var descriptor = MTLSamplerDescriptor()
+        descriptor.minFilter = minFilter.toMetal()
+        descriptor.magFilter = magFilter.toMetal()
+        descriptor.mipFilter = mipMagFilter.toMetal()
+        descriptor.sAddressMode = wrapS.toMetal()
+        descriptor.tAddressMode = wrapT.toMetal()
+        descriptor.maxAnisotropy = maximumAnisotropy
+        
+        state = context.createSamplerState(descriptor)
+    }
 }
 
 enum TextureWrap: UInt {

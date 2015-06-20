@@ -60,6 +60,8 @@ class Context {
     
     var textureFilterAnisotropic = true
     
+    var maximumTextureFilterAnisotropy = 1
+    
     struct glOptions {
         
         var alpha = false
@@ -242,7 +244,15 @@ class Context {
             }
             return _pipelineCache.getRenderPipeline(self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
     }
-    /** 
+    
+    /**
+    * Creates a compiled MTLSamplerState from a MTLSamplerDescriptor. These should generally be cached.
+    */
+    func createSamplerState (descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
+        return device.newSamplerStateWithDescriptor(descriptor)
+    }
+    
+    /**
     * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be 
     * copied to the buffer and can be released (or automatically released via ARC)
     */
@@ -748,6 +758,11 @@ var renderStateCache = {};
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
         let bufferParams = renderPipeline.setUniforms(drawCommand, context: self, uniformState: uniformState)
         
+        // Don't render unless any textures required are available
+        if !bufferParams.texturesValid {
+            return
+        }
+        
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
@@ -756,6 +771,12 @@ var renderStateCache = {};
             _commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 1)
             
             _commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 1)
+            
+            for (index, texture) in enumerate(bufferParams.textures) {
+                _commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
+                _commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)
+            }
+            
             _commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount

@@ -39,5 +39,9 @@ class ImageryLayerUniformMap: UniformMap {
     func floatUniform(name: String) -> FloatUniformFunc? {
         return _floatUniforms[name]
     }
+    
+    func textureForUniform(uniform: UniformSampler) -> Texture? {
+        return texture
+    }
 
 }

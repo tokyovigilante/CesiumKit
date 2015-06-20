@@ -490,9 +490,8 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery for which to create a texture.
     */
     func createTexture (context: Context, imagery: Imagery) {
-        //glFlush()
-        //dispatch_async(context.textureLoadQueue, {
-          //  EAGLContext.setCurrentContext(context.textureLoadContext)
+        dispatch_async(context.textureLoadQueue, {
+            
             // If this imagery provider has a discard policy, use it to check if this
             // image should be discarded.
             if let discardPolicy = self.imageryProvider.tileDiscardPolicy {
@@ -512,18 +511,17 @@ public class ImageryLayer {
             
             // Imagery does not need to be discarded, so upload it to GL.
             
-            //let texture = context.createTexture2D(TextureOptions(
-                //source : .Image(imagery.image!),
-                //pixelFormat : self.imageryProvider.hasAlphaChannel ? .RGBA : .RGB))
-            //imagery.texture = texture
+            let texture = context.createTexture2D(TextureOptions(
+                source : .Image(imagery.image!))
+            )
+            imagery.texture = texture
             imagery.image = nil
             //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-            //glFlush()
+            dispatch_async(dispatch_get_main_queue(), {
             //dispatch_async(context.renderQueue, {
-            //    EAGLContext.setCurrentContext(context.view.context)
-               imagery.state = ImageryState.TextureLoaded
-            //})
-        //})
+                imagery.state = ImageryState.TextureLoaded
+            })
+        })
     }
     
     /**
@@ -536,10 +534,8 @@ public class ImageryLayer {
     * @param {Imagery} imagery The imagery instance to reproject.
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
-        //glFlush()
-        //dispatch_async(context.textureLoadQueue, {
-          //  EAGLContext.setCurrentContext(context.textureLoadContext)
-            /*var texture = imagery.texture!
+        dispatch_async(context.textureLoadQueue, {
+            var texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
             // Reproject this texture if it is not already in a geographic projection and
@@ -549,41 +545,32 @@ public class ImageryLayer {
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
             if !isGeographic && pixelGap {
-                let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
-                texture = reprojectedTexture
-                imagery.texture = texture
+                //let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
+                //texture = reprojectedTexture
+                //imagery.texture = texture
             }
             
             // Use mipmaps if this texture has power-of-two dimensions.
-            if Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
-                /*var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
+            if false {//Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+                var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
-                    mipmapSampler = Sampler()
-                    mipmapSampler!.wrapS = .Edge
-                    mipmapSampler!.wrapT = .Edge
-                    mipmapSampler!.minificationFilter = TextureMinificationFilter.LinearMipmapLinear
-                    mipmapSampler!.magnificationFilter = TextureMagnificationFilter.Linear
-                    mipmapSampler!.maximumAnisotropy = context.maximumTextureFilterAnisotropy
-                }*/
-                
-                /*context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
-                texture.generateMipmap(hint: .Fastest)
-                texture.sampler = mipmapSampler!
+                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.maximumTextureFilterAnisotropy)
+                }
+                // FIXME: Mipmaps
+                context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
             } else {
                 var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
                 if nonMipmapSampler == nil {
-                    nonMipmapSampler = Sampler()
+                    nonMipmapSampler = Sampler(context: context)
                     context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
                 }
-                texture.sampler = nonMipmapSampler!*/
+                texture.sampler = nonMipmapSampler!
             }
-            
-            //println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-            //glFlush()
-            //dispatch_async(context.renderQueue, {*/
+            dispatch_async(dispatch_get_main_queue(), {
+            // dispatch_async(context.renderQueue, {
                 imagery.state = .Ready
-            //})
-        //})
+            })
+        })
     }
     
     func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {

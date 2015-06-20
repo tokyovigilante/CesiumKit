@@ -235,4 +235,12 @@ class TileUniformMap: UniformMap {
         return _floatUniforms[name]
     }
     
+    func textureForUniform (uniform: UniformSampler) -> Texture? {
+        let name = uniform.name
+        if name.hasPrefix("u_dayTexture") {
+            return dayTextures.first
+        }
+        return nil
+    }
+    
 }

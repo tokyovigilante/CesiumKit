@@ -57,9 +57,7 @@ struct TextureOptions {
     
     let premultiplyAlpha: Bool
     
-    let mipmapped: Bool
-    
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .RGBA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true, mipmapped: Bool) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .RGBA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -68,11 +66,6 @@ struct TextureOptions {
         self.pixelFormat = pixelFormat
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
-        self.mipmapped = mipmapped
-        if mipmapped {
-            assert(self.width > 1 && Math.isPowerOfTwo(self.width), "width must be a power of two to call generateMipmap()")
-            assert(self.height > 1 && Math.isPowerOfTwo(self.height), "height must be a power of two to call generateMipmap")
-        }
     }
 }
 
@@ -103,33 +96,8 @@ class Texture {
     * @memberof Texture.prototype
     * @type {Object}
     */
-    var sampler: Sampler! {
-        didSet {
-            /*if pixelDatatype == .Float {
-                if (sampler.minificationFilter != .Nearest &&
-                    sampler.minificationFilter != .NearestMipmapNearest) {
-                        assertionFailure("Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.")
-                }
-                
-                if (sampler.magnificationFilter != .Nearest) {
-                    assertionFailure("Only the NEAREST magnification filter is supported for floating point textures.")
-                }
-            }
-            
-            glActiveTexture(GLenum(GL_TEXTURE0))
-            glBindTexture(textureTarget, textureName)
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MIN_FILTER), sampler.minificationFilter.toGL())
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAG_FILTER), sampler.magnificationFilter.toGL());
-            
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_S), sampler.wrapS.toGL())
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_T), sampler.wrapT.toGL())
-            if textureFilterAnisotropic {
-                glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAX_ANISOTROPY_EXT), sampler.maximumAnisotropy)
-            }
-            glBindTexture(textureTarget, 0)*/
-        }
-    }
-
+    var sampler: Sampler!
+        
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
@@ -146,8 +114,9 @@ class Texture {
         
         pixelFormat = options.pixelFormat
         premultiplyAlpha = options.premultiplyAlpha
-        mipmapped = options.mipmapped
-        
+        //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
+        mipmapped = false
+
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
@@ -173,8 +142,9 @@ class Texture {
         //var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         var flipY = options.flipY
         
+        // FIXME: mipmapping
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
-            width: width, height: height, mipmapped: mipmapped)
+            width: width, height: height, mipmapped: false/*mipmapped*/)
         metalTexture = context.device.newTextureWithDescriptor(textureDescriptor)
         
          if let source = source {

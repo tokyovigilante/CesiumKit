@@ -28,7 +28,7 @@ class RenderPipeline {
         self.shaderProgram = shaderProgram
     }
     
-    func setUniforms(command: DrawCommand, context: Context, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int) {
+    func setUniforms(command: DrawCommand, context: Context, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int, texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
             command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(context)
         }

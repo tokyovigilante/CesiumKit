@@ -68,7 +68,7 @@ class ShaderProgram {
     
     private var _fragmentUniforms: [Uniform]!
     
-    private var _samplerUniforms: [Uniform]!
+    private var _samplerUniforms: [UniformSampler]!
     
     let keyword: String
 
@@ -174,15 +174,15 @@ class ShaderProgram {
             _fragmentUniforms.append(Uniform.create(desc: desc, type: type))
         }
 
-        _samplerUniforms = [Uniform]()
+        _samplerUniforms = [UniformSampler]()
         let samplerUniformCount = _fragmentShader.textureCount()
         for i in 0..<samplerUniformCount {
             let desc =  _fragmentShader.textureDescription(i)
-            _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler))
+            _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler) as! UniformSampler)
         }
     }
     
-    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int) {
+    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
         let buffer = command.uniformBufferProvider.nextBuffer()
 
@@ -198,12 +198,18 @@ class ShaderProgram {
             setUniform(uniform, buffer: buffer, offset: vSize + uniform.location, uniformMap: command.uniformMap, uniformState: uniformState)
         }
         
+        var textures = [Texture]()
+        
+        var texturesValid = true
         for uniform in _samplerUniforms {
-            setUniform(uniform, buffer: command.samplerUniformBuffer, uniformMap: command.uniformMap?, uniformState: uniformState)
-            
+            if let texture = command.uniformMap!.textureForUniform(uniform) {
+                textures.append(texture)
+            } else {
+                texturesValid = false
+            }
         }
         
-        return (buffer: buffer, fragmentOffset: vSize, samplerOffset: vSize + fSize)
+        return (buffer: buffer, fragmentOffset: vSize, samplerOffset: vSize + fSize, texturesValid: texturesValid, textures: textures)
     }
     
     func setUniform (uniform: Uniform, buffer: Buffer, offset: Int, uniformMap: UniformMap?, uniformState: UniformState) {
@@ -223,7 +229,7 @@ class ShaderProgram {
     }
     
     
-    private func setSamplerUniform(samplerUniforms: [Uniform]) -> GLint {
+    /*private func setSamplerUniform(samplerUniforms: [Uniform]) -> GLint {
         
         /*var textureUnitIndex: Int = 0
         
@@ -234,7 +240,7 @@ class ShaderProgram {
         }
         
         return textureUnitIndex*/
-    }
+    }**/
     /**
     * Creates a GLSL shader source string by sending the input through three stages:
     * <ul>

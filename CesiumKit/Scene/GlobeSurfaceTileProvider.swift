@@ -766,7 +766,7 @@ var northeastScratch = new Cartesian3();
                     tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: tileImagery)
                 }
                 
-                //uniformMap.dayTextures.append(imagery!.texture!)
+                uniformMap.dayTextures.append(imagery!.texture!)
                 tileImagery.textureTranslationAndScale!.pack(&uniformMap.dayTextureTranslationAndScale, startingIndex: numberOfDayTextures * 4)
                 tileImagery.textureCoordinateRectangle!.pack(&uniformMap.dayTextureTexCoordsRectangle, startingIndex: numberOfDayTextures * 4)
                 

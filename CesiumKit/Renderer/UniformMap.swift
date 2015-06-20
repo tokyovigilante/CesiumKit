@@ -16,7 +16,7 @@ protocol UniformMap {
     subscript(name: String) -> UniformFunc? { get }
     
     func floatUniform(name: String) -> FloatUniformFunc?
-
     
+    func textureForUniform (uniform: UniformSampler) -> Texture?
 }
 
