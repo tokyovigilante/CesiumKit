@@ -54,7 +54,7 @@ class TileImagery {
     */
     func processStateMachine (tile: QuadtreeTile, context: Context) -> Bool {
         
-        var imageryLayer = loadingImagery!.imageryLayer
+        let imageryLayer = loadingImagery!.imageryLayer
         
         loadingImagery!.processStateMachine(context)
         

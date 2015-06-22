@@ -600,7 +600,7 @@ struct Transforms {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
-    static func pointToWindowCoordinates(#modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    static func pointToWindowCoordinates(modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var result = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix: modelViewProjectionMatrix, viewportTransformation: viewportTransformation, point: point)
         result.y = 2.0 * viewportTransformation[5] - result.y
@@ -611,7 +611,7 @@ struct Transforms {
     /**
     * @private
     */
-    private static func pointToGLWindowCoordinates (#modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    private static func pointToGLWindowCoordinates (modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
         coords.multiplyByScalar(1.0 / coords.w)

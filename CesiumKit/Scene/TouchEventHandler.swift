@@ -201,8 +201,8 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         } else {
             distance = height
         }
-        var newDistance = distance * scale
-        var diff = newDistance - distance
+        let newDistance = distance * scale
+        let diff = newDistance - distance
         /*let unitPosition = _scene.camera.position.normalize()
         let unitPositionDotDirection = unitPosition.dot(_scene.camera.direction)
         var distanceMeasure = distance
@@ -240,7 +240,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             distance = distanceMeasure - maxHeight
         }*/
         
-        _scene.camera.zoomIn(amount: diff)
+        _scene.camera.zoomIn(diff)
 
     }
 

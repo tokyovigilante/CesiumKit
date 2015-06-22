@@ -254,7 +254,7 @@ public struct Rectangle/*: Packable*/ {
         } else {
             east = self.east
         }
-        var longitude = Math.negativePiToPi((west + east) * 0.5)
+        let longitude = Math.negativePiToPi((west + east) * 0.5)
         let latitude = (south + north) * 0.5
         
         return Cartographic(longitude: longitude, latitude: latitude)

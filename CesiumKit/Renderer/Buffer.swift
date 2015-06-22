@@ -25,9 +25,9 @@ class Buffer {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         if array != nil {
-            metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: nil)
+            metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .CPUCacheModeDefaultCache)
         } else {
-            metalBuffer = device.newBufferWithLength(sizeInBytes, options: nil)
+            metalBuffer = device.newBufferWithLength(sizeInBytes, options: .CPUCacheModeDefaultCache)
         }
         
         self.componentDatatype = componentDatatype

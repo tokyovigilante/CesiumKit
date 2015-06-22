@@ -129,24 +129,26 @@ class ShaderProgram {
     }
     
     private func compileMetalProgram(device: MTLDevice) {
-        var error: NSError?
-        _vertexLibrary = device.newLibraryWithSource(_metalVertexShaderSource, options: nil, error: &error)
-        if _vertexLibrary == nil {
-            println(_fragmentShaderText)
-            println(_metalFragmentShaderSource)
-            println(error!.localizedDescription)
+        
+        do {
+            _vertexLibrary = try device.newLibraryWithSource(_metalVertexShaderSource, options: nil)
+            metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
+        } catch {
+            print(_fragmentShaderText)
+            print(_metalFragmentShaderSource)
+            print((error as NSError).localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }
-        metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
         
-        _fragmentLibrary = device.newLibraryWithSource(_metalFragmentShaderSource, options: nil, error: &error)
-        if _fragmentLibrary == nil {
-            println(_fragmentShaderText)
-            println(_metalFragmentShaderSource)
-            println(error!.localizedDescription)
+        do {
+            _fragmentLibrary = try device.newLibraryWithSource(_metalFragmentShaderSource, options: nil)
+            metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
+        } catch {
+            print(_fragmentShaderText)
+            print(_metalFragmentShaderSource)
+            print((error as NSError).localizedDescription)
             assertionFailure("_library == nil")
         }
-        metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
     }
     
     private func findVertexAttributes() {
@@ -155,7 +157,7 @@ class ShaderProgram {
         vertexAttributes = [String: GLSLShaderVariableDescription]()
         
         for i in 0..<attributeCount {
-            var attribute = _vertexShader.inputDescription(i)
+            let attribute = _vertexShader.inputDescription(i)
             vertexAttributes[attribute.name] = attribute
         }
     }
@@ -283,7 +285,7 @@ class ShaderProgram {
     * @private
     */
     
-    class func createShaderSource(#defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
+    class func createShaderSource(defines defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
         
         assert(pickColorQualifier == nil || pickColorQualifier == "uniform" || pickColorQualifier == "varying", "options.pickColorQualifier must be 'uniform' or 'varying'")
         

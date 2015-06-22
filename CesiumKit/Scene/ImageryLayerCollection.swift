@@ -108,7 +108,7 @@ public class ImageryLayerCollection {
     // FIXME: ImageryProvider
     public func addImageryProvider(imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
         
-        var layer = ImageryLayer(imageryProvider: imageryProvider)
+        let layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)
         return layer
     }
@@ -347,7 +347,7 @@ ImageryLayerCollection.prototype.destroy = function() {
         var layersShownOrHidden = [ImageryLayer]()
         var layer: ImageryLayer
         
-        for (index, layer) in enumerate(_layers) {
+        for (index, layer) in _layers.enumerate() {
             layer.layerIndex = index
             
             if (layer.show) {
@@ -364,7 +364,7 @@ ImageryLayerCollection.prototype.destroy = function() {
                 layer._show = layer.show
             }
         }
-        for (index, layer) in enumerate(layersShownOrHidden) {
+        for (index, layer) in layersShownOrHidden.enumerate() {
             //FIXME: RaiseEvent
             layerShownOrHidden.raiseEvent()//layer, layer._layerIndex, layer.show)
         }

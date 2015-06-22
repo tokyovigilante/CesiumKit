@@ -70,6 +70,6 @@ protocol Command: class {
     
     var executeInClosestFrustum: Bool { get set }
     
-    func execute(#context: Context, passState: PassState?, renderState: RenderState?, renderPipeline: RenderPipeline?)
+    func execute(context context: Context, passState: PassState?, renderState: RenderState?, renderPipeline: RenderPipeline?)
     
 }

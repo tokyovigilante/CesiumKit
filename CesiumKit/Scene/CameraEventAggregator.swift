@@ -240,7 +240,7 @@ class CameraEventAggregator {
         //var isDown = aggregator._isDown;
         
         for i in 0..<CameraEventType.COUNT.rawValue {
-            var key = getKey(CameraEventType(rawValue: i)!, modifier: modifier)
+            let key = getKey(CameraEventType(rawValue: i)!, modifier: modifier)
             _update[key] = true
         
             if _lastMovement[key] == nil {
@@ -354,7 +354,7 @@ class CameraEventAggregator {
     */
     func getLastMovement (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> MouseMovement? {
         let key = getKey(type, modifier: modifier)
-        var lastMovement = _lastMovement[key]
+        let lastMovement = _lastMovement[key]
         if lastMovement != nil && lastMovement!.valid {
             return lastMovement!
         }
@@ -387,7 +387,7 @@ class CameraEventAggregator {
             return _currentMousePosition
         }
         
-        var key = getKey(type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _eventStartPosition[key]!
     }
     

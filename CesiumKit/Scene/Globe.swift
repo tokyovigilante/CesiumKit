@@ -279,8 +279,8 @@ class Globe {
     
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
         func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
-            var aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
-            var bDist = b.pickBoundingSphere.distanceSquaredTo(rayOrigin)
+            let aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
+            let bDist = b.pickBoundingSphere.distanceSquaredTo(rayOrigin)
             return aDist < bDist
         }
         return comparePickTileFunction
@@ -301,11 +301,11 @@ class Globe {
     */
     func pick(ray: Ray, scene: Scene) -> Cartesian3? {
         let mode = scene.mode
-        let projection = scene.mapProjection
+        //let projection = scene.mapProjection
         
         var sphereIntersections = [GlobeSurfaceTile]()
         
-        var tilesToRender = _surface.tilesToRender
+        let tilesToRender = _surface.tilesToRender
         
         for tile in tilesToRender {
             
@@ -323,12 +323,12 @@ class Globe {
                 boundingVolume = tileData.boundingSphere3D
             }
             
-            if let boundingSphereIntersection = IntersectionTests.raySphere(ray, sphere: boundingVolume) {
+            if IntersectionTests.raySphere(ray, sphere: boundingVolume) != nil {
                 sphereIntersections.append(tileData)
             }
         }
         
-        sphereIntersections.sort(createComparePickTileFunction(ray.origin))
+        sphereIntersections.sortInPlace(createComparePickTileFunction(ray.origin))
         
         for sphereIntersection in sphereIntersections {
             if let intersection = sphereIntersection.pick(ray, scene: scene, cullBackFaces: true) {
@@ -412,36 +412,36 @@ class Globe {
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
 
-    func computeDepthQuad(#frameState: FrameState) -> [Float] {
+    func computeDepthQuad(frameState frameState: FrameState) -> [Float] {
         
         var depthQuad = [Float](count: 12, repeatedValue: 0.0)//(count: 12, repeatedValue: 0.0)
         
-        var radii = ellipsoid.radii
+        let radii = ellipsoid.radii
         
         // Find the corresponding position in the scaled space of the ellipsoid.
-        var q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera!.positionWC)
+        let q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera!.positionWC)
         
-        var qMagnitude = q.magnitude()
-        var qUnit = q.normalize()
+        let qMagnitude = q.magnitude()
+        let qUnit = q.normalize()
         
         // Determine the east and north directions at q.
-        var eUnit = q.cross(Cartesian3.unitZ()).normalize()
-        var nUnit = qUnit.cross(eUnit).normalize()
+        let eUnit = q.cross(Cartesian3.unitZ()).normalize()
+        let nUnit = qUnit.cross(eUnit).normalize()
         
         // Determine the radius of the 'limb' of the ellipsoid.
-        var wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
+        let wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
         
         // Compute the center and offsets.
-        var center = qUnit.multiplyByScalar(qMagnitude)
-        var scalar = wMagnitude / qMagnitude;
-        var eastOffset = eUnit.multiplyByScalar(scalar)
-        var northOffset = nUnit.multiplyByScalar(scalar)
+        let center = qUnit.multiplyByScalar(qMagnitude)
+        let scalar = wMagnitude / qMagnitude;
+        let eastOffset = eUnit.multiplyByScalar(scalar)
+        let northOffset = nUnit.multiplyByScalar(scalar)
         
         // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-        var upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
-        var lowerLeft = center.subtract(northOffset).subtract(eastOffset).multiplyComponents(radii)
-        var upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
-        var lowerRight = center.subtract(northOffset).add(eastOffset).multiplyComponents(radii)
+        let upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
+        let lowerLeft = center.subtract(northOffset).subtract(eastOffset).multiplyComponents(radii)
+        let upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
+        let lowerRight = center.subtract(northOffset).add(eastOffset).multiplyComponents(radii)
         
         upperLeft.pack(&depthQuad, startingIndex: 0)
         lowerLeft.pack(&depthQuad, startingIndex: 3)
@@ -455,7 +455,7 @@ class Globe {
     var pt1Scratch = new Cartesian3();
     var pt2Scratch = new Cartesian3();*/
     
-    func computePoleQuad(#frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
+    func computePoleQuad(frameState frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
         //FIXME: PoleQuad
         /*
         let negativeZ = Cartesian3.unitZ().negate()
@@ -498,7 +498,7 @@ class Globe {
  
     }
     
-    func fillPoles(#context: Context, frameState: FrameState) {
+    func fillPoles(context context: Context, frameState: FrameState) {
         //FIXME: Fillpoles
         /*var terrainProvider = globe.terrainProvider;
         if (frameState.mode !== SceneMode.SCENE3D) {
@@ -649,20 +649,20 @@ class Globe {
 /**
 * @private
 */
-    func update(#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if !show {
             return
         }
 
-        var width = context.width
-        var height = context.height
+        let width = context.width
+        let height = context.height
         
         if (width == 0 || height == 0) {
             return
         }
         
-        var mode = frameState.mode
-        var projection = frameState.mapProjection
+        let mode = frameState.mode
+        //var projection = frameState.mapProjection
         var modeChanged = false
         
         if _mode != mode || _rsColor == nil {

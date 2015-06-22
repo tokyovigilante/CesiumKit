@@ -82,7 +82,7 @@ class PipelineCache {
             fragmentShaderSource: fss
         )
         
-        var pipelineDescriptor = MTLRenderPipelineDescriptor()
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
         
         pipelineDescriptor.vertexFunction = shader.metalVertexFunction
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction

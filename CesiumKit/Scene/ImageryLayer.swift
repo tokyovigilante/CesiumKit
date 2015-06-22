@@ -257,7 +257,7 @@ public class ImageryLayer {
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
-        var imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
+        let imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
         var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
 
         let rectangle: Rectangle
@@ -273,7 +273,7 @@ public class ImageryLayer {
             }
             
             let baseImageryRectangle = imageryBounds!
-            var baseTerrainRectangle = tile.rectangle
+            let baseTerrainRectangle = tile.rectangle
             overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
             
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
@@ -311,7 +311,7 @@ public class ImageryLayer {
         let targetGeometricError = errorRatio * terrainProvider.levelMaximumGeometricError(tile.level)
         var imageryLevel = levelWithMaximumTexelSpacing(texelSpacing: targetGeometricError, latitudeClosestToEquator: latitudeClosestToEquator)
         imageryLevel = max(0, imageryLevel)
-        var maximumLevel = imageryProvider.maximumLevel
+        let maximumLevel = imageryProvider.maximumLevel
         if (imageryLevel > maximumLevel) {
             imageryLevel = maximumLevel
         }
@@ -333,10 +333,10 @@ public class ImageryLayer {
         // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
         
         // We define "very close" as being within 1/512 of the width of the tile.
-        var veryCloseX = tile.rectangle.height / 512.0
-        var veryCloseY = tile.rectangle.width / 512.0
+        let veryCloseX = tile.rectangle.height / 512.0
+        let veryCloseY = tile.rectangle.width / 512.0
         
-        var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
+        let northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
             ++northwestTileCoordinates.y
         }
@@ -344,7 +344,7 @@ public class ImageryLayer {
             ++northwestTileCoordinates.x
         }
         
-        var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
+        let southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
         if (abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
             --southeastTileCoordinates.y
         }
@@ -375,7 +375,7 @@ public class ImageryLayer {
             minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / terrainRectangle.height)
         }
         
-        var initialMinV = minV
+        let initialMinV = minV
         
         for i in northwestTileCoordinates.x...southeastTileCoordinates.x {
             minU = maxU
@@ -478,7 +478,7 @@ public class ImageryLayer {
                     imagery.state = .Failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    println(message)
+                    print(message)
                 })
             }
         })
@@ -541,7 +541,7 @@ public class ImageryLayer {
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
         dispatch_async(context.textureLoadQueue, {
-            var texture = imagery.texture!
+            let texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
             // Reproject this texture if it is not already in a geographic projection and
@@ -581,7 +581,7 @@ public class ImageryLayer {
         })
     }
     
-    func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+    func getImageryFromCache (level level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
@@ -595,11 +595,11 @@ public class ImageryLayer {
     }
     
     func removeImageryFromCache (imagery: Imagery) {
-        var cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
+        let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValueForKey(cacheKey)
     }
     
-    private func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
+    private func getImageryCacheKey(level level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
@@ -829,7 +829,7 @@ public class ImageryLayer {
     * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
     * @returns {Number} The level with the specified texel spacing or less.
     */
-    func levelWithMaximumTexelSpacing(#texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
+    func levelWithMaximumTexelSpacing(texelSpacing texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0

@@ -106,8 +106,8 @@ class QuadtreePrimitive {
         
         self._tileProvider = tileProvider
         
-        var tilingScheme = tileProvider.tilingScheme
-        var ellipsoid = tilingScheme.ellipsoid
+        let tilingScheme = tileProvider.tilingScheme
+        let ellipsoid = tilingScheme.ellipsoid
         
         _occluders = QuadtreeOccluders(ellipsoid : ellipsoid)
         
@@ -175,7 +175,7 @@ class QuadtreePrimitive {
     * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
     *        commands to this array during the update call.
     */
-    func update (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
         selectTilesForRendering(context: context, frameState: frameState)
         processTileLoadQueue(context: context, frameState: frameState)
@@ -223,7 +223,7 @@ class QuadtreePrimitive {
     this._tileProvider = this._tileProvider && this._tileProvider.destroy();
     };
     */
-    func selectTilesForRendering(#context: Context, frameState: FrameState) {
+    func selectTilesForRendering(context context: Context, frameState: FrameState) {
         
         if _debug.suspendLodUpdate {
             return
@@ -249,7 +249,7 @@ class QuadtreePrimitive {
         // We can't render anything before the level zero tiles exist.
         if _levelZeroTiles.count == 0 {
             if (_tileProvider.ready) {
-                var terrainTilingScheme = _tileProvider.tilingScheme
+                let terrainTilingScheme = _tileProvider.tilingScheme
                 _levelZeroTiles = QuadtreeTile.createLevelZeroTiles(terrainTilingScheme)
             } else {
                 // Nothing to do until the provider is ready.
@@ -281,7 +281,7 @@ class QuadtreePrimitive {
         // This ordering allows us to load bigger, lower-detail tiles before smaller, higher-detail ones.
         // This maximizes the average detail across the scene and results in fewer sharp transitions
         // between very different LODs.
-        while var tile = _tileTraversalQueue.dequeue() {
+        while let tile = _tileTraversalQueue.dequeue() {
             ++_debug.tilesVisited
             
             _tileReplacementQueue.markTileRendered(tile)
@@ -322,7 +322,7 @@ class QuadtreePrimitive {
                _debug.tilesWaitingForChildren != _debug.lastTilesWaitingForChildren {
                     
                     /*global console*/
-                    println("Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)")
+                    print("Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)")
                     
                     _debug.lastTilesVisited = _debug.tilesVisited
                     _debug.lastTilesRendered = _debug.tilesRendered
@@ -333,7 +333,7 @@ class QuadtreePrimitive {
         }
     }
     
-    func screenSpaceError(#context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
+    func screenSpaceError(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
         if frameState.mode == .Scene2D {
             return screenSpaceError2D(context: context, frameState: frameState, tile: tile)
         }
@@ -347,7 +347,7 @@ class QuadtreePrimitive {
         return (maxGeometricError * Double(context.height)) / (2 * distance * tan(0.5 * frameState.camera!.frustum.fovy))
     }
     
-    func screenSpaceError2D(#context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
+    func screenSpaceError2D(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
         let frustum = frameState.camera!.frustum
 
         let maxGeometricError = _tileProvider.levelMaximumGeometricError(tile.level)
@@ -388,7 +388,7 @@ class QuadtreePrimitive {
         _tileLoadQueue.append(tile)
     }
     
-    func processTileLoadQueue(#context: Context, frameState: FrameState) {
+    func processTileLoadQueue(context context: Context, frameState: FrameState) {
         
         if _tileLoadQueue.count == 0 {
             return
@@ -400,7 +400,7 @@ class QuadtreePrimitive {
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         
-        var len = _tileLoadQueue.count
+        let len = _tileLoadQueue.count
         for var i = len - 1; i >= 0; --i {
             let tile = _tileLoadQueue[i]
             _tileReplacementQueue.markTileRendered(tile)
@@ -411,11 +411,11 @@ class QuadtreePrimitive {
         }
     }
     
-    func createRenderCommandsForSelectedTiles(#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func createRenderCommandsForSelectedTiles(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         func tileDistanceSortFunction(a: QuadtreeTile, b: QuadtreeTile) -> Bool {
             return a.distance < b.distance
         }
-        _tilesToRender.sort(tileDistanceSortFunction)
+        _tilesToRender.sortInPlace(tileDistanceSortFunction)
         
         for tile in _tilesToRender {
             _tileProvider.showTileThisFrame(tile, context: context, frameState: frameState, commandList: &commandList)

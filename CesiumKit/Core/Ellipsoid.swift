@@ -174,9 +174,9 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
     func geodeticSurfaceNormalCartographic(cartographic: Cartographic) -> Cartesian3 {
-        var longitude = cartographic.longitude
-        var latitude = cartographic.latitude
-        var cosLatitude = cos(latitude)
+        let longitude = cartographic.longitude
+        let latitude = cartographic.latitude
+        let cosLatitude = cos(latitude)
         
         return Cartesian3(
             x: cosLatitude * cos(longitude),
@@ -259,18 +259,18 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     
     func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic? {
         
-        var p = scaleToGeodeticSurface(cartesian)
+        let p = scaleToGeodeticSurface(cartesian)
         if p == nil {
             return nil
         }
         
-        var n = geodeticSurfaceNormal(p!)
-        var h = cartesian.subtract(p!)
+        let n = geodeticSurfaceNormal(p!)
+        let h = cartesian.subtract(p!)
         
-        var longitude = atan2(n.y, n.x)
-        var latitude = asin(n.z)
+        let longitude = atan2(n.y, n.x)
+        let latitude = asin(n.z)
         
-        var height = Double(Math.sign(h.dot(cartesian))) * h.magnitude()
+        let height = Double(Math.sign(h.dot(cartesian))) * h.magnitude()
         
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
         
@@ -313,33 +313,33 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     */
     func scaleToGeodeticSurface(cartesian: Cartesian3) -> Cartesian3? {
         
-        var positionX = cartesian.x
-        var positionY = cartesian.y
-        var positionZ = cartesian.z
+        let positionX = cartesian.x
+        let positionY = cartesian.y
+        let positionZ = cartesian.z
         
-        var oneOverRadiiX = oneOverRadii.x
-        var oneOverRadiiY = oneOverRadii.y
-        var oneOverRadiiZ = oneOverRadii.z
+        let oneOverRadiiX = oneOverRadii.x
+        let oneOverRadiiY = oneOverRadii.y
+        let oneOverRadiiZ = oneOverRadii.z
         
-        var x2 = positionX * positionX * oneOverRadiiX * oneOverRadiiX
-        var y2 = positionY * positionY * oneOverRadiiY * oneOverRadiiY
-        var z2 = positionZ * positionZ * oneOverRadiiZ * oneOverRadiiZ
+        let x2 = positionX * positionX * oneOverRadiiX * oneOverRadiiX
+        let y2 = positionY * positionY * oneOverRadiiY * oneOverRadiiY
+        let z2 = positionZ * positionZ * oneOverRadiiZ * oneOverRadiiZ
         
         // Compute the squared ellipsoid norm.
-        var squaredNorm = x2 + y2 + z2
-        var ratio = sqrt(1.0 / squaredNorm)
+        let squaredNorm = x2 + y2 + z2
+        let ratio = sqrt(1.0 / squaredNorm)
         
         // As an initial approximation, assume that the radial intersection is the projection point.
-        var intersection = cartesian.multiplyByScalar(ratio)
+        let intersection = cartesian.multiplyByScalar(ratio)
         
         //* If the position is near the center, the iteration will not converge.
         if (squaredNorm < centerToleranceSquared) {
             return ratio.isInfinite ? nil : intersection
         }
         
-        var oneOverRadiiSquaredX = oneOverRadiiSquared.x
-        var oneOverRadiiSquaredY = oneOverRadiiSquared.y
-        var oneOverRadiiSquaredZ = oneOverRadiiSquared.z
+        let oneOverRadiiSquaredX = oneOverRadiiSquared.x
+        let oneOverRadiiSquaredY = oneOverRadiiSquared.y
+        let oneOverRadiiSquaredZ = oneOverRadiiSquared.z
         
         // Use the gradient at the intersection point in place of the true unit normal.
         // The difference in magnitude will be absorbed in the multiplier.
@@ -364,7 +364,7 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
         var yMultiplier3: Double
         var zMultiplier3: Double
         
-        do {
+        repeat {
             lambda -= correction
             
             xMultiplier = 1.0 / (1.0 + lambda * oneOverRadiiSquaredX)
@@ -385,7 +385,7 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
             // computations in the sections to follow.
             denominator = x2 * xMultiplier3 * oneOverRadiiSquaredX + y2 * yMultiplier3 * oneOverRadiiSquaredY + z2 * zMultiplier3 * oneOverRadiiSquaredZ
             
-            var derivative = -2.0 * denominator
+            let derivative = -2.0 * denominator
             
             correction = funcMultiplier / derivative
         } while (abs(funcMultiplier) > Math.Epsilon12)
@@ -407,10 +407,10 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
         let positionY = cartesian.y
         let positionZ = cartesian.z
         
-        var betaSquared = positionX * positionX * oneOverRadiiSquared.x +
+        let betaSquared = positionX * positionX * oneOverRadiiSquared.x +
             positionY * positionY * oneOverRadiiSquared.y +
             positionZ * positionZ * oneOverRadiiSquared.z
-        var beta = 1.0 / sqrt(betaSquared)
+        let beta = 1.0 / sqrt(betaSquared)
         
         return cartesian.multiplyByScalar(beta)
     }

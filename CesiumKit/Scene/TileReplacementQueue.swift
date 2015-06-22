@@ -47,10 +47,10 @@ class TileReplacementQueue {
             // current frame.
             keepTrimming = tileToTrim! != _lastBeforeStartOfFrame
             
-            var previous = tileToTrim!.replacementPrevious
+            let previous = tileToTrim!.replacementPrevious
             
             if tileToTrim!.eligibleForUnloading {
-                tileToTrim!.freeResources(context: context)
+                tileToTrim!.freeResources(context)
                 remove(tileToTrim!)
             }
             tileToTrim = previous
@@ -58,8 +58,8 @@ class TileReplacementQueue {
     }
     
     func remove(item: QuadtreeTile) {
-        var previous = item.replacementPrevious
-        var next = item.replacementNext
+        let previous = item.replacementPrevious
+        let next = item.replacementNext
         
         if item == _lastBeforeStartOfFrame {
             _lastBeforeStartOfFrame = next

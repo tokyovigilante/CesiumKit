@@ -10,7 +10,7 @@ import Metal
 
 class RenderPipeline {
     
-    let state: MTLRenderPipelineState
+    let state: MTLRenderPipelineState!
     
     let shaderProgram: ShaderProgram
     
@@ -21,11 +21,15 @@ class RenderPipeline {
     var count: Int = 0
     
     init (device: MTLDevice, shaderProgram: ShaderProgram, descriptor: MTLRenderPipelineDescriptor) {
-        var error: NSError?
-        var metalPipeline = device.newRenderPipelineStateWithDescriptor(descriptor, error: &error)
-        assert(error == nil, "Metal Error: \(error!.description)")
-        self.state = metalPipeline!
+        
         self.shaderProgram = shaderProgram
+        do {
+            let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
+            self.state = state
+        } catch  {
+            state = nil
+            assertionFailure("newRenderPipelineStateWithDescriptor failed")
+        }
     }
     
     func setUniforms(command: DrawCommand, context: Context, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int, texturesValid: Bool, textures: [Texture]) {

@@ -171,9 +171,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     
-    func beginUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         
-        var sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
+        let sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
             var aImagery: Imagery
             
             //if isOrderedBefore.
@@ -199,7 +199,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
                 if var imagery: [TileImagery] = tile.data?.imagery {
-                    imagery.sort(sortTileImageryByLayerIndex)
+                    imagery.sortInPlace(sortTileImageryByLayerIndex)
                 }
             })
         }
@@ -232,7 +232,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
 
         if _renderState == nil {
         
@@ -333,7 +333,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         }
         
         if frameState.mode == .Scene3D {
-            var occludeePointInScaledSpace = surfaceTile.occludeePointInScaledSpace
+            let occludeePointInScaledSpace = surfaceTile.occludeePointInScaledSpace
             if occludeePointInScaledSpace == nil {
                 return Visibility(rawValue: intersection.rawValue)!
             }
@@ -372,7 +372,7 @@ var northeastScratch = new Cartesian3();
         var tileImageryCollection = tile.data!.imagery
         
         for ( var i = 0, len = tileImageryCollection.count; i < len; ++i) {
-            var tileImagery = tileImageryCollection[i]
+            let tileImagery = tileImageryCollection[i]
             if tileImagery.readyImagery != nil && tileImagery.readyImagery!.imageryLayer.alpha() != 0.0 {
                 ++readyTextureCount
             }
@@ -616,7 +616,7 @@ var northeastScratch = new Cartesian3();
 
         let surfaceTile = tile.data!
         
-        var viewMatrix = frameState.camera!.viewMatrix
+        let viewMatrix = frameState.camera!.viewMatrix
         
         var maxTextures = context.maximumTextureUnits
 
@@ -650,9 +650,9 @@ var northeastScratch = new Cartesian3();
         var useWebMercatorProjection = false
 
         if frameState.mode != .Scene3D {
-            var projection = frameState.mapProjection!
-            var southwest = projection.project(tile.rectangle.southwest())
-            var northeast = projection.project(tile.rectangle.northeast())
+            let projection = frameState.mapProjection!
+            let southwest = projection.project(tile.rectangle.southwest())
+            let northeast = projection.project(tile.rectangle.northeast())
             
             tileRectangle.x = southwest.x
             tileRectangle.y = southwest.y
@@ -672,8 +672,8 @@ var northeastScratch = new Cartesian3();
                 southLatitude = tile.rectangle.south
                 northLatitude = tile.rectangle.north
                 
-                var southMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(southLatitude)
-                var northMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(northLatitude)
+                let southMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(southLatitude)
+                let northMercatorY = WebMercatorProjection.geodeticLatitudeToMercatorAngle(northLatitude)
                 
                 scratchArray[0] = Float32(southMercatorY)
                 southMercatorYHigh = Double(scratchArray[0])
@@ -701,7 +701,7 @@ var northeastScratch = new Cartesian3();
         
         var initialColor = _firstPassInitialColor
         
-        do {
+        repeat {
             var numberOfDayTextures = 0
             
             var command: DrawCommand

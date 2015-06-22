@@ -281,10 +281,10 @@ public class CesiumGlobe {
         self.scene3DOnly = options.scene3DOnly
         
         if self.sceneMode == SceneMode.Scene2D {
-            self.scene.morphTo2D(duration: 0)
+            self.scene.morphTo2D(0)
         }
         if self.sceneMode == SceneMode.ColumbusView {
-            self.scene.morphToColumbusView(duration: 0)
+            self.scene.morphToColumbusView(0)
         }
         
         configureCanvasSize(Cartesian2(x: Double(layer.bounds.width), y: Double(layer.bounds.height)))
@@ -380,9 +380,9 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
     public func showErrorPanel(title: String, message: String, error: String) {
-        print(title)
-        print(message)
-        print(error)
+        print(title, appendNewline: false)
+        print(message, appendNewline: false)
+        print(error, appendNewline: false)
         /*
         // FIXME Error display
         var element = this._element;

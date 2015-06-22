@@ -57,10 +57,10 @@ public struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     init(fromSpherical spherical: Spherical) {
-        var clock = spherical.clock
-        var cone = spherical.cone
-        var magnitude = spherical.magnitude
-        var radial = magnitude * sin(cone);
+        let clock = spherical.clock
+        let cone = spherical.cone
+        let magnitude = spherical.magnitude
+        let radial = magnitude * sin(cone);
         x = radial * cos(clock);
         y = radial * sin(clock);
         z = magnitude * cos(cone);
@@ -119,9 +119,9 @@ public struct Cartesian3: Packable, Equatable {
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
-        var x = Double(array[startingIndex])
-        var y = Double(array[startingIndex+1])
-        var z = Double(array[startingIndex+2])
+        let x = Double(array[startingIndex])
+        let y = Double(array[startingIndex+1])
+        let z = Double(array[startingIndex+2])
         return Cartesian3(x: x, y: y, z: z)
     }
     
@@ -372,8 +372,8 @@ public struct Cartesian3: Packable, Equatable {
     * @returns {Number} The angle between the Cartesians.
     */
     func angleBetween(other: Cartesian3) -> Double {
-        var cosine = self.normalize().dot(other.normalize())
-        var sine = self.normalize().cross(other.normalize()).magnitude()
+        let cosine = self.normalize().dot(other.normalize())
+        let sine = self.normalize().cross(other.normalize()).magnitude()
         return atan2(sine, cosine)
     }
     
@@ -441,16 +441,16 @@ public struct Cartesian3: Packable, Equatable {
     */
     func cross(other: Cartesian3) -> Cartesian3 {
         
-        var leftX = self.x
-        var leftY = self.y
-        var leftZ = self.z
-        var rightX = other.x
-        var rightY = other.y
-        var rightZ = other.z
+        let leftX = self.x
+        let leftY = self.y
+        let leftZ = self.z
+        let rightX = other.x
+        let rightY = other.y
+        let rightZ = other.z
         
-        var x = leftY * rightZ - leftZ * rightY
-        var y = leftZ * rightX - leftX * rightZ
-        var z = leftX * rightY - leftY * rightX
+        let x = leftY * rightZ - leftZ * rightY
+        let y = leftZ * rightX - leftX * rightZ
+        let z = leftX * rightY - leftY * rightX
         
         return Cartesian3(x: x, y: y, z: z)
     }
@@ -468,10 +468,10 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    public static func fromDegrees(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    public static func fromDegrees(longitude longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
-        var lon = Math.toRadians(longitude)
-        var lat = Math.toRadians(latitude)
+        let lon = Math.toRadians(longitude)
+        let lat = Math.toRadians(latitude)
         return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
     
@@ -488,12 +488,12 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    static func fromRadians(#longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    static func fromRadians(longitude longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
-        var cosLatitude = cos(latitude);
-        var n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
-        var k = n.multiplyComponents(ellipsoid.radiiSquared)
-        var gamma = sqrt(n.dot(k));
+        let cosLatitude = cos(latitude);
+        let n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
+        let k = n.multiplyComponents(ellipsoid.radiiSquared)
+        let gamma = sqrt(n.dot(k));
         
         return k.divideByScalar(gamma).add(n.multiplyByScalar(height));
     }
@@ -509,7 +509,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
     */
-    static func fromDegreesArray(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromDegreesArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
         for coordinate in coordinates {
@@ -530,7 +530,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
     */
-    static func fromRadiansArray(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
@@ -576,7 +576,7 @@ public struct Cartesian3: Packable, Equatable {
     * @example
     * var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
     */
-    static func fromRadiansArrayHeights(#coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArrayHeights(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         

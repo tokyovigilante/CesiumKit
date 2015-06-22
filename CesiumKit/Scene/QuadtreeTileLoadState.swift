@@ -10,7 +10,7 @@
 * @exports QuadtreeTileLoadState
 * @private
 */
-enum QuadtreeTileLoadState: Printable {
+enum QuadtreeTileLoadState: CustomStringConvertible {
     /**
     * The tile is new and loading has not yet begun.
     * @type QuadtreeTileLoadState

@@ -181,16 +181,16 @@ class Texture {
                 var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
                 
                 rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-                rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue
+                rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
                 
-                let bitmapInfo = CGBitmapInfo(alphaInfo.rawValue)
+                let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
                 
                 let colorSpace = CGImageGetColorSpace(imageRef)
 
                 // Allocate a textureData with the above properties:
                 var textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
 
-                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
                 assert(contextRef != nil, "contextRef == nil")
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
                 let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))

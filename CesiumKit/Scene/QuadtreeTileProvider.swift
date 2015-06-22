@@ -108,7 +108,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func beginUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
+    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
@@ -121,7 +121,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
+    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be

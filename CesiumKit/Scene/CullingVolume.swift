@@ -37,7 +37,7 @@ struct CullingVolume {
         var intersecting = false
         
         for plane in planes {
-            var result = boundingVolume.intersect(plane)
+            let result = boundingVolume.intersect(plane)
             if result == .Outside {
                 return result
             } else if result == .Intersecting {

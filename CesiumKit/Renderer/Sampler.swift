@@ -13,7 +13,7 @@ class Sampler {
     
     init (context: Context, wrapS: TextureWrap = .ClampToEdge, wrapT: TextureWrap  = .ClampToEdge, minFilter: TextureMinMagFilter = .Linear, magFilter: TextureMinMagFilter = .Linear, mipMagFilter: TextureMipFilter = .NotMipmapped, maximumAnisotropy: Int = 1) {
         
-        var descriptor = MTLSamplerDescriptor()
+        let descriptor = MTLSamplerDescriptor()
         descriptor.minFilter = minFilter.toMetal()
         descriptor.magFilter = magFilter.toMetal()
         descriptor.mipFilter = mipMagFilter.toMetal()

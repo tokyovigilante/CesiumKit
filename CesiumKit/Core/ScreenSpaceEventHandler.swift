@@ -478,7 +478,7 @@ public class ScreenSpaceEventHandler {
     
     func fireTouchEvents() {
         
-        var modifier: KeyboardEventModifier? = nil// = getModifier(event);
+        let modifier: KeyboardEventModifier? = nil// = getModifier(event);
         let numberOfTouches = _positions.count
         
         var action: EventAction?
@@ -554,7 +554,7 @@ public class ScreenSpaceEventHandler {
     }
     
     func fireTouchMoveEvents() {
-        var modifier: KeyboardEventModifier? = nil//  getModifier(event);
+        let modifier: KeyboardEventModifier? = nil//  getModifier(event);
         /*var positions = screenSpaceEventHandler._positions;
         var previousPositions = screenSpaceEventHandler._previousPositions;
         var numberOfTouches = positions.length;*/

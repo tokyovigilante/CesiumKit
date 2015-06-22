@@ -239,7 +239,7 @@ class TileUniformMap: UniformMap {
         var name = uniform.name
         if name.hasPrefix("u_dayTexture") {
             name.removeRange(Range(start: name.startIndex, end: name.endIndex.predecessor()))
-            let textureIndex = name.toInt()
+            let textureIndex = Int(name)
             assert(textureIndex != nil && textureIndex! < dayTextures.count, "textureIndex < dayTextures.count")
             return dayTextures[textureIndex!]
         }

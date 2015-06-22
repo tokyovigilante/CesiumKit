@@ -29,7 +29,7 @@ class VertexDescriptor {
         
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](count: attributes.count, repeatedValue: false)
-        for (index, va) in enumerate(attributes) {
+        for (index, va) in attributes.enumerate() {
             if uniqueIndices[index] {
                 assertionFailure("Index \(index) is used by more than one attribute.")
             }

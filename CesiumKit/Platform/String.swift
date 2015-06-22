@@ -23,7 +23,7 @@ extension String {
     }
     
     func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
-        return self.rangeOfString(findStr, options: nil, range: nil, locale: nil)?.startIndex
+        return self.rangeOfString(findStr, options: [], range: nil, locale: nil)?.startIndex
     }
 
 }

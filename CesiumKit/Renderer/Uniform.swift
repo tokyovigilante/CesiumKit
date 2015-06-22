@@ -155,7 +155,7 @@ class Uniform {
         assertionFailure("Invalid base class")
     }
     
-    static func create(#desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+    static func create(desc desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
         switch desc.type {
         case .Float:
             return UniformFloat(desc: desc, type: type)

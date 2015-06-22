@@ -13,7 +13,7 @@
 * @constructor
 * @private
 *
-* :param: level The level of the tile in the quadtree.
+* - parameter level: The level of the tile in the quadtree.
 * @param x The X coordinate of the tile in the quadtree.  0 is the westernmost tile.
 * @param y The Y coordinate of the tile in the quadtree.  0 is the northernmost tile.
 * @param tilingScheme The tiling scheme in which this tile exists.
@@ -183,11 +183,11 @@ class QuadtreeTile: Equatable, DrawCommandOwner {
         renderable = false
         upsampledFromParent = false
         
-        data?.freeResources(context: context)
+        data?.freeResources(context)
         
         if _children != nil {
             for tile in _children! {
-                tile.freeResources(context: context)
+                tile.freeResources(context)
             }
             _children = nil
         }

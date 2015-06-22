@@ -98,7 +98,7 @@ class HeightmapTessellator {
     * });
     */
     class func computeVertices (
-        #heightmap: [UInt16],
+        heightmap heightmap: [UInt16],
         height: Int,
         width: Int,
         skirtHeight: Double,
@@ -195,11 +195,11 @@ class HeightmapTessellator {
                     latitude = Math.toRadians(latitude)
                 }
                 
-                var cosLatitude = cos(latitude)
-                var nZ = sin(latitude)
-                var kZ = radiiSquaredZ * nZ
+                let cosLatitude = cos(latitude)
+                let nZ = sin(latitude)
+                let kZ = radiiSquaredZ * nZ
                 
-                var v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
+                let v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
                 
                 for (var colIndex = startCol; colIndex < endCol; ++colIndex) {
                     var col = colIndex;
@@ -218,7 +218,7 @@ class HeightmapTessellator {
                         longitude = Math.toRadians(longitude)
                     }
                     
-                    var terrainOffset = row * (width * stride) + col * stride
+                    let terrainOffset = row * (width * stride) + col * stride
                     
                     var heightSample: Double
                     if (elementsPerHeight == 1) {
@@ -246,18 +246,18 @@ class HeightmapTessellator {
                         heightSample -= skirtHeight
                     }
                     
-                    var nX = cosLatitude * cos(longitude)
-                    var nY = cosLatitude * sin(longitude)
+                    let nX = cosLatitude * cos(longitude)
+                    let nY = cosLatitude * sin(longitude)
                     
-                    var kX = radiiSquaredX * nX
-                    var kY = radiiSquaredY * nY
+                    let kX = radiiSquaredX * nX
+                    let kY = radiiSquaredY * nY
                     
-                    var gamma = sqrt((kX * nX) + (kY * nY) + (kZ * nZ))
-                    var oneOverGamma = 1.0 / gamma
+                    let gamma = sqrt((kX * nX) + (kY * nY) + (kZ * nZ))
+                    let oneOverGamma = 1.0 / gamma
                     
-                    var rSurfaceX = kX * oneOverGamma
-                    var rSurfaceY = kY * oneOverGamma
-                    var rSurfaceZ = kZ * oneOverGamma
+                    let rSurfaceX = kX * oneOverGamma
+                    let rSurfaceY = kY * oneOverGamma
+                    let rSurfaceZ = kZ * oneOverGamma
                     
                     vertices[vertexArrayIndex++] = Float(rSurfaceX + nX * heightSample - relativeToCenter.x)
                     vertices[vertexArrayIndex++] = Float(rSurfaceY + nY * heightSample - relativeToCenter.y)
@@ -265,7 +265,7 @@ class HeightmapTessellator {
                     
                     vertices[vertexArrayIndex++] = Float(heightSample)
                     
-                    var u = (longitude - geographicWest) / (geographicEast - geographicWest)
+                    let u = (longitude - geographicWest) / (geographicEast - geographicWest)
                     
                     vertices[vertexArrayIndex++] = Float(u)
                     vertices[vertexArrayIndex++] = Float(v)

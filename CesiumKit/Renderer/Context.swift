@@ -200,8 +200,8 @@ class Context {
 
         _debug = (0, 0)
 
-        var us = UniformState()
-        var rs = RenderState()
+        let us = UniformState()
+        let rs = RenderState()
         
         _defaultRenderState = rs
         uniformState = us
@@ -358,7 +358,7 @@ class Context {
     * var va = context.createVertexArray(attributes);
     */
     
-    func createVertexArray (#vertexBuffer: Buffer, vertexCount: Int, indexBuffer: Buffer?) -> VertexArray {
+    func createVertexArray (vertexBuffer vertexBuffer: Buffer, vertexCount: Int, indexBuffer: Buffer?) -> VertexArray {
         return VertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
         
     }
@@ -675,7 +675,7 @@ var renderStateCache = {};
         assert(_drawable == nil, "drawable != nil")
         _drawable = layer.nextDrawable()
         if _drawable == nil {
-            println("drawable == nil")
+            print("drawable == nil")
             return false
         }
         //assert(_drawable != nil, "drawable == nil")
@@ -703,9 +703,8 @@ var renderStateCache = {};
         }
         let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
         
-        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(passDescriptor)
-        assert(commandEncoder != nil, "Could not create command encoder")
-        _commandEncoder = commandEncoder!
+        _commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(passDescriptor)
+
         _commandEncoder.setTriangleFillMode(.Fill)
         _commandEncoder.setFrontFacingWinding(.CounterClockwise)
         _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
@@ -713,7 +712,7 @@ var renderStateCache = {};
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
-        var previousState = _currentRenderState
+        let previousState = _currentRenderState
         if previousState.hash != renderState.hash {
             _currentRenderState = renderState
             renderState.partialApply(previousState, passState: passState)
@@ -725,9 +724,9 @@ var renderStateCache = {};
         
         let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
         
-        var c = clearCommand.color
-        var d = clearCommand.depth
-        var s = clearCommand.stencil
+        let c = clearCommand.color
+        let d = clearCommand.depth
+        let s = clearCommand.stencil
         
         let colorAttachment = passDescriptor.colorAttachments[0]
         if let c = c {
@@ -767,7 +766,7 @@ var renderStateCache = {};
         
         let activePassState: PassState
         if let pass = drawCommand.pass {
-            var commandPassState = _passStates[pass]
+            let commandPassState = _passStates[pass]
             activePassState = commandPassState ?? _defaultPassState
         } else {
             activePassState = _currentPassState ?? _defaultPassState
@@ -776,9 +775,9 @@ var renderStateCache = {};
             _currentPassState = activePassState
         }
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
+        let framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
         
-        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, renderPipeline: renderPipeline)
+        beginDraw(framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, renderPipeline: renderPipeline)
         continueDraw(drawCommand, renderPipeline: renderPipeline)
     }
     
@@ -818,7 +817,7 @@ var renderStateCache = {};
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
-            println("invalid textures")
+            print("invalid textures")
             return
         }
         
@@ -831,7 +830,7 @@ var renderStateCache = {};
             
             _commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 1)
             
-            for (index, texture) in enumerate(bufferParams.textures) {
+            for (index, texture) in bufferParams.textures.enumerate() {
                 _commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
                 _commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)
             }

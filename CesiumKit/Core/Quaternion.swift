@@ -66,9 +66,9 @@ public struct Quaternion {
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
     public init(fromAxis axis: Cartesian3, angle: Double) {
-        var halfAngle = angle / 2.0
-        var s = sin(halfAngle)
-        var normAxis = axis.normalize()
+        let halfAngle = angle / 2.0
+        let s = sin(halfAngle)
+        let normAxis = axis.normalize()
         
         self.x = normAxis.x * s
         self.y = normAxis.y * s
@@ -88,11 +88,11 @@ public struct Quaternion {
     */
     init(fromRotationMatrix matrix: Matrix3) {
         
-        var m00 = matrix[0, 0]
-        var m11 = matrix[1, 1]
-        var m22 = matrix[2, 2]
+        let m00 = matrix[0, 0]
+        let m11 = matrix[1, 1]
+        let m22 = matrix[2, 2]
         
-        var trace = m00 + m11 + m22
+        let trace = m00 + m11 + m22
         
         var root: Double
         
@@ -118,8 +118,8 @@ public struct Quaternion {
             if (m22 > m00 && m22 > m11) {
                 i = 2
             }
-            var j = next[i]
-            var k = next[j]
+            let j = next[i]
+            let k = next[j]
             
             root = sqrt(matrix[i, i] - matrix[j, j] - matrix[k, k] + 1.0)
             

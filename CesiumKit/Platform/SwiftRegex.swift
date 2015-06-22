@@ -20,17 +20,16 @@ public class SwiftRegex: NSObject, BooleanType {
     var target: NSString
     var regex: NSRegularExpression
     
-    init(target:NSString, pattern:String, options:NSRegularExpressionOptions = nil) {
+    init(target:NSString, pattern:String, options: NSRegularExpressionOptions = NSRegularExpressionOptions(rawValue: 0)) {
         self.target = target
         if let regex = swiftRegexCache[pattern] {
             self.regex = regex
         } else {
-            var error: NSError?
-            if let regex = NSRegularExpression(pattern: pattern, options:options, error:&error) {
+            do {
+                let regex = try NSRegularExpression(pattern: pattern, options:options)
                 swiftRegexCache[pattern] = regex
                 self.regex = regex
-            }
-            else {
+            } catch let error as NSError {
                 SwiftRegex.failure("Error in pattern: \(pattern) - \(error)")
                 self.regex = NSRegularExpression()
             }
@@ -39,7 +38,7 @@ public class SwiftRegex: NSObject, BooleanType {
     }
     
     class func failure(message: String) {
-        println("SwiftRegex: "+message)
+        print("SwiftRegex: "+message)
         //assert(false,"SwiftRegex: failed")
     }
     
@@ -55,20 +54,20 @@ public class SwiftRegex: NSObject, BooleanType {
         }
     }
     
-    public func doesMatch(options: NSMatchingOptions = nil) -> Bool {
-        return range(options: options).location != NSNotFound
+    public func doesMatch(options: NSMatchingOptions = NSMatchingOptions()) -> Bool {
+        return range(options).location != NSNotFound
     }
     
-    public func range(options: NSMatchingOptions = nil) -> NSRange {
-        return regex.rangeOfFirstMatchInString(target as! String, options: nil, range: targetRange)
+    public func range(options: NSMatchingOptions = NSMatchingOptions()) -> NSRange {
+        return regex.rangeOfFirstMatchInString(target as String, options: [], range: targetRange)
     }
     
-    public func match(options: NSMatchingOptions = nil) -> String! {
-        return substring(range(options: options)) as String
+    public func match(options: NSMatchingOptions = NSMatchingOptions()) -> String! {
+        return substring(range(options)) as String
     }
     
-    public func groups(options: NSMatchingOptions = nil) -> [String]! {
-        return groupsForMatch( regex.firstMatchInString(target as! String, options: options, range: targetRange) )
+    public func groups(options: NSMatchingOptions = NSMatchingOptions()) -> [String]! {
+        return groupsForMatch( regex.firstMatchInString(target as String, options: options, range: targetRange) )
     }
     
     func groupsForMatch(match: NSTextCheckingResult!) -> [String]! {
@@ -93,9 +92,9 @@ public class SwiftRegex: NSObject, BooleanType {
         }
         set(newValue) {
             if let mutableTarget = target as? NSMutableString {
-                for match in matchResults().reverse() {
+                for match in Array(matchResults().reverse()) {
                     let replacement = regex.replacementStringForResult( match as! NSTextCheckingResult,
-                        inString: target as! String, offset: 0, template: newValue )
+                        inString: target as String, offset: 0, template: newValue )
                     mutableTarget.replaceCharactersInRange(match.rangeAtIndex(groupno), withString: replacement)
                 }
             } else {
@@ -104,42 +103,41 @@ public class SwiftRegex: NSObject, BooleanType {
         }
     }
     
-    func matchResults(options: NSMatchingOptions = nil) -> [AnyObject] {
-        let result = regex.matchesInString(target as! String, options: options, range: targetRange)
-        return regex.matchesInString(target as! String, options: options, range: targetRange)
+    func matchResults(options: NSMatchingOptions = NSMatchingOptions()) -> [AnyObject] {
+        return regex.matchesInString(target as String, options: options, range: targetRange)
     }
     
-    public func ranges(options: NSMatchingOptions = nil) -> [NSRange] {
-        return matchResults(options: options).map { $0.range }
+    public func ranges(options: NSMatchingOptions = NSMatchingOptions()) -> [NSRange] {
+        return matchResults(options).map { $0.range }
     }
     
-    public func matches(options: NSMatchingOptions = nil) -> [String] {
-        return matchResults(options: options).map { self.substring($0.range) }
+    public func matches(options: NSMatchingOptions = NSMatchingOptions()) -> [String] {
+        return matchResults(options).map { self.substring($0.range) }
     }
     
-    public func allGroups(options: NSMatchingOptions = nil) -> [[String]] {
-        return matchResults(options: options).map { self.groupsForMatch($0 as! NSTextCheckingResult) }
+    public func allGroups(options: NSMatchingOptions = NSMatchingOptions()) -> [[String]] {
+        return matchResults(options).map { self.groupsForMatch($0 as! NSTextCheckingResult) }
     }
     
-    public func dictionary(options: NSMatchingOptions = nil) -> Dictionary<String,String> {
+    public func dictionary(options: NSMatchingOptions = NSMatchingOptions()) -> Dictionary<String,String> {
         var out = Dictionary<String,String>()
-        for match in matchResults(options: options) {
+        for match in matchResults(options) {
             out[substring(match.rangeAtIndex(1)) as String] =
                 substring(match.rangeAtIndex(2)) as String
         }
         return out
     }
     
-    func substituteMatches(options: NSMatchingOptions = nil, substitution: (NSTextCheckingResult, UnsafeMutablePointer<ObjCBool>) -> String) -> String {
+    func substituteMatches(options: NSMatchingOptions = NSMatchingOptions(), substitution: (NSTextCheckingResult, UnsafeMutablePointer<ObjCBool>) -> String) -> String {
             var out = "" //NSMutableString()
             var pos = 0
-            
-            regex.enumerateMatchesInString(target as! String, options: options, range: targetRange ) {
-                (match: NSTextCheckingResult!, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) in
+        
+            regex.enumerateMatchesInString(target as String, options: options, range: targetRange ) {
+                (match: NSTextCheckingResult?, flags: NSMatchingFlags, stop: UnsafeMutablePointer<ObjCBool>) in
                 
-                let matchRange = match.range
+                let matchRange = match!.range
                 out += self.substring(NSRange(location:pos, length:matchRange.location-pos))
-                out += (substitution(match, stop))
+                out += (substitution(match!, stop))
                 pos = matchRange.location + matchRange.length
             }
             
@@ -178,6 +176,6 @@ extension String {
 }
 
 public func RegexMutable(string: NSString) -> NSMutableString {
-    return NSMutableString(string:string as! String)
+    return NSMutableString(string:string as String)
 }
 

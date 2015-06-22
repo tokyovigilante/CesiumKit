@@ -70,7 +70,7 @@ class TileTerrain {
 
 
     func publishToTile(tile: QuadtreeTile) {
-        var surfaceTile = tile.data!
+        let surfaceTile = tile.data!
         assert(mesh != nil, "mesh not created")
         surfaceTile.center = mesh!.center
 
@@ -88,7 +88,7 @@ class TileTerrain {
         vertexArray = nil
     }
     
-    func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processLoadStateMachine (context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
             requestTileGeometry(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
         } else if state == .Received {
@@ -99,11 +99,11 @@ class TileTerrain {
     }
     
     
-    func requestTileGeometry(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func requestTileGeometry(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
 
         dispatch_async(context.processorQueue, {
             self.state = .Receiving
-            var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
+            let terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
             if let terrainData = terrainData {
                 dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
@@ -118,7 +118,7 @@ class TileTerrain {
                     self.state = TerrainState.Failed
                     
                     let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                    println(message)
+                    print(message)
                     
                 })
             }
@@ -162,11 +162,11 @@ class TileTerrain {
         }*/
     }
 
-    func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func transform(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
         dispatch_async(context.processorQueue, {
-            var mesh = self.data?.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
+            let mesh = self.data?.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
                 dispatch_async(dispatch_get_main_queue(), {
@@ -178,14 +178,14 @@ class TileTerrain {
                 dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                     self.state = .Failed
-                    var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
-                    println(message)
+                    let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
+                    print(message)
                 })
             }
         })
     }
     
-    func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func createResources(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Buffering
         var terrainMesh = self.mesh!
         dispatch_async(context.processorQueue, {
@@ -201,7 +201,7 @@ class TileTerrain {
             
             let vertexCount = meshBufferSize / stride
             
-            let vertexBuffer = context.createBuffer(array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
+            let vertexBuffer = context.createBuffer(terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
             
             var indexBuffer = terrainMesh.indexBuffer
             if indexBuffer == nil {
@@ -210,13 +210,13 @@ class TileTerrain {
                 if indices.count < Math.SixtyFourKilobytes {
                     let indicesShort = indices.map({ UInt16($0) })
                     indexBuffer = context.createBuffer(
-                        array: indicesShort,
+                        indicesShort,
                         componentDatatype: ComponentDatatype.UnsignedShort,
                         sizeInBytes: indicesShort.sizeInBytes)
                 } else {
                     let indicesInt = indices.map({ UInt32($0) })
                     indexBuffer = context.createBuffer(
-                        array: indicesInt,
+                        indicesInt,
                         componentDatatype: ComponentDatatype.UnsignedInt,
                         sizeInBytes: indicesInt.sizeInBytes)
                 }

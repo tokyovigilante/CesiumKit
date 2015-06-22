@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-enum TerrainState: Int, Printable {
+enum TerrainState: Int, CustomStringConvertible {
     
     case Failed = 0,
     Unloaded,
