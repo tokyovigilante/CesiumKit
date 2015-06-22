@@ -91,14 +91,17 @@ class ShaderProgram {
         initialize(context, optimizer: optimizer)
     }
     
-    func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
+    func getUniformBufferSize() -> Int {
         let vSize = Int(_vertexShader.uniformTotalSize())
         let fSize = Int(_fragmentShader.uniformTotalSize())
-        let sSize = Int(_fragmentShader.textureCount()) 
-        let totalSize = vSize + fSize + sSize
-        
+        //let sSize = Int(_fragmentShader.textureCount())
+        //println("vsize: \(vSize), fsize: \(fSize), sSize: \(sSize)")
+        return vSize + fSize// + sSize
+    }
+    
+    func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
+        let totalSize = getUniformBufferSize()
         let provider = context.createUniformBufferProvider(3, sizeInBytes: totalSize > 0 ? totalSize : 1)
-        
         return provider
     }
     

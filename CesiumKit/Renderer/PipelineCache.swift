@@ -89,6 +89,7 @@ class PipelineCache {
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        pipelineDescriptor.stencilAttachmentPixelFormat = .Stencil8
         
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         

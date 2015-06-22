@@ -79,7 +79,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .AerialWithLabels, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
@@ -524,7 +524,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public func loadImage (url: String) -> UIImage? {
         if let imageData = NSData(contentsOfURL: NSURL(string: url)!) {
-            return UIImage(data: imageData)
+            let image = UIImage(data: imageData)
+            return image
         }
         /*request(.GET, url)//, //parameters: [
         //"incl" : "ImageryPrtoviders",

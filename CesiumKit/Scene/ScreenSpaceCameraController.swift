@@ -952,7 +952,6 @@ public class ScreenSpaceCameraController {
     var scratchLookUp = new Cartesian3();*/
     
     func spin3D(startPosition: Cartesian2, movement: MouseMovement) {
-        println("\(startPosition), \(movement.startPosition), \(movement.endPosition)")
         let camera = _scene.camera
         
         if camera.transform != Matrix4.identity() {

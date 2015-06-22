@@ -14,7 +14,7 @@ import Metal
 *
 * @private
 */
-struct PassState {
+class PassState {
     /**
     * The context used to execute commands for this pass.
     *

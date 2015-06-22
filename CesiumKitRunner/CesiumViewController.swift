@@ -31,8 +31,9 @@ class CesiumViewController: UIViewController {
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         
+        
         _displayLink = CADisplayLink(target: self, selector: "render:")
-        _displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+        _displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     }
     
     /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {

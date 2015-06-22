@@ -28,8 +28,12 @@ class Context {
         }
     }*/
     let networkQueue: dispatch_queue_t
+    let networkSemaphore: dispatch_semaphore_t
+    
     let processorQueue: dispatch_queue_t
     let textureLoadQueue: dispatch_queue_t
+    
+    private let _inflight_semaphore: dispatch_semaphore_t
 
     var layer: CAMetalLayer
     
@@ -37,9 +41,9 @@ class Context {
     
     private let _commandQueue: MTLCommandQueue
     
-    private var _drawable: CAMetalDrawable!
-    private var _commandBuffer: MTLCommandBuffer!
-    private var _commandEncoder: MTLRenderCommandEncoder!
+    private var _drawable: CAMetalDrawable! = nil
+    private var _commandBuffer: MTLCommandBuffer! = nil
+    private var _commandEncoder: MTLRenderCommandEncoder! = nil
 
 /*    var pipeline: MTLRenderPipelineState
     var uniformBuffer: MTLBuffer
@@ -49,8 +53,10 @@ class Context {
     var nearestMipSamplerState: MTLSamplerState
     var linearMipSamplerState: MTLSamplerState*/
     
-    private var _commandsExecutedThisFrame = [DrawCommand]()
-
+    //private var _commandsExecutedThisFrame = [DrawCommand]()
+    
+    private var _depthTexture: MTLTexture!
+    private var _stencilTexture: MTLTexture!
     
     var maximumTextureSize: Int = 4096
     
@@ -90,9 +96,6 @@ class Context {
     private var _passStates = [Pass: PassState]()
     
     var uniformState: UniformState
-    
-    private var _depthTexture: MTLTexture!
-    //var _currentFramebuffer: Framebuffer? = nil
     
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -182,9 +185,13 @@ class Context {
         
         id = NSUUID().UUIDString
         
+        _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
+
         networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
         textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
+        
+        networkSemaphore = dispatch_semaphore_create(4)
         
         //antialias = true
        
@@ -610,21 +617,15 @@ Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebu
             mipmapped: false)
         _depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
     }
-    func createCommandEncoder(passState: PassState? = nil) {
-        if _commandEncoder != nil {
-            _commandEncoder.endEncoding()
-        }
-        let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
-        
-        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(_defaultPassState.passDescriptor)
-        assert(commandEncoder != nil, "Could not create command encoder")
-        _commandEncoder = commandEncoder!
-        _commandEncoder.setTriangleFillMode(.Fill)
-        _commandEncoder.setFrontFacingWinding(.CounterClockwise)
-        _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
-        _commandEncoder.setCullMode(.Back)
+    
+    func createStencilTexture() {
+        let stencilTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(.Stencil8,
+            width: Int(width),
+            height: Int(height),
+            mipmapped: false)
+        _stencilTexture = device.newTextureWithDescriptor(stencilTextureDescriptor)
     }
-
+    
 /*
 Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;
@@ -665,14 +666,50 @@ var renderStateCache = {};
 
 
     
-    func beginFrame() {
+    func beginFrame() -> Bool {
+        
+        // Allow the renderer to preflight 3 frames on the CPU (using a semapore as a guard) and commit them to the GPU.
+        // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
+        // signifying the CPU can go ahead and prepare another frame.
+        dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER)
+        assert(_drawable == nil, "drawable != nil")
         _drawable = layer.nextDrawable()
+        if _drawable == nil {
+            println("drawable == nil")
+            return false
+        }
+        //assert(_drawable != nil, "drawable == nil")
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        
-        _defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
+        _defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
 
+        _defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
+        _defaultPassState.passDescriptor.stencilAttachment.texture = _stencilTexture
+        
         _commandBuffer = _commandQueue.commandBuffer()
+        
+        // call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
+        _commandBuffer.addCompletedHandler { (buffer) in
+            // GPU has completed rendering the frame and is done using the contents of any buffers previously encoded on the CPU for that frame.
+            // Signal the semaphore and allow the CPU to proceed and construct the next frame.
+            dispatch_semaphore_signal(self._inflight_semaphore)
+        }
+        return true
+    }
+    
+    func createCommandEncoder(passState: PassState? = nil) {
+        if _commandEncoder != nil {
+            _commandEncoder.endEncoding()
+        }
+        let passDescriptor = passState?.passDescriptor ?? _defaultPassState.passDescriptor!
+        
+        let commandEncoder = _commandBuffer.renderCommandEncoderWithDescriptor(passDescriptor)
+        assert(commandEncoder != nil, "Could not create command encoder")
+        _commandEncoder = commandEncoder!
+        _commandEncoder.setTriangleFillMode(.Fill)
+        _commandEncoder.setFrontFacingWinding(.CounterClockwise)
+        _commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(width), height: Double(height), znear: 0.0, zfar: 1.0))
+        _commandEncoder.setCullMode(.Back)
     }
     
     func applyRenderState(renderState: RenderState, passState: PassState) {
@@ -724,13 +761,34 @@ var renderStateCache = {};
         }
     }
     
+    func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
+        
+        //_commandsExecutedThisFrame.append(drawCommand)
+        
+        let activePassState: PassState
+        if let pass = drawCommand.pass {
+            var commandPassState = _passStates[pass]
+            activePassState = commandPassState ?? _defaultPassState
+        } else {
+            activePassState = _currentPassState ?? _defaultPassState
+        }
+        if _currentPassState == nil /*|| _currentPassState! != activePassState*/ {
+            _currentPassState = activePassState
+        }
+        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+        var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
+        
+        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, renderPipeline: renderPipeline)
+        continueDraw(drawCommand, renderPipeline: renderPipeline)
+    }
+    
     func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, renderPipeline: RenderPipeline?) {
         
-
+        
         /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
         
         if framebuffer != nil && rs.depthTest.enabled {
-            assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
+        assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
         _commandEncoder.setRenderPipelineState(renderPipeline.state)
@@ -740,7 +798,7 @@ var renderStateCache = {};
         
         //applyRenderState(rs, passState: passState)
     }
-
+    
     func continueDraw(drawCommand: DrawCommand, renderPipeline: RenderPipeline?) {
         let primitiveType = drawCommand.primitiveType
         
@@ -754,12 +812,13 @@ var renderStateCache = {};
         
         
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
-
+        
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
         let bufferParams = renderPipeline.setUniforms(drawCommand, context: self, uniformState: uniformState)
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
+            println("invalid textures")
             return
         }
         
@@ -786,33 +845,17 @@ var renderStateCache = {};
         }
     }
 
-    func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
-        
-        _commandsExecutedThisFrame.append(drawCommand)
-        
-        let activePassState: PassState
-        if let pass = drawCommand.pass {
-            var commandPassState = _passStates[pass]
-            activePassState = commandPassState ?? _defaultPassState
-        } else {
-            activePassState = _currentPassState ?? _defaultPassState
-        }
-        if _currentPassState == nil /*|| _currentPassState! != activePassState*/ {
-            _currentPassState = activePassState
-        }
-        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
-        
-        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, renderPipeline: renderPipeline)
-        continueDraw(drawCommand, renderPipeline: renderPipeline)
-    }
-
     func endFrame () {
         _commandEncoder.endEncoding()
         _commandBuffer.presentDrawable(_drawable)
+        
+        _drawable = nil
+        _defaultPassState.passDescriptor = nil
+        _currentPassState?.passDescriptor = nil
+        
         _commandBuffer.commit()
         _commandEncoder = nil
-        
+        _commandBuffer = nil
         /*
         var
         buffers = scratchBackBufferArray;

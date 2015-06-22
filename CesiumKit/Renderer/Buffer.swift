@@ -18,9 +18,7 @@ class Buffer {
         return metalBuffer.contents()
     }
     
-    var length: Int {
-        return metalBuffer.length
-    }
+    let length: Int
     
     init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
         
@@ -33,6 +31,7 @@ class Buffer {
         }
         
         self.componentDatatype = componentDatatype
+        self.length = sizeInBytes
     }
     
 }

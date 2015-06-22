@@ -4,13 +4,38 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Headers/GLSLOptimizer.h</key>
+		<data>
+		qoxFzUOKTXAubmqnNM7bxRZwNWo=
+		</data>
+		<key>Headers/GLSLOptimizerBridge.h</key>
+		<data>
+		512KaxLw31oSN4pnsO7H0mUhbu4=
+		</data>
 		<key>Info.plist</key>
 		<data>
 		aJBWdCtXiixrzvU9+UMd6GqS8aw=
 		</data>
+		<key>Modules/module.modulemap</key>
+		<data>
+		4VvqQfzdwDfnM/YO/bC9eGLz76c=
+		</data>
 	</dict>
 	<key>files2</key>
-	<dict/>
+	<dict>
+		<key>Headers/GLSLOptimizer.h</key>
+		<data>
+		qoxFzUOKTXAubmqnNM7bxRZwNWo=
+		</data>
+		<key>Headers/GLSLOptimizerBridge.h</key>
+		<data>
+		512KaxLw31oSN4pnsO7H0mUhbu4=
+		</data>
+		<key>Modules/module.modulemap</key>
+		<data>
+		4VvqQfzdwDfnM/YO/bC9eGLz76c=
+		</data>
+	</dict>
 	<key>rules</key>
 	<dict>
 		<key>^</key>

@@ -40,7 +40,7 @@ class QuadtreePrimitive {
     private var _tileProvider: QuadtreeTileProvider
     
     private var _debug = (
-        enableDebugOutput : true,
+        enableDebugOutput : false,
         
         maxDepth: 0,
         tilesVisited: 0,

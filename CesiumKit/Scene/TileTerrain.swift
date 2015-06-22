@@ -54,12 +54,12 @@ class TileTerrain {
                 self.vertexArray = nil
             }
         }
-        if let context = context {
+        /*if let context = context {
             dispatch_async(context.processorQueue, freeResourcesRaw)
-        } else {
+        } else {*/
             freeResourcesRaw()
-        }
-        
+        //}
+        // FIXME: Index buffer
         /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
         --indexBuffer.referenceCount;
         if (indexBuffer.referenceCount === 0) {
@@ -127,38 +127,38 @@ class TileTerrain {
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-        
-        
-        assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
-        
-        var sourceData = upsampleDetails!.data
-        var sourceX = upsampleDetails!.x
-        var sourceY = upsampleDetails!.y
-        var sourceLevel = upsampleDetails!.level
+            
+            
+            assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
+            
+            var sourceData = upsampleDetails!.data
+            var sourceX = upsampleDetails!.x
+            var sourceY = upsampleDetails!.y
+            var sourceLevel = upsampleDetails!.level
             /*
             this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
             if (!defined(this.data)) {
-                // The upsample request has been deferred - try again later.
-                return;
+            // The upsample request has been deferred - try again later.
+            return;
             }
             
             this.state = TerrainState.RECEIVING;
             
             var that = this;
             when(this.data, function(terrainData) {
-                that.data = terrainData;
-                that.state = TerrainState.RECEIVED;
-                }, function() {
-                    that.state = TerrainState.FAILED;
-                });*/
+            that.data = terrainData;
+            that.state = TerrainState.RECEIVED;
+            }, function() {
+            that.state = TerrainState.FAILED;
+            });*/
         }
         
         /*if (this.state === TerrainState.RECEIVED) {
-            transform(this, context, terrainProvider, x, y, level);
+        transform(this, context, terrainProvider, x, y, level);
         }
         
         if (this.state === TerrainState.TRANSFORMED) {
-            createResources(this, context, terrainProvider, x, y, level);
+        createResources(this, context, terrainProvider, x, y, level);
         }*/
     }
 
@@ -187,9 +187,9 @@ class TileTerrain {
     
     func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Buffering
+        var terrainMesh = self.mesh!
         dispatch_async(context.processorQueue, {
             let datatype = ComponentDatatype.Float32
-            var terrainMesh = self.mesh!
             let meshBufferSize = terrainMesh.vertices.sizeInBytes
             
             let stride: Int

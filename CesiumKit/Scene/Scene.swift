@@ -951,9 +951,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var sunVisible = isVisible(sunCommand, frameState);*/
         
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
-        _clearColorCommand.execute(context: context, passState: nil)
+        _clearColorCommand.execute(context: context, passState: passState)
         
-        context.createCommandEncoder(passState: passState)
+        //context.createCommandEncoder(passState: passState)
         
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
@@ -1033,6 +1033,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         //}*/
 
         // Execute commands in each frustum in back to front order
+        
+        context.createCommandEncoder(passState: passState)
+        _depthClearCommand.execute(context: context, passState: passState)
+        
         for (index, frustumCommands) in enumerate(_frustumCommandsList) {
             frustum.near = frustumCommands.near
             frustum.far = frustumCommands.far
@@ -1043,8 +1047,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             
             context.uniformState.updateFrustum(frustum)
-            _depthClearCommand.execute(context: context, passState: passState)
-            context.createCommandEncoder(passState: passState)
+
 
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
@@ -1108,6 +1111,7 @@ function callAfterRenderFunctions(frameState) {
         drawableWidth = Int(size.x)
         drawableHeight = Int(size.y)
         context.createDepthTexture()
+        context.createStencilTexture()
     }
     /**
     * @private
@@ -1145,7 +1149,10 @@ function callAfterRenderFunctions(frameState) {
     
         updatePrimitives()
         createPotentiallyVisibleSet()
-        context.beginFrame()
+        
+        if !context.beginFrame() {
+            return
+        }
         executeCommands(passState: _passState, clearColor: backgroundColor)
         executeOverlayCommands(_passState)
         

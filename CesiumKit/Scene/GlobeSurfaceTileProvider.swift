@@ -825,6 +825,11 @@ var northeastScratch = new Cartesian3();
                 hasVertexNormals: hasVertexNormals,
                 useWebMercatorProjection: useWebMercatorProjection
             )
+            // recreate uniform buffer provider if shader program uniform size has changed
+            let pipelineUniformSize = command.pipeline!.shaderProgram.getUniformBufferSize()
+            if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
+                command.uniformBufferProvider = nil
+            }
             command.renderState = renderState
             command.primitiveType = .Triangle
             command.vertexArray = surfaceTile.vertexArray

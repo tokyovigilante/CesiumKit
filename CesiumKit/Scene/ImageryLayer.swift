@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import UIKit.UIImage
+import CoreGraphics
 
 /**
 * An imagery layer that displays tiled image data from a single imagery provider
@@ -461,7 +461,10 @@ public class ImageryLayer {
         
         //Async.background {
         dispatch_async(context.networkQueue, {
-            if let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level) {
+            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
+            let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
+            dispatch_semaphore_signal(context.networkSemaphore)
+            if let image = image {
                 dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                     imagery.image = image
@@ -498,27 +501,30 @@ public class ImageryLayer {
                 // If the discard policy is not ready yet, transition back to the
                 // RECEIVED state and we'll try again next time.
                 if !discardPolicy.isReady {
-                    imagery.state = .Received
+                    dispatch_async(dispatch_get_main_queue(), {
+                        imagery.state = .Received
+                    })
                     return
                 }
                 
                 // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
                 if (discardPolicy.shouldDiscardImage(imagery.image!)) {
-                    imagery.state = .Invalid
+                    dispatch_async(dispatch_get_main_queue(), {
+                        imagery.state = .Invalid
+                    })
                     return
                 }
             }
-            
             // Imagery does not need to be discarded, so upload it to GL.
-            
             let texture = context.createTexture2D(TextureOptions(
                 source : .Image(imagery.image!))
             )
-            imagery.texture = texture
-            imagery.image = nil
+
             //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             dispatch_async(dispatch_get_main_queue(), {
             //dispatch_async(context.renderQueue, {
+                imagery.texture = texture
+                imagery.image = nil
                 imagery.state = ImageryState.TextureLoaded
             })
         })
@@ -546,8 +552,10 @@ public class ImageryLayer {
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
             if !isGeographic && pixelGap {
                 //let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
-                //texture = reprojectedTexture
-                //imagery.texture = texture
+                dispatch_async(dispatch_get_main_queue(),  {
+                    //texture = reprojectedTexture
+                    //imagery.texture = texture
+                })
             }
             
             // Use mipmaps if this texture has power-of-two dimensions.
@@ -591,7 +599,7 @@ public class ImageryLayer {
         _imageryCache.removeValueForKey(cacheKey)
     }
     
-    func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
+    private func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
