@@ -676,6 +676,7 @@ var renderStateCache = {};
         _drawable = layer.nextDrawable()
         if _drawable == nil {
             print("drawable == nil")
+            dispatch_semaphore_signal(_inflight_semaphore)
             return false
         }
         //assert(_drawable != nil, "drawable == nil")

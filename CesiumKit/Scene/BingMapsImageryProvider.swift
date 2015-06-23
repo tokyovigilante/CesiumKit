@@ -80,7 +80,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "http:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
@@ -401,7 +401,7 @@ public class BingMapsImageryProvider: ImageryProvider {
             let imageUrlTemplate = resource["imageUrl"].stringValue.replace("{culture}", self.culture)
             
             // Force HTTPS
-            self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
+            self._imageUrlTemplate = imageUrlTemplate//.replace("http://", "https://")
             
             
             // Install the default tile discard policy if none has been supplied.

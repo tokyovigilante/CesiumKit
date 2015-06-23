@@ -7,7 +7,9 @@
 //
 
 import Foundation
-import CoreGraphics
+import Alamofire
+import UIKit
+
 
 /**
 * An imagery layer that displays tiled image data from a single imagery provider
@@ -460,9 +462,36 @@ public class ImageryLayer {
         imagery.state = .Transitioning
         
         //Async.background {
-        dispatch_async(context.networkQueue, {
-            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
-            let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
+        //dispatch_async(context.networkQueue, {
+          //  dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
+        
+        let imageURL = (self.imageryProvider as! BingMapsImageryProvider).buildImageUrl(x: imagery.x, y: imagery.y, level: imagery.level)
+        request(.GET, URLString: imageURL)
+            .response { (request, response, data, error) in
+                //print(request)
+                //print(response)
+                //print(error)
+                if error != nil {
+                    //dispatch_async(dispatch_get_main_queue(), {
+                    //dispatch_async(context.renderQueue, {
+                    imagery.state = .Failed
+                    
+                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                    print(message)
+                    
+                    //})
+                } else {
+                    //dispatch_async(dispatch_get_main_queue(), {
+                    //dispatch_async(context.renderQueue, {
+                    imagery.image = UIImage(data: data as! NSData)!
+                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+                    
+                    imagery.state = .Received
+                    //})
+                }
+        }
+            /*}
+            //let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
             dispatch_semaphore_signal(context.networkSemaphore)
             if let image = image {
                 dispatch_async(dispatch_get_main_queue(), {
@@ -481,7 +510,7 @@ public class ImageryLayer {
                     print(message)
                 })
             }
-        })
+        })*/
     }
     
     /**

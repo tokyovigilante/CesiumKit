@@ -165,8 +165,15 @@ class TileTerrain {
     func transform(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
+        guard let data = data else {
+            self.state = .Failed
+            let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - data missing"
+            print(message)
+            return
+        }
+        
         dispatch_async(context.processorQueue, {
-            let mesh = self.data?.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
+            let mesh = data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
                 dispatch_async(dispatch_get_main_queue(), {

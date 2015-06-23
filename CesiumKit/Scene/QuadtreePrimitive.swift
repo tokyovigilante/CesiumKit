@@ -111,8 +111,6 @@ class QuadtreePrimitive {
         
         _occluders = QuadtreeOccluders(ellipsoid : ellipsoid)
         
-        self.tileCacheSize = tileCacheSize
-        
         self._tileProvider.quadtree = self
     }
     
