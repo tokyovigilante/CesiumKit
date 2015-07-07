@@ -1,6 +1,0 @@
-framework module GLSLOptimizer {
-  umbrella header "GLSLOptimizer.h"
-
-  export *
-  module * { export * }
-}
