@@ -826,10 +826,11 @@ var renderStateCache = {};
             let indexType = va.indexType
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
-            _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 0)
-            _commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 1)
+
+            _commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
+            _commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 1)
             
-            _commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 1)
+            _commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 0)
             
             for (index, texture) in bufferParams.textures.enumerate() {
                 _commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
