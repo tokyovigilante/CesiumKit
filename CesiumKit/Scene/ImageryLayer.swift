@@ -461,41 +461,14 @@ public class ImageryLayer {
         
         imagery.state = .Transitioning
         
-        //Async.background {
-        //dispatch_async(context.networkQueue, {
-          //  dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
-        
-        let imageURL = (self.imageryProvider as! BingMapsImageryProvider).buildImageUrl(x: imagery.x, y: imagery.y, level: imagery.level)
-        request(.GET, URLString: imageURL)
-            .response { (request, response, data, error) in
-                //print(request)
-                //print(response)
-                //print(error)
-                if error != nil {
-                    //dispatch_async(dispatch_get_main_queue(), {
-                    //dispatch_async(context.renderQueue, {
-                    imagery.state = .Failed
-                    
-                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    print(message)
-                    
-                    //})
-                } else {
-                    //dispatch_async(dispatch_get_main_queue(), {
-                    //dispatch_async(context.renderQueue, {
-                    imagery.image = UIImage(data: data as! NSData)!
-                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
-                    
-                    imagery.state = .Received
-                    //})
-                }
-        }
-            /*}
-            //let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
+        dispatch_async(context.networkQueue, {
+            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
+            
+            let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
             dispatch_semaphore_signal(context.networkSemaphore)
             if let image = image {
                 dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
+                    //dispatch_async(context.renderQueue, {
                     imagery.image = image
                     imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                     
@@ -503,14 +476,14 @@ public class ImageryLayer {
                 })
             } else {
                 dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
+                    //dispatch_async(context.renderQueue, {
                     imagery.state = .Failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
                     print(message)
                 })
             }
-        })*/
+        })
     }
     
     /**
@@ -570,7 +543,7 @@ public class ImageryLayer {
     */
     func reprojectTexture (context: Context, imagery: Imagery) {
         dispatch_async(context.textureLoadQueue, {
-            let texture = imagery.texture!
+            var texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
             // Reproject this texture if it is not already in a geographic projection and
@@ -579,16 +552,26 @@ public class ImageryLayer {
             // no noticeable difference in the georeferencing of the image.
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if !isGeographic && pixelGap {
-                //let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
+            if false { //!isGeographic && pixelGap {
+                let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
                 dispatch_async(dispatch_get_main_queue(),  {
-                    //texture = reprojectedTexture
-                    //imagery.texture = texture
+                    texture = reprojectedTexture
+                    imagery.texture = texture
+                    imagery.state = .Reprojected
+                })
+            } else {
+                dispatch_async(dispatch_get_main_queue(),  {
+                    imagery.state = .Reprojected
                 })
             }
-            
-            // Use mipmaps if this texture has power-of-two dimensions.
-            if false {//Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+        })
+    }
+    
+    func generateMipmaps (context: Context, imagery: Imagery) {
+        // Use mipmaps if this texture has power-of-two dimensions.
+        dispatch_async(context.textureLoadQueue, {
+            let texture = imagery.texture!
+            if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
                 var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
                     mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.maximumTextureFilterAnisotropy)
@@ -604,7 +587,7 @@ public class ImageryLayer {
                 texture.sampler = nonMipmapSampler!
             }
             dispatch_async(dispatch_get_main_queue(), {
-            // dispatch_async(context.renderQueue, {
+                // dispatch_async(context.renderQueue, {
                 imagery.state = .Ready
             })
         })

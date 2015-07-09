@@ -193,7 +193,7 @@ class ShaderProgram {
 
         let vSize = Int(_vertexShader.uniformTotalSize())
         let fSize = Int(_fragmentShader.uniformTotalSize())
-        let sSize = Int(_fragmentShader.textureCount())
+        //let sSize = Int(_fragmentShader.textureCount())
         
         for uniform in _vertexUniforms {
             setUniform(uniform, buffer: buffer, offset: uniform.location, uniformMap: command.uniformMap, uniformState: uniformState)

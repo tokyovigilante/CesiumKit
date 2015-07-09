@@ -100,6 +100,10 @@ class Imagery {
             state = .Transitioning
             imageryLayer.reprojectTexture(context, imagery: self)
         }
+        if (state == .Reprojected) {
+            state = .Transitioning
+            imageryLayer.generateMipmaps(context, imagery: self)
+        }
     }
     
 }

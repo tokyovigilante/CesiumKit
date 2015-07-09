@@ -26,11 +26,16 @@ class CesiumViewController: UIViewController {
         
         _globe = CesiumGlobe(view: view, layer: metalView.metalLayer, options: options)
         
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         
+        //Murrumbeena
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(-90), range: 1000))
+        //Wellington
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
+        //_globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
         
         _displayLink = CADisplayLink(target: self, selector: "render:")
         _displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)

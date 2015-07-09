@@ -22,7 +22,7 @@ public class MetalView: UIView {
         return CAMetalLayer.self
     }
     
-    public required init(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setupLayer()
         setupMultitouchInput()

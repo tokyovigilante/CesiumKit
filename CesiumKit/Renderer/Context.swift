@@ -849,12 +849,12 @@ var renderStateCache = {};
     func endFrame () {
         _commandEncoder.endEncoding()
         _commandBuffer.presentDrawable(_drawable)
-        
+        _commandBuffer.commit()
+
         _drawable = nil
         _defaultPassState.passDescriptor = nil
         _currentPassState?.passDescriptor = nil
         
-        _commandBuffer.commit()
         _commandEncoder = nil
         _commandBuffer = nil
         /*
