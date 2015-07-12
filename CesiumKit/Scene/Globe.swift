@@ -210,13 +210,13 @@ class Globe {
         let attributes = [
             //position3DAndHeight
             VertexAttributes(
-                bufferIndex: 0,
+                bufferIndex: 1,
                 format: .Float4,
-                offset: 0,
+                offset: 1,
                 size: position3DAndHeightLength * datatype.elementSize),
             // texCoordAndEncodedNormals
             VertexAttributes(
-                bufferIndex: 0,
+                bufferIndex: 1,
                 format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
                 offset: position3DAndHeightLength * datatype.elementSize,
                 size: numTexCoordComponents * datatype.elementSize)

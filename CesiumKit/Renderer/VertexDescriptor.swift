@@ -23,7 +23,7 @@ class VertexDescriptor {
         
         metalDescriptor = MTLVertexDescriptor()
 
-        let bufferIndex = attributes.first?.bufferIndex ?? 0
+        let bufferIndex = attributes.first?.bufferIndex ?? 1
         // Set up layout descriptor
         metalDescriptor.layouts[bufferIndex].stepFunction = .PerVertex
         

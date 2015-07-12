@@ -244,13 +244,11 @@
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
 		945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6461AA9C00000FFAD81 /* GeometryType.swift */; };
 		945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */; };
+		945C3AD11B5296DA0095A86F /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ACC1B5296C10095A86F /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		945C3AD21B5296DD0095A86F /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ABD1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
 		946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946007AD1AC2C97F0095A86F /* CameraEventType.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
-		94801B801B4B691C001A40C8 /* GLSLOptimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94801B7B1B4B6908001A40C8 /* GLSLOptimizer.framework */; };
-		94801B811B4B6923001A40C8 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94801B631B4B68FA001A40C8 /* Alamofire.framework */; };
-		94801B821B4B692A001A40C8 /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94801B7B1B4B6908001A40C8 /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		94801B831B4B692E001A40C8 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94801B631B4B68FA001A40C8 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */; };
 		94889B881B2857430095A86F /* PipelineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B871B2857430095A86F /* PipelineCache.swift */; };
 		94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B891B286E990095A86F /* UniformBufferProvider.swift */; };
@@ -289,58 +287,58 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		94801B621B4B68FA001A40C8 /* PBXContainerItemProxy */ = {
+		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F8111E3319A95C8B0040E7D1;
 			remoteInfo = "Alamofire iOS";
 		};
-		94801B641B4B68FA001A40C8 /* PBXContainerItemProxy */ = {
+		945C3ABE1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4DD67C0B1A5C55C900ED2280;
 			remoteInfo = "Alamofire OSX";
 		};
-		94801B661B4B68FA001A40C8 /* PBXContainerItemProxy */ = {
+		945C3AC01B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F8111E3E19A95C8B0040E7D1;
 			remoteInfo = "Alamofire iOS Tests";
 		};
-		94801B681B4B68FA001A40C8 /* PBXContainerItemProxy */ = {
+		945C3AC21B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F829C6B21A7A94F100A2CD59;
 			remoteInfo = "Alamofire OSX Tests";
 		};
-		94801B781B4B6908001A40C8 /* PBXContainerItemProxy */ = {
+		945C3AC91B5296C10095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			containerPortal = 945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC046055464E500DB518D;
 			remoteInfo = glsl_optimizer;
 		};
-		94801B7A1B4B6908001A40C8 /* PBXContainerItemProxy */ = {
+		945C3ACB1B5296C10095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			containerPortal = 945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9429935F1B1DB6E20095A86F;
 			remoteInfo = GLSLOptimizer;
 		};
-		94801B7C1B4B6914001A40C8 /* PBXContainerItemProxy */ = {
+		945C3ACD1B5296C90095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			containerPortal = 945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9429935E1B1DB6E20095A86F;
 			remoteInfo = GLSLOptimizer;
 		};
-		94801B7E1B4B6917001A40C8 /* PBXContainerItemProxy */ = {
+		945C3ACF1B5296CC0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
 			remoteInfo = "Alamofire iOS";
@@ -391,8 +389,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				94801B831B4B692E001A40C8 /* Alamofire.framework in CopyFiles */,
-				94801B821B4B692A001A40C8 /* GLSLOptimizer.framework in CopyFiles */,
+				945C3AD21B5296DD0095A86F /* Alamofire.framework in CopyFiles */,
+				945C3AD11B5296DA0095A86F /* GLSLOptimizer.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +447,8 @@
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
 		945BF6461AA9C00000FFAD81 /* GeometryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryType.swift; sourceTree = "<group>"; };
 		945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderSource.swift; sourceTree = "<group>"; };
+		945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = CesiumKit/Platform/Dependencies/Alamofire/Alamofire.xcodeproj; sourceTree = "<group>"; };
+		945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
 		945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidalOccluder.swift; sourceTree = "<group>"; };
 		945E45031B17387E0095A86F /* VertexType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexType.swift; sourceTree = "<group>"; };
 		946007AD1AC2C97F0095A86F /* CameraEventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraEventType.swift; sourceTree = "<group>"; };
@@ -474,8 +474,6 @@
 		947A241019C99C860040042F /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
 		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
-		94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = CesiumKit/Platform/Dependencies/alamofire/Alamofire.xcodeproj; sourceTree = "<group>"; };
-		94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/alamofire/../glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
 		94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
 		94889B871B2857430095A86F /* PipelineCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineCache.swift; sourceTree = "<group>"; };
 		94889B891B286E990095A86F /* UniformBufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformBufferProvider.swift; sourceTree = "<group>"; };
@@ -574,8 +572,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94801B811B4B6923001A40C8 /* Alamofire.framework in Frameworks */,
-				94801B801B4B691C001A40C8 /* GLSLOptimizer.framework in Frameworks */,
 				942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */,
 				942251421B1062CC0095A86F /* Metal.framework in Frameworks */,
 			);
@@ -790,6 +786,26 @@
 			path = Shaders;
 			sourceTree = "<group>";
 		};
+		945C3AB61B5296B40095A86F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				945C3ABD1B5296B40095A86F /* Alamofire.framework */,
+				945C3ABF1B5296B40095A86F /* Alamofire.framework */,
+				945C3AC11B5296B40095A86F /* Alamofire iOS Tests.xctest */,
+				945C3AC31B5296B40095A86F /* Alamofire OSX Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		945C3AC51B5296C10095A86F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				945C3ACA1B5296C10095A86F /* libglsl_optimizer.a */,
+				945C3ACC1B5296C10095A86F /* GLSLOptimizer.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		94697D9E1A25C72000FFAD81 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
@@ -799,26 +815,6 @@
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
 			);
 			name = Platform;
-			sourceTree = "<group>";
-		};
-		94801B5C1B4B68FA001A40C8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				94801B631B4B68FA001A40C8 /* Alamofire.framework */,
-				94801B651B4B68FA001A40C8 /* Alamofire.framework */,
-				94801B671B4B68FA001A40C8 /* Alamofire iOS Tests.xctest */,
-				94801B691B4B68FA001A40C8 /* Alamofire OSX Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		94801B741B4B6908001A40C8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				94801B791B4B6908001A40C8 /* libglsl_optimizer.a */,
-				94801B7B1B4B6908001A40C8 /* GLSLOptimizer.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		94985A661A38444C00FFAD81 /* CesiumKitRunner */ = {
@@ -846,8 +842,8 @@
 		94DC79191918425300012DC4 = {
 			isa = PBXGroup;
 			children = (
-				94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */,
-				94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */,
+				945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */,
+				945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
 				94985A661A38444C00FFAD81 /* CesiumKitRunner */,
@@ -951,8 +947,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				94801B7F1B4B6917001A40C8 /* PBXTargetDependency */,
-				94801B7D1B4B6914001A40C8 /* PBXTargetDependency */,
+				945C3AD01B5296CC0095A86F /* PBXTargetDependency */,
+				945C3ACE1B5296C90095A86F /* PBXTargetDependency */,
 			);
 			name = CesiumKit;
 			productName = CesiumKit;
@@ -1030,12 +1026,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 94801B5C1B4B68FA001A40C8 /* Products */;
-					ProjectRef = 94801B5B1B4B68FA001A40C8 /* Alamofire.xcodeproj */;
+					ProductGroup = 945C3AB61B5296B40095A86F /* Products */;
+					ProjectRef = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 				},
 				{
-					ProductGroup = 94801B741B4B6908001A40C8 /* Products */;
-					ProjectRef = 94801B731B4B6908001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+					ProductGroup = 945C3AC51B5296C10095A86F /* Products */;
+					ProjectRef = 945C3AC41B5296C10095A86F /* glsl_optimizer_lib.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1048,46 +1044,46 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		94801B631B4B68FA001A40C8 /* Alamofire.framework */ = {
+		945C3ABD1B5296B40095A86F /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Alamofire.framework;
-			remoteRef = 94801B621B4B68FA001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		94801B651B4B68FA001A40C8 /* Alamofire.framework */ = {
+		945C3ABF1B5296B40095A86F /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Alamofire.framework;
-			remoteRef = 94801B641B4B68FA001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3ABE1B5296B40095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		94801B671B4B68FA001A40C8 /* Alamofire iOS Tests.xctest */ = {
+		945C3AC11B5296B40095A86F /* Alamofire iOS Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = "Alamofire iOS Tests.xctest";
-			remoteRef = 94801B661B4B68FA001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3AC01B5296B40095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		94801B691B4B68FA001A40C8 /* Alamofire OSX Tests.xctest */ = {
+		945C3AC31B5296B40095A86F /* Alamofire OSX Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = "Alamofire OSX Tests.xctest";
-			remoteRef = 94801B681B4B68FA001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3AC21B5296B40095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		94801B791B4B6908001A40C8 /* libglsl_optimizer.a */ = {
+		945C3ACA1B5296C10095A86F /* libglsl_optimizer.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libglsl_optimizer.a;
-			remoteRef = 94801B781B4B6908001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3AC91B5296C10095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		94801B7B1B4B6908001A40C8 /* GLSLOptimizer.framework */ = {
+		945C3ACC1B5296C10095A86F /* GLSLOptimizer.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = GLSLOptimizer.framework;
-			remoteRef = 94801B7A1B4B6908001A40C8 /* PBXContainerItemProxy */;
+			remoteRef = 945C3ACB1B5296C10095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1408,15 +1404,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		94801B7D1B4B6914001A40C8 /* PBXTargetDependency */ = {
+		945C3ACE1B5296C90095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GLSLOptimizer;
-			targetProxy = 94801B7C1B4B6914001A40C8 /* PBXContainerItemProxy */;
+			targetProxy = 945C3ACD1B5296C90095A86F /* PBXContainerItemProxy */;
 		};
-		94801B7F1B4B6917001A40C8 /* PBXTargetDependency */ = {
+		945C3AD01B5296CC0095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Alamofire iOS";
-			targetProxy = 94801B7E1B4B6917001A40C8 /* PBXContainerItemProxy */;
+			targetProxy = 945C3ACF1B5296CC0095A86F /* PBXContainerItemProxy */;
 		};
 		94CA7E0C1A998E4200FFAD81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
