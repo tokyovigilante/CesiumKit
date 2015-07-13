@@ -152,7 +152,7 @@ public class ImageryLayer {
     *        by the WebGL stack will be used.  Larger values make the imagery look better in horizon
     *        views.
     */
-    let maximumAnisotropy: GLint?
+    let maximumAnisotropy: Int?
     
     /*
     * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
@@ -204,7 +204,7 @@ public class ImageryLayer {
         show: Bool = true,
         minimumTerrainLevel: Int? = nil,
         maximumTerrainLevel: Int? = nil,
-        maximumAnisotropy: GLint? = nil
+        maximumAnisotropy: Int? = nil
         ) {
             self.imageryProvider = imageryProvider
             self._rectangle = rectangle
@@ -552,7 +552,7 @@ public class ImageryLayer {
             // no noticeable difference in the georeferencing of the image.
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if false { //!isGeographic && pixelGap {
+            if !isGeographic && pixelGap {
                 let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
                 dispatch_async(dispatch_get_main_queue(),  {
                     texture = reprojectedTexture
@@ -616,23 +616,25 @@ public class ImageryLayer {
     }
     
     class Reproject {
-        var framebuffer: Framebuffer? = nil
+        //var framebuffer: Framebuffer? = nil
+        var renderPassDescriptor: MTLRenderPassDescriptor
         let vertexArray: VertexArray
-        let shaderProgram: ShaderProgram
+        let pipeline: RenderPipeline
         var renderState: RenderState? = nil
         let sampler: Sampler
         
-        init (vertexArray: VertexArray, shaderProgram: ShaderProgram, sampler: Sampler) {
+        init (vertexArray: VertexArray, pipeline: RenderPipeline, renderPassDescriptor: MTLRenderPassDescriptor, sampler: Sampler) {
             self.vertexArray = vertexArray
-            self.shaderProgram = shaderProgram
+            self.pipeline = pipeline
+            self.renderPassDescriptor = renderPassDescriptor
             self.sampler = sampler
         }
         
         deinit {
             // FIXME: destroy
-            if framebuffer != nil {
+            //if framebuffer != nil {
                 //this.framebuffer.destroy()
-            }
+            //}
             //this.vertexArray.destroy();
             //shaderProgram.destroy();
         }
@@ -675,7 +677,7 @@ public class ImageryLayer {
         // doing a slightly less accurate reprojection than we were before, but we can't see the difference
         // so it's worth the 4x speedup.
         
-        /*var reproject = context.cache["imageryLayer_reproject"] as! Reproject?
+        var reproject = context.cache["imageryLayer_reproject"] as! Reproject!
         
         if reproject == nil {
             
@@ -687,62 +689,61 @@ public class ImageryLayer {
             // do not correctly report the available fragment shader precision, so we can't have different
             // paths for devices with or without high precision fragment shaders, even if we want to.
             
-            var positions = [SerializedType]()//count: 2*64*2, repeatedValue: 0.0)
-            let position0 = SerializedType.Float32(0.0)
-            let position1 = SerializedType.Float32(1.0)
+            var positions = [Float32](count: 2*64*2, repeatedValue: 0.0)
+            let position0: Float = 0.0
+            let position1: Float = 1.0
             
             var index = 0
             for j in 0..<64 {
-                let y = SerializedType.Float32(Float(j) / 63.0)
+                let y = Float(j) / 63.0
                 positions.append(position0)
                 positions.append(y)
                 positions.append(position1)
                 positions.append(y)
             }
             
-            let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ SerializedType.UnsignedInt16(UInt16($0)) })
+            let vertexBuffer = context.createBuffer(positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
+            let webMercatorTBuffer = context.createBuffer(componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
             
-            let indexBuffer = context.createIndexBuffer(array: indices, usage: BufferUsage.StaticDraw, indexDatatype: IndexDatatype.UnsignedShort)
-            
-            let reprojectAttribInds = [
-                "position": 0,
-                "webMercatorT": 1
-            ]
+            let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
+
+            let indexBuffer = context.createBuffer(indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
             
             let vertexAttributes = [
+                //position
                 VertexAttributes(
-                    index: reprojectAttribInds["position"]!,
-                    vertexBuffer: context.createVertexBuffer(
-                        array: positions,
-                        usage: .StaticDraw),
-                    componentsPerAttribute: 2),
+                    bufferIndex: 1,
+                    format: .Float4,
+                    offset: 0,
+                    size: sizeof(Float) * 4),
+                // webMercatorT
                 VertexAttributes(
-                    index: reprojectAttribInds["webMercatorT"]!,
-                    vertexBuffer: context.createVertexBuffer(
-                        sizeInBytes: 64 * 2 * 4,
-                        usage: .DynamicDraw),
-                    componentsPerAttribute: 1)
+                    bufferIndex: 2,
+                    format: .Float2,
+                    offset: 0,
+                    size: sizeof(Float) * 2)
             ]
+            let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
-            let vertexArray = context.createVertexArray(vertexAttributes, indexBuffer: indexBuffer)
+            let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: positions.count, indexBuffer: indexBuffer)
             
-            let shaderProgram = context.createShaderProgram(
-                vertexShaderString: Shaders["ReprojectWebMercatorVS"]!,
-                fragmentShaderString: Shaders["ReprojectWebMercatorFS"]!,
-                attributeLocations: reprojectAttribInds
+            let pipeline = context.createRenderPipeline(
+                vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
+                fragmentShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorFS"]!]),
+                vertexDescriptor: vertexDescriptor
             )
+
+            let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
+            let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
             
-            /*let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
-            var sampler = Sampler()
-            sampler.wrapS = .Edge
-            sampler.wrapT = .Edge
-            sampler.minificationFilter = TextureMinificationFilter.Linear
-            sampler.magnificationFilter = TextureMagnificationFilter.Linear
-            sampler.maximumAnisotropy = min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy)*/
+            let renderPassDescriptor = MTLRenderPassDescriptor()
+            renderPassDescriptor.colorAttachments[0].loadAction = .DontCare
+            renderPassDescriptor.colorAttachments[0].storeAction = .Store
             
             reproject = Reproject(
                 vertexArray: vertexArray,
-                shaderProgram: shaderProgram!,
+                pipeline: pipeline,
+                renderPassDescriptor: renderPassDescriptor,
                 sampler: sampler)
             
             context.cache["imageryLayer_reproject"] = reproject
@@ -768,28 +769,15 @@ public class ImageryLayer {
                 width: width,
                 height: height,
                 pixelFormat: texture.pixelFormat,
-                pixelDatatype: texture.pixelDatatype,
                 premultiplyAlpha: texture.premultiplyAlpha
             )
         )
-        
-        // Allocate memory for the mipmaps.  Failure to do this before rendering
-        // to the texture via the FBO, and calling generateMipmap later,
-        // will result in the texture appearing blank.  I can't pretend to
-        // understand exactly why this is.
-        outputTexture.generateMipmap(hint: .Nicest)
-        
-        reproject!.framebuffer = context.createFramebuffer(
-            Framebuffer.Options(
-                colorTextures : [outputTexture]
-            )
-        )
-        reproject!.framebuffer!.destroyAttachments = false
-        
+        reproject.renderPassDescriptor.colorAttachments[0].texture = outputTexture.metalTexture
+
         let south = rectangle.south
         let north = rectangle.north
         
-        var webMercatorT = [SerializedType]()
+        var webMercatorT = [Float]()
         
         //var outputIndex = 0;
         for webMercatorTIndex in 0..<64 {
@@ -797,21 +785,15 @@ public class ImageryLayer {
             let latitude = Math.lerp(p: south, q: north, time: fraction)
             sinLatitude = sin(latitude)
             let mercatorY = 0.5 * log((1.0 + sinLatitude) / (1.0 - sinLatitude))
-            let mercatorFraction = SerializedType.Float32(Float((mercatorY - southMercatorY) * oneOverMercatorHeight))
+            let mercatorFraction = Float((mercatorY - southMercatorY) * oneOverMercatorHeight)
             webMercatorT.append(mercatorFraction)
             webMercatorT.append(mercatorFraction)
         }
         
-        reproject!.vertexArray.attribute(1).vertexBuffer!.copyFromArrayView(webMercatorT)
+        let webMercatorTBuffer = context.createBuffer(webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
         
-        let command = ClearCommand(
-            color: Cartesian4.fromColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0),
-            framebuffer : reproject!.framebuffer!
-        )
-        command.execute(context: context)
-        
-        if reproject!.renderState == nil {
-            reproject!.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
+        if reproject.renderState == nil {
+            reproject.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
         }
         
         /*if reproject!.renderState!.viewport == nil ||
@@ -821,15 +803,15 @@ public class ImageryLayer {
         //}
         
         let drawCommand = DrawCommand(
-            framebuffer: reproject!.framebuffer,
-            shaderProgram: reproject!.shaderProgram,
+            //framebuffer: reproject!.framebuffer,
+            //pipeline: reproject!.pipeline,
             renderState: reproject!.renderState,
-            primitiveType: PrimitiveType.Triangles,
             vertexArray: reproject!.vertexArray,
             uniformMap: uniformMap
         )
+        drawCommand.pipeline = reproject.pipeline
         drawCommand.execute(context: context)
-        return outputTexture*/
+        //return outputTexture
         return texture
         
     }

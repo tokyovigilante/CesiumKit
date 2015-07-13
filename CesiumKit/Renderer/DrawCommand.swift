@@ -59,7 +59,7 @@ class DrawCommand: Command {
     * @type {PrimitiveType}
     * @default PrimitiveType.TRIANGLES
     */
-    var primitiveType: MTLPrimitiveType
+    var primitiveType: MTLPrimitiveType = .Triangle
     
     /**
     * The vertex array.
