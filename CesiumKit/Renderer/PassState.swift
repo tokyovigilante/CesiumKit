@@ -23,27 +23,8 @@ class PassState {
     weak var context: Context! = nil
     
     /**
-    * The framebuffer to render to.  This framebuffer is used unless a {@link DrawCommand}
-    * or {@link ClearCommand} explicitly define a framebuffer, which is used for off-screen
-    * rendering.
-    *
-    * @type {Framebuffer}
-    * @default undefined
-    */
-    weak var framebuffer: Framebuffer? = nil
-    
-    /**
-    * The texture to render to.  This texture is used unless a {@link DrawCommand}
-    * or {@link ClearCommand} explicitly define a texture, which is used for off-screen
-    * rendering.
-    *
-    * @type {MTLTexture}
-    * @default undefined
-    */
-    var texture: MTLTexture? = nil
-    
-    /**
-    * The pass descriptor to use for rendering.
+    * The pass descriptor to use for rendering. Incorporates the color, depth and stencil 
+    * attachments.
     *
     * @type {MTLRenderPassDescriptor}
     */
@@ -72,7 +53,6 @@ class PassState {
     * @default undefined
     */
     var scissorTest: RenderState.ScissorTest? = nil
-
 }
 
 

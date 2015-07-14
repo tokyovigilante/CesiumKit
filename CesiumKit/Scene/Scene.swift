@@ -86,8 +86,6 @@ public class Scene {
         canvas.parentNode.appendChild(creditContainer);
     }*/
     
-    private var _passState: PassState
-    
     /**
     * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
     * @memberof Scene.prototype
@@ -536,8 +534,6 @@ public class Scene {
         _frameState.scene3DOnly = scene3DOnly
         
         // initial guess at frustums.
-        _passState = PassState()
-        _passState.context = context
         camera = Camera(
             projection: projection,
             mode: mode,
@@ -628,8 +624,8 @@ public class Scene {
             if distance.stop < frustumCommands.near {
                 break
             }
-            
-            let pass: Pass = (command is ClearCommand) ? Pass.Opaque : command.pass!
+            // FIXME: Command passes
+            let pass = Pass.Globe//pass: Pass = (command is ClearCommand) ? Pass.Opaque : command.pass!
             let passIndex = pass.rawValue
             let index = frustumCommands.indices[pass.rawValue]++
             frustumCommands.commands[pass.rawValue]!.append(command)
@@ -686,9 +682,10 @@ func createPotentiallyVisibleSet() {
     
     
     for command in _commandList {
-        if command.pass == .Overlay {
+        // FIXME: Command.pass
+        /*if command.pass == .Overlay {
             _overlayCommandList.append(command)
-        } else {
+        } else *///{
             if let boundingVolume = command.boundingVolume {
                 if command.cull &&
                    (cullingVolume.visibility(boundingVolume) == .Outside ||
@@ -709,7 +706,7 @@ func createPotentiallyVisibleSet() {
             }
             
             insertIntoBin(command, distance: distances)
-        }
+        //}
     }
     
     if (undefBV) {
@@ -806,7 +803,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 0.0, 0.0, 1.0));
 */
     
-    func executeCommand(command: Command, passState: PassState, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil, debugFramebuffer: Framebuffer? = nil) {
+    func executeCommand(command: Command, renderPass: RenderPass, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil, debugFramebuffer: Framebuffer? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
             return;
@@ -816,7 +813,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         if (scene.debugShowCommands || scene.debugShowFrustums) {
             executeDebugCommand(command, scene, passState, renderState, shaderProgram);
         } else {*/
-        command.execute(context: context, passState: passState, renderState: renderState, renderPipeline: renderPipeline)
+        command.execute(context, renderPass: renderPass, renderPipeline: renderPipeline)
         //}
         
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
@@ -917,7 +914,7 @@ var scratchPerspectiveFrustum = new PerspectiveFrustum();
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
-    func executeCommands(passState passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
+    func executeCommands(passState: PassState?, clearColor: Cartesian4, picking: Bool = false) {
         
         var j: Int
         
@@ -950,10 +947,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunVisible = isVisible(sunCommand, frameState);*/
         
-        _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
-        _clearColorCommand.execute(context: context, passState: passState)
+
         
-        //context.createCommandEncoder(passState: passState)
+        let spaceRenderPass = context.createRenderPass(nil)
+        
+        _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
+        _clearColorCommand.execute(context, renderPass: spaceRenderPass)
         
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
@@ -981,7 +980,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
         */
         
-        var opaqueFramebuffer = passState.framebuffer
         /*if (useOIT) {
             opaqueFramebuffer = scene._oit.getColorFramebuffer();
         } else if (useFXAA) {
@@ -1017,6 +1015,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 passState.framebuffer = opaqueFramebuffer;
             }
         }*/
+        spaceRenderPass.complete()
         /*
         var clearDepth = scene._depthClearCommand;
         // FIXME: Translucentcommands
@@ -1033,9 +1032,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         //}*/
 
         // Execute commands in each frustum in back to front order
-        
-        context.createCommandEncoder(passState)
-        _depthClearCommand.execute(context: context, passState: passState)
+    
+        let globeRenderPass = context.createRenderPass(nil)
+        _depthClearCommand.execute(context, renderPass: globeRenderPass)
         
         for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             frustum.near = frustumCommands.near
@@ -1054,7 +1053,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             let numPasses = Pass.Translucent.rawValue
             for pass in 0..<numPasses {
                 for command in frustumCommands.commands[pass]! {
-                    executeCommand(command, passState: passState)
+                    executeCommand(command, renderPass: globeRenderPass)
                 }
             }
             
@@ -1065,6 +1064,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             commands.length = frustumCommands.indices[Pass.TRANSLUCENT];
             executeTranslucentCommands(scene, executeCommand, passState, commands);*/
         }
+        globeRenderPass.complete()
         /*
         if (useOIT) {
             passState.framebuffer = useFXAA ? scene._fxaa.getColorFramebuffer() : undefined;
@@ -1077,7 +1077,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }*/
     }
 
-    func executeOverlayCommands(passState: PassState) {
+    func executeOverlayCommands() {
 /*
         context.createCommandEncoder(passState: nil)
         for command in _overlayCommandList {
@@ -1153,8 +1153,8 @@ function callAfterRenderFunctions(frameState) {
         if !context.beginFrame() {
             return
         }
-        executeCommands(passState: _passState, clearColor: backgroundColor)
-        executeOverlayCommands(_passState)
+        executeCommands(nil, clearColor: backgroundColor)
+        executeOverlayCommands()
         
         /*frameState.creditDisplay.endFrame();
         

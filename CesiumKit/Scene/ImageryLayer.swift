@@ -810,7 +810,7 @@ public class ImageryLayer {
             uniformMap: uniformMap
         )
         drawCommand.pipeline = reproject.pipeline
-        drawCommand.execute(context: context)
+        //drawCommand.execute(context: context, pass: )
         //return outputTexture
         return texture
         

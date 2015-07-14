@@ -613,7 +613,7 @@ class RenderState/*: Printable*/ {
         applyViewport(passState)
     }
 
-    func apply(passState: PassState) {
+    func apply(encoder: MTLRenderCommandEncoder, passState: PassState) {
         applyFrontFace()
         applyCull()
         applyLineWidth()

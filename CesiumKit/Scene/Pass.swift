@@ -12,7 +12,8 @@
 * @private
 */
 enum Pass: Int {
-    case Globe = 0,
+    case Compute = 0
+    case Globe,
     Opaque,
     Translucent,
     // Commands are executed in order by pass up to the translucent pass.

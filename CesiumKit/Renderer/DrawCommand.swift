@@ -8,8 +8,6 @@
 
 import Metal
 
-protocol DrawCommandOwner: class {}
-
 /**
 * Represents a command to the renderer for drawing.
 *
@@ -131,19 +129,6 @@ class DrawCommand: Command {
     var pass: Pass?
     
     /**
-    * The object who created this command.  This is useful for debugging command
-    * execution; it allows us to see who created a command when we only have a
-    * reference to the command, and can be used to selectively execute commands
-    * with {@link Scene#debugCommandFilter}.
-    *
-    * @type {Object}
-    * @default undefined
-    *
-    * @see Scene#debugCommandFilter
-    */
-    weak var owner: DrawCommandOwner? = nil
-    
-    /**
     * This property is for debugging only; it is not for production use nor is it optimized.
     * <p>
     * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
@@ -189,7 +174,6 @@ class DrawCommand: Command {
         framebuffer: Framebuffer? = nil,
         pass: Pass? = nil,
         executeInClosestFrustum: Bool = false,
-        owner: DrawCommandOwner? = nil,
         debugShowBoundingVolume: Bool = false,
         debugOverlappingFrustums: Int = 0,
         uniformMap: UniformMap? = nil) {
@@ -204,7 +188,6 @@ class DrawCommand: Command {
             self.framebuffer = framebuffer
             self.pass = pass
             self.executeInClosestFrustum = executeInClosestFrustum
-            self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
             self.uniformMap = uniformMap
@@ -214,11 +197,11 @@ class DrawCommand: Command {
     * Executes the draw command.
     *
     * @param {Context} context The renderer context in which to draw.
-    * @param {PassState} [passState] The state for the current render pass.
+    * @param {RenderPass} [renderPass] The render pass this command is part of.
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
-    * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
+    * @param {RenderPipeline} [renderPipeline] The render pipeline that will override the shader program of the command.
     */
-    func execute(context context: Context, passState: PassState? = nil, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
-        context.draw(self, passState: passState, renderState: renderState, renderPipeline: renderPipeline)
+    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
+        context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline)
     }
 }

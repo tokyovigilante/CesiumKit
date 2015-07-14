@@ -49,27 +49,10 @@ protocol Command: class {
     */
     var renderState: RenderState? { get set }
     
-    /**
-    * The framebuffer to clear.
-    *
-    * @type {Framebuffer}
-    *
-    * @default undefined
-    */
-    //var framebuffer: Framebuffer? { get set }
-    
-    /**
-    * The pass when to render.
-    *
-    * @type {Pass}
-    * @default undefined
-    */
-    var pass: Pass? { get set }
-    
     var debugOverlappingFrustums: Int { get set }
     
     var executeInClosestFrustum: Bool { get set }
     
-    func execute(context context: Context, passState: PassState?, renderState: RenderState?, renderPipeline: RenderPipeline?)
+    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline?)
     
 }

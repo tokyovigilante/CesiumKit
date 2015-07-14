@@ -75,13 +75,6 @@ class ClearCommand: Command {
     
     var debugOverlappingFrustums: Int = 0
     var executeInClosestFrustum: Bool = false
-    /**
-    * The pass when to render.
-    *
-    * @type {Pass}
-    * @default undefined
-    */
-    var pass: Pass? = nil
 
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
@@ -102,9 +95,9 @@ class ClearCommand: Command {
     class func all() -> ClearCommand {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil, framebuffer: nil/*, owner: unowned*/)
     }
-    
-    func execute(context context: Context, passState: PassState? = nil, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
-        context.clear(self, passState: passState)
+
+    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
+        context.clear(self, renderPass: renderPass)
     }
     
 }

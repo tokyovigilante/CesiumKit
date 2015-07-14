@@ -709,7 +709,6 @@ var northeastScratch = new Cartesian3();
             
             if (_drawCommands.count <= _usedDrawCommands) {
                 command = DrawCommand()
-                command.owner = tile
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
                 
@@ -722,7 +721,6 @@ var northeastScratch = new Cartesian3();
                 uniformMap = _uniformMaps[_usedDrawCommands]
             }
             
-            command.owner = tile
             
             ++_usedDrawCommands
             

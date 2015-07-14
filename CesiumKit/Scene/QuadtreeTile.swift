@@ -19,7 +19,7 @@
 * @param tilingScheme The tiling scheme in which this tile exists.
 * @param  This tile's parent, or undefined if this is a root tile.
 */
-class QuadtreeTile: Equatable, DrawCommandOwner {
+class QuadtreeTile: Equatable {
     
     let level: Int
     let x: Int
