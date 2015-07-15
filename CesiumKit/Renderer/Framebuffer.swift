@@ -138,7 +138,7 @@ class Framebuffer {
 
             assert(textures.count <= Int(maximumColorAttachments), "The number of color attachments exceeds the number supported.")
             
-            for (i, texture) in enumerate(textures) {
+            for (i, texture) in textures.enumerate() {
                 assert(texture.pixelFormat.isColorFormat(), "The color-texture pixel-format must be a color format.")
                 
                 attachmentEnum = GLenum(GL_COLOR_ATTACHMENT0 + i)

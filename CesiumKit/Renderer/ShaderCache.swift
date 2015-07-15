@@ -51,7 +51,7 @@ class ShaderCache {
             releaseShaderProgram(existingShader)
         }
         
-        return getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
+        return getShaderProgram(vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
     
     /**
@@ -91,7 +91,7 @@ class ShaderCache {
         let vertexShaderText = vertexShaderSource.createCombinedVertexShader()
         let fragmentShaderText = fragmentShaderSource.createCombinedFragmentShader()
         
-        var keyword = vertexShaderText + fragmentShaderText + attributeLocations.description
+        let keyword = vertexShaderText + fragmentShaderText + attributeLocations.description
         
         var cachedShader: ShaderProgram? = _shaders[keyword]
         

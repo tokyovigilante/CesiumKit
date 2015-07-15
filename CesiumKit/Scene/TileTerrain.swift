@@ -61,7 +61,7 @@ class TileTerrain {
     };
     */
     func publishToTile(tile: QuadtreeTile) {
-        var surfaceTile = tile.data!
+        let surfaceTile = tile.data!
         assert(mesh != nil, "mesh not created")
         surfaceTile.center = mesh!.center
 
@@ -79,7 +79,7 @@ class TileTerrain {
         vertexArray = nil
     }
     
-    func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processLoadStateMachine (context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
             requestTileGeometry(terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
@@ -94,7 +94,7 @@ class TileTerrain {
     }
     
     
-    func requestTileGeometry(#terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func requestTileGeometry(terrainProvider terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         weak var weakSelf = self
         
         var success = { (terrainData: TerrainData) -> () in
@@ -106,7 +106,7 @@ class TileTerrain {
             // change to RECEIVING or UNLOADED.
             weakSelf?.state = TerrainState.Failed
             
-            var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
+            let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
             /*terrainProvider._requestError = TileProviderError.handleError(
             terrainProvider._requestError,
             terrainProvider,
@@ -114,11 +114,11 @@ class TileTerrain {
             message,
             x, y, level,
             doRequest);*/
-            println(message)
+            print(message)
         }
         Async.background {
             self.state = .Receiving
-            var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
+            let terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
             if let terrainData = terrainData {
                 Async.main {
                     self.data = terrainData
@@ -130,7 +130,7 @@ class TileTerrain {
                     // change to RECEIVING or UNLOADED.
                     weakSelf?.state = TerrainState.Failed
                     
-                    var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
+                    let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
                     /*terrainProvider._requestError = TileProviderError.handleError(
                     terrainProvider._requestError,
                     terrainProvider,
@@ -138,7 +138,7 @@ class TileTerrain {
                     message,
                     x, y, level,
                     doRequest);*/
-                    println(message)
+                    print(message)
 
                 }
             }
@@ -182,11 +182,11 @@ class TileTerrain {
         }*/
     }
 
-    func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func transform(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
         Async.background {
-            var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
+            let mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
             
             if let mesh = mesh {
                 Async.main {
@@ -196,18 +196,18 @@ class TileTerrain {
             } else {
                 Async.main {
                     self.state = .Failed
-                    var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
-                    println(message)
+                    let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
+                    print(message)
                 }
             }
         }
     }
 
-    func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func createResources(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         let datatype = ComponentDatatype.Float32
         var terrainMesh = mesh!
         let buffer = context.createVertexBuffer(
-            array: SerializedType.fromFloatArray(terrainMesh.vertices),
+            SerializedType.fromFloatArray(terrainMesh.vertices),
             usage: BufferUsage.StaticDraw)
 
         var stride: Int
@@ -246,7 +246,7 @@ class TileTerrain {
             //let indexDatatype = vertices.= 2) ?  IndexDatatype.UNSIGNED_SHORT : IndexDatatype.UNSIGNED_INT;
             //indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, indexDatatype);
             indexBuffer = context.createIndexBuffer(
-                array: SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
+                SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
                 usage: .StaticDraw,
                 indexDatatype: .UnsignedShort)
             terrainMesh.indexBuffer = indexBuffer

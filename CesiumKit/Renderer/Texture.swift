@@ -227,7 +227,7 @@ class Texture {
                 rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
                 rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue*/
                 
-                let bitmapInfo = CGBitmapInfo(alphaInfo.rawValue)
+                let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
                 
                 let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))

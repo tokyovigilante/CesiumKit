@@ -70,7 +70,7 @@ return Cartesian3.add(origin, result, result);
         let edge1 = p2.subtract(p0)
         
         let p = direction.cross(edge1)
-        var det = edge0.dot(p)
+        let det = edge0.dot(p)
         
         var tvec: Cartesian3
         var q: Cartesian3
@@ -100,7 +100,7 @@ return Cartesian3.add(origin, result, result);
             if abs(det) < Math.Epsilon6 {
                 return nil
             }
-            var invDet = 1.0 / det
+            let invDet = 1.0 / det
             
             tvec = origin.subtract(p0)
             u = tvec.dot(p) * invDet
@@ -135,7 +135,7 @@ return Cartesian3.add(origin, result, result);
     * @returns {Cartesian3} The intersection point or undefined if there is no intersections.
     */
     static func rayTriangle (ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Cartesian3? {
-        var t = _rayTriangle(ray, p0: p0, p1: p1, p2: p2, cullBackFaces: cullBackFaces)
+        let t = _rayTriangle(ray, p0: p0, p1: p1, p2: p2, cullBackFaces: cullBackFaces)
         if t == nil || t < 0.0 {
             return nil
         }
@@ -187,7 +187,7 @@ Cartesian3.multiplyByScalar(ray.direction, t, result);
 return Cartesian3.add(ray.origin, result, result);
 };
 */
-    private static func solveQuadratic(#a: Double, b: Double, c: Double)  -> Interval? {
+    private static func solveQuadratic(a a: Double, b: Double, c: Double)  -> Interval? {
         let det = b * b - 4.0 * a * c
         if det < 0.0 {
             return nil
@@ -216,10 +216,10 @@ return Cartesian3.add(ray.origin, result, result);
         let origin = ray.origin
         let direction = ray.direction
         
-        var center = sphere.center
-        var radiusSquared = sphere.radius * sphere.radius
+        let center = sphere.center
+        let radiusSquared = sphere.radius * sphere.radius
         
-        var diff = origin.subtract(center)
+        let diff = origin.subtract(center)
         
         let a = direction.dot(direction)
         let b = 2.0 * direction.dot(diff)
@@ -319,7 +319,7 @@ var scratchW = new Cartesian3();
             }
             
             // qw < 0.0.
-            var qw2 = qw * qw
+            let qw2 = qw * qw
             difference = q2 - 1.0 // Positively valued.
             w2 = w.magnitudeSquared()
             product = w2 * difference
@@ -331,15 +331,15 @@ var scratchW = new Cartesian3();
                 // Distinct roots (2 intersections).
                 discriminant = qw * qw - product
                 temp = -qw + sqrt(discriminant) // Avoid cancellation.
-                var root0 = temp / w2
-                var root1 = difference / temp
+                let root0 = temp / w2
+                let root1 = difference / temp
                 if (root0 < root1) {
                     return Interval(start: root0, stop: root1)
                 }
                 return Interval(start : root1, stop : root0)
             } else {
                 // qw2 == product.  Repeated roots (2 intersections).
-                var root = sqrt(difference / w2)
+                let root = sqrt(difference / w2)
                 return Interval(start : root, stop : root)
             }
         } else if q2 < 1.0 {

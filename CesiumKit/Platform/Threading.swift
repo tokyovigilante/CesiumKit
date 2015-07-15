@@ -115,22 +115,22 @@ extension Async {
         dispatch_after(time, queue, _block)
         return Async(_block)
     }
-    public static func main(#after: Double, block: dispatch_block_t) -> Async {
+    public static func main(after after: Double, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: GCD.mainQueue())
     }
-    public static func userInteractive(#after: Double, block: dispatch_block_t) -> Async {
+    public static func userInteractive(after after: Double, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: GCD.userInteractiveQueue())
     }
-    public static func userInitiated(#after: Double, block: dispatch_block_t) -> Async {
+    public static func userInitiated(after after: Double, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: GCD.userInitiatedQueue())
     }
-    public static func utility(#after: Double, block: dispatch_block_t) -> Async {
+    public static func utility(after after: Double, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: GCD.utilityQueue())
     }
-    public static func background(#after: Double, block: dispatch_block_t) -> Async {
+    public static func background(after after: Double, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: GCD.backgroundQueue())
     }
-    public static func customQueue(#after: Double, queue: dispatch_queue_t, block: dispatch_block_t) -> Async {
+    public static func customQueue(after after: Double, queue: dispatch_queue_t, block: dispatch_block_t) -> Async {
         return Async.after(after, block: block, inQueue: queue)
     }
 }
@@ -193,22 +193,22 @@ extension Async {
         // Wrap block in a struct since dispatch_block_t can't be extended
         return Async(_chainingBlock)
     }
-    public func main(#after: Double, block: dispatch_block_t) -> Async {
+    public func main(after after: Double, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: GCD.mainQueue())
     }
-    public func userInteractive(#after: Double, block: dispatch_block_t) -> Async {
+    public func userInteractive(after after: Double, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: GCD.userInteractiveQueue())
     }
-    public func userInitiated(#after: Double, block: dispatch_block_t) -> Async {
+    public func userInitiated(after after: Double, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: GCD.userInitiatedQueue())
     }
-    public func utility(#after: Double, block: dispatch_block_t) -> Async {
+    public func utility(after after: Double, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: GCD.utilityQueue())
     }
-    public func background(#after: Double, block: dispatch_block_t) -> Async {
+    public func background(after after: Double, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: GCD.backgroundQueue())
     }
-    public func customQueue(#after: Double, queue: dispatch_queue_t, block: dispatch_block_t) -> Async {
+    public func customQueue(after after: Double, queue: dispatch_queue_t, block: dispatch_block_t) -> Async {
         return self.after(after, block: block, runInQueue: queue)
     }
     
@@ -288,11 +288,11 @@ public extension qos_class_t {
 
 // Binary operator for qos_class_t allows for comparison in switch-statements
 func ~=(lhs: qos_class_t, rhs: qos_class_t) -> Bool {
-    return lhs.value ~= rhs.value
+    return lhs.rawValue ~= rhs.rawValue
 }
 
 // Make qos_class_t equatable
 extension qos_class_t: Equatable {}
 public func ==(lhs: qos_class_t, rhs: qos_class_t) -> Bool {
-    return lhs.value == rhs.value
+    return lhs.rawValue == rhs.rawValue
 }

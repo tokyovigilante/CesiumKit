@@ -261,7 +261,7 @@ public struct Math {
     * @example
     * var n = Cesium.Math.lerp(0.0, 2.0, 0.5); // returns 1.0
     */
-    static func lerp (#p: Double, q: Double, time: Double) -> Double {
+    static func lerp (p p: Double, q: Double, time: Double) -> Double {
         return (1.0 - time) * p + time * q
     }
     /*
@@ -467,7 +467,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
 */
     static func equalsEpsilon(left: Double, _ right: Double, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         let epsilon = absoluteEpsilon ?? relativeEpsilon
-        var absDiff = abs(left - right)
+        let absDiff = abs(left - right)
         return absDiff <= epsilon || absDiff <= relativeEpsilon * max(abs(left), abs(right))
     }
 /*

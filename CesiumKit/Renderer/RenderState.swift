@@ -341,12 +341,12 @@ class RenderState/*: Printable*/ {
     
     func applyScissorTest(passState: PassState) {
         
-        var enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
+        let enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
         
         enableOrDisable(GLenum(GL_SCISSOR_TEST), enable: enabled)
         
         if (enabled) {
-            var rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
+            let rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
             glScissor(GLint(rectangle.x), GLint(rectangle.y), GLsizei(rectangle.width), GLsizei(rectangle.height))
         }
     }
@@ -382,7 +382,7 @@ class RenderState/*: Printable*/ {
     
     func applyBlending(passState: PassState) {
         
-        var enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
+        let enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
         
         enableOrDisable(GLenum(GL_BLEND), enable: enabled)
         
@@ -406,10 +406,10 @@ class RenderState/*: Printable*/ {
             glStencilFuncSeparate(GLenum(GL_BACK), stencilTest.backFunction, stencilTest.reference, stencilTest.mask);
             glStencilFuncSeparate(GLenum(GL_FRONT), stencilTest.frontFunction, stencilTest.reference, stencilTest.mask);
             
-            var frontOperation = stencilTest.frontOperation;
+            let frontOperation = stencilTest.frontOperation;
             glStencilOpSeparate(GLenum(GL_FRONT), frontOperation.fail, frontOperation.zFail, frontOperation.zPass)
             
-            var backOperation = stencilTest.backOperation;
+            let backOperation = stencilTest.backOperation;
             glStencilOpSeparate(GLenum(GL_BACK), backOperation.fail, backOperation.zFail, backOperation.zPass)
         }
     }
@@ -427,7 +427,7 @@ class RenderState/*: Printable*/ {
     func applyViewport(passState: PassState) {
         
         var actualViewport = BoundingRectangle()
-        var context = passState.context!
+        let context = passState.context!
         if !(viewport != nil) {
             actualViewport.width = Double(context.width)
             actualViewport.height = Double(context.height)

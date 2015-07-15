@@ -111,7 +111,7 @@ class ShaderProgram {
         
         var log: GLint = 0
         
-        var shaderCount: GLsizei = 1
+        let shaderCount: GLsizei = 1
         
         var vertexSourceUTF8 = UnsafePointer<GLchar>((_vertexShaderText as NSString).UTF8String)
         var vertexSourceLength = GLint(_vertexShaderText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
@@ -156,7 +156,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(vertexShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                println(_vertexShaderText)
+                print(_vertexShaderText)
                 assertionFailure("[GL] Vertex shader compile log: " + errorMessage!)
                 
             }
@@ -169,7 +169,7 @@ class ShaderProgram {
                 var actualLength: GLsizei = 0
                 glGetShaderInfoLog(fragmentShader, infoLogLength, &actualLength, &strInfoLog)
                 let errorMessage = String.fromCString(UnsafePointer<CChar>(strInfoLog))
-                println(_fragmentShaderText)
+                print(_fragmentShaderText)
                 assertionFailure("[GL] Fragment shader compile log: " + errorMessage!)
             }
             
@@ -324,8 +324,8 @@ class ShaderProgram {
         
         glGetProgramiv(_program!, GLenum(GL_ACTIVE_ATTRIBUTES), &_numberOfVertexAttributes)
         
-        var uniforms = findUniforms()
-        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
+        let uniforms = findUniforms()
+        let partitionedUniforms = partitionUniforms(uniforms.uniformsByName)
         
         _vertexAttributes = findVertexAttributes(numberOfVertexAttributes)
         _uniformsByName = uniforms.uniformsByName
@@ -426,7 +426,7 @@ class ShaderProgram {
     * @private
     */
     
-    class func createShaderSource(#defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
+    class func createShaderSource(defines defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
         
         assert(pickColorQualifier == nil || pickColorQualifier == "uniform" || pickColorQualifier == "varying", "options.pickColorQualifier must be 'uniform' or 'varying'")
         

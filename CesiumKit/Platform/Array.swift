@@ -9,8 +9,8 @@
 import Foundation
 
 public func deleteDuplicates<S:ExtensibleCollectionType where S.Generator.Element: Equatable>(seq:S)-> S {
-    let s = reduce(seq, S()){
-        ac, x in contains(ac,x) ? ac : ac + [x]
+    let s = seq.reduce(S()){
+        ac, x in ac.contains(x) ? ac : ac + [x]
     }
     return s
 }

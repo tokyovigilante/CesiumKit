@@ -51,7 +51,7 @@ struct BoundingRectangle: Equatable {
     
     var projection: Projection = GeographicProjection()
     
-    init (var x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: Projection = GeographicProjection()) {
+    init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: Projection = GeographicProjection()) {
         self.x = x
         self.y = y
         self.width = width
@@ -83,8 +83,8 @@ struct BoundingRectangle: Equatable {
         var maximumY = points[0].y
         
         for cartesian2 in points {
-            var x = cartesian2.x
-            var y = cartesian2.y
+            let x = cartesian2.x
+            let y = cartesian2.y
             
             minimumX = min(x, minimumX)
             maximumX = max(x, maximumX)
@@ -110,8 +110,8 @@ struct BoundingRectangle: Equatable {
         
         self.projection = projection
         
-        var lowerLeft = projection.project(rectangle.southwest())
-        var upperRight = projection.project(rectangle.northeast())
+        let lowerLeft = projection.project(rectangle.southwest())
+        let upperRight = projection.project(rectangle.northeast())
         
         upperRight.subtract(lowerLeft);
         
@@ -131,10 +131,10 @@ struct BoundingRectangle: Equatable {
     */
     func union(other: BoundingRectangle) -> BoundingRectangle {
         
-        var lowerLeftX = min(x, other.x);
-        var lowerLeftY = min(y, other.y);
-        var upperRightX = max(x + width, other.x + other.width);
-        var upperRightY = max(y + height, other.y + other.height);
+        let lowerLeftX = min(x, other.x);
+        let lowerLeftY = min(y, other.y);
+        let upperRightX = max(x + width, other.x + other.width);
+        let upperRightY = max(y + height, other.y + other.height);
         
         return BoundingRectangle(
             x: lowerLeftX,
@@ -153,8 +153,8 @@ struct BoundingRectangle: Equatable {
     */
     func expand(point: Cartesian2) -> BoundingRectangle {
         var result = self
-        var width = point.x - result.x
-        var height = point.y - result.y
+        let width = point.x - result.x
+        let height = point.y - result.y
         
         if (width > result.width) {
             result.width = width

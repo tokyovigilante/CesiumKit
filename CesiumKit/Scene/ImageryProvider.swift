@@ -196,7 +196,7 @@ public protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func tileCredits (#x: Int, y: Int, level: Int) -> [Credit]
+    func tileCredits (x x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -220,5 +220,5 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(#x: Int, y: Int, level: Int) -> UIImage?
+    func requestImage(x x: Int, y: Int, level: Int) -> UIImage?
 }

@@ -56,7 +56,7 @@ class TerrainData: Equatable {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
         assert(false, "invalid base class")
         return Double.NaN
     }
@@ -91,7 +91,7 @@ class TerrainData: Equatable {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh? {
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh? {
         assert(false, "invalid base class")
         return nil
     }
@@ -111,7 +111,7 @@ class TerrainData: Equatable {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData? {
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData? {
         assert(false, "invalid base class")
         return nil
     }

@@ -79,16 +79,16 @@ class Occluder {
     }
     
     func updateCameraPosition() {
-        var cameraToOccluderVec = occluderPosition.subtract(cameraPosition)
+        let cameraToOccluderVec = occluderPosition.subtract(cameraPosition)
         var invCameraToOccluderDistance = cameraToOccluderVec.magnitudeSquared()
-        var occluderRadiusSqrd = occluderRadius * occluderRadius
+        let occluderRadiusSqrd = occluderRadius * occluderRadius
         
         if (invCameraToOccluderDistance > occluderRadiusSqrd) {
             
             horizonDistance = sqrt(invCameraToOccluderDistance - occluderRadiusSqrd)
             invCameraToOccluderDistance = 1.0 / sqrt(invCameraToOccluderDistance)
             horizonPlaneNormal = cameraToOccluderVec.multiplyByScalar(invCameraToOccluderDistance)
-            var nearPlaneDistance = horizonDistance * horizonDistance * invCameraToOccluderDistance
+            let nearPlaneDistance = horizonDistance * horizonDistance * invCameraToOccluderDistance
             horizonPlanePosition = cameraPosition.add(horizonPlaneNormal.multiplyByScalar(nearPlaneDistance))
         }
         else {
@@ -142,8 +142,8 @@ class Occluder {
     * occluder.isBoundingSphereVisible(bigSphere); //returns true
     */
     func isBoundingSphereVisible(occludee: BoundingSphere) -> Bool {
-        var occludeePosition = occludee.center
-        var occludeeRadius = occludee.radius
+        let occludeePosition = occludee.center
+        let occludeeRadius = occludee.radius
         
         if (self.horizonDistance < Double.infinity) {
             var tempVec = occludeePosition.subtract(occluderPosition)
@@ -162,9 +162,9 @@ class Occluder {
             // an uncommon case, the following code should rarely execute.
             if (temp > 0.0) {
                 tempVec = occludeePosition.subtract(cameraPosition)
-                var tempVecMagnitudeSquared = tempVec.magnitudeSquared()
-                var occluderRadiusSquared = occluderRadius * occluderRadius
-                var occludeeRadiusSquared = occludeeRadius * occludeeRadius
+                let tempVecMagnitudeSquared = tempVec.magnitudeSquared()
+                let occluderRadiusSquared = occluderRadius * occluderRadius
+                let occludeeRadiusSquared = occludeeRadius * occludeeRadius
                 if ((((horizonDistance * horizonDistance) + occluderRadiusSquared) * occludeeRadiusSquared) >
                     (tempVecMagnitudeSquared * occluderRadiusSquared)) {
                         // The occludee is close enough that the occluder cannot possible occlude the occludee
@@ -203,8 +203,8 @@ class Occluder {
         // If the occludee radius is larger than the occluders, this will return that
         // the entire ocludee is visible, even though that may not be the case, though this should
         // not occur too often.
-        var occludeePosition = occludeeBS.center
-        var occludeeRadius = occludeeBS.radius
+        let occludeePosition = occludeeBS.center
+        let occludeeRadius = occludeeBS.radius
         
         if (occludeeRadius > occluderRadius) {
             return Visibility.Full
@@ -214,14 +214,14 @@ class Occluder {
             // The camera is outside the occluder
             var tempVec = occludeePosition.subtract(occluderPosition)
             var temp = occluderRadius - occludeeRadius;
-            var occluderToOccludeeDistSqrd = tempVec.magnitudeSquared()
+            let occluderToOccludeeDistSqrd = tempVec.magnitudeSquared()
             temp = occluderToOccludeeDistSqrd - (temp * temp)
             if (temp > 0.0) {
                 // The occludee is not completely inside the occluder
                 // Check to see if the occluder completely hides the occludee
                 temp = sqrt(temp) + horizonDistance;
                 tempVec = occludeePosition.subtract(cameraPosition)
-                var cameraToOccludeeDistSqrd = tempVec.magnitudeSquared()
+                let cameraToOccludeeDistSqrd = tempVec.magnitudeSquared()
                 if (((temp * temp) + (occludeeRadius * occludeeRadius)) < cameraToOccludeeDistSqrd) {
                     return Visibility.None
                 }

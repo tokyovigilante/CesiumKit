@@ -33,7 +33,7 @@ import Foundation
 * @see Matrix4
 */
 // FIXME: Packable
-public struct Matrix3: DebugPrintable, Printable, Packable {
+public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Packable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -110,7 +110,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
         }
     }
     
-    func indexIsValid(#column: Int, row: Int) -> Bool {
+    func indexIsValid(column column: Int, row: Int) -> Bool {
         return row >= 0 && column >= 0 && (column * row) + row < Matrix3.packedLength
     }
     
@@ -381,8 +381,8 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * var rotated = Cesium.Matrix3.multiplyByVector(m, p);
     */
     init (fromRotationX angle: Double) {
-        var cosAngle = cos(angle)
-        var sinAngle = sin(angle)
+        let cosAngle = cos(angle)
+        let sinAngle = sin(angle)
         
         _grid[0] = 1.0
         _grid[1] = 0.0

@@ -120,7 +120,7 @@ protocol Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
+    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
     
     /**
     * Returns the pixel's width and height in meters.
@@ -155,7 +155,7 @@ protocol Frustum {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
+    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
     
     /**
     * Returns a duplicate of a PerspectiveFrustum instance.

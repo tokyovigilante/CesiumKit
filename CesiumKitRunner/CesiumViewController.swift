@@ -16,7 +16,7 @@ class CesiumViewController: GLKViewController {
     
     private var lastFrameRateUpdate = NSDate()    
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
     }
@@ -49,7 +49,7 @@ class CesiumViewController: GLKViewController {
         view.context = EAGLContext(API: .OpenGLES3)
         
         if !EAGLContext.setCurrentContext(view.context) {
-            println("Failed to set current OpenGL context!")
+            print("Failed to set current OpenGL context!")
             exit(1)
         }
         
@@ -76,8 +76,8 @@ class CesiumViewController: GLKViewController {
         let options = CesiumOptions(
             imageryProvider: nil)
         globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        ///globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         //globe.scene.camera.setView()
         
@@ -94,31 +94,31 @@ class CesiumViewController: GLKViewController {
         
     }
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         // propagate to CesiumKit
         globe?.eventHandler.handleTouchStart(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
     
-    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         globe?.eventHandler.handleTouchMove(touches, screenScaleFactor: Double(view.contentScaleFactor))
     }
     
-    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         globe?.eventHandler.handleTouchEnd(touches)
     }
     
-    override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
         
     }
     
     //MARK: - GLKView delegate
     
-    override func glkView(view: GLKView!, drawInRect rect: CGRect) {
+    override func glkView(view: GLKView, drawInRect rect: CGRect) {
         globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
         if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
             lastFrameRateUpdate = NSDate()
             let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
-            println(performanceString)
+            print(performanceString)
         }
     }
     

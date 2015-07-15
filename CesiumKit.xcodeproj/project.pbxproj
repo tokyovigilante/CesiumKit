@@ -273,7 +273,6 @@
 		948BA2B31A99F1EB00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
 		948BA2B41A99F1F500FFAD81 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB861A7D00ED00FFAD81 /* Threading.swift */; };
 		948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
-		948BA2B61A99F21900FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 		94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A691A38444C00FFAD81 /* AppDelegate.swift */; };
 		94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */; };
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
@@ -289,6 +288,8 @@
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
 		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
 		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
+		94DA69AB1B55E1F4001A40C8 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DA69A21B55E1DE001A40C8 /* Alamofire.framework */; };
+		94DA69AD1B55E209001A40C8 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DA69A21B55E1DE001A40C8 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
@@ -296,7 +297,6 @@
 		94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DD011D1AADAF2500FFAD81 /* Matrix2.swift */; };
 		94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */; };
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
-		94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 /* End PBXBuildFile section */
 
@@ -307,6 +307,41 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9413B7831A37B8D900FFAD81;
 			remoteInfo = CesiumKit;
+		};
+		94DA69A11B55E1DE001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F8111E3319A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS";
+		};
+		94DA69A31B55E1DE001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4DD67C0B1A5C55C900ED2280;
+			remoteInfo = "Alamofire OSX";
+		};
+		94DA69A51B55E1DE001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F8111E3E19A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS Tests";
+		};
+		94DA69A71B55E1DE001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F829C6B21A7A94F100A2CD59;
+			remoteInfo = "Alamofire OSX Tests";
+		};
+		94DA69A91B55E1F0001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -330,6 +365,16 @@
 				94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */,
 			);
 			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94DA69AC1B55E202001A40C8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				94DA69AD1B55E209001A40C8 /* Alamofire.framework in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -475,6 +520,7 @@
 		94D5AC1D19FBAD4800FFAD81 /* BlendEquation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendEquation.swift; sourceTree = "<group>"; };
 		94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendFunction.swift; sourceTree = "<group>"; };
 		94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Matrix4Tests.swift; path = Core/Matrix4Tests.swift; sourceTree = "<group>"; };
+		94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = CesiumKit/Platform/Dependencies/Alamofire/Alamofire.xcodeproj; sourceTree = "<group>"; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
 		94DC79321918425300012DC4 /* CesiumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CesiumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -497,7 +543,6 @@
 		94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerspectiveOffCenterFrustum.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
-		94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Alamofire.swift; path = Platform/Alamofire.swift; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
@@ -510,6 +555,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94DA69AB1B55E1F4001A40C8 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,7 +775,6 @@
 		94697D9E1A25C72000FFAD81 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
-				94EEE8121A7DEF6D00FFAD81 /* Alamofire.swift */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
@@ -760,9 +805,21 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		94DA699B1B55E1DE001A40C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				94DA69A21B55E1DE001A40C8 /* Alamofire.framework */,
+				94DA69A41B55E1DE001A40C8 /* Alamofire.framework */,
+				94DA69A61B55E1DE001A40C8 /* Alamofire iOS Tests.xctest */,
+				94DA69A81B55E1DE001A40C8 /* Alamofire OSX Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		94DC79191918425300012DC4 = {
 			isa = PBXGroup;
 			children = (
+				94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
 				94985A661A38444C00FFAD81 /* CesiumKitRunner */,
@@ -858,10 +915,12 @@
 				9413B7801A37B8D900FFAD81 /* Frameworks */,
 				9413B7811A37B8D900FFAD81 /* Headers */,
 				9413B7821A37B8D900FFAD81 /* Resources */,
+				94DA69AC1B55E202001A40C8 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				94DA69AA1B55E1F0001A40C8 /* PBXTargetDependency */,
 			);
 			name = CesiumKit;
 			productName = CesiumKit;
@@ -911,6 +970,8 @@
 		94DC791A1918425300012DC4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Test Toast";
 				TargetAttributes = {
@@ -935,6 +996,12 @@
 			mainGroup = 94DC79191918425300012DC4;
 			productRefGroup = 94DC79231918425300012DC4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 94DA699B1B55E1DE001A40C8 /* Products */;
+					ProjectRef = 94DA699A1B55E1DE001A40C8 /* Alamofire.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				94DC79311918425300012DC4 /* CesiumKitTests */,
@@ -943,6 +1010,37 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		94DA69A21B55E1DE001A40C8 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 94DA69A11B55E1DE001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		94DA69A41B55E1DE001A40C8 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 94DA69A31B55E1DE001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		94DA69A61B55E1DE001A40C8 /* Alamofire iOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire iOS Tests.xctest";
+			remoteRef = 94DA69A51B55E1DE001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		94DA69A81B55E1DE001A40C8 /* Alamofire OSX Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire OSX Tests.xctest";
+			remoteRef = 94DA69A71B55E1DE001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9413B7821A37B8D900FFAD81 /* Resources */ = {
@@ -1008,7 +1106,6 @@
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
 				9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */,
 				9413B8041A37B94500FFAD81 /* ImageryLayer.swift in Sources */,
-				94EEE8131A7DEF6D00FFAD81 /* Alamofire.swift in Sources */,
 				94B9DB5E1AC630020095A86F /* KeyboardEventModifier.swift in Sources */,
 				9413B7B41A37B93100FFAD81 /* GeometryPipeline.swift in Sources */,
 				9413B80C1A37B94500FFAD81 /* PrimitiveCollection.swift in Sources */,
@@ -1219,7 +1316,6 @@
 				9410138419FB037500FFAD81 /* Visibility.swift in Sources */,
 				9413B8361A37B94800FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B8371A37B94800FFAD81 /* QuadtreePrimitive.swift in Sources */,
-				948BA2B61A99F21900FFAD81 /* Alamofire.swift in Sources */,
 				9410136819FB037500FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
 				9413B82C1A37B94800FFAD81 /* Imagery.swift in Sources */,
 				9413B81F1A37B94800FFAD81 /* BlendFunction.swift in Sources */,
@@ -1282,6 +1378,11 @@
 			isa = PBXTargetDependency;
 			target = 9413B7831A37B8D900FFAD81 /* CesiumKit */;
 			targetProxy = 94CA7E0B1A998E4200FFAD81 /* PBXContainerItemProxy */;
+		};
+		94DA69AA1B55E1F0001A40C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Alamofire iOS";
+			targetProxy = 94DA69A91B55E1F0001A40C8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

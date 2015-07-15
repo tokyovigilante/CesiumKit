@@ -8,6 +8,7 @@
 
 import UIKit
 import Foundation
+import Alamofire
 
 /**
 * Provides tiled imagery using the Bing Maps Imagery REST API.
@@ -438,14 +439,14 @@ public class BingMapsImageryProvider: ImageryProvider {
         }
         
         var metadataFailure = { (error: String) -> () in
-            println(error)
+            print(error)
         /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
         var requestMetadata  = { () -> () in
             
             let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
-            request(.GET, metadataUrl, parameters: [
+            request(.GET, URLString: metadataUrl, parameters: [
                 "incl" : "ImageryProviders",
                 "key" : self._key])
                 .response { (request, response, data, error) in
@@ -472,7 +473,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
         return [credit]
     }
     
@@ -498,7 +499,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int) -> UIImage? {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         
         let url = buildImageUrl(x: x, y: y, level: level)
@@ -597,12 +598,12 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @see {@link http://msdn.microsoft.com/en-us/library/bb259689.aspx|Bing Maps Tile System}
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
-    func tileXYToQuadKey (#x: Int, y: Int, level: Int) -> String {
+    func tileXYToQuadKey (x x: Int, y: Int, level: Int) -> String {
     
         var quadkey = ""
         
         for ( var i = level; i >= 0; --i) {
-            var bitmask = 1 << i
+            let bitmask = 1 << i
             var digit = 0
             
             if ((x & bitmask) != 0) {
@@ -650,14 +651,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     };
     */
-    func buildImageUrl(#x: Int, y: Int, level: Int) -> String {
+    func buildImageUrl(x x: Int, y: Int, level: Int) -> String {
         var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
         var subdomains = _imageUrlSubdomains!.arrayValue
-        var subdomainIndex = (x + y + level) % subdomains.count
+        let subdomainIndex = (x + y + level) % subdomains.count
         imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
 
         // FIXME: proxy

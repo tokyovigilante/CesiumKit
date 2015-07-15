@@ -234,7 +234,7 @@ public class Camera {
     * @see PerspectiveOffCenterFrustum
     * @see OrthographicFrustum
     */
-    var frustum: Frustum = PerspectiveFrustum()
+    var frustum = PerspectiveFrustum()
 
     /**
     * The default amount to move the camera when an argument is not
@@ -592,7 +592,7 @@ public class Camera {
                 direction = _direction.normalize()
 
                 let invUpMag = 1.0 / up.magnitudeSquared()
-                var w0 = direction.multiplyByScalar(up.dot(direction) * invUpMag)
+                let w0 = direction.multiplyByScalar(up.dot(direction) * invUpMag)
                 _up = up.subtract(w0).normalize()
                 up = _up
 
@@ -831,12 +831,12 @@ public class Camera {
             position.x = zero.x
             position.y = zero.y
             
-            var cartographic2D = _projection.ellipsoid.cartesianToCartographic(cartesian)
-            var newLeft = -cartographic2D!.height * 0.5
-            var newRight = -newLeft
+            let cartographic2D = _projection.ellipsoid.cartesianToCartographic(cartesian)
+            let newLeft = -cartographic2D!.height * 0.5
+            let newRight = -newLeft
             
             if (newRight > newLeft) {
-                var ratio = frustum.top / frustum.right
+                let ratio = frustum.top / frustum.right
                 frustum.right = newRight
                 frustum.left = newLeft
                 frustum.top = frustum.right * ratio
@@ -1174,11 +1174,11 @@ Camera.prototype.lookDown = function(amount) {
     * @see Camera#lookLeft
     * @see Camera#lookRight
     */
-    public func look (#axis: Cartesian3, angle: Double? = nil) {
+    public func look (axis axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultLookAmount
         let quaternion = Quaternion(fromAxis: axis, angle: -turnAngle)
-        var rotation = Matrix3(fromQuaternion: quaternion)
+        let rotation = Matrix3(fromQuaternion: quaternion)
         
         direction = rotation.multiplyByVector(direction)
         up = rotation.multiplyByVector(up)
@@ -1285,7 +1285,7 @@ Camera.prototype.rotateDown = function(angle, transform) {
             let northParallel = p.equalsEpsilon(constrainedAxis!, relativeEpsilon: Math.Epsilon2)
             let southParallel = p.equalsEpsilon(constrainedAxis!.negate(), relativeEpsilon: Math.Epsilon2)
             if !northParallel && !southParallel {
-                var constrainedAxis = self.constrainedAxis!.normalize()
+                let constrainedAxis = self.constrainedAxis!.normalize()
                 var dot = p.dot(constrainedAxis)
                 var angleToAxis = acos(dot)
                 if angle > 0 && angle > angleToAxis {
@@ -1393,7 +1393,7 @@ Camera.prototype.rotateDown = function(angle, transform) {
     * @see Camera#zoomOut
     */
     public func zoomIn (amount: Double? = nil) {
-        var amount = amount ?? defaultZoomAmount
+        let amount = amount ?? defaultZoomAmount
         if _mode == .Scene2D {
             zoom2D(amount)
         } else {
@@ -1575,15 +1575,15 @@ Camera.prototype.getMagnitude = function() {
 
     func rectangleCameraPosition3D (rectangle: Rectangle, ellipsoid: Ellipsoid, positionOnly: Bool = false) -> Cartesian3 {
         
-        var cameraRF = self
+        let cameraRF = self
         if (positionOnly) {
             assertionFailure("not implemented")
             //cameraRF = defaultRF;
         }
-        var north = rectangle.north
-        var south = rectangle.south
+        let north = rectangle.north
+        let south = rectangle.south
         var east = rectangle.east
-        var west = rectangle.west
+        let west = rectangle.west
         
         // If we go across the International Date Line
         if (west > east) {
@@ -1613,13 +1613,13 @@ Camera.prototype.getMagnitude = function() {
         northEast = northEast.subtract(center)
         southWest = southWest.subtract(center)
         
-        var direction = center.negate().normalize()
+        let direction = center.negate().normalize()
         cameraRF.direction = direction
         
-        var right = direction.cross(Cartesian3.unitZ()).normalize()
+        let right = direction.cross(Cartesian3.unitZ()).normalize()
         cameraRF.right = right
         
-        var up = right.cross(direction)
+        let up = right.cross(direction)
         cameraRF.up = up
         
         let height = max(
@@ -1875,10 +1875,10 @@ function pickMapColumbusView(camera, windowPosition, projection, result) {
         var nearCenter = directionWC.multiplyByScalar(near)
         nearCenter = position.add(nearCenter)
         
-        var xDir = rightWC.multiplyByScalar(x * near * tanTheta)
-        var yDir = upWC.multiplyByScalar(y * near * tanPhi)
+        let xDir = rightWC.multiplyByScalar(x * near * tanTheta)
+        let yDir = upWC.multiplyByScalar(y * near * tanPhi)
         
-        var direction = nearCenter.add(xDir).add(yDir).subtract(position).normalize()
+        let direction = nearCenter.add(xDir).add(yDir).subtract(position).normalize()
         
         return Ray(origin: position, direction: direction)
     }

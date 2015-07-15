@@ -34,11 +34,11 @@ class VertexArray {
         }
         
         for var i = 0; i < vaAttributes.count; ++i {
-            var attribute = vaAttributes[i]
+            let attribute = vaAttributes[i]
             
             if attribute.vertexBuffer != nil {
                 // This assumes that each vertex buffer in the vertex array has the same number of vertices.
-                var bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize()
+                let bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize()
                 numberOfVertices = attribute.vertexBuffer!.sizeInBytes / bytes
                 break
             }
@@ -47,7 +47,7 @@ class VertexArray {
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](count: vaAttributes.count, repeatedValue: false)
         for var j = 0; j < vaAttributes.count; ++j {
-            var index = vaAttributes[j].index
+            let index = vaAttributes[j].index
             if (uniqueIndices[index]) {
                 assert(!uniqueIndices[index], "Index \(index) is used by more than one attribute.")
             }
@@ -67,9 +67,9 @@ class VertexArray {
     
     private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
         
-        var hasVertexBuffer = attribute.vertexBuffer != nil
-        var hasValue = attribute.value != nil
-        var componentsPerAttribute = (attribute.value != nil) ? attribute.value!.length : attribute.componentsPerAttribute
+        let hasVertexBuffer = attribute.vertexBuffer != nil
+        let hasValue = attribute.value != nil
+        let componentsPerAttribute = (attribute.value != nil) ? attribute.value!.length : attribute.componentsPerAttribute
         
         // FIXME: vertexbuffer.value
         assert(hasVertexBuffer != hasValue, "attribute must have a vertexBuffer or a value. It must have either a vertexBuffer property defining per-vertex data or a value property defining data for all vertices")
@@ -80,7 +80,7 @@ class VertexArray {
             // WebGL limit.  Not in GL ES.
             throw new DeveloperError('attribute must have a strideInBytes less than or equal to 255 or not specify it.');
         }*/
-        var attr = attribute.copy()
+        let attr = attribute.copy()
         
         if (hasVertexBuffer) {
             // Common case: vertex buffer for per-vertex data

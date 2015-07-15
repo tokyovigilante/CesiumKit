@@ -47,7 +47,7 @@
 * @see Packable
 */
 //FIXME: Packable
-public struct Matrix4: Packable, Equatable, Printable {
+public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -686,7 +686,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeOrthographicOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
         var a = 1.0 / (right - left)
         var b = 1.0 / (top - bottom)
@@ -719,7 +719,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
@@ -747,7 +747,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeInfinitePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+    static func computeInfinitePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
         let column2Row0 = (right + left) / (right - left)
@@ -1152,25 +1152,25 @@ Matrix4.getMaximumScale = function(matrix) {
         let right14: Double = other[14]
         let right15: Double = other[15]
         
-        var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
-        var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
-        var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
-        var column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
+        let column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
+        let column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
+        let column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
+        let column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
         
-        var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
-        var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
-        var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
-        var column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
+        let column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
+        let column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
+        let column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
+        let column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
         
-        var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
-        var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
-        var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
-        var column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
+        let column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
+        let column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
+        let column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
+        let column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
         
-        var column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
-        var column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
-        var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
-        var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
+        let column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
+        let column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
+        let column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
+        let column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
         
         return Matrix4(
             column0Row0, column1Row0, column2Row0, column3Row0,
@@ -1544,9 +1544,9 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
 */
     func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
-        var vX = cartesian.x
-        var vY = cartesian.y
-        var vZ = cartesian.z
+        let vX = cartesian.x
+        let vY = cartesian.y
+        let vZ = cartesian.z
         
         let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12]
         let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13]

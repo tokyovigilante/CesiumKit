@@ -76,12 +76,12 @@ class WebMercatorTilingScheme: TilingScheme {
                 self.rectangleNortheastInMeters = rectangleNortheastInMeters!
             }
             else {
-                var semimajorAxisTimesPi = self.ellipsoid.maximumRadius * M_PI;
+                let semimajorAxisTimesPi = self.ellipsoid.maximumRadius * M_PI;
                 self.rectangleSouthwestInMeters = Cartesian3(x: -semimajorAxisTimesPi, y: -semimajorAxisTimesPi, z: 0.0)
                 self.rectangleNortheastInMeters = Cartesian3(x: semimajorAxisTimesPi, y: semimajorAxisTimesPi, z: 0.0)
             }
-            var southwest = self.projection.unproject(self.rectangleSouthwestInMeters)
-            var northeast = self.projection.unproject(self.rectangleNortheastInMeters)
+            let southwest = self.projection.unproject(self.rectangleSouthwestInMeters)
+            let northeast = self.projection.unproject(self.rectangleNortheastInMeters)
             self.rectangle = Rectangle(west: southwest.longitude, south: southwest.latitude,
                 east: northeast.longitude, north: northeast.latitude)
     }
@@ -118,8 +118,8 @@ class WebMercatorTilingScheme: TilingScheme {
     *          is undefined.
     */
     func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle {
-        var southwest = projection.project(rectangle.southwest())
-        var northeast = projection.project(rectangle.northeast())
+        let southwest = projection.project(rectangle.southwest())
+        let northeast = projection.project(rectangle.northeast())
         
         return Rectangle(west: southwest.x, south: southwest.y, east: northeast.x, north: northeast.y)
         
@@ -137,17 +137,17 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToNativeRectangle(#x: Int, y: Int, level: Int) -> Rectangle {
-        var xTiles = numberOfXTilesAtLevel(level)
-        var yTiles = numberOfYTilesAtLevel(level)
+    func tileXYToNativeRectangle(x x: Int, y: Int, level: Int) -> Rectangle {
+        let xTiles = numberOfXTilesAtLevel(level)
+        let yTiles = numberOfYTilesAtLevel(level)
         
-        var xTileWidth = (rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x) / Double(xTiles)
-        var west = rectangleSouthwestInMeters.x + Double(x) * xTileWidth
-        var east = rectangleSouthwestInMeters.x + Double(x + 1) * xTileWidth
+        let xTileWidth = (rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x) / Double(xTiles)
+        let west = rectangleSouthwestInMeters.x + Double(x) * xTileWidth
+        let east = rectangleSouthwestInMeters.x + Double(x + 1) * xTileWidth
         
-        var yTileHeight = (rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y) / Double(yTiles)
-        var north = rectangleNortheastInMeters.y - Double(y) * yTileHeight
-        var south = rectangleNortheastInMeters.y - Double(y + 1) * yTileHeight
+        let yTileHeight = (rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y) / Double(yTiles)
+        let north = rectangleNortheastInMeters.y - Double(y) * yTileHeight
+        let south = rectangleNortheastInMeters.y - Double(y + 1) * yTileHeight
         
         return Rectangle(west: west, south: south, east: east, north: north)
     }
@@ -163,11 +163,11 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToRectangle(#x: Int, y: Int, level: Int) -> Rectangle {
+    func tileXYToRectangle(x x: Int, y: Int, level: Int) -> Rectangle {
         var nativeRectangle = tileXYToNativeRectangle(x: x, y: y, level: level)
         
-        var southwest = projection.unproject(Cartesian3(x: nativeRectangle.west, y: nativeRectangle.south, z: 0.0))
-        var northeast = projection.unproject(Cartesian3(x: nativeRectangle.east, y: nativeRectangle.north, z: 0.0))
+        let southwest = projection.unproject(Cartesian3(x: nativeRectangle.west, y: nativeRectangle.south, z: 0.0))
+        let northeast = projection.unproject(Cartesian3(x: nativeRectangle.east, y: nativeRectangle.north, z: 0.0))
         
         nativeRectangle.west = southwest.longitude
         nativeRectangle.south = southwest.latitude
@@ -187,24 +187,24 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)? {
+    func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         
         if !rectangle.contains(position) {
                 // outside the bounds of the tiling scheme
                 return nil
         }
         
-        var xTiles = numberOfXTilesAtLevel(level)
-        var yTiles = numberOfYTilesAtLevel(level)
+        let xTiles = numberOfXTilesAtLevel(level)
+        let yTiles = numberOfYTilesAtLevel(level)
         
-        var overallWidth = rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x
-        var xTileWidth = overallWidth / Double(xTiles)
-        var overallHeight = rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y
-        var yTileHeight = overallHeight / Double(yTiles)
+        let overallWidth = rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x
+        let xTileWidth = overallWidth / Double(xTiles)
+        let overallHeight = rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y
+        let yTileHeight = overallHeight / Double(yTiles)
         
-        var webMercatorPosition = projection.project(position)
-        var distanceFromWest = webMercatorPosition.x - rectangleSouthwestInMeters.x
-        var distanceFromNorth = rectangleNortheastInMeters.y - webMercatorPosition.y
+        let webMercatorPosition = projection.project(position)
+        let distanceFromWest = webMercatorPosition.x - rectangleSouthwestInMeters.x
+        let distanceFromNorth = rectangleNortheastInMeters.y - webMercatorPosition.y
         
         var xTileCoordinate = Int(distanceFromWest / xTileWidth) | 0
         if (xTileCoordinate >= xTiles) {

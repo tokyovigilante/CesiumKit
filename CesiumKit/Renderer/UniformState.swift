@@ -815,7 +815,7 @@ class UniformState {
         _mode = frameState.mode
         _mapProjection = frameState.mapProjection
         
-        var camera = frameState.camera!
+        let camera = frameState.camera!
         
         setView(camera.viewMatrix)
         setInverseView(camera.inverseViewMatrix)
@@ -848,7 +848,7 @@ class UniformState {
             var v = _viewport
             
             _viewportOrthographicMatrix = Matrix4.computeOrthographicOffCenter(left: v.x, right: v.x + v.width, bottom: v.y, top: v.y + v.height, near: 0.0, far: 1.0)
-            _viewportTransformation = Matrix4.computeViewportTransformation(viewport: v, nearDepthRange: 0.0, farDepthRange: 1.0)
+            _viewportTransformation = Matrix4.computeViewportTransformation(v, nearDepthRange: 0.0, farDepthRange: 1.0)
             _viewportDirty = false
         }
     }

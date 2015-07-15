@@ -326,7 +326,7 @@ class Context {
     */
     var textureFilterAnisotropic: Bool {
     get {
-        var result = checkGLExtension("EXT_texture_filter_anisotropic")
+        let result = checkGLExtension("EXT_texture_filter_anisotropic")
         if result {
             glGetIntegerv(GLenum(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT), &maximumTextureFilterAnisotropy)
         }
@@ -599,8 +599,8 @@ class Context {
 
         _debug = (0, 0)
 
-        var us = UniformState()
-        var rs = RenderState()
+        let us = UniformState()
+        let rs = RenderState()
         //var ps = PassState()
         
         _defaultRenderState = rs
@@ -639,7 +639,7 @@ class Context {
         if _shaderCache == nil {
             _shaderCache = ShaderCache(context: self)
         }
-        return _shaderCache!.getShaderProgram(vertexShaderString: vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
+        return _shaderCache!.getShaderProgram(vertexShaderString, vertexShaderSource: vss, fragmentShaderString: fragmentShaderString, fragmentShaderSource: fss, attributeLocations: attributeLocations)
     }
 
     func createBuffer(target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage) -> Buffer {
@@ -1281,7 +1281,7 @@ var renderStateCache = {};
 
     func validateFramebuffer(framebuffer: Framebuffer) {
         if _validateFramebuffer {
-            var status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
+            let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
             
             if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
                 var message: String
@@ -1304,7 +1304,7 @@ var renderStateCache = {};
     }
 
     func applyRenderState(renderState: RenderState, passState: PassState) {
-        var previousState = _currentRenderState
+        let previousState = _currentRenderState
         if previousState.hash != renderState.hash {
             _currentRenderState = renderState
             renderState.partialApply(previousState, passState: passState)
@@ -1345,13 +1345,13 @@ if (typeof WebGLRenderingContext !== 'undefined') {
 
     func clear(clearCommand: ClearCommand = ClearCommand(), passState: PassState?) {
         
-        var passState = passState ?? _defaultPassState
+        let passState = passState ?? _defaultPassState
         
         var bitmask: Int32 = 0
         
-        var c = clearCommand.color
-        var d = clearCommand.depth
-        var s = clearCommand.stencil
+        let c = clearCommand.color
+        let d = clearCommand.depth
+        let s = clearCommand.stencil
         
         if c != nil {
             if _clearColor != c {
@@ -1381,11 +1381,11 @@ if (typeof WebGLRenderingContext !== 'undefined') {
             }
             bitmask = bitmask | GL_STENCIL_BUFFER_BIT
         }
-        var rs = clearCommand.renderState ?? _defaultRenderState
+        let rs = clearCommand.renderState ?? _defaultRenderState
         applyRenderState(rs, passState: passState)
         
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        var framebuffer = clearCommand.framebuffer ?? passState.framebuffer
+        let framebuffer = clearCommand.framebuffer ?? passState.framebuffer
         
         var oldFBO: GLint = 0
         glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &oldFBO)
@@ -1396,13 +1396,13 @@ if (typeof WebGLRenderingContext !== 'undefined') {
 
     func beginDraw(framebuffer: Framebuffer? = nil, drawCommand: DrawCommand, passState: PassState, renderState: RenderState?, shaderProgram: ShaderProgram?) {
         
-        var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
+        let rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
         
         if framebuffer != nil && rs.depthTest.enabled {
             assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }
         bindFramebuffer(framebuffer)
-        var sp = shaderProgram ?? drawCommand.shaderProgram
+        let sp = shaderProgram ?? drawCommand.shaderProgram
         sp!.bind()
         _maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
         
@@ -1441,11 +1441,11 @@ if (typeof WebGLRenderingContext !== 'undefined') {
 
     func draw(drawCommand: DrawCommand, passState: PassState?, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
         
-        var activePassState = passState ?? _defaultPassState
+        let activePassState = passState ?? _defaultPassState
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        var framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
+        let framebuffer = drawCommand.framebuffer ?? activePassState.framebuffer
         
-        beginDraw(framebuffer: framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
+        beginDraw(framebuffer, drawCommand: drawCommand, passState: activePassState, renderState: renderState, shaderProgram: shaderProgram)
         continueDraw(drawCommand, shaderProgram: shaderProgram)
     }
 
@@ -1683,7 +1683,7 @@ function interleaveAttributes(attributes) {
 * va = va.destroy();
 */
     func createVertexArrayFromGeometry (
-        #geometry: Geometry,
+        geometry geometry: Geometry,
         attributeLocations: [String: Int],
         bufferUsage: BufferUsage = .DynamicDraw,
         interleave: Bool = false) -> VertexArray {
@@ -1745,7 +1745,7 @@ function interleaveAttributes(attributes) {
                         
                         vertexBuffer = nil
                         if attribute.values != nil {
-                            vertexBuffer = createVertexBuffer(array: attribute.values, usage: bufferUsage)
+                            vertexBuffer = createVertexBuffer(attribute.values, usage: bufferUsage)
                         }
                         
                         vaAttributes.append(VertexAttributes(
@@ -1764,11 +1764,11 @@ function interleaveAttributes(attributes) {
                     
                     indexBuffer = createIndexBuffer(
                         // FIXME: combine datatype
-                        array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedInt),
+                        SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedInt),
                         indexDatatype: IndexDatatype.UnsignedInt)
                 } else {
                     indexBuffer = createIndexBuffer(
-                        array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedShort),
+                        SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedShort),
                         indexDatatype: IndexDatatype.UnsignedShort)
                 }
             }
@@ -1955,7 +1955,7 @@ Context.prototype.isDestroyed = function() {
     }
 
     func getGLExtensions() -> [String] {
-        var glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS)))) ?? ""
+        let glExtensions = String.fromCString(UnsafePointer<CChar>(glGetString(GLenum(GL_EXTENSIONS)))) ?? ""
         return glExtensions.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }
 

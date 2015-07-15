@@ -73,9 +73,9 @@ struct BoundingSphere: Intersectable {
             
             currentPos = points[i]
             
-            var x = currentPos.x
-            var y = currentPos.y
-            var z = currentPos.z
+            let x = currentPos.x
+            let y = currentPos.y
+            let z = currentPos.z
             
             // Store points containing the the smallest and largest components
             if (x < xMin.x) {
@@ -104,9 +104,9 @@ struct BoundingSphere: Intersectable {
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        var xSpan = xMax.subtract(xMin).magnitudeSquared()
-        var ySpan = yMax.subtract(yMin).magnitudeSquared()
-        var zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared()
+        let ySpan = yMax.subtract(yMin).magnitudeSquared()
+        let zSpan = zMax.subtract(zMin).magnitudeSquared()
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -144,7 +144,7 @@ struct BoundingSphere: Intersectable {
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
         
-        var naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0;
@@ -152,20 +152,20 @@ struct BoundingSphere: Intersectable {
             currentPos = points[i]
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            var r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude()
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            var oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
             if (oldCenterToPointSquared > radiusSquared) {
-                var oldCenterToPoint = sqrt(oldCenterToPointSquared)
+                let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
                 ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5
                 radiusSquared = ritterRadius * ritterRadius
                 // Calculate center of new Ritter sphere
-                var oldToNew = oldCenterToPoint - ritterRadius
+                let oldToNew = oldCenterToPoint - ritterRadius
                 ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
                 ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
@@ -222,9 +222,9 @@ struct BoundingSphere: Intersectable {
             let lowerLeft = projection.project(fromRectangle2DSouthwest)
             let upperRight = projection.project(fromRectangle2DNortheast)
             
-            var width = upperRight.x - lowerLeft.x
-            var height = upperRight.y - lowerLeft.y
-            var elevation = upperRight.z - lowerLeft.z
+            let width = upperRight.x - lowerLeft.x
+            let height = upperRight.y - lowerLeft.y
+            let elevation = upperRight.z - lowerLeft.z
             
             return BoundingSphere(
                 center: Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5),
@@ -319,11 +319,11 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         var yMax = currentPos
         var zMax = currentPos
         
-        var numElements = positions.count
+        let numElements = positions.count
         for (var i = 0; i < numElements; i += stride) {
-            var x = Double(positions[i]) + center.x
-            var y = Double(positions[i + 1]) + center.y
-            var z = Double(positions[i + 2]) + center.z
+            let x = Double(positions[i]) + center.x
+            let y = Double(positions[i + 1]) + center.y
+            let z = Double(positions[i + 2]) + center.z
             
             currentPos.x = x
             currentPos.y = y
@@ -356,9 +356,9 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        var xSpan = xMax.subtract(xMin).magnitudeSquared()
-        var ySpan = yMax.subtract(yMin).magnitudeSquared()
-        var zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared()
+        let ySpan = yMax.subtract(yMin).magnitudeSquared()
+        let zSpan = zMax.subtract(zMin).magnitudeSquared()
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -397,7 +397,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
         
-        var naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
@@ -407,20 +407,20 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
             currentPos.z = Double(positions[i + 2]) + center.z
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            var r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude()
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            var oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
             if (oldCenterToPointSquared > radiusSquared) {
-                var oldCenterToPoint = sqrt(oldCenterToPointSquared)
+                let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
                 ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5
                 radiusSquared = ritterRadius * ritterRadius
                 // Calculate center of new Ritter sphere
-                var oldToNew = oldCenterToPoint - ritterRadius
+                let oldToNew = oldCenterToPoint - ritterRadius
                 ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
                 ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
@@ -633,10 +633,10 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
     */
     func union(other: BoundingSphere) -> BoundingSphere {
         
-        var newCenter = center.add(other.center).multiplyByScalar(0.5)
+        let newCenter = center.add(other.center).multiplyByScalar(0.5)
         
-        var radius1 = center.subtract(newCenter).magnitude() + radius
-        var radius2 = other.center.subtract(newCenter).magnitude() + other.radius
+        let radius1 = center.subtract(newCenter).magnitude() + radius
+        let radius2 = other.center.subtract(newCenter).magnitude() + other.radius
         
         return BoundingSphere(center: newCenter, radius: max(radius1, radius2))
     }
@@ -741,7 +741,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
 * });
 */
     func distanceSquaredTo(cartesian: Cartesian3) -> Double {
-        var diff = center.subtract(cartesian)
+        let diff = center.subtract(cartesian)
         return diff.magnitudeSquared() - radius * radius
     }
 /*

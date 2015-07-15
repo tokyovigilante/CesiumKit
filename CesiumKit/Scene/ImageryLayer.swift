@@ -260,7 +260,7 @@ public class ImageryLayer {
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
-        var imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
+        let imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
         var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
 
         let rectangle: Rectangle
@@ -276,7 +276,7 @@ public class ImageryLayer {
             }
             
             let baseImageryRectangle = imageryBounds!
-            var baseTerrainRectangle = tile.rectangle
+            let baseTerrainRectangle = tile.rectangle
             overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
             
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
@@ -314,7 +314,7 @@ public class ImageryLayer {
         let targetGeometricError = errorRatio * terrainProvider.levelMaximumGeometricError(tile.level)
         var imageryLevel = levelWithMaximumTexelSpacing(texelSpacing: targetGeometricError, latitudeClosestToEquator: latitudeClosestToEquator)
         imageryLevel = max(0, imageryLevel)
-        var maximumLevel = imageryProvider.maximumLevel
+        let maximumLevel = imageryProvider.maximumLevel
         if (imageryLevel > maximumLevel) {
             imageryLevel = maximumLevel
         }
@@ -336,10 +336,10 @@ public class ImageryLayer {
         // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
         
         // We define "very close" as being within 1/512 of the width of the tile.
-        var veryCloseX = tile.rectangle.height / 512.0
-        var veryCloseY = tile.rectangle.width / 512.0
+        let veryCloseX = tile.rectangle.height / 512.0
+        let veryCloseY = tile.rectangle.width / 512.0
         
-        var northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
+        let northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
             ++northwestTileCoordinates.y
         }
@@ -347,7 +347,7 @@ public class ImageryLayer {
             ++northwestTileCoordinates.x
         }
         
-        var southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
+        let southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
         if (abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
             --southeastTileCoordinates.y
         }
@@ -378,7 +378,7 @@ public class ImageryLayer {
             minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / terrainRectangle.height)
         }
         
-        var initialMinV = minV
+        let initialMinV = minV
         
         for i in northwestTileCoordinates.x...southeastTileCoordinates.x {
             minU = maxU
@@ -475,8 +475,8 @@ public class ImageryLayer {
                 Async.main {
                     imagery.state = .Failed
                     
-                    var message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    println(message)
+                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                    print(message)
                 }
             }
         }
@@ -516,7 +516,7 @@ public class ImageryLayer {
         imagery.texture = texture
         imagery.image = nil
         imagery.state = ImageryState.TextureLoaded
-        println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+        print("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
     }
     
     /**
@@ -557,7 +557,7 @@ public class ImageryLayer {
             }
             
             context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
-            texture.generateMipmap(hint: .Nicest)
+            texture.generateMipmap(.Nicest)
             texture.sampler = mipmapSampler
         } else {
             var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
@@ -569,11 +569,11 @@ public class ImageryLayer {
         }
         
         imagery.state = .Ready
-        println("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+        print("reprojected texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
         
     }
     
-    func getImageryFromCache (#level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+    func getImageryFromCache (level level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
@@ -587,11 +587,11 @@ public class ImageryLayer {
     }
     
     func removeImageryFromCache (imagery: Imagery) {
-        var cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
+        let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValueForKey(cacheKey)
     }
     
-    func getImageryCacheKey(#level: Int, x: Int, y: Int) -> String {
+    func getImageryCacheKey(level level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
@@ -682,7 +682,7 @@ public class ImageryLayer {
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ SerializedType.UnsignedInt16(UInt16($0)) })
             
-            let indexBuffer = context.createIndexBuffer(array: indices, usage: BufferUsage.StaticDraw, indexDatatype: IndexDatatype.UnsignedShort)
+            let indexBuffer = context.createIndexBuffer(indices, usage: BufferUsage.StaticDraw, indexDatatype: IndexDatatype.UnsignedShort)
             
             let reprojectAttribInds = [
                 "position": 0,
@@ -693,7 +693,7 @@ public class ImageryLayer {
                 VertexAttributes(
                     index: reprojectAttribInds["position"]!,
                     vertexBuffer: context.createVertexBuffer(
-                        array: positions,
+                        positions,
                         usage: .StaticDraw),
                     componentsPerAttribute: 2),
                 VertexAttributes(
@@ -707,7 +707,7 @@ public class ImageryLayer {
             let vertexArray = context.createVertexArray(vertexAttributes, indexBuffer: indexBuffer)
             
             let shaderProgram = context.createShaderProgram(
-                vertexShaderString: Shaders["ReprojectWebMercatorVS"]!,
+                Shaders["ReprojectWebMercatorVS"]!,
                 fragmentShaderString: Shaders["ReprojectWebMercatorFS"]!,
                 attributeLocations: reprojectAttribInds
             )
@@ -758,7 +758,7 @@ public class ImageryLayer {
         // to the texture via the FBO, and calling generateMipmap later,
         // will result in the texture appearing blank.  I can't pretend to
         // understand exactly why this is.
-        outputTexture.generateMipmap(hint: .Nicest)
+        outputTexture.generateMipmap(.Nicest)
         
         reproject!.framebuffer = context.createFramebuffer(
             Framebuffer.Options(
@@ -820,7 +820,7 @@ public class ImageryLayer {
     * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
     * @returns {Number} The level with the specified texel spacing or less.
     */
-    func levelWithMaximumTexelSpacing(#texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
+    func levelWithMaximumTexelSpacing(texelSpacing texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0

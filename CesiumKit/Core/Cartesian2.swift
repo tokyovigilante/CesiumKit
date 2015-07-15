@@ -22,7 +22,7 @@ import Foundation
 */
 // FIXME: Pack
 
-public struct Cartesian2: Printable, Packable, Equatable {
+public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
@@ -236,7 +236,7 @@ public struct Cartesian2: Printable, Packable, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func normalize() -> Cartesian2 {
-        var magnitude = self.magnitude();
+        let magnitude = self.magnitude();
         return Cartesian2(x: x / magnitude, y: y / magnitude)
     }
     

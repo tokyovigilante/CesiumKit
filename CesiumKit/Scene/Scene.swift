@@ -556,9 +556,9 @@ public class Scene {
         //this._fxaa = new FXAA();
         }
         camera.scene = self
-        var near = camera.frustum.near
-        var far = camera.frustum.far
-        var numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
+        let near = camera.frustum.near
+        let far = camera.frustum.far
+        let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
         updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
         
         // give frameState, camera, and screen space camera controller initial state before rendering
@@ -597,7 +597,7 @@ public class Scene {
         clearPasses(&_frameState.passes)
     }
     
-    func updateFrustums(#near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
+    func updateFrustums(near near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
         
         for (var m = 0; m < numFrustums; ++m) {
             
@@ -622,7 +622,7 @@ public class Scene {
             command.debugOverlappingFrustums = 0
         }
         
-        for (index, frustumCommands) in enumerate(_frustumCommandsList) {
+        for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             if distance.start > frustumCommands.far {
                 continue
             }
@@ -919,7 +919,7 @@ var scratchPerspectiveFrustum = new PerspectiveFrustum();
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
-    func executeCommands(#passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
+    func executeCommands(passState passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
 
         var j: Int
         
@@ -1032,7 +1032,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         //}*/
         
         // Execute commands in each frustum in back to front order
-        for (index, frustumCommands) in enumerate(_frustumCommandsList) {
+        for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             frustum.near = frustumCommands.near
             frustum.far = frustumCommands.far
             
@@ -1047,7 +1047,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
-            var numPasses = Pass.Translucent.rawValue
+            let numPasses = Pass.Translucent.rawValue
             for pass in 0..<numPasses {
                 for command in frustumCommands.commands[pass]! {
                     executeCommand(command, passState: passState)
@@ -1123,9 +1123,9 @@ function callAfterRenderFunctions(frameState) {
         // FIXME: Events
         //preRender.raiseEvent(self, time)
         
-        var uniformState = context.uniformState
+        let uniformState = context.uniformState
         
-        var frameNumber = Math.incrementWrap(_frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
+        let frameNumber = Math.incrementWrap(_frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
         _frameState.passes.render = true
         // FIXME: Creditdisplay

@@ -127,7 +127,7 @@ class Uniform {
         assertionFailure("Invalid base class")
     }
     
-    static func create(#activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
+    static func create(activeUniform activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
         switch activeUniform.type {
             case .FloatVec1:
             return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)
@@ -434,7 +434,7 @@ class UniformSampler: Uniform {
         
         let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
         
-        for (index, location) in enumerate(_locations) {
+        for (index, location) in _locations.enumerate() {
             
             glActiveTexture(textureUnitIndex + GLenum(index))
             glBindTexture(_values[index].textureTarget, _values[index].textureName)

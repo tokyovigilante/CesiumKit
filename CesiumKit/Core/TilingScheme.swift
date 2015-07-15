@@ -90,7 +90,7 @@ public protocol TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToNativeRectangle(#x: Int, y: Int, level: Int) -> Rectangle
+    func tileXYToNativeRectangle(x x: Int, y: Int, level: Int) -> Rectangle
     
     /**
     * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
@@ -104,7 +104,7 @@ public protocol TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToRectangle(#x: Int, y: Int, level: Int) -> Rectangle
+    func tileXYToRectangle(x x: Int, y: Int, level: Int) -> Rectangle
     /**
     * Calculates the tile x, y coordinates of the tile containing
     * a given cartographic position.
@@ -117,6 +117,6 @@ public protocol TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(#position: Cartographic, level: Int) -> (x: Int, y: Int)?
+    func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)?
     
 }

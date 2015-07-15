@@ -221,7 +221,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
         return [credit]
     }
     
@@ -247,7 +247,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int) -> UIImage? {
         
         let size = CGSizeMake(CGFloat(tileWidth), CGFloat(256.0))
         

@@ -276,7 +276,7 @@ public class ScreenSpaceCameraController {
             return 0.0
         }
         
-        var tau = (1.0 - coefficient) * 25.0
+        let tau = (1.0 - coefficient) * 25.0
         return exp(-tau * time)
     }
     
@@ -290,22 +290,22 @@ public class ScreenSpaceCameraController {
     // hardware. Should be investigated further.
     var inertiaMaxClickTimeThreshold = 0.4
     
-    func maintainInertia(#type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
+    func maintainInertia(type type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
         
         var state = _intertiaMovementStates[lastMovementName]
         if state == nil {
             state = MovementState()
             _intertiaMovementStates[lastMovementName] = state!
         }
-        var movementState = state!
+        let movementState = state!
         
         let ts = _aggregator.getButtonPressTime(type, modifier: modifier)
         let tr = _aggregator.getButtonReleaseTime(type, modifier: modifier)
         
         if let ts = ts, tr = tr {
-            var threshold = tr.timeIntervalSinceReferenceDate - ts.timeIntervalSinceReferenceDate
-            var now = NSDate()
-            var fromNow = now.timeIntervalSinceReferenceDate - tr.timeIntervalSinceReferenceDate
+            let threshold = tr.timeIntervalSinceReferenceDate - ts.timeIntervalSinceReferenceDate
+            let now = NSDate()
+            let fromNow = now.timeIntervalSinceReferenceDate - tr.timeIntervalSinceReferenceDate
             
             if threshold < inertiaMaxClickTimeThreshold {
                 let d = decay(fromNow, coefficient: decayCoef)
@@ -363,13 +363,13 @@ public class ScreenSpaceCameraController {
         var movement: MouseMovement? = nil
         
         for eventType in eventTypes {
-            var type = eventType.type
-            var modifier = eventType.modifier
+            let type = eventType.type
+            let modifier = eventType.modifier
             
             if _aggregator.isMoving(type, modifier: modifier) {
                 movement = _aggregator.getMovement(type, modifier: modifier)
             }
-            var startPosition = _aggregator.getStartMousePosition(type, modifier: modifier)
+            let startPosition = _aggregator.getStartMousePosition(type, modifier: modifier)
             
             if enableInputs && enabled {
                 if movement != nil {
@@ -390,7 +390,7 @@ public class ScreenSpaceCameraController {
         // distanceMeasure should be the height above the ellipsoid.
         // The zoomRate slows as it approaches the surface and stops minimumZoomDistance above it.
         let minHeight = minimumZoomDistance * percentage
-        var maxHeight = maximumZoomDistance
+        let maxHeight = maximumZoomDistance
         
         let minDistance = distanceMeasure - minHeight
         var zoomRate = zoomFactor * minDistance
@@ -415,7 +415,7 @@ public class ScreenSpaceCameraController {
             distance = distanceMeasure - maxHeight
         }
         
-        _scene.camera.zoomIn(amount: distance)
+        _scene.camera.zoomIn(distance)
     }
     /*
     var translate2DStart = new Ray();
@@ -952,7 +952,7 @@ public class ScreenSpaceCameraController {
     var scratchLookUp = new Cartesian3();*/
     
     func spin3D(startPosition: Cartesian2, movement: MouseMovement) {
-        println("\(startPosition), \(movement.startPosition), \(movement.endPosition)")
+        print("\(startPosition), \(movement.startPosition), \(movement.endPosition)")
         let camera = _scene.camera
         
         if camera.transform != Matrix4.identity() {
@@ -983,8 +983,8 @@ public class ScreenSpaceCameraController {
         
         let height = _ellipsoid.cartesianToCartographic(camera.positionWC)?.height
         if _globe != nil && height != nil && height! < minimumPickingTerrainHeight {
-            var startRay = camera.getPickRay(movement.startPosition)
-            var mousePos = _globe!.pick(startRay, scene: _scene)
+            let startRay = camera.getPickRay(movement.startPosition)
+            let mousePos = _globe!.pick(startRay, scene: _scene)
             if mousePos != nil {
                 magnitude = mousePos!.magnitude()
                 ellipsoid = Ellipsoid(x: magnitude, y: magnitude, z: magnitude)
@@ -1027,14 +1027,14 @@ public class ScreenSpaceCameraController {
         if rotateRate < _minimumRotateRate {
             rotateRate = _minimumRotateRate
         }
-        println("\(movement.startPosition.x - movement.endPosition.x), \(_scene.context.width)")
+        print("\(movement.startPosition.x - movement.endPosition.x), \(_scene.context.width)")
         var phiWindowRatio = (movement.startPosition.x - movement.endPosition.x) / Double(_scene.context.width)
         var thetaWindowRatio = (movement.startPosition.y - movement.endPosition.y) / Double(_scene.context.width)
         phiWindowRatio = min(phiWindowRatio, maximumMovementRatio)
         thetaWindowRatio = min(thetaWindowRatio, maximumMovementRatio)
         
-        var deltaPhi = rotateRate * phiWindowRatio * M_PI * 2.0
-        var deltaTheta = rotateRate * thetaWindowRatio * M_PI
+        let deltaPhi = rotateRate * phiWindowRatio * M_PI * 2.0
+        let deltaTheta = rotateRate * thetaWindowRatio * M_PI
         
         if !rotateOnlyVertical {
             camera.rotateRight(deltaPhi)
@@ -1079,8 +1079,8 @@ public class ScreenSpaceCameraController {
             return
         }
         
-        var c0 = camera.worldToCameraCoordinates(Cartesian4(x: p0.x, y: p0.y, z: p0.z, w: 1.0)) //var pan3DP0 = Cartesian4.clone(Cartesian4.UNIT_W);
-        var c1 = camera.worldToCameraCoordinates(Cartesian4(x: p1.x, y: p1.y, z: p1.z, w: 1.0)) //var pan3DP1 = Cartesian4.clone(Cartesian4.UNIT_W);
+        let c0 = camera.worldToCameraCoordinates(Cartesian4(x: p0.x, y: p0.y, z: p0.z, w: 1.0)) //var pan3DP0 = Cartesian4.clone(Cartesian4.UNIT_W);
+        let c1 = camera.worldToCameraCoordinates(Cartesian4(x: p1.x, y: p1.y, z: p1.z, w: 1.0)) //var pan3DP1 = Cartesian4.clone(Cartesian4.UNIT_W);
         p0 = Cartesian3(fromCartesian4: c0)
         p1 = Cartesian3(fromCartesian4: c1)
 
@@ -1524,7 +1524,7 @@ public class ScreenSpaceCameraController {
         
         let camera = _scene.camera
         let ellipsoid = _ellipsoid
-        var projection = _scene.mapProjection
+        let projection = _scene.mapProjection
         
         var cartographic: Cartographic
         if mode == SceneMode.Scene3D {

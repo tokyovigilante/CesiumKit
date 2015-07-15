@@ -14,16 +14,16 @@ import GLKit
 /**
 Describes Globe object options
 
-:param: Clock [options.clock=new Clock()] The clock to use to control current time.
-:param: imageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
-:param: terrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
-:param: skyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
-:param: sceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
-:param: scene3DOnly Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
-:param: mapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
-:param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
-:param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
-:param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+- parameter Clock: [options.clock=new Clock()] The clock to use to control current time.
+- parameter imageryProvider: [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
+- parameter terrainProvider: [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
+- parameter skyBox: [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
+- parameter sceneMode: [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
+- parameter scene3DOnly: Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+- parameter mapProjection: [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
+- parameter Boolean: [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
+- parameter Number: [options.targetFrameRate] The target frame rate when using the default render loop.
+- parameter Boolean: [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
 public struct CesiumOptions {
     
@@ -284,10 +284,10 @@ public class CesiumGlobe {
         self.scene3DOnly = options.scene3DOnly
         
         if self.sceneMode == SceneMode.Scene2D {
-            self.scene.morphTo2D(duration: 0)
+            self.scene.morphTo2D(0)
         }
         if self.sceneMode == SceneMode.ColumbusView {
-            self.scene.morphToColumbusView(duration: 0)
+            self.scene.morphToColumbusView(0)
         }
         
         configureCanvasSize(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
@@ -384,9 +384,9 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
     public func showErrorPanel(title: String, message: String, error: String) {
-        println(title)
-        println(message)
-        println(error)
+        print(title)
+        print(message)
+        print(error)
         /*
         // FIXME Error display
         var element = this._element;
@@ -495,7 +495,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
 
         resize(size)
         scene.initializeFrame()
-        var currentTime = clock.tick()
+        let currentTime = clock.tick()
         if _canRender {
             scene.render(currentTime)
             //_lastFrameTime = NSDate()

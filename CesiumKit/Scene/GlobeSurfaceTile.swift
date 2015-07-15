@@ -148,8 +148,8 @@ class GlobeSurfaceTile {
         
         if scene != nil && scene!.mode != .Scene3D {
             var projection = scene!.mapProjection
-            var ellipsoid = projection.ellipsoid
-            var positionCart = ellipsoid.cartesianToCartographic(result)
+            let ellipsoid = projection.ellipsoid
+            let positionCart = ellipsoid.cartesianToCartographic(result)
             result = projection.project(positionCart!)
             result = Cartesian3(x: result.z, y: result.x, z: result.y)
         }
@@ -174,9 +174,9 @@ class GlobeSurfaceTile {
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
             
-            var v0 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i0)
-            var v1 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i1)
-            var v2 = getPosition(scene: scene, vertices: vertices, stride: stride, index: i2)
+            var v0 = getPosition(scene, vertices: vertices, stride: stride, index: i0)
+            var v1 = getPosition(scene, vertices: vertices, stride: stride, index: i1)
+            var v2 = getPosition(scene, vertices: vertices, stride: stride, index: i2)
             
             var intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
             if intersection != nil {
@@ -234,7 +234,7 @@ class GlobeSurfaceTile {
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()
         }
-        var surfaceTile = tile.data
+        let surfaceTile = tile.data
         
         if tile.state == .Start {
             GlobeSurfaceTile.prepareNewTile(tile, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayerCollection)
@@ -259,13 +259,13 @@ class GlobeSurfaceTile {
         var i, len: Int
         var tileImageryCollection = surfaceTile!.imagery
         for i = 0, len = tileImageryCollection.count; i < len; ++i {
-            var tileImagery = tileImageryCollection[i]
+            let tileImagery = tileImageryCollection[i]
             if tileImagery.loadingImagery == nil {
                 isUpsampledOnly = false
                 continue
             }
             if tileImagery.loadingImagery!.state == .PlaceHolder {
-                var imageryLayer = tileImagery.loadingImagery!.imageryLayer
+                let imageryLayer = tileImagery.loadingImagery!.imageryLayer
                 if (imageryLayer.imageryProvider.ready) {
                     // Remove the placeholder and add the actual skeletons (if any)
                     // at the same position.  Then continue the loop at the same index.
@@ -281,7 +281,7 @@ class GlobeSurfaceTile {
                 }
             }
             
-            var thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context)
+            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context)
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.
@@ -312,7 +312,7 @@ class GlobeSurfaceTile {
 //var cartographicScratch = new Cartographic();
     
     class func prepareNewTile (tile: QuadtreeTile, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
-        var surfaceTile = tile.data!
+        let surfaceTile = tile.data!
         
         if let upsampleTileDetails = GlobeSurfaceTile.getUpsampleTileDetails(tile) {
             surfaceTile.upsampledTerrain = TileTerrain(upsampleDetails: upsampleTileDetails)
@@ -332,10 +332,10 @@ class GlobeSurfaceTile {
             }
         }
         
-        var ellipsoid = tile.tilingScheme.ellipsoid
+        let ellipsoid = tile.tilingScheme.ellipsoid
         
         // Compute tile rectangle boundaries for estimating the distance to the tile.
-        var rectangle = tile.rectangle
+        let rectangle = tile.rectangle
         
         surfaceTile.southwestCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.southwest())
         surfaceTile.northeastCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.northeast())
@@ -353,19 +353,19 @@ class GlobeSurfaceTile {
         surfaceTile.eastNormal = Cartesian3.unitZ().cross(easternMidpointCartesian).normalize()
         
         // Compute the normal of the plane bounding the southern edge of the tile.
-        var southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast())
-        var westVector = westernMidpointCartesian.subtract(easternMidpointCartesian)
+        let southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast())
+        let westVector = westernMidpointCartesian.subtract(easternMidpointCartesian)
         surfaceTile.southNormal = southeastCornerNormal.cross(westVector).normalize()
         
         // Compute the normal of the plane bounding the northern edge of the tile.
-        var northwestCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.northwest())
+        let northwestCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.northwest())
         surfaceTile.northNormal = westVector.cross(northwestCornerNormal).normalize()
     }
 
     class func processTerrainStateMachine(tile: QuadtreeTile, context: Context, terrainProvider: TerrainProvider) {
-        var surfaceTile = tile.data!
-        var loaded = surfaceTile.loadedTerrain
-        var upsampled = surfaceTile.upsampledTerrain
+        let surfaceTile = tile.data!
+        let loaded = surfaceTile.loadedTerrain
+        let upsampled = surfaceTile.upsampledTerrain
         var suspendUpsampling = false
         
         if let loaded = loaded {
@@ -539,7 +539,7 @@ class GlobeSurfaceTile {
             return tileDataAvailable
         }
         
-        var parent = tile.parent
+        let parent = tile.parent
         if parent == nil {
             // Data is assumed to be available for root tiles.
             return true

@@ -23,7 +23,7 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-public struct Cartesian4: Packable, Equatable, Printable {
+public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     /**
     * The X component.
     * @type {Number}
@@ -102,7 +102,7 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    static func fromColor (#red: Double, green: Double, blue: Double, alpha: Double) -> Cartesian4 {
+    static func fromColor (red red: Double, green: Double, blue: Double, alpha: Double) -> Cartesian4 {
         return Cartesian4(x: red, y: green, z: blue, w: alpha)
     }
     
@@ -268,7 +268,7 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @returns {Cartesian4} The modified result parameter.
     */
     func normalize() -> Cartesian4 {
-        var magnitude = self.magnitude();
+        let magnitude = self.magnitude();
         return Cartesian4(x: x / magnitude, y: y / magnitude, z: z / magnitude, w: w / magnitude)
     }
     
@@ -387,7 +387,7 @@ public struct Cartesian4: Packable, Equatable, Printable {
     */
     func mostOrthogonalAxis() -> Cartesian4 {
         
-        var f = normalize().absolute()
+        let f = normalize().absolute()
         var result: Cartesian4
         
         if (f.x <= f.y) {
