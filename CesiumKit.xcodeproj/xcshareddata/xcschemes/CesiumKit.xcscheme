@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9413B7831A37B8D900FFAD81"
-               BuildableName = "CesiumKit iOS.framework"
+               BuildableName = "CesiumKit.framework"
                BlueprintName = "CesiumKit iOS"
                ReferencedContainer = "container:CesiumKit.xcodeproj">
             </BuildableReference>
@@ -56,7 +56,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9413B7831A37B8D900FFAD81"
-            BuildableName = "CesiumKit iOS.framework"
+            BuildableName = "CesiumKit.framework"
             BlueprintName = "CesiumKit iOS"
             ReferencedContainer = "container:CesiumKit.xcodeproj">
          </BuildableReference>

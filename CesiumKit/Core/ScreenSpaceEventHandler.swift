@@ -6,11 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-#if (iOS)
-    import UIKit
-#elseif (OSX)
-    import AppKit
-#endif
+
+import Foundation
 
 enum MouseButton: Int {
     case Left = 0,

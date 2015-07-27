@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-import UIKit
 import CoreGraphics
 import CoreText
 
@@ -247,27 +246,39 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int) -> CGImage? {
         
-        let size = CGSizeMake(CGFloat(tileWidth), CGFloat(256.0))
+        let bytesPerPixel: Int = 4
+        let bytesPerRow = bytesPerPixel * tileWidth
+        let bitsPerComponent = 8
         
-        UIGraphicsBeginImageContext(size)
+        let alphaInfo = CGImageAlphaInfo.PremultipliedLast
         
-        let context = UIGraphicsGetCurrentContext()
+        var bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
         
-        let drawColor = UIColor(red: CGFloat(color.red), green: CGFloat(color.green), blue: CGFloat(color.blue), alpha: CGFloat(color.alpha))
-        CGContextSetStrokeColorWithColor(context, drawColor.CGColor)
+        //rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
+        //rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
+        
+        //let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
+        
+        let colorSpace = CGColorSpaceCreateDeviceRGB()!
+        
+        let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(0), tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+        
+        assert(contextRef != nil, "contextRef == nil")
+        let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))
+        CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
         // border
-        let rect = CGRectMake(1.0, 1.0, size.width-2.0, size.height-2.0)
-        CGContextClearRect(context, rect)
-        CGContextStrokeRectWithWidth(context, rect, 2.0)
+        let borderRect = CGRectMake(1.0, 1.0, size.width-2.0, size.height-2.0)
+        CGContextClearRect(context, borderRect)
+        CGContextStrokeRectWithWidth(context, borderRect, 2.0)
         
         // label
         let string = "L\(level)X\(x)Y\(y)" as NSString
         let font = UIFont(name: "Helvetica Neue", size: 36.0)
         assert(font != nil, "Could not create UIFont")
-
+t
         let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
         let textSize = string.sizeWithAttributes(attr)
         
@@ -275,8 +286,10 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         string.drawInRect(textRect, withAttributes: attr)
         
 
-        let result = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
+        let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+        CGContextConcatCTM(contextRef, flipVertical)
+        CGContextDrawImage(contextRef, imageRect, imageRef)
         
         return result
     }

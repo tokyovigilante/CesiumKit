@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Metal
+
 /**
 * A geometry representation with attributes forming vertices and optional index data
 * defining primitives.  Geometries and an {@link Appearance}, which describes the shading,

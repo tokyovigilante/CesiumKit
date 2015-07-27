@@ -236,26 +236,23 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
 
         if _renderState == nil {
         
-            var cullEnabled = RenderState.Cull()
+            var cullFace = CullFace.Back
             var depthEnabled = RenderState.DepthTest()
             
-            cullEnabled.enabled = true
             depthEnabled.enabled = (frameState.mode == .Scene3D || frameState.mode == .ColumbusView)
 
             _renderState = RenderState(
-                cull: cullEnabled,
+                cullFace: cullFace,
                 depthTest: depthEnabled
             )
         }
         
         if _blendRenderState == nil {
             
-            var cullEnabled = RenderState.Cull()
-            
-            cullEnabled.enabled = true
+            var cullFace = CullFace.Back
             
             _blendRenderState = RenderState(
-                cull: cullEnabled,
+                cullFace: cullFace,
                 depthTest: RenderState.DepthTest(enabled: _renderState!.depthTest.enabled, function: .LessOrEqual),
                 blending: BlendingState.AlphaBlend(Cartesian4())
             )

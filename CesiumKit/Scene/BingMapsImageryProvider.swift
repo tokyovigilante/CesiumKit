@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit
 import Foundation
 import Alamofire
 
@@ -503,7 +502,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int) -> CGImageRef? {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         
         let url = buildImageUrl(x: x, y: y, level: level)
@@ -523,11 +522,11 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (url: String) -> UIImage? {
+    public func loadImage (url: String) -> CGImageRef? {
         if let imageData = NSData(contentsOfURL: NSURL(string: url)!) {
-            let image = UIImage(data: imageData)
-            return image
+            //return imageData
         }
+        return nil
         /*request(.GET, url)//, //parameters: [
         //"incl" : "ImageryPrtoviders",
         //"key" : self._key])

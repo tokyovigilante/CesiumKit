@@ -83,17 +83,16 @@ class ClearCommand: Command {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil) {
         
         self.color = color == nil ? nil : MTLClearColorMake(color!.red, color!.green, color!.blue, color!.alpha)
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
-        //self.owner = owner
     }
     
     class func all() -> ClearCommand {
-        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil, framebuffer: nil/*, owner: unowned*/)
+        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil)
     }
 
     func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {

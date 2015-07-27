@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 /**
 * Winding order defines the order of vertices for a triangle to be considered front-facing.
@@ -31,12 +31,12 @@ enum WindingOrder {
     */
     CounterClockwise // WebGL: CCW
     
-    func toGL() -> GLenum {
+    func toMetal() -> MTLWinding {
         switch self {
         case .Clockwise:
-            return GLenum(GL_CW)
+            return .Clockwise
         case .CounterClockwise:
-            return GLenum(GL_CCW)
+            return .CounterClockwise
         }
     }
 }

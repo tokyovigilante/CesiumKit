@@ -7,9 +7,7 @@
 //
 
 import Foundation
-import Alamofire
-import UIKit
-
+import Metal
 
 /**
 * An imagery layer that displays tiled image data from a single imagery provider

@@ -6,35 +6,37 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
-    /**
-    * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
-    * interface and is not intended to be instantiated directly.
-    *
-    * @alias ImageryProvider
-    * @constructor
-    *
-    * @see ArcGisMapServerImageryProvider
-    * @see SingleTileImageryProvider
-    * @see BingMapsImageryProvider
-    * @see GoogleEarthImageryProvider
-    * @see OpenStreetMapImageryProvider
-    * @see WebMapTileServiceImageryProvider
-    * @see WebMapServiceImageryProvider
-    *
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
-    */
-public protocol ImageryProvider {
+import Foundation
 
 /**
-* The default alpha blending value of this provider, with 0.0 representing fully transparent and
-* 1.0 representing fully opaque.
+* Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
+* interface and is not intended to be instantiated directly.
 *
-* @type {Number}
-* @default undefined
+* @alias ImageryProvider
+* @constructor
+*
+* @see ArcGisMapServerImageryProvider
+* @see SingleTileImageryProvider
+* @see BingMapsImageryProvider
+* @see GoogleEarthImageryProvider
+* @see OpenStreetMapImageryProvider
+* @see WebMapTileServiceImageryProvider
+* @see WebMapServiceImageryProvider
+*
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
+public protocol ImageryProvider {
+
+    /**
+    * The default alpha blending value of this provider, with 0.0 representing fully transparent and
+    * 1.0 representing fully opaque.
+    *
+    * @type {Number}
+    * @default undefined
+    */
     var defaultAlpha: Float { get }
+    
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -220,5 +222,5 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(x x: Int, y: Int, level: Int) -> UIImage?
+    func requestImage(x x: Int, y: Int, level: Int) -> CGImageRef?
 }

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class CubeMapFace {
     
@@ -62,7 +62,7 @@ class CubeMapFace {
         
         assert(xOffset + source.width <= size, "xOffset + source.width must be less than or equal to width")
         assert(yOffset + source.height <= size, "yOffset + source.height must be less than or equal to height")
-        
+        /*
         glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
         //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
@@ -70,7 +70,7 @@ class CubeMapFace {
         glBindTexture(GLenum(target), GLuint(texture))
 
         // FIXME: glTexSubImage2D(GLenum(target), GLint(0), GLint(xOffset), GLint(yOffset), GLsizei(source.width), GLsizei(source.height), GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(source.arrayBufferView))
-        glBindTexture(GLenum(target), 0)
+        glBindTexture(GLenum(target), 0)*/
 
 
     }

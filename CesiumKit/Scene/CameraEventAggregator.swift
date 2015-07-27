@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 /**
 * Aggregates input events. For example, suppose the following inputs are received between frames:
@@ -51,7 +51,11 @@ class CameraEventAggregator {
     
     var _currentMousePosition = Cartesian2()
     
+    #if (iOS)
     private var _view: UIView!
+    #elseif (OSX)
+    private var _view: NSView!
+    #endif
     
     init (/*view: UIView*/) {
         

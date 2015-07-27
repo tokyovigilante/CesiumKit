@@ -8,7 +8,7 @@
 
 import GLSLOptimizer
 
-enum UniformDataType: GLenum {
+enum UniformDataType: UInt {
     
     case FloatVec1 = 5126, // GLenum(GL_FLOAT)
     FloatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
@@ -283,7 +283,7 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 
 class UniformSampler: Uniform {
     
-    private var _textureUnitIndex: GLint = 0
+    private var _textureUnitIndex: Int = 0
     
     private var _values: [Texture]!
     
@@ -293,7 +293,7 @@ class UniformSampler: Uniform {
     
     override func set(buffer: Buffer) {
         
-        let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
+        //let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
         
         /*for (index, location) in enumerate(_locations) {
         
@@ -302,7 +302,7 @@ class UniformSampler: Uniform {
         }*/
     }
     
-    func setSampler (textureUnitIndex: GLint) -> GLint {
+    func setSampler (textureUnitIndex: Int) -> Int {
         
         self._textureUnitIndex = textureUnitIndex
         

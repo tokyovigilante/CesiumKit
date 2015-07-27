@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Foundation
+import QuartzCore.CAMetalLayer
 
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -115,7 +116,7 @@ public class Scene {
     */
     var primitives = PrimitiveCollection()
     
-    var pickFramebuffer: Framebuffer? = nil
+    //var pickFramebuffer: Framebuffer? = nil
     
     //TODO: TweenCollection
 //    var tweens = TweenCollection()
@@ -128,8 +129,9 @@ public class Scene {
     // TODO: setCamera
     public var camera: Camera
 
+    #if (iOS)
     var touchEventHandler: TouchEventHandler? = nil
-    
+    #endif
     /**
     * Gets the controller for camera input handling.
     * @memberof Scene.prototype
@@ -525,7 +527,7 @@ public class Scene {
         }
     }
 
-    init (view: UIView, layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
         context = Context(layer: layer)
         self.globe = globe
@@ -540,8 +542,9 @@ public class Scene {
             initialWidth: Double(layer.bounds.width),
             initialHeight: Double(layer.bounds.height)
         )
-        
+        #if (iOS)
         touchEventHandler = TouchEventHandler(scene: self, view: view)
+        #endif
         
         // TODO: OIT and FXAA
         if useOIT {
@@ -803,7 +806,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 0.0, 0.0, 1.0));
 */
     
-    func executeCommand(command: Command, renderPass: RenderPass, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil, debugFramebuffer: Framebuffer? = nil) {
+    func executeCommand(command: Command, renderPass: RenderPass, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
             return;

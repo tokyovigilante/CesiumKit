@@ -6,24 +6,20 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
+import CoreGraphics
 import Metal
 
 enum TextureSource {
-    case Image(UIImage)
+    case Image(CGImageRef)
     case ImageBuffer(Imagebuffer)
-    case FrameBuffer(Framebuffer)
     
     var width: Int {
         get {
             switch self {
             case .Image(let image):
-                return Int(image.size.width)
+                return CGImageGetWidth(image)
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.width
-            case .FrameBuffer(let framebuffer):
-                assertionFailure("not implemented")
-                return 0
             }
         }
     }
@@ -32,12 +28,9 @@ enum TextureSource {
         get {
             switch self {
             case .Image(let image):
-                return Int(image.size.height)
+                return Int(CGImageGetHeight(image))
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.height
-            case .FrameBuffer(let framebuffer):
-                assertionFailure("not implemented")
-                return 0
             }
         }
     }
@@ -155,20 +148,9 @@ class Texture {
             /* // FIXME - glTexImage2D
                 let region = MTLRegionMake2D(0, 0, width, height)
                 metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: pixelBuffer, bytesPerRow: bytesPerRow)*/
-            case .FrameBuffer(let framebuffer):
-                // Source: framebuffer
-                if framebuffer !== context.defaultFramebuffer {
-                    framebuffer.bind()
-                }
-            /*    /*glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
-                
-                if (source.framebuffer != context.defaultFramebuffer) {
-                    source.framebuffer.unbind()*/*/
-            case .Image(let image): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
+            case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 //Extract info for your image
-                let imageRef = image.CGImage
-                
                 let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
                 let bytesPerPixel: Int = 4

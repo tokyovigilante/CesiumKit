@@ -10,7 +10,7 @@ import Foundation
 import Metal
 import GLSLOptimizer
 
-struct VertexAttributeInfo {
+/*struct VertexAttributeInfo {
     
     var name: String = ""
     
@@ -18,7 +18,7 @@ struct VertexAttributeInfo {
     
     var index: GLenum = 0
         
-}
+}*/
 
 class ShaderProgram {
     

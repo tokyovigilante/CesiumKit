@@ -113,14 +113,6 @@ class DrawCommand: Command {
     var pipeline: RenderPipeline? = nil
     
     /**
-    * The framebuffer to draw to.
-    *
-    * @type {Framebuffer}
-    * @default undefined
-    */
-    weak var framebuffer: Framebuffer?
-    
-    /**
     * The pass when to render.
     *
     * @type {Pass}
@@ -171,7 +163,6 @@ class DrawCommand: Command {
         offset: Int = 0,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
-        framebuffer: Framebuffer? = nil,
         pass: Pass? = nil,
         executeInClosestFrustum: Bool = false,
         debugShowBoundingVolume: Bool = false,
@@ -185,7 +176,7 @@ class DrawCommand: Command {
             self.offset = offset
             self.pipeline = renderPipeline
             self.renderState = renderState
-            self.framebuffer = framebuffer
+            //self.framebuffer = framebuffer
             self.pass = pass
             self.executeInClosestFrustum = executeInClosestFrustum
             self.debugShowBoundingVolume = debugShowBoundingVolume

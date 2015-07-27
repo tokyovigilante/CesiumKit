@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 /**
 * Determines the function used to compare two depths for the depth test.
@@ -14,7 +14,7 @@ import OpenGLES
 * @namespace
 * @alias DepthFunction
 */
-enum DepthFunction {
+enum DepthFunction: UInt {
     /**
     * 0x200.  The depth test never passes.
     *
@@ -79,25 +79,9 @@ enum DepthFunction {
     */
     Always
     
-    func toGL() -> GLenum {
-        switch self {
-        case .Never:
-            return GLenum(GL_NEVER)
-        case .Less:
-            return GLenum(GL_LESS)
-        case .Equal:
-            return GLenum(GL_EQUAL)
-        case .LessOrEqual:
-            return GLenum(GL_LEQUAL)
-        case .Greater:
-            return GLenum(GL_GREATER)
-        case .NotEqual:
-            return GLenum(GL_NOTEQUAL)
-        case .GreaterOrEqual:
-            return GLenum(GL_GEQUAL)
-        case .Always:
-            return GLenum(GL_ALWAYS)
-        }
+    //FIXME: toMetal()
+    func toMetal() -> MTLCompareFunction {
+        return MTLCompareFunction(rawValue: self.rawValue)!
     }
 }
 

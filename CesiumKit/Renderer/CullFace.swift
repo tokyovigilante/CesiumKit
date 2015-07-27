@@ -6,21 +6,21 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 enum CullFace {
-    case Front,
-    Back,
-    FrontAndBack
+    case None
+    case Front
+    case Back
     
-    func toGL() -> GLenum {
+    func toMetal() -> MTLCullMode {
         switch self {
+        case .None:
+            return .None
         case .Front:
-            return GLenum(GL_FRONT)
+            return .Front
         case .Back:
-            return GLenum(GL_BACK)
-        case .FrontAndBack:
-            return GLenum(GL_FRONT_AND_BACK)
+            return .Back
         }
     }
 }

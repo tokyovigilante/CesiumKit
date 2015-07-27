@@ -668,25 +668,25 @@ class Globe {
         if _mode != mode || _rsColor == nil {
             modeChanged = true
             
-            var cullEnabled = RenderState.Cull()
+            var cullEnabled = false
 
             if mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView {
                 
-                cullEnabled.enabled = true
+                cullEnabled = true
                 var depthEnabled = RenderState.DepthTest()
                 depthEnabled.enabled = true
                 
                 _rsColor = RenderState(
-                    cull: cullEnabled,
+                    cullFace: cullEnabled ? .Back : .None,
                     depthTest: depthEnabled
                 )
                 
                 _rsColorWithoutDepthTest = RenderState(
-                    cull: cullEnabled
+                    cullFace: cullEnabled ? .Back : .None
                 )
 
                 _depthCommand.renderState = RenderState(
-                    cull: cullEnabled,
+                    cullFace: cullEnabled ? .Back : .None,
                     depthTest:RenderState.DepthTest(
                         enabled: true,
                         function: .Always
@@ -701,7 +701,7 @@ class Globe {
                 
             } else {
                 _rsColor = RenderState(
-                    cull: cullEnabled
+                    cullFace: cullEnabled ? .Back : .None
                 )
                 _rsColorWithoutDepthTest = _rsColor
             }

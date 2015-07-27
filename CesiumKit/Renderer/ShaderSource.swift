@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 private class DependencyNode: Equatable {
     
     var name: String

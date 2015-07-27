@@ -169,7 +169,7 @@ class Context {
     * {@link Context.createTexture2DFromFramebuffer}.
     * @type {Object}
     */
-    var defaultFramebuffer: Framebuffer? = nil
+    //var defaultFramebuffer: Framebuffer? = nil
     
     init (layer: CAMetalLayer) {
         
