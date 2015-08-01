@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		940A5AE21B6D528F0095A86F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 940A5AE11B6D528F0095A86F /* AppKit.framework */; };
+		940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEC1B6D54400095A86F /* AppDelegate.swift */; };
+		940A5AEF1B6D54400095A86F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEE1B6D54400095A86F /* ViewController.swift */; };
+		940A5AF11B6D54400095A86F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF01B6D54400095A86F /* Assets.xcassets */; };
+		940A5AF41B6D54400095A86F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF21B6D54400095A86F /* Main.storyboard */; };
+		940A5AFC1B6D545F0095A86F /* CesiumKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		940A5AFE1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
+		940A5AFF1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
+		940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9478218E1B5A3D310095A86F /* QuartzCore.framework */; };
+		940A5B011B6D91E30095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947821901B5A3D370095A86F /* Metal.framework */; };
 		9410135519FA49FA00FFAD81 /* CameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9410135419FA49FA00FFAD81 /* CameraTests.swift */; };
 		9410135819FB02D700FFAD81 /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
 		9410135E19FB032100FFAD81 /* Matrix3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2819BDC26300FFE1CB /* Matrix3.swift */; };
@@ -427,6 +437,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		940A5AF91B6D54450095A86F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94DC791A1918425300012DC4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 947820DA1B5A2C0E0095A86F;
+			remoteInfo = "CesiumKit OSX";
+		};
 		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
@@ -507,6 +524,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		940A5AFB1B6D54500095A86F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				940A5AFC1B6D545F0095A86F /* CesiumKit.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9413114019F3A19600FFAD81 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -552,6 +579,14 @@
 /* Begin PBXFileReference section */
 		940899F019CE6C3600012DC4 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
+		940A5AE11B6D528F0095A86F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
+		940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CesiumKitRunner OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		940A5AEC1B6D54400095A86F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		940A5AEE1B6D54400095A86F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		940A5AF01B6D54400095A86F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		940A5AF31B6D54400095A86F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		940A5AF51B6D54400095A86F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		940A5AFD1B6D54BC0095A86F /* MetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
@@ -726,6 +761,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		940A5AE71B6D54400095A86F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				940A5B011B6D91E30095A86F /* Metal.framework in Frameworks */,
+				940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9413B7801A37B8D900FFAD81 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -739,6 +783,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				940A5AE21B6D528F0095A86F /* AppKit.framework in Frameworks */,
 				947821911B5A3D370095A86F /* Metal.framework in Frameworks */,
 				9478218F1B5A3D310095A86F /* QuartzCore.framework in Frameworks */,
 			);
@@ -773,6 +818,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		940A5AEB1B6D54400095A86F /* CesiumKitRunner OSX */ = {
+			isa = PBXGroup;
+			children = (
+				940A5AEC1B6D54400095A86F /* AppDelegate.swift */,
+				940A5AEE1B6D54400095A86F /* ViewController.swift */,
+				940A5AF01B6D54400095A86F /* Assets.xcassets */,
+				940A5AF21B6D54400095A86F /* Main.storyboard */,
+				940A5AF51B6D54400095A86F /* Info.plist */,
+				940A5AFD1B6D54BC0095A86F /* MetalView.swift */,
+			);
+			path = "CesiumKitRunner OSX";
+			sourceTree = "<group>";
+		};
 		9410135319FA49CA00FFAD81 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
@@ -1023,6 +1081,7 @@
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
 				94985A661A38444C00FFAD81 /* CesiumKitRunner */,
+				940A5AEB1B6D54400095A86F /* CesiumKitRunner OSX */,
 				94DC79241918425300012DC4 /* Frameworks */,
 				94DC79231918425300012DC4 /* Products */,
 			);
@@ -1036,6 +1095,7 @@
 				94985A651A38444C00FFAD81 /* CesiumKitRunner.app */,
 				947820DB1B5A2C0E0095A86F /* CesiumKit.framework */,
 				947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */,
+				940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1043,6 +1103,7 @@
 		94DC79241918425300012DC4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				940A5AE11B6D528F0095A86F /* AppKit.framework */,
 				947821901B5A3D370095A86F /* Metal.framework */,
 				9478218E1B5A3D310095A86F /* QuartzCore.framework */,
 				94BACBA01B1AE1CB0095A86F /* Accelerate.framework */,
@@ -1121,6 +1182,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		940A5AE91B6D54400095A86F /* CesiumKitRunner OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 940A5AF61B6D54400095A86F /* Build configuration list for PBXNativeTarget "CesiumKitRunner OSX" */;
+			buildPhases = (
+				940A5AE61B6D54400095A86F /* Sources */,
+				940A5AE71B6D54400095A86F /* Frameworks */,
+				940A5AE81B6D54400095A86F /* Resources */,
+				940A5AFB1B6D54500095A86F /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				940A5AFA1B6D54450095A86F /* PBXTargetDependency */,
+			);
+			name = "CesiumKitRunner OSX";
+			productName = "CesiumKitRunner OSX";
+			productReference = 940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */;
+			productType = "com.apple.product-type.application";
+		};
 		9413B7831A37B8D900FFAD81 /* CesiumKit iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9413B7971A37B8D900FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKit iOS" */;
@@ -1227,6 +1307,9 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Test Toast";
 				TargetAttributes = {
+					940A5AE91B6D54400095A86F = {
+						CreatedOnToolsVersion = 7.0;
+					};
 					9413B7831A37B8D900FFAD81 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = 7AS9FJBK47;
@@ -1271,6 +1354,7 @@
 				94985A641A38444C00FFAD81 /* CesiumKitRunner */,
 				947820DA1B5A2C0E0095A86F /* CesiumKit OSX */,
 				947820E31B5A2C0E0095A86F /* CesiumKit OSXTests */,
+				940A5AE91B6D54400095A86F /* CesiumKitRunner OSX */,
 			);
 		};
 /* End PBXProject section */
@@ -1321,6 +1405,15 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		940A5AE81B6D54400095A86F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				940A5AF11B6D54400095A86F /* Assets.xcassets in Resources */,
+				940A5AF41B6D54400095A86F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9413B7821A37B8D900FFAD81 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1363,6 +1456,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		940A5AE61B6D54400095A86F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				940A5AFF1B6D54BC0095A86F /* MetalView.swift in Sources */,
+				940A5AEF1B6D54400095A86F /* ViewController.swift in Sources */,
+				940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9413B77F1A37B8D900FFAD81 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1547,6 +1650,7 @@
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
 				947821221B5A2D7B0095A86F /* JulianDate.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
+				940A5AFE1B6D54BC0095A86F /* MetalView.swift in Sources */,
 				947821241B5A2D7B0095A86F /* Math.swift in Sources */,
 				947821251B5A2D7B0095A86F /* Matrix2.swift in Sources */,
 				947821261B5A2D7B0095A86F /* Matrix3.swift in Sources */,
@@ -1802,6 +1906,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		940A5AFA1B6D54450095A86F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 947820DA1B5A2C0E0095A86F /* CesiumKit OSX */;
+			targetProxy = 940A5AF91B6D54450095A86F /* PBXContainerItemProxy */;
+		};
 		945C3AD01B5296CC0095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Alamofire iOS";
@@ -1830,6 +1939,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		940A5AF21B6D54400095A86F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				940A5AF31B6D54400095A86F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		94985A711A38444C00FFAD81 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1857,6 +1974,70 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		940A5AF71B6D54400095A86F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "CesiumKitRunner OSX/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		940A5AF81B6D54400095A86F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "CesiumKitRunner OSX/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
 		9413B7981A37B8D900FFAD81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2198,6 +2379,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		940A5AF61B6D54400095A86F /* Build configuration list for PBXNativeTarget "CesiumKitRunner OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				940A5AF71B6D54400095A86F /* Debug */,
+				940A5AF81B6D54400095A86F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9413B7971A37B8D900FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKit iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

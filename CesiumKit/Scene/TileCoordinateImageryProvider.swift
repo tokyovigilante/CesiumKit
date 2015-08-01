@@ -8,6 +8,7 @@
 
 import CoreGraphics
 import CoreText
+import AppKit
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -261,37 +262,40 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         //let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
         
-        let colorSpace = CGColorSpaceCreateDeviceRGB()!
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
         
-        let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(0), tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+        let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
         
         assert(contextRef != nil, "contextRef == nil")
         let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))
         CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
         // border
-        let borderRect = CGRectMake(1.0, 1.0, size.width-2.0, size.height-2.0)
-        CGContextClearRect(context, borderRect)
-        CGContextStrokeRectWithWidth(context, borderRect, 2.0)
+        let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
+        CGContextClearRect(contextRef, borderRect)
+        CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
         // label
-        let string = "L\(level)X\(x)Y\(y)" as NSString
-        let font = UIFont(name: "Helvetica Neue", size: 36.0)
+        let string = "L\(level)X\(x)Y\(y)"
+    //#if (iOS)
+      //  let font = UIFont(name: "Helvetica Neue", size: 36.0)
+    //#elseif (OSX)
+        let font = NSFont(name: "Helvetica Neue", size: 36.0)
+    //#endif
         assert(font != nil, "Could not create UIFont")
-t
-        let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
+
+        let attr: [String: AnyObject] = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
         let textSize = string.sizeWithAttributes(attr)
         
-        let textRect = CGRectMake(size.width/2 - textSize.width/2, size.height/2 - textSize.height/2, textSize.width, textSize.height)
+        let textRect = CGRectMake(CGFloat(tileWidth)/2 - textSize.width/2, CGFloat(tileHeight)/2 - textSize.height/2, textSize.width, textSize.height)
         string.drawInRect(textRect, withAttributes: attr)
         
-
-        let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-        let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+        let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))
+        let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
-        CGContextDrawImage(contextRef, imageRect, imageRef)
-        
-        return result
+    
+        return CGBitmapContextCreateImage(contextRef)
+
     }
     
 }

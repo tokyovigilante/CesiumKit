@@ -448,8 +448,8 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         var requestMetadata  = { () -> () in
             
-            let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
-            request(.GET, URLString: metadataUrl, parameters: [
+            /*let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+            request(.GET, metadataUrl, parameters: [
                 "incl" : "ImageryProviders",
                 "key" : self._key])
                 .response { (request, response, data, error) in
@@ -458,7 +458,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                         return
                     }
                     metadataSuccess(data as! NSData!)
-            }
+            }*/
         }
         
         requestMetadata()
