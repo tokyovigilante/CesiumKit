@@ -21,31 +21,12 @@ import Metal
 import QuartzCore.CAMetalLayer
 
 public class MetalView: NSView {
-    
-    internal var renderQueue: dispatch_queue_t!
-    
-    private var _renderSemaphore: dispatch_semaphore_t!
-    
+
     public private(set) var metalLayer: CAMetalLayer!
     
     override public func makeBackingLayer() -> CALayer {
-        return CAMetalLayer()
+        self.metalLayer = CAMetalLayer()
+        return metalLayer
     }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setupLayer()
-        setupMultitouchInput()
-    }
-    
-    private func setupLayer () {
-        metalLayer = self.layer as! CAMetalLayer
-    }
-    
-    
-    
-    // MARK: - NSResponder
-    private func setupMultitouchInput() {
-        
-    }
+
 }

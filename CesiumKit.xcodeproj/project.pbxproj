@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,7 +12,6 @@
 		940A5AEF1B6D54400095A86F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEE1B6D54400095A86F /* ViewController.swift */; };
 		940A5AF11B6D54400095A86F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF01B6D54400095A86F /* Assets.xcassets */; };
 		940A5AF41B6D54400095A86F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF21B6D54400095A86F /* Main.storyboard */; };
-		940A5AFC1B6D545F0095A86F /* CesiumKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		940A5AFE1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
 		940A5AFF1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
 		940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9478218E1B5A3D310095A86F /* QuartzCore.framework */; };
@@ -406,6 +405,9 @@
 		948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		948BA2B31A99F1EB00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
 		948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
+		948CD9CD1B6D94120095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
+		948CD9CE1B6D941B0095A86F /* CesiumKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		948CD9D01B6D94F10095A86F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948CD9CF1B6D94F10095A86F /* Cocoa.framework */; };
 		94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A691A38444C00FFAD81 /* AppDelegate.swift */; };
 		94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */; };
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
@@ -434,6 +436,7 @@
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
+		94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -530,7 +533,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				940A5AFC1B6D545F0095A86F /* CesiumKit.framework in CopyFiles */,
+				948CD9CE1B6D941B0095A86F /* CesiumKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -671,6 +674,7 @@
 		94889B891B286E990095A86F /* UniformBufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformBufferProvider.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
 		948B802F194D462F00012DC4 /* Quaternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quaternion.swift; sourceTree = "<group>"; };
+		948CD9CF1B6D94F10095A86F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		948D03D81944802300DC0E52 /* BoundingSphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingSphere.swift; sourceTree = "<group>"; };
 		948D03DA19449DC900DC0E52 /* Cartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian3.swift; sourceTree = "<group>"; };
 		948D03DC19449E9600DC0E52 /* Packable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packable.swift; sourceTree = "<group>"; };
@@ -765,6 +769,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				948CD9D01B6D94F10095A86F /* Cocoa.framework in Frameworks */,
+				948CD9CD1B6D94120095A86F /* CesiumKit.framework in Frameworks */,
 				940A5B011B6D91E30095A86F /* Metal.framework in Frameworks */,
 				940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */,
 			);
@@ -1103,6 +1109,7 @@
 		94DC79241918425300012DC4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				948CD9CF1B6D94F10095A86F /* Cocoa.framework */,
 				940A5AE11B6D528F0095A86F /* AppKit.framework */,
 				947821901B5A3D370095A86F /* Metal.framework */,
 				9478218E1B5A3D310095A86F /* QuartzCore.framework */,
@@ -1327,7 +1334,7 @@
 				};
 			};
 			buildConfigurationList = 94DC791D1918425300012DC4 /* Build configuration list for PBXProject "CesiumKit" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1717,6 +1724,7 @@
 				947821631B5A2D7C0095A86F /* CameraEventAggregator.swift in Sources */,
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
+				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,
 				947821681B5A2D7C0095A86F /* FrustumCommands.swift in Sources */,
@@ -1977,7 +1985,7 @@
 		940A5AF71B6D54400095A86F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = x86_64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2008,7 +2016,7 @@
 		940A5AF81B6D54400095A86F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = x86_64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;

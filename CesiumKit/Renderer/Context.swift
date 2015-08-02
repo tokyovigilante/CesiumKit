@@ -613,6 +613,7 @@ class Context {
             width: Int(width),
             height: Int(height),
             mipmapped: false)
+        depthTextureDescriptor.storageMode = .Private
         _depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
     }
     
@@ -621,6 +622,7 @@ class Context {
             width: Int(width),
             height: Int(height),
             mipmapped: false)
+        stencilTextureDescriptor.storageMode = .Private
         _stencilTexture = device.newTextureWithDescriptor(stencilTextureDescriptor)
     }
     
