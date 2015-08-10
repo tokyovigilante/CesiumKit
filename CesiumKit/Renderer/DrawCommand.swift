@@ -13,7 +13,7 @@ import Metal
 *
 * @private
 */
-class DrawCommand: Command {
+class DrawCommand {
         
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.

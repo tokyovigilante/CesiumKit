@@ -164,9 +164,9 @@ public class Scene {
     //this._sunPostProcess = undefined;
     
     
-    private var _commandList = [Command]()
+    private var _commandList = [DrawCommand]()
     private var _frustumCommandsList = [FrustumCommands]()
-    private var _overlayCommandList = [Command]()
+    private var _overlayCommandList = [DrawCommand]()
     
     
     /*
@@ -614,7 +614,7 @@ public class Scene {
         }
     }
 
-    func insertIntoBin(command: Command, distance: Interval) {
+    func insertIntoBin(command: DrawCommand, distance: Interval) {
         if _debugShowFrustums {
             command.debugOverlappingFrustums = 0
         }
@@ -806,7 +806,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 0.0, 0.0, 1.0));
 */
     
-    func executeCommand(command: Command, renderPass: RenderPass, renderState: RenderState? = nil, renderPipeline: RenderPipeline? = nil) {
+    func executeCommand(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
             return;
@@ -899,11 +899,11 @@ function isVisible(command, frameState) {
                 (!defined(occluder) || occluder.isBoundingSphereVisible(boundingVolume)))));
 }
 */
-    func translucentCompare(a: Command, b: Command, position: Cartesian3) -> Bool {
+    func translucentCompare(a: DrawCommand, b: DrawCommand, position: Cartesian3) -> Bool {
     return ((b.boundingVolume as! BoundingSphere).distanceSquaredTo(position)) > ((a.boundingVolume as! BoundingSphere).distanceSquaredTo(position))
 }
 
-    func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [Command]) {
+    func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [DrawCommand]) {
     // FIXME: sorting
     //mergeSort(commands, translucentCompare, scene._camera.positionWC)
     
@@ -952,11 +952,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
 
         
-        let spaceRenderPass = context.createRenderPass(nil)
         
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
-        _clearColorCommand.execute(context, renderPass: spaceRenderPass)
-        
+        let spaceRenderPass = context.createRenderPass(clearCommand: _clearColorCommand)
+
         /*var renderTranslucentCommands = false
         //var frustumCommandsList = scene._frustumCommandsList;
         //var numFrustums = frustumCommandsList.length;
@@ -1019,7 +1018,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
         }*/
         spaceRenderPass.complete()
-        return
+        
         /*
         var clearDepth = scene._depthClearCommand;
         // FIXME: Translucentcommands
@@ -1037,8 +1036,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
         // Execute commands in each frustum in back to front order
     
-        let globeRenderPass = context.createRenderPass(nil)
-        _depthClearCommand.execute(context, renderPass: globeRenderPass)
+        let globeRenderPass = context.createRenderPass(clearCommand: _depthClearCommand)
         
         for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             frustum.near = frustumCommands.near

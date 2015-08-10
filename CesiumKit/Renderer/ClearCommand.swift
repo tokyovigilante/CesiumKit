@@ -13,7 +13,7 @@ import Metal
 *
 * @private
 */
-class ClearCommand: Command {
+struct ClearCommand {
 
     let boundingVolume: Intersectable? = nil
     let cull: Bool = false
@@ -91,12 +91,12 @@ class ClearCommand: Command {
         self.renderState = renderState
     }
     
-    class func all() -> ClearCommand {
+    static func all() -> ClearCommand {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil)
     }
 
-    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
-        context.clear(self, renderPass: renderPass)
+    func execute(context: Context, passState: PassState?) {
+        context.clear(self, passState: passState)
     }
     
 }

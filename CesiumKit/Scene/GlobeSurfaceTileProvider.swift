@@ -171,7 +171,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *        commands into this array.
     */
     
-    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         
         let sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
             var aImagery: Imagery
@@ -232,7 +232,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
 
         if _renderState == nil {
         
@@ -363,7 +363,7 @@ var northeastScratch = new Cartesian3();
     * @param {FrameState} frameState The state information of the current rendering frame.
     * @param {DrawCommand[]} commandList The list of rendering commands.  This method may add additional commands to this list.
     */
-    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         
         var readyTextureCount = 0
         var tileImageryCollection = tile.data!.imagery
@@ -608,7 +608,7 @@ var northeastScratch = new Cartesian3();
     }
     
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!

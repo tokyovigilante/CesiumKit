@@ -649,7 +649,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         if !show {
             return
         }
@@ -815,7 +815,7 @@ class Globe {
             // render depth plane
             if (mode == .Scene3D || mode == .ColumbusView) {
                 if (!depthTestAgainstTerrain) {
-                    commandList.append(_clearDepthCommand)
+                    //commandList.append(_clearDepthCommand)
                     if (mode == .Scene3D) {
                         //commandList.append(_depthCommand)
                     }

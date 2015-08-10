@@ -50,7 +50,6 @@
 		9410138519FB037500FFAD81 /* WebMercatorProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947540E019483BD5005251CC /* WebMercatorProjection.swift */; };
 		9410138619FB037500FFAD81 /* WebMercatorTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */; };
 		9410138A19FB037D00FFAD81 /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
-		9410138B19FB037D00FFAD81 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940899F019CE6C3600012DC4 /* Command.swift */; };
 		9410138C19FB037D00FFAD81 /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		9410138D19FB037D00FFAD81 /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
 		9410138E19FB037D00FFAD81 /* CullFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240E19C9919D0040042F /* CullFace.swift */; };
@@ -137,7 +136,6 @@
 		9413B7D61A37B93300FFAD81 /* MergeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */; };
 		9413B7D71A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */; };
 		9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
-		9413B7DC1A37B93D00FFAD81 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940899F019CE6C3600012DC4 /* Command.swift */; };
 		9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC4194D699400012DC4 /* Context.swift */; };
 		9413B7DE1A37B93D00FFAD81 /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		9413B7DF1A37B93D00FFAD81 /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
@@ -317,7 +315,6 @@
 		9478213C1B5A2D7B0095A86F /* AutomaticUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */; };
 		9478213D1B5A2D7B0095A86F /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C6E5571B1475BF0095A86F /* Buffer.swift */; };
 		9478213E1B5A2D7B0095A86F /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
-		9478213F1B5A2D7C0095A86F /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940899F019CE6C3600012DC4 /* Command.swift */; };
 		947821401B5A2D7C0095A86F /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC4194D699400012DC4 /* Context.swift */; };
 		947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
 		947821421B5A2D7C0095A86F /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
@@ -594,7 +591,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		940899F019CE6C3600012DC4 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
 		940A5AE11B6D528F0095A86F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
 		940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CesiumKitRunner OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -941,7 +937,6 @@
 				94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */,
 				94C6E5571B1475BF0095A86F /* Buffer.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
-				940899F019CE6C3600012DC4 /* Command.swift */,
 				94B87DC4194D699400012DC4 /* Context.swift */,
 				9465B0271956F61400355D2C /* CubeMap.swift */,
 				94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */,
@@ -1564,7 +1559,6 @@
 				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
 				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
-				9413B7DC1A37B93D00FFAD81 /* Command.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
 				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
@@ -1703,7 +1697,6 @@
 				9478213C1B5A2D7B0095A86F /* AutomaticUniforms.swift in Sources */,
 				9478213D1B5A2D7B0095A86F /* Buffer.swift in Sources */,
 				9478213E1B5A2D7B0095A86F /* ClearCommand.swift in Sources */,
-				9478213F1B5A2D7C0095A86F /* Command.swift in Sources */,
 				947821401B5A2D7C0095A86F /* Context.swift in Sources */,
 				947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */,
 				947821421B5A2D7C0095A86F /* CubeMapFace.swift in Sources */,
@@ -1902,7 +1895,6 @@
 				9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */,
 				948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */,
 				9413B83E1A37B94800FFAD81 /* ScreenSpaceCameraController.swift in Sources */,
-				9410138B19FB037D00FFAD81 /* Command.swift in Sources */,
 				9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */,
 				9413113819F3A08100FFAD81 /* Math.swift in Sources */,
 				9410137919FB037500FFAD81 /* Queue.swift in Sources */,

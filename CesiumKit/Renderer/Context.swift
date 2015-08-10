@@ -698,9 +698,9 @@ class Context {
         return true
     }
     
-    func createRenderPass(passState: PassState? = nil) -> RenderPass {
+    func createRenderPass(passState: PassState? = nil, clearCommand: ClearCommand) -> RenderPass {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState)
+        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, clearCommand: clearCommand)
         return pass
     }
     
@@ -712,9 +712,10 @@ class Context {
         pass.applyRenderState(renderState)
     }
     
-    func clear(clearCommand: ClearCommand, renderPass: RenderPass) {
+    func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
         
-        let passDescriptor = renderPass.passState.passDescriptor
+        let passState = passState ?? _defaultPassState
+        let passDescriptor = passState.passDescriptor
         
         let c = clearCommand.color
         let d = clearCommand.depth
@@ -839,7 +840,7 @@ class Context {
     }
     
     func endFrame () {
-        //_commandEncoder.endEncoding()
+
         _commandBuffer.presentDrawable(_drawable)
         _commandBuffer.commit()
         
@@ -847,7 +848,6 @@ class Context {
         _defaultPassState.passDescriptor = nil
         _currentPassState?.passDescriptor = nil
         
-        //_commandEncoder = nil
         _commandBuffer = nil
         /*
         var
