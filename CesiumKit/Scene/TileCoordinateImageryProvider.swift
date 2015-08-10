@@ -7,9 +7,11 @@
 //
 
 import CoreGraphics
-//#if (OSX)
-import Cocoa
-//#endif
+#if (iOS)
+import UIKit
+//#else
+//import Cocoa
+#endif
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -272,8 +274,8 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
         let drawColorArray: [CGFloat] = [0.90625, 0.80, 0.80, 1.0]
         let drawCGColor = CGColorCreate(rgbSpace, drawColorArray)
-        //let drawUIColor = UIColor(CGColor: drawCGColor!)
-        let drawNSColor = NSColor(CGColor: drawCGColor!)
+        let drawUIColor = UIColor(CGColor: drawCGColor!)
+        //let drawNSColor = NSColor(CGColor: drawCGColor!)
         
 /*        let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))*/
         CGContextSetStrokeColorWithColor(contextRef, drawCGColor)
@@ -285,14 +287,14 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         // label
         let string = "L\(level)X\(x)Y\(y)"
-    //#if (iOS)
-      //  let font = UIFont(name: "Helvetica Neue", size: 36.0)
-    //#elseif (OSX)
+    #if os(iOS)
+        let font = UIFont(name: "Helvetica Neue", size: 36.0)
+    #elseif os(OSX)
         let font = NSFont(name: "Helvetica Neue", size: 36.0)
-    //#endif
+    #endif
         assert(font != nil, "Could not create UIFont")
 
-        let attr: [String: AnyObject] = [NSFontAttributeName: font!/*, NSForegroundColorAttributeName: drawNSColor*/]
+        let attr: [String: AnyObject] = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawUIColor]
         let textSize = string.sizeWithAttributes(attr)
         
         let textRect = CGRectMake(CGFloat(tileWidth)/2 - textSize.width/2, CGFloat(tileHeight)/2 - textSize.height/2, textSize.width, textSize.height)

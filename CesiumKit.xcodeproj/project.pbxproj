@@ -66,7 +66,6 @@
 		9410139E19FB037D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
 		9412FBB01B76A71E0095A86F /* GLSLOptimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; };
-		9412FBB11B76A7240095A86F /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
 		9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
@@ -250,9 +249,10 @@
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
 		945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6461AA9C00000FFAD81 /* GeometryType.swift */; };
 		945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */; };
-		945C3AD21B5296DD0095A86F /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ABD1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
 		946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946007AD1AC2C97F0095A86F /* CameraEventType.swift */; };
+		9467543F1B78C216001A40C8 /* GLSLOptimizer.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		946754401B78C21A001A40C8 /* Alamofire.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 945C3ABD1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		947820E51B5A2C0E0095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
 		947821031B5A2D7B0095A86F /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
@@ -492,6 +492,13 @@
 			remoteGlobalIDString = E4202FE01B667AA100C997FB;
 			remoteInfo = "Alamofire watchOS";
 		};
+		9467543D1B78C202001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = glsl_optimizer;
+		};
 		947820E61B5A2C0E0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94DC791A1918425300012DC4 /* Project object */;
@@ -506,26 +513,12 @@
 			remoteGlobalIDString = 9429935F1B1DB6E20095A86F;
 			remoteInfo = "GLSLOptimizer iOS";
 		};
-		947820FD1B5A2D1F0095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9478201C1B5A28B20095A86F;
-			remoteInfo = "GLSLOptimizer OSX";
-		};
 		947820FF1B5A2D2C0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4DD67C0A1A5C55C900ED2280;
 			remoteInfo = "Alamofire OSX";
-		};
-		947821011B5A2D2E0095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9478201B1B5A28B20095A86F;
-			remoteInfo = "GLSLOptimizer OSX";
 		};
 		94CA7E0B1A998E4200FFAD81 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -563,18 +556,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				946754401B78C21A001A40C8 /* Alamofire.framework in Copy Files */,
+				9467543F1B78C216001A40C8 /* GLSLOptimizer.framework in Copy Files */,
 				94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */,
 			);
 			name = "Copy Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		949B60731B33EED5001A40C8 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		94F7FEB51B1F18E20095A86F /* CopyFiles */ = {
@@ -583,8 +569,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9412FBB11B76A7240095A86F /* GLSLOptimizer.framework in CopyFiles */,
-				945C3AD21B5296DD0095A86F /* Alamofire.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,8 +1043,8 @@
 		947820F71B5A2D1F0095A86F /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				9467543E1B78C202001A40C8 /* libglsl_optimizer.a */,
 				947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */,
-				947820FE1B5A2D1F0095A86F /* GLSLOptimizer.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1248,7 +1232,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				947821021B5A2D2E0095A86F /* PBXTargetDependency */,
 				947821001B5A2D2C0095A86F /* PBXTargetDependency */,
 			);
 			name = "CesiumKit OSX";
@@ -1278,11 +1261,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 94985A851A38444C00FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKitRunner" */;
 			buildPhases = (
-				94985A901A3845CF00FFAD81 /* Copy Files */,
 				94985A611A38444C00FFAD81 /* Sources */,
 				94985A621A38444C00FFAD81 /* Frameworks */,
 				94985A631A38444C00FFAD81 /* Resources */,
-				949B60731B33EED5001A40C8 /* CopyFiles */,
+				94985A901A3845CF00FFAD81 /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -1410,18 +1392,18 @@
 			remoteRef = 946273771B7579CA0095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9467543E1B78C202001A40C8 /* libglsl_optimizer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libglsl_optimizer.a;
+			remoteRef = 9467543D1B78C202001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = GLSLOptimizer.framework;
 			remoteRef = 947820FB1B5A2D1F0095A86F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		947820FE1B5A2D1F0095A86F /* GLSLOptimizer.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GLSLOptimizer.framework;
-			remoteRef = 947820FD1B5A2D1F0095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1947,11 +1929,6 @@
 			isa = PBXTargetDependency;
 			name = "Alamofire OSX";
 			targetProxy = 947820FF1B5A2D2C0095A86F /* PBXContainerItemProxy */;
-		};
-		947821021B5A2D2E0095A86F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "GLSLOptimizer OSX";
-			targetProxy = 947821011B5A2D2E0095A86F /* PBXContainerItemProxy */;
 		};
 		94CA7E0C1A998E4200FFAD81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
