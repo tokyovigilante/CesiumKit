@@ -79,7 +79,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "http:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
@@ -400,7 +400,7 @@ public class BingMapsImageryProvider: ImageryProvider {
             let imageUrlTemplate = resource["imageUrl"].stringValue.replace("{culture}", self.culture)
             
             // Force HTTPS
-            self._imageUrlTemplate = imageUrlTemplate//.replace("http://", "https://")
+            self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
             
             
             // Install the default tile discard policy if none has been supplied.
@@ -457,7 +457,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                         metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
                         return
                     }
-                    metadataSuccess(data as! NSData!)
+                    metadataSuccess(data as NSData!)
             }
         }
         
@@ -509,8 +509,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         return loadImage(url)
         
     }
-    
-    
+
     /**
     * Loads an image from a given URL.  If the server referenced by the URL already has
     * too many requests pending, this function will instead return undefined, indicating
@@ -523,10 +522,21 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     public func loadImage (url: String) -> CGImageRef? {
-        if let imageData = NSData(contentsOfURL: NSURL(string: url)!) {
-            //return imageData
+        print(url)
+        var imageData: NSData? = nil
+        do {
+            imageData = try NSData(contentsOfURL: NSURL(string: url)!, options: [])
+            #if os(IOS)
+                #elseif os(OSX)
+                return nil
+            #endif
+        } catch {
+            print("error")
         }
-        return nil
+        return UIImage(data: imageData!)?.CGImage
+
+
+
         /*request(.GET, url)//, //parameters: [
         //"incl" : "ImageryPrtoviders",
         //"key" : self._key])
@@ -538,7 +548,6 @@ public class BingMapsImageryProvider: ImageryProvider {
         metadataSuccess(data as NSData!)
         }
         }*/
-        return nil
     }
     
     /*
