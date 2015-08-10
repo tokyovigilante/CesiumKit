@@ -92,11 +92,18 @@ class ShaderProgram {
     }
     
     func getUniformBufferSize() -> Int {
-        let vSize = Int(_vertexShader.uniformTotalSize())
         let fSize = Int(_fragmentShader.uniformTotalSize())
-        //let sSize = Int(_fragmentShader.textureCount())
-        //println("vsize: \(vSize), fsize: \(fSize), sSize: \(sSize)")
-        return vSize + fSize// + sSize
+        return getVertexBufferSize() + fSize// + sSize
+    }
+    
+    func getVertexBufferSize() -> Int {
+        var vSize = Int(_vertexShader.uniformTotalSize())
+        if vSize % 256 != 0 { // fragment uniform buffer offset must be multiple of 256
+            var multiplier = vSize / 256
+            multiplier++
+            vSize = multiplier * 256
+        }
+        return vSize
     }
     
     func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
@@ -191,7 +198,7 @@ class ShaderProgram {
         
         let buffer = command.uniformBufferProvider.nextBuffer()
 
-        let vSize = Int(_vertexShader.uniformTotalSize())
+        let vSize = getVertexBufferSize()
         let fSize = Int(_fragmentShader.uniformTotalSize())
         //let sSize = Int(_fragmentShader.textureCount())
         

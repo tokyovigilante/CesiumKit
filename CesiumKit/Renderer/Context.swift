@@ -668,7 +668,7 @@ class Context {
     
     func beginFrame() -> Bool {
         
-        // Allow the renderer to preflight 3 frames on the CPU (using a semapore as a guard) and commit them to the GPU.
+        // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
         // signifying the CPU can go ahead and prepare another frame.
         dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER)
