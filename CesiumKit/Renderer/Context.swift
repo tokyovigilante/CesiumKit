@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Metal
+import MetalKit
 import QuartzCore.CAMetalLayer
 
 
@@ -35,7 +35,7 @@ class Context {
     
     private let _inflight_semaphore: dispatch_semaphore_t
     
-    var layer: CAMetalLayer
+    let view: MTKView
     
     internal let device: MTLDevice!
     
@@ -54,8 +54,8 @@ class Context {
     
     //private var _commandsExecutedThisFrame = [DrawCommand]()
     
-    private var _depthTexture: MTLTexture!
-    private var _stencilTexture: MTLTexture!
+    //private var _depthTexture: MTLTexture!
+    //private var _stencilTexture: MTLTexture!
     
     var maximumTextureSize: Int = 4096
     
@@ -171,14 +171,11 @@ class Context {
     */
     //var defaultFramebuffer: Framebuffer? = nil
     
-    init (layer: CAMetalLayer) {
+    init (view: MTKView) {
         
-        self.layer = layer
+        self.view = view
         
-        device = MTLCreateSystemDefaultDevice()
-        layer.device = device
-        layer.pixelFormat = MTLPixelFormat.BGRA8Unorm
-        layer.framebufferOnly = true
+        device = view.device!
         
         _commandQueue = device.newCommandQueue()
         
@@ -225,6 +222,9 @@ class Context {
         */
         //this.options = options;
         //_currentRenderState.apply(_defaultPassState)
+        
+        width = Int(view.drawableSize.width)
+        height = Int(view.drawableSize.height)
     }
     
     func replaceRenderPipeline(
@@ -614,7 +614,7 @@ class Context {
             height: Int(height),
             mipmapped: false)
         depthTextureDescriptor.storageMode = .Private
-        _depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
+        //_depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
     }
     
     func createStencilTexture() {
@@ -623,7 +623,7 @@ class Context {
             height: Int(height),
             mipmapped: false)
         stencilTextureDescriptor.storageMode = .Private
-        _stencilTexture = device.newTextureWithDescriptor(stencilTextureDescriptor)
+        //_stencilTexture = device.newTextureWithDescriptor(stencilTextureDescriptor)
     }
     
     /*
@@ -673,7 +673,7 @@ class Context {
         // signifying the CPU can go ahead and prepare another frame.
         dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER)
         assert(_drawable == nil, "drawable != nil")
-        _drawable = layer.nextDrawable()
+        _drawable = view.currentDrawable
         if _drawable == nil {
             print("drawable == nil")
             dispatch_semaphore_signal(_inflight_semaphore)
@@ -682,10 +682,10 @@ class Context {
         //assert(_drawable != nil, "drawable == nil")
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        _defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
+        //_defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
         
-        _defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
-        _defaultPassState.passDescriptor.stencilAttachment.texture = _stencilTexture
+        //_defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
+        //_defaultPassState.passDescriptor.stencilAttachment.texture = _stencilTexture
         
         _commandBuffer = _commandQueue.commandBuffer()
         
@@ -712,7 +712,7 @@ class Context {
         pass.applyRenderState(renderState)
     }
     
-    func clear(clearCommand: ClearCommand = ClearCommand(), renderPass: RenderPass) {
+    func clear(clearCommand: ClearCommand, renderPass: RenderPass) {
         
         let passDescriptor = renderPass.passState.passDescriptor
         

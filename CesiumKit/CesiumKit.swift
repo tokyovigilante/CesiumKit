@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import QuartzCore.CAMetalLayer
+import MetalKit
 
 /**
 Describes Globe object options
@@ -120,9 +120,7 @@ public class CesiumGlobe {
     var showRenderLoopErrors = false
     
     var _lastFrameTime: NSDate?
-        
-    //let view: MetalView
-    
+            
     /**
     * Gets the scene.
     * @memberof CesiumWidget.prototype
@@ -213,7 +211,7 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (layer: CAMetalLayer, options: CesiumOptions) {
+    public init (view: MTKView, options: CesiumOptions) {
 
         /*
         var creditContainer = document.createElement('div');
@@ -230,7 +228,7 @@ public class CesiumGlobe {
         
         globe = Globe(ellipsoid: ellipsoid)
         scene = Scene(
-            layer: layer,
+            view: view,
             globe: self.globe,
             /*canvas : canvas,
             contextOptions : options.contextOptions,
@@ -286,7 +284,7 @@ public class CesiumGlobe {
             self.scene.morphToColumbusView(0)
         }
         
-        configureCanvasSize(Cartesian2(x: Double(layer.bounds.width), y: Double(layer.bounds.height)))
+        configureCanvasSize(Cartesian2(x: Double(view.drawableSize.width), y: Double(view.drawableSize.height)))
         configureCameraFrustum()
 
         // FIXME: Render errors
@@ -346,7 +344,6 @@ public class CesiumGlobe {
     func configureCanvasSize(size: Cartesian2) {
         
         scene.resize(size)
-        
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
         
     }

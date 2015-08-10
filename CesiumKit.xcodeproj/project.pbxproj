@@ -9,11 +9,9 @@
 /* Begin PBXBuildFile section */
 		940A5AE21B6D528F0095A86F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 940A5AE11B6D528F0095A86F /* AppKit.framework */; };
 		940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEC1B6D54400095A86F /* AppDelegate.swift */; };
-		940A5AEF1B6D54400095A86F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEE1B6D54400095A86F /* ViewController.swift */; };
+		940A5AEF1B6D54400095A86F /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AEE1B6D54400095A86F /* CesiumViewController.swift */; };
 		940A5AF11B6D54400095A86F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF01B6D54400095A86F /* Assets.xcassets */; };
 		940A5AF41B6D54400095A86F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF21B6D54400095A86F /* Main.storyboard */; };
-		940A5AFE1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
-		940A5AFF1B6D54BC0095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940A5AFD1B6D54BC0095A86F /* MetalView.swift */; };
 		940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9478218E1B5A3D310095A86F /* QuartzCore.framework */; };
 		940A5B011B6D91E30095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947821901B5A3D370095A86F /* Metal.framework */; };
 		9410135519FA49FA00FFAD81 /* CameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9410135419FA49FA00FFAD81 /* CameraTests.swift */; };
@@ -68,6 +66,8 @@
 		9410139C19FB037D00FFAD81 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
 		9410139E19FB037D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
+		9412FBB01B76A71E0095A86F /* GLSLOptimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; };
+		9412FBB11B76A7240095A86F /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
 		9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
@@ -413,7 +413,6 @@
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
 		94985A751A38444C00FFAD81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94985A741A38444C00FFAD81 /* Images.xcassets */; };
 		94985A781A38444C00FFAD81 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94985A761A38444C00FFAD81 /* LaunchScreen.xib */; };
-		949A45E51B1145510095A86F /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949A45E41B1145510095A86F /* MetalView.swift */; };
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC671F1B539ED9001A40C8 /* RenderPass.swift */; };
 		94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */; };
@@ -446,6 +445,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 947820DA1B5A2C0E0095A86F;
 			remoteInfo = "CesiumKit OSX";
+		};
+		9412FBAA1B76A7150095A86F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9429935E1B1DB6E20095A86F;
+			remoteInfo = "GLSLOptimizer iOS";
 		};
 		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -481,6 +487,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
 			remoteInfo = "Alamofire iOS";
+		};
+		946273771B7579CA0095A86F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4202FE01B667AA100C997FB;
+			remoteInfo = "Alamofire watchOS";
 		};
 		947820E61B5A2C0E0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -573,6 +586,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				9412FBB11B76A7240095A86F /* GLSLOptimizer.framework in CopyFiles */,
 				945C3AD21B5296DD0095A86F /* Alamofire.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -585,11 +599,10 @@
 		940A5AE11B6D528F0095A86F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
 		940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CesiumKitRunner OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		940A5AEC1B6D54400095A86F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		940A5AEE1B6D54400095A86F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		940A5AEE1B6D54400095A86F /* CesiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CesiumViewController.swift; sourceTree = "<group>"; };
 		940A5AF01B6D54400095A86F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		940A5AF31B6D54400095A86F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		940A5AF51B6D54400095A86F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		940A5AFD1B6D54BC0095A86F /* MetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
@@ -694,7 +707,6 @@
 		94985A721A38444C00FFAD81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		94985A741A38444C00FFAD81 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		94985A771A38444C00FFAD81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		949A45E41B1145510095A86F /* MetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		949AABAC199F730700037973 /* QuadtreePrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreePrimitive.swift; sourceTree = "<group>"; };
 		949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeSurfaceTileProvider.swift; sourceTree = "<group>"; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
@@ -780,6 +792,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9412FBB01B76A71E0095A86F /* GLSLOptimizer.framework in Frameworks */,
 				942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */,
 				942251421B1062CC0095A86F /* Metal.framework in Frameworks */,
 			);
@@ -828,11 +841,10 @@
 			isa = PBXGroup;
 			children = (
 				940A5AEC1B6D54400095A86F /* AppDelegate.swift */,
-				940A5AEE1B6D54400095A86F /* ViewController.swift */,
+				940A5AEE1B6D54400095A86F /* CesiumViewController.swift */,
 				940A5AF01B6D54400095A86F /* Assets.xcassets */,
 				940A5AF21B6D54400095A86F /* Main.storyboard */,
 				940A5AF51B6D54400095A86F /* Info.plist */,
-				940A5AFD1B6D54BC0095A86F /* MetalView.swift */,
 			);
 			path = "CesiumKitRunner OSX";
 			sourceTree = "<group>";
@@ -1031,6 +1043,7 @@
 			children = (
 				945C3ABD1B5296B40095A86F /* Alamofire.framework */,
 				945C3ABF1B5296B40095A86F /* Alamofire.framework */,
+				946273781B7579CA0095A86F /* Alamofire.framework */,
 				945C3AC11B5296B40095A86F /* Alamofire iOS Tests.xctest */,
 				945C3AC31B5296B40095A86F /* Alamofire OSX Tests.xctest */,
 			);
@@ -1061,7 +1074,6 @@
 			isa = PBXGroup;
 			children = (
 				94985A691A38444C00FFAD81 /* AppDelegate.swift */,
-				949A45E41B1145510095A86F /* MetalView.swift */,
 				94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */,
 				94985A711A38444C00FFAD81 /* Main.storyboard */,
 				94985A741A38444C00FFAD81 /* Images.xcassets */,
@@ -1221,6 +1233,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9412FBAB1B76A7150095A86F /* PBXTargetDependency */,
 				945C3AD01B5296CC0095A86F /* PBXTargetDependency */,
 			);
 			name = "CesiumKit iOS";
@@ -1395,6 +1408,13 @@
 			remoteRef = 945C3AC21B5296B40095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		946273781B7579CA0095A86F /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 946273771B7579CA0095A86F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1467,8 +1487,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				940A5AFF1B6D54BC0095A86F /* MetalView.swift in Sources */,
-				940A5AEF1B6D54400095A86F /* ViewController.swift in Sources */,
+				940A5AEF1B6D54400095A86F /* CesiumViewController.swift in Sources */,
 				940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1657,7 +1676,6 @@
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
 				947821221B5A2D7B0095A86F /* JulianDate.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
-				940A5AFE1B6D54BC0095A86F /* MetalView.swift in Sources */,
 				947821241B5A2D7B0095A86F /* Math.swift in Sources */,
 				947821251B5A2D7B0095A86F /* Matrix2.swift in Sources */,
 				947821261B5A2D7B0095A86F /* Matrix3.swift in Sources */,
@@ -1778,7 +1796,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				949A45E51B1145510095A86F /* MetalView.swift in Sources */,
 				94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */,
 				94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */,
 			);
@@ -1919,6 +1936,11 @@
 			target = 947820DA1B5A2C0E0095A86F /* CesiumKit OSX */;
 			targetProxy = 940A5AF91B6D54450095A86F /* PBXContainerItemProxy */;
 		};
+		9412FBAB1B76A7150095A86F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "GLSLOptimizer iOS";
+			targetProxy = 9412FBAA1B76A7150095A86F /* PBXContainerItemProxy */;
+		};
 		945C3AD01B5296CC0095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Alamofire iOS";
@@ -2006,6 +2028,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -serialize-debugging-options";
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2038,6 +2061,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -serialize-debugging-options";
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2245,7 +2269,6 @@
 					"$(PROJECT_DIR)/CesiumKit/Platform",
 				);
 				INFOPLIST_FILE = CesiumKitRunner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.testtoast.$(PRODUCT_NAME:rfc1034identifier)";
@@ -2268,7 +2291,6 @@
 					"$(PROJECT_DIR)/CesiumKit/Platform",
 				);
 				INFOPLIST_FILE = CesiumKitRunner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.testtoast.$(PRODUCT_NAME:rfc1034identifier)";
@@ -2305,7 +2327,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2330,7 +2352,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import QuartzCore.CAMetalLayer
+import MetalKit
 
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -527,9 +527,9 @@ public class Scene {
         }
     }
 
-    init (layer: CAMetalLayer, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
         
-        context = Context(layer: layer)
+        context = Context(view: view)
         self.globe = globe
         
         _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
@@ -539,8 +539,8 @@ public class Scene {
         camera = Camera(
             projection: projection,
             mode: mode,
-            initialWidth: Double(layer.bounds.width),
-            initialHeight: Double(layer.bounds.height)
+            initialWidth: Double(view.drawableSize.width),
+            initialHeight: Double(view.drawableSize.height)
         )
         #if (iOS)
         touchEventHandler = TouchEventHandler(scene: self, view: view)
@@ -1019,6 +1019,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
         }*/
         spaceRenderPass.complete()
+        return
         /*
         var clearDepth = scene._depthClearCommand;
         // FIXME: Translucentcommands
@@ -1113,8 +1114,10 @@ function callAfterRenderFunctions(frameState) {
     func resize(size: Cartesian2) {
         drawableWidth = Int(size.x)
         drawableHeight = Int(size.y)
-        context.createDepthTexture()
-        context.createStencilTexture()
+        if drawableWidth > 0 && drawableHeight > 0 {
+        //    context.createDepthTexture()
+        //    context.createStencilTexture()
+        }
     }
     /**
     * @private

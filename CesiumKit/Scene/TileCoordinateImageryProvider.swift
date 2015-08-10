@@ -7,8 +7,9 @@
 //
 
 import CoreGraphics
-import CoreText
-import AppKit
+//#if (OSX)
+import Cocoa
+//#endif
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -255,7 +256,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let alphaInfo = CGImageAlphaInfo.PremultipliedLast
         
-        var bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
+        let bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
         
         //rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
         //rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
@@ -264,11 +265,18 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
-        let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
+        let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue | alphaInfo.rawValue)
         
         assert(contextRef != nil, "contextRef == nil")
-        let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))
-        CGContextSetStrokeColorWithColor(contextRef, drawColor)
+        
+        let rgbSpace = CGColorSpaceCreateDeviceRGB()
+        let drawColorArray: [CGFloat] = [0.90625, 0.80, 0.80, 1.0]
+        let drawCGColor = CGColorCreate(rgbSpace, drawColorArray)
+        //let drawUIColor = UIColor(CGColor: drawCGColor!)
+        let drawNSColor = NSColor(CGColor: drawCGColor!)
+        
+/*        let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))*/
+        CGContextSetStrokeColorWithColor(contextRef, drawCGColor)
         
         // border
         let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
@@ -284,13 +292,13 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     //#endif
         assert(font != nil, "Could not create UIFont")
 
-        let attr: [String: AnyObject] = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
+        let attr: [String: AnyObject] = [NSFontAttributeName: font!/*, NSForegroundColorAttributeName: drawNSColor*/]
         let textSize = string.sizeWithAttributes(attr)
         
         let textRect = CGRectMake(CGFloat(tileWidth)/2 - textSize.width/2, CGFloat(tileHeight)/2 - textSize.height/2, textSize.width, textSize.height)
         string.drawInRect(textRect, withAttributes: attr)
         
-        let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))
+        //let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
     

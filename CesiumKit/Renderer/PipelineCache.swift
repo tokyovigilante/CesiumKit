@@ -88,8 +88,8 @@ class PipelineCache {
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        pipelineDescriptor.stencilAttachmentPixelFormat = .Stencil8
+        //pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        //pipelineDescriptor.stencilAttachmentPixelFormat = .Stencil8
         
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         

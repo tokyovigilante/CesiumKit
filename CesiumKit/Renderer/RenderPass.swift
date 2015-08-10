@@ -50,3 +50,4 @@ class RenderPass {
         commandEncoder.endEncoding()
     }
 }
+
