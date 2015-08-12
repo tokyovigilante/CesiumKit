@@ -606,26 +606,7 @@ class Context {
         */
         return nil
     }
-    
-    func createDepthTexture() {
         
-        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(.Depth32Float,
-            width: Int(width),
-            height: Int(height),
-            mipmapped: false)
-        depthTextureDescriptor.storageMode = .Private
-        //_depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
-    }
-    
-    func createStencilTexture() {
-        let stencilTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(.Stencil8,
-            width: Int(width),
-            height: Int(height),
-            mipmapped: false)
-        stencilTextureDescriptor.storageMode = .Private
-        //_stencilTexture = device.newTextureWithDescriptor(stencilTextureDescriptor)
-    }
-    
     /*
     Context.prototype.createRenderbuffer = function(options) {
     var gl = this._gl;

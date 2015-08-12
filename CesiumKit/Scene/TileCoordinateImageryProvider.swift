@@ -40,7 +40,18 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let tileHeight: Int = 256
     }
     
-    public let color: Cartesian4
+    var color: Cartesian4 {
+        get {
+            return Cartesian4.fromArray(_colorArray.map({ Float($0) }))
+        }
+        set (newColor) {
+            var floatColorArray = [Float](count: 4, repeatedValue: 0.0)
+            newColor.pack(&floatColorArray)
+            _colorArray = floatColorArray.map({ CGFloat($0) })
+        }
+    }
+
+    private var _colorArray: [CGFloat]!
 
     /**
     * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -208,9 +219,9 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
         
         tilingScheme = options.tilingScheme
-        color = options.color
         tileWidth = options.tileWidth
         tileHeight = options.tileHeight
+        color = options.color
     }
 
     /**
@@ -272,8 +283,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         assert(contextRef != nil, "contextRef == nil")
         
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
-        let drawColorArray: [CGFloat] = [0.90625, 0.80, 0.80, 1.0]
-        let drawCGColor = CGColorCreate(rgbSpace, drawColorArray)
+        let drawCGColor = CGColorCreate(rgbSpace, _colorArray)
         let drawUIColor = UIColor(CGColor: drawCGColor!)
         //let drawNSColor = NSColor(CGColor: drawCGColor!)
         

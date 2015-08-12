@@ -18,7 +18,6 @@ class CesiumViewController: UIViewController, MTKViewDelegate {
     
     override func viewDidLoad() {
         
-        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
 
         _metalView.delegate = self
         
@@ -26,9 +25,10 @@ class CesiumViewController: UIViewController, MTKViewDelegate {
         _metalView.colorPixelFormat = .BGRA8Unorm
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
+        _metalView.autoResizeDrawable = true
         
-        /*view.layer!.contentsScale = NSScreen.mainScreen()?.backingScaleFactor ?? 1.0*/
-        
+        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
+    
         let options = CesiumOptions(imageryProvider: nil)
         
         _globe = CesiumGlobe(view: _metalView, options: options)
@@ -74,13 +74,21 @@ class CesiumViewController: UIViewController, MTKViewDelegate {
     }
     
     func drawInMTKView(view: MTKView) {
-        _globe.render(view.drawableSize)
+        let scaleFactor = view.contentScaleFactor
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
+        
+        let renderSize = CGSizeMake(renderWidth , renderHeight)
+        _globe.render(renderSize)
     }
     
     func mtkView(view: MTKView, drawableSizeWillChange size: CGSize) {
-        /*let scale = self.v!.backingScaleFactor
-        let layerSize = view.bounds.size
+        //let scale = view.contentScaleFactor
+        //let layerSize = view.bounds.size
         
+        //view.drawableSize = layerSize
+        /*
         _metalView.metalLayer.contentsScale = scale
         _metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
         _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
