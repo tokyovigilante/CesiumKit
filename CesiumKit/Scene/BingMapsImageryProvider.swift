@@ -526,28 +526,14 @@ public class BingMapsImageryProvider: ImageryProvider {
         var imageData: NSData? = nil
         do {
             imageData = try NSData(contentsOfURL: NSURL(string: url)!, options: [])
-            #if os(IOS)
-                #elseif os(OSX)
-                return nil
-            #endif
         } catch {
             print("error")
         }
+        #if os(iOS)
         return UIImage(data: imageData!)?.CGImage
-
-
-
-        /*request(.GET, url)//, //parameters: [
-        //"incl" : "ImageryPrtoviders",
-        //"key" : self._key])
-        .response { (request, response, data, error) in
-        if let error = error {
-        metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
-        return
-        }
-        metadataSuccess(data as NSData!)
-        }
-        }*/
+        #elseif os(OSX)
+        return nil
+        #endif
     }
     
     /*

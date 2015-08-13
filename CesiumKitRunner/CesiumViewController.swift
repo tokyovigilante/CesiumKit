@@ -19,15 +19,25 @@ class CesiumViewController: UIViewController, MTKViewDelegate {
     override func viewDidLoad() {
         
 
+        let scaleFactor = UIScreen.mainScreen().nativeScale
+        view.contentScaleFactor = scaleFactor
+
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
+        
+        let renderSize = CGSizeMake(renderWidth, renderHeight)
+                
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
         _metalView.colorPixelFormat = .BGRA8Unorm
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
+
+        _metalView.drawableSize = renderSize
         _metalView.autoResizeDrawable = true
         
-        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
     
         let options = CesiumOptions(imageryProvider: nil)
         
