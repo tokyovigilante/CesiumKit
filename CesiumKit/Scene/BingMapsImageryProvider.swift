@@ -389,7 +389,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         //var metadataError;
         
-        var metadataSuccess = { (data: NSData) -> () in
+        let metadataSuccess = { (data: NSData) -> () in
             let metadata = JSON(data: data)
             let resource = metadata["resourceSets"][0]["resources"][0]
             self._tileWidth = resource["imageWidth"].intValue
@@ -441,27 +441,23 @@ public class BingMapsImageryProvider: ImageryProvider {
             //TileProviderError.handleSuccess(metadataError);*/
         }
         
-        var metadataFailure = { (error: String) -> () in
+        let metadataFailure = { (error: String) -> () in
             print(error)
             /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
-        var requestMetadata  = { () -> () in
-            
-            let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
-            request(.GET, metadataUrl, parameters: [
-                "incl" : "ImageryProviders",
-                "key" : self._key])
-                .response { (request, response, data, error) in
-                    if let error = error {
-                        metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
-                        return
-                    }
-                    metadataSuccess(data as NSData!)
-            }
-        }
         
-        requestMetadata()
+        let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+        request(.GET, metadataUrl, parameters: [
+            "incl" : "ImageryProviders",
+            "key" : self._key])
+            .response { (request, response, data, error) in
+                if let error = error {
+                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
+                    return
+                }
+                metadataSuccess(data as NSData!)
+        }
     }
     
     
@@ -502,11 +498,10 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int) -> CGImageRef? {
+    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
-        
         let url = buildImageUrl(x: x, y: y, level: level)
-        return loadImage(url)
+        loadImage(url, completionBlock: completionBlock)
         
     }
 
@@ -521,19 +516,21 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (url: String) -> CGImageRef? {
-        print(url)
-        var imageData: NSData? = nil
-        do {
-            imageData = try NSData(contentsOfURL: NSURL(string: url)!, options: [])
-        } catch {
-            print("error")
+    public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
+        request(.GET, url)
+            .response { (request, response, data, error) in
+                if let error = error {
+                    print("error: \(error.localizedDescription)")
+                    return
+                }
+                #if os(iOS)
+                    let image = UIImage(data: data!)?.CGImage
+                    completionBlock(image)
+                #elseif os(OSX)
+                    completionBlock(nil)
+                #endif
         }
-        #if os(iOS)
-        return UIImage(data: imageData!)?.CGImage
-        #elseif os(OSX)
-        return nil
-        #endif
+        
     }
     
     /*

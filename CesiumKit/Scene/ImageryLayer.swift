@@ -458,29 +458,35 @@ public class ImageryLayer {
     func requestImagery (context: Context, imagery: Imagery) {
         
         imagery.state = .Transitioning
+
         
         dispatch_async(context.networkQueue, {
-            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
             
-            let image = self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level)
-            dispatch_semaphore_signal(context.networkSemaphore)
-            if let image = image {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //dispatch_async(context.renderQueue, {
-                    imagery.image = image
-                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
-                    
-                    imagery.state = .Received
-                })
-            } else {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //dispatch_async(context.renderQueue, {
-                    imagery.state = .Failed
-                    
-                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    print(message)
-                })
+            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
+
+            let completionBlock: (CGImageRef? -> Void) = { (image) in
+                
+                dispatch_semaphore_signal(context.networkSemaphore)
+                if let image = image {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        imagery.image = image
+                        imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+                        
+                        imagery.state = .Received
+                    })
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        imagery.state = .Failed
+                        
+                        let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                        print(message)
+                    })
+                }
+                
             }
+            self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
         })
     }
     

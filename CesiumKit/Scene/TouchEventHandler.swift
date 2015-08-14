@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MetalKit
 
 protocol TouchEvent {}
 
@@ -74,7 +75,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
     private var _pinchRecognizer: UIPinchGestureRecognizer!
     
     private var _scene: Scene!
-    private var _view: UIView!
+    private var _view: MTKView!
     
     // Constants, Make any of these public?*/
     private var _zoomFactor = 5.0
@@ -86,7 +87,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
     private var _minimumZoomRate = 20.0
     private var _maximumZoomRate = 5906376272000.0  // distance from the Sun to Pluto in meters.
     
-    init (scene: Scene, view: UIView) {
+    init (scene: Scene, view: MTKView) {
         _scene = scene
         _view = view
         super.init()

@@ -261,8 +261,8 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int) -> CGImage? {
-        
+    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
+    
         let bytesPerPixel: Int = 4
         let bytesPerRow = bytesPerPixel * tileWidth
         let bitsPerComponent = 8
@@ -314,7 +314,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
     
-        return CGBitmapContextCreateImage(contextRef)
+        completionBlock(CGBitmapContextCreateImage(contextRef))
 
     }
     

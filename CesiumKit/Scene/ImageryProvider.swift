@@ -222,5 +222,6 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(x x: Int, y: Int, level: Int) -> CGImageRef?
+    func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void))
+    
 }

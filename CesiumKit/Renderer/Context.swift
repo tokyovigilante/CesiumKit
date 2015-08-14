@@ -181,9 +181,9 @@ class Context {
         
         id = NSUUID().UUIDString
         
-        _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
+        _inflight_semaphore = dispatch_semaphore_create(4)//kInFlightCommandBuffers)
         
-        networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_CONCURRENT)
+        networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_SERIAL)
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
         textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
         

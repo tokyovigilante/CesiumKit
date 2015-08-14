@@ -129,8 +129,8 @@ public class Scene {
     // TODO: setCamera
     public var camera: Camera
 
-    #if (iOS)
-    var touchEventHandler: TouchEventHandler? = nil
+    #if os(iOS)
+    var touchEventHandler: TouchEventHandler!
     #endif
     /**
     * Gets the controller for camera input handling.
@@ -542,7 +542,7 @@ public class Scene {
             initialWidth: Double(view.drawableSize.width),
             initialHeight: Double(view.drawableSize.height)
         )
-        #if (iOS)
+        #if os(iOS)
         touchEventHandler = TouchEventHandler(scene: self, view: view)
         #endif
         
