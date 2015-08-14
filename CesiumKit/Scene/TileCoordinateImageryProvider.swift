@@ -7,11 +7,7 @@
 //
 
 import CoreGraphics
-#if (iOS)
-import UIKit
-//#else
-//import Cocoa
-#endif
+import CoreText
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -283,12 +279,12 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         assert(contextRef != nil, "contextRef == nil")
         
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
-        let drawCGColor = CGColorCreate(rgbSpace, _colorArray)
-        let drawUIColor = UIColor(CGColor: drawCGColor!)
+        let drawColor = CGColorCreate(rgbSpace, _colorArray)
+        //let drawUIColor = UIColor(CGColor: drawCGColor!)
         //let drawNSColor = NSColor(CGColor: drawCGColor!)
         
-/*        let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))*/
-        CGContextSetStrokeColorWithColor(contextRef, drawCGColor)
+/*      let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))*/
+        CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
         // border
         let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
@@ -296,7 +292,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
         // label
-        let string = "L\(level)X\(x)Y\(y)"
+        /*let string = "L\(level)X\(x)Y\(y)"
     #if os(iOS)
         let font = UIFont(name: "Helvetica Neue", size: 36.0)
     #elseif os(OSX)
@@ -310,7 +306,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let textRect = CGRectMake(CGFloat(tileWidth)/2 - textSize.width/2, CGFloat(tileHeight)/2 - textSize.height/2, textSize.width, textSize.height)
         string.drawInRect(textRect, withAttributes: attr)
         
-        //let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))
+        //let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))*/
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
     
