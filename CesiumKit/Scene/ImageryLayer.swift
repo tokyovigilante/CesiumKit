@@ -817,7 +817,6 @@ public class ImageryLayer {
         //drawCommand.execute(context: context, pass: )
         //return outputTexture
         return texture
-        
     }
     
     /**

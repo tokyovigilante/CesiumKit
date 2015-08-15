@@ -679,7 +679,7 @@ class Context {
         return true
     }
     
-    func createRenderPass(passState: PassState? = nil, clearCommand: ClearCommand) -> RenderPass {
+    func createRenderPass(passState: PassState? = nil, clearCommand: ClearCommand?) -> RenderPass {
         let passState = passState ?? _defaultPassState
         let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, clearCommand: clearCommand)
         return pass

@@ -686,7 +686,7 @@ func createPotentiallyVisibleSet() {
     
     for command in _commandList {
         // FIXME: Command.pass
-        /*if command.pass == .Overlay {
+        if command.pass == .Overlay {
             _overlayCommandList.append(command)
         } else *///{
             if let boundingVolume = command.boundingVolume {
@@ -919,7 +919,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 */
     func executeCommands(passState: PassState?, clearColor: Cartesian4, picking: Bool = false) {
         
-        var j: Int
+        
+        let computeRenderPass = context.createRenderPass(clearCommand: nil)
+        
+        
         
         var frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
