@@ -922,7 +922,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         let computeRenderPass = context.createRenderPass(clearCommand: nil)
         
-        
+        computeRenderPass.complete()
         
         var frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
