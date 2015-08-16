@@ -688,7 +688,7 @@ func createPotentiallyVisibleSet() {
         // FIXME: Command.pass
         if command.pass == .Overlay {
             _overlayCommandList.append(command)
-        } else *///{
+        } else {
             if let boundingVolume = command.boundingVolume {
                 if command.cull &&
                    (cullingVolume.visibility(boundingVolume) == .Outside ||
@@ -709,7 +709,7 @@ func createPotentiallyVisibleSet() {
             }
             
             insertIntoBin(command, distance: distances)
-        //}
+        }
     }
     
     if (undefBV) {

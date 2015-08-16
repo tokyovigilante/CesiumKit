@@ -280,10 +280,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
         let drawColor = CGColorCreate(rgbSpace, _colorArray)
-        //let drawUIColor = UIColor(CGColor: drawCGColor!)
-        //let drawNSColor = NSColor(CGColor: drawCGColor!)
         
-/*      let drawColor = CGColorCreateGenericRGB(CGFloat(color.red), CGFloat(color.green), CGFloat(color.blue), CGFloat(color.alpha))*/
         CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
         // border
@@ -292,21 +289,16 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
         // label
-        /*let string = "L\(level)X\(x)Y\(y)"
-    #if os(iOS)
-        let font = UIFont(name: "Helvetica Neue", size: 36.0)
-    #elseif os(OSX)
-        let font = NSFont(name: "Helvetica Neue", size: 36.0)
-    #endif
-        assert(font != nil, "Could not create UIFont")
+        let tileString = NSAttributedString(string: "L\(level)X\(x)Y\(y)")
+        
+        var path = CGPathCreateMutable()
+        CGPathAddRect(path, nil, borderRect)
 
-        let attr: [String: AnyObject] = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawUIColor]
-        let textSize = string.sizeWithAttributes(attr)
+        let framesetter = CTFramesetterCreateWithAttributedString(tileString)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, tileString.length), path, nil)
         
-        let textRect = CGRectMake(CGFloat(tileWidth)/2 - textSize.width/2, CGFloat(tileHeight)/2 - textSize.height/2, textSize.width, textSize.height)
-        string.drawInRect(textRect, withAttributes: attr)
-        
-        //let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(tileWidth), CGFloat(tileHeight))*/
+        CTFrameDraw(frame, contextRef!)
+
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
     
