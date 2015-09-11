@@ -20,23 +20,29 @@
 */
 
 public struct HeadingPitchRange {
-
+    
     /**
     * Heading is the rotation from the local north direction where a positive angle is increasing eastward.
     * @type {Number}
     */
-    var heading: Double = 0.0
-
+    public var heading: Double = 0.0
+    
     /**
     * Pitch is the rotation from the local xy-plane. Positive pitch angles
     * are above the plane. Negative pitch angles are below the plane.
     * @type {Number}
     */
-    var pitch: Double = 0.0
+    public var pitch: Double = 0.0
     
     /**
     * Range is the distance from the center of the local frame.
     * @type {Number}
     */
-    var range: Double = 0.0
+    public var range: Double = 0.0
+    
+    public init (heading: Double = 0.0, pitch: Double = 0.0, range: Double = 0.0) {
+        self.heading = heading
+        self.pitch = pitch
+        self.range = range
+    }
 }
