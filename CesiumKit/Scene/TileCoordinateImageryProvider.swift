@@ -8,6 +8,7 @@
 
 import CoreGraphics
 import CoreText
+import Foundation
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws

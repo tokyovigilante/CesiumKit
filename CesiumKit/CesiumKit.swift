@@ -377,10 +377,9 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
     public func showErrorPanel(title: String, message: String, error: String) {
-        print(title, appendNewline: false)
-        print(message, appendNewline: false)
-        print(error, appendNewline: false)
-        /*
+        print(title, terminator: "")
+        print(message, terminator: "")
+        print(error, terminator: "")   /*
         // FIXME Error display
         var element = this._element;
         var overlay = document.createElement('div');

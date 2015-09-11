@@ -450,6 +450,20 @@
 			remoteGlobalIDString = 9429935E1B1DB6E20095A86F;
 			remoteInfo = "GLSLOptimizer iOS";
 		};
+		941549761BA1198A0095A86F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9478201B1B5A28B20095A86F;
+			remoteInfo = "GLSLOptimizer OSX";
+		};
+		9415497C1BA1198A0095A86F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9478201C1B5A28B20095A86F;
+			remoteInfo = "GLSLOptimizer OSX";
+		};
 		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
@@ -491,13 +505,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = E4202FE01B667AA100C997FB;
 			remoteInfo = "Alamofire watchOS";
-		};
-		9467543D1B78C202001A40C8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = glsl_optimizer;
 		};
 		947820E61B5A2C0E0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1043,8 +1050,8 @@
 		947820F71B5A2D1F0095A86F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9467543E1B78C202001A40C8 /* libglsl_optimizer.a */,
 				947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */,
+				9415497D1BA1198A0095A86F /* GLSLOptimizer.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1232,6 +1239,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				941549771BA1198A0095A86F /* PBXTargetDependency */,
 				947821001B5A2D2C0095A86F /* PBXTargetDependency */,
 			);
 			name = "CesiumKit OSX";
@@ -1357,6 +1365,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		9415497D1BA1198A0095A86F /* GLSLOptimizer.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GLSLOptimizer.framework;
+			remoteRef = 9415497C1BA1198A0095A86F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		945C3ABD1B5296B40095A86F /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1390,13 +1405,6 @@
 			fileType = wrapper.framework;
 			path = Alamofire.framework;
 			remoteRef = 946273771B7579CA0095A86F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9467543E1B78C202001A40C8 /* libglsl_optimizer.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libglsl_optimizer.a;
-			remoteRef = 9467543D1B78C202001A40C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */ = {
@@ -1914,6 +1922,11 @@
 			isa = PBXTargetDependency;
 			name = "GLSLOptimizer iOS";
 			targetProxy = 9412FBAA1B76A7150095A86F /* PBXContainerItemProxy */;
+		};
+		941549771BA1198A0095A86F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "GLSLOptimizer OSX";
+			targetProxy = 941549761BA1198A0095A86F /* PBXContainerItemProxy */;
 		};
 		945C3AD01B5296CC0095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
