@@ -290,16 +290,31 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
         // label
-        let tileString = NSAttributedString(string: "L\(level)X\(x)Y\(y)")
+        let tileString = "L\(level)X\(x)Y\(y)"
         
-        var path = CGPathCreateMutable()
-        CGPathAddRect(path, nil, borderRect)
+        let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), tileString)
+        
+        let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
+        CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
-        let framesetter = CTFramesetterCreateWithAttributedString(tileString)
-        let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, tileString.length), path, nil)
+        CGContextSetFillColorWithColor(contextRef, drawColor)
+        CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorFromContextAttributeName, kCFBooleanTrue)
         
+        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+        var fitRange = CFRangeMake(0, 0)
+        let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, borderRect.size, &fitRange)
+        
+        let pathZeroX = borderRect.size.width / 2 - textSize.width / 2
+        let pathZeroY = borderRect.size.height / 2 - textSize.height / 2
+        let pathRect = CGRectMake(pathZeroX, pathZeroY, textSize.width, textSize.height)
+        
+        let path = CGPathCreateMutable()
+        CGPathAddRect(path, nil, pathRect)
+        
+        let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         CTFrameDraw(frame, contextRef!)
-
+        
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
         CGContextConcatCTM(contextRef, flipVertical)
     

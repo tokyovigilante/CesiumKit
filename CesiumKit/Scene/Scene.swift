@@ -1059,7 +1059,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             for pass in 0..<numPasses {
                 for command in frustumCommands.commands[pass]! {
                     executeCommand(command, renderPass: globeRenderPass)
-                    
                 }
             }
             
