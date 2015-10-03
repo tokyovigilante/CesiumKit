@@ -8,6 +8,9 @@
 
 import Foundation
 import Alamofire
+#if os(OSX)
+import AppKit.NSImage
+#endif
 
 /**
 * Provides tiled imagery using the Bing Maps Imagery REST API.
@@ -527,7 +530,8 @@ public class BingMapsImageryProvider: ImageryProvider {
                     let image = UIImage(data: data!)?.CGImage
                     completionBlock(image)
                 #elseif os(OSX)
-                    completionBlock(nil)
+                    let image = NSImage(data: data!)?.CGImage
+                    completionBlock(image)
                 #endif
         }
         
@@ -697,9 +701,22 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     return result;
     }
-    
-    return BingMapsImageryProvider;
-    });
     */
-    
 }
+ 
+ extension NSImage {
+    var CGImage: CGImageRef? {
+        get {
+            guard let imageData = self.TIFFRepresentation else {
+                return nil
+            }
+            guard let source = CGImageSourceCreateWithData(imageData, nil) else {
+                return nil
+            }
+            let maskRef = CGImageSourceCreateImageAtIndex(source, 0, nil)
+            return maskRef
+        }
+    }
+ }
+ 
+ 
