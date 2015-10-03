@@ -220,7 +220,7 @@ class ShaderProgram {
                 texturesValid = false
             }
         }
-        
+        buffer.metalBuffer.didModifyRange(NSMakeRange(0, vSize+fSize))
         return (buffer: buffer, fragmentOffset: vSize, samplerOffset: vSize + fSize, texturesValid: texturesValid, textures: textures)
     }
     

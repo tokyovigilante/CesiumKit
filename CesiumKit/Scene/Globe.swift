@@ -212,7 +212,7 @@ class Globe {
             VertexAttributes(
                 bufferIndex: 1,
                 format: .Float4,
-                offset: 1,
+                offset: 0,
                 size: position3DAndHeightLength * datatype.elementSize),
             // texCoordAndEncodedNormals
             VertexAttributes(

@@ -953,9 +953,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunVisible = isVisible(sunCommand, frameState);*/
         
-
-        
-        
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
         let spaceRenderPass = context.createRenderPass(clearCommand: _clearColorCommand)
 

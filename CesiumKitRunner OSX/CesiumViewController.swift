@@ -27,18 +27,19 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
+        
         _metalView.colorPixelFormat = .BGRA8Unorm
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
         
-        /*view.layer!.contentsScale = NSScreen.mainScreen()?.backingScaleFactor ?? 1.0*/
+        view.layer!.contentsScale = NSScreen.mainScreen()?.backingScaleFactor ?? 1.0
 
         let options = CesiumOptions(imageryProvider: nil)
         
         _globe = CesiumGlobe(view: _metalView, options: options)
         
         //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         

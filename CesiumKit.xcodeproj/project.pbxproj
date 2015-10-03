@@ -65,7 +65,6 @@
 		9410139C19FB037D00FFAD81 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
 		9410139E19FB037D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
-		9412FBB01B76A71E0095A86F /* GLSLOptimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; };
 		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
 		9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
@@ -251,7 +250,6 @@
 		945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */; };
 		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
 		946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946007AD1AC2C97F0095A86F /* CameraEventType.swift */; };
-		9467543F1B78C216001A40C8 /* GLSLOptimizer.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		946754401B78C21A001A40C8 /* Alamofire.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 945C3ABD1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		947820E51B5A2C0E0095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
@@ -436,33 +434,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9404C86D1BBE9FF8001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9429935F1B1DB6E20095A86F;
+			remoteInfo = "GLSLOptimizer iOS";
+		};
+		9404C86F1BBE9FF8001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9478201C1B5A28B20095A86F;
+			remoteInfo = "GLSLOptimizer OSX";
+		};
+		9404C8711BBEA000001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9478201B1B5A28B20095A86F;
+			remoteInfo = "GLSLOptimizer OSX";
+		};
 		940A5AF91B6D54450095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94DC791A1918425300012DC4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 947820DA1B5A2C0E0095A86F;
 			remoteInfo = "CesiumKit OSX";
-		};
-		9412FBAA1B76A7150095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9429935E1B1DB6E20095A86F;
-			remoteInfo = "GLSLOptimizer iOS";
-		};
-		941549761BA1198A0095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9478201B1B5A28B20095A86F;
-			remoteInfo = "GLSLOptimizer OSX";
-		};
-		9415497C1BA1198A0095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9478201C1B5A28B20095A86F;
-			remoteInfo = "GLSLOptimizer OSX";
 		};
 		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -513,13 +511,6 @@
 			remoteGlobalIDString = 947820DA1B5A2C0E0095A86F;
 			remoteInfo = "CesiumKit OSX";
 		};
-		947820FB1B5A2D1F0095A86F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9429935F1B1DB6E20095A86F;
-			remoteInfo = "GLSLOptimizer iOS";
-		};
 		947820FF1B5A2D2C0095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
@@ -564,7 +555,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				946754401B78C21A001A40C8 /* Alamofire.framework in Copy Files */,
-				9467543F1B78C216001A40C8 /* GLSLOptimizer.framework in Copy Files */,
 				94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */,
 			);
 			name = "Copy Files";
@@ -582,6 +572,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
 		9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileDiscardPolicy.swift; sourceTree = "<group>"; };
 		940A5AE11B6D528F0095A86F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
 		940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CesiumKitRunner OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -660,7 +651,6 @@
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
 		947820DB1B5A2C0E0095A86F /* CesiumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CesiumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CesiumKit OSXTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "../glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
 		9478218E1B5A3D310095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		947821901B5A3D370095A86F /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Metal.framework; sourceTree = DEVELOPER_DIR; };
 		94786822194A959200B3F462 /* TerrainMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainMesh.swift; sourceTree = "<group>"; };
@@ -779,7 +769,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9412FBB01B76A71E0095A86F /* GLSLOptimizer.framework in Frameworks */,
 				942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */,
 				942251421B1062CC0095A86F /* Metal.framework in Frameworks */,
 			);
@@ -824,6 +813,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9404C8691BBE9FF7001A40C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9404C86E1BBE9FF8001A40C8 /* GLSLOptimizer.framework */,
+				9404C8701BBE9FF8001A40C8 /* GLSLOptimizer.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		940A5AEB1B6D54400095A86F /* CesiumKitRunner OSX */ = {
 			isa = PBXGroup;
 			children = (
@@ -1047,15 +1045,6 @@
 			name = Platform;
 			sourceTree = "<group>";
 		};
-		947820F71B5A2D1F0095A86F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */,
-				9415497D1BA1198A0095A86F /* GLSLOptimizer.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		94985A661A38444C00FFAD81 /* CesiumKitRunner */ = {
 			isa = PBXGroup;
 			children = (
@@ -1080,7 +1069,7 @@
 		94DC79191918425300012DC4 = {
 			isa = PBXGroup;
 			children = (
-				947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */,
+				9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */,
 				945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
@@ -1219,7 +1208,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				9412FBAB1B76A7150095A86F /* PBXTargetDependency */,
 				945C3AD01B5296CC0095A86F /* PBXTargetDependency */,
 			);
 			name = "CesiumKit iOS";
@@ -1239,7 +1227,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				941549771BA1198A0095A86F /* PBXTargetDependency */,
+				9404C8721BBEA000001A40C8 /* PBXTargetDependency */,
 				947821001B5A2D2C0095A86F /* PBXTargetDependency */,
 			);
 			name = "CesiumKit OSX";
@@ -1348,8 +1336,8 @@
 					ProjectRef = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
 				},
 				{
-					ProductGroup = 947820F71B5A2D1F0095A86F /* Products */;
-					ProjectRef = 947820F61B5A2D1F0095A86F /* glsl_optimizer_lib.xcodeproj */;
+					ProductGroup = 9404C8691BBE9FF7001A40C8 /* Products */;
+					ProjectRef = 9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1365,11 +1353,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		9415497D1BA1198A0095A86F /* GLSLOptimizer.framework */ = {
+		9404C86E1BBE9FF8001A40C8 /* GLSLOptimizer.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = GLSLOptimizer.framework;
-			remoteRef = 9415497C1BA1198A0095A86F /* PBXContainerItemProxy */;
+			remoteRef = 9404C86D1BBE9FF8001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9404C8701BBE9FF8001A40C8 /* GLSLOptimizer.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GLSLOptimizer.framework;
+			remoteRef = 9404C86F1BBE9FF8001A40C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		945C3ABD1B5296B40095A86F /* Alamofire.framework */ = {
@@ -1405,13 +1400,6 @@
 			fileType = wrapper.framework;
 			path = Alamofire.framework;
 			remoteRef = 946273771B7579CA0095A86F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		947820FC1B5A2D1F0095A86F /* GLSLOptimizer.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GLSLOptimizer.framework;
-			remoteRef = 947820FB1B5A2D1F0095A86F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1913,20 +1901,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9404C8721BBEA000001A40C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "GLSLOptimizer OSX";
+			targetProxy = 9404C8711BBEA000001A40C8 /* PBXContainerItemProxy */;
+		};
 		940A5AFA1B6D54450095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 947820DA1B5A2C0E0095A86F /* CesiumKit OSX */;
 			targetProxy = 940A5AF91B6D54450095A86F /* PBXContainerItemProxy */;
-		};
-		9412FBAB1B76A7150095A86F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "GLSLOptimizer iOS";
-			targetProxy = 9412FBAA1B76A7150095A86F /* PBXContainerItemProxy */;
-		};
-		941549771BA1198A0095A86F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "GLSLOptimizer OSX";
-			targetProxy = 941549761BA1198A0095A86F /* PBXContainerItemProxy */;
 		};
 		945C3AD01B5296CC0095A86F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2009,8 +1992,6 @@
 				INFOPLIST_FILE = "CesiumKitRunner OSX/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -serialize-debugging-options";
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2042,8 +2023,6 @@
 				INFOPLIST_FILE = "CesiumKitRunner OSX/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -serialize-debugging-options";
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKitRunner-OSX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2134,7 +2113,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKit-OSX";
 				PRODUCT_NAME = CesiumKit;
 				SDKROOT = macosx;
@@ -2174,7 +2152,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "testtoast.CesiumKit-OSX";
 				PRODUCT_NAME = CesiumKit;
 				SDKROOT = macosx;
