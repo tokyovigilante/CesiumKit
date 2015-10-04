@@ -394,6 +394,10 @@
 		947821911B5A3D370095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947821901B5A3D370095A86F /* Metal.framework */; };
 		947E322F1BC0D109001A40C8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32281BC0D0E5001A40C8 /* Extensions.swift */; settings = {ASSET_TAGS = (); }; };
 		947E32301BC0D10F001A40C8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32281BC0D0E5001A40C8 /* Extensions.swift */; settings = {ASSET_TAGS = (); }; };
+		947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; settings = {ASSET_TAGS = (); }; };
+		947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; settings = {ASSET_TAGS = (); }; };
+		947E32351BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; settings = {ASSET_TAGS = (); }; };
+		947E32361BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; settings = {ASSET_TAGS = (); }; };
 		94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */; };
 		94889B881B2857430095A86F /* PipelineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B871B2857430095A86F /* PipelineCache.swift */; };
 		94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B891B286E990095A86F /* UniformBufferProvider.swift */; };
@@ -662,6 +666,8 @@
 		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		947E32281BC0D0E5001A40C8 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		947E32311BC0D485001A40C8 /* AttributeCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeCompression.swift; sourceTree = "<group>"; };
+		947E32341BC0D85E001A40C8 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
 		94889B871B2857430095A86F /* PipelineCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineCache.swift; sourceTree = "<group>"; };
 		94889B891B286E990095A86F /* UniformBufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformBufferProvider.swift; sourceTree = "<group>"; };
@@ -859,6 +865,7 @@
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				947E32311BC0D485001A40C8 /* AttributeCompression.swift */,
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
 				94BC43561948189A007117F2 /* Cartesian2.swift */,
@@ -895,6 +902,7 @@
 				948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */,
 				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
+				947E32341BC0D85E001A40C8 /* Plane.swift */,
 				9444499D1948326C009D1703 /* Projection.swift */,
 				948B802F194D462F00012DC4 /* Quaternion.swift */,
 				949E67A419D6BCB200012DC4 /* Queue.swift */,
@@ -1535,6 +1543,8 @@
 				9413B7F71A37B94500FFAD81 /* BlendEquation.swift in Sources */,
 				9413B8191A37B94500FFAD81 /* TileDiscardPolicy.swift in Sources */,
 				9413B7BB1A37B93100FFAD81 /* JulianDate.swift in Sources */,
+				947E32351BC0D85E001A40C8 /* Plane.swift in Sources */,
+				947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
 				9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */,
 				9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */,
@@ -1651,6 +1661,7 @@
 				9478211E1B5A2D7B0095A86F /* Intersect.swift in Sources */,
 				9478211F1B5A2D7B0095A86F /* Intersectable.swift in Sources */,
 				947821201B5A2D7B0095A86F /* IntersectionTests.swift in Sources */,
+				947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
 				947821221B5A2D7B0095A86F /* JulianDate.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
@@ -1668,6 +1679,7 @@
 				9478212F1B5A2D7B0095A86F /* Rectangle.swift in Sources */,
 				947821301B5A2D7B0095A86F /* ScreenSpaceEventHandler.swift in Sources */,
 				947821311B5A2D7B0095A86F /* ScreenSpaceEventType.swift in Sources */,
+				947E32361BC0D85E001A40C8 /* Plane.swift in Sources */,
 				947821321B5A2D7B0095A86F /* Spherical.swift in Sources */,
 				947821331B5A2D7B0095A86F /* TerrainData.swift in Sources */,
 				947821341B5A2D7B0095A86F /* TerrainMesh.swift in Sources */,
