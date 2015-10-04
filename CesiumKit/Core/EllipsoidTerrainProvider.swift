@@ -155,16 +155,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          pending and the request will be retried later.
      */
     
-    func requestTileGeometry(x x: Int, y: Int, level: Int/*, throttleRequests: Bool = true*/) -> TerrainData? {
-        
-        return _terrainData
-        //resolve(terrainData)
-        /*dispatch_async(terrainProcessorQueue, {
-            // FIXME: Do expensive work to make terrainData
-            dispatch_async(dispatch_get_main_queue(),  {
-                resolve(nil)
-            })
-        })*/
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
+        completionBlock(_terrainData)
     }
 
     /**
@@ -195,9 +187,5 @@ class EllipsoidTerrainProvider: TerrainProvider {
             return false
         }
     }
-    
-    func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
-        return nil
-    }
-    
+
 }

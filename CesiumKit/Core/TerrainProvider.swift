@@ -20,7 +20,7 @@ import Foundation
 * @see CesiumTerrainProvider
 * @see ArcGisImageServerTerrainProvider
 */
-// FIXME: make base class
+
 protocol TerrainProvider {
     
     /**
@@ -114,7 +114,7 @@ protocol TerrainProvider {
     *          returns undefined instead of a promise, it is an indication that too many requests are already
     *          pending and the request will be retried later.
     */
-    func requestTileGeometry(x x: Int, y: Int, level: Int/*, throttleRequests: Bool*/) -> TerrainData? //resolve: (TerrainData?) -> () )
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> () )
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
@@ -155,5 +155,13 @@ protocol TerrainProvider {
     * @type {Boolean}
     */
     var hasVertexNormals: Bool { get }
+}
+
+extension TerrainProvider {
+    
+    func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
+        return nil
+    }
+    
 }
 

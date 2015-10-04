@@ -100,28 +100,29 @@ class TileTerrain {
     
     
     func requestTileGeometry(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-
+        
+        self.state = .Receiving
         dispatch_async(context.processorQueue, {
-            self.state = .Receiving
-            let terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
-            if let terrainData = terrainData {
-                dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
-                    self.data = terrainData
-                    self.state = .Received
-                })
-            } else {
-                dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
-                    // Initially assume failure.  handleError may retry, in which case the state will
-                    // change to RECEIVING or UNLOADED.
-                    self.state = TerrainState.Failed
-                    
-                    let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                    print(message)
-                    
-                })
-            }
+            let terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
+                if let terrainData = terrainData {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.data = terrainData
+                        self.state = .Received
+                    })
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        // Initially assume failure.  handleError may retry, in which case the state will
+                        // change to RECEIVING or UNLOADED.
+                        self.state = TerrainState.Failed
+                        
+                        let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
+                        print(message)
+                        
+                    })
+                }
+            })
         })
     }
 

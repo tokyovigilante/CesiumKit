@@ -27,7 +27,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
-        
+        print("Metal device: " + (_metalView.device?.name ?? "Unknown"))
         _metalView.colorPixelFormat = .BGRA8Unorm
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
@@ -38,7 +38,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         
         _globe = CesiumGlobe(view: _metalView, options: options)
         
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
@@ -61,7 +61,14 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
     }
 
     func drawInMTKView(view: MTKView) {
-        _globe.render(view.drawableSize)
+        let scaleFactor = view.layer?.contentsScale ?? 1.0
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
+        
+        let renderSize = CGSizeMake(renderWidth , renderHeight)
+
+        _globe.render(renderSize/*view.drawableSize*/)
     }
     
     /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
