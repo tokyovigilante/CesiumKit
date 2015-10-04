@@ -704,19 +704,5 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
 }
  
- extension NSImage {
-    var CGImage: CGImageRef? {
-        get {
-            guard let imageData = self.TIFFRepresentation else {
-                return nil
-            }
-            guard let source = CGImageSourceCreateWithData(imageData, nil) else {
-                return nil
-            }
-            let maskRef = CGImageSourceCreateImageAtIndex(source, 0, nil)
-            return maskRef
-        }
-    }
- }
  
  
