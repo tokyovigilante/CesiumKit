@@ -174,22 +174,23 @@ class TileTerrain {
         }
         
         dispatch_async(context.processorQueue, {
-            let mesh = data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
-            
-            if let mesh = mesh {
-                dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
-                    self.mesh = mesh
-                    self.state = .Transformed
-                })
-            } else {
-                dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
-                    self.state = .Failed
-                    let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
-                    print(message)
-                })
-            }
+            data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, completionBlock: { mesh in
+                
+                if let mesh = mesh {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.mesh = mesh
+                        self.state = .Transformed
+                    })
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.state = .Failed
+                        let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
+                        print(message)
+                    })
+                }
+            })
         })
     }
     

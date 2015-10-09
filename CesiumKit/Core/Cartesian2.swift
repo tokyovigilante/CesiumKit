@@ -91,8 +91,8 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian2.packedLength, "Array to short to pack")
-        array[startingIndex] = Float32(Float(x))
-        array[startingIndex+1] = Float32(Float(y))
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
     }
     
     

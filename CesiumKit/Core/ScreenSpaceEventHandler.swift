@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+// FIXME: reimport from cesium and try to merge touch and pointer
 
 import Foundation
 
@@ -50,17 +51,6 @@ struct TouchPinchMovementEventGeometry: EventGeometry {
 }
 
 typealias EventAction = (geometry: EventGeometry) -> ()
-
-/**
-* Handles user input events. Custom functions can be added to be executed on
-* when the user enters input.
-*
-* @alias ScreenSpaceEventHandler
-*
-* @param {Canvas} [element=document] The element to add events to.
-*
-* @constructor
-*/
 
 public class ScreenSpaceEventHandler {
     

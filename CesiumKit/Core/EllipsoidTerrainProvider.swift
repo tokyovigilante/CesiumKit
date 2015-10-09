@@ -104,8 +104,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
             
             var index = 0
             var indicesIndex = 0
-            for j in 0..<height-1 {
-                for i in 0..<width-1 {
+            for _ in 0..<height-1 {
+                for _ in 0..<width-1 {
                     let upperLeft = index
                     let lowerLeft = upperLeft + width
                     let lowerRight = lowerLeft + 1
@@ -155,7 +155,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          pending and the request will be retried later.
      */
     
-    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
         completionBlock(_terrainData)
     }
 
