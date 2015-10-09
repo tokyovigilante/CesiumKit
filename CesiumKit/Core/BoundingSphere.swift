@@ -189,7 +189,7 @@ struct BoundingSphere: Intersectable {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    static func fromRectangle2D(rectangle: Rectangle?, projection: Projection = GeographicProjection()) -> BoundingSphere {
+    static func fromRectangle2D(rectangle: Rectangle?, projection: MapProjection = GeographicProjection()) -> BoundingSphere {
         return BoundingSphere.fromRectangleWithHeights2D(rectangle, projection: projection, minimumHeight: 0.0, maximumHeight: 0.0)
     }
 
@@ -206,7 +206,7 @@ struct BoundingSphere: Intersectable {
     */
     static func fromRectangleWithHeights2D(
         rectangle: Rectangle?,
-        projection: Projection = GeographicProjection(),
+        projection: MapProjection = GeographicProjection(),
         minimumHeight: Double = 0.0,
         maximumHeight: Double = 0.0) -> BoundingSphere {
 

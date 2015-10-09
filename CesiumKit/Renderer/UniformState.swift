@@ -121,7 +121,7 @@ class UniformState {
     private var _moonDirectionEC = Cartesian3()
     
     private var _mode: SceneMode? = nil
-    private var _mapProjection: Projection? = nil
+    private var _mapProjection: MapProjection? = nil
     private var _cameraDirection = Cartesian3()
     private var _cameraRight = Cartesian3()
     private var _cameraUp = Cartesian3()
@@ -1026,7 +1026,7 @@ class UniformState {
     var view2Dto3DCartesian3Scratch = new Cartesian3();
     var view2Dto3DMatrix4Scratch = new Matrix4();
     */
-    func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: Projection) -> Matrix4 {
+    func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: MapProjection) -> Matrix4 {
         
         // The camera position and directions are expressed in the 2D coordinate system where the Y axis is to the East,
         // the Z axis is to the North, and the X axis is out of the map.  Express them instead in the ENU axes where

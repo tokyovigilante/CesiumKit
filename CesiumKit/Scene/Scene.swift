@@ -317,7 +317,7 @@ public class Scene {
     *
     * @default new GeographicProjection()
     */
-    private(set) var mapProjection: Projection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
+    private(set) var mapProjection: MapProjection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
 
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
@@ -527,7 +527,7 @@ public class Scene {
         }
     }
 
-    init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: Projection = GeographicProjection()) {
+    init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
         context = Context(view: view)
         self.globe = globe

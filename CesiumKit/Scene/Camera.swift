@@ -293,7 +293,7 @@ public class Camera {
     
     private var _modeChanged = true
     
-    private var _projection: Projection
+    private var _projection: MapProjection
     
     private var _maxCoord = Cartesian3()
     
@@ -317,7 +317,7 @@ public class Camera {
     */
     var defaultViewFactor = 0.5
     
-    init(projection: Projection, mode: SceneMode, initialWidth: Double, initialHeight: Double) {
+    init(projection: MapProjection, mode: SceneMode, initialWidth: Double, initialHeight: Double) {
         
         _projection = projection
         _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
@@ -344,7 +344,7 @@ public class Camera {
         canvas: (width: Int, height: Int),
         width: Int,
         height: Int,
-        mapProjection: Projection//,
+        mapProjection: MapProjection//,
         /* tweens = new TweenCollection();*/)) {
         
         _projection = fakeScene.mapProjection

@@ -41,7 +41,7 @@ public protocol TilingScheme {
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    var projection : Projection { get }
+    var projection : MapProjection { get }
     
     var numberOfLevelZeroTilesX: Int { get }
     var numberOfLevelZeroTilesY: Int { get }

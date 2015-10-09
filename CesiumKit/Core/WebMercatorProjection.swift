@@ -21,7 +21,7 @@ import Foundation
 *
 * @see GeographicProjection
 */
-struct WebMercatorProjection: Projection {
+struct WebMercatorProjection: MapProjection {
     
     let ellipsoid: Ellipsoid
     let semimajorAxis: Double

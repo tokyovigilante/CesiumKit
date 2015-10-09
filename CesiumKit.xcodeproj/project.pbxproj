@@ -77,7 +77,7 @@
 		9413113A19F3A09800FFAD81 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943D25B01947128A00263D91 /* Rectangle.swift */; };
 		9413113B19F3A0A200FFAD81 /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
 		9413113C19F3A0B600FFAD81 /* Intersectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DCE194D71A200012DC4 /* Intersectable.swift */; };
-		9413113D19F3A0C000FFAD81 /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
+		9413113D19F3A0C000FFAD81 /* MapProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* MapProjection.swift */; };
 		9413113E19F3A0C700FFAD81 /* GeographicProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499F1948331C009D1703 /* GeographicProjection.swift */; };
 		9413113F19F3A0CF00FFAD81 /* Intersect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949ABA8019410120009B1183 /* Intersect.swift */; };
 		9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
@@ -115,7 +115,7 @@
 		9413B7C01A37B93100FFAD81 /* MergeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */; };
 		9413B7C11A37B93100FFAD81 /* Occluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DD0194D75A100012DC4 /* Occluder.swift */; };
 		9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
-		9413B7C41A37B93100FFAD81 /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
+		9413B7C41A37B93100FFAD81 /* MapProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* MapProjection.swift */; };
 		9413B7C51A37B93100FFAD81 /* Quaternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quaternion.swift */; };
 		9413B7C61A37B93100FFAD81 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E67A419D6BCB200012DC4 /* Queue.swift */; };
 		9413B7C71A37B93100FFAD81 /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
@@ -293,7 +293,7 @@
 		947821281B5A2D7B0095A86F /* MergeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */; };
 		947821291B5A2D7B0095A86F /* Occluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DD0194D75A100012DC4 /* Occluder.swift */; };
 		9478212A1B5A2D7B0095A86F /* Packable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03DC19449E9600DC0E52 /* Packable.swift */; };
-		9478212B1B5A2D7B0095A86F /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* Projection.swift */; };
+		9478212B1B5A2D7B0095A86F /* MapProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9444499D1948326C009D1703 /* MapProjection.swift */; };
 		9478212C1B5A2D7B0095A86F /* Quaternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948B802F194D462F00012DC4 /* Quaternion.swift */; };
 		9478212D1B5A2D7B0095A86F /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E67A419D6BCB200012DC4 /* Queue.swift */; };
 		9478212E1B5A2D7B0095A86F /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D25A919592BFD0080379D /* Ray.swift */; };
@@ -613,7 +613,7 @@
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
-		9444499D1948326C009D1703 /* Projection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
+		9444499D1948326C009D1703 /* MapProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapProjection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
 		944C5BE81AB70D8700FFAD81 /* CesiumKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CesiumKit.h; sourceTree = SOURCE_ROOT; };
 		94540420199F03C300012DC4 /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
@@ -903,7 +903,7 @@
 				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				947E32341BC0D85E001A40C8 /* Plane.swift */,
-				9444499D1948326C009D1703 /* Projection.swift */,
+				9444499D1948326C009D1703 /* MapProjection.swift */,
 				948B802F194D462F00012DC4 /* Quaternion.swift */,
 				949E67A419D6BCB200012DC4 /* Queue.swift */,
 				946D25A919592BFD0080379D /* Ray.swift */,
@@ -1579,7 +1579,7 @@
 				9413B7E31A37B93D00FFAD81 /* Framebuffer.swift in Sources */,
 				9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */,
 				9413B7A91A37B93100FFAD81 /* Credit.swift in Sources */,
-				9413B7C41A37B93100FFAD81 /* Projection.swift in Sources */,
+				9413B7C41A37B93100FFAD81 /* MapProjection.swift in Sources */,
 				9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */,
 				9413B8071A37B94500FFAD81 /* ImageryState.swift in Sources */,
 				94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */,
@@ -1672,7 +1672,7 @@
 				947821281B5A2D7B0095A86F /* MergeSort.swift in Sources */,
 				947821291B5A2D7B0095A86F /* Occluder.swift in Sources */,
 				9478212A1B5A2D7B0095A86F /* Packable.swift in Sources */,
-				9478212B1B5A2D7B0095A86F /* Projection.swift in Sources */,
+				9478212B1B5A2D7B0095A86F /* MapProjection.swift in Sources */,
 				9478212C1B5A2D7B0095A86F /* Quaternion.swift in Sources */,
 				9478212D1B5A2D7B0095A86F /* Queue.swift in Sources */,
 				9478212E1B5A2D7B0095A86F /* Ray.swift in Sources */,
@@ -1813,7 +1813,7 @@
 				9413113719F3A07B00FFAD81 /* Cartesian4.swift in Sources */,
 				9410136219FB035500FFAD81 /* Context.swift in Sources */,
 				9410136F19FB037500FFAD81 /* GeometryPipeline.swift in Sources */,
-				9413113D19F3A0C000FFAD81 /* Projection.swift in Sources */,
+				9413113D19F3A0C000FFAD81 /* MapProjection.swift in Sources */,
 				9413113519F3A06600FFAD81 /* Packable.swift in Sources */,
 				9410139119FB037D00FFAD81 /* Framebuffer.swift in Sources */,
 				9413B81E1A37B94800FFAD81 /* BingMapsImageryProvider.swift in Sources */,

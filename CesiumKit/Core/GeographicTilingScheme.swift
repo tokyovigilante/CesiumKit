@@ -46,7 +46,7 @@ class GeographicTilingScheme: TilingScheme {
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
-    let projection: Projection
+    let projection: MapProjection
 
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int
@@ -160,9 +160,7 @@ class GeographicTilingScheme: TilingScheme {
      *
      * @param {Cartographic} position The position.
      * @param {Number} level The tile level-of-detail.  Zero is the least detailed.
-     * @param {Cartesian} [result] The instance to which to copy the result, or undefined if a new instance
-     *        should be created.
-     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
+     * @returns {(Int: Int)} The specified 'result', or a new object containing the tile x, y coordinates
      *          if 'result' is undefined.
      */
     func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)? {

@@ -30,7 +30,7 @@ public struct CesiumOptions {
     //public var skyBox: SkyBox? = nil
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
-    public var mapProjection: Projection = GeographicProjection()
+    public var mapProjection: MapProjection = GeographicProjection()
     public var showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
@@ -43,7 +43,7 @@ public struct CesiumOptions {
         imageryProvider: ImageryProvider? = nil,
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
-        mapProjection: Projection = GeographicProjection(),
+        mapProjection: MapProjection = GeographicProjection(),
         targetFrameRate: Int = 60,
         showRenderLoopErrors: Bool = true,
         resolutionScale: Double = 0.5) {
