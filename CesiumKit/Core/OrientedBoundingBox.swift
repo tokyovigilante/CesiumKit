@@ -137,7 +137,7 @@ struct OrientedBoundingBox: Intersectable {
         
         return result;*/
     }
-    /*
+    
     /**
     * Computes an OrientedBoundingBox given extents in the east-north-up space of the tangent plane.
     *
@@ -150,50 +150,31 @@ struct OrientedBoundingBox: Intersectable {
     * @param {OrientedBoundingBox} [result] The object onto which to store the result.
     * @returns {OrientedBoundingBox} The modified result parameter or a new OrientedBoundingBox instance if one was not provided.
     */
-    var fromTangentPlaneExtents = function(tangentPlane, minimumX, maximumX, minimumY, maximumY, minimumZ, maximumZ, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(minimumX) ||
-    !defined(maximumX) ||
-    !defined(minimumY) ||
-    !defined(maximumY) ||
-    !defined(minimumZ) ||
-    !defined(maximumZ)) {
-    throw new DeveloperError('all extents (minimum/maximum X/Y/Z) are required.');
+    init (fromTangentPlaneExtents tangentPlane: EllipsoidTangentPlane, minimumX: Double, maximumX: Double, minimumY: Double, maximumY: Double, minimumZ: Double, maximumZ: Double) {
+        
+        var halfAxes = Matrix3()
+        halfAxes.setColumn(0, tangentPlane.xAxis)
+        Matrix3.setColumn(halfAxes, 1, tangentPlane.yAxis, halfAxes);
+        Matrix3.setColumn(halfAxes, 2, tangentPlane.zAxis, halfAxes);
+        
+        var centerOffset = scratchOffset;
+        centerOffset.x = (minimumX + maximumX) / 2.0;
+        centerOffset.y = (minimumY + maximumY) / 2.0;
+        centerOffset.z = (minimumZ + maximumZ) / 2.0;
+        
+        var scale = scratchScale;
+        scale.x = (maximumX - minimumX) / 2.0;
+        scale.y = (maximumY - minimumY) / 2.0;
+        scale.z = (maximumZ - minimumZ) / 2.0;
+        
+        var center = result.center;
+        centerOffset = Matrix3.multiplyByVector(halfAxes, centerOffset, centerOffset);
+        Cartesian3.add(tangentPlane.origin, centerOffset, center);
+        Matrix3.multiplyByScale(halfAxes, scale, halfAxes);
+        
+        self.halfAxes = halfAxes
     }
-    //>>includeEnd('debug');
     
-    if (!defined(result)) {
-    result = new OrientedBoundingBox();
-    }
-    
-    var halfAxes = result.halfAxes;
-    Matrix3.setColumn(halfAxes, 0, tangentPlane.xAxis, halfAxes);
-    Matrix3.setColumn(halfAxes, 1, tangentPlane.yAxis, halfAxes);
-    Matrix3.setColumn(halfAxes, 2, tangentPlane.zAxis, halfAxes);
-    
-    var centerOffset = scratchOffset;
-    centerOffset.x = (minimumX + maximumX) / 2.0;
-    centerOffset.y = (minimumY + maximumY) / 2.0;
-    centerOffset.z = (minimumZ + maximumZ) / 2.0;
-    
-    var scale = scratchScale;
-    scale.x = (maximumX - minimumX) / 2.0;
-    scale.y = (maximumY - minimumY) / 2.0;
-    scale.z = (maximumZ - minimumZ) / 2.0;
-    
-    var center = result.center;
-    centerOffset = Matrix3.multiplyByVector(halfAxes, centerOffset, centerOffset);
-    Cartesian3.add(tangentPlane.origin, centerOffset, center);
-    Matrix3.multiplyByScale(halfAxes, scale, halfAxes);
-    
-    return result;
-    };
-    
-    var scratchRectangleCenterCartographic = new Cartographic();
-    var scratchRectangleCenter = new Cartesian3();
-    var perimeterCartographicScratch = [new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic()];
-    var perimeterCartesianScratch = [new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3()];
-    var perimeterProjectedScratch = [new Cartesian2(), new Cartesian2(), new Cartesian2(), new Cartesian2(), new Cartesian2(), new Cartesian2(), new Cartesian2(), new Cartesian2()];*/
     /**
     * Computes an OrientedBoundingBox that bounds a {@link Rectangle} on the surface of an {@link Ellipsoid}.
     * There are no guarantees about the orientation of the bounding box.
@@ -228,8 +209,8 @@ struct OrientedBoundingBox: Intersectable {
         let tangentPlane = EllipsoidTangentPlane(origin: tangentPoint, ellipsoid: ellipsoid)
         let plane = tangentPlane.plane
         
-        var lonCenter = tangentPointCartographic.longitude
-        var latCenter = (rectangle.south < 0.0 && rectangle.north > 0.0) ? 0.0 : tangentPointCartographic.latitude
+        let lonCenter = tangentPointCartographic.longitude
+        let latCenter = (rectangle.south < 0.0 && rectangle.north > 0.0) ? 0.0 : tangentPointCartographic.latitude
         
         // Corner arrangement:
         //          N/+y
@@ -253,21 +234,24 @@ struct OrientedBoundingBox: Intersectable {
         ]
         
         let perimeterCartesian = ellipsoid.cartographicArrayToCartesianArray(cartographicArray)
-        tangentPlane.projectPointsToNearestOnPlane(perimeterCartesianScratch, perimeterProjectedScratch);
+        let perimeterProjected = tangentPlane.projectPointsToNearestOnPlane(perimeterCartesian)
+        
+        assert(perimeterProjected.count == 8, "invalid perimeter")
         // See the `perimeterXX` definitions above for what these are
-        var minX = Math.min(perimeterProjectedScratch[6].x, perimeterProjectedScratch[7].x, perimeterProjectedScratch[0].x);
-        var maxX = Math.max(perimeterProjectedScratch[2].x, perimeterProjectedScratch[3].x, perimeterProjectedScratch[4].x);
-        var minY = Math.min(perimeterProjectedScratch[4].y, perimeterProjectedScratch[5].y, perimeterProjectedScratch[6].y);
-        var maxY = Math.max(perimeterProjectedScratch[0].y, perimeterProjectedScratch[1].y, perimeterProjectedScratch[2].y);
+        let minX = min(perimeterProjected[6].x, perimeterProjected[7].x, perimeterProjected[0].x)
+        let maxX = max(perimeterProjected[2].x, perimeterProjected[3].x, perimeterProjected[4].x)
+        let minY = min(perimeterProjected[4].y, perimeterProjected[5].y, perimeterProjected[6].y)
+        let maxY = max(perimeterProjected[0].y, perimeterProjected[1].y, perimeterProjected[2].y)
         
         // Compute minimum Z using the rectangle at minimum height
-        perimeterNE.height = perimeterNW.height = perimeterSE.height = perimeterSW.height = minimumHeight;
-        ellipsoid.cartographicArrayToCartesianArray(perimeterCartographicScratch, perimeterCartesianScratch);
-        var minZ = Math.min(Plane.getPointDistance(plane, perimeterCartesianScratch[0]),
-            Plane.getPointDistance(plane, perimeterCartesianScratch[2]),
-            Plane.getPointDistance(plane, perimeterCartesianScratch[4]),
-            Plane.getPointDistance(plane, perimeterCartesianScratch[6]));
-        var maxZ = maximumHeight;  // Since the tangent plane touches the surface at height = 0, this is okay
+        let cartographicMinHeightArray = cartographicArray.map({ Cartographic(longitude: $0.longitude, latitude: $0.latitude, height: minimumHeight) })
+        let perimeterMinHeightCartesian = ellipsoid.cartographicArrayToCartesianArray(cartographicMinHeightArray)
+        let minZ = min(
+            plane.getPointDistance(perimeterMinHeightCartesian[0]),
+            plane.getPointDistance(perimeterMinHeightCartesian[2]),
+            plane.getPointDistance(perimeterMinHeightCartesian[4]),
+            plane.getPointDistance(perimeterMinHeightCartesian[6]))
+        let maxZ = maximumHeight  // Since the tangent plane touches the surface at height = 0, this is okay
         
         return fromTangentPlaneExtents(tangentPlane, minX, maxX, minY, maxY, minZ, maxZ, result);
     };

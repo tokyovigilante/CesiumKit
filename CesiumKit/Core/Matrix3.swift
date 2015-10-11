@@ -511,42 +511,31 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
             y: _grid[startIndex + 1],
             z: _grid[startIndex + 2])
     }
-    /*
+    
     /**
     * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian3 instance.
     *
     * @param {Matrix3} matrix The matrix to use.
     * @param {Number} index The zero-based index of the column to set.
     * @param {Cartesian3} cartesian The Cartesian whose values will be assigned to the specified column.
-    * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Matrix3} The modified result parameter.
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    Matrix3.setColumn = function(matrix, index, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(cartesian)) {
-    throw new DeveloperError('cartesian is required');
-    }
-    if (typeof index !== 'number' || index < 0 || index > 2) {
-    throw new DeveloperError('index must be 0, 1, or 2.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
+    func setColumn (index: Int, cartesian: Cartesian3) -> Matrix3 {
     
-    result = Matrix3.clone(matrix, result);
-    var startIndex = index * 3;
-    result[startIndex] = cartesian.x;
-    result[startIndex + 1] = cartesian.y;
-    result[startIndex + 2] = cartesian.z;
-    return result;
-    };
+        if index < 0 || index > 2 {
+            assertionFailure("index must be 0, 1, or 2.")
+        }
     
+        var result = self
+        let startIndex = index * 3
+        result[startIndex] = cartesian.x
+        result[startIndex + 1] = cartesian.y
+        result[startIndex + 2] = cartesian.z
+        return result
+    }
+    /*
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian3 instance.
     *

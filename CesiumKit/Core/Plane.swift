@@ -87,7 +87,7 @@ struct Plane {
         distance = coefficients.w
     }
     
-    /*
+    
     /**
     * Computes the signed shortest distance of a point to a plane.
     * The sign of the distance determines which side of the plane the point
@@ -99,19 +99,11 @@ struct Plane {
     * @param {Cartesian3} point The point.
     * @returns {Number} The signed shortest distance of the point to the plane.
     */
-    Plane.getPointDistance = function(plane, point) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(plane)) {
-    throw new DeveloperError('plane is required.');
+    func getPointDistance (point: Cartesian3) -> Double {
+        return normal.dot(point) + distance
     }
-    if (!defined(point)) {
-    throw new DeveloperError('point is required.');
-    }
-    //>>includeEnd('debug');
     
-    return Cartesian3.dot(plane.normal, point) + plane.distance;
-    };
-    
+    /*
     /**
     * A constant initialized to the XY plane passing through the origin, with normal in positive Z.
     *

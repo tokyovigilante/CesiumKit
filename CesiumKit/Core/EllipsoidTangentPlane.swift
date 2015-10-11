@@ -190,22 +190,18 @@ struct EllipsoidTangentPlane {
     */
     func projectPointToNearestOnPlane (cartesian: Cartesian3) -> Cartesian2 {
         
-        let ray = Ray(origin: cartesian, direction: plane.normal)
+        var ray = Ray(origin: cartesian, direction: plane.normal)
         
-        let intersectionPoint = IntersectionTests.rayPlane(ray, plane)
+        var intersectionPoint = IntersectionTests.rayPlane(ray, plane: plane)
         
-        if (!defined(intersectionPoint)) {
-            Cartesian3.negate(ray.direction, ray.direction);
-            intersectionPoint = IntersectionTests.rayPlane(ray, this._plane, scratchProjectPointOntoPlaneCartesian3);
+        if intersectionPoint == nil {
+            ray.direction = ray.direction.negate()
+            intersectionPoint = IntersectionTests.rayPlane(ray, plane: plane)
         }
+        assert(intersectionPoint != nil, "no intersection with plane")
         
-        var v = Cartesian3.subtract(intersectionPoint, this._origin, intersectionPoint);
-        var x = Cartesian3.dot(this._xAxis, v);
-        var y = Cartesian3.dot(this._yAxis, v);
-        
-        result.x = x;
-        result.y = y;
-        return result;
+        let v = intersectionPoint!.subtract(origin)
+        return Cartesian2(x: xAxis.dot(v), y: yAxis.dot(v))
     }
     
     /**
