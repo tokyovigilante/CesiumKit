@@ -1275,7 +1275,7 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     return Matrix4(
         column0Row0, column1Row0, column2Row0, column3Row0,
         column0Row1, column1Row1, column2Row1, column3Row1,
-        column0Row2, column1Row1, column2Row2, column3Row2,
+        column0Row2, column1Row2, column2Row2, column3Row2,
         0.0, 0.0, 0.0, 1.0
     )
 }
