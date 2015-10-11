@@ -50,7 +50,12 @@ struct Plane {
     * @type {Number}
     */
     let distance: Double
-    /*
+    
+    init(normal: Cartesian3, distance: Double) {
+        self.normal = normal
+        self.distance = distance
+    }
+    
     /**
     * Creates a plane from a normal and a point on the plane.
     *
@@ -64,29 +69,12 @@ struct Plane {
     * var normal = ellipsoid.geodeticSurfaceNormal(point);
     * var tangentPlane = Cesium.Plane.fromPointNormal(point, normal);
     */
-    Plane.fromPointNormal = function(point, normal, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(point)) {
-    throw new DeveloperError('point is required.');
-    }
-    if (!defined(normal)) {
-    throw new DeveloperError('normal is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var distance = -Cartesian3.dot(normal, point);
-    
-    if (!defined(result)) {
-    return new Plane(normal, distance);
+    init (fromPoint point: Cartesian3, normal: Cartesian3) {
+        
+        let distance = -normal.dot(point)
+        self = Plane(normal: normal, distance: distance)
     }
     
-    Cartesian3.clone(normal, result.normal);
-    result.distance = distance;
-    return result;
-    };
-    
-    var scratchNormal = new Cartesian3();
-    */
     /**
     * Creates a plane from the general equation
     *

@@ -881,7 +881,7 @@ Matrix4.getElementIndex = function(column, row) {
     
     return column * 4 + row;
 };
-
+*/
 /**
 * Retrieves a copy of the matrix column at the provided index as a Cartesian4 instance.
 *
@@ -909,33 +909,21 @@ Matrix4.getElementIndex = function(column, row) {
 *
 * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
 */
-Matrix4.getColumn = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required.');
-    }
     
-    if (typeof index !== 'number' || index < 0 || index > 3) {
-        throw new DeveloperError('index must be 0, 1, 2, or 3.');
+    func getColumn ( index: Int) -> Cartesian4 {
+        if index < 0 || index > 3 {
+            fatalError("index must be 0, 1, 2, or 3.")
+        }
+        
+        let startIndex = index * 4;
+        let x = _grid[startIndex];
+        let y = _grid[startIndex + 1]
+        let z = _grid[startIndex + 2]
+        let w = _grid[startIndex + 3]
+        
+        return Cartesian4(x: x, y: y, z: z, w: w)
     }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var startIndex = index * 4;
-    var x = matrix[startIndex];
-    var y = matrix[startIndex + 1];
-    var z = matrix[startIndex + 2];
-    var w = matrix[startIndex + 3];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
-*/
+
 /**
 * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
 *

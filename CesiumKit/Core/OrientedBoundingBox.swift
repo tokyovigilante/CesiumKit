@@ -210,76 +210,66 @@ struct OrientedBoundingBox: Intersectable {
     * @exception {DeveloperError} ellipsoid must be an ellipsoid of revolution (<code>radii.x == radii.y</code>)
     */
     
-    init (fromRectangle rectangle: Rectangle, minimumHeight: Double, maximumHeight: Double, ellipsoid: Ellipsoid) {
-    
-    if (rectangle.width < 0.0 || rectangle.width > CesiumMath.PI) {
-    throw new DeveloperError('Rectangle width must be between 0 and pi');
-    }
-    if (rectangle.height < 0.0 || rectangle.height > CesiumMath.PI) {
-    throw new DeveloperError('Rectangle height must be between 0 and pi');
-    }
-    if (defined(ellipsoid) && !CesiumMath.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, CesiumMath.EPSILON15)) {
-    throw new DeveloperError('Ellipsoid must be an ellipsoid of revolution (radii.x == radii.y)');
-    }
-    //>>includeEnd('debug');
-    
-    minimumHeight = defaultValue(minimumHeight, 0.0);
-    maximumHeight = defaultValue(maximumHeight, 0.0);
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    
-    // The bounding box will be aligned with the tangent plane at the center of the rectangle.
-    var tangentPointCartographic = Rectangle.center(rectangle, scratchRectangleCenterCartographic);
-    var tangentPoint = ellipsoid.cartographicToCartesian(tangentPointCartographic, scratchRectangleCenter);
-    var tangentPlane = new EllipsoidTangentPlane(tangentPoint, ellipsoid);
-    var plane = tangentPlane.plane;
-    
-    // Corner arrangement:
-    //          N/+y
-    //      [0] [1] [2]
-    // W/-x [7]     [3] E/+x
-    //      [6] [5] [4]
-    //          S/-y
-    // "C" refers to the central lat/long, which by default aligns with the tangent point (above).
-    // If the rectangle spans the equator, CW and CE are instead aligned with the equator.
-    var perimeterNW = perimeterCartographicScratch[0];
-    var perimeterNC = perimeterCartographicScratch[1];
-    var perimeterNE = perimeterCartographicScratch[2];
-    var perimeterCE = perimeterCartographicScratch[3];
-    var perimeterSE = perimeterCartographicScratch[4];
-    var perimeterSC = perimeterCartographicScratch[5];
-    var perimeterSW = perimeterCartographicScratch[6];
-    var perimeterCW = perimeterCartographicScratch[7];
-    
-    var lonCenter = tangentPointCartographic.longitude;
-    var latCenter = (rectangle.south < 0.0 && rectangle.north > 0.0) ? 0.0 : tangentPointCartographic.latitude;
-    perimeterSW.latitude = perimeterSC.latitude = perimeterSE.latitude = rectangle.south;
-    perimeterCW.latitude = perimeterCE.latitude = latCenter;
-    perimeterNW.latitude = perimeterNC.latitude = perimeterNE.latitude = rectangle.north;
-    perimeterSW.longitude = perimeterCW.longitude = perimeterNW.longitude = rectangle.west;
-    perimeterSC.longitude = perimeterNC.longitude = lonCenter;
-    perimeterSE.longitude = perimeterCE.longitude = perimeterNE.longitude = rectangle.east;
-    
-    // Compute XY extents using the rectangle at maximum height
-    perimeterNE.height = perimeterNC.height = perimeterNW.height = perimeterCW.height = perimeterSW.height = perimeterSC.height = perimeterSE.height = perimeterCE.height = maximumHeight;
-    
-    ellipsoid.cartographicArrayToCartesianArray(perimeterCartographicScratch, perimeterCartesianScratch);
-    tangentPlane.projectPointsToNearestOnPlane(perimeterCartesianScratch, perimeterProjectedScratch);
-    // See the `perimeterXX` definitions above for what these are
-    var minX = Math.min(perimeterProjectedScratch[6].x, perimeterProjectedScratch[7].x, perimeterProjectedScratch[0].x);
-    var maxX = Math.max(perimeterProjectedScratch[2].x, perimeterProjectedScratch[3].x, perimeterProjectedScratch[4].x);
-    var minY = Math.min(perimeterProjectedScratch[4].y, perimeterProjectedScratch[5].y, perimeterProjectedScratch[6].y);
-    var maxY = Math.max(perimeterProjectedScratch[0].y, perimeterProjectedScratch[1].y, perimeterProjectedScratch[2].y);
-    
-    // Compute minimum Z using the rectangle at minimum height
-    perimeterNE.height = perimeterNW.height = perimeterSE.height = perimeterSW.height = minimumHeight;
-    ellipsoid.cartographicArrayToCartesianArray(perimeterCartographicScratch, perimeterCartesianScratch);
-    var minZ = Math.min(Plane.getPointDistance(plane, perimeterCartesianScratch[0]),
-    Plane.getPointDistance(plane, perimeterCartesianScratch[2]),
-    Plane.getPointDistance(plane, perimeterCartesianScratch[4]),
-    Plane.getPointDistance(plane, perimeterCartesianScratch[6]));
-    var maxZ = maximumHeight;  // Since the tangent plane touches the surface at height = 0, this is okay
-    
-    return fromTangentPlaneExtents(tangentPlane, minX, maxX, minY, maxY, minZ, maxZ, result);
+    init (fromRectangle rectangle: Rectangle, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+        
+        if rectangle.width < 0.0 || rectangle.width > M_PI {
+            fatalError("Rectangle width must be between 0 and pi")
+        }
+        if rectangle.height < 0.0 || rectangle.height > M_PI {
+            fatalError("Rectangle height must be between 0 and pi")
+        }
+        if (Math.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, relativeEpsilon: Math.Epsilon15)) {
+            fatalError("Ellipsoid must be an ellipsoid of revolution (radii.x == radii.y)")
+        }
+        
+        // The bounding box will be aligned with the tangent plane at the center of the rectangle.
+        let tangentPointCartographic = rectangle.center()
+        let tangentPoint = ellipsoid.cartographicToCartesian(tangentPointCartographic)
+        let tangentPlane = EllipsoidTangentPlane(origin: tangentPoint, ellipsoid: ellipsoid)
+        let plane = tangentPlane.plane
+        
+        var lonCenter = tangentPointCartographic.longitude
+        var latCenter = (rectangle.south < 0.0 && rectangle.north > 0.0) ? 0.0 : tangentPointCartographic.latitude
+        
+        // Corner arrangement:
+        //          N/+y
+        //      [0] [1] [2]
+        // W/-x [7]     [3] E/+x
+        //      [6] [5] [4]
+        //          S/-y
+        // "C" refers to the central lat/long, which by default aligns with the tangent point (above).
+        // If the rectangle spans the equator, CW and CE are instead aligned with the equator.
+        // Compute XY extents using the rectangle at maximum height
+
+        let cartographicArray = [
+            Cartographic(longitude: rectangle.west, latitude: rectangle.north, height: maximumHeight), // perimeterNW
+            Cartographic(longitude: lonCenter, latitude: rectangle.north, height: maximumHeight), // perimeterNC
+            Cartographic(longitude: rectangle.east, latitude: rectangle.north, height: maximumHeight), // perimeterNE
+            Cartographic(longitude: rectangle.east, latitude: latCenter, height: maximumHeight), // perimeterCE
+            Cartographic(longitude: rectangle.east, latitude: rectangle.south, height: maximumHeight), // perimeterSE
+            Cartographic(longitude: lonCenter, latitude: rectangle.south, height: maximumHeight), // perimeterSC
+            Cartographic(longitude: rectangle.west, latitude: rectangle.south, height: maximumHeight), // perimeterSW
+            Cartographic(longitude: rectangle.west, latitude: latCenter, height: maximumHeight) // perimeterCW
+        ]
+        
+        let perimeterCartesian = ellipsoid.cartographicArrayToCartesianArray(cartographicArray)
+        tangentPlane.projectPointsToNearestOnPlane(perimeterCartesianScratch, perimeterProjectedScratch);
+        // See the `perimeterXX` definitions above for what these are
+        var minX = Math.min(perimeterProjectedScratch[6].x, perimeterProjectedScratch[7].x, perimeterProjectedScratch[0].x);
+        var maxX = Math.max(perimeterProjectedScratch[2].x, perimeterProjectedScratch[3].x, perimeterProjectedScratch[4].x);
+        var minY = Math.min(perimeterProjectedScratch[4].y, perimeterProjectedScratch[5].y, perimeterProjectedScratch[6].y);
+        var maxY = Math.max(perimeterProjectedScratch[0].y, perimeterProjectedScratch[1].y, perimeterProjectedScratch[2].y);
+        
+        // Compute minimum Z using the rectangle at minimum height
+        perimeterNE.height = perimeterNW.height = perimeterSE.height = perimeterSW.height = minimumHeight;
+        ellipsoid.cartographicArrayToCartesianArray(perimeterCartographicScratch, perimeterCartesianScratch);
+        var minZ = Math.min(Plane.getPointDistance(plane, perimeterCartesianScratch[0]),
+            Plane.getPointDistance(plane, perimeterCartesianScratch[2]),
+            Plane.getPointDistance(plane, perimeterCartesianScratch[4]),
+            Plane.getPointDistance(plane, perimeterCartesianScratch[6]));
+        var maxZ = maximumHeight;  // Since the tangent plane touches the surface at height = 0, this is okay
+        
+        return fromTangentPlaneExtents(tangentPlane, minX, maxX, minY, maxY, minZ, maxZ, result);
     };
     /*
     /**

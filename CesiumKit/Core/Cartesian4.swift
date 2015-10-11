@@ -123,8 +123,8 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    static func fromColor (red red: Double, green: Double, blue: Double, alpha: Double) -> Cartesian4 {
-        return Cartesian4(x: red, y: green, z: blue, w: alpha)
+    init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
+        self.init(x: red, y: green, z: blue, w: alpha)
     }
     
     /**

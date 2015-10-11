@@ -224,7 +224,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         if (rectangle.width < M_PI_2 + Math.Epsilon5) {
             // Here, rectangle.width < pi/2, and rectangle.height < pi
             // (though it would still work with rectangle.width up to pi)
-            orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, statistics.minimumHeight, statistics.maximumHeight, ellipsoid)
+            orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, minimumHeight: statistics.minimumHeight, maximumHeight: statistics.maximumHeight, ellipsoid: ellipsoid)
         } else {
             orientedBoundingBox = nil
         }
@@ -240,7 +240,6 @@ class HeightmapTerrainData: TerrainData, Equatable {
             boundingSphere3D: boundingSphere3D,
             occludeePointInScaledSpace: occludeePointInScaledSpace!,
             orientedBoundingBox: orientedBoundingBox)
-        )
         completionBlock(mesh)
     }
 
