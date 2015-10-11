@@ -81,7 +81,7 @@ class ShaderProgram {
     var maximumTextureUnitIndex: Int = 0
     
     init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
-
+        
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
         fragmentShaderSource = fss
@@ -90,6 +90,30 @@ class ShaderProgram {
         keyword = _vertexShaderText + _fragmentShaderText
         initialize(context, optimizer: optimizer)
     }
+    
+    ShaderProgram.fromCache = function(options) {
+            options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    
+            //>>includeStart('debug', pragmas.debug);
+            if (!defined(options.context)) {
+                throw new DeveloperError('options.context is required.');
+            }
+            //>>includeEnd('debug');
+    
+            return options.context.shaderCache.getShaderProgram(options);
+        };
+    
+        ShaderProgram.replaceCache = function(options) {
+            options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    
+           //>>includeStart('debug', pragmas.debug);
+            if (!defined(options.context)) {
+                throw new DeveloperError('options.context is required.');
+            }
+            //>>includeEnd('debug');
+    
+            return options.context.shaderCache.replaceShaderProgram(options);
+        }
     
     func getUniformBufferSize() -> Int {
         let fSize = Int(_fragmentShader.uniformTotalSize())

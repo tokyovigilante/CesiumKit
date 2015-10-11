@@ -31,8 +31,8 @@ class ComputeEngine {
         return MTLRenderPassDescriptor()
     }
     
-    private func createViewportQuadShader(fragmentShaderSource: ShaderSource) {
-    return ShaderProgram.fromCache({
+    private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) {
+    return RenderPipeline.fromCache({
     context : context,
     vertexShaderSource : ViewportQuadVS,
     fragmentShaderSource : fragmentShaderSource,
