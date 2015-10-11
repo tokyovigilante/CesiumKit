@@ -14,52 +14,33 @@ import Foundation
 * @alias IntersectionTests
 */
 class IntersectionTests {
-    /*
-
-
-
-/**
-* Computes the intersection of a ray and a plane.
-*
-* @param {Ray} ray The ray.
-* @param {Plane} plane The plane.
-* @param {Cartesian3} [result] The object onto which to store the result.
-* @returns {Cartesian3} The intersection point or undefined if there is no intersections.
-*/
-IntersectionTests.rayPlane = function(ray, plane, result) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(ray)) {
-throw new DeveloperError('ray is required.');
-}
-if (!defined(plane)) {
-throw new DeveloperError('plane is required.');
-}
-//>>includeEnd('debug');
-
-if (!defined(result)) {
-result = new Cartesian3();
-}
-
-var origin = ray.origin;
-var direction = ray.direction;
-var normal = plane.normal;
-var denominator = Cartesian3.dot(normal, direction);
-
-if (Math.abs(denominator) < CesiumMath.EPSILON15) {
-// Ray is parallel to plane.  The ray may be in the polygon's plane.
-return undefined;
-}
-
-var t = (-plane.distance - Cartesian3.dot(normal, origin)) / denominator;
-
-if (t < 0) {
-return undefined;
-}
-
-result = Cartesian3.multiplyByScalar(direction, t, result);
-return Cartesian3.add(origin, result, result);
-};
-*/
+   
+    /**
+    * Computes the intersection of a ray and a plane.
+    *
+    * @param {Ray} ray The ray.
+    * @param {Plane} plane The plane.
+    * @param {Cartesian3} [result] The object onto which to store the result.
+    * @returns {Cartesian3} The intersection point or undefined if there is no intersections.
+    */
+    static func rayPlane (ray: Ray, plane: Plane) -> Cartesian3? {
+        
+        let origin = ray.origin
+        let direction = ray.direction
+        let normal = plane.normal
+        let denominator = normal.dot(direction)
+        
+        if abs(denominator) < Math.Epsilon15 {
+            // Ray is parallel to plane.  The ray may be in the polygon's plane.
+            return nil
+        }
+        let t = (-plane.distance - normal.dot(origin)) / denominator
+        
+        if t < 0 {
+            return nil
+        }
+        return origin.add(direction.multiplyByScalar(t))
+    }
 
     static private func _rayTriangle (ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
         

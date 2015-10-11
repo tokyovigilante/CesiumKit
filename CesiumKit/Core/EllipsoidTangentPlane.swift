@@ -180,7 +180,7 @@ struct EllipsoidTangentPlane {
     result.length = count;
     return result;
     };
-    
+    */
     /**
     * Computes the projection of the provided 3D position onto the 2D plane, along the plane normal.
     *
@@ -188,35 +188,25 @@ struct EllipsoidTangentPlane {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
-    EllipsoidTangentPlane.prototype.projectPointToNearestOnPlane = function(cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(cartesian)) {
-    throw new DeveloperError('cartesian is required.');
+    func projectPointToNearestOnPlane (cartesian: Cartesian3) -> Cartesian2 {
+        
+        let ray = Ray(origin: cartesian, direction: plane.normal)
+        
+        let intersectionPoint = IntersectionTests.rayPlane(ray, plane)
+        
+        if (!defined(intersectionPoint)) {
+            Cartesian3.negate(ray.direction, ray.direction);
+            intersectionPoint = IntersectionTests.rayPlane(ray, this._plane, scratchProjectPointOntoPlaneCartesian3);
+        }
+        
+        var v = Cartesian3.subtract(intersectionPoint, this._origin, intersectionPoint);
+        var x = Cartesian3.dot(this._xAxis, v);
+        var y = Cartesian3.dot(this._yAxis, v);
+        
+        result.x = x;
+        result.y = y;
+        return result;
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    result = new Cartesian2();
-    }
-    
-    var ray = scratchProjectPointOntoPlaneRay;
-    ray.origin = cartesian;
-    Cartesian3.clone(this._plane.normal, ray.direction);
-    
-    var intersectionPoint = IntersectionTests.rayPlane(ray, this._plane, scratchProjectPointOntoPlaneCartesian3);
-    if (!defined(intersectionPoint)) {
-    Cartesian3.negate(ray.direction, ray.direction);
-    intersectionPoint = IntersectionTests.rayPlane(ray, this._plane, scratchProjectPointOntoPlaneCartesian3);
-    }
-    
-    var v = Cartesian3.subtract(intersectionPoint, this._origin, intersectionPoint);
-    var x = Cartesian3.dot(this._xAxis, v);
-    var y = Cartesian3.dot(this._yAxis, v);
-    
-    result.x = x;
-    result.y = y;
-    return result;
-    };
     
     /**
     * Computes the projection of the provided 3D positions onto the 2D plane, along the plane normal.
@@ -227,25 +217,10 @@ struct EllipsoidTangentPlane {
     * @param {Cartesian2[]} [result] The array of Cartesian2 instances onto which to store results.
     * @returns {Cartesian2[]} The modified result parameter or a new array of Cartesian2 instances if none was provided. This will have the same length as <code>cartesians</code>.
     */
-    EllipsoidTangentPlane.prototype.projectPointsToNearestOnPlane = function(cartesians, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(cartesians)) {
-    throw new DeveloperError('cartesians is required.');
+    func projectPointsToNearestOnPlane (cartesians: [Cartesian3]) -> [Cartesian2] {
+        return cartesians.map({ projectPointToNearestOnPlane($0) })
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    result = [];
-    }
-    
-    var length = cartesians.length;
-    result.length = length;
-    for (var i = 0; i < length; i++) {
-    result[i] = this.projectPointToNearestOnPlane(cartesians[i], result[i]);
-    }
-    return result;
-    };
-    
+    /*
     var projectPointsOntoEllipsoidScratch = new Cartesian3();
     /**
     * Computes the projection of the provided 2D positions onto the 3D ellipsoid.
