@@ -219,6 +219,16 @@ class HeightmapTerrainData: TerrainData, Equatable {
             structure: _structure)
         let boundingSphere3D = BoundingSphere.fromVertices(statistics.vertices, center: center, stride: numberOfAttributes)
         
+        let orientedBoundingBox: OrientedBoundingBox?
+        
+        if (rectangle.width < M_PI_2 + Math.Epsilon5) {
+            // Here, rectangle.width < pi/2, and rectangle.height < pi
+            // (though it would still work with rectangle.width up to pi)
+            orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, statistics.minimumHeight, statistics.maximumHeight, ellipsoid)
+        } else {
+            orientedBoundingBox = nil
+        }
+        
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
         let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: statistics.vertices, stride: numberOfAttributes, center: center)
         let mesh = TerrainMesh(
@@ -228,7 +238,8 @@ class HeightmapTerrainData: TerrainData, Equatable {
             minimumHeight: statistics.minimumHeight,
             maximumHeight: statistics.maximumHeight,
             boundingSphere3D: boundingSphere3D,
-            occludeePointInScaledSpace: occludeePointInScaledSpace!
+            occludeePointInScaledSpace: occludeePointInScaledSpace!,
+            orientedBoundingBox: orientedBoundingBox)
         )
         completionBlock(mesh)
     }

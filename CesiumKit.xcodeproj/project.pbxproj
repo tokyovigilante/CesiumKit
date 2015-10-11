@@ -436,6 +436,8 @@
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
+		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; settings = {ASSET_TAGS = (); }; };
+		94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; settings = {ASSET_TAGS = (); }; };
 		94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 /* End PBXBuildFile section */
 
@@ -757,6 +759,7 @@
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
 		94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
+		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrientedBoundingBox.swift; sourceTree = "<group>"; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
@@ -920,6 +923,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1484,6 +1488,7 @@
 				9413B8061A37B94500FFAD81 /* ImageryProvider.swift in Sources */,
 				9413B7CE1A37B93100FFAD81 /* TerrainProvider.swift in Sources */,
 				9413B7A61A37B93100FFAD81 /* Cartographic.swift in Sources */,
+				94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
 				9413B7D11A37B93100FFAD81 /* Transforms.swift in Sources */,
 				9413B7E11A37B93D00FFAD81 /* DepthTest.swift in Sources */,
 				9413B8151A37B94500FFAD81 /* ScreenSpaceCameraController.swift in Sources */,
@@ -1705,6 +1710,7 @@
 				947821491B5A2D7C0095A86F /* PassState.swift in Sources */,
 				9478214A1B5A2D7C0095A86F /* PipelineCache.swift in Sources */,
 				9478214B1B5A2D7C0095A86F /* Renderbuffer.swift in Sources */,
+				94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
 				9478214C1B5A2D7C0095A86F /* RenderPass.swift in Sources */,
 				9478214D1B5A2D7C0095A86F /* RenderPipeline.swift in Sources */,
 				9478214E1B5A2D7C0095A86F /* RenderState.swift in Sources */,

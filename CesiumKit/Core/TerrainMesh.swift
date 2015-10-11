@@ -93,8 +93,14 @@ struct TerrainMesh {
     * @type {Number}
     */
     let stride: Int
+
+    /**
+    * A bounding box that completely contains the tile.
+    * @type {OrientedBoundingBox}
+    */
+    let orientedBoundingBox: OrientedBoundingBox?
     
-    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6) {
+    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?) {
         self.center = center
         self.vertices = vertices
         self.indices = indices
@@ -103,5 +109,6 @@ struct TerrainMesh {
         self.boundingSphere3D = boundingSphere3D
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
         self.stride = vertexStride
+        self.orientedBoundingBox = orientedBoundingBox
     }
 }
