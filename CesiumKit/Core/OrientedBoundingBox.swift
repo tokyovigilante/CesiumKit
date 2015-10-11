@@ -153,24 +153,16 @@ struct OrientedBoundingBox: Intersectable {
     init (fromTangentPlaneExtents tangentPlane: EllipsoidTangentPlane, minimumX: Double, maximumX: Double, minimumY: Double, maximumY: Double, minimumZ: Double, maximumZ: Double) {
         
         var halfAxes = Matrix3()
-        halfAxes.setColumn(0, tangentPlane.xAxis)
-        Matrix3.setColumn(halfAxes, 1, tangentPlane.yAxis, halfAxes);
-        Matrix3.setColumn(halfAxes, 2, tangentPlane.zAxis, halfAxes);
+        halfAxes.setColumn(0, cartesian: tangentPlane.xAxis)
+        halfAxes.setColumn(1, cartesian: tangentPlane.yAxis)
+        halfAxes.setColumn(2, cartesian: tangentPlane.zAxis)
         
-        var centerOffset = scratchOffset;
-        centerOffset.x = (minimumX + maximumX) / 2.0;
-        centerOffset.y = (minimumY + maximumY) / 2.0;
-        centerOffset.z = (minimumZ + maximumZ) / 2.0;
+        var centerOffset = Cartesian3(x: (minimumX + maximumX) / 2.0, y: (minimumY + maximumY) / 2.0, z: (minimumZ + maximumZ) / 2.0)
+        var scale = Cartesian3(x: (maximumX - minimumX) / 2.0, y: (maximumY - minimumY) / 2.0, z: (maximumZ - minimumZ) / 2.0)
         
-        var scale = scratchScale;
-        scale.x = (maximumX - minimumX) / 2.0;
-        scale.y = (maximumY - minimumY) / 2.0;
-        scale.z = (maximumZ - minimumZ) / 2.0;
-        
-        var center = result.center;
-        centerOffset = Matrix3.multiplyByVector(halfAxes, centerOffset, centerOffset);
-        Cartesian3.add(tangentPlane.origin, centerOffset, center);
-        Matrix3.multiplyByScale(halfAxes, scale, halfAxes);
+        centerOffset = halfAxes.multiplyByVector(centerOffset)
+        center = tangentPlane.origin.add(centerOffset)
+        halfAxes = halfAxes.multiplyByScale(scale)
         
         self.halfAxes = halfAxes
     }
@@ -253,8 +245,8 @@ struct OrientedBoundingBox: Intersectable {
             plane.getPointDistance(perimeterMinHeightCartesian[6]))
         let maxZ = maximumHeight  // Since the tangent plane touches the surface at height = 0, this is okay
         
-        return fromTangentPlaneExtents(tangentPlane, minX, maxX, minY, maxY, minZ, maxZ, result);
-    };
+        self.init(fromTangentPlaneExtents: tangentPlane, minimumX: minX, maximumX: maxX, minimumY: minY, maximumY: maxY, minimumZ: minZ, maximumZ: maxZ)
+    }
     /*
     /**
     * Duplicates a OrientedBoundingBox instance.

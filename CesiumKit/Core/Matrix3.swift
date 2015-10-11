@@ -158,13 +158,10 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         return result
     }
     
-    static func fromMatrix4 (matrix: Matrix4) -> Matrix3 {
-        
-        var result = Matrix3()
+    init (fromMatrix4 matrix: Matrix4) {
         for index in 0..<Matrix3.packedLength {
-            result[index] = matrix[index]
+            _grid[index] = matrix[index]
         }
-        return result
     }
     
     /**
@@ -188,14 +185,10 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
     */
-    static func fromArray (array: [Double], startingIndex: Int = 0) -> Matrix3 {
-        
-        var result = Matrix3()
-        
+    init (fromArray array: [Double], startingIndex: Int = 0) {
         for index in 0..<Matrix3.packedLength {
-            result[index] = array[startingIndex + index]
+            _grid[index] = array[startingIndex + index]
         }
-        return result
     }
     /*
     /**
@@ -790,47 +783,38 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     result[8] = matrix[8] * scalar;
     return result;
     };
-    
+    */
     /**
-         * Computes the product of a matrix times a (non-uniform) scale, as if the scale were a scale matrix.
-         *
-         * @param {Matrix3} matrix The matrix on the left-hand side.
-         * @param {Cartesian3} scale The non-uniform scale on the right-hand side.
-         * @param {Matrix3} result The object onto which to store the result.
-         * @returns {Matrix3} The modified result parameter.
-         *
-         * @see Matrix3.fromScale
-         * @see Matrix3.multiplyByUniformScale
-         *
-         * @example
-         * // Instead of Cesium.Matrix3.multiply(m, Cesium.Matrix3.fromScale(scale), m);
-         * Cesium.Matrix3.multiplyByScale(m, scale, m);
-         */
-        Matrix3.multiplyByScale = function(matrix, scale, result) {
-            //>>includeStart('debug', pragmas.debug);
-            if (!defined(matrix)) {
-                throw new DeveloperError('matrix is required');
-            }
-            if (!defined(scale)) {
-                throw new DeveloperError('scale is required');
-            }
-            if (!defined(result)) {
-                throw new DeveloperError('result is required');
-            }
-            //>>includeEnd('debug');
-    
-            result[0] = matrix[0] * scale.x;
-            result[1] = matrix[1] * scale.x;
-            result[2] = matrix[2] * scale.x;
-            result[3] = matrix[3] * scale.y;
-            result[4] = matrix[4] * scale.y;
-            result[5] = matrix[5] * scale.y;
-            result[6] = matrix[6] * scale.z;
-            result[7] = matrix[7] * scale.z;
-            result[8] = matrix[8] * scale.z;
-            return result;
-        };
-    
+    * Computes the product of a matrix times a (non-uniform) scale, as if the scale were a scale matrix.
+    *
+    * @param {Matrix3} matrix The matrix on the left-hand side.
+    * @param {Cartesian3} scale The non-uniform scale on the right-hand side.
+    * @param {Matrix3} result The object onto which to store the result.
+    * @returns {Matrix3} The modified result parameter.
+    *
+    * @see Matrix3.fromScale
+    * @see Matrix3.multiplyByUniformScale
+    *
+    * @example
+    * // Instead of Cesium.Matrix3.multiply(m, Cesium.Matrix3.fromScale(scale), m);
+    * Cesium.Matrix3.multiplyByScale(m, scale, m);
+    */
+    func multiplyByScale (scale: Cartesian3) -> Matrix3 {
+        
+        var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
+        
+        grid[0] = _grid[0] * scale.x
+        grid[1] = _grid[1] * scale.x
+        grid[2] = _grid[2] * scale.x
+        grid[3] = _grid[3] * scale.y
+        grid[4] = _grid[4] * scale.y
+        grid[5] = _grid[5] * scale.y
+        grid[6] = _grid[6] * scale.z
+        grid[7] = _grid[7] * scale.z
+        grid[8] = _grid[8] * scale.z
+        return Matrix3(fromArray: grid)
+    }
+    /*
     /**
     * Creates a negated copy of the provided matrix.
     *
