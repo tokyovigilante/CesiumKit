@@ -208,13 +208,7 @@ public struct Ellipsoid: Packable {
     * var cartesianPositions = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(positions);
     */
     func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3] {
-        
-        var cartesians = [Cartesian3]()
-        
-        for cartographic in cartographics {
-            cartesians.append(cartographicToCartesian(cartographic))
-        }
-        return cartesians
+        return cartographics.map({ cartographicToCartesian($0) })
     }
     
     /**
@@ -265,15 +259,7 @@ public struct Ellipsoid: Packable {
     * var cartographicPositions = Cesium.Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
     */
     func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic] {
-        
-        var cartographics = [Cartographic]()
-        
-        for cartesian in cartesians {
-            if let cartographic = cartesianToCartographic(cartesian) {
-                cartographics.append(cartographic)
-            }
-        }
-        return cartographics
+        return cartesians.flatMap({ cartesianToCartographic($0) })
     }
     
     /**
