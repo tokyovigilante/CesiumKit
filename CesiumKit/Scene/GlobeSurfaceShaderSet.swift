@@ -176,7 +176,7 @@ class GlobeSurfaceShaderSet {
             
             vs.sources.append(get2DYPositionFraction)
             
-            let pipeline = context.createRenderPipeline(vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
+            let pipeline = context.getRenderPipeline(vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 
             surfacePipeline = pipelinesByFlags![flags]

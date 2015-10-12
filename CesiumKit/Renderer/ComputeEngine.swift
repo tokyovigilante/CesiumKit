@@ -17,7 +17,7 @@ class ComputeEngine {
     */
     let context: Context
     
-    var renderStateScratch: RenderState
+    //var renderStateScratch: RenderState
     
     lazy var drawCommandScratch = DrawCommand()
     
@@ -31,18 +31,26 @@ class ComputeEngine {
         return MTLRenderPassDescriptor()
     }
     
-    private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) {
-    return RenderPipeline.fromCache({
-    context : context,
-    vertexShaderSource : ViewportQuadVS,
-    fragmentShaderSource : fragmentShaderSource,
-    attributeLocations : {
-    position : 0,
-    textureCoordinates : 1
+    private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) -> RenderPipeline? {
+        
+        let attributes = [
+            // attribute vec4 position;
+            VertexAttributes(
+                bufferIndex: 1,
+                format: .Float4,
+                offset: 0,
+                size: 16),
+            // attribute vec2 textureCoordinates;
+            VertexAttributes(
+                bufferIndex: 1,
+                format: .Float2,
+                offset: 16,
+                size: 8)
+        ]
+        
+        return RenderPipeline.fromCache(context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes))
     }
-    });
-    }
-    
+    /*
     function createRenderState(width, height) {
     if ((!defined(renderStateScratch)) ||
     (renderStateScratch.viewport.width !== width) ||
@@ -115,9 +123,6 @@ class ComputeEngine {
         }*/
     }
     /*
-    ComputeEngine.prototype.isDestroyed = function() {
-    return false;
-    };
     
     ComputeEngine.prototype.destroy = function() {
     return destroyObject(this);

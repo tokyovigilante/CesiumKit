@@ -30,7 +30,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
         
-        let color: Cartesian4 = Cartesian4.fromColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        let color = Cartesian4(fromRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
         let tileWidth: Int = 256
         

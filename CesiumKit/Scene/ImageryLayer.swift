@@ -731,7 +731,7 @@ public class ImageryLayer {
             
             let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: positions.count, indexBuffer: indexBuffer)
             
-            let pipeline = context.createRenderPipeline(
+            let pipeline = context.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorFS"]!]),
                 vertexDescriptor: vertexDescriptor

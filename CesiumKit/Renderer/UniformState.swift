@@ -38,7 +38,7 @@ class UniformState {
     }
     var _frameState: FrameState = FrameState()
     
-    private var _temeToPseudoFixed = Matrix3.fromMatrix4(Matrix4.identity())
+    private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity())
     
     // Derived members
     private var _view3DDirty = true

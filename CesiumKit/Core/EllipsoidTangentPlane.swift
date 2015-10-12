@@ -66,7 +66,9 @@ struct EllipsoidTangentPlane {
     * @readonly
     * @type {Cartesian3}
     */
-    let zAxis: Cartesian3
+    var zAxis: Cartesian3 {
+        return plane.normal
+    }
     
     init (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         

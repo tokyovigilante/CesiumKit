@@ -85,35 +85,19 @@ class ShaderProgram {
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
         fragmentShaderSource = fss
-        _vertexShaderText = vss.createCombinedVertexShader()
-        _fragmentShaderText = fss.createCombinedFragmentShader()
-        keyword = _vertexShaderText + _fragmentShaderText
+        let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
+        _vertexShaderText = combinedShaders.vst
+        _fragmentShaderText = combinedShaders.fst
+        keyword = combinedShaders.keyword
         initialize(context, optimizer: optimizer)
     }
     
-    ShaderProgram.fromCache = function(options) {
-            options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    
-            //>>includeStart('debug', pragmas.debug);
-            if (!defined(options.context)) {
-                throw new DeveloperError('options.context is required.');
-            }
-            //>>includeEnd('debug');
-    
-            return options.context.shaderCache.getShaderProgram(options);
-        };
-    
-        ShaderProgram.replaceCache = function(options) {
-            options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    
-           //>>includeStart('debug', pragmas.debug);
-            if (!defined(options.context)) {
-                throw new DeveloperError('options.context is required.');
-            }
-            //>>includeEnd('debug');
-    
-            return options.context.shaderCache.replaceShaderProgram(options);
-        }
+    static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
+        let vst = vss.createCombinedVertexShader()
+        let fst = fss.createCombinedFragmentShader()
+        let keyword = vst + fst
+        return (vst, fst, keyword)
+    }
     
     func getUniformBufferSize() -> Int {
         let fSize = Int(_fragmentShader.uniformTotalSize())

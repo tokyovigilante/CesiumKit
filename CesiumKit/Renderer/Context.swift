@@ -239,7 +239,7 @@ class Context {
             return _pipelineCache!.replaceRenderPipeline(pipeline, context: self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
     }
     
-    func createRenderPipeline(
+    func getRenderPipeline(
         vertexShaderSource vss: ShaderSource,
         fragmentShaderSource fss: ShaderSource,
         vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline {

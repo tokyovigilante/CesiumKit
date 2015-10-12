@@ -36,13 +36,13 @@ struct OrientedBoundingBox: Intersectable {
     * @type {Cartesian3}
     * @default {@link Cartesian3.ZERO}
     */
-    let center = Cartesian3.zero()
+    private (set) var center = Cartesian3.zero()
     /**
     * The transformation matrix, to rotate the box to the right position.
     * @type {Matrix3}
     * @default {@link Matrix3.IDENTITY}
     */
-    let halfAxes = Matrix3.zero()
+    private (set) var halfAxes = Matrix3.zero()
     
     /**
     * Computes an instance of an OrientedBoundingBox of the given positions.
@@ -191,7 +191,7 @@ struct OrientedBoundingBox: Intersectable {
         if rectangle.height < 0.0 || rectangle.height > M_PI {
             fatalError("Rectangle height must be between 0 and pi")
         }
-        if (Math.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, relativeEpsilon: Math.Epsilon15)) {
+        if !Math.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, relativeEpsilon: Math.Epsilon15) {
             fatalError("Ellipsoid must be an ellipsoid of revolution (radii.x == radii.y)")
         }
         

@@ -456,7 +456,7 @@ public class BingMapsImageryProvider: ImageryProvider {
             "key" : self._key])
             .response { (request, response, data, error) in
                 if let error = error {
-                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
+                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
                     return
                 }
                 metadataSuccess(data as NSData!)
