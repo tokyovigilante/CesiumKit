@@ -417,6 +417,8 @@
 		948CD9CD1B6D94120095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
 		948CD9CE1B6D941B0095A86F /* CesiumKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		948CD9D01B6D94F10095A86F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948CD9CF1B6D94F10095A86F /* Cocoa.framework */; };
+		949090731BCCE3D5001A40C8 /* ContextLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949090711BCCE3D5001A40C8 /* ContextLimits.swift */; settings = {ASSET_TAGS = (); }; };
+		949090741BCCE3D5001A40C8 /* ContextLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949090711BCCE3D5001A40C8 /* ContextLimits.swift */; settings = {ASSET_TAGS = (); }; };
 		94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A691A38444C00FFAD81 /* AppDelegate.swift */; };
 		94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */; };
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
@@ -697,6 +699,7 @@
 		948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MergeSort.swift; sourceTree = "<group>"; };
 		948F4D8D19D7969400FFAD81 /* TileReplacementQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileReplacementQueue.swift; sourceTree = "<group>"; };
 		948F4D8F19D79D1C00FFAD81 /* QuadtreeOccluders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreeOccluders.swift; sourceTree = "<group>"; };
+		949090711BCCE3D5001A40C8 /* ContextLimits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextLimits.swift; sourceTree = "<group>"; };
 		9491BBAF1949D084007C1C4C /* TerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainProvider.swift; sourceTree = "<group>"; };
 		9491BBB11949D156007C1C4C /* Credit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		9491BBB51949D63A007C1C4C /* TilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilingScheme.swift; sourceTree = "<group>"; };
@@ -958,6 +961,7 @@
 				943416B81BC8D864001A40C8 /* ComputeCommand.swift */,
 				943416BB1BC8D932001A40C8 /* ComputeEngine.swift */,
 				94B87DC4194D699400012DC4 /* Context.swift */,
+				949090711BCCE3D5001A40C8 /* ContextLimits.swift */,
 				9465B0271956F61400355D2C /* CubeMap.swift */,
 				94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */,
 				947A240E19C9919D0040042F /* CullFace.swift */,
@@ -1538,6 +1542,7 @@
 				9413B8021A37B94500FFAD81 /* GridImageryProvider.swift in Sources */,
 				9413B7B61A37B93100FFAD81 /* HeightmapTessellator.swift in Sources */,
 				9413B7A41A37B93100FFAD81 /* Cartesian3.swift in Sources */,
+				949090731BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
 				94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */,
 				943416BC1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
@@ -1749,6 +1754,7 @@
 				947821591B5A2D7C0095A86F /* VertexType.swift in Sources */,
 				9478215A1B5A2D7C0095A86F /* WindingOrder.swift in Sources */,
 				9478215B1B5A2D7C0095A86F /* BingMapsAPI.swift in Sources */,
+				949090741BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9478215C1B5A2D7C0095A86F /* BingMapsImageryProvider.swift in Sources */,
 				9478215D1B5A2D7C0095A86F /* BingMapsStyle.swift in Sources */,
 				9478215E1B5A2D7C0095A86F /* BlendEquation.swift in Sources */,

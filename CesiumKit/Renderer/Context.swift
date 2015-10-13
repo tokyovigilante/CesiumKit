@@ -44,6 +44,8 @@ class Context {
     private var _drawable: CAMetalDrawable! = nil
     private var _commandBuffer: MTLCommandBuffer! = nil
     
+    var limits: ContextLimits
+    
     /*    var pipeline: MTLRenderPipelineState
     var uniformBuffer: MTLBuffer
     var depthTexture: MTLTexture
@@ -57,15 +59,16 @@ class Context {
     //private var _depthTexture: MTLTexture!
     //private var _stencilTexture: MTLTexture!
     
-    var maximumTextureSize: Int = 4096
+    /*var maximumTextureSize: Int = 4096
     
     var maximumTextureUnits: Int = 16 // techically maximum sampler state attachment
+    
+    
+    var maximumTextureFilterAnisotropy = 1*/
     
     var allowTextureFilterAnisotropic = true
     
     var textureFilterAnisotropic = true
-    
-    var maximumTextureFilterAnisotropy = 1
     
     struct glOptions {
         
@@ -176,6 +179,7 @@ class Context {
         self.view = view
         
         device = view.device!
+        limits = ContextLimits(device: device)
         
         _commandQueue = device.newCommandQueue()
         

@@ -578,7 +578,7 @@ public class ImageryLayer {
             if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
                 var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
-                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.maximumTextureFilterAnisotropy)
+                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
                 }
                 // FIXME: Mipmaps
                 context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
@@ -737,7 +737,7 @@ public class ImageryLayer {
                 vertexDescriptor: vertexDescriptor
             )
 
-            let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
+            let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
             let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
             
             let renderPassDescriptor = MTLRenderPassDescriptor()

@@ -158,7 +158,7 @@ struct OrientedBoundingBox: Intersectable {
         halfAxes.setColumn(2, cartesian: tangentPlane.zAxis)
         
         var centerOffset = Cartesian3(x: (minimumX + maximumX) / 2.0, y: (minimumY + maximumY) / 2.0, z: (minimumZ + maximumZ) / 2.0)
-        var scale = Cartesian3(x: (maximumX - minimumX) / 2.0, y: (maximumY - minimumY) / 2.0, z: (maximumZ - minimumZ) / 2.0)
+        let scale = Cartesian3(x: (maximumX - minimumX) / 2.0, y: (maximumY - minimumY) / 2.0, z: (maximumZ - minimumZ) / 2.0)
         
         centerOffset = halfAxes.multiplyByVector(centerOffset)
         center = tangentPlane.origin.add(centerOffset)
