@@ -46,25 +46,10 @@ class Context {
     
     var limits: ContextLimits
     
-    /*    var pipeline: MTLRenderPipelineState
-    var uniformBuffer: MTLBuffer
-    var depthTexture: MTLTexture
-    var depthState: MTLDepthStencilState
-    var notMipSamplerState: MTLSamplerState
-    var nearestMipSamplerState: MTLSamplerState
-    var linearMipSamplerState: MTLSamplerState*/
-    
     //private var _commandsExecutedThisFrame = [DrawCommand]()
     
     //private var _depthTexture: MTLTexture!
     //private var _stencilTexture: MTLTexture!
-    
-    /*var maximumTextureSize: Int = 4096
-    
-    var maximumTextureUnits: Int = 16 // techically maximum sampler state attachment
-    
-    
-    var maximumTextureFilterAnisotropy = 1*/
     
     var allowTextureFilterAnisotropic = true
     
@@ -82,7 +67,7 @@ class Context {
     
     var _logShaderCompilation = false
     
-    var _pipelineCache: PipelineCache!
+    let pipelineCache: PipelineCache!
     
     private var _clearColor: MTLClearColor = MTLClearColorMake(1.0, 0.0, 0.0, 1.0)
     
@@ -181,7 +166,15 @@ class Context {
         device = view.device!
         limits = ContextLimits(device: device)
         
+        print("Metal device: " + (device.name ?? "Unknown"))
+        #if os(OSX)
+            print("- Low power: " + (device.lowPower ? "Yes" : "No"))
+            print("- Headless: " + (device.headless ? "Yes" : "No"))
+        #endif
+        
         _commandQueue = device.newCommandQueue()
+        
+        pipelineCache = PipelineCache(device: device)
         
         id = NSUUID().UUIDString
         
@@ -229,29 +222,6 @@ class Context {
         
         width = Int(view.drawableSize.width)
         height = Int(view.drawableSize.height)
-    }
-    
-    func replaceRenderPipeline(
-        pipeline: RenderPipeline?,
-        vertexShaderSource vss: ShaderSource,
-        fragmentShaderSource fss: ShaderSource,
-        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline? {
-            
-            if _pipelineCache == nil {
-                _pipelineCache = PipelineCache(context: self)
-            }
-            return _pipelineCache!.replaceRenderPipeline(pipeline, context: self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
-    }
-    
-    func getRenderPipeline(
-        vertexShaderSource vss: ShaderSource,
-        fragmentShaderSource fss: ShaderSource,
-        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline {
-            
-            if _pipelineCache == nil {
-                _pipelineCache = PipelineCache(context: self)
-            }
-            return _pipelineCache.getRenderPipeline(self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
     }
     
     /**

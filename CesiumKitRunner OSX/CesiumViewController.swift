@@ -27,7 +27,6 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
-        print("Metal device: " + (_metalView.device?.name ?? "Unknown"))
         _metalView.colorPixelFormat = .BGRA8Unorm
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60

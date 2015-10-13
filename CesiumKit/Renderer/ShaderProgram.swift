@@ -80,7 +80,7 @@ class ShaderProgram {
     
     var maximumTextureUnitIndex: Int = 0
     
-    init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
+    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
         
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
@@ -89,7 +89,7 @@ class ShaderProgram {
         _vertexShaderText = combinedShaders.vst
         _fragmentShaderText = combinedShaders.fst
         keyword = combinedShaders.keyword
-        initialize(context, optimizer: optimizer)
+        initialize(device, optimizer: optimizer)
     }
     
     static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
@@ -120,10 +120,10 @@ class ShaderProgram {
         return provider
     }
     
-    private func initialize(context: Context, optimizer: GLSLOptimizer) {
+    private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
 
         createMetalProgram(optimizer)
-        compileMetalProgram(context.device)
+        compileMetalProgram(device)
         
         findVertexAttributes()
         findUniforms()
