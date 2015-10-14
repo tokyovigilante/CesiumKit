@@ -231,7 +231,7 @@ class TileTerrain {
                 }
                 terrainMesh.indexBuffer = indexBuffer!
             }
-            let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            let vertexArray = context.createVertexArray(buffers: [vertexBuffer], vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                 self.vertexArray = vertexArray
