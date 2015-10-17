@@ -210,7 +210,7 @@ class TileTerrain {
             
             let vertexCount = meshBufferSize / stride
             
-            let vertexBuffer = context.createBuffer(terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
+            let vertexBuffer = Buffer(device: context.device, array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
             
             var indexBuffer = terrainMesh.indexBuffer
             if indexBuffer == nil {
@@ -218,20 +218,22 @@ class TileTerrain {
                 let indices = terrainMesh.indices
                 if indices.count < Math.SixtyFourKilobytes {
                     let indicesShort = indices.map({ UInt16($0) })
-                    indexBuffer = context.createBuffer(
-                        indicesShort,
+                    indexBuffer = Buffer(
+                        device: context.device,
+                        array: indicesShort,
                         componentDatatype: ComponentDatatype.UnsignedShort,
                         sizeInBytes: indicesShort.sizeInBytes)
                 } else {
                     let indicesInt = indices.map({ UInt32($0) })
-                    indexBuffer = context.createBuffer(
-                        indicesInt,
+                    indexBuffer = Buffer(
+                        device: context.device,
+                        array: indicesInt,
                         componentDatatype: ComponentDatatype.UnsignedInt,
                         sizeInBytes: indicesInt.sizeInBytes)
                 }
                 terrainMesh.indexBuffer = indexBuffer!
             }
-            let vertexArray = context.createVertexArray([vertexBuffer], vertexAttributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            let vertexArray = VertexArray(buffers: [vertexBuffer], attributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                 self.vertexArray = vertexArray

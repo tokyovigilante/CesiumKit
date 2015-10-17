@@ -114,9 +114,9 @@ class ShaderProgram {
         return vSize
     }
     
-    func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
+    func createUniformBufferProvider(device: MTLDevice) -> UniformBufferProvider {
         let totalSize = getUniformBufferSize()
-        let provider = context.createUniformBufferProvider(3, sizeInBytes: totalSize > 0 ? totalSize : 1)
+        let provider = UniformBufferProvider(device: device, capacity: 3, sizeInBytes: totalSize > 0 ? totalSize : 1)
         return provider
     }
     

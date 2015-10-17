@@ -522,7 +522,7 @@ public class ImageryLayer {
                 }
             }
             // Imagery does not need to be discarded, so upload it to GL.
-            let texture = context.createTexture2D(TextureOptions(
+            let texture = Texture(context: context, options: TextureOptions(
                 source : .Image(imagery.image!))
             )
 
@@ -706,12 +706,12 @@ public class ImageryLayer {
                 positions.append(y)
             }
             
-            let vertexBuffer = context.createBuffer(positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
-            let webMercatorTBuffer = context.createBuffer(componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
+            let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
+            let webMercatorTBuffer = Buffer(device: context.device, componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
 
-            let indexBuffer = context.createBuffer(indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
+            let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
             
             let vertexAttributes = [
                 //position
@@ -731,7 +731,7 @@ public class ImageryLayer {
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
-            let vertexArray = context.createVertexArray([vertexBuffer, webMercatorTBuffer], vertexAttributes: vertexAttributes, vertexCount: positions.count, indexBuffer: indexBuffer)
+            let vertexArray = VertexArray(buffers: [vertexBuffer, webMercatorTBuffer], attributes: vertexAttributes, vertexCount: positions.count, indexBuffer: indexBuffer)
             
             let pipeline = context.pipelineCache.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
@@ -770,8 +770,9 @@ public class ImageryLayer {
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
         var oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
         
-        var outputTexture = context.createTexture2D(
-            TextureOptions(
+        var outputTexture = Texture(
+            context: context,
+            options: TextureOptions(
                 width: width,
                 height: height,
                 pixelFormat: texture.pixelFormat,
@@ -796,7 +797,7 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
         }
         
-        let webMercatorTBuffer = context.createBuffer(webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
+        let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
         
         if reproject.renderState == nil {
             reproject.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
