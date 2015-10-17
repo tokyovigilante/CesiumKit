@@ -716,15 +716,15 @@ public class ImageryLayer {
             let vertexAttributes = [
                 //position
                 VertexAttributes(
-                    bufferIndex: 0,
-                    index: 1,
+                    bufferIndex: 1,
+                    index: 0,
                     format: .Float4,
                     offset: 0,
                     size: sizeof(Float) * 4),
                 // webMercatorT
                 VertexAttributes(
-                    bufferIndex: 1,
-                    index: 2,
+                    bufferIndex: 2,
+                    index: 0,
                     format: .Float2,
                     offset: 0,
                     size: sizeof(Float) * 2)

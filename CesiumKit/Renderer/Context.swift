@@ -778,8 +778,8 @@ class Context {
             
             commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
             
-            for attribute in va.attributes {
-                commandEncoder.setVertexBuffer(va.vertexBuffers[attribute.bufferIndex].metalBuffer, offset: attribute.offset, atIndex: attribute.index)
+            for (i, buffer) in va.vertexBuffers.enumerate() {
+                commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: i+1)
             }
             
             commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 0)
