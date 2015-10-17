@@ -716,20 +716,22 @@ public class ImageryLayer {
             let vertexAttributes = [
                 //position
                 VertexAttributes(
-                    bufferIndex: 1,
+                    bufferIndex: 0,
+                    index: 1,
                     format: .Float4,
                     offset: 0,
                     size: sizeof(Float) * 4),
                 // webMercatorT
                 VertexAttributes(
-                    bufferIndex: 2,
+                    bufferIndex: 1,
+                    index: 2,
                     format: .Float2,
                     offset: 0,
                     size: sizeof(Float) * 2)
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
-            let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: positions.count, indexBuffer: indexBuffer)
+            let vertexArray = context.createVertexArray([vertexBuffer, webMercatorTBuffer], vertexAttributes: vertexAttributes, vertexCount: positions.count, indexBuffer: indexBuffer)
             
             let pipeline = context.pipelineCache.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),

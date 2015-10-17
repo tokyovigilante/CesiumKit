@@ -84,6 +84,11 @@ protocol TerrainProvider {
     * @returns {Uint16Array} The list of indices.
     */
     
+    /**
+    * Gets an array of vertex attributes describing the terrain vertices produced.
+    */
+    var vertexAttributes: [VertexAttributes] { get }
+    
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
     static func getRegularGridIndices(width width: Int, height: Int) -> [Int]
@@ -163,5 +168,33 @@ extension TerrainProvider {
         return nil
     }
     
+    var vertexAttributes: [VertexAttributes] {
+        let datatype = ComponentDatatype.Float32
+        let numTexCoordComponents: Int
+        if hasVertexNormals {
+            numTexCoordComponents = 3
+        } else {
+            numTexCoordComponents = 2
+        }
+        
+        let position3DAndHeightLength = 4
+        
+        return [
+            //position3DAndHeight
+            VertexAttributes(
+                bufferIndex: 0,
+                index: 1,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
+            // texCoordAndEncodedNormals
+            VertexAttributes(
+                bufferIndex: 0,
+                index: 2,
+                format: hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
+        ]
+    }
 }
 

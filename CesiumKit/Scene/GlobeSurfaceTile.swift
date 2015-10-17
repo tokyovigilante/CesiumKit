@@ -174,9 +174,9 @@ class GlobeSurfaceTile {
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
             
-            var v0 = getPosition(scene, vertices: vertices, stride: stride, index: i0)
-            var v1 = getPosition(scene, vertices: vertices, stride: stride, index: i1)
-            var v2 = getPosition(scene, vertices: vertices, stride: stride, index: i2)
+            let v0 = getPosition(scene, vertices: vertices, stride: stride, index: i0)
+            let v1 = getPosition(scene, vertices: vertices, stride: stride, index: i1)
+            let v2 = getPosition(scene, vertices: vertices, stride: stride, index: i2)
             
             var intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
             if intersection != nil {

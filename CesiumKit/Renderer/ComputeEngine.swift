@@ -36,13 +36,15 @@ class ComputeEngine {
         let attributes = [
             // attribute vec4 position;
             VertexAttributes(
-                bufferIndex: 1,
+                bufferIndex: 0,
+                index: 1,
                 format: .Float4,
                 offset: 0,
                 size: 16),
             // attribute vec2 textureCoordinates;
             VertexAttributes(
-                bufferIndex: 1,
+                bufferIndex: 0,
+                index: 2,
                 format: .Float2,
                 offset: 16,
                 size: 8)

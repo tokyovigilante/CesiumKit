@@ -8,6 +8,7 @@
 
 struct VertexAttributes {
     let bufferIndex: Int
+    let index: Int
     let format: VertexType
     let offset: Int
     let size: Int

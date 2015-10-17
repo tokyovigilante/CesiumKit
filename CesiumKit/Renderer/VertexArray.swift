@@ -27,7 +27,7 @@ class VertexArray {
     
     init(buffers: [Buffer], attributes: [VertexAttributes], vertexCount: Int, indexType: MTLIndexType = .UInt16, indexBuffer: Buffer? = nil) {
         self.vertexBuffers = buffers
-        self.attributes = vertexAttributes
+        self.attributes = attributes
         self.vertexCount = vertexCount
         self.indexType = indexType
         self.indexBuffer = indexBuffer
@@ -148,7 +148,7 @@ class VertexArray {
             }*/
         } else {
             // One vertex buffer per attribute.
-            for attribute in attributes {
+            for attribute in vertexAttributes {
                 /*if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
                 attribute = attributes[name];
                 
@@ -198,7 +198,7 @@ class VertexArray {
         }
     }*/
     
-    self.init(vertexAttributes: vertexAttributes, vertexCount: 0)
+        self.init(buffers: [geometry.attributes.normal!.buffer], attributes: vertexAttributes, vertexCount: 0)
     //    attributes : vaAttributes,
     //  indexBuffer : indexBuffer
     // }

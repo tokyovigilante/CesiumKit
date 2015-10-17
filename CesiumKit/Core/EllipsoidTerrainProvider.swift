@@ -63,7 +63,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {Boolean}
     */
     var ready = true
-
+    
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
     private let _terrainData: HeightmapTerrainData
