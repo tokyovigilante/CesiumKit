@@ -469,12 +469,12 @@ class Context {
                 position: GeometryAttribute(
                     componentDatatype: .Float32,
                     componentsPerAttribute: 2,
-                    buffer: Buffer(device: device, array: [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0], componentDatatype: .Float32, sizeInBytes: 32)
+                    buffer: Buffer(device: device, array: UnsafePointer<Void>([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
                 ), // position
                 st: GeometryAttribute(
                     componentDatatype: .Float32,
                     componentsPerAttribute: 2,
-                    buffer: Buffer(device: device, array: [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0], componentDatatype: .Float32, sizeInBytes: 32)
+                    buffer: Buffer(device: device, array: UnsafePointer<Void>([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
                 )), // textureCoordinates
             indices: [0, 1, 2, 0, 2, 3]
             )

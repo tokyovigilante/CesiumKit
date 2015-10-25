@@ -26,9 +26,9 @@ class RenderPipeline {
         do {
             let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
             self.state = state
-        } catch  {
+        } catch let error as NSError  {
             state = nil
-            assertionFailure("newRenderPipelineStateWithDescriptor failed")
+            assertionFailure("newRenderPipelineStateWithDescriptor failed: \(error.localizedDescription)")
         }
     }
     

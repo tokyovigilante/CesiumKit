@@ -407,6 +407,8 @@
 		947E32351BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; settings = {ASSET_TAGS = (); }; };
 		947E32361BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; settings = {ASSET_TAGS = (); }; };
 		94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */; };
+		9487FA551BD747F20095A86F /* ViewportQuad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9487FA541BD747F20095A86F /* ViewportQuad.swift */; settings = {ASSET_TAGS = (); }; };
+		9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9487FA541BD747F20095A86F /* ViewportQuad.swift */; settings = {ASSET_TAGS = (); }; };
 		94889B881B2857430095A86F /* PipelineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B871B2857430095A86F /* PipelineCache.swift */; };
 		94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B891B286E990095A86F /* UniformBufferProvider.swift */; };
 		948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
@@ -685,6 +687,7 @@
 		947E32311BC0D485001A40C8 /* AttributeCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeCompression.swift; sourceTree = "<group>"; };
 		947E32341BC0D85E001A40C8 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
+		9487FA541BD747F20095A86F /* ViewportQuad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewportQuad.swift; sourceTree = "<group>"; };
 		94889B871B2857430095A86F /* PipelineCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineCache.swift; sourceTree = "<group>"; };
 		94889B891B286E990095A86F /* UniformBufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformBufferProvider.swift; sourceTree = "<group>"; };
 		948B802D194D3BD900012DC4 /* VertexFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexFormat.swift; sourceTree = "<group>"; };
@@ -1045,6 +1048,7 @@
 				9454042E199F5C7D00012DC4 /* TileTerrain.swift */,
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
+				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1549,6 +1553,7 @@
 				945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */,
 				9413B7A51A37B93100FFAD81 /* Cartesian4.swift in Sources */,
 				9413B7B01A37B93100FFAD81 /* GeographicTilingScheme.swift in Sources */,
+				9487FA551BD747F20095A86F /* ViewportQuad.swift in Sources */,
 				9413B7E91A37B93D00FFAD81 /* RenderState.swift in Sources */,
 				9413B81D1A37B94500FFAD81 /* TileUniformMap.swift in Sources */,
 				9413B8051A37B94500FFAD81 /* ImageryLayerCollection.swift in Sources */,
@@ -1728,6 +1733,7 @@
 				947821401B5A2D7C0095A86F /* Context.swift in Sources */,
 				947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */,
 				947821421B5A2D7C0095A86F /* CubeMapFace.swift in Sources */,
+				9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */,
 				947821431B5A2D7C0095A86F /* CullFace.swift in Sources */,
 				947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */,
 				947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */,

@@ -268,11 +268,6 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
         
-        //rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-        //rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
-        
-        //let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
         let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue | alphaInfo.rawValue)
@@ -284,12 +279,10 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
-        // border
         let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
         CGContextClearRect(contextRef, borderRect)
         CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
-        // label
         let tileString = "L\(level)X\(x)Y\(y)"
         
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);

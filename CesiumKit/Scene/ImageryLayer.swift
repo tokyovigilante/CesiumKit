@@ -724,7 +724,7 @@ public class ImageryLayer {
                 // webMercatorT
                 VertexAttributes(
                     bufferIndex: 2,
-                    index: 0,
+                    index: 1,
                     format: .Float2,
                     offset: 0,
                     size: sizeof(Float) * 2)
