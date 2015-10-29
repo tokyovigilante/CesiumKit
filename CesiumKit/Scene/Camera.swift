@@ -234,8 +234,8 @@ public class Camera {
     * @see PerspectiveOffCenterFrustum
     * @see OrthographicFrustum
     */
-    let frustum: PerspectiveFrustum
-    //var frustum: Frustum
+    //let frustum: PerspectiveFrustum
+    var frustum: Frustum
 
     /**
     * The default amount to move the camera when an argument is not

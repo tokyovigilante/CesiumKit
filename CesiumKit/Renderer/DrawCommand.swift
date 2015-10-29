@@ -32,6 +32,17 @@ class DrawCommand {
     var boundingVolume: Intersectable?
     
     /**
+    * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
+    * {@link DrawCommand#boundingVolume} for plane intersection testing.
+    *
+    * @type {OrientedBoundingBox}
+    * @default undefined
+    *
+    * @see DrawCommand#debugShowBoundingVolume
+    */
+    var orientedBoundingBox: OrientedBoundingBox? = nil
+    
+    /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
     * If the command was already culled, set this to <code>false</code> for a performance improvement.
     *
@@ -99,8 +110,6 @@ class DrawCommand {
     *
     * @type {RenderState}
     * @default undefined
-    *
-    * @see Context#createRenderState
     */
     var renderState: RenderState?
     
@@ -155,6 +164,7 @@ class DrawCommand {
     
     init(
         boundingVolume: Intersectable? = nil,
+        orientedBoundingBox: OrientedBoundingBox? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
         primitiveType: MTLPrimitiveType = .Triangle,

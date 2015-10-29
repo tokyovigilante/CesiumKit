@@ -85,7 +85,7 @@ class PerspectiveFrustum: Frustum {
     var far = 500000000.0
     private var _far = Double.NaN
     
-    private var _offCenterFrustum = PerspectiveOffCenterFrustum()
+    var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
         assert(fov != Double.NaN && aspectRatio != Double.NaN && near != Double.NaN && far != Double.NaN, "fov, aspectRatio, near, or far parameters are not set")

@@ -11,6 +11,11 @@ import Foundation
 class UniformState {
     
     /**
+     * @type {Texture}
+     */
+    var globeDepthTexture: Texture? = nil
+    
+    /**
     * @private
     */
     private var _viewport = BoundingRectangle()
@@ -27,6 +32,7 @@ class UniformState {
     
     private var _entireFrustum = Cartesian2()
     private var _currentFrustum = Cartesian2()
+    private var _frustumPlanes = Cartesian4()
     
     /**
     * @memberof UniformState.prototype
@@ -36,7 +42,7 @@ class UniformState {
     var frameState: FrameState {
         return _frameState
     }
-    var _frameState: FrameState = FrameState()
+    private var _frameState = FrameState()
     
     private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity())
     
@@ -602,7 +608,17 @@ class UniformState {
     return this._currentFrustum;
     }
     },
-    
+    /**
+     The distances to the frustum planes. The top, bottom, left and right distances are
+             * the x, y, z, and w components, respectively.
+             * @memberof UniformState.prototype
+             * @type {Cartesian4}
+             */
+            frustumPlanes : {
+                get : function() {
+                    return this._frustumPlanes;
+                }
+            },
     /**
     * The the height (<code>x</code>) and the height squared (<code>y</code>)
     * in meters of the camera above the 2D world plane. This uniform is only valid
@@ -794,13 +810,22 @@ class UniformState {
     * @param {Object} frustum The frustum to synchronize with.
     */
     // FIXME: frustum
-    func updateFrustum (frustum: Frustum) {
+    func updateFrustum (var frustum: Frustum) {
         projection = frustum.projectionMatrix
         if frustum.infiniteProjectionMatrix != nil {
             infiniteProjection = frustum.infiniteProjectionMatrix!
         }
         _currentFrustum.x = frustum.near
         _currentFrustum.y = frustum.far
+    
+        if frustum.top != Double.NaN {
+            frustum = (frustum as! PerspectiveFrustum)._offCenterFrustum
+        }
+        
+        _frustumPlanes.x = frustum.top
+        _frustumPlanes.y = frustum.bottom
+        _frustumPlanes.z = frustum.left
+        _frustumPlanes.w = frustum.right
     }
     
     /**

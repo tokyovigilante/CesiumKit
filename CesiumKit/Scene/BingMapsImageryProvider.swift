@@ -82,13 +82,16 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public let ellipsoid: Ellipsoid
+        
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
             self.mapStyle = mapStyle
             self.culture = culture
             self.tileDiscardPolicy = tileDiscardPolicy
+            self.ellipsoid = ellipsoid
         }
     }
     
@@ -381,7 +384,8 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         _tilingScheme = WebMercatorTilingScheme(
             numberOfLevelZeroTilesX : 2,
-            numberOfLevelZeroTilesY : 2
+            numberOfLevelZeroTilesY : 2,
+            ellipsoid: options.ellipsoid
         )
         
         
@@ -522,8 +526,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
         request(.GET, url)
             .response { (request, response, data, error) in
-                if let error = error {
-                    print("error")//: \(error.localizedDescription)")
+                if error != nil {
+                    print("error: \((error as! NSError).localizedDescription)")
                     return
                 }
                 #if os(iOS)
