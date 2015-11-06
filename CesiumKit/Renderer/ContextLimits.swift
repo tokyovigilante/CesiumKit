@@ -177,18 +177,16 @@ class ContextLimits {
     return ContextLimits._maximumVertexUniformVectors;
     }
     },
-    
+    */
     /**
     * The minimum aliased line width, in pixels, supported by this WebGL implementation.  It will be at most one.
     * @memberof ContextLimits
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    minimumAliasedLineWidth : {
-    get: function () {
-    return ContextLimits._minimumAliasedLineWidth;
+    var minimumAliasedLineWidth: Int {
+        return 1
     }
-    },
     
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
@@ -196,11 +194,9 @@ class ContextLimits {
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    maximumAliasedLineWidth : {
-    get: function () {
-    return ContextLimits._maximumAliasedLineWidth;
+    var maximumAliasedLineWidth: Int {
+        return 511
     }
-    },
     
     /**
     * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
@@ -208,11 +204,9 @@ class ContextLimits {
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    minimumAliasedPointSize : {
-    get: function () {
-    return ContextLimits._minimumAliasedPointSize;
+    var minimumAliasedPointSize: Int {
+        return 1
     }
-    },
     
     /**
     * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
@@ -220,11 +214,9 @@ class ContextLimits {
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>ALIASED_POINT_SIZE_RANGE</code>.
     */
-    maximumAliasedPointSize : {
-    get: function () {
-    return ContextLimits._maximumAliasedPointSize;
+    var maximumAliasedPointSize: Int {
+        return 511
     }
-    },
     
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
@@ -232,11 +224,9 @@ class ContextLimits {
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
     */
-    maximumViewportWidth : {
-    get: function () {
-    return ContextLimits._maximumViewportWidth;
+    var maximumViewportWidth: Int {
+        return maximumTextureSize
     }
-    },
     
     /**
     * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
@@ -244,12 +234,10 @@ class ContextLimits {
     * @type {Number}
     * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>MAX_VIEWPORT_DIMS</code>.
     */
-    maximumViewportHeight : {
-    get: function () {
-    return ContextLimits._maximumViewportHeight;
+    var maximumViewportHeight: Int {
+        return maximumTextureSize
     }
-    },
-    */
+    
     /**
     * The maximum degree of anisotropy for texture filtering
     * @memberof ContextLimits

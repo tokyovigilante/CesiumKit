@@ -33,7 +33,7 @@ import Foundation
 let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
-public struct Ellipsoid: Packable {
+public struct Ellipsoid: Packable, Equatable {
     let radii: Cartesian3
     let radiiSquared: Cartesian3
     let radiiToTheFourth: Cartesian3
@@ -403,17 +403,6 @@ public struct Ellipsoid: Packable {
         return position.multiplyComponents(radii)
     }
     
-    /**
-    * Compares this Ellipsoid against the provided Ellipsoid componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
-    *
-    * @param {Ellipsoid} [right] The other Ellipsoid.
-    * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
-    */
-    /*    @infix func == (left: Ellipsoid, right: Ellipsoid) -> Bool {
-    return (left.radii == right.radii
-    }*/
-    
     
     /**
     * Creates a string representing this Ellipsoid in the format '(radii.x, radii.y, radii.z)'.
@@ -424,4 +413,15 @@ public struct Ellipsoid: Packable {
         return radii.toString()
     }
     
+}
+
+/**
+ * Compares this Ellipsoid against the provided Ellipsoid componentwise and returns
+ * <code>true</code> if they are equal, <code>false</code> otherwise.
+ *
+ * @param {Ellipsoid} [right] The other Ellipsoid.
+ * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
+ */
+public func == (left: Ellipsoid, right: Ellipsoid) -> Bool {
+    return (left.radii == right.radii)
 }

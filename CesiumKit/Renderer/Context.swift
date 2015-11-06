@@ -341,9 +341,9 @@ class Context {
     func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
         
         
-        /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
+        let rs = /*(renderPass.pa ??*/ drawCommand.renderState/*)*/ ?? _defaultRenderState
         
-        if framebuffer != nil && rs.depthTest.enabled {
+        /*if framebuffer != nil && rs.depthTest.enabled {
         assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
         let commandEncoder = renderPass.commandEncoder
@@ -353,8 +353,8 @@ class Context {
         
         
         //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
-        
-        //applyRenderState(rs, passState: passState)
+
+        applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
     func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
