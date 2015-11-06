@@ -31,7 +31,7 @@ struct FrameState {
     *
     * @type {Number}
     */
-    var morphTime: Double = SceneMode.Scene3D.morphTime()!
+    var morphTime: Double = SceneMode.Scene3D.morphTime ?? Double.NaN
     
     /**
     * The current frame number.
