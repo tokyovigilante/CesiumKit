@@ -110,8 +110,24 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     private var _blendRenderState: RenderState? = nil
     
+    private var _pickRenderState: RenderState? = nil
+    
     private var _layerOrderChanged = false
-   
+    
+    private var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
+
+    private var _drawCommands = [DrawCommand]()
+    
+    private var _uniformMaps = [TileUniformMap]()
+    
+    private var _pickCommands = [DrawCommand]()
+    
+    private var _usedDrawCommands = 0
+    
+    private var _usedPickCommands = 0
+    
+    private var _debug: (wireframe: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
+    
     var baseColor: Cartesian4 {
         get {
             return _baseColor
@@ -125,16 +141,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     private var _baseColor: Cartesian4
     
     private var _firstPassInitialColor: Cartesian4
-    
-    private var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
-
-    private var _drawCommands = [DrawCommand]()
-    
-    private var _uniformMaps = [TileUniformMap]()
-    
-    private var _usedDrawCommands = 0
-    
-    private var _debug: (wireframe: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -161,6 +167,27 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
     }
     
+    private func sortTileImageryByLayerIndex (a: TileImagery, b: TileImagery) -> Bool {
+        //let aImagery: Imagery
+        
+        let aImagery = a.loadingImagery ?? a.readyImagery!
+        let bImagery = b.loadingImagery ?? b.readyImagery!
+        /*if (a.loadingImagery == nil) {
+            aImagery = a.readyImagery!
+        } else {
+            aImagery = a.loadingImagery!
+        }
+        
+        let bImagery: Imagery
+        if (b.loadingImagery == nil) {
+            bImagery = b.readyImagery!
+        } else {
+            bImagery = b.loadingImagery!
+        }*/
+        
+        return aImagery.imageryLayer.layerIndex < bImagery.imageryLayer.layerIndex
+    }
+    
     /**
     * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
     * or any other functions.
@@ -170,36 +197,15 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    
     func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         
-        let sortTileImageryByLayerIndex = { (a: TileImagery, b: TileImagery) -> Bool in
-            var aImagery: Imagery
-            
-            //if isOrderedBefore.
-            if (a.loadingImagery == nil) {
-                aImagery = a.readyImagery!
-            } else {
-                aImagery = a.loadingImagery!
-            }
-            
-            var bImagery: Imagery
-            if (b.loadingImagery == nil) {
-                bImagery = b.readyImagery!
-            } else {
-                bImagery = b.loadingImagery!
-            }
-            
-            return aImagery.imageryLayer.layerIndex < bImagery.imageryLayer.layerIndex
-        }
-
         imageryLayers.update()
         
         if _layerOrderChanged {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
                 if var imagery: [TileImagery] = tile.data?.imagery {
-                    imagery.sortInPlace(sortTileImageryByLayerIndex)
+                    imagery.sortInPlace(self.sortTileImageryByLayerIndex)
                 }
             })
         }
@@ -235,34 +241,58 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func endUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
 
         if _renderState == nil {
-        
-            var cullFace = CullFace.Back
-            var depthEnabled = RenderState.DepthTest()
             
-            depthEnabled.enabled = (frameState.mode == .Scene3D || frameState.mode == .ColumbusView)
-
             _renderState = RenderState(
-                cullFace: cullFace,
-                depthTest: depthEnabled
+                cullFace: .Back,
+                depthTest: RenderState.DepthTest(enabled: true, function: .Less)
             )
         }
         
         if _blendRenderState == nil {
             
-            var cullFace = CullFace.Back
-            
             _blendRenderState = RenderState(
-                cullFace: cullFace,
-                depthTest: RenderState.DepthTest(enabled: _renderState!.depthTest.enabled, function: .LessOrEqual),
+                cullFace: .Back,
+                depthTest: RenderState.DepthTest(enabled: true, function: .LessOrEqual),
                 blending: BlendingState.AlphaBlend(Cartesian4())
             )
         }
         // And the tile render commands to the command list, sorted by texture count.
         for (count, tilesToRender) in _tilesToRenderByTextureCount {
             for tile in tilesToRender {
-                // FIXME: Tileprovider
                 addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
             }
+        }
+    }
+    
+    /**
+         * Adds draw commands for tiles rendered in the previous frame for a pick pass.
+         *
+         * @param {Context} context The rendering context.
+         * @param {FrameState} frameState The frame state.
+         * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
+         *        commands into this array.
+         */
+    func updateForPick (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+        if _pickRenderState == nil {
+            _pickRenderState = RenderState(
+                colorMask: RenderState.ColorMask(
+                    red : false,
+                    green : false,
+                    blue : false,
+                    alpha : false
+                ),
+                depthTest: RenderState.DepthTest(
+                    enabled : true,
+                    function: .Less
+                )
+            )
+        }
+        _usedPickCommands = 0
+        
+        // Add the tile pick commands from the tiles drawn last frame.
+        var tilesToRenderByTextureCount = _tilesToRenderByTextureCount
+        for i in 0..<_usedDrawCommands {
+            addPickCommandsForTile(_drawCommands[i], context, frameState, commandList)
         }
     }
     
@@ -287,8 +317,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (tile: QuadtreeTile, context: Context, frameState: FrameState) {
-        GlobeSurfaceTile.processStateMachine(tile, context: context, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
+    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [DrawCommand], frameState: FrameState) {
+        GlobeSurfaceTile.processStateMachine(tile, context: context, commandList: commandList, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
     }
     
     
@@ -306,7 +336,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
         let surfaceTile = tile.data!
         let cullingVolume = frameState.cullingVolume!
-        var boundingVolume = surfaceTile.boundingSphere3D
+        var boundingVolume = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
         
         if frameState.mode != .Scene3D {
             boundingVolume = BoundingSphere.fromRectangleWithHeights2D(
@@ -343,20 +373,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         return Visibility(rawValue: intersection.rawValue)!
     }
     
-    /*
-var float32ArrayScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(1) : undefined;
-var modifiedModelViewScratch = new Matrix4();
-var tileRectangleScratch = new Cartesian4();
-var rtcScratch = new Cartesian3();
-var centerEyeScratch = new Cartesian4();
-var southwestScratch = new Cartesian3();
-var northeastScratch = new Cartesian3();
-*/
-
     /**
     * Shows a specified tile in this frame.  The provider can cause the tile to be shown by adding
     * render commands to the commandList, or use any other method as appropriate.  The tile is not
-    * expected to be visible next frame as well, unless this method is call next frame, too.
+    * expected to be visible next frame as well, unless this method is called next frame, too.
     *
     * @param {Object} tile The tile instance.
     * @param {Context} context The rendering context.
@@ -613,7 +633,7 @@ var northeastScratch = new Cartesian3();
 
         let surfaceTile = tile.data!
         
-        let viewMatrix = frameState.camera!.viewMatrix
+        var viewMatrix = frameState.camera!.viewMatrix
         
         var maxTextures = context.limits.maximumTextureImageUnits
 
@@ -682,12 +702,9 @@ var northeastScratch = new Cartesian3();
             }
         }
         
-        var centerEye = Cartesian4(x: rtc.x, y: rtc.y, z: rtc.z, w: 1.0)
+        var centerEye = viewMatrix.multiplyByPoint(rtc)
+        viewMatrix.setTranslation(centerEye)
         
-        centerEye = viewMatrix.multiplyByVector(centerEye)
-        var modifiedModelView = viewMatrix
-        modifiedModelView.setColumn(3, cartesian: centerEye)
-
         let tileImageryCollection = surfaceTile.imagery
         var imageryIndex = 0
         let imageryLen = tileImageryCollection.count
@@ -697,6 +714,10 @@ var northeastScratch = new Cartesian3();
         var renderState = firstPassRenderState
         
         var initialColor = _firstPassInitialColor
+        
+        if _debug.boundingSphereTile == nil {
+            //debugDestroyPrimitive()
+        }
         
         repeat {
             var numberOfDayTextures = 0
@@ -708,6 +729,7 @@ var northeastScratch = new Cartesian3();
                 command = DrawCommand()
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
+                command.orientedBoundingBox = nil
                 
                 uniformMap = createTileUniformMap(maxTextures)
                 
@@ -721,8 +743,16 @@ var northeastScratch = new Cartesian3();
             
             ++_usedDrawCommands
             
-            command.debugShowBoundingVolume = (tile == _debug.boundingSphereTile)
-            
+            /*if (tile === tileProvider._debug.boundingSphereTile) {
+                // If a debug primitive already exists for this tile, it will not be
+                // re-created, to avoid allocation every frame. If it were possible
+                // to have more than one selected tile, this would have to change.
+                if (defined(surfaceTile.orientedBoundingBox)) {
+                    getDebugOrientedBoundingBox(surfaceTile.orientedBoundingBox, Color.RED).update(context, frameState, commandList);
+                } else if (defined(surfaceTile.boundingSphere3D)) {
+                    getDebugBoundingSphere(surfaceTile.boundingSphere3D, Color.RED).update(context, frameState, commandList);
+                }
+            }*/
             initialColor.pack(&uniformMap.initialColor)
             uniformMap.oceanNormalMap = oceanNormalMap
             uniformMap.lightingFadeDistance = [lightingFadeOutDistance, lightingFadeInDistance]

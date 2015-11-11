@@ -87,13 +87,13 @@ class GlobeSurfaceTile {
     var center = Cartesian3()
     
     var vertexArray: VertexArray? = nil
-    var wireframeVertexArray: VertexArray? = nil
     
     var minimumHeight = 0.0
     var maximumHeight = 0.0
     
     var boundingSphere3D = BoundingSphere()
     var boundingSphere2D = BoundingSphere()
+    var orientedBoundingBox: OrientedBoundingBox? = nil
     
     var occludeePointInScaledSpace: Cartesian3? = Cartesian3()
     
@@ -105,7 +105,7 @@ class GlobeSurfaceTile {
     
     var pickTerrain: TileTerrain? = nil
     
-    var pipeline: GlobeSurfacePipeline? = nil
+    var surfacePipeline: GlobeSurfacePipeline? = nil
     
     /**
     * Gets a value indicating whether or not this tile is eligible to be unloaded.
@@ -142,14 +142,12 @@ class GlobeSurfaceTile {
     }
     
     
-    func getPosition(scene: Scene? = nil, vertices: [Float], stride: Int, index: Int) -> Cartesian3 {
+    func getPosition(mode mode: SceneMode? = nil, projection: MapProjection, vertices: [Float], stride: Int, index: Int) -> Cartesian3 {
         var result = Cartesian3.unpack(vertices, startingIndex: index * stride)
         result = center.add(result)
         
-        if scene != nil && scene!.mode != .Scene3D {
-            let projection = scene!.mapProjection
-            let ellipsoid = projection.ellipsoid
-            let positionCart = ellipsoid.cartesianToCartographic(result)
+        if mode != nil && mode != .Scene3D {
+            let positionCart = projection.ellipsoid.cartesianToCartographic(result)
             result = projection.project(positionCart!)
             result = Cartesian3(x: result.z, y: result.x, z: result.y)
         }
@@ -157,7 +155,7 @@ class GlobeSurfaceTile {
         return result
     }
 
-    func pick (ray: Ray, scene: Scene, cullBackFaces: Bool) -> Cartesian3? {
+    func pick (ray: Ray, mode: SceneMode, projection: MapProjection, cullBackFaces: Bool) -> Cartesian3? {
         
         let mesh = pickTerrain?.mesh
         if mesh == nil {
@@ -174,11 +172,11 @@ class GlobeSurfaceTile {
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
             
-            let v0 = getPosition(scene, vertices: vertices, stride: stride, index: i0)
-            let v1 = getPosition(scene, vertices: vertices, stride: stride, index: i1)
-            let v2 = getPosition(scene, vertices: vertices, stride: stride, index: i2)
+            let v0 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i0)
+            let v1 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i1)
+            let v2 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i2)
             
-            var intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
+            let intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
             if intersection != nil {
                 return intersection
             }
@@ -223,10 +221,9 @@ class GlobeSurfaceTile {
     
     func freeVertexArray() {
         vertexArray = nil
-        wireframeVertexArray = nil
     }
     
-    class func processStateMachine(tile: QuadtreeTile, context: Context, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
+    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()
@@ -266,9 +263,7 @@ class GlobeSurfaceTile {
                 if (imageryLayer.imageryProvider.ready) {
                     // Remove the placeholder and add the actual skeletons (if any)
                     // at the same position.  Then continue the loop at the same index.
-                    //tileImagery.freeResources();
                     tileImageryCollection.removeAtIndex(i)
-                    //tileImageryCollection.splice(i, 1);
                     imageryLayer.createTileImagerySkeletons(tile, terrainProvider: terrainProvider, insertionPoint: i)
                     --i
                     len = tileImageryCollection.count
@@ -278,7 +273,7 @@ class GlobeSurfaceTile {
                 }
             }
             
-            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context)
+            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: [Command])
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.
@@ -301,12 +296,6 @@ class GlobeSurfaceTile {
             }
         }
     }
-
-//var cartesian3Scratch = new Cartesian3();
-//var cartesian3Scratch2 = new Cartesian3();
-//var westernMidpointScratch = new Cartesian3();
-//var easternMidpointScratch = new Cartesian3();
-//var cartographicScratch = new Cartographic();
     
     class func prepareNewTile (tile: QuadtreeTile, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         let surfaceTile = tile.data!
@@ -377,7 +366,7 @@ class GlobeSurfaceTile {
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
                     if let waterMask = surfaceTile.terrainData?.waterMask {
-                       // createWaterMaskTextureIfNeeded(context, surfaceTile)
+                       createWaterMaskTextureIfNeeded(context)
                     }
                     
                     GlobeSurfaceTile.propagateNewLoadedDataToChildren(tile)
@@ -534,7 +523,6 @@ class GlobeSurfaceTile {
         if let tileDataAvailable = terrainProvider.getTileDataAvailable(x: tile.x, y: tile.y, level: tile.level) {
             return tileDataAvailable
         }
-        
         let parent = tile.parent
         if parent == nil {
             // Data is assumed to be available for root tiles.
@@ -582,57 +570,59 @@ context.cache.tile_waterMaskData = data;
 }
 return data;
 }
-
-function createWaterMaskTextureIfNeeded(context, surfaceTile) {
-var previousTexture = surfaceTile.waterMaskTexture;
-if (defined(previousTexture)) {
---previousTexture.referenceCount;
-if (previousTexture.referenceCount === 0) {
-previousTexture.destroy();
-}
-surfaceTile.waterMaskTexture = undefined;
-}
-
--            result = waterMask[0] === 0 ? waterMaskData.allLandTexture : waterMaskData.allWaterTexture;
-var waterMask = surfaceTile.terrainData.waterMask;
-if (!defined(waterMask)) {
-return;
-}
-
-var waterMaskData = getContextWaterMaskData(context);
-var texture;
-
-var waterMaskLength = waterMask.length;
-if (waterMaskLength === 1) {
-// Length 1 means the tile is entirely land or entirely water.
-// A value of 0 indicates entirely land, a value of 1 indicates entirely water.
-if (waterMask[0] !== 0) {
-texture = waterMaskData.allWaterTexture;
-} else {
-// Leave the texture undefined if the tile is entirely land.
-return;
-}
-} else {
-var textureSize = Math.sqrt(waterMaskLength);
-texture = context.createTexture2D({
-pixelFormat : PixelFormat.LUMINANCE,
-pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-source : {
-width : textureSize,
-height : textureSize,
-arrayBufferView : waterMask
-}
-});
-
-
-texture.referenceCount = 0;
-texture.sampler = waterMaskData.sampler;
-}
-++texture.referenceCount;
-surfaceTile.waterMaskTexture = texture;
-
-Cartesian4.fromElements(0.0, 0.0, 1.0, 1.0, surfaceTile.waterMaskTranslationAndScale);
-}
+*/
+    func createWaterMaskTextureIfNeeded(context: Context) {
+        /*
+        var previousTexture = surfaceTile.waterMaskTexture;
+        if (defined(previousTexture)) {
+        --previousTexture.referenceCount;
+        if (previousTexture.referenceCount === 0) {
+        previousTexture.destroy();
+        }
+        surfaceTile.waterMaskTexture = undefined;
+        }
+        
+        var waterMask = surfaceTile.terrainData.waterMask;
+        if (!defined(waterMask)) {
+        return;
+        }
+        
+        var waterMaskData = getContextWaterMaskData(context);
+        var texture;
+        
+        var waterMaskLength = waterMask.length;
+        if (waterMaskLength === 1) {
+        // Length 1 means the tile is entirely land or entirely water.
+        // A value of 0 indicates entirely land, a value of 1 indicates entirely water.
+        if (waterMask[0] !== 0) {
+        texture = waterMaskData.allWaterTexture;
+        } else {
+        // Leave the texture undefined if the tile is entirely land.
+        return;
+        }
+        } else {
+        var textureSize = Math.sqrt(waterMaskLength);
+        texture = new Texture({
+        context : context,
+        pixelFormat : PixelFormat.LUMINANCE,
+        pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
+        source : {
+        width : textureSize,
+        height : textureSize,
+        arrayBufferView : waterMask
+        }
+        });
+        
+        texture.referenceCount = 0;
+        texture.sampler = waterMaskData.sampler;
+        }
+        
+        ++texture.referenceCount;
+        surfaceTile.waterMaskTexture = texture;
+        
+        Cartesian4.fromElements(0.0, 0.0, 1.0, 1.0, surfaceTile.waterMaskTranslationAndScale);
+        */
+    }
     /*
     function upsampleWaterMask(tile) {
         var surfaceTile = tile.data;
@@ -666,6 +656,6 @@ Cartesian4.fromElements(0.0, 0.0, 1.0, 1.0, surfaceTile.waterMaskTranslationAndS
     }
 
     return GlobeSurfaceTile;
-});*/*/
+});*/
 
 }

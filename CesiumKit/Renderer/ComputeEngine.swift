@@ -50,7 +50,7 @@ class ComputeEngine {
                 size: 8)
         ]
         
-        return RenderPipeline.fromCache(context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes))
+        return RenderPipeline.fromCache(context: context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes))
     }
     /*
     function createRenderState(width, height) {

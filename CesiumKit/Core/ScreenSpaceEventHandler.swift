@@ -74,7 +74,7 @@ public class ScreenSpaceEventHandler {
     // or determined based on the platform?
     private var _clickPixelTolerance = 5
     
-    init(/*view: UIView*/) {
+    init(/*view: UIView, */_ something: Bool = false) {
         //self._view = view
         _inputEvents = Dictionary<String, EventAction>()
         

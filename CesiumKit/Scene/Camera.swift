@@ -1966,7 +1966,7 @@ public class Camera: DRU {
     };
     */
     /**
-    * View an rectangle on an ellipsoid or map.
+    * View a rectangle on an ellipsoid or map.
     *
     * @memberof Camera
     *
@@ -2107,9 +2107,8 @@ public class Camera: DRU {
     * @memberof Camera
     *
     * @param {Cartesian2} windowPosition The x and y coordinates of a pixel.
-    * @param {Ray} [result] The object onto which to store the result.
     *
-    * @returns {Object} Returns the {@link Cartesian3} position and direction of the ray.
+    * @returns {Ray} Returns the {@link Cartesian3} position and direction of the ray.
     */
     func getPickRay (windowPosition: Cartesian2) -> Ray {
         
@@ -2276,8 +2275,9 @@ public class Camera: DRU {
     
     return undefined;
     };
+    */
     
-    var scratchFlyToDestination = new Cartesian3();
+    /*var scratchFlyToDestination = new Cartesian3();
     var scratchFlyToQuaternion = new Quaternion();
     var scratchFlyToMatrix3 = new Matrix3();
     var scratchFlyToDirection = new Cartesian3();
@@ -2285,13 +2285,21 @@ public class Camera: DRU {
     var scratchFlyToMatrix4 = new Matrix4();
     var newOptions = {
     destination : undefined,
-    direction : undefined,
-    up : undefined,
+    heading : undefined,
+    pitch : undefined,
+    roll : undefined,
     duration : undefined,
     complete : undefined,
     cancel : undefined,
-    endTransform : undefined
+    endTransform : undefined,
+    maximumHeight : undefined,
+    easingFunction : undefined
     };
+    
+    var scratchFlyDirection = new Cartesian3();
+    var scratchFlyUp = new Cartesian3();
+    var scratchFlyRight = new Cartesian3();
+    */
     
     /**
     * Flies the camera from its current position to a new position.
@@ -2301,12 +2309,14 @@ public class Camera: DRU {
     * @param {Object} [options.orientation] An object that contains either direction and up properties or heading, pith and roll properties. By default, the direction will point
     * towards the center of the frame in 3D and in the negative z direction in Columbus view or 2D. The up direction will point towards local north in 3D and in the positive
     * y direction in Columbus view or 2D.
-    * @param {Number} [options.duration=3.0] The duration of the flight in seconds.
+    * @param {Number} [options.duration] The duration of the flight in seconds. If ommitted, Cesium attempts to calculate an ideal duration based on the distance to be traveled by the flight.
     * @param {Camera~FlightCompleteCallback} [options.complete] The function to execute when the flight is complete.
     * @param {Camera~FlightCancelledCallback} [options.cancel] The function to execute if the flight is cancelled.
     * @param {Matrix4} [options.endTransform] Transform matrix representing the reference frame the camera will be in when the flight is completed.
     * @param {Boolean} [options.convert=true] When <code>true</code>, the destination is converted to the correct coordinate system for each scene mode. When <code>false</code>, the destination is expected
     *                  to be in the correct coordinate system.
+    * @param {Number} [options.maximumHeight] The maximum height at the peak of the flight.
+    * @param {EasingFunction|EasingFunction~Callback} [options.easingFunction] Controls how the time is interpolated over the duration of the flight.
     *
     * @exception {DeveloperError} If either direction or up is given, then both are required.
     *
@@ -2340,8 +2350,8 @@ public class Camera: DRU {
     *     }
     * });
     */
-    Camera.prototype.flyTo = function(options) {
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    func flyTo (/*options*/) {
+    /*options = defaultValue(options, defaultValue.EMPTY_OBJECT);
     
     var destination = options.destination;
     //>>includeStart('debug', pragmas.debug);
@@ -2354,47 +2364,57 @@ public class Camera: DRU {
     
     var isRectangle = defined(destination.west);
     if (isRectangle) {
+    if (scene.mode !== SceneMode.SCENE3D && destination.west > destination.east) {
+    destination = Rectangle.MAX_VALUE;
+    }
     destination = scene.camera.getRectangleCameraCoordinates(destination, scratchFlyToDestination);
     }
     
-    var direction;
-    var up;
+    var heading;
+    var pitch;
+    var roll;
     
     var orientation = defaultValue(options.orientation, defaultValue.EMPTY_OBJECT);
     if (defined(orientation.heading)) {
-    var heading = defaultValue(orientation.heading, 0.0);
-    var pitch = defaultValue(orientation.pitch, -CesiumMath.PI_OVER_TWO);
-    var roll = defaultValue(orientation.roll, 0.0);
-    
-    var rotQuat = Quaternion.fromHeadingPitchRoll(heading - CesiumMath.PI_OVER_TWO, pitch, roll, scratchFlyToQuaternion);
-    var rotMat = Matrix3.fromQuaternion(rotQuat, scratchFlyToMatrix3);
-    
-    direction = Matrix3.getColumn(rotMat, 0, scratchFlyToDirection);
-    up = Matrix3.getColumn(rotMat, 2, scratchFlyToUp);
-    
-    var ellipsoid = this._projection.ellipsoid;
-    var transform = Transforms.eastNorthUpToFixedFrame(destination, ellipsoid, scratchFlyToMatrix4);
-    
-    Matrix4.multiplyByPointAsVector(transform, direction, direction);
-    Matrix4.multiplyByPointAsVector(transform, up, up);
+    heading = orientation.heading;
+    pitch = orientation.pitch;
+    roll = orientation.roll;
     } else if (defined(orientation.direction)) {
-    direction = orientation.direction;
-    up = orientation.up;
+    var direction = Cartesian3.clone(orientation.direction, scratchFlyDirection);
+    var up = Cartesian3.clone(orientation.up, scratchFlyUp);
+    
+    if (scene.mode === SceneMode.SCENE3D) {
+    var ellipsoid = this._projection.ellipsoid;
+    var transform = Transforms.eastNorthUpToFixedFrame(destination, ellipsoid, scratchHPRMatrix1);
+    var invTransform = Matrix4.inverseTransformation(transform, scratchHPRMatrix2);
+    
+    Matrix4.multiplyByPointAsVector(invTransform, direction, direction);
+    Matrix4.multiplyByPointAsVector(invTransform, up, up);
+    }
+    
+    var right = Cartesian3.cross(direction, up, scratchFlyRight);
+    
+    heading = getHeading(direction, up);
+    pitch = getPitch(direction);
+    roll = getRoll(direction, up, right);
     }
     
     newOptions.destination = destination;
-    newOptions.direction = direction;
-    newOptions.up = up;
+    newOptions.heading = heading;
+    newOptions.pitch = pitch;
+    newOptions.roll = roll;
     newOptions.duration = options.duration;
     newOptions.complete = options.complete;
     newOptions.cancel = options.cancel;
     newOptions.endTransform = options.endTransform;
     newOptions.convert = isRectangle ? false : options.convert;
+    newOptions.maximumHeight = options.maximumHeight;
+    newOptions.easingFunction = options.easingFunction;
     
-    scene.tweens.add(CameraFlightPath.createTween(scene, newOptions));
-    };
+    scene.tweens.add(CameraFlightPath.createTween(scene, newOptions));*/
+    }
     
-    function distanceToBoundingSphere3D(camera, radius) {
+    /*function distanceToBoundingSphere3D(camera, radius) {
     var frustum = camera.frustum;
     var tanPhi = Math.tan(frustum.fovy * 0.5);
     var tanTheta = frustum.aspectRatio * tanPhi;
@@ -2477,9 +2497,12 @@ public class Camera: DRU {
     var scratchflyToBoundingSphereDirection = new Cartesian3();
     var scratchflyToBoundingSphereUp = new Cartesian3();
     var scratchflyToBoundingSphereRight = new Cartesian3();
+    var scratchFlyToBoundingSphereCart4 = new Cartesian4();
+    var scratchFlyToBoundingSphereQuaternion = new Quaternion();
+    var scratchFlyToBoundingSphereMatrix3 = new Matrix3();
     
     /**
-    * Flys the camera to a location where the current view contains the provided bounding sphere.
+    * Flies the camera to a location where the current view contains the provided bounding sphere.
     *
     * <p> The offset is heading/pitch/range in the local east-north-up reference frame centered at the center of the bounding sphere.
     * The heading and the pitch angles are defined in the local east-north-up reference frame.
@@ -2492,11 +2515,13 @@ public class Camera: DRU {
     *
     * @param {BoundingSphere} boundingSphere The bounding sphere to view, in world coordinates.
     * @param {Object} [options] Object with the following properties:
-    * @param {Number} [options.duration=3.0] The duration of the flight in seconds.
+    * @param {Number} [options.duration] The duration of the flight in seconds. If ommitted, Cesium attempts to calculate an ideal duration based on the distance to be traveled by the flight.
     * @param {HeadingPitchRange} [options.offset] The offset from the target in the local east-north-up reference frame centered at the target.
     * @param {Camera~FlightCompleteCallback} [options.complete] The function to execute when the flight is complete.
     * @param {Camera~FlightCancelledCallback} [options.cancel] The function to execute if the flight is cancelled.
     * @param {Matrix4} [options.endTransform] Transform matrix representing the reference frame the camera will be in when the flight is completed.
+    * @param {Number} [options.maximumHeight] The maximum height at the peak of the flight.
+    * @param {EasingFunction|EasingFunction~Callback} [options.easingFunction] Controls how the time is interpolated over the duration of the flight.
     */
     Camera.prototype.flyToBoundingSphere = function(boundingSphere, options) {
     //>>includeStart('debug', pragmas.debug);
@@ -2529,6 +2554,14 @@ public class Camera: DRU {
     Cartesian3.normalize(direction, direction);
     
     up = Matrix4.multiplyByPointAsVector(transform, Cartesian3.UNIT_Z, scratchflyToBoundingSphereUp);
+    if (1.0 - Math.abs(Cartesian3.dot(direction, up)) < CesiumMath.EPSILON6) {
+    var rotateQuat = Quaternion.fromAxisAngle(direction, offset.heading, scratchFlyToBoundingSphereQuaternion);
+    var rotation = Matrix3.fromQuaternion(rotateQuat, scratchFlyToBoundingSphereMatrix3);
+    
+    Cartesian3.fromCartesian4(Matrix4.getColumn(transform, 1, scratchFlyToBoundingSphereCart4), up);
+    Matrix3.multiplyByVector(rotation, up, up);
+    }
+    
     var right = Cartesian3.cross(direction, up, scratchflyToBoundingSphereRight);
     Cartesian3.cross(right, direction, up);
     Cartesian3.normalize(up, up);
@@ -2543,26 +2576,39 @@ public class Camera: DRU {
     duration : options.duration,
     complete : options.complete,
     cancel : options.cancel,
-    endTransform : options.endTransform
+    endTransform : options.endTransform,
+    maximumHeight : options.maximumHeight,
+    easingFunction : options.easingFunction
     });
     };
     
     /**
-    * Returns a duplicate of a Camera instance.
-    *
-    * @memberof Camera
-    *
-    * @returns {Camera} A new copy of the Camera instance.
+    * @private
     */
-    Camera.prototype.clone = function() {
-    var camera = new Camera(this._scene);
-    camera.position = Cartesian3.clone(this.position);
-    camera.direction = Cartesian3.clone(this.direction);
-    camera.up = Cartesian3.clone(this.up);
-    camera.right = Cartesian3.clone(this.right);
-    camera.transform = Matrix4.clone(this.transform);
-    camera.frustum = this.frustum.clone();
-    return camera;
-    };*/
+    Camera.clone = function(camera, result) {
+    if (!defined(result)) {
+    result = new Camera(camera._scene);
+    }
+    
+    Cartesian3.clone(camera.position, result.position);
+    Cartesian3.clone(camera.direction, result.direction);
+    Cartesian3.clone(camera.up, result.up);
+    Cartesian3.clone(camera.right, result.right);
+    Matrix4.clone(camera._transform, result.transform);
+    
+    return result;
+    };
+    
+    /**
+    * A function that will execute when a flight completes.
+    * @callback Camera~FlightCompleteCallback
+    */
+    
+    /**
+    * A function that will execute when a flight is cancelled.
+    * @callback Camera~FlightCancelledCallback
+    */
+    
+    return Camera;*/
     
 }

@@ -151,7 +151,7 @@ protocol QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (tile: QuadtreeTile, context: Context, frameState: FrameState)
+    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [DrawCommand], frameState: FrameState)
     
     /**
     * Determines the visibility of a given tile.  The tile may be fully visible, partially visible, or not

@@ -962,52 +962,25 @@ Matrix4.getElementIndex = function(column, row) {
         _floatRepresentation[startIndex + 2] = Float(cartesian.z)
         _floatRepresentation[startIndex + 3] = Float(cartesian.w)
     }
-/*
+
     /**
-         * Computes a new matrix that replaces the translation in the rightmost column of the provided
-         * matrix with the provided translation.  This assumes the matrix is an affine transformation
-         *
-         * @param {Matrix4} matrix The matrix to use.
-         * @param {Cartesian3} translation The translation that replaces the translation of the provided matrix.
-         * @param {Cartesian4} result The object onto which to store the result.
-         * @returns {Matrix4} The modified result parameter.
-         */
-    +    Matrix4.setTranslation = function(matrix, translation, result) {
-    +        //>>includeStart('debug', pragmas.debug);
-    +        if (!defined(matrix)) {
-    +            throw new DeveloperError('matrix is required');
-    +        }
-    +        if (!defined(translation)) {
-    +            throw new DeveloperError('translation is required');
-    +        }
-    +        if (!defined(result)) {
-    +            throw new DeveloperError('result is required');
-    +        }
-    +        //>>includeEnd('debug');
-    +
-    +        result[0] = matrix[0];
-    +        result[1] = matrix[1];
-    +        result[2] = matrix[2];
-    +        result[3] = matrix[3];
-    +
-    +        result[4] = matrix[4];
-    +        result[5] = matrix[5];
-    +        result[6] = matrix[6];
-    +        result[7] = matrix[7];
-    +
-    +        result[8] = matrix[8];
-    +        result[9] = matrix[9];
-    +        result[10] = matrix[10];
-    +        result[11] = matrix[11];
-    +
-    +        result[12] = translation.x;
-    +        result[13] = translation.y;
-    +        result[14] = translation.z;
-    +        result[15] = matrix[15];
-    +
-    +        return result;
-    +    };
-    +*/
+    * Computes a new matrix that replaces the translation in the rightmost column of the provided
+    * matrix with the provided translation.  This assumes the matrix is an affine transformation
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Cartesian3} translation The translation that replaces the translation of the provided matrix.
+    * @param {Cartesian4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    */
+    mutating func setTranslation (translation: Cartesian3) {
+        _grid[12] = translation.x
+        _grid[13] = translation.y
+        _grid[14] = translation.z
+        _floatRepresentation[12] = Float(_grid[12])
+        _floatRepresentation[13] = Float(_grid[13])
+        _floatRepresentation[14] = Float(_grid[14])
+    }
+    
     
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.

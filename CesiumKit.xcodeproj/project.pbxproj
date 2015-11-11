@@ -240,6 +240,7 @@
 		941F557C1AA17FEC00FFAD81 /* Renderbuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */; };
 		942251421B1062CC0095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251411B1062CC0095A86F /* Metal.framework */; };
 		942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251431B1062D20095A86F /* QuartzCore.framework */; };
+		942501851BF316A20095A86F /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
 		943416B21BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B31BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B91BC8D864001A40C8 /* ComputeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B81BC8D864001A40C8 /* ComputeCommand.swift */; };
@@ -622,6 +623,7 @@
 		942251411B1062CC0095A86F /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		942251431B1062D20095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		942251451B106CCF0095A86F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		942501841BF316A20095A86F /* GlobeDepth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeDepth.swift; sourceTree = "<group>"; };
 		942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentDatatype.swift; sourceTree = "<group>"; };
 		942CD41719553F9E00012DC4 /* GeometryAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttributes.swift; sourceTree = "<group>"; };
 		942CEED2199E063E00012DC4 /* SkyBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyBox.swift; sourceTree = "<group>"; };
@@ -1021,6 +1023,7 @@
 				94BA59EE19A695B90049322D /* Frustum.swift */,
 				94540424199F05D300012DC4 /* FrustumCommands.swift */,
 				9460F80C194DAA6200012DC4 /* Globe.swift */,
+				942501841BF316A20095A86F /* GlobeDepth.swift */,
 				9460F812194DAE9300012DC4 /* GlobeSurfaceShaderSet.swift */,
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
 				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
@@ -1029,6 +1032,7 @@
 				94540436199F63A700012DC4 /* Imagery.swift */,
 				94540438199F649000012DC4 /* ImageryLayer.swift */,
 				9460F80E194DABF000012DC4 /* ImageryLayerCollection.swift */,
+				949E09EB1BE44CF40095A86F /* ImageryLayerFeatureInfo.swift */,
 				941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
 				94540434199F62C900012DC4 /* ImageryState.swift */,
@@ -1057,7 +1061,6 @@
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
-				949E09EB1BE44CF40095A86F /* ImageryLayerFeatureInfo.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1894,6 +1897,7 @@
 				9413B7D61A37B93300FFAD81 /* MergeSort.swift in Sources */,
 				9413B83F1A37B94800FFAD81 /* SkyBox.swift in Sources */,
 				9413B8311A37B94800FFAD81 /* OrthographicFrustum.swift in Sources */,
+				942501851BF316A20095A86F /* GlobeDepth.swift in Sources */,
 				9410139619FB037D00FFAD81 /* RenderState.swift in Sources */,
 				9410135819FB02D700FFAD81 /* Matrix4.swift in Sources */,
 				9413B8441A37B94800FFAD81 /* TileReplacementQueue.swift in Sources */,
