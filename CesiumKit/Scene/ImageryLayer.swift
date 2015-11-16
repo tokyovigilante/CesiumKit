@@ -562,7 +562,7 @@ public class ImageryLayer {
             // no noticeable difference in the georeferencing of the image.
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if !isGeographic && pixelGap {
+            if false { // !isGeographic && pixelGap {
                 let reprojectCommand = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
                 /*dispatch_async(dispatch_get_main_queue(),  {
                 should be completion block for command buffer
