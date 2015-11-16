@@ -245,7 +245,12 @@
 		941F557C1AA17FEC00FFAD81 /* Renderbuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */; };
 		942251421B1062CC0095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251411B1062CC0095A86F /* Metal.framework */; };
 		942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251431B1062D20095A86F /* QuartzCore.framework */; };
-		942501851BF316A20095A86F /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
+		942A703B1BF9D8C8001A40C8 /* OIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A703A1BF9D8C8001A40C8 /* OIT.swift */; };
+		942A703C1BF9D8C8001A40C8 /* OIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A703A1BF9D8C8001A40C8 /* OIT.swift */; };
+		942A70431BF9DA16001A40C8 /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
+		942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
+		942A70461BF9DB2E001A40C8 /* DepthPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A70451BF9DB2E001A40C8 /* DepthPlane.swift */; };
+		942A70471BF9DB2E001A40C8 /* DepthPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A70451BF9DB2E001A40C8 /* DepthPlane.swift */; };
 		943416B21BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B31BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B91BC8D864001A40C8 /* ComputeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B81BC8D864001A40C8 /* ComputeCommand.swift */; };
@@ -645,6 +650,8 @@
 		942251431B1062D20095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		942251451B106CCF0095A86F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		942501841BF316A20095A86F /* GlobeDepth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeDepth.swift; sourceTree = "<group>"; };
+		942A703A1BF9D8C8001A40C8 /* OIT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OIT.swift; sourceTree = "<group>"; };
+		942A70451BF9DB2E001A40C8 /* DepthPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthPlane.swift; sourceTree = "<group>"; };
 		942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentDatatype.swift; sourceTree = "<group>"; };
 		942CD41719553F9E00012DC4 /* GeometryAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttributes.swift; sourceTree = "<group>"; };
 		942CEED2199E063E00012DC4 /* SkyBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyBox.swift; sourceTree = "<group>"; };
@@ -1070,6 +1077,7 @@
 				9454042A199F4FD900012DC4 /* QuadtreeTileLoadState.swift */,
 				942CF4BC19CD7DD500012DC4 /* QuadtreeTileProvider.swift */,
 				94B87DC0194D678D00012DC4 /* Scene.swift */,
+				942A703A1BF9D8C8001A40C8 /* OIT.swift */,
 				94B87DC8194D6B0A00012DC4 /* SceneMode.swift */,
 				940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */,
 				94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */,
@@ -1084,6 +1092,7 @@
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
 				941A28231BF40BBB001A40C8 /* HeightReference.swift */,
+				942A70451BF9DB2E001A40C8 /* DepthPlane.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1579,6 +1588,7 @@
 				9413B7FF1A37B94500FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
 				9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */,
 				9413B7F51A37B94500FFAD81 /* BingMapsImageryProvider.swift in Sources */,
+				942A70431BF9DA16001A40C8 /* GlobeDepth.swift in Sources */,
 				9413B7BE1A37B93100FFAD81 /* Matrix3.swift in Sources */,
 				949E09F51BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */,
 				9413B7FE1A37B94500FFAD81 /* Globe.swift in Sources */,
@@ -1594,6 +1604,7 @@
 				94B9DB5E1AC630020095A86F /* KeyboardEventModifier.swift in Sources */,
 				9413B7B41A37B93100FFAD81 /* GeometryPipeline.swift in Sources */,
 				9413B80C1A37B94500FFAD81 /* PrimitiveCollection.swift in Sources */,
+				942A703B1BF9D8C8001A40C8 /* OIT.swift in Sources */,
 				9413B7A81A37B93100FFAD81 /* ComponentDatatype.swift in Sources */,
 				9413B8021A37B94500FFAD81 /* GridImageryProvider.swift in Sources */,
 				9413B7B61A37B93100FFAD81 /* HeightmapTessellator.swift in Sources */,
@@ -1674,6 +1685,7 @@
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
 				941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
+				942A70461BF9DB2E001A40C8 /* DepthPlane.swift in Sources */,
 				9413B8031A37B94500FFAD81 /* Imagery.swift in Sources */,
 				9413B7F81A37B94500FFAD81 /* BlendingState.swift in Sources */,
 				946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */,
@@ -1759,6 +1771,7 @@
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
 				947821241B5A2D7B0095A86F /* Math.swift in Sources */,
 				947821251B5A2D7B0095A86F /* Matrix2.swift in Sources */,
+				942A703C1BF9D8C8001A40C8 /* OIT.swift in Sources */,
 				947821261B5A2D7B0095A86F /* Matrix3.swift in Sources */,
 				947821271B5A2D7B0095A86F /* Matrix4.swift in Sources */,
 				947821281B5A2D7B0095A86F /* MergeSort.swift in Sources */,
@@ -1801,6 +1814,7 @@
 				9478214B1B5A2D7C0095A86F /* Renderbuffer.swift in Sources */,
 				94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
 				9478214C1B5A2D7C0095A86F /* RenderPass.swift in Sources */,
+				942A70471BF9DB2E001A40C8 /* DepthPlane.swift in Sources */,
 				9478214D1B5A2D7C0095A86F /* RenderPipeline.swift in Sources */,
 				9478214E1B5A2D7C0095A86F /* RenderState.swift in Sources */,
 				9478214F1B5A2D7C0095A86F /* Sampler.swift in Sources */,
@@ -1808,6 +1822,7 @@
 				947821511B5A2D7C0095A86F /* ShaderSource.swift in Sources */,
 				949E09F61BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */,
 				947821521B5A2D7C0095A86F /* Texture.swift in Sources */,
+				942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */,
 				947821531B5A2D7C0095A86F /* Uniform.swift in Sources */,
 				947821541B5A2D7C0095A86F /* UniformBufferProvider.swift in Sources */,
 				947821551B5A2D7C0095A86F /* UniformMap.swift in Sources */,
@@ -1940,7 +1955,6 @@
 				9413B7D61A37B93300FFAD81 /* MergeSort.swift in Sources */,
 				9413B83F1A37B94800FFAD81 /* SkyBox.swift in Sources */,
 				9413B8311A37B94800FFAD81 /* OrthographicFrustum.swift in Sources */,
-				942501851BF316A20095A86F /* GlobeDepth.swift in Sources */,
 				9410139619FB037D00FFAD81 /* RenderState.swift in Sources */,
 				9410135819FB02D700FFAD81 /* Matrix4.swift in Sources */,
 				9413B8441A37B94800FFAD81 /* TileReplacementQueue.swift in Sources */,

@@ -73,7 +73,9 @@ import MetalKit
 
 public class Scene {
     
-    var context: Context
+    let context: Context
+    
+    let computeEngine: ComputeEngine
     
     /*
     if (!defined(creditContainer)) {
@@ -94,11 +96,10 @@ public class Scene {
     * @type {Number}
     * @readonly
     *
-    * @see {@link https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml|glGet} with <code>GL_MAX_CUBE_MAP_TEXTURE_SIZE</code>.
     */
     var maximumCubeMapSize: Int {
         get  {
-            return 0//context.maximumCubeMapSize
+            return context.limits.maximumCubeMapSize
         }
     }
 
@@ -114,7 +115,9 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {PrimitiveCollection}
     */
-    var primitives = PrimitiveCollection()
+    let primitives = PrimitiveCollection()
+    
+    let groundPrimitives = PrimitiveCollection()
     
     //var pickFramebuffer: Framebuffer? = nil
     
@@ -163,26 +166,30 @@ public class Scene {
     
     //this._sunPostProcess = undefined;
     
-    
+    private var _computeCommandList = [ComputeCommand]()
     private var _commandList = [DrawCommand]()
     private var _frustumCommandsList = [FrustumCommands]()
     private var _overlayCommandList = [DrawCommand]()
     
     
-    /*
     // TODO: OIT and FXAA
-    if (useOIT)
-    this._oit = new OIT(context);
-    this._executeOITFunction = undefined;
     
-    this._fxaa = new FXAA();
-    */
+    private var _globeDepth: GlobeDepth? = nil
+    private var _depthPlane = DepthPlane()
+    private var _oit: OIT? = nil
+    private var _executeOITFunction: (() -> ())? = nil
     
-    var _clearColorCommand = ClearCommand(color: Cartesian4.zero()/*, owner: self*/)
+    //this._fxaa = new FXAA();
+    
+    
+    var _clearColorCommand = ClearCommand(color: Cartesian4.zero(), stencil: 0/*, owner: self*/)
     
     var _depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
     
-    lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self) }()
+    lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self, projection: self.mapProjection) }()
+    
+    private var _pickDepths = [AnyObject]()
+    private var _debugGlobeDepths = [AnyObject]()
     
     /**
     * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
@@ -209,6 +216,9 @@ public class Scene {
     * @type {Event}
     */
     var postRender = Event()
+    
+    private var _cameraStartFired = false
+    private var _cameraMovedTime: Double? = nil
     
     /*
     /**
@@ -317,7 +327,7 @@ public class Scene {
     *
     * @default new GeographicProjection()
     */
-    private(set) var mapProjection: MapProjection = GeographicProjection(ellipsoid: Ellipsoid.wgs84())
+    private(set) var mapProjection: MapProjection
 
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
@@ -441,8 +451,7 @@ public class Scene {
     */
     var orderIndependentTranslucency: Bool {
         get {
-            return false
-            //return _oit != nil
+            return _oit != nil
         }
     }
     
@@ -530,7 +539,12 @@ public class Scene {
     init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
         context = Context(view: view)
+        
+        computeEngine = ComputeEngine(context: context)
+        
         self.globe = globe
+        
+        self.mapProjection = projection
         
         _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
         _frameState.scene3DOnly = scene3DOnly
@@ -545,6 +559,23 @@ public class Scene {
         #if os(iOS)
         touchEventHandler = TouchEventHandler(scene: self, view: view)
         #endif
+        
+        let globeDepth: GlobeDepth?
+        
+        if context.depthTexture != nil {
+            globeDepth = GlobeDepth()
+        } else {
+            globeDepth = nil
+        }
+        
+        let oit: OIT?
+        if useOIT && globeDepth != nil {
+            oit = OIT(context: context)
+        } else {
+            oit = nil
+        }
+        _globeDepth = globeDepth
+        _oit = oit
         
         // TODO: OIT and FXAA
         if useOIT {

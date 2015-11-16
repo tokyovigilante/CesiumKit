@@ -48,8 +48,8 @@ class Context {
     
     //private var _commandsExecutedThisFrame = [DrawCommand]()
     
-    //private var _depthTexture: MTLTexture!
-    //private var _stencilTexture: MTLTexture!
+    private (set) var depthTexture: Texture? = nil
+    private (set) var stencilTexture: Texture? = nil
     
     var allowTextureFilterAnisotropic = true
     
@@ -249,8 +249,8 @@ class Context {
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
         //_defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
         
-        //_defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
-        //_defaultPassState.passDescriptor.stencilAttachment.texture = _stencilTexture
+        _defaultPassState.passDescriptor.depthAttachment.texture = depthTexture?.metalTexture
+        _defaultPassState.passDescriptor.stencilAttachment.texture = stencilTexture?.metalTexture
         
         _commandBuffer = _commandQueue.commandBuffer()
         
