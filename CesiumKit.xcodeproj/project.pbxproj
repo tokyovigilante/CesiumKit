@@ -234,6 +234,11 @@
 		9413B8461A37B94800FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
 		9415C94D1B547E7F001A40C8 /* PassState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415C94C1B547E7F001A40C8 /* PassState.swift */; };
+		941A28161BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
+		941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
+		941A28181BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
+		941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28231BF40BBB001A40C8 /* HeightReference.swift */; };
+		941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28231BF40BBB001A40C8 /* HeightReference.swift */; };
 		941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941EE9A81BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */; };
@@ -488,6 +493,20 @@
 			remoteGlobalIDString = 947820DA1B5A2C0E0095A86F;
 			remoteInfo = "CesiumKit OSX";
 		};
+		941A281E1BF40B55001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CF626EF1BA7CB3E0011A099;
+			remoteInfo = "Alamofire tvOS";
+		};
+		941A28201BF40B55001A40C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CF626F81BA7CB3E0011A099;
+			remoteInfo = "Alamofire tvOS Tests";
+		};
 		945C3ABC1B5296B40095A86F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */;
@@ -616,6 +635,8 @@
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
 		9415C94C1B547E7F001A40C8 /* PassState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassState.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
+		941A28151BF40B54001A40C8 /* GroundPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroundPrimitive.swift; sourceTree = "<group>"; };
+		941A28231BF40BBB001A40C8 /* HeightReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightReference.swift; sourceTree = "<group>"; };
 		941E2162199EDC3600012DC4 /* ImageBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBuffer.swift; sourceTree = "<group>"; };
 		941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTangentPlane.swift; sourceTree = "<group>"; };
 		941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerUniformMap.swift; sourceTree = "<group>"; };
@@ -1028,6 +1049,7 @@
 				9454042C199F5B4600012DC4 /* GlobeSurfaceTile.swift */,
 				949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */,
 				94E03FB619D96C8300FFAD81 /* GridImageryProvider.swift */,
+				941A28151BF40B54001A40C8 /* GroundPrimitive.swift */,
 				94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */,
 				94540436199F63A700012DC4 /* Imagery.swift */,
 				94540438199F649000012DC4 /* ImageryLayer.swift */,
@@ -1061,6 +1083,7 @@
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
+				941A28231BF40BBB001A40C8 /* HeightReference.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1077,10 +1100,12 @@
 			isa = PBXGroup;
 			children = (
 				945C3ABD1B5296B40095A86F /* Alamofire.framework */,
-				945C3ABF1B5296B40095A86F /* Alamofire.framework */,
-				946273781B7579CA0095A86F /* Alamofire.framework */,
 				945C3AC11B5296B40095A86F /* Alamofire iOS Tests.xctest */,
+				945C3ABF1B5296B40095A86F /* Alamofire.framework */,
 				945C3AC31B5296B40095A86F /* Alamofire OSX Tests.xctest */,
+				941A281F1BF40B55001A40C8 /* Alamofire.framework */,
+				941A28211BF40B55001A40C8 /* Alamofire tvOS Tests.xctest */,
+				946273781B7579CA0095A86F /* Alamofire.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1419,6 +1444,20 @@
 			remoteRef = 9404C86F1BBE9FF8001A40C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		941A281F1BF40B55001A40C8 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 941A281E1BF40B55001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		941A28211BF40B55001A40C8 /* Alamofire tvOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire tvOS Tests.xctest";
+			remoteRef = 941A28201BF40B55001A40C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		945C3ABD1B5296B40095A86F /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1561,6 +1600,7 @@
 				9413B7A41A37B93100FFAD81 /* Cartesian3.swift in Sources */,
 				949090731BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
+				941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */,
 				943416BC1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
 				945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */,
@@ -1633,6 +1673,7 @@
 				9413B7E01A37B93D00FFAD81 /* CullFace.swift in Sources */,
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
+				941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 				9413B8031A37B94500FFAD81 /* Imagery.swift in Sources */,
 				9413B7F81A37B94500FFAD81 /* BlendingState.swift in Sources */,
 				946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */,
@@ -1823,12 +1864,14 @@
 				947821851B5A2D7C0095A86F /* TerrainState.swift in Sources */,
 				947821861B5A2D7C0095A86F /* TileCoordinateImageryProvider.swift in Sources */,
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
+				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
 				947821891B5A2D7C0095A86F /* TileReplacementQueue.swift in Sources */,
 				9478218A1B5A2D7C0095A86F /* TileTerrain.swift in Sources */,
 				943416BA1BC8D864001A40C8 /* ComputeCommand.swift in Sources */,
 				9478218B1B5A2D7C0095A86F /* TileUniformMap.swift in Sources */,
 				9478218D1B5A2D7C0095A86F /* Shaders.swift in Sources */,
+				941A28181BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1918,6 +1961,7 @@
 				9413B82D1A37B94800FFAD81 /* ImageryLayer.swift in Sources */,
 				9413B7F41A37B93D00FFAD81 /* Uniform.swift in Sources */,
 				948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */,
+				941A28161BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 				9410137E19FB037500FFAD81 /* TerrainMesh.swift in Sources */,
 				9410136B19FB037500FFAD81 /* GeographicTilingScheme.swift in Sources */,
 				9410137819FB037500FFAD81 /* Quaternion.swift in Sources */,

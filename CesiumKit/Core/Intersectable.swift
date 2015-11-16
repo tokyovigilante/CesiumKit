@@ -11,5 +11,8 @@ import Foundation
 // Protocol for objects which support plane intersection testing
 
 protocol Intersectable {
+    
+    var center: Cartesian3 { get }
+    
     func intersectPlane(plane: Plane) -> Intersect
 }

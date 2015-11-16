@@ -515,7 +515,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         request(.GET, url)
             .response { (request, response, data, error) in
                 if error != nil {
-                    print("error: \((error as! NSError).localizedDescription)")
+                    //print("error: \((error as NSError).localizedDescription)")
                     return
                 }
                 #if os(iOS)

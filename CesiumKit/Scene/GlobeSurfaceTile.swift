@@ -13,7 +13,7 @@
 * @alias GlobeSurfaceTile
 * @private
 */
-class GlobeSurfaceTile {
+class GlobeSurfaceTile: QuadTreeTileData {
    
     /**
     * The {@link TileImagery} attached to this tile.
@@ -223,7 +223,7 @@ class GlobeSurfaceTile {
         vertexArray = nil
     }
     
-    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
+    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [DrawCommand], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()
@@ -273,7 +273,7 @@ class GlobeSurfaceTile {
                 }
             }
             
-            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: [Command])
+            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: commandList)
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.
@@ -366,7 +366,7 @@ class GlobeSurfaceTile {
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
                     if let waterMask = surfaceTile.terrainData?.waterMask {
-                       createWaterMaskTextureIfNeeded(context)
+                       //createWaterMaskTextureIfNeeded(context)
                     }
                     
                     GlobeSurfaceTile.propagateNewLoadedDataToChildren(tile)

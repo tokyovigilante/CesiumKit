@@ -74,6 +74,13 @@ class QuadtreePrimitive {
     private var _levelZeroTiles = [QuadtreeTile]()
     private var _levelZeroTilesReady = false
     private var _loadQueueTimeSlice = 0.05 // 5ms
+    
+    private var _addHeightCallbacks = [CallbackObject]()
+    private var _removeHeightCallbacks = [CallbackObject]()
+    
+    private var _tilesToUpdateHeights = [QuadtreeTile]()
+    private var _lastTileIndex = 0
+    private var _updateHeightsTimeSlice = 0.02
 
     
     /**
@@ -129,6 +136,15 @@ class QuadtreePrimitive {
         
         // Free and recreate the level zero tiles.
         for tile in _levelZeroTiles {
+            var customData = tile.customData
+            var customDataLength = customData.count
+            
+            for data in customData {
+                //data.level = 0
+                // FIXME: addHeightCallbacks
+                //_addHeightCallbacks.append(data)
+            }
+            
             tile.freeResources()
         }
         _levelZeroTiles.removeAll()
@@ -164,8 +180,39 @@ class QuadtreePrimitive {
     tileFunction(tilesRendered[i]);
     }
     }*/
+     
+    private class CallbackObject {
+        var position: Cartesian3? = nil
+        var positionCartographic: Cartographic = Cartographic()
+        var level: Int = -1
+        var callback: () -> ()
+        var removeFunc: () -> () = {}
+        
+        init (callback: () -> ()) {
+            self.callback = callback
+        }
+    }
     
     /**
+     * Calls the callback when a new tile is rendered that contains the given cartographic. The only parameter
+     * is the cartesian position on the tile.
+     *
+     * @param {Cartographic} cartographic The cartographic position.
+     * @param {Function} callback The function to be called when a new tile is loaded containing cartographic.
+     * @returns {Function} The function to remove this callback from the quadtree.
+     */
+    func updateHeight (cartographic: Cartographic, callback: () -> ()) -> (() -> ()) {
+        let object = CallbackObject(callback: callback)
+        
+        object.removeFunc = {
+            self._removeHeightCallbacks.append(object)
+        }
+        
+        _addHeightCallbacks.append(object)
+        return object.removeFunc
+    }
+    
+        /**
     * Updates the primitive.
     *
     * @param {Context} context The rendering context to use.
@@ -174,11 +221,17 @@ class QuadtreePrimitive {
     *        commands to this array during the update call.
     */
     func update (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
-        _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
-        selectTilesForRendering(context: context, frameState: frameState)
-        processTileLoadQueue(context: context, frameState: frameState)
-        createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
-        _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList)
+        if (frameState.passes.render) {
+            _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
+            selectTilesForRendering(context: context, frameState: frameState)
+            processTileLoadQueue(context: context, frameState: frameState, commandList: &commandList)
+            createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
+            _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList)
+        }
+        
+        if (frameState.passes.pick && _tilesToRender.count > 0) {
+            _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList)
+        }
     }
     
     /*
@@ -247,8 +300,7 @@ class QuadtreePrimitive {
         // We can't render anything before the level zero tiles exist.
         if _levelZeroTiles.count == 0 {
             if (_tileProvider.ready) {
-                let terrainTilingScheme = _tileProvider.tilingScheme
-                _levelZeroTiles = QuadtreeTile.createLevelZeroTiles(terrainTilingScheme)
+                _levelZeroTiles = QuadtreeTile.createLevelZeroTiles(_tileProvider.tilingScheme)
             } else {
                 // Nothing to do until the provider is ready.
                 return
@@ -256,6 +308,22 @@ class QuadtreePrimitive {
         }
         
         _occluders.ellipsoid.cameraPosition = frameState.camera!.positionWC
+        
+        /*var levelZeroTiles = primitive._levelZeroTiles;
+        
+        var customDataAdded = primitive._addHeightCallbacks;
+        var customDataRemoved = primitive._removeHeightCallbacks;
+        var frameNumber = frameState.frameNumber;
+        
+        if (customDataAdded.length > 0 || customDataRemoved.length > 0) {
+            for (i = 0, len = levelZeroTiles.length; i < len; ++i) {
+                tile = levelZeroTiles[i];
+                tile._updateCustomData(frameNumber, customDataAdded, customDataRemoved);
+            }
+            
+            customDataAdded.length = 0;
+            customDataRemoved.length = 0;
+        }*/
         
         // Enqueue the root tiles that are renderable and visible.
         for tile in _levelZeroTiles {
@@ -284,6 +352,8 @@ class QuadtreePrimitive {
             
             _tileReplacementQueue.markTileRendered(tile)
             
+            //tile.updateCustomData(frameNumber)
+            
             if (tile.level > _debug.maxDepth) {
                 _debug.maxDepth = tile.level
             }
@@ -306,7 +376,6 @@ class QuadtreePrimitive {
                     }
                 }
             } else {
-                ++_debug.tilesWaitingForChildren
                 // SSE is not good enough but not all children are loaded, so render this tile anyway.
                 addTileToRenderList(tile)
             }
@@ -386,7 +455,7 @@ class QuadtreePrimitive {
         _tileLoadQueue.append(tile)
     }
     
-    func processTileLoadQueue(context context: Context, frameState: FrameState) {
+    func processTileLoadQueue(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         
         if _tileLoadQueue.count == 0 {
             return
@@ -402,11 +471,97 @@ class QuadtreePrimitive {
         for var i = len - 1; i >= 0; --i {
             let tile = _tileLoadQueue[i]
             _tileReplacementQueue.markTileRendered(tile)
-            _tileProvider.loadTile(tile, context: context, frameState: frameState)
+            _tileProvider.loadTile(tile, context: context, commandList: &commandList, frameState: frameState)
             if NSDate().compare(endTime) == NSComparisonResult.OrderedDescending {
                 break
             }
         }
+    }
+    
+    func updateHeights(frameState: FrameState) {
+
+        let terrainProvider = _tileProvider.terrainProvider
+        
+        var startTime = NSDate()
+        var timeSlice = _updateHeightsTimeSlice
+        //var endTime = startTime + timeSlice
+        
+        var mode = frameState.mode;
+        var projection = frameState.mapProjection;
+        var ellipsoid = projection?.ellipsoid ?? Ellipsoid.wgs84()
+        // FIXME: updateHeights
+        /*while _tilesToUpdateHeights.count > 0 {
+            var tile = tilesToUpdateHeights[tilesToUpdateHeights.length - 1];
+            if (tile !== primitive._lastTileUpdated) {
+                primitive._lastTileIndex = 0;
+            }
+            
+            var customData = tile.customData;
+            var customDataLength = customData.length;
+            
+            var timeSliceMax = false;
+            for (var i = primitive._lastTileIndex; i < customDataLength; ++i) {
+                var data = customData[i];
+                
+                if (tile.level > data.level) {
+                    if (!defined(data.position)) {
+                        data.position = ellipsoid.cartographicToCartesian(data.positionCartographic);
+                    }
+                    
+                    if (mode === SceneMode.SCENE3D) {
+                        Cartesian3.clone(Cartesian3.ZERO, scratchRay.origin);
+                        Cartesian3.normalize(data.position, scratchRay.direction);
+                    } else {
+                        Cartographic.clone(data.positionCartographic, scratchCartographic);
+                        
+                        // minimum height for the terrain set, need to get this information from the terrain provider
+                        scratchCartographic.height = -11500.0;
+                        projection.project(scratchCartographic, scratchPosition);
+                        Cartesian3.fromElements(scratchPosition.z, scratchPosition.x, scratchPosition.y, scratchPosition);
+                        Cartesian3.clone(scratchPosition, scratchRay.origin);
+                        Cartesian3.clone(Cartesian3.UNIT_X, scratchRay.direction);
+                    }
+                    
+                    var position = tile.data.pick(scratchRay, mode, projection, false, scratchPosition);
+                    if (defined(position)) {
+                        data.callback(position);
+                    }
+                    
+                    data.level = tile.level;
+                } else if (tile.level === data.level) {
+                    var children = tile.children;
+                    var childrenLength = children.length;
+                    
+                    var child;
+                    for (var j = 0; j < childrenLength; ++j) {
+                        child = children[j];
+                        if (Rectangle.contains(child.rectangle, data.positionCartographic)) {
+                            break;
+                        }
+                    }
+                    
+                    var tileDataAvailable = terrainProvider.getTileDataAvailable(child.x, child.y, child.level);
+                    if ((defined(tileDataAvailable) && !tileDataAvailable) ||
+                        (defined(parent) && defined(parent.data) && defined(parent.data.terrainData) &&
+                            !parent.data.terrainData.isChildAvailable(parent.x, parent.y, child.x, child.y))) {
+                                data.removeFunc();
+                    }
+                }
+                
+                if (getTimestamp() >= endTime) {
+                    timeSliceMax = true;
+                    break;
+                }
+            }
+            
+            if (timeSliceMax) {
+                primitive._lastTileUpdated = tile;
+                primitive._lastTileIndex = i;
+                break;
+            } else {
+                tilesToUpdateHeights.pop();
+            }
+        }*/
     }
     
     func createRenderCommandsForSelectedTiles(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
@@ -417,7 +572,14 @@ class QuadtreePrimitive {
         
         for tile in _tilesToRender {
             _tileProvider.showTileThisFrame(tile, context: context, frameState: frameState, commandList: &commandList)
+            
+            if tile.frameRendered != frameState.frameNumber - 1 {
+                _tilesToUpdateHeights.append(tile)
+            }
+            tile.frameRendered = frameState.frameNumber
         }
+        updateHeights(frameState)
+
     }
 
 }

@@ -173,10 +173,7 @@ class PerspectiveFrustum: Frustum {
     * @example
     * // Example 1
     * // Get the width and height of a pixel.
-    * var pixelSize = camera.frustum.getPixelSize({
-    *     width : canvas.clientWidth,
-    *     height : canvas.clientHeight
-    * });
+    * var pixelSize = camera.frustum.getPixelSize({ width : canvas.clientWidth, height : canvas.clientHeight });
     *
     * @example
     * // Example 2

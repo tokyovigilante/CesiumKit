@@ -225,6 +225,12 @@ public protocol ImageryProvider {
     func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void))
     
     /**
+     * Asynchronously determines what features, if any, are located at a given longitude and latitude within
+     * a tile.  This function should not be called before {@link ImageryProvider#ready} returns true.
+     * This function is optional, so it may not exist on all ImageryProviders.
+     *
+     * @function
+     *
      * @param {Number} x The tile X coordinate.
      * @param {Number} y The tile Y coordinate.
      * @param {Number} level The tile level.

@@ -949,18 +949,16 @@ Matrix4.getElementIndex = function(column, row) {
 * //     [18.0, 19.0, 97.0, 21.0]
 * //     [22.0, 23.0, 96.0, 25.0]
 */
-    mutating func setColumn (index: Int, cartesian: Cartesian4) {
+    func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         let startIndex = index * 4
-        _grid[startIndex] = cartesian.x
-        _grid[startIndex + 1] = cartesian.y
-        _grid[startIndex + 2] = cartesian.z
-        _grid[startIndex + 3] = cartesian.w
-        _floatRepresentation[startIndex] = Float(cartesian.x)
-        _floatRepresentation[startIndex + 1] = Float(cartesian.y)
-        _floatRepresentation[startIndex + 2] = Float(cartesian.z)
-        _floatRepresentation[startIndex + 3] = Float(cartesian.w)
+        var grid = _grid
+        grid[startIndex] = cartesian.x
+        grid[startIndex + 1] = cartesian.y
+        grid[startIndex + 2] = cartesian.z
+        grid[startIndex + 3] = cartesian.w
+        return Matrix4(grid: grid)
     }
 
     /**
@@ -972,13 +970,12 @@ Matrix4.getElementIndex = function(column, row) {
     * @param {Cartesian4} result The object onto which to store the result.
     * @returns {Matrix4} The modified result parameter.
     */
-    mutating func setTranslation (translation: Cartesian3) {
-        _grid[12] = translation.x
-        _grid[13] = translation.y
-        _grid[14] = translation.z
-        _floatRepresentation[12] = Float(_grid[12])
-        _floatRepresentation[13] = Float(_grid[13])
-        _floatRepresentation[14] = Float(_grid[14])
+    func setTranslation (translation: Cartesian3) -> Matrix4 {
+        var grid = _grid
+        grid[12] = translation.x
+        grid[13] = translation.y
+        grid[14] = translation.z
+        return Matrix4(grid: grid)
     }
     
     

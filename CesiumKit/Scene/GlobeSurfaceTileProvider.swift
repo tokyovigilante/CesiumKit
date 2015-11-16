@@ -272,7 +272,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
          * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
          *        commands into this array.
          */
-    func updateForPick (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func updateForPick (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
         if _pickRenderState == nil {
             _pickRenderState = RenderState(
                 colorMask: RenderState.ColorMask(
@@ -292,7 +292,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         // Add the tile pick commands from the tiles drawn last frame.
         var tilesToRenderByTextureCount = _tilesToRenderByTextureCount
         for i in 0..<_usedDrawCommands {
-            addPickCommandsForTile(_drawCommands[i], context, frameState, commandList)
+            addPickCommandsForTile(_drawCommands[i], context: context, frameState: frameState, commandList: &commandList)
         }
     }
     
@@ -336,21 +336,22 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
         let surfaceTile = tile.data!
         let cullingVolume = frameState.cullingVolume!
-        var boundingVolume = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
+        var boundingVolume: Intersectable = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
         
         if frameState.mode != .Scene3D {
-            boundingVolume = BoundingSphere.fromRectangleWithHeights2D(
+            var boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
                 tile.rectangle,
                 projection: frameState.mapProjection!,
                 minimumHeight: surfaceTile.minimumHeight,
                 maximumHeight: surfaceTile.maximumHeight)
-            boundingVolume.center = Cartesian3(
+            boundingSphere.center = Cartesian3(
                 x: boundingVolume.center.z,
                 y: boundingVolume.center.x,
                 z: boundingVolume.center.y)
+            boundingVolume = boundingSphere
             
-            if (frameState.mode == .Morphing) {
-                boundingVolume = surfaceTile.boundingSphere3D.union(boundingVolume)
+            if frameState.mode == .Morphing {
+                boundingVolume = surfaceTile.boundingSphere3D.union(boundingVolume as! BoundingSphere)
             }
         }
         
@@ -703,7 +704,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         }
         
         var centerEye = viewMatrix.multiplyByPoint(rtc)
-        viewMatrix.setTranslation(centerEye)
+        let modifiedModelView = viewMatrix.setTranslation(centerEye)
         
         let tileImageryCollection = surfaceTile.imagery
         var imageryIndex = 0
@@ -873,7 +874,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             }
             
             var boundingSphere: BoundingSphere
-            
+
             if frameState.mode != .Scene3D {
                 boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
                     tile.rectangle,
@@ -894,6 +895,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             }
             
             command.boundingVolume = boundingSphere
+            command.orientedBoundingBox = surfaceTile.orientedBoundingBox
             commandList.append(command)
             
             renderState = otherPassesRenderState
@@ -901,4 +903,33 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         } while (imageryIndex < imageryLen)
     }
 
+    func addPickCommandsForTile(drawCommand: DrawCommand, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+        let pickCommand: DrawCommand
+        if (_pickCommands.count <= _usedPickCommands) {
+            pickCommand = DrawCommand(cull: false)
+            pickCommand.cull = false
+            
+            _pickCommands.append(pickCommand)
+        } else {
+            pickCommand = _pickCommands[_usedPickCommands]
+        }
+        
+        ++_usedPickCommands
+        
+        let useWebMercatorProjection = frameState.mapProjection is WebMercatorProjection
+        
+        pickCommand.pipeline = surfaceShaderSet.getPickRenderPipeline(context: context, sceneMode: frameState.mode, useWebMercatorProjection: useWebMercatorProjection)
+        pickCommand.renderState = _pickRenderState
+        
+        pickCommand.owner = drawCommand.owner;
+        pickCommand.primitiveType = drawCommand.primitiveType;
+        pickCommand.vertexArray = drawCommand.vertexArray;
+        pickCommand.uniformMap = drawCommand.uniformMap;
+        pickCommand.boundingVolume = drawCommand.boundingVolume;
+        pickCommand.orientedBoundingBox = drawCommand.orientedBoundingBox
+        pickCommand.pass = drawCommand.pass
+        
+        commandList.append(pickCommand)
+    }
+    
 }
