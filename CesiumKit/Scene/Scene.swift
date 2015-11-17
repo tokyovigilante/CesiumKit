@@ -131,6 +131,7 @@ public class Scene {
     */
     // TODO: setCamera
     public var camera: Camera
+    public var cameraClone: Camera
 
     #if os(iOS)
     var touchEventHandler: TouchEventHandler!
@@ -456,25 +457,55 @@ public class Scene {
     }
     
     /**
-    * If <code>true</code>, enables Fast Aproximate Anti-aliasing only if order independent translucency
-    * is supported.
-    *
-    * @type Boolean
-    * @default true
-    */
-    var fxaaOrderIndependentTranslucency = true
+     * This property is for debugging only; it is not for production use.
+     * <p>
+     * Displays depth information for the indicated frustum.
+     * </p>
+     * @type Boolean
+     *
+     * @default false
+     */
+    var debugShowGlobeDepth = false
+    
+    /**
+     * This property is for debugging only; it is not for production use.
+     * <p>
+     * Indicates which frustum will have depth information displayed.
+     * </p>
+     *
+     * @type Number
+     *
+     * @default 1
+     */
+    var debugShowDepthFrustum = 1
     
     /**
     * When <code>true</code>, enables Fast Approximate Anti-aliasing even when order independent translucency
     * is unsupported.
     *
     * @type Boolean
-    * @default false
+    * @default true
     */
-    var fxaa = false
+    var fxaa = true
+    
+    /**
+     * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
+     * @type {Number}
+     * @default 500.0
+     * @private
+     */
+    var cameraEventWaitTime = 500.0
+    
+    /**
+     * Set to true to copy the depth texture after rendering the globe. Makes czm_globeDepthTexture valid.
+     * @type {Boolean}
+     @default false
+     * @private
+     */
+    var copyGlobeDepth = false
     
     //this._performanceDisplay = undefined;
-    //this._debugSphere = undefined;
+    private var _debugVolume: Intersectable? = nil
 
     
     /**
@@ -556,6 +587,13 @@ public class Scene {
             initialWidth: Double(view.drawableSize.width),
             initialHeight: Double(view.drawableSize.height)
         )
+        cameraClone = Camera(
+            projection: projection,
+            mode: mode,
+            initialWidth: Double(view.drawableSize.width),
+            initialHeight: Double(view.drawableSize.height)
+        )
+
         #if os(iOS)
         touchEventHandler = TouchEventHandler(scene: self, view: view)
         #endif

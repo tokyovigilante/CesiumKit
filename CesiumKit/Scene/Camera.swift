@@ -2581,24 +2581,24 @@ public class Camera: DRU {
     easingFunction : options.easingFunction
     });
     };
-    
+    */
     /**
     * @private
     */
-    Camera.clone = function(camera, result) {
-    if (!defined(result)) {
-    result = new Camera(camera._scene);
+    func clone () -> Camera {
+        
+        let camera = Camera(projection: _projection, mode: _mode, initialWidth: 0, initialHeight: 0)
+        camera.position = position
+        camera.direction = direction
+        camera.up = up
+        camera.right = right
+        // FIXME: Clone
+        //camera.transform = transform
+        
+        return camera
     }
     
-    Cartesian3.clone(camera.position, result.position);
-    Cartesian3.clone(camera.direction, result.direction);
-    Cartesian3.clone(camera.up, result.up);
-    Cartesian3.clone(camera.right, result.right);
-    Matrix4.clone(camera._transform, result.transform);
-    
-    return result;
-    };
-    
+    /*
     /**
     * A function that will execute when a flight completes.
     * @callback Camera~FlightCompleteCallback
