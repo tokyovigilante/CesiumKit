@@ -576,7 +576,7 @@ public class Scene {
      * @type {Boolean}
      * @readonly
      */
-    var pickPositionSupported: Bool { return context.depthTexture != nil }
+    var pickPositionSupported: Bool { return context.depthTexture }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
@@ -642,7 +642,7 @@ public class Scene {
         
         let globeDepth: GlobeDepth?
         
-        if context.depthTexture != nil {
+        if context.depthTexture {
             globeDepth = GlobeDepth()
         } else {
             globeDepth = nil
@@ -916,8 +916,12 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
     
     fs.sources.push(newMain);
     var attributeLocations = getAttributeLocations(sp);
-    return context.createShaderProgram(sp.vertexShaderSource, fs, attributeLocations);
-}
+    return ShaderProgram.fromCache({
+    +            context : context,
+    +            vertexShaderSource : sp.vertexShaderSource,
+    +            fragmentShaderSource : fs,
+    +            attributeLocations : attributeLocations
+    +        });}
 
 function executeDebugCommand(command, scene, passState, renderState, shaderProgram) {
     if (defined(command.shaderProgram) || defined(shaderProgram)) {
@@ -950,20 +954,20 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
             // Debug code to draw bounding volume for command.  Not optimized!
-            // Assumes bounding volume is a bounding sphere.
-            if (defined(scene._debugSphere)) {
-                scene._debugSphere.destroy();
-            }
-            
+        +            // Assumes bounding volume is a bounding sphere or box
+
+        
             var frameState = scene._frameState;
             var boundingVolume = command.boundingVolume;
-            var radius = boundingVolume.radius;
-            var center = boundingVolume.center;
+
             
-            var geometry = GeometryPipeline.toWireframe(EllipsoidGeometry.createGeometry(new EllipsoidGeometry({
-                radii : new Cartesian3(radius, radius, radius),
-                vertexFormat : PerInstanceColorAppearance.FLAT_VERTEX_FORMAT
-            })));
+        +            if (defined(scene._debugVolume)) {
+        +                scene._debugVolume.destroy();
+        +            }
+        +
+        +            var geometry;
+        
+        +            var center = Cartesian3.clone(boundingVolume.center);
             
             if (frameState.mode !== SceneMode.SCENE3D) {
                 center = Matrix4.multiplyByPoint(transformFrom2D, center);
@@ -972,24 +976,56 @@ var transformFrom2D = Matrix4.inverseTransformation(//
                 center = projection.ellipsoid.cartographicToCartesian(centerCartographic);
             }
             
-            scene._debugSphere = new Primitive({
-            geometryInstances : new GeometryInstance({
-            geometry : geometry,
-            modelMatrix : Matrix4.multiplyByTranslation(Matrix4.IDENTITY, center),
-            attributes : {
-            color : new ColorGeometryInstanceAttribute(1.0, 0.0, 0.0, 1.0)
-            }
-            }),
-            appearance : new PerInstanceColorAppearance({
-            flat : true,
-            translucent : false
-            }),
-            asynchronous : false
-            });
+        if (defined(boundingVolume.radius)) {
+        +                var radius = boundingVolume.radius;
+        +
+        +                geometry = GeometryPipeline.toWireframe(EllipsoidGeometry.createGeometry(new EllipsoidGeometry({
+        +                    radii : new Cartesian3(radius, radius, radius),
+        +                    vertexFormat : PerInstanceColorAppearance.FLAT_VERTEX_FORMAT
+        +                })));
+        +
+        +                scene._debugVolume = new Primitive({
+        +                    geometryInstances : new GeometryInstance({
+        +                        geometry : geometry,
+        +                        modelMatrix : Matrix4.multiplyByTranslation(Matrix4.IDENTITY, center, new Matrix4()),
+        +                        attributes : {
+        +                            color : new ColorGeometryInstanceAttribute(1.0, 0.0, 0.0, 1.0)
+        +                        }
+        +                    }),
+        +                    appearance : new PerInstanceColorAppearance({
+        +                        flat : true,
+        +                        translucent : false
+        +                    }),
+        +                    asynchronous : false
+        +                });
+        +            } else {
+        +                var halfAxes = boundingVolume.halfAxes;
+        +
+        +                geometry = GeometryPipeline.toWireframe(BoxGeometry.createGeometry(BoxGeometry.fromDimensions({
+        +                    dimensions : new Cartesian3(2.0, 2.0, 2.0),
+        +                    vertexFormat : PerInstanceColorAppearance.FLAT_VERTEX_FORMAT
+        +                })));
+        +
+        +                scene._debugVolume = new Primitive({
+        +                    geometryInstances : new GeometryInstance({
+        +                        geometry : geometry,
+        +                        modelMatrix : Matrix4.fromRotationTranslation(halfAxes, center, new Matrix4()),
+        +                        attributes : {
+        +                            color : new ColorGeometryInstanceAttribute(1.0, 0.0, 0.0, 1.0)
+        +                        }
+        +                    }),
+        +                    appearance : new PerInstanceColorAppearance({
+        +                        flat : true,
+        +                        translucent : false
+        +                    }),
+        +                    asynchronous : false
+        +                });
+        +            }
+        
             
             var commandList = [];
-            scene._debugSphere.update(context, frameState, commandList);
-            
+        +            scene._debugVolume.update(context, frameState, commandList);
+        
             var framebuffer;
             if (defined(debugFramebuffer)) {
                 framebuffer = passState.framebuffer;
@@ -1025,11 +1061,11 @@ function isVisible(command, frameState) {
         ((!defined(command.boundingVolume)) ||
             !command.cull ||
             ((cullingVolume.getVisibility(boundingVolume) !== Intersect.OUTSIDE) &&
-                (!defined(occluder) || occluder.isBoundingSphereVisible(boundingVolume)))));
+    +                   (!defined(occluder) || !boundingVolume.isOccluded(occluder)))));
 }
 */
     func translucentCompare(a: DrawCommand, b: DrawCommand, position: Cartesian3) -> Bool {
-    return ((b.boundingVolume as! BoundingSphere).distanceSquaredTo(position)) > ((a.boundingVolume as! BoundingSphere).distanceSquaredTo(position))
+    return b.boundingVolume!.distanceSquaredTo(position) > a.boundingVolume!.distanceSquaredTo(position)
 }
 
     func executeTranslucentCommandsSorted(executeFunction: () -> Bool, passState: PassState, commands: [DrawCommand]) {
@@ -1042,7 +1078,27 @@ function isVisible(command, frameState) {
    //}
 }
 /*
-var scratchPerspectiveFrustum = new PerspectiveFrustum();
+
+    +    function getDebugGlobeDepth(scene, index) {
+    +        var globeDepth = scene._debugGlobeDepths[index];
+    +        if (!defined(globeDepth) && scene.context.depthTexture) {
+    +            globeDepth = new GlobeDepth();
+    +            scene._debugGlobeDepths[index] = globeDepth;
+    +        }
+    +        return globeDepth;
+    +    }
+    +
+    +    function getPickDepth(scene, index) {
+    +        var pickDepth = scene._pickDepths[index];
+    +        if (!defined(pickDepth)) {
+    +            pickDepth = new PickDepth();
+    +            scene._pickDepths[index] = pickDepth;
+    +        }
+    +        return pickDepth;
+    +    }
+    +
+    
+    var scratchPerspectiveFrustum = new PerspectiveFrustum();
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
@@ -1053,7 +1109,39 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         computeRenderPass.complete()
         
-        var frustum: Frustum
+        // FIXME: Sun
+        // Manage sun bloom post-processing effect.
+        
+        /*if (defined(scene.sun) && scene.sunBloom !== scene._sunBloom) {
+        if (scene.sunBloom) {
+        scene._sunPostProcess = new SunPostProcess();
+        } else if(defined(scene._sunPostProcess)){
+        scene._sunPostProcess = scene._sunPostProcess.destroy();
+        }
+        
+        scene._sunBloom = scene.sunBloom;
+        } else if (!defined(scene.sun) && defined(scene._sunPostProcess)) {
+        scene._sunPostProcess = scene._sunPostProcess.destroy();
+        scene._sunBloom = false;
+        }*/
+        
+        // Manage celestial and terrestrial environment effects.
+        let renderPass = frameState.passes.render
+        //let skyBoxCommand = renderPass && skyBox != nil ? scene.skyBox.update(context, frameState) : nil
+        /*var skyAtmosphereCommand = (renderPass && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
+        var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
+        var sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
+        var sunComputeCommand = defined(sunCommands) ? sunCommands.computeCommand : undefined;
+        var sunVisible = isVisible(sunDrawCommand, frameState);
+        var moonCommand = (renderPass && defined(scene.moon)) ? scene.moon.update(context, frameState) : undefined;
+        var moonVisible = isVisible(moonCommand, frameState);*/
+        
+        // Preserve the reference to the original framebuffer.
+        var originalPassStateDescriptor = passState?.passDescriptor
+        
+        // Create a working frustum from the original camera frustum
+        
+        let frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
             frustum = camera.frustum.clone(PerspectiveFrustum())
         } else if camera.frustum.infiniteProjectionMatrix != nil {
@@ -1062,25 +1150,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             frustum = camera.frustum.clone(OrthographicFrustum())
         }
         
-        // FIXME: Sun
-        /*if (defined(scene.sun) && scene.sunBloom !== scene._sunBloom) {
-            if (scene.sunBloom) {
-                scene._sunPostProcess = new SunPostProcess();
-            } else if(defined(scene._sunPostProcess)){
-                scene._sunPostProcess = scene._sunPostProcess.destroy();
-            }
-            
-            scene._sunBloom = scene.sunBloom;
-        } else if (!defined(scene.sun) && defined(scene._sunPostProcess)) {
-            scene._sunPostProcess = scene._sunPostProcess.destroy();
-            scene._sunBloom = false;
-        }*/
-        
-        // FIXME: Skybox, atmosphere
-        /*var skyBoxCommand = (frameState.passes.render && defined(scene.skyBox)) ? scene.skyBox.update(context, frameState) : undefined;
-        var skyAtmosphereCommand = (frameState.passes.render && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
-        var sunCommand = (frameState.passes.render && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
-        var sunVisible = isVisible(sunCommand, frameState);*/
+        // Clear the pass state framebuffer.
         
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
         let spaceRenderPass = context.createRenderPass(clearCommand: _clearColorCommand)
@@ -1240,10 +1310,6 @@ function callAfterRenderFunctions(frameState) {
     func resize(size: Cartesian2) {
         drawableWidth = Int(size.x)
         drawableHeight = Int(size.y)
-        if drawableWidth > 0 && drawableHeight > 0 {
-        //    context.createDepthTexture()
-        //    context.createStencilTexture()
-        }
     }
     /**
     * @private

@@ -48,8 +48,7 @@ class Context {
     
     //private var _commandsExecutedThisFrame = [DrawCommand]()
     
-    private (set) var depthTexture: Texture? = nil
-    private (set) var stencilTexture: Texture? = nil
+    private (set) var depthTexture: Bool = true
     
     var allowTextureFilterAnisotropic = true
     
@@ -230,7 +229,7 @@ class Context {
     func createSamplerState (descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
         return device.newSamplerStateWithDescriptor(descriptor)
     }
-        
+    
     func beginFrame() -> Bool {
         
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
@@ -247,10 +246,13 @@ class Context {
         //assert(_drawable != nil, "drawable == nil")
         _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
         _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        //_defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
+        _defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
         
-        _defaultPassState.passDescriptor.depthAttachment.texture = depthTexture?.metalTexture
-        _defaultPassState.passDescriptor.stencilAttachment.texture = stencilTexture?.metalTexture
+        if depthTexture {
+            let ds = view.depthStencilTexture
+            _defaultPassState.passDescriptor.depthAttachment.texture = ds//view.depthStencilTexture
+            _defaultPassState.passDescriptor.stencilAttachment.texture = ds//view.depthStencilTexture
+        }
         
         _commandBuffer = _commandQueue.commandBuffer()
         

@@ -28,6 +28,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         
         _metalView.device = MTLCreateSystemDefaultDevice()
         _metalView.colorPixelFormat = .BGRA8Unorm
+        _metalView.depthStencilPixelFormat = .Depth32Float_Stencil8
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
         

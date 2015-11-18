@@ -18,6 +18,8 @@ protocol BoundingVolume {
     
     func isOccluded (occluder: Occluder) -> Bool
     
+    func distanceSquaredTo(cartesian: Cartesian3) -> Double
+    
     func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval 
 
 }

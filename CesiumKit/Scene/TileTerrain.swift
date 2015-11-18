@@ -106,7 +106,7 @@ class TileTerrain {
         
         self.state = .Receiving
         dispatch_async(context.processorQueue, {
-            let terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
+            terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
                 if let terrainData = terrainData {
                     dispatch_async(dispatch_get_main_queue(), {
                         //dispatch_async(context.renderQueue, {

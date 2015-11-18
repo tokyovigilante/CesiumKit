@@ -306,7 +306,7 @@ struct OrientedBoundingBox: BoundingVolume {
     var scratchCartesianV = new Cartesian3();
     var scratchCartesianW = new Cartesian3();
     var scratchPPrime = new Cartesian3();
-    
+    */
     /**
     * Computes the estimated distance squared from the closest point on a bounding box to a point.
     *
@@ -320,9 +320,11 @@ struct OrientedBoundingBox: BoundingVolume {
     *     return Cesium.OrientedBoundingBox.distanceSquaredTo(b, camera.positionWC) - Cesium.OrientedBoundingBox.distanceSquaredTo(a, camera.positionWC);
     * });
     */
-    OrientedBoundingBox.distanceSquaredTo = function(box, cartesian) {
+    func distanceSquaredTo (cartesian: Cartesian3) -> Double {
+        assertionFailure("not implemented")
+        let distanceSquared = 0.0
     // See Geometric Tools for Computer Graphics 10.4.2
-    
+    /*
     //>>includeStart('debug', pragmas.debug);
     if (!defined(box)) {
     throw new DeveloperError('box is required.');
@@ -378,11 +380,11 @@ struct OrientedBoundingBox: BoundingVolume {
     d = pPrime.z - wHalf;
     distanceSquared += d * d;
     }
+    */
+    return distanceSquared
+    }
     
-    return distanceSquared;
-    };
-    
-    var scratchCorner = new Cartesian3();
+    /*var scratchCorner = new Cartesian3();
     var scratchToCenter = new Cartesian3();
     var scratchProj = new Cartesian3();
     */
@@ -402,6 +404,7 @@ struct OrientedBoundingBox: BoundingVolume {
     
     var minDist = Double.infinity
     var maxDist = Double.infinity * -1.0
+        assertionFailure("not implemented")
     /*
     var center = box.center;
     var halfAxes = box.halfAxes;
@@ -518,21 +521,7 @@ struct OrientedBoundingBox: BoundingVolume {
     
     /*
        
-    /**
-    * Computes the estimated distance squared from the closest point on a bounding box to a point.
-    *
-    * @param {Cartesian3} cartesian The point
-    * @returns {Number} The estimated distance squared from the bounding sphere to the point.
-    *
-    * @example
-    * // Sort bounding boxes from back to front
-    * boxes.sort(function(a, b) {
-    *     return b.distanceSquaredTo(camera.positionWC) - a.distanceSquaredTo(camera.positionWC);
-    * });
-    */
-    OrientedBoundingBox.prototype.distanceSquaredTo = function(cartesian) {
-    return OrientedBoundingBox.distanceSquaredTo(this, cartesian);
-    };
+
         
     /**
     * Compares the provided OrientedBoundingBox componentwise and returns

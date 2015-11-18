@@ -50,7 +50,9 @@ struct TextureOptions {
     
     let premultiplyAlpha: Bool
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .RGBA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true) {
+    let textureUsage: MTLTextureUsage
+    
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .RGBA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true, textureUsage: MTLTextureUsage = .ShaderRead) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -59,20 +61,23 @@ struct TextureOptions {
         self.pixelFormat = pixelFormat
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
+        self.textureUsage = textureUsage
     }
 }
 
 class Texture {
     
-    var width: Int
+    let width: Int
     
-    var height: Int
+    let height: Int
     
     let pixelFormat: MTLPixelFormat
     
     var textureFilterAnisotropic = true
     
     var premultiplyAlpha = true
+    
+    let textureUsage: MTLTextureUsage
     
     var mipmapped: Bool
 
@@ -107,6 +112,7 @@ class Texture {
         
         pixelFormat = options.pixelFormat
         premultiplyAlpha = options.premultiplyAlpha
+        textureUsage = options.textureUsage
         //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
         mipmapped = false
 
@@ -133,11 +139,16 @@ class Texture {
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20*/
         //var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
-        var flipY = options.flipY
+        let flipY = options.flipY
         
         // FIXME: mipmapping
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
             width: width, height: height, mipmapped: false/*mipmapped*/)
+        textureDescriptor.usage = textureUsage
+        
+        if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Depth24Unorm_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
+            textureDescriptor.storageMode = .Private
+        }
         metalTexture = context.device.newTextureWithDescriptor(textureDescriptor)
         
          if let source = source {
@@ -170,13 +181,15 @@ class Texture {
                 let colorSpace = CGImageGetColorSpace(imageRef)
 
                 // Allocate a textureData with the above properties:
-                var textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
+                let textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
 
                 let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
                 assert(contextRef != nil, "contextRef == nil")
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-                let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-                CGContextConcatCTM(contextRef, flipVertical)
+                if flipY {
+                    let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+                    CGContextConcatCTM(contextRef, flipVertical)
+                }
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
                 // Copy to texture
