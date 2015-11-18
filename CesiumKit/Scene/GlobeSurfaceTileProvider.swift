@@ -197,7 +197,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         
         imageryLayers.update()
         
@@ -238,7 +238,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
 
         if _renderState == nil {
             
@@ -272,7 +272,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
          * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
          *        commands into this array.
          */
-    func updateForPick (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func updateForPick (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if _pickRenderState == nil {
             _pickRenderState = RenderState(
                 colorMask: RenderState.ColorMask(
@@ -317,7 +317,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [DrawCommand], frameState: FrameState) {
+    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [Command], frameState: FrameState) {
         GlobeSurfaceTile.processStateMachine(tile, context: context, commandList: commandList, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
     }
     
@@ -336,7 +336,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
         let surfaceTile = tile.data!
         let cullingVolume = frameState.cullingVolume!
-        var boundingVolume: Intersectable = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
+        var boundingVolume: BoundingVolume = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
         
         if frameState.mode != .Scene3D {
             var boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
@@ -384,7 +384,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {FrameState} frameState The state information of the current rendering frame.
     * @param {DrawCommand[]} commandList The list of rendering commands.  This method may add additional commands to this list.
     */
-    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
         
         var readyTextureCount = 0
         var tileImageryCollection = tile.data!.imagery
@@ -629,7 +629,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     }
     
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
@@ -903,7 +903,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         } while (imageryIndex < imageryLen)
     }
 
-    func addPickCommandsForTile(drawCommand: DrawCommand, context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func addPickCommandsForTile(drawCommand: DrawCommand, context: Context, frameState: FrameState, inout commandList: [Command]) {
         let pickCommand: DrawCommand
         if (_pickCommands.count <= _usedPickCommands) {
             pickCommand = DrawCommand(cull: false)

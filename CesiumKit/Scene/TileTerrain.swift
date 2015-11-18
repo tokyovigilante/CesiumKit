@@ -71,14 +71,17 @@ class TileTerrain {
 
     func publishToTile(tile: QuadtreeTile) {
         let surfaceTile = tile.data!
-        assert(mesh != nil, "mesh not created")
-        surfaceTile.center = mesh!.center
+        guard let mesh = mesh else {
+            assertionFailure("mesh not created")
+            return
+        }
+        surfaceTile.center = mesh.center
 
-        surfaceTile.minimumHeight = mesh!.minimumHeight
-        surfaceTile.maximumHeight = mesh!.maximumHeight
-        surfaceTile.boundingSphere3D = mesh!.boundingSphere3D
-        
-        tile.data!.occludeePointInScaledSpace = mesh!.occludeePointInScaledSpace
+        surfaceTile.minimumHeight = mesh.minimumHeight
+        surfaceTile.maximumHeight = mesh.maximumHeight
+        surfaceTile.boundingSphere3D = mesh.boundingSphere3D
+        surfaceTile.orientedBoundingBox = mesh.orientedBoundingBox
+        tile.data!.occludeePointInScaledSpace = mesh.occludeePointInScaledSpace
         
         // Free the tile's existing vertex array, if any.
         surfaceTile.freeVertexArray()

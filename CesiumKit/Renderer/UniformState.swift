@@ -39,10 +39,7 @@ class UniformState {
     * @type {FrameState}
     * @readonly
     */
-    var frameState: FrameState {
-        return _frameState
-    }
-    private var _frameState = FrameState()
+    private (set) var frameState = FrameState()
     
     private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity())
     
@@ -863,7 +860,7 @@ class UniformState {
         _entireFrustum.y = camera.frustum.far
         updateFrustum(camera.frustum)
         
-        _frameState = frameState
+        self.frameState = frameState
         // FIXME: _temeToPseudoFixed
         //_temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
     };

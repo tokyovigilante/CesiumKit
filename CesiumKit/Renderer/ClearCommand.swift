@@ -15,7 +15,7 @@ import Metal
 */
 struct ClearCommand {
 
-    let boundingVolume: Intersectable? = nil
+    let boundingVolume: BoundingVolume? = nil
     let cull: Bool = false
     
     /**

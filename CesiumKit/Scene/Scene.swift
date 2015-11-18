@@ -9,6 +9,8 @@
 import Foundation
 import MetalKit
 
+private let OpaqueFrustumNearOffset = 0.99
+
 /**
 * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
 * a scene is not created directly; instead, it is implicitly created by {@link CesiumWidget}.
@@ -90,25 +92,11 @@ public class Scene {
     }*/
     
     /**
-    * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
-    * @memberof Scene.prototype
-    *
-    * @type {Number}
-    * @readonly
-    *
-    */
-    var maximumCubeMapSize: Int {
-        get  {
-            return context.limits.maximumCubeMapSize
-        }
-    }
-
-    /**
     * Gets or sets the depth-test ellipsoid.
     * @memberof Scene.prototype
     * @type {Globe}
     */
-    var globe: Globe
+    var globe: Globe!
     
     /**
     * Gets the collection of primitives.
@@ -116,7 +104,14 @@ public class Scene {
     * @type {PrimitiveCollection}
     */
     let primitives = PrimitiveCollection()
-    
+
+    /**
+     * Gets the collection of ground primitives.
+     * @memberof Scene.prototype
+     *
+     * @type {PrimitiveCollection}
+     * @readonly
+     */
     let groundPrimitives = PrimitiveCollection()
     
     //var pickFramebuffer: Framebuffer? = nil
@@ -145,6 +140,16 @@ public class Scene {
         ScreenSpaceCameraController(scene: self)
         }()
     
+    /**
+     * Get the map projection to use in 2D and Columbus View modes.
+     * @memberof Scene.prototype
+     *
+     * @type {MapProjection}
+     * @readonly
+     *
+     * @default new GeographicProjection()
+     */
+    private(set) var mapProjection: MapProjection
     
     /**
     * Gets state information about the current scene. If called outside of a primitive's <code>update</code>
@@ -152,7 +157,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {FrameState}
     */
-    private var _frameState: FrameState
+    private (set) var frameState: FrameState
 
     /**
     * Gets the collection of animations taking place in the scene.
@@ -168,7 +173,7 @@ public class Scene {
     //this._sunPostProcess = undefined;
     
     private var _computeCommandList = [ComputeCommand]()
-    private var _commandList = [DrawCommand]()
+    private var _commandList = [Command]()
     private var _frustumCommandsList = [FrustumCommands]()
     private var _overlayCommandList = [DrawCommand]()
     
@@ -317,19 +322,23 @@ public class Scene {
     * @type {SceneMode}
     * @default {@link SceneMode.SCENE3D}
     */
-    var mode: SceneMode = .Scene3D
+    var mode: SceneMode = .Scene3D {
+        didSet {
+            if mode != .Scene3D && scene3DOnly {
+                mode = .Scene3D
+            }
+        }
+    }
     
     /**
-    * Get the map projection to use in 2D and Columbus View modes.
-    * @memberof Scene.prototype
-    *
-    * @type {MapProjection}
-    * @readonly
-    *
-    * @default new GeographicProjection()
-    */
-    private(set) var mapProjection: MapProjection
-
+             * Gets the number of frustums used in the last frame.
+             * @memberof Scene.prototype
+             * @type {Number}
+             *
+             * @private
+             */
+    var numberOfFrustums: Int { return _frustumCommandsList.count }
+    
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
     * with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -443,6 +452,14 @@ public class Scene {
     var debugShowFramesPerSecond = false
     
     /**
+    * Gets whether or not the scene is optimized for 3D only viewing.
+    * @memberof Scene.prototype
+    * @type {Boolean}
+    * @readonly
+    */
+    var scene3DOnly: Bool { return frameState.scene3DOnly }
+    
+    /**
     * Gets whether or not the scene has order independent translucency enabled.
     * Note that this only reflects the original construction option, and there are
     * other factors that could prevent OIT from functioning on a given system configuration.
@@ -450,11 +467,7 @@ public class Scene {
     * @type {Boolean}
     * @readonly
     */
-    var orderIndependentTranslucency: Bool {
-        get {
-            return _oit != nil
-        }
-    }
+    var orderIndependentTranslucency: Bool { return _oit != nil }
     
     /**
      * This property is for debugging only; it is not for production use.
@@ -505,7 +518,8 @@ public class Scene {
     var copyGlobeDepth = false
     
     //this._performanceDisplay = undefined;
-    private var _debugVolume: Intersectable? = nil
+    private var _debugVolume: BoundingVolume? = nil
+    
 
     
     /**
@@ -544,14 +558,32 @@ public class Scene {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var maximumAliasedLineWidth: Int { get { return 1/*context.maximumAliasedLineWidth*/ } }
+    var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
+    
+    /**
+     * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
+     * @memberof Scene.prototype
+     *
+     * @type {Number}
+     * @readonly
+     *
+     */
+    var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
+    
+    /**
+     * Returns true if the pickPosition function is supported.
+     *
+     * @type {Boolean}
+     * @readonly
+     */
+    var pickPositionSupported: Bool { return context.depthTexture != nil }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
     * @memberof Scene.prototype
     * @type {ImageryLayerCollection}
     */
-    public var imageryLayers: ImageryLayerCollection { get { return globe.imageryLayers } }
+    public var imageryLayers: ImageryLayerCollection { return globe.imageryLayers }
 
     /**
     * The terrain provider providing surface geometry for the globe.
@@ -566,6 +598,14 @@ public class Scene {
             globe.terrainProvider = newTerrainProvider
         }
     }
+    
+    /**
+    * Gets the unique identifier for this scene.
+    * @memberof Scene.prototype
+    * @type {String}
+    * @readonly
+    */
+    let id: String
 
     init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
@@ -577,8 +617,10 @@ public class Scene {
         
         self.mapProjection = projection
         
-        _frameState = FrameState(/*new CreditDisplay(creditContainer*/)
-        _frameState.scene3DOnly = scene3DOnly
+        id = NSUUID().UUIDString
+            
+        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
+        frameState.scene3DOnly = scene3DOnly
         
         // initial guess at frustums.
         camera = Camera(
@@ -633,6 +675,26 @@ public class Scene {
         initializeFrame()
     }
 
+    func maxComponent(a a: Cartesian3, b: Cartesian3) -> Double {
+        return max(
+            abs(a.x), abs(b.x),
+            abs(a.y), abs(b.y),
+            abs(a.z), abs(b.z)
+        )
+    }
+
+    func cameraEqual(camera0: Camera, camera1: Camera, epsilon: Double) -> Bool {
+        let scalar = 1 / max(1, maxComponent(a: camera0.position, b: camera1.position))
+        let position0 = camera0.position.multiplyByScalar(scalar)
+        let position1 = camera1.position.multiplyByScalar(scalar)
+        return position0.equalsEpsilon(position1, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
+            camera0.direction.equalsEpsilon(camera1.direction, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
+            camera0.up.equalsEpsilon(camera1.up, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
+            camera0.right.equalsEpsilon(camera1.right, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
+            camera0.transform.equalsEpsilon(camera1.transform, epsilon: epsilon)
+    }
+
+
     func getOccluder() -> Occluder? {
         // TODO: The occluder is the top-level globe. When we add
         //       support for multiple central bodies, this should be the closest one.
@@ -649,19 +711,19 @@ public class Scene {
 
     func updateFrameState(frameNumber: Int, time: JulianDate) {
 
-        _frameState.mode = mode
-        _frameState.morphTime = morphTime
-        _frameState.mapProjection = mapProjection
-        _frameState.frameNumber = frameNumber
-        _frameState.time = time
-        _frameState.camera = camera
-        _frameState.cullingVolume = camera.frustum.computeCullingVolume(
+        frameState.mode = mode
+        frameState.morphTime = morphTime
+        frameState.mapProjection = mapProjection
+        frameState.frameNumber = frameNumber
+        frameState.time = time
+        frameState.camera = camera
+        frameState.cullingVolume = camera.frustum.computeCullingVolume(
             position: camera.positionWC,
             direction: camera.directionWC,
             up: camera.upWC)
-        _frameState.occluder = getOccluder()
+        frameState.occluder = getOccluder()
         
-        clearPasses(&_frameState.passes)
+        clearPasses(&frameState.passes)
     }
     
     func updateFrustums(near near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
@@ -696,11 +758,7 @@ public class Scene {
             if distance.stop < frustumCommands.near {
                 break
             }
-            // FIXME: Command passes
-            let pass = Pass.Globe//pass: Pass = (command is ClearCommand) ? Pass.Opaque : command.pass!
-            let passIndex = pass.rawValue
-            let index = frustumCommands.indices[pass.rawValue]++
-            frustumCommands.commands[pass.rawValue]!.append(command)
+            frustumCommands.commands[command.pass.rawValue].append(command)
             
             if _debugShowFrustums {
                 command.debugOverlappingFrustums |= (1 << index)
@@ -718,94 +776,96 @@ public class Scene {
         }
     }
 
-func createPotentiallyVisibleSet() {
-    
-    var distances = Interval()
-    
-    
-    let direction = camera.directionWC
-    let position = camera.positionWC
-    
-    
-    //FIXME debugShowFrustums
-    if _debugShowFrustums {
-        _debugFrustumStatistics = (
-            totalCommands : 0,
-            commandsInFrustums : [Int]()
-        )
-    }
-    
-    let numberOfFrustums = _frustumCommandsList.count
-    for frustumCommands in _frustumCommandsList {
-        frustumCommands.removeAll()
-    }
-    var near: Double = Double.infinity
-    var far: Double = 0.0
-    var undefBV = false
-    
-    var occluder: Occluder?
-    if _frameState.mode == .Scene3D {
-        occluder = _frameState.occluder
-    }
-    
-    // get user culling volume minus the far plane.
-    var planes = _frameState.cullingVolume!.planes[0...4]
-    let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
-    
-    
-    for command in _commandList {
-        // FIXME: Command.pass
-        if command.pass == .Overlay {
-            _overlayCommandList.append(command)
+    func createPotentiallyVisibleSet() {
+        
+        var distances = Interval()
+        
+        let direction = camera.directionWC
+        let position = camera.positionWC
+        
+        
+        //FIXME debugShowFrustums
+        if _debugShowFrustums {
+            _debugFrustumStatistics = (
+                totalCommands : 0,
+                commandsInFrustums : [Int]()
+            )
+        }
+        
+        let numberOfFrustums = _frustumCommandsList.count
+        for frustumCommands in _frustumCommandsList {
+            frustumCommands.removeAll()
+        }
+        var near: Double = Double.infinity
+        var far: Double = 0.0
+        var undefBV = false
+        
+        let occluder: Occluder?
+        if frameState.mode == .Scene3D {
+            occluder = frameState.occluder
         } else {
-            if let boundingVolume = command.boundingVolume {
-                if command.cull &&
-                   (cullingVolume.visibility(boundingVolume) == .Outside ||
-                    occluder != nil && !(occluder!.isBoundingSphereVisible(boundingVolume as! BoundingSphere))) {
+            occluder = nil
+        }
+        
+        // get user culling volume minus the far plane.
+        var planes = frameState.cullingVolume!.planes[0...4]
+        let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
+        
+        for command in _commandList {
+            
+            if command.pass == .Compute {
+                _computeCommandList.append(command as! ComputeCommand)
+            } else if command.pass == .Overlay {
+                _overlayCommandList.append(command as! DrawCommand)
+            } else {
+                let command = command as! DrawCommand
+                if let boundingVolume = command.boundingVolume {
+                    if command.cull && (cullingVolume.visibility(boundingVolume) == .Outside ||
+                        occluder != nil && boundingVolume.isOccluded(occluder!)) {
                             continue
+                    }
+                    
+                    distances = boundingVolume.computePlaneDistances(position, direction: direction)
+                    near = min(near, distances.start)
+                    far = max(far, distances.stop)
+                } else {
+                    // Clear commands don't need a bounding volume - just add the clear to all frustums.
+                    // If another command has no bounding volume, though, we need to use the camera's
+                    // worst-case near and far planes to avoid clipping something important.
+                    distances.start = camera.frustum.near
+                    distances.stop = camera.frustum.far
+                    undefBV = true//!(command is ClearCommand)
                 }
                 
-                distances = (boundingVolume as! BoundingSphere).computePlaneDistances(position, direction: direction)
-                near = min(near, distances.start)
-                far = max(far, distances.stop)
-            } else {
-                // Clear commands don't need a bounding volume - just add the clear to all frustums.
-                // If another command has no bounding volume, though, we need to use the camera's
-                // worst-case near and far planes to avoid clipping something important.
-                distances.start = camera.frustum.near
-                distances.stop = camera.frustum.far
-                undefBV = !(command is ClearCommand)
+                insertIntoBin(command, distance: distances)
             }
-            
-            insertIntoBin(command, distance: distances)
+        }
+        
+        if (undefBV) {
+            near = camera.frustum.near
+            far = camera.frustum.far
+        } else {
+            // The computed near plane must be between the user defined near and far planes.
+            // The computed far plane must between the user defined far and computed near.
+            // This will handle the case where the computed near plane is further than the user defined far plane.
+            near = min(max(near, camera.frustum.near), camera.frustum.far)
+            far = max(min(far, camera.frustum.far), near)
+        }
+        
+        // Exploit temporal coherence. If the frustums haven't changed much, use the frustums computed
+        // last frame, else compute the new frustums and sort them by frustum again.
+        let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
+        if near != Double.infinity &&
+            (numFrustums != numberOfFrustums ||
+                (_frustumCommandsList.count != 0 &&
+                    (near < (_frustumCommandsList.first! as FrustumCommands).near
+                        || far > (_frustumCommandsList.last! as FrustumCommands).far)
+                )
+            ) {
+                updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
+                createPotentiallyVisibleSet()
         }
     }
-    
-    if (undefBV) {
-        near = camera.frustum.near
-        far = camera.frustum.far
-    } else {
-        // The computed near plane must be between the user defined near and far planes.
-        // The computed far plane must between the user defined far and computed near.
-        // This will handle the case where the computed near plane is further than the user defined far plane.
-        near = min(max(near, camera.frustum.near), camera.frustum.far)
-        far = max(min(far, camera.frustum.far), near)
-    }
-    
-    // Exploit temporal coherence. If the frustums haven't changed much, use the frustums computed
-    // last frame, else compute the new frustums and sort them by frustum again.
-    let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
-    if near != Double.infinity &&
-        (numFrustums != numberOfFrustums ||
-            (_frustumCommandsList.count != 0 &&
-                (near < (_frustumCommandsList.first! as FrustumCommands).near
-                || far > (_frustumCommandsList.last! as FrustumCommands).far)
-            )
-        ) {
-            updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
-            createPotentiallyVisibleSet()
-    }
-}
     
 /*
 function getAttributeLocations(shaderProgram) {
@@ -1121,9 +1181,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
-            let numPasses = Pass.Translucent.rawValue
+            let numPasses = Pass.count
             for pass in 0..<numPasses {
-                for command in frustumCommands.commands[pass]! {
+                for command in frustumCommands.commands[pass] {
                     executeCommand(command, renderPass: globeRenderPass)
                 }
             }
@@ -1157,16 +1217,15 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     }
 
     func updatePrimitives() {
-        
-        globe.update(context: context, frameState: _frameState, commandList: &_commandList)
-        //FIXME: primitives
-        //scene._primitives.update(context, frameState, commandList);
-        //FIXME: moon
-        /*
-        if (defined(scene.moon)) {
-            scene.moon.update(context, frameState, commandList);
-        }*/
+    
+        if globe != nil {
+            globe.update(context: context, frameState: frameState, commandList: &_commandList)
+        }
+    /*
+    _groundPrimitives.update(context, frameState, _commandList);
+    _primitives.update(context, frameState, _commandList);*/
     }
+
 /*
 function callAfterRenderFunctions(frameState) {
     // Functions are queued up during primitive update and executed here in case
@@ -1210,13 +1269,13 @@ function callAfterRenderFunctions(frameState) {
         
         let uniformState = context.uniformState
         
-        let frameNumber = Math.incrementWrap(_frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
+        let frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
-        _frameState.passes.render = true
+        frameState.passes.render = true
         // FIXME: Creditdisplay
         //frameState.creditDisplay.beginFrame();
         
-        uniformState.update(context, frameState: _frameState)
+        uniformState.update(context, frameState: frameState)
         _commandList.removeAll()
         _overlayCommandList.removeAll()
     

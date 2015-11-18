@@ -29,7 +29,7 @@ class DrawCommand: Command {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: Intersectable?
+    var boundingVolume: BoundingVolume?
     
     /**
     * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
@@ -127,7 +127,7 @@ class DrawCommand: Command {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass?
+    var pass: Pass = .Globe
     
     /**
     * Specifies if this command is only to be executed in the frustum closest
@@ -176,7 +176,7 @@ class DrawCommand: Command {
     //var oit = undefined;
     
     init(
-        boundingVolume: Intersectable? = nil,
+        boundingVolume: BoundingVolume? = nil,
         orientedBoundingBox: OrientedBoundingBox? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
@@ -186,7 +186,7 @@ class DrawCommand: Command {
         offset: Int = 0,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
-        pass: Pass? = nil,
+        pass: Pass = .Globe,
         executeInClosestFrustum: Bool = false,
         owner: AnyObject? = nil,
         debugShowBoundingVolume: Bool = false,

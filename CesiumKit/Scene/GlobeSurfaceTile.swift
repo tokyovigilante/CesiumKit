@@ -223,7 +223,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         vertexArray = nil
     }
     
-    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [DrawCommand], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
+    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()

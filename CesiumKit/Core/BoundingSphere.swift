@@ -20,7 +20,7 @@ import Foundation
 * @see BoundingRectangle
 * @see Packable
 */
-struct BoundingSphere: Intersectable {
+struct BoundingSphere: BoundingVolume {
     /**
     * The center point of the sphere.
     * @type {Cartesian3}
@@ -971,26 +971,18 @@ BoundingSphere.equals = function(left, right) {
 BoundingSphere.prototype.intersect = function(plane) {
     return BoundingSphere.intersect(this, plane);
 };
-
-/**
+*/
+    /**
     * Determines whether or not a sphere is hidden from view by the occluder.
     *
     * @param {BoundingSphere} sphere The bounding sphere surrounding the occludee object.
     * @param {Occluder} occluder The occluder.
     * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
     */
-    BoundingSphere.isOccluded = function(sphere, occluder) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(sphere)) {
-    throw new DeveloperError('sphere is required.');
+    func isOccluded (occluder: Occluder) -> Bool {
+        return !occluder.isBoundingSphereVisible(self)
     }
-    if (!defined(occluder)) {
-    throw new DeveloperError('occluder is required.');
-    }
-    //>>includeEnd('debug');
-    return !occluder.isBoundingSphereVisible(sphere);
-    };
-    
+    /*
     /**
 * Compares this BoundingSphere against the provided BoundingSphere componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.

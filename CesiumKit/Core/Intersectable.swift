@@ -1,5 +1,5 @@
 //
-//  Intersectable.swift
+//  BoundingVolume.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 15/06/14.
@@ -8,11 +8,16 @@
 
 import Foundation
 
-// Protocol for objects which support plane intersection testing
+// Protocol for bounding volumes
 
-protocol Intersectable {
+protocol BoundingVolume {
     
     var center: Cartesian3 { get }
     
     func intersectPlane(plane: Plane) -> Intersect
+    
+    func isOccluded (occluder: Occluder) -> Bool
+    
+    func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval 
+
 }

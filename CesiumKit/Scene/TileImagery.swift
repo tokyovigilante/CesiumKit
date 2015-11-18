@@ -52,7 +52,7 @@ class TileImagery {
     * @param {Context} context The context.
     * @returns {Boolean} True if this instance is done loading; otherwise, false.
     */
-    func processStateMachine (tile: QuadtreeTile, context: Context, commandList: [DrawCommand]) -> Bool {
+    func processStateMachine (tile: QuadtreeTile, context: Context, commandList: [Command]) -> Bool {
         
         let imageryLayer = loadingImagery!.imageryLayer
         

@@ -579,7 +579,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func update(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if !show {
             return
         }

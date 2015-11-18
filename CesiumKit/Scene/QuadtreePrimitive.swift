@@ -220,7 +220,7 @@ class QuadtreePrimitive {
     * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
     *        commands to this array during the update call.
     */
-    func update (context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func update (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if (frameState.passes.render) {
             _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
             selectTilesForRendering(context: context, frameState: frameState)
@@ -455,7 +455,7 @@ class QuadtreePrimitive {
         _tileLoadQueue.append(tile)
     }
     
-    func processTileLoadQueue(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func processTileLoadQueue(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         
         if _tileLoadQueue.count == 0 {
             return
@@ -564,7 +564,7 @@ class QuadtreePrimitive {
         }*/
     }
     
-    func createRenderCommandsForSelectedTiles(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func createRenderCommandsForSelectedTiles(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         func tileDistanceSortFunction(a: QuadtreeTile, b: QuadtreeTile) -> Bool {
             return a.distance < b.distance
         }

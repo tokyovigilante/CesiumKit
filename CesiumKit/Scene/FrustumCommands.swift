@@ -21,20 +21,14 @@ class FrustumCommands {
     var near = 0.0
     var far = 0.0
 
-    var commands = [Int: [DrawCommand]]()
-    var indices = [Int](count: Pass.count, repeatedValue: 0)
+    var commands = [[DrawCommand]](count: Pass.count, repeatedValue: [DrawCommand]())
     
     init (near: Double = 0.0, far: Double = 0.0) {
         self.near = near
         self.far = far
-        
-        for i in 0..<Pass.count {
-            commands[i] = [DrawCommand]()
-        }
     }
     
     func removeAll() {
-        indices = [Int](count: Pass.count, repeatedValue: 0)
         for i in 0..<Pass.count {
             commands[i] = [DrawCommand]()
         }

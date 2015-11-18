@@ -9,5 +9,11 @@
 import Foundation
 
 protocol Command {
+    var pass: Pass { get }
     
+    var boundingVolume: BoundingVolume? { get }
+}
+
+extension Command {
+    var boundingVolume: BoundingVolume? { return nil }
 }

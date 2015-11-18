@@ -29,7 +29,7 @@ import Foundation
 *
 * var obb = new Cesium.OrientedBoundingBox(center, halfAxes);
 */
-struct OrientedBoundingBox: Intersectable {
+struct OrientedBoundingBox: BoundingVolume {
     
     /**
     * The center of the box.
@@ -153,9 +153,9 @@ struct OrientedBoundingBox: Intersectable {
     init (fromTangentPlaneExtents tangentPlane: EllipsoidTangentPlane, minimumX: Double, maximumX: Double, minimumY: Double, maximumY: Double, minimumZ: Double, maximumZ: Double) {
         
         var halfAxes = Matrix3()
-        halfAxes.setColumn(0, cartesian: tangentPlane.xAxis)
-        halfAxes.setColumn(1, cartesian: tangentPlane.yAxis)
-        halfAxes.setColumn(2, cartesian: tangentPlane.zAxis)
+        halfAxes = halfAxes.setColumn(0, cartesian: tangentPlane.xAxis)
+        halfAxes = halfAxes.setColumn(1, cartesian: tangentPlane.yAxis)
+        halfAxes = halfAxes.setColumn(2, cartesian: tangentPlane.zAxis)
         
         var centerOffset = Cartesian3(x: (minimumX + maximumX) / 2.0, y: (minimumY + maximumY) / 2.0, z: (minimumZ + maximumZ) / 2.0)
         let scale = Cartesian3(x: (maximumX - minimumX) / 2.0, y: (maximumY - minimumY) / 2.0, z: (maximumZ - minimumZ) / 2.0)
@@ -280,28 +280,26 @@ struct OrientedBoundingBox: Intersectable {
     *                      on the opposite side, and {@link Intersect.INTERSECTING} if the box
     *                      intersects the plane.
     */
-    //FIXME: intersectPlane
     func intersectPlane(plane: Plane) -> Intersect {
-        /*
-        var center = box.center;
-        var normal = plane.normal;
-        var halfAxes = box.halfAxes;
-        var normalX = normal.x, normalY = normal.y, normalZ = normal.z;
-        // plane is used as if it is its normal; the first three components are assumed to be normalized
-        var radEffective = Math.abs(normalX * halfAxes[Matrix3.COLUMN0ROW0] + normalY * halfAxes[Matrix3.COLUMN0ROW1] + normalZ * halfAxes[Matrix3.COLUMN0ROW2]) +
-        Math.abs(normalX * halfAxes[Matrix3.COLUMN1ROW0] + normalY * halfAxes[Matrix3.COLUMN1ROW1] + normalZ * halfAxes[Matrix3.COLUMN1ROW2]) +
-        Math.abs(normalX * halfAxes[Matrix3.COLUMN2ROW0] + normalY * halfAxes[Matrix3.COLUMN2ROW1] + normalZ * halfAxes[Matrix3.COLUMN2ROW2]);
-        var distanceToPlane = Cartesian3.dot(normal, center) + plane.distance;
         
-        if (distanceToPlane <= -radEffective) {
-        // The entire box is on the negative side of the plane normal
-        return Intersect.OUTSIDE;
-        } else if (distanceToPlane >= radEffective) {
-        // The entire box is on the positive side of the plane normal
-        return Intersect.INSIDE;
+        let normal = plane.normal
+        let normalX = normal.x, normalY = normal.y, normalZ = normal.z
+        
+        // plane is used as if it is its normal; the first three components are assumed to be normalized
+        let radEffective1 = abs(normalX * halfAxes[0,0] + normalY * halfAxes[0,1] + normalZ * halfAxes[0,2])
+        let radEffective2 = abs(normalX * halfAxes[1,0] + normalY * halfAxes[1,1] + normalZ * halfAxes[1,2])
+        let radEffective3 = abs(normalX * halfAxes[2,0] + normalY * halfAxes[2,1] + normalZ * halfAxes[2,2])
+        let radEffective = radEffective1 + radEffective2 + radEffective3
+        let distanceToPlane = normal.dot(center) + plane.distance
+        
+        if distanceToPlane <= -radEffective {
+            // The entire box is on the negative side of the plane normal
+            return .Outside
+        } else if distanceToPlane >= radEffective {
+            // The entire box is on the positive side of the plane normal
+            return .Inside
         }
-        return Intersect.INTERSECTING;*/
-        return .Outside
+        return .Intersecting
     }
     /*
     var scratchCartesianU = new Cartesian3();
@@ -387,7 +385,7 @@ struct OrientedBoundingBox: Intersectable {
     var scratchCorner = new Cartesian3();
     var scratchToCenter = new Cartesian3();
     var scratchProj = new Cartesian3();
-    
+    */
     /**
     * The distances calculated by the vector from the center of the bounding box to position projected onto direction.
     * <br>
@@ -400,28 +398,11 @@ struct OrientedBoundingBox: Intersectable {
     * @param {Interval} [result] A Interval to store the nearest and farthest distances.
     * @returns {Interval} The nearest and farthest distances on the bounding box from position in direction.
     */
-    OrientedBoundingBox.computePlaneDistances = function(box, position, direction, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(box)) {
-    throw new DeveloperError('box is required.');
-    }
+    func computePlaneDistances (position: Cartesian3, direction: Cartesian3) -> Interval {
     
-    if (!defined(position)) {
-    throw new DeveloperError('position is required.');
-    }
-    
-    if (!defined(direction)) {
-    throw new DeveloperError('direction is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    result = new Interval();
-    }
-    
-    var minDist = Number.POSITIVE_INFINITY;
-    var maxDist = Number.NEGATIVE_INFINITY;
-    
+    var minDist = Double.infinity
+    var maxDist = Double.infinity * -1.0
+    /*
     var center = box.center;
     var halfAxes = box.halfAxes;
     
@@ -516,60 +497,27 @@ struct OrientedBoundingBox: Intersectable {
     
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
-    result.start = minDist;
-    result.stop = maxDist;
-    return result;
-    };
-    
-    var scratchBoundingSphere = new BoundingSphere();
-    
+    */
+        return Interval(start: minDist, stop: maxDist)
+    }
+
     /**
     * Determines whether or not a bounding box is hidden from view by the occluder.
     *
-    * @param {OrientedBoundingBox} sphere The bounding box surrounding the occludee object.
     * @param {Occluder} occluder The occluder.
     * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
     */
-    OrientedBoundingBox.isOccluded = function(box, occluder) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(box)) {
-    throw new DeveloperError('box is required.');
+    func isOccluded (occluder: Occluder) -> Bool {
+
+        let uHalf = halfAxes.column(0).magnitude()
+        let vHalf = halfAxes.column(1).magnitude()
+        let wHalf = halfAxes.column(2).magnitude()
+
+        return !occluder.isBoundingSphereVisible(BoundingSphere(center: center, radius: max(uHalf, vHalf, wHalf)))
     }
-    if (!defined(occluder)) {
-    throw new DeveloperError('occluder is required.');
-    }
-    //>>includeEnd('debug');
     
-    var halfAxes = box.halfAxes;
-    var u = Matrix3.getColumn(halfAxes, 0, scratchCartesianU);
-    var v = Matrix3.getColumn(halfAxes, 1, scratchCartesianV);
-    var w = Matrix3.getColumn(halfAxes, 2, scratchCartesianW);
-    
-    var uHalf = Cartesian3.magnitude(u);
-    var vHalf = Cartesian3.magnitude(v);
-    var wHalf = Cartesian3.magnitude(w);
-    
-    var sphere = scratchBoundingSphere;
-    sphere.center = Cartesian3.clone(box.center, sphere.center);
-    sphere.radius = Math.max(uHalf, vHalf, wHalf);
-    
-    return !occluder.isBoundingSphereVisible(sphere);
-    };
-    
-    /**
-    * Determines which side of a plane the oriented bounding box is located.
-    *
-    * @param {Plane} plane The plane to test against.
-    * @returns {Intersect} {@link Intersect.INSIDE} if the entire box is on the side of the plane
-    *                      the normal is pointing, {@link Intersect.OUTSIDE} if the entire box is
-    *                      on the opposite side, and {@link Intersect.INTERSECTING} if the box
-    *                      intersects the plane.
-    */
-    OrientedBoundingBox.prototype.intersectPlane = function(plane) {
-    return OrientedBoundingBox.intersectPlane(this, plane);
-    };
-    
+    /*
+       
     /**
     * Computes the estimated distance squared from the closest point on a bounding box to a point.
     *
@@ -585,32 +533,7 @@ struct OrientedBoundingBox: Intersectable {
     OrientedBoundingBox.prototype.distanceSquaredTo = function(cartesian) {
     return OrientedBoundingBox.distanceSquaredTo(this, cartesian);
     };
-    
-    /**
-    * The distances calculated by the vector from the center of the bounding box to position projected onto direction.
-    * <br>
-    * If you imagine the infinite number of planes with normal direction, this computes the smallest distance to the
-    * closest and farthest planes from position that intersect the bounding box.
-    *
-    * @param {Cartesian3} position The position to calculate the distance from.
-    * @param {Cartesian3} direction The direction from position.
-    * @param {Interval} [result] A Interval to store the nearest and farthest distances.
-    * @returns {Interval} The nearest and farthest distances on the bounding box from position in direction.
-    */
-    OrientedBoundingBox.prototype.computePlaneDistances = function(position, direction, result) {
-    return OrientedBoundingBox.computePlaneDistances(this, position, direction, result);
-    };
-    
-    /**
-    * Determines whether or not a bounding box is hidden from view by the occluder.
-    *
-    * @param {Occluder} occluder The occluder.
-    * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
-    */
-    OrientedBoundingBox.prototype.isOccluded = function(occluder) {
-    return OrientedBoundingBox.isOccluded(this, occluder);
-    };
-    
+        
     /**
     * Compares the provided OrientedBoundingBox componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
