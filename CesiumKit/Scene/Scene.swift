@@ -1140,7 +1140,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var originalPassStateDescriptor = passState?.passDescriptor
         
         // Create a working frustum from the original camera frustum
-        
         let frustum: Frustum
         if camera.frustum.fovy != Double.NaN {
             frustum = camera.frustum.clone(PerspectiveFrustum())
@@ -1151,7 +1150,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
         
         // Clear the pass state framebuffer.
-        
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
         let spaceRenderPass = context.createRenderPass(clearCommand: _clearColorCommand)
 
@@ -1234,8 +1232,17 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         //}*/
 
         // Execute commands in each frustum in back to front order
+        
+        // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
+        let useGlobeDepthFramebuffer = !picking && _globeDepth != nil
+        if useGlobeDepthFramebuffer {
+            _globeDepth!.update(context)
+            //_globeDepth.clear(context, passState, clearColor)
+        }
+        let globeRenderPass = context.createRenderPass(clearCommand: useGlobeDepthFramebuffer ?_depthClearCommand : nil)
+        
+        // Determine if there are any translucent surfaces in any of the frustums.
     
-        let globeRenderPass = context.createRenderPass(clearCommand: _depthClearCommand)
         
         for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             frustum.near = frustumCommands.near

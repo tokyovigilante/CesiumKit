@@ -197,14 +197,15 @@ globeDepth._clearColorCommand.framebuffer = globeDepth.framebuffer;
 
 GlobeDepth.prototype.executeDebugGlobeDepth = function(context, passState) {
 executeDebugGlobeDepth(this, context, passState);
-};
+};*/
 
-GlobeDepth.prototype.update = function(context) {
-updateFramebuffers(this, context);
-updateCopyCommands(this, context);
-context.uniformState.globeDepthTexture = undefined;
-};
-
+    func update (context: Context) {
+        assertionFailure("stub")
+        //updateFramebuffers(this, context);
+        //updateCopyCommands(this, context);
+        //context.uniformState.globeDepthTexture = undefined;
+    }
+/*
 GlobeDepth.prototype.executeCopyDepth = function(context, passState) {
 if (defined(this._copyDepthCommand)) {
 this._copyDepthCommand.execute(context, passState);
