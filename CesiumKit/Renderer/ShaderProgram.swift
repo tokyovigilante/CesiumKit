@@ -148,20 +148,20 @@ class ShaderProgram {
         do {
             _vertexLibrary = try device.newLibraryWithSource(_metalVertexShaderSource, options: nil)
             metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
-        } catch {
+        } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
-            print((error as NSError).localizedDescription)
+            print(error.localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }
         
         do {
             _fragmentLibrary = try device.newLibraryWithSource(_metalFragmentShaderSource, options: nil)
             metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
-        } catch {
+        } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
-            print((error as NSError).localizedDescription)
+            print(error.localizedDescription)
             assertionFailure("_library == nil")
         }
     }
