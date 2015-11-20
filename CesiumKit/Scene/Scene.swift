@@ -1105,9 +1105,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     func executeCommands(passState: PassState?, clearColor: Cartesian4, picking: Bool = false) {
         
         
-        let computeRenderPass = context.createRenderPass(clearCommand: nil)
+        //let computeRenderPass = context.createRenderPass(clearCommand: nil)
         
-        computeRenderPass.complete()
+        //computeRenderPass.complete()
         
         // FIXME: Sun
         // Manage sun bloom post-processing effect.
@@ -1151,52 +1151,66 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         // Clear the pass state framebuffer.
         _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
-        let spaceRenderPass = context.createRenderPass(clearCommand: _clearColorCommand)
 
-        /*var renderTranslucentCommands = false
-        //var frustumCommandsList = scene._frustumCommandsList;
+        // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
+        let useGlobeDepthFramebuffer = !picking && _globeDepth != nil
+        if useGlobeDepthFramebuffer {
+            // FIXME: globeDepth
+            _globeDepth!.update(context)
+            _globeDepth!.clear(context, passState: passState!, clearColor: clearColor)
+        }
+        
+        let spaceRenderPass = context.createRenderPass(clearCommands: [_clearColorCommand])
+        
+            
+            
+        // Determine if there are any translucent surfaces in any of the frustums.
+        var renderTranslucentCommands = false
+        /*var frustumCommandsList = scene._frustumCommandsList;
         //var numFrustums = frustumCommandsList.length;
         for frustumCommands in _frustumCommandsList {
         //for (i = 0; i < numFrustums; ++i) {
             if frustumCommands.translucentCommands.count > 0 {
-            //if (frustumCommandsList[i].translucentIndex > 0) {
+            if (frustumCommandsList[i].indices[Pass.TRANSLUCENT] > 0) {
                 renderTranslucentCommands = true
                 break
             }
-        }
-        // FIXME: OIT
-        var useOIT = !picking && renderTranslucentCommands && defined(scene._oit) && scene._oit.isSupported();
-        if (useOIT) {
-            scene._oit.update(context);
+        }*/
+
+        
+        
+        // If supported, configure OIT to use the globe depth framebuffer and clear the OIT framebuffer.
+        var useOIT = !picking && renderTranslucentCommands && _oit != nil && _oit!.isSupported()
+        /*if (useOIT) {
+            scene._oit.update(context, scene._globeDepth.framebuffer);
             scene._oit.clear(context, passState, clearColor);
             useOIT = useOIT && scene._oit.isSupported();
         }
         
-        var useFXAA = !picking && (scene.fxaa || (useOIT && scene.fxaaOrderIndependentTranslucency));
+        // If supported, configure FXAA to use the globe depth color texture and clear the FXAA framebuffer.
+        var useFXAA = !picking && scene.fxaa;
         if (useFXAA) {
             scene._fxaa.update(context);
             scene._fxaa.clear(context, passState, clearColor);
         }
-        */
         
-        /*if (useOIT) {
-            opaqueFramebuffer = scene._oit.getColorFramebuffer();
-        } else if (useFXAA) {
-            opaqueFramebuffer = scene._fxaa.getColorFramebuffer();
-        }*/
-        // FIXME: Sun
-        /*if (sunVisible && scene.sunBloom) {
+        if (sunVisible && scene.sunBloom) {
             passState.framebuffer = scene._sunPostProcess.update(context);
-        } else {
-            passState.framebuffer = opaqueFramebuffer;
-        }*/
-        // FIXME: skybox, atmosphere
-        /*
+        } else if (useGlobeDepthFramebuffer) {
+            passState.framebuffer = scene._globeDepth.framebuffer;
+        } else if (useFXAA) {
+            passState.framebuffer = scene._fxaa.getColorFramebuffer();
+        }
+        
+        if (defined(passState.framebuffer)) {
+            clear.execute(context, passState);
+        }
+        
         // Ideally, we would render the sky box and atmosphere last for
         // early-z, but we would have to draw it in each frustum
-        frustum.near = camera.frustum.near
-        frustum.far = camera.frustum.far
-        context.uniformState.updateFrustum(frustum)
+        frustum.near = camera.frustum.near;
+        frustum.far = camera.frustum.far;
+        us.updateFrustum(frustum);
         
         if (defined(skyBoxCommand)) {
             executeCommand(skyBoxCommand, scene, context, passState);
@@ -1206,39 +1220,155 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             executeCommand(skyAtmosphereCommand, scene, context, passState);
         }
         
-        if (defined(sunCommand) && sunVisible) {
-            sunCommand.execute(context, passState);
-            
-            if (scene.sunBloom) {
-                scene._sunPostProcess.execute(context, opaqueFramebuffer);
-                passState.framebuffer = opaqueFramebuffer;
-            }
-        }*/
-        spaceRenderPass.complete()
         
-        /*
-        var clearDepth = scene._depthClearCommand;
-        // FIXME: Translucentcommands
+        if (sunVisible) {
+            if (defined(sunComputeCommand)) {
+                sunComputeCommand.execute(scene._computeEngine);
+            }
+            sunDrawCommand.execute(context, passState);
+            if (scene.sunBloom) {
+                var framebuffer;
+                if (useGlobeDepthFramebuffer) {
+                    framebuffer = scene._globeDepth.framebuffer;
+                } else if (useFXAA) {
+                    framebuffer = scene._fxaa.getColorFramebuffer();
+                } else {
+                    framebuffer = originalFramebuffer;
+                }
+                scene._sunPostProcess.execute(context, framebuffer);
+                passState.framebuffer = framebuffer;
+            }
+        }
+        // Moon can be seen through the atmosphere, since the sun is rendered after the atmosphere.
+        if (moonVisible) {
+            moonCommand.execute(context, passState);
+        }
+        
+        
+        // Determine how translucent surfaces will be handled.
         var executeTranslucentCommands;
-        /*if (useOIT) {
+        if (useOIT) {
             if (!defined(scene._executeOITFunction)) {
                 scene._executeOITFunction = function(scene, executeFunction, passState, commands) {
                     scene._oit.executeCommands(scene, executeFunction, passState, commands);
                 };
             }
             executeTranslucentCommands = scene._executeOITFunction;
-        } else {*/
-            executeTranslucentCommands = executeTranslucentCommandsSorted()
-        //}*/
-
-        // Execute commands in each frustum in back to front order
-        
-        // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
-        let useGlobeDepthFramebuffer = !picking && _globeDepth != nil
-        if useGlobeDepthFramebuffer {
-            _globeDepth!.update(context)
-            //_globeDepth.clear(context, passState, clearColor)
+        } else {
+            executeTranslucentCommands = executeTranslucentCommandsSorted;
         }
+        // Execute commands in each frustum in back to front order
+        let clearDepth = _depthClearCommand
+        for (i = 0; i < numFrustums; ++i) {
+            var index = numFrustums - i - 1;
+            var frustumCommands = frustumCommandsList[index];
+            
+            // Avoid tearing artifacts between adjacent frustums in the opaque passes
+            frustum.near = index !== 0 ? frustumCommands.near * OPAQUE_FRUSTUM_NEAR_OFFSET : frustumCommands.near;
+            frustum.far = frustumCommands.far;
+            
+            var globeDepth = scene.debugShowGlobeDepth ? getDebugGlobeDepth(scene, index) : scene._globeDepth;
+            
+            var fb;
+            if (scene.debugShowGlobeDepth && defined(globeDepth) && useGlobeDepthFramebuffer) {
+                fb = passState.framebuffer;
+                passState.framebuffer = globeDepth.framebuffer;
+            }
+            
+            us.updateFrustum(frustum);
+            clearDepth.execute(context, passState);
+            
+            var commands = frustumCommands.commands[Pass.GLOBE];
+            var length = frustumCommands.indices[Pass.GLOBE];
+            for (j = 0; j < length; ++j) {
+                executeCommand(commands[j], scene, context, passState);
+            }
+            
+            if (defined(globeDepth) && useGlobeDepthFramebuffer && (scene.copyGlobeDepth || scene.debugShowGlobeDepth)) {
+                globeDepth.update(context);
+                globeDepth.executeCopyDepth(context, passState);
+            }
+            
+            if (scene.debugShowGlobeDepth && defined(globeDepth) && useGlobeDepthFramebuffer) {
+                passState.framebuffer = fb;
+            }
+            
+            commands = frustumCommands.commands[Pass.GROUND];
+            length = frustumCommands.indices[Pass.GROUND];
+            for (j = 0; j < length; ++j) {
+                executeCommand(commands[j], scene, context, passState);
+            }
+            
+            if (clearGlobeDepth) {
+                clearDepth.execute(context, passState);
+                if (useDepthPlane) {
+                    scene._depthPlane.execute(context, passState);
+                }
+            }
+            
+            // Execute commands in order by pass up to the translucent pass.
+            // Translucent geometry needs special handling (sorting/OIT).
+            var startPass = Pass.GROUND + 1;
+            var endPass = Pass.TRANSLUCENT;
+            for (var pass = startPass; pass < endPass; ++pass) {
+                commands = frustumCommands.commands[pass];
+                length = frustumCommands.indices[pass];
+                for (j = 0; j < length; ++j) {
+                    executeCommand(commands[j], scene, context, passState);
+                }
+            }
+            
+            if (index !== 0) {
+                // Do not overlap frustums in the translucent pass to avoid blending artifacts
+                frustum.near = frustumCommands.near;
+                us.updateFrustum(frustum);
+            }
+            
+            commands = frustumCommands.commands[Pass.TRANSLUCENT];
+            commands.length = frustumCommands.indices[Pass.TRANSLUCENT];
+            executeTranslucentCommands(scene, executeCommand, passState, commands);
+            
+            if (defined(globeDepth) && useGlobeDepthFramebuffer) {
+                // PERFORMANCE_IDEA: Use MRT to avoid the extra copy.
+                var pickDepth = getPickDepth(scene, index);
+                pickDepth.update(context, globeDepth.framebuffer.depthStencilTexture);
+                pickDepth.executeCopyDepth(context, passState);
+            }
+        }
+        
+        if (scene.debugShowGlobeDepth && useGlobeDepthFramebuffer) {
+            var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
+            gd.executeDebugGlobeDepth(context, passState);
+        }
+        
+        if (scene.debugShowPickDepth && useGlobeDepthFramebuffer) {
+            var pd = getPickDepth(scene, scene.debugShowDepthFrustum - 1);
+            pd.executeDebugPickDepth(context, passState);
+        }
+        
+        if (useOIT) {
+            passState.framebuffer = useFXAA ? scene._fxaa.getColorFramebuffer() : undefined;
+            scene._oit.execute(context, passState);
+        }
+        
+        if (useFXAA) {
+            if (!useOIT && useGlobeDepthFramebuffer) {
+                passState.framebuffer = scene._fxaa.getColorFramebuffer();
+                scene._globeDepth.executeCopyColor(context, passState);
+            }
+            
+            passState.framebuffer = originalFramebuffer;
+            scene._fxaa.execute(context, passState);
+        }
+        
+        if (!useOIT && !useFXAA && useGlobeDepthFramebuffer) {
+            passState.framebuffer = originalFramebuffer;
+            scene._globeDepth.executeCopyColor(context, passState);
+        }
+    
+                /*
+        spaceRenderPass.complete()
+
         let globeRenderPass = context.createRenderPass(clearCommand: useGlobeDepthFramebuffer ?_depthClearCommand : nil)
         
         // Determine if there are any translucent surfaces in any of the frustums.
@@ -1247,12 +1377,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         for (index, frustumCommands) in _frustumCommandsList.enumerate() {
             frustum.near = frustumCommands.near
             frustum.far = frustumCommands.far
-            
+        
             if index != 0 {
                 // Avoid tearing artifacts between adjacent frustums
                 frustum.near *= 0.99
             }
-            
+        
             context.uniformState.updateFrustum(frustum)
 
 
@@ -1282,7 +1412,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         if (useFXAA) {
             passState.framebuffer = undefined;
             scene._fxaa.execute(context, passState);
-        }*/
+        }*/*/*/
     }
 
     func executeOverlayCommands() {

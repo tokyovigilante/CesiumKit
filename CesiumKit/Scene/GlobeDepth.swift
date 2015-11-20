@@ -200,7 +200,7 @@ executeDebugGlobeDepth(this, context, passState);
 };*/
 
     func update (context: Context) {
-        assertionFailure("stub")
+        //assertionFailure("stub")
         //updateFramebuffers(this, context);
         //updateCopyCommands(this, context);
         //context.uniformState.globeDepthTexture = undefined;
@@ -218,15 +218,15 @@ if (defined(this._copyColorCommand)) {
 this._copyColorCommand.execute(context, passState);
 }
 };
-
-GlobeDepth.prototype.clear = function(context, passState, clearColor) {
-var clear = this._clearColorCommand;
-if (defined(clear)) {
-Color.clone(clearColor, clear.color);
-clear.execute(context, passState);
-}
-};
-
+*/
+    func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
+        //var clear = _clearColorCommand
+        /*if (defined(clear)) {
+            Color.clone(clearColor, clear.color);
+            clear.execute(context, passState);
+        }*/
+    }
+/*
 GlobeDepth.prototype.isDestroyed = function() {
 return false;
 };
