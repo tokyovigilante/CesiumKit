@@ -25,7 +25,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var color: MTLClearColor?
+    var color: Cartesian4?
     
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
@@ -85,7 +85,7 @@ struct ClearCommand {
     */
     init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil) {
         
-        self.color = color == nil ? nil : MTLClearColorMake(color!.red, color!.green, color!.blue, color!.alpha)
+        self.color = color
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState

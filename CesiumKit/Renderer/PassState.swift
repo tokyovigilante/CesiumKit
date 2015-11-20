@@ -53,6 +53,10 @@ class PassState {
     * @default undefined
     */
     var scissorTest: RenderState.ScissorTest? = nil
+    
+    init (context: Context) {
+        self.context = context
+    }
 }
 
 

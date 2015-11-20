@@ -198,8 +198,8 @@ class Context {
         _defaultRenderState = rs
         uniformState = us
         _currentRenderState = rs
-        _defaultPassState = PassState()
-        _defaultPassState.context = self
+        _defaultPassState = PassState(context: self)
+        //_defaultPassState.context = self
         
         /**
         * @example
@@ -230,7 +230,7 @@ class Context {
         return device.newSamplerStateWithDescriptor(descriptor)
     }
     
-    func beginFrame() -> Bool {
+    func beginFrame(passState: PassState) -> Bool {
         
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
@@ -244,14 +244,14 @@ class Context {
             return false
         }
         //assert(_drawable != nil, "drawable == nil")
-        _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
-        _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        _defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
+        passState.passDescriptor = MTLRenderPassDescriptor()
+        passState.passDescriptor.colorAttachments[0].texture = _drawable.texture
+        passState.passDescriptor.colorAttachments[0].storeAction = .Store
         
         if depthTexture {
             let ds = view.depthStencilTexture
-            _defaultPassState.passDescriptor.depthAttachment.texture = ds//view.depthStencilTexture
-            _defaultPassState.passDescriptor.stencilAttachment.texture = ds//view.depthStencilTexture
+            passState.passDescriptor.depthAttachment.texture = ds//view.depthStencilTexture
+            passState.passDescriptor.stencilAttachment.texture = ds//view.depthStencilTexture
         }
         
         _commandBuffer = _commandQueue.commandBuffer()
@@ -265,9 +265,9 @@ class Context {
         return true
     }
     
-    func createRenderPass(passState: PassState? = nil, clearCommands: [ClearCommand]?) -> RenderPass {
+    func createRenderPass(passState: PassState? = nil/*, clearCommands: [ClearCommand]?*/) -> RenderPass {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, clearCommands: clearCommands)
+        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState/*, clearCommands: clearCommands*/)
         return pass
     }
     
@@ -292,7 +292,7 @@ class Context {
         if let c = c {
             colorAttachment.loadAction = .Clear
             colorAttachment.storeAction = .Store
-            colorAttachment.clearColor = c
+            colorAttachment.clearColor = MTLClearColorMake(c.red, c.green, c.blue, c.alpha)
         } else {
             colorAttachment.loadAction = .DontCare
             colorAttachment.storeAction = .DontCare

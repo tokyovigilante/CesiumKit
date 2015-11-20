@@ -46,11 +46,12 @@ this._globeDepthTexture = undefined;
 
 this.framebuffer = undefined;
 this._copyDepthFramebuffer = undefined;
+*/
+    private var _clearColorCommand: ClearCommand? = nil
+    private var _copyColorCommand: ClearCommand? = nil
+    private var _copyDepthCommand: ClearCommand? = nil
 
-this._clearColorCommand = undefined;
-this._copyColorCommand = undefined;
-this._copyDepthCommand = undefined;
-
+/*
 this._debugGlobeDepthViewportCommand = undefined;
 };
 
@@ -220,11 +221,11 @@ this._copyColorCommand.execute(context, passState);
 };
 */
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
-        //var clear = _clearColorCommand
-        /*if (defined(clear)) {
-            Color.clone(clearColor, clear.color);
-            clear.execute(context, passState);
-        }*/
+        if _clearColorCommand != nil {
+            var clear = _clearColorCommand!
+            clear.color = clearColor
+            clear.execute(context, passState: passState)
+        }
     }
 /*
 GlobeDepth.prototype.isDestroyed = function() {

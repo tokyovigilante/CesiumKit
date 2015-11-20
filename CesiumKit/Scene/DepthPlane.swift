@@ -114,82 +114,83 @@ class DepthPlane {
     
     return depthQuadScratch;
     }
-    
-    DepthPlane.prototype.update = function(context, frameState) {
-    this._mode = frameState.mode;
-    if (frameState.mode !== SceneMode.SCENE3D) {
-    return;
+    */
+    func update (context: Context, frameState: FrameState) {
+        //FIXME: unimplemented
+        /*this._mode = frameState.mode;
+        if (frameState.mode !== SceneMode.SCENE3D) {
+            return;
+        }
+        
+        var ellipsoid = frameState.mapProjection.ellipsoid;
+        
+        if (!defined(this._command)) {
+            this._rs = RenderState.fromCache({ // Write depth, not color
+                cull : {
+                    enabled : true
+                },
+                depthTest : {
+                    enabled : true,
+                    func : DepthFunction.ALWAYS
+                },
+                colorMask : {
+                    red : false,
+                    green : false,
+                    blue : false,
+                    alpha : false
+                }
+            });
+            
+            this._sp = ShaderProgram.fromCache({
+                context : context,
+                vertexShaderSource : DepthPlaneVS,
+                fragmentShaderSource : DepthPlaneFS,
+                attributeLocations : {
+                    position : 0
+                }
+            });
+            
+            this._command = new DrawCommand({
+                renderState : this._rs,
+                shaderProgram : this._sp,
+                boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
+                pass : Pass.OPAQUE,
+                owner : this
+            });
+        }
+        
+        // update depth plane
+        var depthQuad = computeDepthQuad(ellipsoid, frameState);
+        
+        // depth plane
+        if (!defined(this._va)) {
+            var geometry = new Geometry({
+                attributes : {
+                    position : new GeometryAttribute({
+                    componentDatatype : ComponentDatatype.FLOAT,
+                    componentsPerAttribute : 3,
+                    values : depthQuad
+                    })
+                },
+                indices : [0, 1, 2, 2, 1, 3],
+                primitiveType : PrimitiveType.TRIANGLES
+            });
+            
+            this._va = VertexArray.fromGeometry({
+                context : context,
+                geometry : geometry,
+                attributeLocations : {
+                    position : 0
+                },
+                bufferUsage : BufferUsage.DYNAMIC_DRAW
+            });
+            
+            this._command.vertexArray = this._va;
+        } else {
+            this._va.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
+        }*/
     }
-    
-    var ellipsoid = frameState.mapProjection.ellipsoid;
-    
-    if (!defined(this._command)) {
-    this._rs = RenderState.fromCache({ // Write depth, not color
-    cull : {
-    enabled : true
-    },
-    depthTest : {
-    enabled : true,
-    func : DepthFunction.ALWAYS
-    },
-    colorMask : {
-    red : false,
-    green : false,
-    blue : false,
-    alpha : false
-    }
-    });
-    
-    this._sp = ShaderProgram.fromCache({
-    context : context,
-    vertexShaderSource : DepthPlaneVS,
-    fragmentShaderSource : DepthPlaneFS,
-    attributeLocations : {
-    position : 0
-    }
-    });
-    
-    this._command = new DrawCommand({
-    renderState : this._rs,
-    shaderProgram : this._sp,
-    boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
-    pass : Pass.OPAQUE,
-    owner : this
-    });
-    }
-    
-    // update depth plane
-    var depthQuad = computeDepthQuad(ellipsoid, frameState);
-    
-    // depth plane
-    if (!defined(this._va)) {
-    var geometry = new Geometry({
-    attributes : {
-    position : new GeometryAttribute({
-    componentDatatype : ComponentDatatype.FLOAT,
-    componentsPerAttribute : 3,
-    values : depthQuad
-    })
-    },
-    indices : [0, 1, 2, 2, 1, 3],
-    primitiveType : PrimitiveType.TRIANGLES
-    });
-    
-    this._va = VertexArray.fromGeometry({
-    context : context,
-    geometry : geometry,
-    attributeLocations : {
-    position : 0
-    },
-    bufferUsage : BufferUsage.DYNAMIC_DRAW
-    });
-    
-    this._command.vertexArray = this._va;
-    } else {
-    this._va.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
-    }
-    };
-    
+    /*
     DepthPlane.prototype.execute = function(context, passState) {
     if (this._mode === SceneMode.SCENE3D) {
     this._command.execute(context, passState);

@@ -14,6 +14,8 @@
 		940A5AF41B6D54400095A86F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 940A5AF21B6D54400095A86F /* Main.storyboard */; };
 		940A5B001B6D91DE0095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9478218E1B5A3D310095A86F /* QuartzCore.framework */; };
 		940A5B011B6D91E30095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947821901B5A3D370095A86F /* Metal.framework */; };
+		940D88EA1BFF313E0095A86F /* FXAA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D88E91BFF313E0095A86F /* FXAA.swift */; };
+		940D88EB1BFF313E0095A86F /* FXAA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940D88E91BFF313E0095A86F /* FXAA.swift */; };
 		9410135519FA49FA00FFAD81 /* CameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9410135419FA49FA00FFAD81 /* CameraTests.swift */; };
 		9410135819FB02D700FFAD81 /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C57E1319722AB90046791A /* Matrix4.swift */; };
 		9410135E19FB032100FFAD81 /* Matrix3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D45B2819BDC26300FFE1CB /* Matrix3.swift */; };
@@ -619,6 +621,7 @@
 		940A5AF51B6D54400095A86F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitioner.swift; sourceTree = "<group>"; };
 		940D794619C3F66900012DC4 /* GeometryPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryPipeline.swift; sourceTree = "<group>"; };
+		940D88E91BFF313E0095A86F /* FXAA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FXAA.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9410135419FA49FA00FFAD81 /* CameraTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraTests.swift; path = Scene/CameraTests.swift; sourceTree = "<group>"; };
 		9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidalOccluderTests.swift; path = Core/EllipsoidalOccluderTests.swift; sourceTree = "<group>"; };
@@ -1022,6 +1025,7 @@
 		943999381930418C00012DC4 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				940D88E91BFF313E0095A86F /* FXAA.swift */,
 				9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */,
 				94E7A864199E02AB00012DC4 /* BingMapsImageryProvider.swift */,
 				9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */,
@@ -1680,6 +1684,7 @@
 				9413B7AC1A37B93100FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
 				9413B7CC1A37B93100FFAD81 /* TerrainData.swift in Sources */,
 				9413B80F1A37B94500FFAD81 /* QuadtreeTile.swift in Sources */,
+				940D88EA1BFF313E0095A86F /* FXAA.swift in Sources */,
 				9413B7C51A37B93100FFAD81 /* Quaternion.swift in Sources */,
 				945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */,
 				9413B7DF1A37B93D00FFAD81 /* CubeMapFace.swift in Sources */,
@@ -1795,6 +1800,7 @@
 				942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */,
 				947821531B5A2D7C0095A86F /* Uniform.swift in Sources */,
 				947821541B5A2D7C0095A86F /* UniformBufferProvider.swift in Sources */,
+				940D88EB1BFF313E0095A86F /* FXAA.swift in Sources */,
 				947821551B5A2D7C0095A86F /* UniformMap.swift in Sources */,
 				947821561B5A2D7C0095A86F /* UniformState.swift in Sources */,
 				947821571B5A2D7C0095A86F /* VertexArray.swift in Sources */,

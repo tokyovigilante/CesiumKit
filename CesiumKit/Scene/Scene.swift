@@ -158,6 +158,8 @@ public class Scene {
     * @type {FrameState}
     */
     private (set) var frameState: FrameState
+    
+    private var _passState: PassState
 
     /**
     * Gets the collection of animations taking place in the scene.
@@ -185,7 +187,7 @@ public class Scene {
     private var _oit: OIT? = nil
     private var _executeOITFunction: (() -> ())? = nil
     
-    //this._fxaa = new FXAA();
+    private let _fxaa = FXAA()
     
     
     var _clearColorCommand = ClearCommand(color: Cartesian4.zero(), stencil: 0/*, owner: self*/)
@@ -331,12 +333,12 @@ public class Scene {
     }
     
     /**
-             * Gets the number of frustums used in the last frame.
-             * @memberof Scene.prototype
-             * @type {Number}
-             *
-             * @private
-             */
+     * Gets the number of frustums used in the last frame.
+     * @memberof Scene.prototype
+     * @type {Number}
+     *
+     * @private
+     */
     var numberOfFrustums: Int { return _frustumCommandsList.count }
     
     /**
@@ -622,6 +624,8 @@ public class Scene {
         frameState = FrameState(/*new CreditDisplay(creditContainer*/)
         frameState.scene3DOnly = scene3DOnly
         
+        _passState = PassState(context: context)
+        
         // initial guess at frustums.
         camera = Camera(
             projection: projection,
@@ -657,13 +661,6 @@ public class Scene {
         _globeDepth = globeDepth
         _oit = oit
         
-        // TODO: OIT and FXAA
-        if useOIT {
-        //this._oit = new OIT(context);
-        //this._executeOITFunction = undefined;
-        
-        //this._fxaa = new FXAA();
-        }
         camera.scene = self
         let near = camera.frustum.near
         let far = camera.frustum.far
@@ -1102,8 +1099,7 @@ function isVisible(command, frameState) {
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
-    func executeCommands(passState: PassState?, clearColor: Cartesian4, picking: Bool = false) {
-        
+    func executeCommands(passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
         
         //let computeRenderPass = context.createRenderPass(clearCommand: nil)
         
@@ -1137,7 +1133,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var moonVisible = isVisible(moonCommand, frameState);*/
         
         // Preserve the reference to the original framebuffer.
-        var originalPassStateDescriptor = passState?.passDescriptor
+        var originalPassStateDescriptor = passState.passDescriptor
         
         // Create a working frustum from the original camera frustum
         let frustum: Frustum
@@ -1150,20 +1146,17 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
         
         // Clear the pass state framebuffer.
-        _clearColorCommand.color = MTLClearColorMake(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha)
-
+        _clearColorCommand.color = clearColor
+        _clearColorCommand.execute(context, passState: nil)
+        
         // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
         let useGlobeDepthFramebuffer = !picking && _globeDepth != nil
         if useGlobeDepthFramebuffer {
             // FIXME: globeDepth
             _globeDepth!.update(context)
-            _globeDepth!.clear(context, passState: passState!, clearColor: clearColor)
+            _globeDepth!.clear(context, passState: passState, clearColor: clearColor)
         }
         
-        let spaceRenderPass = context.createRenderPass(clearCommands: [_clearColorCommand])
-        
-            
-            
         // Determine if there are any translucent surfaces in any of the frustums.
         var renderTranslucentCommands = false
         /*var frustumCommandsList = scene._frustumCommandsList;
@@ -1176,36 +1169,45 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 break
             }
         }*/
-
         
+        let clearGlobeDepth = globe != nil && (!globe.depthTestAgainstTerrain || mode == SceneMode.Scene2D)
+        let useDepthPlane = clearGlobeDepth && mode == SceneMode.Scene3D
+        if useDepthPlane {
+            // Update the depth plane that is rendered in 3D when the primitives are
+            // not depth tested against terrain so primitives on the backface
+            // of the globe are not picked.
+            _depthPlane.update(context, frameState: frameState)
+        }
         
         // If supported, configure OIT to use the globe depth framebuffer and clear the OIT framebuffer.
         var useOIT = !picking && renderTranslucentCommands && _oit != nil && _oit!.isSupported()
-        /*if (useOIT) {
-            scene._oit.update(context, scene._globeDepth.framebuffer);
-            scene._oit.clear(context, passState, clearColor);
-            useOIT = useOIT && scene._oit.isSupported();
+        if useOIT {
+            //FIXME: Renderstate
+            //_oit.update(context, scene._globeDepth.framebuffer);
+            //_oit.clear(context, passState, clearColor);
+            useOIT = useOIT && _oit!.isSupported()
         }
         
         // If supported, configure FXAA to use the globe depth color texture and clear the FXAA framebuffer.
-        var useFXAA = !picking && scene.fxaa;
-        if (useFXAA) {
-            scene._fxaa.update(context);
-            scene._fxaa.clear(context, passState, clearColor);
+        var useFXAA = !picking && fxaa
+        if useFXAA {
+            _fxaa.update(context)
+            _fxaa.clear(context, passState: passState!, clearColor: clearColor)
         }
-        
-        if (sunVisible && scene.sunBloom) {
+        /*
+        if sunVisible && scene.sunBloom) {
             passState.framebuffer = scene._sunPostProcess.update(context);
         } else if (useGlobeDepthFramebuffer) {
             passState.framebuffer = scene._globeDepth.framebuffer;
         } else if (useFXAA) {
             passState.framebuffer = scene._fxaa.getColorFramebuffer();
+        }*/
+        let spaceRenderPass = context.createRenderPass(passState)
+
+        if passState?.passDescriptor != nil {
+            _clearColorCommand.execute(context, passState: passState)
         }
-        
-        if (defined(passState.framebuffer)) {
-            clear.execute(context, passState);
-        }
-        
+        /*
         // Ideally, we would render the sky box and atmosphere last for
         // early-z, but we would have to draw it in each frustum
         frustum.near = camera.frustum.near;
@@ -1485,10 +1487,13 @@ function callAfterRenderFunctions(frameState) {
         updatePrimitives()
         createPotentiallyVisibleSet()
         
-        if !context.beginFrame() {
+        let passState = _passState
+        
+        if !context.beginFrame(passState) {
             return
         }
-        executeCommands(nil, clearColor: backgroundColor)
+    
+        executeCommands(passState, clearColor: backgroundColor)
         executeOverlayCommands()
         
         /*frameState.creditDisplay.endFrame();

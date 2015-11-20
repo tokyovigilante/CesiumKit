@@ -11,44 +11,9 @@ import Foundation
 class OIT {
     
     init (context: Context) {
+    }
         /*
-        /*global define*/
-        define([
-        '../Core/Color',
-        '../Core/defined',
-        '../Core/destroyObject',
-        '../Core/PixelFormat',
-        '../Renderer/ClearCommand',
-        '../Renderer/Framebuffer',
-        '../Renderer/PixelDatatype',
-        '../Renderer/RenderState',
-        '../Renderer/ShaderProgram',
-        '../Renderer/ShaderSource',
-        '../Renderer/Texture',
-        '../Renderer/WebGLConstants',
-        '../Shaders/AdjustTranslucentFS',
-        '../Shaders/CompositeOITFS',
-        './BlendEquation',
-        './BlendFunction'
-        ], function(
-        Color,
-        defined,
-        destroyObject,
-        PixelFormat,
-        ClearCommand,
-        Framebuffer,
-        PixelDatatype,
-        RenderState,
-        ShaderProgram,
-        ShaderSource,
-        Texture,
-        WebGLConstants,
-        AdjustTranslucentFS,
-        CompositeOITFS,
-        BlendEquation,
-        BlendFunction) {
-        "use strict";
-        
+    
         /**
         * @private
         */
@@ -201,13 +166,13 @@ class OIT {
         
         return supported;
         }
-        
-        OIT.prototype.update = function(context, framebuffer) {
-        if (!this.isSupported()) {
-        return;
+        */
+    func update (context: Context, passDescriptor: PassState) {
+        if !isSupported() {
+            return
         }
         
-        this._opaqueFBO = framebuffer;
+        /*this._opaqueFBO = framebuffer;
         this._opaqueTexture = framebuffer.getColorTexture(0);
         this._depthStencilTexture = framebuffer.depthStencilTexture;
         
@@ -217,14 +182,14 @@ class OIT {
         var accumulationTexture = this._accumulationTexture;
         var textureChanged = !defined(accumulationTexture) || accumulationTexture.width !== width || accumulationTexture.height !== height;
         if (textureChanged) {
-        updateTextures(this, context, width, height);
+            updateTextures(this, context, width, height);
         }
         
         if (!defined(this._translucentFBO) || textureChanged) {
-        if (!updateFramebuffers(this, context)) {
-        // framebuffer creation failed
-        return;
-        }
+            if (!updateFramebuffers(this, context)) {
+                // framebuffer creation failed
+                return;
+            }
         }
         
         var that = this;
@@ -232,90 +197,90 @@ class OIT {
         var uniformMap;
         
         if (!defined(this._compositeCommand)) {
-        fs = new ShaderSource({
-        sources : [CompositeOITFS]
-        });
-        if (this._translucentMRTSupport) {
-        fs.defines.push('MRT');
-        }
-        
-        uniformMap = {
-        u_opaque : function() {
-        return that._opaqueTexture;
-        },
-        u_accumulation : function() {
-        return that._accumulationTexture;
-        },
-        u_revealage : function() {
-        return that._revealageTexture;
-        }
-        };
-        this._compositeCommand = context.createViewportQuadCommand(fs, {
-        renderState : RenderState.fromCache(),
-        uniformMap : uniformMap,
-        owner : this
-        });
+            fs = new ShaderSource({
+                sources : [CompositeOITFS]
+            });
+            if (this._translucentMRTSupport) {
+                fs.defines.push('MRT');
+            }
+            
+            uniformMap = {
+                u_opaque : function() {
+                    return that._opaqueTexture;
+                },
+                u_accumulation : function() {
+                    return that._accumulationTexture;
+                },
+                u_revealage : function() {
+                    return that._revealageTexture;
+                }
+            };
+            this._compositeCommand = context.createViewportQuadCommand(fs, {
+                renderState : RenderState.fromCache(),
+                uniformMap : uniformMap,
+                owner : this
+            });
         }
         
         if (!defined(this._adjustTranslucentCommand)) {
-        if (this._translucentMRTSupport) {
-        fs = new ShaderSource({
-        defines : ['MRT'],
-        sources : [AdjustTranslucentFS]
-        });
-        
-        uniformMap = {
-        u_bgColor : function() {
-        return that._translucentMRTClearCommand.color;
-        },
-        u_depthTexture : function() {
-        return that._depthStencilTexture;
-        }
-        };
-        
-        this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
-        renderState : RenderState.fromCache(),
-        uniformMap : uniformMap,
-        owner : this
-        });
-        } else if (this._translucentMultipassSupport) {
-        fs = new ShaderSource({
-        sources : [AdjustTranslucentFS]
-        });
-        
-        uniformMap = {
-        u_bgColor : function() {
-        return that._translucentMultipassClearCommand.color;
-        },
-        u_depthTexture : function() {
-        return that._depthStencilTexture;
-        }
-        };
-        
-        this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
-        renderState : RenderState.fromCache(),
-        uniformMap : uniformMap,
-        owner : this
-        });
-        
-        uniformMap = {
-        u_bgColor : function() {
-        return that._alphaClearCommand.color;
-        },
-        u_depthTexture : function() {
-        return that._depthStencilTexture;
-        }
-        };
-        
-        this._adjustAlphaCommand = context.createViewportQuadCommand(fs, {
-        renderState : RenderState.fromCache(),
-        uniformMap : uniformMap,
-        owner : this
-        });
-        }
-        }
-        };
-        
+            if (this._translucentMRTSupport) {
+                fs = new ShaderSource({
+                    defines : ['MRT'],
+                    sources : [AdjustTranslucentFS]
+                });
+                
+                uniformMap = {
+                    u_bgColor : function() {
+                        return that._translucentMRTClearCommand.color;
+                    },
+                    u_depthTexture : function() {
+                        return that._depthStencilTexture;
+                    }
+                };
+                
+                this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
+                    renderState : RenderState.fromCache(),
+                    uniformMap : uniformMap,
+                    owner : this
+                });
+            } else if (this._translucentMultipassSupport) {
+                fs = new ShaderSource({
+                    sources : [AdjustTranslucentFS]
+                });
+                
+                uniformMap = {
+                    u_bgColor : function() {
+                        return that._translucentMultipassClearCommand.color;
+                    },
+                    u_depthTexture : function() {
+                        return that._depthStencilTexture;
+                    }
+                };
+                
+                this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
+                    renderState : RenderState.fromCache(),
+                    uniformMap : uniformMap,
+                    owner : this
+                });
+                
+                uniformMap = {
+                    u_bgColor : function() {
+                        return that._alphaClearCommand.color;
+                    },
+                    u_depthTexture : function() {
+                        return that._depthStencilTexture;
+                    }
+                };
+                
+                this._adjustAlphaCommand = context.createViewportQuadCommand(fs, {
+                    renderState : RenderState.fromCache(),
+                    uniformMap : uniformMap,
+                    owner : this
+                });
+            }
+        }*/
+    }
+        /*
         var translucentMRTBlend = {
         enabled : true,
         color : new Color(0.0, 0.0, 0.0, 0.0),
@@ -439,7 +404,7 @@ class OIT {
         
         return shader;
         }
-        
+    
         function getTranslucentMRTShaderProgram(oit, context, shaderProgram) {
         return getTranslucentShaderProgram(context, shaderProgram, oit._translucentShaderCache, mrtShaderSource);
         }
@@ -604,10 +569,8 @@ class OIT {
         
         return destroyObject(this);
         };
-        
-        return OIT;
-        });
+
 
 */
-    }
+    
 }
