@@ -235,6 +235,8 @@
 		9413B8451A37B94800FFAD81 /* TileTerrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9454042E199F5C7D00012DC4 /* TileTerrain.swift */; };
 		9413B8461A37B94800FFAD81 /* TileUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */; };
 		9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
+		94145CCF1C008BC60095A86F /* PickDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94145CCE1C008BC60095A86F /* PickDepth.swift */; };
+		94145CD01C008BC60095A86F /* PickDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94145CCE1C008BC60095A86F /* PickDepth.swift */; };
 		9415C94D1B547E7F001A40C8 /* PassState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415C94C1B547E7F001A40C8 /* PassState.swift */; };
 		941A28161BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
 		941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
@@ -627,6 +629,7 @@
 		9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidalOccluderTests.swift; path = Core/EllipsoidalOccluderTests.swift; sourceTree = "<group>"; };
 		9413B7841A37B8D900FFAD81 /* CesiumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CesiumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
+		94145CCE1C008BC60095A86F /* PickDepth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickDepth.swift; sourceTree = "<group>"; };
 		9415C94C1B547E7F001A40C8 /* PassState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassState.swift; sourceTree = "<group>"; };
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941A28151BF40B54001A40C8 /* GroundPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroundPrimitive.swift; sourceTree = "<group>"; };
@@ -1064,6 +1067,7 @@
 				94BA59F219A6DA640049322D /* PerspectiveFrustum.swift */,
 				94E8511519A81461006B7780 /* PerspectiveOffCenterFrustum.swift */,
 				947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */,
+				94145CCE1C008BC60095A86F /* PickDepth.swift */,
 				948F4D8F19D79D1C00FFAD81 /* QuadtreeOccluders.swift */,
 				949AABAC199F730700037973 /* QuadtreePrimitive.swift */,
 				94540428199F4CD900012DC4 /* QuadtreeTile.swift */,
@@ -1635,6 +1639,7 @@
 				9413B7D31A37B93100FFAD81 /* Visibility.swift in Sources */,
 				9413B7A21A37B93100FFAD81 /* BoundingSphere.swift in Sources */,
 				949E09F11BE452B40095A86F /* ImageryLayerFeatureInfo.swift in Sources */,
+				94145CCF1C008BC60095A86F /* PickDepth.swift in Sources */,
 				941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */,
 				9413B7F11A37B93D00FFAD81 /* WindingOrder.swift in Sources */,
 				9413B7BA1A37B93100FFAD81 /* Interval.swift in Sources */,
@@ -1839,6 +1844,7 @@
 				947821751B5A2D7C0095A86F /* NeverTileDiscardPolicy.swift in Sources */,
 				947821761B5A2D7C0095A86F /* OrthographicFrustum.swift in Sources */,
 				947821771B5A2D7C0095A86F /* Pass.swift in Sources */,
+				94145CD01C008BC60095A86F /* PickDepth.swift in Sources */,
 				947821781B5A2D7C0095A86F /* PerspectiveFrustum.swift in Sources */,
 				947821791B5A2D7C0095A86F /* PerspectiveOffCenterFrustum.swift in Sources */,
 				9478217A1B5A2D7C0095A86F /* PrimitiveCollection.swift in Sources */,

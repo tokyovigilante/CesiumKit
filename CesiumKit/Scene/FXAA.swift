@@ -48,8 +48,9 @@ class FXAA {
     this._texture = undefined;
     this._depthTexture = undefined;
     this._depthRenderbuffer = undefined;
-    this._fbo = undefined;
-    this._command = undefined;
+    */
+    private var _fbo: Framebuffer? = nil
+    /*this._command = undefined;
     
     var clearCommand = new ClearCommand({
     color : new Color(0.0, 0.0, 0.0, 0.0),
@@ -161,11 +162,11 @@ class FXAA {
         passState.framebuffer = framebuffer;*/
     }
     
-    /*
-    FXAA.prototype.getColorFramebuffer = function() {
-    return this._fbo;
-    };
     
+    func getColorFramebuffer() -> Framebuffer? {
+        return _fbo
+    }
+    /*
     FXAA.prototype.isDestroyed = function() {
     return false;
     };

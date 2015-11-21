@@ -416,8 +416,9 @@ class OIT {
         function getTranslucentAlphaShaderProgram(oit, context, shaderProgram) {
         return getTranslucentShaderProgram(context, shaderProgram, oit._alphaShaderCache, alphaShaderSource);
         }
-        
-        function executeTranslucentCommandsSortedMultipass(oit, scene, executeFunction, passState, commands) {
+        */
+        func executeTranslucentCommandsSortedMultipass(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+            /*
         var command;
         var renderState;
         var shaderProgram;
@@ -462,11 +463,11 @@ class OIT {
         executeFunction(command, scene, context, passState, renderState, shaderProgram, debugFramebuffer);
         }
         
-        passState.framebuffer = framebuffer;
+        passState.framebuffer = framebuffer;*/
         }
-        
-        function executeTranslucentCommandsSortedMRT(oit, scene, executeFunction, passState, commands) {
-        var context = scene.context;
+
+        func executeTranslucentCommandsSortedMRT(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        /*var context = scene.context;
         var framebuffer = passState.framebuffer;
         var length = commands.length;
         
@@ -492,22 +493,21 @@ class OIT {
         executeFunction(command, scene, context, passState, renderState, shaderProgram, debugFramebuffer);
         }
         
-        passState.framebuffer = framebuffer;
+        passState.framebuffer = framebuffer;*/
         }
-        
-        OIT.prototype.executeCommands = function(scene, executeFunction, passState, commands) {
-        if (this._translucentMRTSupport) {
-        executeTranslucentCommandsSortedMRT(this, scene, executeFunction, passState, commands);
-        return;
+    
+    func executeCommands (scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        if _translucentMRTSupport {
+            executeTranslucentCommandsSortedMRT(scene, executeFunction: executeFunction, passState: passState, commands: commands)
+            return
         }
-        
-        executeTranslucentCommandsSortedMultipass(this, scene, executeFunction, passState, commands);
-        };
-        
-        OIT.prototype.execute = function(context, passState) {
-        this._compositeCommand.execute(context, passState);
-        };
-        
+        executeTranslucentCommandsSortedMultipass(scene, executeFunction: executeFunction, passState: passState, commands: commands)
+    }
+    
+    func execute (context: Context, passState: PassState) {
+        //_compositeCommand.execute(context, passState);
+    }
+        /*
         OIT.prototype.clear = function(context, passState, clearColor) {
         var framebuffer = passState.framebuffer;
         

@@ -23,12 +23,14 @@ class PassState {
     weak var context: Context! = nil
     
     /**
-    * The pass descriptor to use for rendering. Incorporates the color, depth and stencil 
-    * attachments.
+    * The framebuffer to render to.  This framebuffer is used unless a {@link DrawCommand}
+    * or {@link ClearCommand} explicitly define a framebuffer, which is used for off-screen
+    * rendering.
     *
-    * @type {MTLRenderPassDescriptor}
+    * @type {Framebuffer}
+    * @default undefined
     */
-    var passDescriptor: MTLRenderPassDescriptor! = nil
+    var framebuffer: Framebuffer! = nil
     
     /**
     * When defined, this overrides the blending property of a {@link DrawCommand}'s render state.
@@ -53,10 +55,7 @@ class PassState {
     * @default undefined
     */
     var scissorTest: RenderState.ScissorTest? = nil
-    
-    init (context: Context) {
-        self.context = context
-    }
+
 }
 
 

@@ -59,6 +59,15 @@ struct ClearCommand {
     var renderState: RenderState?
     
     /**
+    * The framebuffer to clear.
+    *
+    * @type {Framebuffer}
+    *
+    * @default undefined
+    */
+    var framebuffer: Framebuffer?
+    
+    /**
     * The object who created this command.  This is useful for debugging command
     * execution; it allows you to see who created a command when you only have a
     * reference to the command, and can be used to selectively execute commands
@@ -83,12 +92,13 @@ struct ClearCommand {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil) {
         
         self.color = color
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
+        self.framebuffer = framebuffer
     }
     
     static func all() -> ClearCommand {

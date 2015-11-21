@@ -27,16 +27,11 @@ class RenderPass {
     
     let passState: PassState
     
-    init (context: Context, buffer: MTLCommandBuffer, passState: PassState/*, clearCommands: [ClearCommand]?*/) {
+    init (context: Context, buffer: MTLCommandBuffer, passState: PassState, defaultFramebuffer: Framebuffer) {
         _context = context
         self.passState = passState
-        /*if let clearCommands = clearCommands {
-            for clearCommand in clearCommands {
-                
-                clearCommand.execute(context, passState: passState)
-            }
-        }*/
-        commandEncoder = buffer.renderCommandEncoderWithDescriptor(passState.passDescriptor)
+        let passDescriptor = passState.framebuffer?.renderPassDescriptor ?? defaultFramebuffer.renderPassDescriptor
+        commandEncoder = buffer.renderCommandEncoderWithDescriptor(passDescriptor)
         
         // FIXME: temp
         commandEncoder.setTriangleFillMode(.Fill)

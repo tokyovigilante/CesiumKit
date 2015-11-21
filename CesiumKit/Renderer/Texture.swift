@@ -79,7 +79,7 @@ class Texture {
     
     let textureUsage: MTLTextureUsage
     
-    var mipmapped: Bool
+    var mipmapped: Bool = false
 
     weak var context: Context?
     
@@ -94,7 +94,7 @@ class Texture {
     * @memberof Texture.prototype
     * @type {Object}
     */
-    var sampler: Sampler!
+    var sampler: Sampler! = nil
         
     //var dimensions: Cartesian2
 
@@ -199,6 +199,17 @@ class Texture {
         }
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
+    }
+    
+    init (context: Context, metalTexture: MTLTexture) {
+        self.context = context
+        self.metalTexture = metalTexture
+        self.width = metalTexture.width
+        self.height = metalTexture.height
+        self.pixelFormat = metalTexture.pixelFormat
+        self.textureFilterAnisotropic = true
+        self.textureUsage = metalTexture.usage
+        self.premultiplyAlpha = true
     }
     /*
     defineProperties(Texture.prototype, {

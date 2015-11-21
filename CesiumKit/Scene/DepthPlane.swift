@@ -57,10 +57,10 @@ class DepthPlane {
     var DepthPlane = function() {
     this._rs = undefined;
     this._sp = undefined;
-    this._va = undefined;
-    this._command = undefined;
-    this._mode = undefined;
-    };
+    this._va = undefined;*/
+    private var _command: DrawCommand? = nil
+    private var _mode: SceneMode = .Scene3D
+    /*
     
     var depthQuadScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(12) : [];
     var scratchCartesian1 = new Cartesian3();
@@ -116,12 +116,13 @@ class DepthPlane {
     }
     */
     func update (context: Context, frameState: FrameState) {
-        //FIXME: unimplemented
-        /*this._mode = frameState.mode;
-        if (frameState.mode !== SceneMode.SCENE3D) {
-            return;
-        }
+        _mode = frameState.mode
         
+        if frameState.mode != .Scene3D {
+            return
+        }
+        //FIXME: unimplemented
+        /*
         var ellipsoid = frameState.mapProjection.ellipsoid;
         
         if (!defined(this._command)) {
@@ -190,13 +191,13 @@ class DepthPlane {
             this._va.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
         }*/
     }
-    /*
-    DepthPlane.prototype.execute = function(context, passState) {
-    if (this._mode === SceneMode.SCENE3D) {
-    this._command.execute(context, passState);
-    }
-    };
     
+    func execute (context: Context, renderPass: RenderPass) {
+        if _mode == SceneMode.Scene3D {
+            _command?.execute(context, renderPass: renderPass)
+        }
+    }
+    /*
     DepthPlane.prototype.isDestroyed = function() {
     return false;
     };

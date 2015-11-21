@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Metal
+import MetalKit
 
 /**
  * @private
@@ -15,15 +15,21 @@ class Framebuffer {
     
     let maximumColorAttachments: Int
     
-    let colorTextures: [Texture]?
+    private (set) var colorTextures: [Texture]?
     
-    let depthTexture: Texture?
+    private (set) var depthTexture: Texture?
     
-    let stencilTexture: Texture?
+    private (set) var stencilTexture: Texture?
+    
+    var depthStencilTexture: Texture? {
+        return depthTexture === stencilTexture ? depthTexture : nil
+    }
     
     var renderPassDescriptor: MTLRenderPassDescriptor {
         return _rpd
     }
+    
+    private var _rpd = MTLRenderPassDescriptor()
     
     var numberOfColorAttachments: Int {
         return colorTextures?.count ?? 0
@@ -39,8 +45,6 @@ class Framebuffer {
     var hasDepthAttachment: Bool {
         return depthTexture != nil
     }
-    
-    private var _rpd = MTLRenderPassDescriptor()
     
     init (
         maximumColorAttachments: Int,
@@ -62,7 +66,28 @@ class Framebuffer {
             
             _rpd.depthAttachment.texture = self.depthTexture?.metalTexture
             _rpd.stencilAttachment.texture = self.stencilTexture?.metalTexture
-
     }
     
+    func updateFromDrawable (context: Context, drawable: CAMetalDrawable, depthStencil: MTLTexture?) {
+        
+        colorTextures = [Texture(context: context, metalTexture: drawable.texture)]
+        
+        _rpd.colorAttachments[0].texture = drawable.texture
+        _rpd.colorAttachments[0].storeAction = .Store
+        
+        if let depthStencil = depthStencil {
+            _rpd.depthAttachment.texture = depthStencil
+            _rpd.stencilAttachment.texture = depthStencil
+        } else {
+            _rpd.depthAttachment.texture = nil
+            _rpd.stencilAttachment.texture = nil
+        }
+    }
+    
+    func clearDrawable () {
+        colorTextures = nil
+        _rpd.colorAttachments[0].texture = nil
+        _rpd.colorAttachments[0].loadAction = .Load
+        _rpd.colorAttachments[0].storeAction = .DontCare
+    }
 }

@@ -43,9 +43,9 @@ var GlobeDepth = function() {
 this._colorTexture = undefined;
 this._depthStencilTexture = undefined;
 this._globeDepthTexture = undefined;
-
-this.framebuffer = undefined;
-this._copyDepthFramebuffer = undefined;
+*/
+    var framebuffer: Framebuffer? = nil
+/*this._copyDepthFramebuffer = undefined;
 */
     private var _clearColorCommand: ClearCommand? = nil
     private var _copyColorCommand: ClearCommand? = nil
@@ -206,20 +206,21 @@ executeDebugGlobeDepth(this, context, passState);
         //updateCopyCommands(this, context);
         //context.uniformState.globeDepthTexture = undefined;
     }
-/*
-GlobeDepth.prototype.executeCopyDepth = function(context, passState) {
-if (defined(this._copyDepthCommand)) {
-this._copyDepthCommand.execute(context, passState);
-context.uniformState.globeDepthTexture = this._globeDepthTexture;
-}
-};
 
-GlobeDepth.prototype.executeCopyColor = function(context, passState) {
-if (defined(this._copyColorCommand)) {
-this._copyColorCommand.execute(context, passState);
-}
-};
-*/
+    func executeCopyDepth (context: Context, passState: PassState) {
+        /*if (defined(this._copyDepthCommand)) {
+            this._copyDepthCommand.execute(context, passState);
+            context.uniformState.globeDepthTexture = this._globeDepthTexture;
+        }*/
+    }
+
+
+    func executeCopyColor (context: Context, passState: PassState) {
+        /*if (defined(this._copyColorCommand)) {
+            this._copyColorCommand.execute(context, passState);
+        }*/
+    }
+    
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
         if _clearColorCommand != nil {
             var clear = _clearColorCommand!

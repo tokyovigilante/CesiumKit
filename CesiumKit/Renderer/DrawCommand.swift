@@ -200,7 +200,6 @@ class DrawCommand: Command {
             self.offset = offset
             self.pipeline = renderPipeline
             self.renderState = renderState
-            //self.framebuffer = framebuffer
             self.pass = pass
             self.executeInClosestFrustum = executeInClosestFrustum
             self.owner = owner

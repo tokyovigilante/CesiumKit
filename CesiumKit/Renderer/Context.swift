@@ -156,7 +156,7 @@ class Context {
     * {@link Context.createTexture2DFromFramebuffer}.
     * @type {Object}
     */
-    //var defaultFramebuffer: Framebuffer? = nil
+    private let _defaultFramebuffer: Framebuffer
     
     init (view: MTKView) {
         
@@ -198,8 +198,10 @@ class Context {
         _defaultRenderState = rs
         uniformState = us
         _currentRenderState = rs
-        _defaultPassState = PassState(context: self)
-        //_defaultPassState.context = self
+        _defaultFramebuffer = Framebuffer(maximumColorAttachments: limits.maximumColorAttachments)
+        _defaultPassState = PassState()
+        _defaultPassState.context = self
+
         
         /**
         * @example
@@ -230,7 +232,7 @@ class Context {
         return device.newSamplerStateWithDescriptor(descriptor)
     }
     
-    func beginFrame(passState: PassState) -> Bool {
+    func beginFrame() -> Bool {
         
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
@@ -244,15 +246,7 @@ class Context {
             return false
         }
         //assert(_drawable != nil, "drawable == nil")
-        passState.passDescriptor = MTLRenderPassDescriptor()
-        passState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        passState.passDescriptor.colorAttachments[0].storeAction = .Store
-        
-        if depthTexture {
-            let ds = view.depthStencilTexture
-            passState.passDescriptor.depthAttachment.texture = ds//view.depthStencilTexture
-            passState.passDescriptor.stencilAttachment.texture = ds//view.depthStencilTexture
-        }
+        _defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         
         _commandBuffer = _commandQueue.commandBuffer()
         
@@ -265,9 +259,9 @@ class Context {
         return true
     }
     
-    func createRenderPass(passState: PassState? = nil/*, clearCommands: [ClearCommand]?*/) -> RenderPass {
+    func createRenderPass(passState: PassState? = nil) -> RenderPass {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState/*, clearCommands: clearCommands*/)
+        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: _defaultFramebuffer)
         return pass
     }
     
@@ -281,8 +275,9 @@ class Context {
     
     func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
         
-        let passState = passState ?? _defaultPassState
-        let passDescriptor = passState.passDescriptor
+        let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? _defaultFramebuffer
+
+        let passDescriptor = framebuffer.renderPassDescriptor
         
         let c = clearCommand.color
         let d = clearCommand.depth
@@ -324,7 +319,7 @@ class Context {
         
         //_commandsExecutedThisFrame.append(drawCommand)
         /*
-        let activePassState: PassState
+        let activePassState: Pas    sState
         if let pass = drawCommand.pass {
             let commandPassState = _passStates[pass]
             activePassState = commandPassState ?? _defaultPassState
@@ -335,6 +330,7 @@ class Context {
             _currentPassState = activePassState
         }*/
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+        //var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
         
         beginDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
         continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
@@ -415,8 +411,7 @@ class Context {
         _commandBuffer.commit()
         
         _drawable = nil
-        _defaultPassState.passDescriptor = nil
-        _currentPassState?.passDescriptor = nil
+        _defaultFramebuffer.clearDrawable()
         
         _commandBuffer = nil
         /*

@@ -257,18 +257,40 @@ class ContextLimits {
     return ContextLimits._maximumDrawBuffers;
     }
     },
+    */
     
     /**
     * The maximum number of color attachments supported.
     * @memberof ContextLimits
     * @type {Number}
     */
-    maximumColorAttachments : {
-    get: function () {
-    return ContextLimits._maximumColorAttachments;
+    var maximumColorAttachments: Int {
+        #if os(OSX)
+            switch(_highestSupportedFeatureSet) {
+            case .OSX_GPUFamily1_v1:
+                return 8
+            default:
+                fatalError("Unknown Metal GPU feature set")
+            }
+        #elseif os(iOS)
+            switch(_highestSupportedFeatureSet) {
+            case .iOS_GPUFamily1_v1:
+                return 4
+            case .iOS_GPUFamily2_v1:
+                return 4
+            case .iOS_GPUFamily1_v2:
+                return 8
+            case .iOS_GPUFamily2_v2:
+                return 8
+            case .iOS_GPUFamily3_v1:
+                return 8
+            default:
+                fatalError("Unknown Metal GPU feature set")
+            }
+        #endif
+        
     }
-    },
-    */
+    
     /**
     * High precision float supported (<code>highp</code>) in fragment shaders.
     * @memberof ContextLimits
@@ -286,8 +308,6 @@ class ContextLimits {
     var highpIntSupported: Bool {
         return true
     }
-    
-    
     
     init (device: MTLDevice) {
         
