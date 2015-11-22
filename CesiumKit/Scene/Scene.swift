@@ -1676,9 +1676,9 @@ Scene.prototype.pick = function(windowPosition) {
     return object;
 };
 */
-    var scratchPickDepthPosition = new Cartesian3();
+    /*var scratchPickDepthPosition = new Cartesian3();
     var scratchMinDistPos = new Cartesian3();
-    var scratchPackedDepth = new Cartesian4();
+    var scratchPackedDepth = new Cartesian4();*/
 
    /**
      * Returns the cartesian position reconstructed from the depth buffer and window position.
@@ -1759,14 +1759,15 @@ Scene.prototype.pick = function(windowPosition) {
     * @example
     * var pickedObjects = scene.drillPick(new Cesium.Cartesian2(100.0, 200.0));
     */
-Scene.prototype.drillPick = function(windowPosition, limit) {
+    func drillPick (windowPosition: Cartesian2, limit: Int) {
+    assertionFailure("unimplemented")
     // PERFORMANCE_IDEA: This function calls each primitive's update for each pass. Instead
     // we could update the primitive once, and then just execute their commands for each pass,
     // and cull commands for picked primitives.  e.g., base on the command's owner.
     
     //>>includeStart('debug', pragmas.debug);
-    if (!defined(windowPosition)) {
-        throw new DeveloperError('windowPosition is undefined.');
+    /*if (!defined(windowPosition)) {
+    throw new DeveloperError('windowPosition is undefined.');
     }
     //>>includeEnd('debug');
     
@@ -1775,52 +1776,53 @@ Scene.prototype.drillPick = function(windowPosition, limit) {
     var result = [];
     var pickedPrimitives = [];
     var pickedAttributes = [];
-            if (!defined(limit)) {
-                limit = Number.MAX_VALUE;
-            }
-
+    if (!defined(limit)) {
+    limit = Number.MAX_VALUE;
+    }
+    
     var pickedResult = this.pick(windowPosition);
     while (defined(pickedResult) && defined(pickedResult.primitive)) {
     result.push(pickedResult);
-                if (0 >= --limit) {
-                    break;
-                }        
+    if (0 >= --limit) {
+    break;
+    }
     var primitive = pickedResult.primitive;
-var hasShowAttribute = false;
-        
+    var hasShowAttribute = false;
+    
     //If the picked object has a show attribute, use it.
-    +            if (typeof primitive.getGeometryInstanceAttributes === 'function') {
-    +                attributes = primitive.getGeometryInstanceAttributes(pickedResult.id);
-            if (defined(attributes) && defined(attributes.show)) {
-    +                    hasShowAttribute = true;
-    +                    attributes.show = ShowGeometryInstanceAttribute.toValue(false, attributes.show);
-    +                    pickedAttributes.push(attributes);            }
-        }
+    if (typeof primitive.getGeometryInstanceAttributes === 'function') {
+    attributes = primitive.getGeometryInstanceAttributes(pickedResult.id);
+    if (defined(attributes) && defined(attributes.show)) {
+    hasShowAttribute = true;
+    attributes.show = ShowGeometryInstanceAttribute.toValue(false, attributes.show);
+    pickedAttributes.push(attributes);            }
+    }
     //Otherwise, hide the entire primitive
-    +            if (!hasShowAttribute) {
-    +                primitive.show = false;
-    +                pickedPrimitives.push(primitive);
-    +            }
-        pickedResult = this.pick(windowPosition);
+    if (!hasShowAttribute) {
+    primitive.show = false;
+    pickedPrimitives.push(primitive);
+    }
+    pickedResult = this.pick(windowPosition);
     }
     
     // unhide everything we hid while drill picking
-    +        for (i = 0; i < pickedPrimitives.length; ++i) {
-    +            pickedPrimitives[i].show = true;
+    for (i = 0; i < pickedPrimitives.length; ++i) {
+    pickedPrimitives[i].show = true;
     }
     
     for (i = 0; i < pickedAttributes.length; ++i) {
-    +            attributes = pickedAttributes[i];
-    +            attributes.show = ShowGeometryInstanceAttribute.toValue(true, attributes.show);
-    +        }
-    +
-    +        return result;};
+    attributes = pickedAttributes[i];
+    attributes.show = ShowGeometryInstanceAttribute.toValue(true, attributes.show);
+    }
+    
+    return result;*/
+    }
 
 /**
 * Instantly completes an active transition.
 * @memberof Scene
 */
-Scene.prototype.completeMorph = function(){
+/*Scene.prototype.completeMorph = function(){
     this._transitioner.completeMorph();
 };
 */
@@ -1831,6 +1833,7 @@ Scene.prototype.completeMorph = function(){
 */
 // FIXME: Morph functions
 func morphTo2D (duration: Double = 2000) {
+    assertionFailure("unimplemented")
     /*var globe = this.globe;
     if (defined(globe)) {
         this._transitioner.morphTo2D(duration, globe.ellipsoid);

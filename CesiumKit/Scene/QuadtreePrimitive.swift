@@ -487,8 +487,8 @@ class QuadtreePrimitive {
         //var endTime = startTime + timeSlice
         
         var mode = frameState.mode;
-        var projection = frameState.mapProjection;
-        var ellipsoid = projection?.ellipsoid ?? Ellipsoid.wgs84()
+        var projection = frameState.mapProjection
+        var ellipsoid = projection.ellipsoid
         // FIXME: updateHeights
         /*while _tilesToUpdateHeights.count > 0 {
             var tile = tilesToUpdateHeights[tilesToUpdateHeights.length - 1];

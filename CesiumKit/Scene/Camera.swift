@@ -1548,7 +1548,7 @@ public class Camera: DRU {
      *
      * @returns {Number} The magnitude of the position.
      */
-    func getMagnitude () -> Double {
+    func getMagnitude() -> Double {
         if _mode == .Scene3D {
             return position.magnitude()
         } else if _mode == .ColumbusView {
@@ -1556,6 +1556,7 @@ public class Camera: DRU {
         } else if _mode == SceneMode.Scene2D {
             return  max(frustum.right - frustum.left, frustum.top - frustum.bottom)
         }
+        return 0.0
     }
         
      /**

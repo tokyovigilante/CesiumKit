@@ -341,7 +341,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if frameState.mode != .Scene3D {
             var boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
                 tile.rectangle,
-                projection: frameState.mapProjection!,
+                projection: frameState.mapProjection,
                 minimumHeight: surfaceTile.minimumHeight,
                 maximumHeight: surfaceTile.maximumHeight)
             boundingSphere.center = Cartesian3(
@@ -434,11 +434,11 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         var maximumHeight = surfaceTile.maximumHeight
         
         if frameState.mode != .Scene3D {
-            southwestCornerCartesian = frameState.mapProjection!.project(tile.rectangle.southwest())
+            southwestCornerCartesian = frameState.mapProjection.project(tile.rectangle.southwest())
             southwestCornerCartesian.z = southwestCornerCartesian.y
             southwestCornerCartesian.y = southwestCornerCartesian.x
             southwestCornerCartesian.x = 0.0
-            northeastCornerCartesian = frameState.mapProjection!.project(tile.rectangle.northeast())
+            northeastCornerCartesian = frameState.mapProjection.project(tile.rectangle.northeast())
             northeastCornerCartesian.z = northeastCornerCartesian.y
             northeastCornerCartesian.y = northeastCornerCartesian.x
             northeastCornerCartesian.x = 0.0
@@ -668,7 +668,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         var useWebMercatorProjection = false
 
         if frameState.mode != .Scene3D {
-            let projection = frameState.mapProjection!
+            let projection = frameState.mapProjection
             let southwest = projection.project(tile.rectangle.southwest())
             let northeast = projection.project(tile.rectangle.northeast())
             
@@ -878,7 +878,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             if frameState.mode != .Scene3D {
                 boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
                     tile.rectangle,
-                    projection: frameState.mapProjection!,
+                    projection: frameState.mapProjection,
                     minimumHeight: surfaceTile.minimumHeight,
                     maximumHeight: surfaceTile.maximumHeight)
                 

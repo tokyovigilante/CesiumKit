@@ -104,7 +104,6 @@ class TileImagery {
                 return true // done loading
             }
         }
-        
         return false // not done loading
     }
 

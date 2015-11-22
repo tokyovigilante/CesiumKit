@@ -20,6 +20,9 @@ import Foundation
 *
 * @param {Object} [options] Object with the following properties:
 * @param {TilingScheme} [options.tilingScheme=new GeographicTilingScheme()] The tiling scheme for which to draw tiles.
+* @param {Ellipsoid} [options.ellipsoid] The ellipsoid.  If the tilingScheme is specified,
+*                    this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
+*                    parameter is specified, the WGS84 ellipsoid is used.
 * @param {Color} [options.color=Color.YELLOW] The color to draw the tile box and label.
 * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
@@ -29,6 +32,8 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     public struct Options {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
+        
+        let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
         
         let color = Cartesian4(fromRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
