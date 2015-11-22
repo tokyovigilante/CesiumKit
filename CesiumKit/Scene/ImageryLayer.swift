@@ -551,9 +551,9 @@ public class ImageryLayer {
     * @param {Context} context The rendered context to use.
     * @param {Imagery} imagery The imagery instance to reproject.
     */
-    func reprojectTexture (context: Context, imagery: Imagery) {
-        dispatch_async(context.textureLoadQueue, {
-            var texture = imagery.texture!
+    func reprojectTexture (context: Context, inout commandList: [Command], imagery: Imagery) {
+
+        var texture = imagery.texture!
             let rectangle = imagery.rectangle!
             
             // Reproject this texture if it is not already in a geographic projection and
@@ -562,20 +562,60 @@ public class ImageryLayer {
             // no noticeable difference in the georeferencing of the image.
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if false { // !isGeographic && pixelGap {
-                let reprojectCommand = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
-                /*dispatch_async(dispatch_get_main_queue(),  {
-                should be completion block for command buffer
-                    texture = reprojectedTexture
-                    imagery.texture = texture
-                    imagery.state = .Reprojected
-                })*/
+            if !isGeographic && pixelGap {
+                let computeCommand = ComputeCommand(
+                    // Update render resources right before execution instead of now.
+                    // This allows different ImageryLayers to share the same vao and buffers.
+                    preExecute: { command in
+                        self.reprojectToGeographic(command, context: context, texture: texture, rectangle: rectangle)
+                    },
+                    postExecute: { outputTexture in
+                        //texture.destroy();
+                        imagery.texture = outputTexture
+                        self.finalizeReprojectTexture(context, imagery: imagery, texture: outputTexture)
+                    },
+                    persists: true,
+                    owner : self
+                )
+                commandList.append(computeCommand)
             } else {
-                dispatch_async(dispatch_get_main_queue(),  {
-                    imagery.state = .Reprojected
-                })
+                //dispatch_async(dispatch_get_main_queue(),  {
+                    finalizeReprojectTexture(context, imagery: imagery, texture: texture)
+                //})
             }
-        })
+        
+    }
+    func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture) {
+        /*
+        // Use mipmaps if this texture has power-of-two dimensions.
+        if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
+            var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
+            if (!defined(mipmapSampler)) {
+                var maximumSupportedAnisotropy = ContextLimits.maximumTextureFilterAnisotropy;
+                mipmapSampler = context.cache.imageryLayer_mipmapSampler = new Sampler({
+                    wrapS : TextureWrap.CLAMP_TO_EDGE,
+                    wrapT : TextureWrap.CLAMP_TO_EDGE,
+                    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
+                    magnificationFilter : TextureMagnificationFilter.LINEAR,
+                    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
+                });
+            }
+            texture.generateMipmap(MipmapHint.NICEST);
+            texture.sampler = mipmapSampler;
+        } else {
+            var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
+            if (!defined(nonMipmapSampler)) {
+                nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = new Sampler({
+                    wrapS : TextureWrap.CLAMP_TO_EDGE,
+                    wrapT : TextureWrap.CLAMP_TO_EDGE,
+                    minificationFilter : TextureMinificationFilter.LINEAR,
+                    magnificationFilter : TextureMagnificationFilter.LINEAR
+                });
+            }
+            texture.sampler = nonMipmapSampler;
+        }
+        
+        imagery.state = ImageryState.READY;*/
     }
     
     func generateMipmaps (context: Context, imagery: Imagery) {
@@ -651,7 +691,7 @@ public class ImageryLayer {
         }
     }
     
-    func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> DrawCommand {
+        func reprojectToGeographic(command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
         
         // This function has gone through a number of iterations, because GPUs are awesome.
         //
@@ -692,19 +732,10 @@ public class ImageryLayer {
         
         if reproject == nil {
             
-            // We need a vertex array with close to one vertex per output texel because we're doing
-            // the reprojection by computing texture coordinates in the vertex shader.
-            // If we computed Web Mercator texture coordinate per-fragment instead, we could get away with only
-            // four vertices.  Problem is: fragment shaders have limited precision on many mobile devices,
-            // leading to all kinds of smearing artifacts.  Current browsers (Chrome 26 for example)
-            // do not correctly report the available fragment shader precision, so we can't have different
-            // paths for devices with or without high precision fragment shaders, even if we want to.
-            
             var positions = [Float32](count: 2*64*2, repeatedValue: 0.0)
             let position0: Float = 0.0
             let position1: Float = 1.0
             
-            var index = 0
             for j in 0..<64 {
                 let y = Float(j) / 63.0
                 positions.append(position0)
@@ -816,7 +847,7 @@ public class ImageryLayer {
         //  reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
         //}
         
-        let drawCommand = DrawCommand(
+        /*let drawCommand = DrawCommand(
             //framebuffer: reproject!.framebuffer,
             //pipeline: reproject!.pipeline,
             renderState: reproject!.renderState,
@@ -826,7 +857,7 @@ public class ImageryLayer {
         drawCommand.pipeline = reproject.pipeline
         //drawCommand.execute(context: context, pass: )
         //return outputTexture
-        return drawCommand
+        return drawCommand*/
     }
     
     /**

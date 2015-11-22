@@ -318,7 +318,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
     func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [Command], frameState: FrameState) {
-        GlobeSurfaceTile.processStateMachine(tile, context: context, commandList: commandList, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
+        GlobeSurfaceTile.processStateMachine(tile, context: context, commandList: &commandList, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
     }
     
     

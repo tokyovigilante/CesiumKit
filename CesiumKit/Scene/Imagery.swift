@@ -89,7 +89,7 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (context: Context) {
+    func processStateMachine (context: Context, inout commandList: [Command]) {
         if (state == .Unloaded) {
             state = .Transitioning
             imageryLayer.requestImagery(context, imagery: self)
@@ -100,7 +100,7 @@ class Imagery {
         }
         if (state == .TextureLoaded) {
             state = .Transitioning
-            imageryLayer.reprojectTexture(context, imagery: self)
+            imageryLayer.reprojectTexture(context, commandList: &commandList, imagery: self)
         }
         if (state == .Reprojected) {
             state = .Transitioning

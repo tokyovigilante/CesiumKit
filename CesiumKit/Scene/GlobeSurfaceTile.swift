@@ -223,7 +223,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         vertexArray = nil
     }
     
-    class func processStateMachine(tile: QuadtreeTile, context: Context, commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
+    class func processStateMachine(tile: QuadtreeTile, context: Context, inout commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()
@@ -273,7 +273,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
                 }
             }
             
-            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: commandList)
+            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: &commandList)
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.

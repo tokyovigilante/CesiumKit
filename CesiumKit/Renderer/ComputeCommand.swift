@@ -102,17 +102,18 @@ class ComputeCommand: Command {
     *
     * @see Scene#debugCommandFilter
     */
-    //this.owner = options.owner;
+    var owner: AnyObject? = nil
     
     init(
         vertexArray: VertexArray? = nil,
-        fragmentShaderSource: ShaderSource?,
+        fragmentShaderSource: ShaderSource? = nil,
         renderPipeline: RenderPipeline? = nil,
         uniformMap: UniformMap? = nil,
-        let outputTexture: Texture? = nil,
-        let preExecute: ((ComputeCommand) -> ())? = nil,
-        let postExecute: ((Texture) -> ())? = nil,
-        let persists: Bool = false) {
+        outputTexture: Texture? = nil,
+        preExecute: ((ComputeCommand) -> ())? = nil,
+        postExecute: ((Texture) -> ())? = nil,
+        persists: Bool = false,
+        owner: AnyObject? = nil) {
             self.vertexArray = vertexArray
             self.fragmentShaderSource = fragmentShaderSource
             self.pipeline = renderPipeline
@@ -121,6 +122,7 @@ class ComputeCommand: Command {
             self.preExecute = preExecute
             self.postExecute = postExecute
             self.persists = persists
+            self.owner = owner
     }
     
     /**

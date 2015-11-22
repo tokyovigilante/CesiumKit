@@ -17,7 +17,7 @@ class ComputeEngine {
     */
     let context: Context
     
-    //var renderStateScratch: RenderState
+    lazy var renderStateScratch = RenderState()
     
     lazy var drawCommandScratch = DrawCommand()
     
@@ -52,31 +52,14 @@ class ComputeEngine {
         
         return RenderPipeline.fromCache(context: context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes))
     }
-    /*
-    function createRenderState(width, height) {
-    if ((!defined(renderStateScratch)) ||
-    (renderStateScratch.viewport.width !== width) ||
-    (renderStateScratch.viewport.height !== height)) {
     
-    renderStateScratch = RenderState.fromCache({
-    viewport : new BoundingRectangle(0, 0, width, height)
-    });
-    }
-    return renderStateScratch;
-    }
-    */
     func execute (computeCommand: ComputeCommand) {
-        /*//>>includeStart('debug', pragmas.debug);
-        if (!defined(computeCommand)) {
-        throw new DeveloperError('computeCommand is required.');
-        }
-        //>>includeEnd('debug');
         
         // This may modify the command's resources, so do error checking afterwards
-        if (defined(computeCommand.preExecute)) {
-        computeCommand.preExecute(computeCommand);
+        if computeCommand.preExecute != nil {
+            computeCommand.preExecute!(computeCommand)
         }
-        
+        /*
         //>>includeStart('debug', pragmas.debug);
         if (!defined(computeCommand.fragmentShaderSource) && !defined(computeCommand.shaderProgram)) {
         throw new DeveloperError('computeCommand.fragmentShaderSource or computeCommand.shaderProgram is required.');
@@ -95,7 +78,9 @@ class ComputeEngine {
         var vertexArray = defined(computeCommand.vertexArray) ? computeCommand.vertexArray : context.getViewportQuadVertexArray();
         var shaderProgram = defined(computeCommand.shaderProgram) ? computeCommand.shaderProgram : createViewportQuadShader(context, computeCommand.fragmentShaderSource);
         var framebuffer = createFramebuffer(context, outputTexture);
-        var renderState = createRenderState(width, height);
+        var renderState = scratchRenderState()
+        renderState.width = width
+        renderState.height = height
         var uniformMap = computeCommand.uniformMap;
         
         var clearCommand = clearCommandScratch;
@@ -124,12 +109,5 @@ class ComputeEngine {
         computeCommand.postExecute(outputTexture);
         }*/
     }
-    /*
     
-    ComputeEngine.prototype.destroy = function() {
-    return destroyObject(this);
-    };
-    
-    
-    */
 }
