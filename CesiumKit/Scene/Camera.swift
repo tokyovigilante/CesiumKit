@@ -1539,7 +1539,7 @@ public class Camera: DRU {
      zoom3D(this, -amount);
      }
      };
-     
+     */
      /**
      * Gets the magnitude of the camera position. In 3D, this is the vector magnitude. In 2D and
      * Columbus view, this is the distance to the map.
@@ -1548,17 +1548,16 @@ public class Camera: DRU {
      *
      * @returns {Number} The magnitude of the position.
      */
-     Camera.prototype.getMagnitude = function() {
-     if (this._mode === SceneMode.SCENE3D) {
-     return Cartesian3.magnitude(this.position);
-     } else if (this._mode === SceneMode.COLUMBUS_VIEW) {
-     return Math.abs(this.position.z);
-     } else if (this._mode === SceneMode.SCENE2D) {
-     return  Math.max(this.frustum.right - this.frustum.left, this.frustum.top - this.frustum.bottom);
-     }
-     };
-     */
-     
+    func getMagnitude () -> Double {
+        if _mode == .Scene3D {
+            return position.magnitude()
+        } else if _mode == .ColumbusView {
+            return abs(position.z)
+        } else if _mode == SceneMode.Scene2D {
+            return  max(frustum.right - frustum.left, frustum.top - frustum.bottom)
+        }
+    }
+        
      /**
      * Sets the camera position and orientation using a target and offset. The target must be given in
      * world coordinates. The offset can be either a cartesian or heading/pitch/range in the local east-north-up reference frame centered at the target.

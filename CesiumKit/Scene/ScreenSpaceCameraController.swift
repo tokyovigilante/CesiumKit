@@ -118,7 +118,7 @@ public class ScreenSpaceCameraController {
     * @type {Number}
     * @default 20.0
     */
-    var minimumZoomDistance = 20.0
+    var minimumZoomDistance = 1.0
     
     /**
     * The maximum magnitude, in meters, of the camera position when zooming. Defaults to positive infinity.
@@ -175,10 +175,17 @@ public class ScreenSpaceCameraController {
     * @default [{@link CameraEventType.MIDDLE_DRAG}, {@link CameraEventType.PINCH}, {
     *     eventType : {@link CameraEventType.LEFT_DRAG},
     *     modifier : {@link KeyboardEventModifier.CTRL}
+    * }, {
+    *     eventType : {@link CameraEventType.RIGHT_DRAG},
+    *     modifier : {@link KeyboardEventModifier.CTRL}
+    * }]
     * }]
     */
-    this.tiltEventTypes = [CameraEventType.MIDDLE_DRAG, CameraEventType.PINCH, {
+    *this.tiltEventTypes = [CameraEventType.MIDDLE_DRAG, CameraEventType.PINCH, {
     eventType : CameraEventType.LEFT_DRAG,
+    modifier : KeyboardEventModifier.CTRL
+    }, {
+    eventType : CameraEventType.RIGHT_DRAG,
     modifier : KeyboardEventModifier.CTRL
     }];
     /**
@@ -205,9 +212,9 @@ public class ScreenSpaceCameraController {
     /**
     * The minimum height the camera must be before testing for collision with terrain.
     * @type {Number}
-    * @default 10000.0
+    * @default 15000.0
     */
-    var minimumCollisionTerrainHeight = 10000.0
+    var minimumCollisionTerrainHeight = 15000.0
     
     /**
     * The minimum height the camera must be before switching from rotating a track ball to
@@ -251,9 +258,15 @@ public class ScreenSpaceCameraController {
     this._tiltCenter = new Cartesian3();*/
     private var _rotateMousePosition = Cartesian2(x: -1.0, y: -1.0)
     private var _rotateStartPosition = Cartesian3()
+    private var _strafeStartPosition = Cartesian3()
+    private var _zoomMouseStart = Cartesian2()
+    private var _zoomWorldPosition = Cartesian3()
     private var _tiltCVOffMap = false
     private var _looking = false
     private var _rotating = false
+    private var _strafing = false
+    private var _zoomingOnVector = false
+    private var _rotatingZoom = false
     /*
     var projection = scene.mapProjection;
     this._maxCoord = projection.project(new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO));
@@ -383,24 +396,32 @@ public class ScreenSpaceCameraController {
         }
     }
     
+    /*var scratchZoomPickRay = new Ray();
+    var scratchPickCartesian = new Cartesian3();
+    var scratchZoomOffset = new Cartesian2();
+    var scratchZoomDirection = new Cartesian3();
+    var scratchCenterPixel = new Cartesian2();
+    var scratchCenterPosition = new Cartesian3();
+    var scratchPositionNormal = new Cartesian3();
+    var scratchPickNormal = new Cartesian3();
+    var scratchZoomAxis = new Cartesian3();
+    var scratchCameraPositionNormal = new Cartesian3();*/
+    
     func handleZoom(startPosition: Cartesian2, movement: MouseMovement, zoomFactor: Double, distanceMeasure: Double, unitPositionDotDirection: Double? = nil) {
         var percentage = 1.0
-        if unitPositionDotDirection != nil {
-            percentage = Math.clamp(abs(unitPositionDotDirection!), min: 0.25, max: 1.0)
+        if let unitPositionDotDirection = unitPositionDotDirection {
+            percentage = Math.clamp(abs(unitPositionDotDirection), min: 0.25, max: 1.0)
         }
-        
         // distanceMeasure should be the height above the ellipsoid.
         // The zoomRate slows as it approaches the surface and stops minimumZoomDistance above it.
         let minHeight = minimumZoomDistance * percentage
         let maxHeight = maximumZoomDistance
         
         let minDistance = distanceMeasure - minHeight
-        var zoomRate = zoomFactor * minDistance
-        zoomRate = Math.clamp(zoomRate, min: _minimumZoomRate, max: _maximumZoomRate)
+        let zoomRate = Math.clamp(zoomFactor * minDistance, min: _minimumZoomRate, max: _maximumZoomRate)
         
         let diff = movement.endPosition.y - movement.startPosition.y
-        var rangeWindowRatio = diff / Double(_scene.drawableHeight)
-        rangeWindowRatio = min(rangeWindowRatio, maximumMovementRatio)
+        let rangeWindowRatio = min(diff / Double(_scene.drawableHeight), maximumMovementRatio)
         var distance = zoomRate * rangeWindowRatio
         
         if distance > 0.0 && abs(distanceMeasure - minHeight) < 1.0 {
@@ -408,7 +429,7 @@ public class ScreenSpaceCameraController {
         }
         
         if distance < 0.0 && abs(distanceMeasure - maxHeight) < 1.0 {
-            return;
+            return
         }
         
         if distanceMeasure - distance < minHeight {
@@ -417,8 +438,99 @@ public class ScreenSpaceCameraController {
             distance = distanceMeasure - maxHeight
         }
         
-        _scene.camera.zoomIn(distance)
+        var camera = _scene.camera
+        var mode = _scene.mode
+        
+        let pickedPosition: Cartesian3?
+        if _globe != nil {
+            pickedPosition = mode != .Scene2D ? pickGlobe(startPosition) : camera.getPickRay(startPosition).origin
+        } else {
+            pickedPosition = nil
+        }
+        
+        if pickedPosition == nil {
+            camera.zoomIn(distance)
+            return
+        }
+        
+        let sameStartPosition = startPosition == _zoomMouseStart
+        var zoomingOnVector = _zoomingOnVector
+        var rotatingZoom = _rotatingZoom
+        
+        if !sameStartPosition {
+            _zoomMouseStart = startPosition
+            _zoomWorldPosition = pickedPosition!
+            
+            zoomingOnVector = _zoomingOnVector == false
+            rotatingZoom = _rotatingZoom == false
+        }
+        
+        var zoomOnVector = mode == .ColumbusView
+        
+        if !sameStartPosition || rotatingZoom {
+            if mode == SceneMode.Scene2D {
+                var worldPosition = _zoomWorldPosition
+                var endPosition = camera.position
+                
+                if !(worldPosition == endPosition) {
+                    var direction = worldPosition.subtract(endPosition).normalize()
+                    
+                    var d = worldPosition.distance(endPosition) * distance / (camera.getMagnitude() * 0.5)
+                    camera.move(direction, amount: d * 0.5)
+                }
+            } else if mode == .Scene3D {
+                let cameraPositionNormal = camera.position.normalize()
+                if camera.positionCartographic.height < 3000.0 && abs(camera.direction.dot(cameraPositionNormal)) < 0.6 {
+                    zoomOnVector = true
+                } else {
+
+                    let centerPixel = Cartesian2(x: Double(_scene.drawableWidth) / 2.0, y: Double(_scene.drawableHeight) / 2.0)
+                    let centerPosition = pickGlobe(centerPixel)
+                    if centerPosition != nil {
+                        let positionNormal = centerPosition!.normalize()
+                        let pickedNormal = _zoomWorldPosition.normalize()
+                        let dotProduct = pickedNormal.dot(positionNormal)
+                        
+                        if dotProduct > 0.0 {
+                            let angle = Math.acosClamped(dotProduct)
+                            let axis = pickedNormal.cross(positionNormal)
+                            
+                            let denom = abs(angle) > Math.toRadians(20.0) ? camera.positionCartographic.height * 0.75 : camera.positionCartographic.height - distance
+                            let scalar = distance / denom;
+                            camera.rotate(axis, angle: angle * scalar)
+                        }
+                    } else {
+                        zoomOnVector = true
+                    }
+                }
+            }
+            
+            _rotatingZoom = !zoomOnVector
+        }
+        
+        if (!sameStartPosition && zoomOnVector) || zoomingOnVector {
+
+            let zoomMouseStart = SceneTransforms.wgs84ToWindowCoordinates(_zoomWorldPosition)
+            let ray: Ray
+            if (mode !== SceneMode.COLUMBUS_VIEW && Cartesian2.equals(startPosition, object._zoomMouseStart) && defined(zoomMouseStart)) {
+                ray = camera.getPickRay(zoomMouseStart, scratchZoomPickRay);
+            } else {
+                ray = camera.getPickRay(startPosition, scratchZoomPickRay);
+            }
+            
+            var rayDirection = ray.direction;
+            if (mode === SceneMode.COLUMBUS_VIEW) {
+                Cartesian3.fromElements(rayDirection.y, rayDirection.z, rayDirection.x, rayDirection);
+            }
+            
+            camera.move(rayDirection, distance);
+            
+            object._zoomingOnVector = true;
+        } else {
+            camera.zoomIn(distance);
+        }
     }
+    
     /*
     var translate2DStart = new Ray();
     var translate2DEnd = new Ray();
@@ -546,6 +658,33 @@ public class ScreenSpaceCameraController {
     
     tweens.update();*/
     }
+
+    func pickGlobe(mousePosition: Cartesian2) -> Cartesian3? {
+
+        let camera = _scene.camera
+        
+        if _globe == nil {
+            return nil
+        }
+        
+        var depthIntersection: Cartesian3?
+        if _scene.pickPositionSupported {
+            depthIntersection = _scene.pickPosition(mousePosition)
+        }
+        
+        let ray = camera.getPickRay(mousePosition)
+        let rayIntersection = _globe!.pick(ray, scene: _scene)
+        
+        let pickDistance = depthIntersection?.distance(camera.positionWC) ?? Double.infinity
+        let rayDistance = rayIntersection?.distance(camera.positionWC) ?? Double.infinity
+        
+        if (pickDistance < rayDistance) {
+            return depthIntersection
+        }
+        
+        return rayIntersection
+    }
+    
     /*
     var translateCVStartRay = new Ray();
     var translateCVEndRay = new Ray();

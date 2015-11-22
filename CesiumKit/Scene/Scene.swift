@@ -1437,11 +1437,28 @@ function callAfterRenderFunctions(frameState) {
     
     func render(time: JulianDate) {
     
+        /*if (!defined(time)) {
+        time = JulianDate.now();
+        }
+        
+        var camera = scene._camera;
+        if (!cameraEqual(camera, scene._cameraClone, CesiumMath.EPSILON6)) {
+        if (!scene._cameraStartFired) {
+        camera.moveStart.raiseEvent();
+        scene._cameraStartFired = true;
+        }
+        scene._cameraMovedTime = getTimestamp();
+        Camera.clone(camera, scene._cameraClone);
+        } else if (scene._cameraStartFired && getTimestamp() - scene._cameraMovedTime > scene.cameraEventWaitTime) {
+        camera.moveEnd.raiseEvent();
+        scene._cameraStartFired = false;
+        }
+        */
         // FIXME: Events
         //preRender.raiseEvent(self, time)
-        
+
         let uniformState = context.uniformState
-        
+
         let frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
         frameState.passes.render = true
@@ -1658,25 +1675,91 @@ Scene.prototype.pick = function(windowPosition) {
     callAfterRenderFunctions(frameState);
     return object;
 };
-
-/**
-* Returns a list of objects, each containing a `primitive` property, for all primitives at
-* a particular window coordinate position. Other properties may also be set depending on the
-* type of primitive. The primitives in the list are ordered by their visual order in the
-* scene (front to back).
-*
-* @memberof Scene
-*
-* @param {Cartesian2} windowPosition Window coordinates to perform picking on.
-*
-* @returns {Object[]} Array of objects, each containing 1 picked primitives.
-*
-* @exception {DeveloperError} windowPosition is undefined.
-*
-* @example
-* var pickedObjects = Cesium.Scene.drillPick(new Cesium.Cartesian2(100.0, 200.0));
 */
-Scene.prototype.drillPick = function(windowPosition) {
+    var scratchPickDepthPosition = new Cartesian3();
+    var scratchMinDistPos = new Cartesian3();
+    var scratchPackedDepth = new Cartesian4();
+
+   /**
+     * Returns the cartesian position reconstructed from the depth buffer and window position.
+     *
+     * @param {Cartesian2} windowPosition Window coordinates to perform picking on.
+     * @param {Cartesian3} [result] The object on which to restore the result.
+     * @returns {Cartesian3} The cartesian position.
+     *
+     * @exception {DeveloperError} Picking from the depth buffer is not supported. Check pickPositionSupported.
+     * @exception {DeveloperError} 2D is not supported. An orthographic projection matrix is not invertible.
+     */
+    func pickPosition (windowPosition: Cartesian2) -> Cartesian3? {
+        
+        assert(_globeDepth != nil, "Picking from the depth buffer is not supported. Check pickPositionSupported.")
+        assertionFailure("Not implemented")
+        let uniformState = context.uniformState
+        /*
+        var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
+        drawingBufferPosition.y = this.drawingBufferHeight - drawingBufferPosition.y;
+        
+        var camera = this._camera;
+        
+        // Create a working frustum from the original camera frustum.
+        var frustum;
+        if (defined(camera.frustum.fov)) {
+            frustum = camera.frustum.clone(scratchPerspectiveFrustum);
+        } else if (defined(camera.frustum.infiniteProjectionMatrix)){
+            frustum = camera.frustum.clone(scratchPerspectiveOffCenterFrustum);
+        } else {
+            //>>includeStart('debug', pragmas.debug);
+            throw new DeveloperError('2D is not supported. An orthographic projection matrix is not invertible.');
+            //>>includeEnd('debug');
+        }
+        var packedDepthScale = new Cartesian4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 160581375.0);
+        
+        var numFrustums = this.numberOfFrustums;
+        for (var i = 0; i < numFrustums; ++i) {
+            var pickDepth = getPickDepth(this, i);
+            var pixels = context.readPixels({
+                x : drawingBufferPosition.x,
+                y : drawingBufferPosition.y,
+                width : 1,
+                height : 1,
+                framebuffer : pickDepth.framebuffer
+            });
+            
+            var packedDepth = Cartesian4.unpack(pixels, 0, scratchPackedDepth);
+            Cartesian4.divideByScalar(packedDepth, 255.0, packedDepth);
+            var depth = Cartesian4.dot(packedDepth, packedDepthScale);
+            
+            if (depth > 0.0 && depth < 1.0) {
+                var renderedFrustum = this._frustumCommandsList[i];
+                frustum.near = renderedFrustum.near * (i !== 0 ? OPAQUE_FRUSTUM_NEAR_OFFSET : 1.0);
+                frustum.far = renderedFrustum.far;
+                uniformState.updateFrustum(frustum);
+                
+                return SceneTransforms.drawingBufferToWgs84Coordinates(this, drawingBufferPosition, depth, result);
+            }
+        }
+        */
+        return nil
+    }
+
+    /**
+    * Returns a list of objects, each containing a `primitive` property, for all primitives at
+    * a particular window coordinate position. Other properties may also be set depending on the
+    * type of primitive. The primitives in the list are ordered by their visual order in the
+    * scene (front to back).
+    *
+    * @memberof Scene
+    *
+    * @param {Cartesian2} windowPosition Window coordinates to perform picking on.
+    * @param {Number} [limit] If supplied, stop drilling after collecting this many picks.
+    * @returns {Object[]} Array of objects, each containing 1 picked primitives.
+    *
+    * @exception {DeveloperError} windowPosition is undefined.
+    *
+    * @example
+    * var pickedObjects = scene.drillPick(new Cesium.Cartesian2(100.0, 200.0));
+    */
+Scene.prototype.drillPick = function(windowPosition, limit) {
     // PERFORMANCE_IDEA: This function calls each primitive's update for each pass. Instead
     // we could update the primitive once, and then just execute their commands for each pass,
     // and cull commands for picked primitives.  e.g., base on the command's owner.
@@ -1692,11 +1775,17 @@ Scene.prototype.drillPick = function(windowPosition) {
     var result = [];
     var pickedPrimitives = [];
     var pickedAttributes = [];
-    
+            if (!defined(limit)) {
+                limit = Number.MAX_VALUE;
+            }
+
     var pickedResult = this.pick(windowPosition);
     while (defined(pickedResult) && defined(pickedResult.primitive)) {
     result.push(pickedResult);
-        var primitive = pickedResult.primitive;
+                if (0 >= --limit) {
+                    break;
+                }        
+    var primitive = pickedResult.primitive;
 var hasShowAttribute = false;
         
     //If the picked object has a show attribute, use it.
