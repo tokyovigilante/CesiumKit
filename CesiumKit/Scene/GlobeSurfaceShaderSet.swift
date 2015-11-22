@@ -31,6 +31,7 @@ class GlobeSurfaceShaderSet {
     let vertexDescriptor: VertexDescriptor
     
     private var _pipelinesByTexturesFlags = [Int: [Int: GlobeSurfacePipeline]]()
+    private var _pickPipelines = [Int: RenderPipeline]()
     
     init (
         baseVertexShaderSource: ShaderSource,
@@ -39,6 +40,34 @@ class GlobeSurfaceShaderSet {
             self.baseVertexShaderSource = baseVertexShaderSource
             self.baseFragmentShaderSource = baseFragmentShaderSource
             self.vertexDescriptor = vertexDescriptor
+    }
+    
+    private func getPositionMode(sceneMode: SceneMode) -> String {
+        let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
+        let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
+        let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
+        let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
+        
+        let positionMode: String
+        
+        switch sceneMode {
+        case SceneMode.Scene3D:
+            positionMode = getPosition3DMode
+        case SceneMode.Scene2D:
+            positionMode = getPosition2DMode
+        case SceneMode.ColumbusView:
+            positionMode = getPositionColumbusViewMode
+        case SceneMode.Morphing:
+            positionMode = getPositionMorphingMode
+        }
+        
+        return positionMode
+    }
+    
+    func get2DYPositionFraction(useWebMercatorProjection: Bool) -> String {
+        let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
+        let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
+        return useWebMercatorProjection ? get2DYPositionFractionMercatorProjection : get2DYPositionFractionGeographicProjection
     }
     
     func getRenderPipeline (context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> RenderPipeline {
@@ -56,7 +85,7 @@ class GlobeSurfaceShaderSet {
             (Int(hasVertexNormals) << 11) |
             (Int(useWebMercatorProjection) << 12)
         
-        var surfacePipeline = surfaceTile.pipeline
+        var surfacePipeline = surfaceTile.surfacePipeline
         if surfacePipeline != nil && surfacePipeline!.numberOfDayTextures == numberOfDayTextures && surfacePipeline!.flags == flags {
             return surfacePipeline!.pipeline
         }
@@ -143,47 +172,46 @@ class GlobeSurfaceShaderSet {
             
             fs.sources.append(computeDayColor)
             
-            let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
-            let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
-            let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
-            let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
+            vs.sources.append(getPositionMode(sceneMode))
+            vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
             
-            let getPositionMode: String
-            
-            switch sceneMode {
-            case .Scene3D:
-                getPositionMode = getPosition3DMode
-            case .Scene2D:
-                getPositionMode = getPosition2DMode
-            case .ColumbusView:
-                getPositionMode = getPositionColumbusViewMode
-            case .Morphing:
-                getPositionMode = getPositionMorphingMode
-            }
-            
-            vs.sources.append(getPositionMode)
-            
-            let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
-            let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
-            
-            let get2DYPositionFraction: String
-            
-            if useWebMercatorProjection {
-                get2DYPositionFraction = get2DYPositionFractionMercatorProjection
-            } else {
-                get2DYPositionFraction = get2DYPositionFractionGeographicProjection
-            }
-            
-            vs.sources.append(get2DYPositionFraction)
-            
-            let pipeline = context.createRenderPipeline(vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
+            let pipeline = RenderPipeline.fromCache(context: context, vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 
             surfacePipeline = pipelinesByFlags![flags]
         }
         _pipelinesByTexturesFlags[numberOfDayTextures] = pipelinesByFlags!
-        surfaceTile.pipeline = surfacePipeline
+        surfaceTile.surfacePipeline = surfacePipeline
         return surfacePipeline!.pipeline
+    }
+    
+    func getPickRenderPipeline(context context: Context, sceneMode: SceneMode, useWebMercatorProjection: Bool) -> RenderPipeline {
+        
+        let flags = sceneMode.rawValue | (Int(useWebMercatorProjection) << 2)
+        var pickShader: RenderPipeline! = _pickPipelines[flags]
+        if pickShader == nil {
+            var vs = baseVertexShaderSource
+            vs.sources.append(getPositionMode(sceneMode))
+            vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
+            
+            // pass through fragment shader. only depth is rendered for the globe on a pick pass
+            let fs = ShaderSource(sources: [
+                "void main()\n" +
+                    "{\n" +
+                    "    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);\n" +
+                "}\n"
+                ])
+            
+            pickShader = RenderPipeline.fromCache(
+                context : context,
+                vertexShaderSource : vs,
+                fragmentShaderSource : fs,
+                vertexDescriptor: vertexDescriptor
+            )
+            _pickPipelines[flags] = pickShader
+        }
+        
+        return pickShader
     }
     
     deinit {

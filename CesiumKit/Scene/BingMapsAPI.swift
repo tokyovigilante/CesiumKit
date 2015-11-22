@@ -1,3 +1,10 @@
+/**
+* Object for setting and retrieving the default BingMaps API key.
+*
+* @namespace
+* @alias BingMapsApi
+*/
+    
 class BingMapsAPI {
     
     class func getKey(key: String?) -> String {

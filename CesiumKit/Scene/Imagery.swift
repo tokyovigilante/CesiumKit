@@ -36,6 +36,8 @@ class Imagery {
     
     var texture: Texture? = nil
     
+    var reprojectCommand: DrawCommand? = nil
+    
     var credits = [Credit]()
     
     private var _referenceCount: Int = 0

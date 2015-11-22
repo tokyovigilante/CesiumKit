@@ -20,6 +20,10 @@ class Buffer {
     
     let length: Int
     
+    /**
+    * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
+    * copied to the buffer and can be released (or automatically released via ARC)
+    */
     init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
         
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")

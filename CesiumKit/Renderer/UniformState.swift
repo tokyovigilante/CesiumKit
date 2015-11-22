@@ -11,6 +11,11 @@ import Foundation
 class UniformState {
     
     /**
+     * @type {Texture}
+     */
+    var globeDepthTexture: Texture? = nil
+    
+    /**
     * @private
     */
     private var _viewport = BoundingRectangle()
@@ -27,18 +32,16 @@ class UniformState {
     
     private var _entireFrustum = Cartesian2()
     private var _currentFrustum = Cartesian2()
+    private var _frustumPlanes = Cartesian4()
     
     /**
     * @memberof UniformState.prototype
     * @type {FrameState}
     * @readonly
     */
-    var frameState: FrameState {
-        return _frameState
-    }
-    var _frameState: FrameState = FrameState()
+    private (set) var frameState = FrameState()
     
-    private var _temeToPseudoFixed = Matrix3.fromMatrix4(Matrix4.identity())
+    private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity())
     
     // Derived members
     private var _view3DDirty = true
@@ -121,7 +124,7 @@ class UniformState {
     private var _moonDirectionEC = Cartesian3()
     
     private var _mode: SceneMode? = nil
-    private var _mapProjection: Projection? = nil
+    private var _mapProjection: MapProjection? = nil
     private var _cameraDirection = Cartesian3()
     private var _cameraRight = Cartesian3()
     private var _cameraUp = Cartesian3()
@@ -602,7 +605,17 @@ class UniformState {
     return this._currentFrustum;
     }
     },
-    
+    /**
+     The distances to the frustum planes. The top, bottom, left and right distances are
+             * the x, y, z, and w components, respectively.
+             * @memberof UniformState.prototype
+             * @type {Cartesian4}
+             */
+            frustumPlanes : {
+                get : function() {
+                    return this._frustumPlanes;
+                }
+            },
     /**
     * The the height (<code>x</code>) and the height squared (<code>y</code>)
     * in meters of the camera above the 2D world plane. This uniform is only valid
@@ -794,13 +807,22 @@ class UniformState {
     * @param {Object} frustum The frustum to synchronize with.
     */
     // FIXME: frustum
-    func updateFrustum (frustum: Frustum) {
+    func updateFrustum (var frustum: Frustum) {
         projection = frustum.projectionMatrix
         if frustum.infiniteProjectionMatrix != nil {
             infiniteProjection = frustum.infiniteProjectionMatrix!
         }
         _currentFrustum.x = frustum.near
         _currentFrustum.y = frustum.far
+    
+        if frustum.top != Double.NaN {
+            frustum = (frustum as! PerspectiveFrustum)._offCenterFrustum
+        }
+        
+        _frustumPlanes.x = frustum.top
+        _frustumPlanes.y = frustum.bottom
+        _frustumPlanes.z = frustum.left
+        _frustumPlanes.w = frustum.right
     }
     
     /**
@@ -838,7 +860,7 @@ class UniformState {
         _entireFrustum.y = camera.frustum.far
         updateFrustum(camera.frustum)
         
-        _frameState = frameState
+        self.frameState = frameState
         // FIXME: _temeToPseudoFixed
         //_temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
     };
@@ -1026,7 +1048,7 @@ class UniformState {
     var view2Dto3DCartesian3Scratch = new Cartesian3();
     var view2Dto3DMatrix4Scratch = new Matrix4();
     */
-    func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: Projection) -> Matrix4 {
+    func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: MapProjection) -> Matrix4 {
         
         // The camera position and directions are expressed in the 2D coordinate system where the Y axis is to the East,
         // the Z axis is to the North, and the X axis is out of the map.  Express them instead in the ENU axes where

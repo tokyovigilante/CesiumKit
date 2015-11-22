@@ -20,6 +20,9 @@ import Foundation
 *
 * @param {Object} [options] Object with the following properties:
 * @param {TilingScheme} [options.tilingScheme=new GeographicTilingScheme()] The tiling scheme for which to draw tiles.
+* @param {Ellipsoid} [options.ellipsoid] The ellipsoid.  If the tilingScheme is specified,
+*                    this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
+*                    parameter is specified, the WGS84 ellipsoid is used.
 * @param {Color} [options.color=Color.YELLOW] The color to draw the tile box and label.
 * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
@@ -30,7 +33,9 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
         
-        let color: Cartesian4 = Cartesian4.fromColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+        
+        let color = Cartesian4(fromRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
         let tileWidth: Int = 256
         
@@ -268,11 +273,6 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
         
-        //rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-        //rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
-        
-        //let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
         let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue | alphaInfo.rawValue)
@@ -284,12 +284,10 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         CGContextSetStrokeColorWithColor(contextRef, drawColor)
         
-        // border
         let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
         CGContextClearRect(contextRef, borderRect)
         CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
         
-        // label
         let tileString = "L\(level)X\(x)Y\(y)"
         
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);

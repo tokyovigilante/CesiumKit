@@ -115,7 +115,7 @@ public struct Cartesian3: Packable, Equatable {
     *
     * @param {Number[]} array The packed array.
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Cartesian3} [result] The object into which to store the result.
+    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.    
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
         assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")

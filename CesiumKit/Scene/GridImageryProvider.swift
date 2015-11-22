@@ -26,15 +26,57 @@
 */
 class GridImageryProvider/*: ImageryProvider*/ {
     /*
-    var GridImageryProvider = function GridImageryProvider(options) {
-    options = defaultValue(options, {});
+    /*global define*/
+    define([
+    '../Core/Color',
+    '../Core/defaultValue',
+    '../Core/defined',
+    '../Core/defineProperties',
+    '../Core/Event',
+    '../Core/GeographicTilingScheme'
+    ], function(
+    Color,
+    defaultValue,
+    defined,
+    defineProperties,
+    Event,
+    GeographicTilingScheme) {
+    "use strict";
     
-    this._tilingScheme = defaultValue(options.tilingScheme, new GeographicTilingScheme());
+    var defaultColor = new Color(1.0, 1.0, 1.0, 0.4);
+    var defaultGlowColor = new Color(0.0, 1.0, 0.0, 0.05);
+    var defaultBackgroundColor = new Color(0.0, 0.5, 0.0, 0.2);
+    
+    /**
+    * An {@link ImageryProvider} that draws a wireframe grid on every tile with controllable background and glow.
+    * May be useful for custom rendering effects or debugging terrain.
+    *
+    * @alias GridImageryProvider
+    * @constructor
+    *
+    * @param {Object} [options] Object with the following properties:
+    * @param {TilingScheme} [options.tilingScheme=new GeographicTilingScheme()] The tiling scheme for which to draw tiles.
+    * @param {Ellipsoid} [options.ellipsoid] The ellipsoid.  If the tilingScheme is specified,
+    *                    this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
+    *                    parameter is specified, the WGS84 ellipsoid is used.
+    * @param {Number} [options.cells=8] The number of grids cells.
+    * @param {Color} [options.color=Color(1.0, 1.0, 1.0, 0.4)] The color to draw grid lines.
+    * @param {Color} [options.glowColor=Color(0.0, 1.0, 0.0, 0.05)] The color to draw glow for grid lines.
+    * @param {Number} [options.glowWidth=6] The width of lines used for rendering the line glow effect.
+    * @param {Color} [backgroundColor=Color(0.0, 0.5, 0.0, 0.2)] Background fill color.
+    * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
+    * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
+    * @param {Number} [options.canvasSize=256] The size of the canvas used for rendering.
+    */
+    var GridImageryProvider = function GridImageryProvider(options) {
+    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    
+    this._tilingScheme = defined(options.tilingScheme) ? options.tilingScheme : new GeographicTilingScheme({ ellipsoid : options.ellipsoid });
     this._cells = defaultValue(options.cells, 8);
-    this._color = defaultValue(options.color, new Color(1.0, 1.0, 1.0, 0.4));
-    this._glowColor = defaultValue(options.glowColor, new Color(0.0, 1.0, 0.0, 0.05));
+    this._color = defaultValue(options.color, defaultColor);
+    this._glowColor = defaultValue(options.glowColor, defaultGlowColor);
     this._glowWidth = defaultValue(options.glowWidth, 6);
-    this._backgroundColor = defaultValue(options.backgroundColor, new Color(0.0, 0.5, 0.0, 0.2));
+    this._backgroundColor = defaultValue(options.backgroundColor, defaultBackgroundColor);
     this._errorEvent = new Event();
     
     this._tileWidth = defaultValue(options.tileWidth, 256);
@@ -53,6 +95,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * Gets the proxy used by this provider.
     * @memberof GridImageryProvider.prototype
     * @type {Proxy}
+    * @readonly
     */
     proxy : {
     get : function() {
@@ -65,6 +108,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Number}
+    * @readonly
     */
     tileWidth : {
     get : function() {
@@ -77,19 +121,20 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Number}
+    * @readonly
     */
-    tileHeight: {
+    tileHeight : {
     get : function() {
     return this._tileHeight;
     }
     },
-    
     
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Number}
+    * @readonly
     */
     maximumLevel : {
     get : function() {
@@ -102,6 +147,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Number}
+    * @readonly
     */
     minimumLevel : {
     get : function() {
@@ -114,6 +160,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {TilingScheme}
+    * @readonly
     */
     tilingScheme : {
     get : function() {
@@ -126,6 +173,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Rectangle}
+    * @readonly
     */
     rectangle : {
     get : function() {
@@ -140,6 +188,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {TileDiscardPolicy}
+    * @readonly
     */
     tileDiscardPolicy : {
     get : function() {
@@ -153,6 +202,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * are passed an instance of {@link TileProviderError}.
     * @memberof GridImageryProvider.prototype
     * @type {Event}
+    * @readonly
     */
     errorEvent : {
     get : function() {
@@ -164,6 +214,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof GridImageryProvider.prototype
     * @type {Boolean}
+    * @readonly
     */
     ready : {
     get : function() {
@@ -176,6 +227,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * the source of the imagery.  This function should not be called before {@link GridImageryProvider#ready} returns true.
     * @memberof GridImageryProvider.prototype
     * @type {Credit}
+    * @readonly
     */
     credit : {
     get : function() {
@@ -191,6 +243,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * and texture upload time are reduced.
     * @memberof GridImageryProvider.prototype
     * @type {Boolean}
+    * @readonly
     */
     hasAlphaChannel : {
     get : function() {
@@ -205,9 +258,9 @@ class GridImageryProvider/*: ImageryProvider*/ {
     GridImageryProvider.prototype._drawGrid = function(context) {
     var minPixel = 0;
     var maxPixel = this._canvasSize;
-    for( var x = 0; x <= this._cells; ++x ){
+    for (var x = 0; x <= this._cells; ++x) {
     var nx = x / this._cells;
-    var val = 1 + nx * (maxPixel-1);
+    var val = 1 + nx * (maxPixel - 1);
     
     context.moveTo(val, minPixel);
     context.lineTo(val, maxPixel);
@@ -246,7 +299,6 @@ class GridImageryProvider/*: ImageryProvider*/ {
     context.strokeRect(minPixel, minPixel, maxPixel, maxPixel);
     this._drawGrid(context);
     
-    
     // Grid lines
     var cssColor = this._color.toCssColorString();
     // Border
@@ -281,7 +333,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * @param {Number} x The tile X coordinate.
     * @param {Number} y The tile Y coordinate.
     * @param {Number} level The tile level.
-    * @returns {Promise} A promise for the image that will resolve when the image is available, or
+    * @returns {Promise.<Image|Canvas>|undefined} A promise for the image that will resolve when the image is available, or
     *          undefined if there are too many active requests to the server, and the request
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
@@ -299,7 +351,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     * @param {Number} level The tile level.
     * @param {Number} longitude The longitude at which to pick features.
     * @param {Number} latitude  The latitude at which to pick features.
-    * @return {Promise} A promise for the picked features that will resolve when the asynchronous
+    * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
     *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
     *                   instances.  The array may be empty if no features are found at the given location.
     *                   It may also be undefined if picking is not supported.
@@ -310,6 +362,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     
     return GridImageryProvider;
     });
+
 
     */
 }

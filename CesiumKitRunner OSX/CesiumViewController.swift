@@ -27,8 +27,8 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
-        
         _metalView.colorPixelFormat = .BGRA8Unorm
+        _metalView.depthStencilPixelFormat = .Depth32Float_Stencil8
         _metalView.framebufferOnly = true
         _metalView.preferredFramesPerSecond = 60
         
@@ -61,7 +61,14 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
     }
 
     func drawInMTKView(view: MTKView) {
-        _globe.render(view.drawableSize)
+        let scaleFactor = view.layer?.contentsScale ?? 1.0
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
+        
+        let renderSize = CGSizeMake(renderWidth , renderHeight)
+
+        _globe.render(renderSize/*view.drawableSize*/)
     }
     
     /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {

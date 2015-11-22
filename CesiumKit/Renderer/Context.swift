@@ -44,28 +44,15 @@ class Context {
     private var _drawable: CAMetalDrawable! = nil
     private var _commandBuffer: MTLCommandBuffer! = nil
     
-    /*    var pipeline: MTLRenderPipelineState
-    var uniformBuffer: MTLBuffer
-    var depthTexture: MTLTexture
-    var depthState: MTLDepthStencilState
-    var notMipSamplerState: MTLSamplerState
-    var nearestMipSamplerState: MTLSamplerState
-    var linearMipSamplerState: MTLSamplerState*/
+    var limits: ContextLimits
     
     //private var _commandsExecutedThisFrame = [DrawCommand]()
     
-    //private var _depthTexture: MTLTexture!
-    //private var _stencilTexture: MTLTexture!
-    
-    var maximumTextureSize: Int = 4096
-    
-    var maximumTextureUnits: Int = 16 // techically maximum sampler state attachment
+    private (set) var depthTexture: Bool = true
     
     var allowTextureFilterAnisotropic = true
     
     var textureFilterAnisotropic = true
-    
-    var maximumTextureFilterAnisotropy = 1
     
     struct glOptions {
         
@@ -79,7 +66,7 @@ class Context {
     
     var _logShaderCompilation = false
     
-    var _pipelineCache: PipelineCache!
+    let pipelineCache: PipelineCache!
     
     private var _clearColor: MTLClearColor = MTLClearColorMake(1.0, 0.0, 0.0, 1.0)
     
@@ -169,15 +156,24 @@ class Context {
     * {@link Context.createTexture2DFromFramebuffer}.
     * @type {Object}
     */
-    //var defaultFramebuffer: Framebuffer? = nil
+    private let _defaultFramebuffer: Framebuffer
     
     init (view: MTKView) {
         
         self.view = view
         
         device = view.device!
+        limits = ContextLimits(device: device)
+        
+        print("Metal device: " + (device.name ?? "Unknown"))
+        #if os(OSX)
+            print("- Low power: " + (device.lowPower ? "Yes" : "No"))
+            print("- Headless: " + (device.headless ? "Yes" : "No"))
+        #endif
         
         _commandQueue = device.newCommandQueue()
+        
+        pipelineCache = PipelineCache(device: device)
         
         id = NSUUID().UUIDString
         
@@ -202,8 +198,10 @@ class Context {
         _defaultRenderState = rs
         uniformState = us
         _currentRenderState = rs
+        _defaultFramebuffer = Framebuffer(maximumColorAttachments: limits.maximumColorAttachments)
         _defaultPassState = PassState()
         _defaultPassState.context = self
+
         
         /**
         * @example
@@ -227,425 +225,12 @@ class Context {
         height = Int(view.drawableSize.height)
     }
     
-    func replaceRenderPipeline(
-        pipeline: RenderPipeline?,
-        vertexShaderSource vss: ShaderSource,
-        fragmentShaderSource fss: ShaderSource,
-        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline? {
-            
-            if _pipelineCache == nil {
-                _pipelineCache = PipelineCache(context: self)
-            }
-            return _pipelineCache!.replaceRenderPipeline(pipeline, context: self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
-    }
-    
-    func createRenderPipeline(
-        vertexShaderSource vss: ShaderSource,
-        fragmentShaderSource fss: ShaderSource,
-        vertexDescriptor vd: VertexDescriptor? = nil) -> RenderPipeline {
-            
-            if _pipelineCache == nil {
-                _pipelineCache = PipelineCache(context: self)
-            }
-            return _pipelineCache.getRenderPipeline(self, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
-    }
-    
     /**
     * Creates a compiled MTLSamplerState from a MTLSamplerDescriptor. These should generally be cached.
     */
     func createSamplerState (descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
         return device.newSamplerStateWithDescriptor(descriptor)
     }
-    
-    /**
-    * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
-    * copied to the buffer and can be released (or automatically released via ARC)
-    */
-    func createBuffer(array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) -> Buffer {
-        return Buffer(device: device, array: array, componentDatatype: componentDatatype, sizeInBytes: sizeInBytes)
-    }
-    
-    func createUniformBufferProvider(capacity: Int, sizeInBytes: Int) -> UniformBufferProvider {
-        return UniformBufferProvider(device: self.device, capacity: capacity, sizeInBytes: sizeInBytes)
-    }
-    
-    /**
-    * Creates a vertex array, which defines the attributes making up a vertex, and contains an optional index buffer
-    * to select vertices for rendering.  Attributes are defined using object literals as shown in Example 1 below.
-    *
-    * @memberof Context
-    *
-    * @param {Object[]} [attributes] An optional array of attributes.
-    * @param {IndexBuffer} [indexBuffer] An optional index buffer.
-    *
-    * @returns {VertexArray} The vertex array, ready for use with drawing.
-    *
-    * @exception {DeveloperError} Attribute must have a <code>vertexBuffer</code>.
-    * @exception {DeveloperError} Attribute must have a <code>componentsPerAttribute</code>.
-    * @exception {DeveloperError} Attribute must have a valid <code>componentDatatype</code> or not specify it.
-    * @exception {DeveloperError} Attribute must have a <code>strideInBytes</code> less than or equal to 255 or not specify it.
-    * @exception {DeveloperError} Index n is used by more than one attribute.
-    *
-    * @see Context#createVertexArrayFromGeometry
-    * @see Context#createVertexBuffer
-    * @see Context#createIndexBuffer
-    * @see Context#draw
-    *
-    * @example
-    * // Example 1. Create a vertex array with vertices made up of three floating point
-    * // values, e.g., a position, from a single vertex buffer.  No index buffer is used.
-    * var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-    * var attributes = [
-    *     {
-    *         index                  : 0,
-    *         enabled                : true,
-    *         vertexBuffer           : positionBuffer,
-    *         componentsPerAttribute : 3,
-    *         componentDatatype      : ComponentDatatype.FLOAT,
-    *         normalize              : false,
-    *         offsetInBytes          : 0,
-    *         strideInBytes          : 0 // tightly packed
-    *     }
-    * ];
-    * var va = context.createVertexArray(attributes);
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 2. Create a vertex array with vertices from two different vertex buffers.
-    * // Each vertex has a three-component position and three-component normal.
-    * var positionBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-    * var normalBuffer = context.createVertexBuffer(12, BufferUsage.STATIC_DRAW);
-    * var attributes = [
-    *     {
-    *         index                  : 0,
-    *         vertexBuffer           : positionBuffer,
-    *         componentsPerAttribute : 3,
-    *         componentDatatype      : ComponentDatatype.FLOAT
-    *     },
-    *     {
-    *         index                  : 1,
-    *         vertexBuffer           : normalBuffer,
-    *         componentsPerAttribute : 3,
-    *         componentDatatype      : ComponentDatatype.FLOAT
-    *     }
-    * ];
-    * var va = context.createVertexArray(attributes);
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 3. Creates the same vertex layout as Example 2 using a single
-    * // vertex buffer, instead of two.
-    * var buffer = context.createVertexBuffer(24, BufferUsage.STATIC_DRAW);
-    * var attributes = [
-    *     {
-    *         vertexBuffer           : buffer,
-    *         componentsPerAttribute : 3,
-    *         componentDatatype      : ComponentDatatype.FLOAT,
-    *         offsetInBytes          : 0,
-    *         strideInBytes          : 24
-    *     },
-    *     {
-    *         vertexBuffer           : buffer,
-    *         componentsPerAttribute : 3,
-    *         componentDatatype      : ComponentDatatype.FLOAT,
-    *         normalize              : true,
-    *         offsetInBytes          : 12,
-    *         strideInBytes          : 24
-    *     }
-    * ];
-    * var va = context.createVertexArray(attributes);
-    */
-    
-    func createVertexArray (vertexBuffer vertexBuffer: Buffer, vertexCount: Int, indexBuffer: Buffer?) -> VertexArray {
-        return VertexArray(vertexBuffer: vertexBuffer, vertexCount: vertexCount, indexBuffer: indexBuffer)
-        
-    }
-    /**
-    * options.source can be {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
-    *
-    * @exception {RuntimeError} When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.
-    * @exception {RuntimeError} When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.
-    * @exception {DeveloperError} options requires a source field to create an initialized texture or width and height fields to create a blank texture.
-    * @exception {DeveloperError} Width must be greater than zero.
-    * @exception {DeveloperError} Width must be less than or equal to the maximum texture size.
-    * @exception {DeveloperError} Height must be greater than zero.
-    * @exception {DeveloperError} Height must be less than or equal to the maximum texture size.
-    * @exception {DeveloperError} Invalid options.pixelFormat.
-    * @exception {DeveloperError} Invalid options.pixelDatatype.
-    * @exception {DeveloperError} When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.
-    * @exception {DeveloperError} When options.pixelFormat is DEPTH_STENCIL, options.pixelDatatype must be UNSIGNED_INT_24_8_WEBGL.
-    * @exception {DeveloperError} When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.
-    *
-    * @see Context#createTexture2DFromFramebuffer
-    * @see Context#createCubeMap
-    * @see Context#createSampler
-    */
-    func createTexture2D(options: TextureOptions) -> Texture {
-        return Texture(context: self, options: options)
-    }
-    /*
-    /**
-    * Creates a texture, and copies a subimage of the framebuffer to it.  When called without arguments,
-    * the texture is the same width and height as the framebuffer and contains its contents.
-    *
-    * @memberof Context
-    *
-    * @param {PixelFormat} [pixelFormat=PixelFormat.RGB] The texture's internal pixel format.
-    * @param {Number} [framebufferXOffset=0] An offset in the x direction in the framebuffer where copying begins from.
-    * @param {Number} [framebufferYOffset=0] An offset in the y direction in the framebuffer where copying begins from.
-    * @param {Number} [width=canvas.clientWidth] The width of the texture in texels.
-    * @param {Number} [height=canvas.clientHeight] The height of the texture in texels.
-    * @param {Framebuffer} [framebuffer=defaultFramebuffer] The framebuffer from which to create the texture.  If this
-    *        parameter is not specified, the default framebuffer is used.
-    *
-    * @returns {Texture} A texture with contents from the framebuffer.
-    *
-    * @exception {DeveloperError} Invalid pixelFormat.
-    * @exception {DeveloperError} pixelFormat cannot be DEPTH_COMPONENT or DEPTH_STENCIL.
-    * @exception {DeveloperError} framebufferXOffset must be greater than or equal to zero.
-    * @exception {DeveloperError} framebufferYOffset must be greater than or equal to zero.
-    * @exception {DeveloperError} framebufferXOffset + width must be less than or equal to canvas.clientWidth.
-    * @exception {DeveloperError} framebufferYOffset + height must be less than or equal to canvas.clientHeight.
-    *
-    * @see Context#createTexture2D
-    * @see Context#createCubeMap
-    * @see Context#createSampler
-    *
-    * @example
-    * // Create a texture with the contents of the framebuffer.
-    * var t = context.createTexture2DFromFramebuffer();
-    */
-    Context.prototype.createTexture2DFromFramebuffer = function(pixelFormat, framebufferXOffset, framebufferYOffset, width, height, framebuffer) {
-    var gl = this._gl;
-    
-    pixelFormat = defaultValue(pixelFormat, PixelFormat.RGB);
-    framebufferXOffset = defaultValue(framebufferXOffset, 0);
-    framebufferYOffset = defaultValue(framebufferYOffset, 0);
-    width = defaultValue(width, gl.drawingBufferWidth);
-    height = defaultValue(height, gl.drawingBufferHeight);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!PixelFormat.validate(pixelFormat)) {
-    throw new DeveloperError('Invalid pixelFormat.');
-    }
-    
-    if (PixelFormat.isDepthFormat(pixelFormat)) {
-    throw new DeveloperError('pixelFormat cannot be DEPTH_COMPONENT or DEPTH_STENCIL.');
-    }
-    
-    if (framebufferXOffset < 0) {
-    throw new DeveloperError('framebufferXOffset must be greater than or equal to zero.');
-    }
-    
-    if (framebufferYOffset < 0) {
-    throw new DeveloperError('framebufferYOffset must be greater than or equal to zero.');
-    }
-    
-    if (framebufferXOffset + width > gl.drawingBufferWidth) {
-    throw new DeveloperError('framebufferXOffset + width must be less than or equal to drawingBufferWidth');
-    }
-    
-    if (framebufferYOffset + height > gl.drawingBufferHeight) {
-    throw new DeveloperError('framebufferYOffset + height must be less than or equal to drawingBufferHeight.');
-    }
-    //>>includeEnd('debug');
-    
-    var texture = new Texture(this, {
-    width : width,
-    height : height,
-    pixelFormat : pixelFormat,
-    source : {
-    framebuffer : defined(framebuffer) ? framebuffer : this.defaultFramebuffer,
-    xOffset : framebufferXOffset,
-    yOffset : framebufferYOffset,
-    width : width,
-    height : height
-    }
-    });
-    
-    return texture;
-    };
-    */
-    /**
-    * options.source can be {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
-    *
-    * @memberof Context
-    *
-    * @returns {CubeMap} The newly created cube map.
-    *
-    * @exception {RuntimeError} When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.
-    * @exception {DeveloperError} options.source requires positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ faces.
-    * @exception {DeveloperError} Each face in options.sources must have the same width and height.
-    * @exception {DeveloperError} options requires a source field to create an initialized cube map or width and height fields to create a blank cube map.
-    * @exception {DeveloperError} Width must equal height.
-    * @exception {DeveloperError} Width and height must be greater than zero.
-    * @exception {DeveloperError} Width and height must be less than or equal to the maximum cube map size.
-    * @exception {DeveloperError} Invalid options.pixelFormat.
-    * @exception {DeveloperError} options.pixelFormat cannot be DEPTH_COMPONENT or DEPTH_STENCIL.
-    * @exception {DeveloperError} Invalid options.pixelDatatype.
-    *
-    * @see Context#createTexture2D
-    * @see Context#createTexture2DFromFramebuffer
-    * @see Context#createSampler
-    */
-    
-    func createCubeMap (faces: [Imagebuffer]?, width: Int?, height: Int?/*, pixelDatatype: PixelDatatype?*/) -> CubeMap? {
-        // FIXME: cubemap
-        /*
-        Context.prototype.createCubeMap = function(options) {
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-        
-        var source = options.source;
-        var width;
-        var height;
-        
-        if (defined(source)) {
-        var faces = [source.positiveX, source.negativeX, source.positiveY, source.negativeY, source.positiveZ, source.negativeZ];
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!faces[0] || !faces[1] || !faces[2] || !faces[3] || !faces[4] || !faces[5]) {
-        throw new DeveloperError('options.source requires positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ faces.');
-        }
-        //>>includeEnd('debug');
-        
-        width = faces[0].width;
-        height = faces[0].height;
-        
-        //>>includeStart('debug', pragmas.debug);
-        for ( var i = 1; i < 6; ++i) {
-        if ((Number(faces[i].width) !== width) || (Number(faces[i].height) !== height)) {
-        throw new DeveloperError('Each face in options.source must have the same width and height.');
-        }
-        }
-        //>>includeEnd('debug');
-        } else {
-        width = options.width;
-        height = options.height;
-        }
-        
-        var size = width;
-        var pixelFormat = defaultValue(options.pixelFormat, PixelFormat.RGBA);
-        var pixelDatatype = defaultValue(options.pixelDatatype, PixelDatatype.UNSIGNED_BYTE);
-        
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(width) || !defined(height)) {
-        throw new DeveloperError('options requires a source field to create an initialized cube map or width and height fields to create a blank cube map.');
-        }
-        
-        if (width !== height) {
-        throw new DeveloperError('Width must equal height.');
-        }
-        
-        if (size <= 0) {
-        throw new DeveloperError('Width and height must be greater than zero.');
-        }
-        
-        if (size > this._maximumCubeMapSize) {
-        throw new DeveloperError('Width and height must be less than or equal to the maximum cube map size (' + this._maximumCubeMapSize + ').  Check maximumCubeMapSize.');
-        }
-        
-        if (!PixelFormat.validate(pixelFormat)) {
-        throw new DeveloperError('Invalid options.pixelFormat.');
-        }
-        
-        if (PixelFormat.isDepthFormat(pixelFormat)) {
-        throw new DeveloperError('options.pixelFormat cannot be DEPTH_COMPONENT or DEPTH_STENCIL.');
-        }
-        
-        if (!PixelDatatype.validate(pixelDatatype)) {
-        throw new DeveloperError('Invalid options.pixelDatatype.');
-        }
-        //>>includeEnd('debug');
-        
-        if ((pixelDatatype === PixelDatatype.FLOAT) && !this.floatingPointTexture) {
-        throw new RuntimeError('When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.');
-        }
-        
-        // Use premultiplied alpha for opaque textures should perform better on Chrome:
-        // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.preMultiplyAlpha || ((pixelFormat === PixelFormat.RGB) || (pixelFormat === PixelFormat.LUMINANCE));
-        var flipY = defaultValue(options.flipY, true);
-        
-        var gl = this._gl;
-        var textureTarget = gl.TEXTURE_CUBE_MAP;
-        var texture = gl.createTexture();
-        
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(textureTarget, texture);
-        
-        function createFace(target, sourceFace) {
-        if (sourceFace.arrayBufferView) {
-        gl.texImage2D(target, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, sourceFace.arrayBufferView);
-        } else {
-        gl.texImage2D(target, 0, pixelFormat, pixelFormat, pixelDatatype, sourceFace);
-        }
-        }
-        
-        if (defined(source)) {
-        gl.pixelStorei(_gl._UNPACK_ALIGNMENT, 4);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
-        
-        createFace(gl.TEXTURE_CUBE_MAP_POSITIVE_X, source.positiveX);
-        createFace(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, source.negativeX);
-        createFace(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, source.positiveY);
-        createFace(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, source.negativeY);
-        createFace(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, source.positiveZ);
-        createFace(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, source.negativeZ);
-        } else {
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, pixelFormat, size, size, 0, pixelFormat, pixelDatatype, null);
-        }
-        gl.bindTexture(textureTarget, null);
-        
-        return new CubeMap(gl, this._textureFilterAnisotropic, textureTarget, texture, pixelFormat, pixelDatatype, size, preMultiplyAlpha, flipY);
-        */
-        return nil
-    }
-        
-    /*
-    Context.prototype.createRenderbuffer = function(options) {
-    var gl = this._gl;
-    
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    var format = defaultValue(options.format, RenderbufferFormat.RGBA4);
-    var width = defined(options.width) ? options.width : gl.drawingBufferWidth;
-    var height = defined(options.height) ? options.height : gl.drawingBufferHeight;
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!RenderbufferFormat.validate(format)) {
-    throw new DeveloperError('Invalid format.');
-    }
-    
-    if (width <= 0) {
-    throw new DeveloperError('Width must be greater than zero.');
-    }
-    
-    if (width > this.maximumRenderbufferSize) {
-    throw new DeveloperError('Width must be less than or equal to the maximum renderbuffer size (' + this.maximumRenderbufferSize + ').  Check maximumRenderbufferSize.');
-    }
-    
-    if (height <= 0) {
-    throw new DeveloperError('Height must be greater than zero.');
-    }
-    
-    if (height > this.maximumRenderbufferSize) {
-    throw new DeveloperError('Height must be less than or equal to the maximum renderbuffer size (' + this.maximumRenderbufferSize + ').  Check maximumRenderbufferSize.');
-    }
-    //>>includeEnd('debug');
-    
-    return new Renderbuffer(gl, format, width, height);
-    };
-    
-    var nextRenderStateId = 0;
-    var renderStateCache = {};
-    */
-    
-    
     
     func beginFrame() -> Bool {
         
@@ -661,12 +246,7 @@ class Context {
             return false
         }
         //assert(_drawable != nil, "drawable == nil")
-        _defaultPassState.passDescriptor = MTLRenderPassDescriptor()
-        _defaultPassState.passDescriptor.colorAttachments[0].texture = _drawable.texture
-        //_defaultPassState.passDescriptor.colorAttachments[0].storeAction = .Store
-        
-        //_defaultPassState.passDescriptor.depthAttachment.texture = _depthTexture
-        //_defaultPassState.passDescriptor.stencilAttachment.texture = _stencilTexture
+        _defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         
         _commandBuffer = _commandQueue.commandBuffer()
         
@@ -679,9 +259,9 @@ class Context {
         return true
     }
     
-    func createRenderPass(passState: PassState? = nil, clearCommand: ClearCommand?) -> RenderPass {
+    func createRenderPass(passState: PassState? = nil) -> RenderPass {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, clearCommand: clearCommand)
+        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: _defaultFramebuffer)
         return pass
     }
     
@@ -695,8 +275,9 @@ class Context {
     
     func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
         
-        let passState = passState ?? _defaultPassState
-        let passDescriptor = passState.passDescriptor
+        let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? _defaultFramebuffer
+
+        let passDescriptor = framebuffer.renderPassDescriptor
         
         let c = clearCommand.color
         let d = clearCommand.depth
@@ -706,7 +287,7 @@ class Context {
         if let c = c {
             colorAttachment.loadAction = .Clear
             colorAttachment.storeAction = .Store
-            colorAttachment.clearColor = c
+            colorAttachment.clearColor = MTLClearColorMake(c.red, c.green, c.blue, c.alpha)
         } else {
             colorAttachment.loadAction = .DontCare
             colorAttachment.storeAction = .DontCare
@@ -738,7 +319,7 @@ class Context {
         
         //_commandsExecutedThisFrame.append(drawCommand)
         /*
-        let activePassState: PassState
+        let activePassState: Pas    sState
         if let pass = drawCommand.pass {
             let commandPassState = _passStates[pass]
             activePassState = commandPassState ?? _defaultPassState
@@ -749,6 +330,7 @@ class Context {
             _currentPassState = activePassState
         }*/
         // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
+        //var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
         
         beginDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
         continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
@@ -757,9 +339,9 @@ class Context {
     func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
         
         
-        /*var rs = (renderState ?? drawCommand.renderState) ?? _defaultRenderState
+        let rs = /*(renderPass.pa ??*/ drawCommand.renderState/*)*/ ?? _defaultRenderState
         
-        if framebuffer != nil && rs.depthTest.enabled {
+        /*if framebuffer != nil && rs.depthTest.enabled {
         assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
         }*/
         let commandEncoder = renderPass.commandEncoder
@@ -769,8 +351,8 @@ class Context {
         
         
         //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
-        
-        //applyRenderState(rs, passState: passState)
+
+        applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
     func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
@@ -788,7 +370,7 @@ class Context {
         uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
         
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
-        let bufferParams = renderPipeline.setUniforms(drawCommand, context: self, uniformState: uniformState)
+        let bufferParams = renderPipeline.setUniforms(drawCommand, device: device, uniformState: uniformState)
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
@@ -803,7 +385,10 @@ class Context {
             let indexCount = count ?? va.numberOfIndices
             
             commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
-            commandEncoder.setVertexBuffer(va.vertexBuffer.metalBuffer, offset: 0, atIndex: 1)
+            
+            for (i, buffer) in va.vertexBuffers.enumerate() {
+                commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: i+1)
+            }
             
             commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 0)
             
@@ -826,8 +411,7 @@ class Context {
         _commandBuffer.commit()
         
         _drawable = nil
-        _defaultPassState.passDescriptor = nil
-        _currentPassState?.passDescriptor = nil
+        _defaultFramebuffer.clearDrawable()
         
         _commandBuffer = nil
         /*
@@ -868,347 +452,59 @@ class Context {
     gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     
     return pixels;
-    };
+    };*/
     
-    //////////////////////////////////////////////////////////////////////////////////////////
+    func getViewportQuadVertexArray () -> VertexArray {
+        // Per-context cache for viewport quads
+        
+        if let vertexArray = cache["viewportQuad_vertexArray"] as? VertexArray {
+            return vertexArray
+        }
+        
+        let geometry = Geometry(
+            attributes: GeometryAttributes(
+                position: GeometryAttribute(
+                    componentDatatype: .Float32,
+                    componentsPerAttribute: 2,
+                    buffer: Buffer(device: device, array: UnsafePointer<Void>([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
+                ), // position
+                st: GeometryAttribute(
+                    componentDatatype: .Float32,
+                    componentsPerAttribute: 2,
+                    buffer: Buffer(device: device, array: UnsafePointer<Void>([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
+                )), // textureCoordinates
+            indices: [0, 1, 2, 0, 2, 3]
+            )
+        
+        let vertexArray = VertexArray(
+            fromGeometry: geometry,
+            interleave : true
+        )
     
-    function computeNumberOfVertices(attribute) {
-    return attribute.values.length / attribute.componentsPerAttribute;
+        cache["viewportQuad_vertexArray"] = vertexArray
+        
+        return vertexArray
     }
-    
-    function computeAttributeSizeInBytes(attribute) {
-    return ComponentDatatype.getSizeInBytes(attribute.componentDatatype) * attribute.componentsPerAttribute;
-    }
-    
-    function interleaveAttributes(attributes) {
-    var j;
-    var name;
-    var attribute;
-    
-    // Extract attribute names.
-    var names = [];
-    for (name in attributes) {
-    // Attribute needs to have per-vertex values; not a constant value for all vertices.
-    if (attributes.hasOwnProperty(name) &&
-    defined(attributes[name]) &&
-    defined(attributes[name].values)) {
-    names.push(name);
-    
-    if (attributes[name].componentDatatype === ComponentDatatype.DOUBLE) {
-    attributes[name].componentDatatype = ComponentDatatype.FLOAT;
-    attributes[name].values = ComponentDatatype.createTypedArray(ComponentDatatype.FLOAT, attributes[name].values);
-    }
-    }
-    }
-    
-    // Validation.  Compute number of vertices.
-    var numberOfVertices;
-    var namesLength = names.length;
-    
-    if (namesLength > 0) {
-    numberOfVertices = computeNumberOfVertices(attributes[names[0]]);
-    
-    for (j = 1; j < namesLength; ++j) {
-    var currentNumberOfVertices = computeNumberOfVertices(attributes[names[j]]);
-    
-    if (currentNumberOfVertices !== numberOfVertices) {
-    throw new RuntimeError(
-    'Each attribute list must have the same number of vertices.  ' +
-    'Attribute ' + names[j] + ' has a different number of vertices ' +
-    '(' + currentNumberOfVertices.toString() + ')' +
-    ' than attribute ' + names[0] +
-    ' (' + numberOfVertices.toString() + ').');
-    }
-    }
-    }
-    
-    // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
-    names.sort(function(left, right) {
-    return ComponentDatatype.getSizeInBytes(attributes[right].componentDatatype) - ComponentDatatype.getSizeInBytes(attributes[left].componentDatatype);
-    });
-    
-    // Compute sizes and strides.
-    var vertexSizeInBytes = 0;
-    var offsetsInBytes = {};
-    
-    for (j = 0; j < namesLength; ++j) {
-    name = names[j];
-    attribute = attributes[name];
-    
-    offsetsInBytes[name] = vertexSizeInBytes;
-    vertexSizeInBytes += computeAttributeSizeInBytes(attribute);
-    }
-    
-    if (vertexSizeInBytes > 0) {
-    // Pad each vertex to be a multiple of the largest component datatype so each
-    // attribute can be addressed using typed arrays.
-    var maxComponentSizeInBytes = ComponentDatatype.getSizeInBytes(attributes[names[0]].componentDatatype); // Sorted large to small
-    var remainder = vertexSizeInBytes % maxComponentSizeInBytes;
-    if (remainder !== 0) {
-    vertexSizeInBytes += (maxComponentSizeInBytes - remainder);
-    }
-    
-    // Total vertex buffer size in bytes, including per-vertex padding.
-    var vertexBufferSizeInBytes = numberOfVertices * vertexSizeInBytes;
-    
-    // Create array for interleaved vertices.  Each attribute has a different view (pointer) into the array.
-    var buffer = new ArrayBuffer(vertexBufferSizeInBytes);
-    var views = {};
-    
-    for (j = 0; j < namesLength; ++j) {
-    name = names[j];
-    var sizeInBytes = ComponentDatatype.getSizeInBytes(attributes[name].componentDatatype);
-    
-    views[name] = {
-    pointer : ComponentDatatype.createTypedArray(attributes[name].componentDatatype, buffer),
-    index : offsetsInBytes[name] / sizeInBytes, // Offset in ComponentType
-    strideInComponentType : vertexSizeInBytes / sizeInBytes
-    };
-    }
-    
-    // Copy attributes into one interleaved array.
-    // PERFORMANCE_IDEA:  Can we optimize these loops?
-    for (j = 0; j < numberOfVertices; ++j) {
-    for ( var n = 0; n < namesLength; ++n) {
-    name = names[n];
-    attribute = attributes[name];
-    var values = attribute.values;
-    var view = views[name];
-    var pointer = view.pointer;
-    
-    var numberOfComponents = attribute.componentsPerAttribute;
-    for ( var k = 0; k < numberOfComponents; ++k) {
-    pointer[view.index + k] = values[(j * numberOfComponents) + k];
-    }
-    
-    view.index += view.strideInComponentType;
-    }
-    }
-    
-    return {
-    buffer : buffer,
-    offsetsInBytes : offsetsInBytes,
-    vertexSizeInBytes : vertexSizeInBytes
-    };
-    }
-    
-    // No attributes to interleave.
-    return undefined;
-    }
-    */
-    /**
-    * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
-    * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
-    * memory for use with rendering.
-    * <br /><br />
-    * The <code>geometry</code> argument should use the standard layout like the geometry returned by {@link BoxGeometry}.
-    * <br /><br />
-    * <code>options</code> can have four properties:
-    * <ul>
-    *   <li><code>geometry</code>:  The source geometry containing data used to create the vertex array.</li>
-    *   <li><code>attributeLocations</code>:  An object that maps geometry attribute names to vertex shader attribute locations.</li>
-    *   <li><code>bufferUsage</code>:  The expected usage pattern of the vertex array's buffers.  On some WebGL implementations, this can significantly affect performance.  See {@link BufferUsage}.  Default: <code>BufferUsage.DYNAMIC_DRAW</code>.</li>
-    *   <li><code>interleave</code>:  Determines if all attributes are interleaved in a single vertex buffer or if each attribute is stored in a separate vertex buffer.  Default: <code>false</code>.</li>
-    * </ul>
-    * <br />
-    * If <code>options</code> is not specified or the <code>geometry</code> contains no data, the returned vertex array is empty.
-    *
-    * @memberof Context
-    *
-    * @param {Object} [options] An object defining the geometry, attribute indices, buffer usage, and vertex layout used to create the vertex array.
-    *
-    * @exception {RuntimeError} Each attribute list must have the same number of vertices.
-    * @exception {DeveloperError} The geometry must have zero or one index lists.
-    * @exception {DeveloperError} Index n is used by more than one attribute.
-    *
-    * @see Context#createVertexArray
-    * @see Context#createVertexBuffer
-    * @see Context#createIndexBuffer
-    * @see GeometryPipeline.createAttributeLocations
-    * @see ShaderProgram
-    *
-    * @example
-    * // Example 1. Creates a vertex array for rendering a box.  The default dynamic draw
-    * // usage is used for the created vertex and index buffer.  The attributes are not
-    * // interleaved by default.
-    * var geometry = new BoxGeometry();
-    * var va = context.createVertexArrayFromGeometry({
-    *     geometry           : geometry,
-    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
-    * });
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 2. Creates a vertex array with interleaved attributes in a
-    * // single vertex buffer.  The vertex and index buffer have static draw usage.
-    * var va = context.createVertexArrayFromGeometry({
-    *     geometry           : geometry,
-    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
-    *     bufferUsage        : BufferUsage.STATIC_DRAW,
-    *     interleave         : true
-    * });
-    *
-    * ////////////////////////////////////////////////////////////////////////////////
-    *
-    * // Example 3.  When the caller destroys the vertex array, it also destroys the
-    * // attached vertex buffer(s) and index buffer.
-    * va = va.destroy();
-    */
+
+    func createViewportQuadCommand (fragmentShaderSource: ShaderSource, overrides: AnyObject) {
+/*overrides = defaultValue(overrides, defaultValue.EMPTY_OBJECT);
+
+return new DrawCommand({
+vertexArray : this.getViewportQuadVertexArray(),
+primitiveType : PrimitiveType.TRIANGLES,
+renderState : overrides.renderState,
+shaderProgram : ShaderProgram.fromCache({
+context : this,
+vertexShaderSource : ViewportQuadVS,
+fragmentShaderSource : fragmentShaderSource,
+attributeLocations : viewportQuadAttributeLocations
+}),
+uniformMap : overrides.uniformMap,
+owner : overrides.owner,
+framebuffer : overrides.framebuffer)*/
+}
+
     /*
-    func createVertexArrayFromGeometry (
-    #geometry: Geometry,
-    attributeLocations: [String: Int],
-    interleave: Bool = false) -> VertexArray {
-    
-    
-    // fIXME: CreatedVAAtributes
-    //var createdVAAttributes = options.vertexArrayAttributes;
-    
-    var name: String
-    var attribute: GeometryAttribute
-    var vertexBuffer: Buffer? = nil
-    var vaAttributes = [VertexAttributes]()//var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];
-    var attributes = geometry.attributes
-    
-    if interleave {
-    // Use a single vertex buffer with interleaved vertices.
-    /*var interleavedAttributes = interleaveAttributes(attributes)
-    if (defined(interleavedAttributes)) {
-    vertexBuffer = this.createVertexBuffer(interleavedAttributes.buffer, bufferUsage);
-    var offsetsInBytes = interleavedAttributes.offsetsInBytes;
-    var strideInBytes = interleavedAttributes.vertexSizeInBytes;
-    
-    for (name in attributes) {
-    if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-    attribute = attributes[name];
-    
-    if (defined(attribute.values)) {
-    // Common case: per-vertex attributes
-    vaAttributes.push({
-    index : attributeLocations[name],
-    vertexBuffer : vertexBuffer,
-    componentDatatype : attribute.componentDatatype,
-    componentsPerAttribute : attribute.componentsPerAttribute,
-    normalize : attribute.normalize,
-    offsetInBytes : offsetsInBytes[name],
-    strideInBytes : strideInBytes
-    });
-    } else {
-    // Constant attribute for all vertices
-    vaAttributes.push({
-    index : attributeLocations[name],
-    value : attribute.value,
-    componentDatatype : attribute.componentDatatype,
-    normalize : attribute.normalize
-    });
-    }
-    }
-    }
-    }*/
-    } else {
-    // One vertex buffer per attribute.
-    for i in 0...5 {
-    if let attribute = attributes[i] {
-    
-    var componentDatatype = attribute.componentDatatype
-    if (componentDatatype == ComponentDatatype.Float64) {
-    componentDatatype = ComponentDatatype.Float32
-    }
-    
-    vertexBuffer = attribute.buffer/*createBuffer(array: UnsafeMutablePointer<Void>(attribute.values!.data().bytes), componentDatatype: componentDatatype, sizeInBytes: attribute.values!.sizeInBytes)*/
-    
-    vaAttributes.append(VertexAttributes(
-    index: attributeLocations[attributes.name(i)]!,
-    vertexBuffer: vertexBuffer!,
-    componentsPerAttribute: attribute.componentsPerAttribute,
-    componentDatatype: componentDatatype,
-    normalize: attribute.normalize))
-    }
-    }
-    }
-    
-    var indexBuffer: Buffer? = nil
-    if geometry.indices != nil {
-    /*if geometry.computeNumberOfVertices() > Math.SixtyFourKilobytes && elementIndexUint == true {
-    
-    indexBuffer = createIndexBuffer(
-    // FIXME: combine datatype
-    array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedInt),
-    indexDatatype: IndexDatatype.UnsignedInt)
-    } else {
-    indexBuffer = createIndexBuffer(
-    array: SerializedType.fromIntArray(geometry.indices!, datatype: .UnsignedShort),
-    indexDatatype: IndexDatatype.UnsignedShort)
-    }*/
-    }
-    return createVertexArray(vaAttributes, indexBuffer: indexBuffer)
-    }*/
-    /*
-    var viewportQuadAttributeLocations = {
-    position : 0,
-    textureCoordAndEncodedNormals : 1
-    };
-    
-    Context.prototype.createViewportQuadCommand = function(fragmentShaderSource, overrides) {
-    // Per-context cache for viewport quads
-    var vertexArray = this.cache.viewportQuad_vertexArray;
-    
-    if (!defined(vertexArray)) {
-    var geometry = new Geometry({
-    attributes : {
-    position : new GeometryAttribute({
-    componentDatatype : ComponentDatatype.FLOAT,
-    componentsPerAttribute : 2,
-    values : [
-    -1.0, -1.0,
-    1.0, -1.0,
-    1.0,  1.0,
-    -1.0,  1.0
-    ]
-    }),
-    
-    textureCoordAndEncodedNormals : new GeometryAttribute({
-    componentDatatype : ComponentDatatype.FLOAT,
-    componentsPerAttribute : 2,
-    values : [
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0
-    ]
-    })
-    },
-    // Workaround Internet Explorer 11.0.8 lack of TRIANGLE_FAN
-    indices : new Uint16Array([0, 1, 2, 0, 2, 3]),
-    primitiveType : PrimitiveType.TRIANGLES
-    });
-    
-    vertexArray = this.createVertexArrayFromGeometry({
-    geometry : geometry,
-    attributeLocations : {
-    position : 0,
-    textureCoordAndEncodedNormals : 1
-    },
-    bufferUsage : BufferUsage.STATIC_DRAW,
-    interleave : true
-    });
-    
-    this.cache.viewportQuad_vertexArray = vertexArray;
-    }
-    
-    overrides = defaultValue(overrides, defaultValue.EMPTY_OBJECT);
-    
-    return new DrawCommand({
-    vertexArray : vertexArray,
-    primitiveType : PrimitiveType.TRIANGLES,
-    renderState : overrides.renderState,
-    shaderProgram : this.createShaderProgram(ViewportQuadVS, fragmentShaderSource, viewportQuadAttributeLocations),
-    uniformMap : overrides.uniformMap,
-    owner : overrides.owner,
-    framebuffer : overrides.framebuffer
-    });
-    };
-    
     Context.prototype.createPickFramebuffer = function() {
     return new PickFramebuffer(this);
     };

@@ -292,14 +292,6 @@ Matrix4.fromColumnMajorArray = function(values, result) {
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
 Matrix4.fromRotationTranslation = function(rotation, translation = Cartesian3.zero(), result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rotation)) {
-        throw new DeveloperError('rotation is required.');
-    }
-    if (!defined(translation)) {
-        throw new DeveloperError('translation is required.');
-    }
-    //>>includeEnd('debug');
     
     if (!defined(result)) {
         return new Matrix4(rotation[0], rotation[3], rotation[6], translation.x,
@@ -421,10 +413,10 @@ Matrix4.fromTranslationQuaternionRotationScale = function(translation, rotation,
 */
 Matrix4.fromTranslation = function(translation, result) {
     //>>includeStart('debug', pragmas.debug);
-    -        if (!defined(translation)) {
-    -            throw new DeveloperError('translation is required.');
-    -        }
-    -        //>>includeEnd('debug');
+            if (!defined(translation)) {
+                throw new DeveloperError('translation is required.');
+            }
+            //>>includeEnd('debug');
     return Matrix4.fromRotationTranslation(Matrix3.IDENTITY, translation, result);
 };
 
@@ -889,7 +881,7 @@ Matrix4.getElementIndex = function(column, row) {
     
     return column * 4 + row;
 };
-
+*/
 /**
 * Retrieves a copy of the matrix column at the provided index as a Cartesian4 instance.
 *
@@ -917,40 +909,27 @@ Matrix4.getElementIndex = function(column, row) {
 *
 * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
 */
-Matrix4.getColumn = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required.');
-    }
     
-    if (typeof index !== 'number' || index < 0 || index > 3) {
-        throw new DeveloperError('index must be 0, 1, 2, or 3.');
+    func getColumn ( index: Int) -> Cartesian4 {
+        if index < 0 || index > 3 {
+            fatalError("index must be 0, 1, 2, or 3.")
+        }
+        
+        let startIndex = index * 4;
+        let x = _grid[startIndex];
+        let y = _grid[startIndex + 1]
+        let z = _grid[startIndex + 2]
+        let w = _grid[startIndex + 3]
+        
+        return Cartesian4(x: x, y: y, z: z, w: w)
     }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var startIndex = index * 4;
-    var x = matrix[startIndex];
-    var y = matrix[startIndex + 1];
-    var z = matrix[startIndex + 2];
-    var w = matrix[startIndex + 3];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
-*/
+
 /**
 * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
 *
 * @param {Matrix4} matrix The matrix to use.
 * @param {Number} index The zero-based index of the column to set.
 * @param {Cartesian4} cartesian The Cartesian whose values will be assigned to the specified column.
-* @param {Cartesian4} result The object onto which to store the result.
 * @returns {Matrix4} The modified result parameter.
 *
 * @exception {DeveloperError} index must be 0, 1, 2, or 3.
@@ -970,20 +949,36 @@ Matrix4.getColumn = function(matrix, index, result) {
 * //     [18.0, 19.0, 97.0, 21.0]
 * //     [22.0, 23.0, 96.0, 25.0]
 */
-    mutating func setColumn (index: Int, cartesian: Cartesian4) {
+    func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         let startIndex = index * 4
-        _grid[startIndex] = cartesian.x
-        _grid[startIndex + 1] = cartesian.y
-        _grid[startIndex + 2] = cartesian.z
-        _grid[startIndex + 3] = cartesian.w
-        _floatRepresentation[startIndex] = Float(cartesian.x)
-        _floatRepresentation[startIndex + 1] = Float(cartesian.y)
-        _floatRepresentation[startIndex + 2] = Float(cartesian.z)
-        _floatRepresentation[startIndex + 3] = Float(cartesian.w)
+        var grid = _grid
+        grid[startIndex] = cartesian.x
+        grid[startIndex + 1] = cartesian.y
+        grid[startIndex + 2] = cartesian.z
+        grid[startIndex + 3] = cartesian.w
+        return Matrix4(grid: grid)
     }
 
+    /**
+    * Computes a new matrix that replaces the translation in the rightmost column of the provided
+    * matrix with the provided translation.  This assumes the matrix is an affine transformation
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Cartesian3} translation The translation that replaces the translation of the provided matrix.
+    * @param {Cartesian4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    */
+    func setTranslation (translation: Cartesian3) -> Matrix4 {
+        var grid = _grid
+        grid[12] = translation.x
+        grid[13] = translation.y
+        grid[14] = translation.z
+        return Matrix4(grid: grid)
+    }
+    
+    
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
     *
@@ -1250,7 +1245,7 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     return Matrix4(
         column0Row0, column1Row0, column2Row0, column3Row0,
         column0Row1, column1Row1, column2Row1, column3Row1,
-        column0Row2, column1Row1, column2Row2, column3Row2,
+        column0Row2, column1Row2, column2Row2, column3Row2,
         0.0, 0.0, 0.0, 1.0
     )
 }
@@ -1334,9 +1329,11 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     };
     
     /**
-    * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
-* by an implicit translation matrix defined by a {@link Cartesian3}.  This is an optimization
-* for <code>Matrix4.multiply(m, Matrix4.fromTranslation(position), m);</code> with less allocations and arithmetic operations.
+    * Multiplies an affine transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
+    * by an implicit non-uniform scale matrix.  This is an optimization
+    * for <code>Matrix4.multiply(m, Matrix4.fromUniformScale(scale), m);</code>, where
+    * <code>m</code> must be an affine matrix.
+    * This function performs fewer allocations and arithmetic operations.
 *
 * @param {Matrix4} matrix The matrix on the left-hand side.
 * @param {Cartesian3} translation The translation on the right-hand side.
@@ -2030,6 +2027,14 @@ Matrix4.abs = function(matrix, result) {
             0.0, 1.0, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0)
+    }
+    
+    static func zero() -> Matrix4 {
+        return Matrix4(
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0)
     }
 
 /*

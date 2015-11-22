@@ -8,6 +8,7 @@
 
 struct VertexAttributes {
     let bufferIndex: Int
+    let index: Int
     let format: VertexType
     let offset: Int
     let size: Int
@@ -34,12 +35,12 @@ class VertexDescriptor {
                 assertionFailure("Index \(index) is used by more than one attribute.")
             }
             uniqueIndices[index] = true
-            addAttribute(va, index: index)
+            addAttribute(va)
         }
     }
     
-    private func addAttribute(attribute: VertexAttributes, index: Int) {
-        
+    private func addAttribute(attribute: VertexAttributes) {
+        let index = attribute.index
         metalDescriptor.attributes[index].bufferIndex = attribute.bufferIndex
         metalDescriptor.attributes[index].format = attribute.format.metalVertexFormat
         metalDescriptor.attributes[index].offset = attribute.offset

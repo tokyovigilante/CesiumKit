@@ -33,7 +33,7 @@ import Foundation
 let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
-public struct Ellipsoid /* : Packable */{
+public struct Ellipsoid: Packable, Equatable {
     let radii: Cartesian3
     let radiiSquared: Cartesian3
     let radiiToTheFourth: Cartesian3
@@ -43,6 +43,12 @@ public struct Ellipsoid /* : Packable */{
     let minimumRadius: Double
     let maximumRadius: Double
     let centerToleranceSquared: Double = Math.Epsilon1
+    
+    /**
+    * The number of elements used to pack the object into an array.
+    * @type {Number}
+    */
+    let packedLength = Cartesian3.packedLength
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
         assert(x >= 0.0 && y >= 0.0 && z >= 0.0, "All radii components must be greater than or equal to zero.")
@@ -64,57 +70,6 @@ public struct Ellipsoid /* : Packable */{
         maximumRadius = max(x, y, z)
     }
     
-    /*
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    Ellipsoid.packedLength = Cartesian3.packedLength;
-    
-    /**
-    * Stores the provided instance into the provided array.
-    * @function
-    *
-    * @param {Object} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    Ellipsoid.pack = function(value, array, startingIndex) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(value)) {
-    throw new DeveloperError('value is required');
-}
-if (!defined(array)) {
-    throw new DeveloperError('array is required');
-}
-//>>includeEnd('debug');
-
-startingIndex = defaultValue(startingIndex, 0);
-
-Cartesian3.pack(value._radii, array, startingIndex);
-};
-
-/**
-* Retrieves an instance from a packed array.
-*
-* @param {Number[]} array The packed array.
-* @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-* @param {Ellipsoid} [result] The object into which to store the result.
-*/
-Ellipsoid.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-        throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    var radii = Cartesian3.unpack(array, startingIndex);
-    return Ellipsoid.fromCartesian3(radii, result);
-};
-
-*/
     /**
     * Computes an Ellipsoid from a Cartesian specifying the radii in x, y, and z directions.
     *
@@ -126,12 +81,8 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     * @see Ellipsoid.WGS84
     * @see Ellipsoid.UNIT_SPHERE
     */
-    static func fromCartesian3(cartesian: Cartesian3?) -> Ellipsoid {
-        
-        if let cartesian = cartesian {
-            return Ellipsoid(x: cartesian.x, y: cartesian.y, z: cartesian.z)
-        }
-        return Ellipsoid()
+    init (cartesian3 cartesian: Cartesian3 = Cartesian3.zero()) {
+        self.init(x: cartesian.x, y: cartesian.y, z: cartesian.z)
     }
     
     /**
@@ -152,6 +103,29 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     */
     static func unitSphere() -> Ellipsoid {
         return Ellipsoid(x: 1.0, y: 1.0, z: 1.0)
+    }
+    
+    /**
+    * Stores the provided instance into the provided array.
+    * @function
+    *
+    * @param {Number[]} array The array to pack into.
+    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+    */
+    func pack (inout array: [Float], startingIndex: Int = 0) {
+        radii.pack(&array, startingIndex: startingIndex)
+    }
+    
+    /**
+    * Retrieves an instance from a packed array.
+    *
+    * @param {Number[]} array The packed array.
+    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+    * @param {Ellipsoid} [result] The object into which to store the result.
+    * @returns {Ellipsoid} The modified result parameter or a new Ellipsoid instance if one was not provided.
+    */
+    static func unpack (array: [Float], startingIndex: Int = 0) -> Ellipsoid {
+        return Ellipsoid(cartesian3: Cartesian3.unpack(array, startingIndex: startingIndex))
     }
     
     /**
@@ -230,17 +204,11 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     * //Convert an array of Cartographics and determine their Cartesian representation on a WGS84 ellipsoid.
     * var positions = [new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 0),
     *                  new Cesium.Cartographic(Cesium.Math.toRadians(21.321), Cesium.Math.toRadians(78.123), 100),
-    *                  new Cesium.Cartographic(Cesium.Math.toRadians(21.645), Cesium.Math.toRadians(78.456), 250)
+    *                  new Cesium.Cartographic(Cesium.Math.toRadians(21.645), Cesium.Math.toRadians(78.456), 250)];
     * var cartesianPositions = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(positions);
     */
     func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3] {
-        
-        var cartesians = [Cartesian3]()
-        
-        for cartographic in cartographics {
-            cartesians.append(cartographicToCartesian(cartographic))
-        }
-        return cartesians
+        return cartographics.map({ cartographicToCartesian($0) })
     }
     
     /**
@@ -252,8 +220,8 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     * @returns {Cartographic} The modified result parameter, new Cartographic instance if none was provided, or undefined if the cartesian is at the center of the ellipsoid.
     *
     * @example
-    * //Create a Cartesian and determine it's Cartographic representation on a WGS84 ellipsoid.
-    * var position = new Cesium.Cartesian(17832.12, 83234.52, 952313.73);
+    * //Create a Cartesian and determine its Cartographic representation on a WGS84 ellipsoid.
+    * var position = new Cesium.Cartesian3(17832.12, 83234.52, 952313.73);
     * var cartographicPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
     */
     
@@ -291,15 +259,7 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
     * var cartographicPositions = Cesium.Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
     */
     func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic] {
-        
-        var cartographics = [Cartographic]()
-        
-        for cartesian in cartesians {
-            if let cartographic = cartesianToCartographic(cartesian) {
-                cartographics.append(cartographic)
-            }
-        }
-        return cartographics
+        return cartesians.flatMap({ cartesianToCartographic($0) })
     }
     
     /**
@@ -443,17 +403,6 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
         return position.multiplyComponents(radii)
     }
     
-    /**
-    * Compares this Ellipsoid against the provided Ellipsoid componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
-    *
-    * @param {Ellipsoid} [right] The other Ellipsoid.
-    * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
-    */
-    /*    @infix func == (left: Ellipsoid, right: Ellipsoid) -> Bool {
-    return (left.radii == right.radii
-    }*/
-    
     
     /**
     * Creates a string representing this Ellipsoid in the format '(radii.x, radii.y, radii.z)'.
@@ -464,4 +413,15 @@ Ellipsoid.unpack = function(array, startingIndex, result) {
         return radii.toString()
     }
     
+}
+
+/**
+ * Compares this Ellipsoid against the provided Ellipsoid componentwise and returns
+ * <code>true</code> if they are equal, <code>false</code> otherwise.
+ *
+ * @param {Ellipsoid} [right] The other Ellipsoid.
+ * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
+ */
+public func == (left: Ellipsoid, right: Ellipsoid) -> Bool {
+    return (left.radii == right.radii)
 }

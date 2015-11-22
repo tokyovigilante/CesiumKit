@@ -80,15 +80,23 @@ class ShaderProgram {
     
     var maximumTextureUnitIndex: Int = 0
     
-    init(context: Context, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
-
+    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
+        
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
         fragmentShaderSource = fss
-        _vertexShaderText = vss.createCombinedVertexShader()
-        _fragmentShaderText = fss.createCombinedFragmentShader()
-        keyword = _vertexShaderText + _fragmentShaderText
-        initialize(context, optimizer: optimizer)
+        let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
+        _vertexShaderText = combinedShaders.vst
+        _fragmentShaderText = combinedShaders.fst
+        keyword = combinedShaders.keyword
+        initialize(device, optimizer: optimizer)
+    }
+    
+    static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
+        let vst = vss.createCombinedVertexShader()
+        let fst = fss.createCombinedFragmentShader()
+        let keyword = vst + fst
+        return (vst, fst, keyword)
     }
     
     func getUniformBufferSize() -> Int {
@@ -106,16 +114,16 @@ class ShaderProgram {
         return vSize
     }
     
-    func createUniformBufferProvider(context: Context) -> UniformBufferProvider {
+    func createUniformBufferProvider(device: MTLDevice) -> UniformBufferProvider {
         let totalSize = getUniformBufferSize()
-        let provider = context.createUniformBufferProvider(3, sizeInBytes: totalSize > 0 ? totalSize : 1)
+        let provider = UniformBufferProvider(device: device, capacity: 3, sizeInBytes: totalSize > 0 ? totalSize : 1)
         return provider
     }
     
-    private func initialize(context: Context, optimizer: GLSLOptimizer) {
+    private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
 
         createMetalProgram(optimizer)
-        compileMetalProgram(context.device)
+        compileMetalProgram(device)
         
         findVertexAttributes()
         findUniforms()
@@ -140,20 +148,20 @@ class ShaderProgram {
         do {
             _vertexLibrary = try device.newLibraryWithSource(_metalVertexShaderSource, options: nil)
             metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
-        } catch {
+        } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
-            print((error as NSError).localizedDescription)
+            print(error.localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }
         
         do {
             _fragmentLibrary = try device.newLibraryWithSource(_metalFragmentShaderSource, options: nil)
             metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
-        } catch {
+        } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
-            print((error as NSError).localizedDescription)
+            print(error.localizedDescription)
             assertionFailure("_library == nil")
         }
     }

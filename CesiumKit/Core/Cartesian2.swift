@@ -91,8 +91,8 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian2.packedLength, "Array to short to pack")
-        array[startingIndex] = Float32(Float(x))
-        array[startingIndex+1] = Float32(Float(y))
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
     }
     
     
@@ -102,7 +102,7 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     *
     * @param {Number[]} array The packed array.
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Cartesian2} [result] The object into which to store the result.
+    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.    
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian2 {
         assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
@@ -390,7 +390,8 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     * @param {Cartesian2} [left] The first Cartesian.
     * @param {Cartesian2} [right] The second Cartesian.
     * @param {Number} relativeEpsilon The relative epsilon tolerance to use for equality testing.
-    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    
+    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
     func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         return self == other ||

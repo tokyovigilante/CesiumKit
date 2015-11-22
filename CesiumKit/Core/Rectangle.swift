@@ -21,7 +21,7 @@ import Foundation
 *
 * @see Packable
 */
-public struct Rectangle/*: Packable*/ {
+public struct Rectangle: Packable {
     var west: Double
     var south: Double
     var east: Double
@@ -57,7 +57,32 @@ public struct Rectangle/*: Packable*/ {
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //static let packedLength: Int = 4
+    static let packedLength = 4
+    
+    /**
+    * Stores the provided instance into the provided array.
+    *
+    * @param {Rectangle} value The value to pack.
+    * @param {Number[]} array The array to pack into.
+    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+    */
+    func pack (inout array: [Float], startingIndex: Int = 0) {
+        array[startingIndex] = Float(west)
+        array[startingIndex+1] = Float(south)
+        array[startingIndex+2] = Float(east)
+        array[startingIndex+3] = Float(north)
+    }
+    
+    /**
+    * Retrieves an instance from a packed array.
+    *
+    * @param {Number[]} array The packed array.
+    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+    * @returns {Rectangle} The modified result parameter or a new Rectangle instance if one was not provided.
+    */
+    static func unpack (array: [Float], startingIndex: Int = 0) -> Rectangle {
+        return Rectangle(west: Double(array[startingIndex]), south: Double(array[startingIndex+1]), east: Double(array[startingIndex+2]), north: Double(array[startingIndex+3]))
+    }
     
     init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = west

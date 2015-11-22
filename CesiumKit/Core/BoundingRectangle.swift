@@ -49,9 +49,9 @@ struct BoundingRectangle: Equatable {
     */
     var height: Double = 0.0
     
-    var projection: Projection = GeographicProjection()
+    var projection: MapProjection = GeographicProjection()
     
-    init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: Projection = GeographicProjection()) {
+    init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: MapProjection = GeographicProjection()) {
         self.x = x
         self.y = y
         self.width = width
@@ -106,7 +106,7 @@ struct BoundingRectangle: Equatable {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    init(fromRectangle rectangle: Rectangle, projection: Projection = GeographicProjection()) {
+    init(fromRectangle rectangle: Rectangle, projection: MapProjection = GeographicProjection()) {
         
         self.projection = projection
         

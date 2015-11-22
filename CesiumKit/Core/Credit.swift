@@ -31,6 +31,8 @@ public struct Credit: Equatable {
     
     public let link: String?
     
+   
+    
     /**
     * @memberof Credit.prototype
     * @type {Number}

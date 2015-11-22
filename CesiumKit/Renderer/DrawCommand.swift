@@ -13,7 +13,7 @@ import Metal
 *
 * @private
 */
-class DrawCommand {
+class DrawCommand: Command {
         
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
@@ -29,7 +29,18 @@ class DrawCommand {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: Intersectable?
+    var boundingVolume: BoundingVolume?
+    
+    /**
+    * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
+    * {@link DrawCommand#boundingVolume} for plane intersection testing.
+    *
+    * @type {OrientedBoundingBox}
+    * @default undefined
+    *
+    * @see DrawCommand#debugShowBoundingVolume
+    */
+    var orientedBoundingBox: OrientedBoundingBox? = nil
     
     /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
@@ -99,8 +110,6 @@ class DrawCommand {
     *
     * @type {RenderState}
     * @default undefined
-    *
-    * @see Context#createRenderState
     */
     var renderState: RenderState?
     
@@ -118,27 +127,8 @@ class DrawCommand {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass?
+    var pass: Pass = .Globe
     
-    /**
-    * This property is for debugging only; it is not for production use nor is it optimized.
-    * <p>
-    * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
-    * </p>
-    *
-    * @type {Boolean}
-    * @default false
-    *
-    * @see DrawCommand#boundingVolume
-    */
-    var debugShowBoundingVolume: Bool
-    
-    /**
-    * Used to implement Scene.debugShowFrustums.
-    * @private
-    */
-    var debugOverlappingFrustums: Int
-
     /**
     * Specifies if this command is only to be executed in the frustum closest
     * to the eye containing the bounding volume. Defaults to <code>false</code>.
@@ -149,12 +139,45 @@ class DrawCommand {
     var executeInClosestFrustum: Bool = false
     
     /**
+    * The object who created this command.  This is useful for debugging command
+    * execution; it allows us to see who created a command when we only have a
+    * reference to the command, and can be used to selectively execute commands
+    * with {@link Scene#debugCommandFilter}.
+    *
+    * @type {Object}
+    * @default undefined
+    *
+    * @see Scene#debugCommandFilter
+    */
+    var owner: AnyObject? = nil
+    
+    /**
+     * This property is for debugging only; it is not for production use nor is it optimized.
+     * <p>
+     * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
+     * </p>
+     *
+     * @type {Boolean}
+     * @default false
+     *
+     * @see DrawCommand#boundingVolume
+     */
+    var debugShowBoundingVolume: Bool
+    
+    /**
+     * Used to implement Scene.debugShowFrustums.
+     * @private
+     */
+    var debugOverlappingFrustums: Int
+    
+    /**
     * @private
     */
     //var oit = undefined;
     
     init(
-        boundingVolume: Intersectable? = nil,
+        boundingVolume: BoundingVolume? = nil,
+        orientedBoundingBox: OrientedBoundingBox? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
         primitiveType: MTLPrimitiveType = .Triangle,
@@ -163,8 +186,9 @@ class DrawCommand {
         offset: Int = 0,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
-        pass: Pass? = nil,
+        pass: Pass = .Globe,
         executeInClosestFrustum: Bool = false,
+        owner: AnyObject? = nil,
         debugShowBoundingVolume: Bool = false,
         debugOverlappingFrustums: Int = 0,
         uniformMap: UniformMap? = nil) {
@@ -176,9 +200,9 @@ class DrawCommand {
             self.offset = offset
             self.pipeline = renderPipeline
             self.renderState = renderState
-            //self.framebuffer = framebuffer
             self.pass = pass
             self.executeInClosestFrustum = executeInClosestFrustum
+            self.owner = owner
             self.debugShowBoundingVolume = debugShowBoundingVolume
             self.debugOverlappingFrustums = debugOverlappingFrustums
             self.uniformMap = uniformMap

@@ -260,7 +260,7 @@ public class ImageryLayer {
         let imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
         var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
 
-        let rectangle: Rectangle
+        var rectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
         
         if overlapRectangle != nil {
             rectangle = overlapRectangle!
@@ -282,6 +282,9 @@ public class ImageryLayer {
             } else if baseTerrainRectangle.north <= baseImageryRectangle.south {
                 overlapRectangle!.south = baseImageryRectangle.south
                 overlapRectangle!.north = overlapRectangle!.south
+            } else {
+                rectangle.south = max(baseTerrainRectangle.south, baseImageryRectangle.south)
+                rectangle.north = min(baseTerrainRectangle.north, baseImageryRectangle.north)
             }
             
             if baseTerrainRectangle.west >= baseImageryRectangle.east {
@@ -290,6 +293,9 @@ public class ImageryLayer {
             } else if baseTerrainRectangle.east <= baseImageryRectangle.west {
                 overlapRectangle!.east = baseImageryRectangle.west
                 overlapRectangle!.west = overlapRectangle!.east
+            } else {
+                rectangle.west = max(baseTerrainRectangle.west, baseImageryRectangle.west)
+                rectangle.east = min(baseTerrainRectangle.east, baseImageryRectangle.east)
             }
             rectangle = overlapRectangle!
             //Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.north)
@@ -522,7 +528,7 @@ public class ImageryLayer {
                 }
             }
             // Imagery does not need to be discarded, so upload it to GL.
-            let texture = context.createTexture2D(TextureOptions(
+            let texture = Texture(context: context, options: TextureOptions(
                 source : .Image(imagery.image!))
             )
 
@@ -556,13 +562,14 @@ public class ImageryLayer {
             // no noticeable difference in the georeferencing of the image.
             let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
             let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if !isGeographic && pixelGap {
-                let reprojectedTexture = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
-                dispatch_async(dispatch_get_main_queue(),  {
+            if false { // !isGeographic && pixelGap {
+                let reprojectCommand = self.reprojectToGeographic(context, texture: texture, rectangle: imagery.rectangle!)
+                /*dispatch_async(dispatch_get_main_queue(),  {
+                should be completion block for command buffer
                     texture = reprojectedTexture
                     imagery.texture = texture
                     imagery.state = .Reprojected
-                })
+                })*/
             } else {
                 dispatch_async(dispatch_get_main_queue(),  {
                     imagery.state = .Reprojected
@@ -578,7 +585,7 @@ public class ImageryLayer {
             if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
                 var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
-                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.maximumTextureFilterAnisotropy)
+                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
                 }
                 // FIXME: Mipmaps
                 context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
@@ -644,7 +651,7 @@ public class ImageryLayer {
         }
     }
     
-    func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> Texture {
+    func reprojectToGeographic(context: Context, texture: Texture, rectangle: Rectangle) -> DrawCommand {
         
         // This function has gone through a number of iterations, because GPUs are awesome.
         //
@@ -706,38 +713,40 @@ public class ImageryLayer {
                 positions.append(y)
             }
             
-            let vertexBuffer = context.createBuffer(positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
-            let webMercatorTBuffer = context.createBuffer(componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
+            let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
+            let webMercatorTBuffer = Buffer(device: context.device, componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
 
-            let indexBuffer = context.createBuffer(indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
+            let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
             
             let vertexAttributes = [
                 //position
                 VertexAttributes(
                     bufferIndex: 1,
+                    index: 0,
                     format: .Float4,
                     offset: 0,
                     size: sizeof(Float) * 4),
                 // webMercatorT
                 VertexAttributes(
                     bufferIndex: 2,
+                    index: 1,
                     format: .Float2,
                     offset: 0,
                     size: sizeof(Float) * 2)
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
-            let vertexArray = context.createVertexArray(vertexBuffer: vertexBuffer, vertexCount: positions.count, indexBuffer: indexBuffer)
+            let vertexArray = VertexArray(buffers: [vertexBuffer, webMercatorTBuffer], attributes: vertexAttributes, vertexCount: positions.count, indexBuffer: indexBuffer)
             
-            let pipeline = context.createRenderPipeline(
+            let pipeline = context.pipelineCache.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorFS"]!]),
                 vertexDescriptor: vertexDescriptor
             )
 
-            let maximumSupportedAnisotropy = context.maximumTextureFilterAnisotropy
+            let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
             let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
             
             let renderPassDescriptor = MTLRenderPassDescriptor()
@@ -766,10 +775,11 @@ public class ImageryLayer {
         
         sinLatitude = sin(rectangle.north)
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
-        var oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
+        let oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
         
-        var outputTexture = context.createTexture2D(
-            TextureOptions(
+        let outputTexture = Texture(
+            context: context,
+            options: TextureOptions(
                 width: width,
                 height: height,
                 pixelFormat: texture.pixelFormat,
@@ -794,7 +804,7 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
         }
         
-        let webMercatorTBuffer = context.createBuffer(webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
+        let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
         
         if reproject.renderState == nil {
             reproject.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
@@ -816,7 +826,7 @@ public class ImageryLayer {
         drawCommand.pipeline = reproject.pipeline
         //drawCommand.execute(context: context, pass: )
         //return outputTexture
-        return texture
+        return drawCommand
     }
     
     /**

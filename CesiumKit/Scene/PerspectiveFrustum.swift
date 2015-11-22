@@ -85,7 +85,7 @@ class PerspectiveFrustum: Frustum {
     var far = 500000000.0
     private var _far = Double.NaN
     
-    private var _offCenterFrustum = PerspectiveOffCenterFrustum()
+    var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
         assert(fov != Double.NaN && aspectRatio != Double.NaN && near != Double.NaN && far != Double.NaN, "fov, aspectRatio, near, or far parameters are not set")
@@ -173,10 +173,7 @@ class PerspectiveFrustum: Frustum {
     * @example
     * // Example 1
     * // Get the width and height of a pixel.
-    * var pixelSize = camera.frustum.getPixelSize({
-    *     width : canvas.clientWidth,
-    *     height : canvas.clientHeight
-    * });
+    * var pixelSize = camera.frustum.getPixelSize({ width : canvas.clientWidth, height : canvas.clientHeight });
     *
     * @example
     * // Example 2

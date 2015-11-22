@@ -52,7 +52,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @memberof WebMercatorTilingScheme.prototype
     * @type {Projection}
     */
-    var projection: Projection
+    var projection: MapProjection
     
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int

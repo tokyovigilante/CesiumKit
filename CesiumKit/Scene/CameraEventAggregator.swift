@@ -59,7 +59,7 @@ class CameraEventAggregator {
     
     init (/*view: UIView*/) {
         
-        eventHandler = ScreenSpaceEventHandler(/*layer: layer*/)
+        eventHandler = ScreenSpaceEventHandler(/*layer: layer,*/ true)
         // FIXME: eventaggregator view
         //_view = view
         //listenToWheel(this, undefined);
@@ -117,7 +117,7 @@ class CameraEventAggregator {
             self._buttonsDown++
             self._isDown[key] = true
             self._pressTime[key] = NSDate()
-            self._eventStartPosition[key] = (geometry as! Touch2StartEventGeometry).position1
+            //self._eventStartPosition[key] = (geometry as! Touch2StartEventGeometry).position1
         })
         
         eventHandler.setInputAction(.PinchEnd, modifier: modifier, action: { (geometry: EventGeometry) in
@@ -387,7 +387,7 @@ class CameraEventAggregator {
     */
     func getStartMousePosition (type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Cartesian2 {
     
-        if type == .Wheel {
+        if type == .Wheel || type == .Pinch {
             return _currentMousePosition
         }
         

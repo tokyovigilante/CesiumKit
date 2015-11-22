@@ -26,15 +26,25 @@ class RenderPipeline {
         do {
             let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
             self.state = state
-        } catch  {
+        } catch let error as NSError  {
             state = nil
-            assertionFailure("newRenderPipelineStateWithDescriptor failed")
+            assertionFailure("newRenderPipelineStateWithDescriptor failed: \(error.localizedDescription)")
         }
     }
     
-    func setUniforms(command: DrawCommand, context: Context, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    static func fromCache (context context: Context, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor vd: VertexDescriptor?) -> RenderPipeline {
+
+        return context.pipelineCache.getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
+    }
+    
+    static func replaceCache (context: Context,  pipeline: RenderPipeline?, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor vd: VertexDescriptor?) -> RenderPipeline? {
+        
+        return context.pipelineCache.replaceRenderPipeline(pipeline, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd)
+    }
+    
+    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, samplerOffset: Int, texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
-            command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(context)
+            command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(device)
         }
         return shaderProgram.setUniforms(command, uniformState: uniformState)
     }

@@ -63,7 +63,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {Boolean}
     */
     var ready = true
-
+    
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
     private let _terrainData: HeightmapTerrainData
@@ -104,8 +104,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
             
             var index = 0
             var indicesIndex = 0
-            for j in 0..<height-1 {
-                for i in 0..<width-1 {
+            for _ in 0..<height-1 {
+                for _ in 0..<width-1 {
                     let upperLeft = index
                     let lowerLeft = upperLeft + width
                     let lowerRight = lowerLeft + 1
@@ -155,16 +155,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          pending and the request will be retried later.
      */
     
-    func requestTileGeometry(x x: Int, y: Int, level: Int/*, throttleRequests: Bool = true*/) -> TerrainData? {
-        
-        return _terrainData
-        //resolve(terrainData)
-        /*dispatch_async(terrainProcessorQueue, {
-            // FIXME: Do expensive work to make terrainData
-            dispatch_async(dispatch_get_main_queue(),  {
-                resolve(nil)
-            })
-        })*/
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
+        completionBlock(_terrainData)
     }
 
     /**
@@ -195,9 +187,5 @@ class EllipsoidTerrainProvider: TerrainProvider {
             return false
         }
     }
-    
-    func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
-        return nil
-    }
-    
+
 }

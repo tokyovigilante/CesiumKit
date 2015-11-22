@@ -205,7 +205,7 @@ struct RenderState/*: Printable*/ {
     
     let viewport: BoundingRectangle?// = nil
     
-    //let hash: String
+    let hash: String
     
     init(
         windingOrder: WindingOrder = WindingOrder.CounterClockwise,
@@ -237,13 +237,30 @@ struct RenderState/*: Printable*/ {
             self.sampleCoverage  = sampleCoverage
             self.viewport = viewport
             
-            //var hash = ""
+            //FIXME: checks disabled
+            /*if self.lineWidth < ContextLimits.minimumAliasedLineWidth ||
+                self.lineWidth > ContextLimits.maximumAliasedLineWidth {
+                    fatalError("renderState.lineWidth is out of range.  Check minimumAliasedLineWidth and maximumAliasedLineWidth.")
+            }*/
             
+            assert(viewport == nil || (viewport != nil && viewport!.width > 0), "renderState.viewport.width must be greater than or equal to zero")
+            assert(viewport == nil || (viewport != nil && viewport!.height > 0), "renderState.viewport.height must be greater than or equal to zero")
+            /*
+            assert(viewport == nil || (viewport != nil && viewport!.height < context.limits.maximumViewportWidth), "renderState.viewport.width must be less than or equal to the maximum viewport width (" + maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
+                +            if (this.viewport.width > ContextLimits.maximumViewportWidth) {
+                    +                throw new DeveloperError('renderState.viewport.width must be less than or equal to the maximum viewport width (' + ContextLimits.maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
+                }
+                -            if (this.viewport.height > context.maximumViewportHeight) {
+                    -                throw new RuntimeError('renderState.viewport.height must be less than or equal to the maximum viewport height (' + this.maximumViewportHeight.toString() + ').  Check maximumViewportHeight.');
+                    +            if (this.viewport.height > ContextLimits.maximumViewportHeight) {
+                        +                throw new DeveloperError('renderState.viewport.height must be less than or equal to the maximum viewport height (' + ContextLimits.maximumViewportHeight.toString() + ').  Check maximumViewportHeight.');*/
+            var hash = ""
+
             // frontFace
-            /*hash += "\(self.frontFace.toGL())"
+            hash += "\(self.windingOrder.toMetal().rawValue)"
             
             // cull
-            hash += cull.enabled ? "c1" : "c0" + "\(cull.face.toGL())"
+            hash += "\(self.cullFace.toMetal().rawValue)"
             
             // polygonOffset
             hash += polygonOffset.enabled ? "p1" : "p0" + "f\(polygonOffset.factor)u\(polygonOffset.units)"
@@ -258,7 +275,7 @@ struct RenderState/*: Printable*/ {
             hash += "dn\(depthRange.near)df\(depthRange.far)"
 
             // depthTest
-            hash += depthTest.enabled ? "d1" : "d0" + "df\(depthTest.function.toGL())"
+            hash += depthTest.enabled ? "d1" : "d0" + "df\(depthTest.function.toMetal().rawValue)"
 
             // colorMask
             hash += "cm" + (colorMask.red ? "1" : "0") + (colorMask.green ? "1" : "0") + (colorMask.blue ? "1" : "0") + (colorMask.alpha ? "1" : "0")
@@ -270,7 +287,7 @@ struct RenderState/*: Printable*/ {
             hash += "sm\(stencilMask)"
             
             // blending
-            hash += "bs" + (blending.enabled ? "1" : "0") + "be\(blending.equationRgb.toGL())" + "ba\(blending.equationAlpha.toGL())" + "bfsr\(blending.functionSourceRgb.toGL())" + "bfsa\(blending.functionSourceAlpha.toGL())" + "bfdr\(blending.functionDestinationRgb.toGL())" + "bfda\(blending.functionDestinationAlpha.toGL())" + "x\(blending.color.x)y\(blending.color.y)z\(blending.color.z)w\(blending.color.w)"
+            hash += "bs" + (blending.enabled ? "1" : "0") + "be\(blending.equationRgb.toMetal().rawValue)" + "ba\(blending.equationAlpha.toMetal().rawValue)" + "bfsr\(blending.functionSourceRgb.toMetal().rawValue)" + "bfsa\(blending.functionSourceAlpha.toMetal().rawValue)" + "bfdr\(blending.functionDestinationRgb.toMetal().rawValue)" + "bfda\(blending.functionDestinationAlpha.toMetal().rawValue)" + "x\(blending.color.x)y\(blending.color.y)z\(blending.color.z)w\(blending.color.w)"
 
             // stencilTest
             hash += "st" + (stencilTest.enabled ? "1" : "0") + "ff\(stencilTest.frontFunction)" + "bf\(stencilTest.backFunction)" + "r\(stencilTest.reference)" + "m\(stencilTest.mask)" + "ff\(stencilTest.frontOperation.fail)" + "zf\(stencilTest.frontOperation.zFail)" + "zp\(stencilTest.frontOperation.zPass)" + "bf\(stencilTest.backOperation.fail)" + "bzf\(stencilTest.backOperation.zFail)" + "bzp\(stencilTest.backOperation.zPass)"
@@ -281,19 +298,8 @@ struct RenderState/*: Printable*/ {
             // viewPort
             hash += "v" + (viewport == nil ? "0" : "x\(viewport!.x)y\(viewport!.y)w\(viewport!.width)h\(viewport!.height)")
             
-            self.hash = hash*/
+            self.hash = hash
     }
-    
-    /*var description: String {
-        get {
-            let address: Pointer = Pointer(address: unsafeBitCast(self, UInt.self))
-            if let memory: Memory = Memory.read(address, knownSize: nil) {
-                return memory.hex()
-            }
-            return address.description
-            return "renderState"
-        }
-    }*/
     
     /*func validate() {
     
@@ -469,6 +475,10 @@ struct RenderState/*: Printable*/ {
         glStencilMask(stencilMask)
     }
     
+    var applyBlendingColor = function(gl, color) {
+            gl.blendColor(color.red, color.green, color.blue, color.alpha);
+        };
+    
     func applyBlending(passState: PassState) {
         
         let enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
@@ -535,15 +545,15 @@ struct RenderState/*: Printable*/ {
         /*applyCull()
         applyLineWidth()
         applyPolygonOffset()
-        applyScissorTest(passState)
         applyDepthRange()
         applyDepthTest()
         applyColorMask()
         applyDepthMask()
         applyStencilMask()
+        applySampleCoverage()
+        applyScissorTest(passState)
         applyBlending(passState)
-        applyStencilTest()
-        applySampleCoverage()*/
+        applyStencilTest()*/
         applyViewport(encoder, passState: passState)
     }
     

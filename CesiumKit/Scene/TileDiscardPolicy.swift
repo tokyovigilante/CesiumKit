@@ -32,8 +32,8 @@ public protocol TileDiscardPolicy {
     * Given a tile image, decide whether to discard that image.
     * @function
     *
-    * @param {Image|Promise} image An image, or a promise that will resolve to an image.
-    * @returns {Boolean} A promise that will resolve to true if the tile should be discarded.
+    * @param {Image} image An image to test.
+    * @returns {Boolean} True if the image should be discarded; otherwise, false.
     */
     func shouldDiscardImage (image: CGImageRef) -> Bool
 }

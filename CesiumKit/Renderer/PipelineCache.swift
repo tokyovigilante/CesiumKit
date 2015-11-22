@@ -15,7 +15,7 @@ class PipelineCache {
     /**
     * @private
     */
-    weak var context: Context?
+    weak var device: MTLDevice!
     
     private var _optimizer: GLSLOptimizer!
     
@@ -23,8 +23,8 @@ class PipelineCache {
     
     var nextRenderPipelineId = 0
     
-    init (context: Context) {
-        self.context = context
+    init (device: MTLDevice) {
+        self.device = device
         _optimizer = GLSLOptimizer(.Metal)
     }
     
@@ -50,7 +50,6 @@ class PipelineCache {
     */
     func replaceRenderPipeline (
         pipeline: RenderPipeline?,
-        context: Context,
         vertexShaderSource vss: ShaderSource,
         fragmentShaderSource fss: ShaderSource,
         vertexDescriptor: VertexDescriptor?) -> RenderPipeline? {
@@ -59,7 +58,7 @@ class PipelineCache {
             existingPipeline.count = 0
             releasePipeline(existingPipeline)
         }
-            return getRenderPipeline(context, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor)
+            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor)
     }
     
     /**
@@ -72,12 +71,11 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (context: Context, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?) -> RenderPipeline {
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?) -> RenderPipeline {
 
         let shader = ShaderProgram(
-            context: context,
+            device: device,
             optimizer: _optimizer,
-            logShaderCompilation: context._logShaderCompilation,
             vertexShaderSource: vss,
             fragmentShaderSource: fss
         )
@@ -88,12 +86,12 @@ class PipelineCache {
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        //pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        //pipelineDescriptor.stencilAttachmentPixelFormat = .Stencil8
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float_Stencil8
+        pipelineDescriptor.stencilAttachmentPixelFormat = .Depth32Float_Stencil8
         
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         
-        return RenderPipeline(device: context.device, shaderProgram: shader, descriptor: pipelineDescriptor)
+        return RenderPipeline(device: device, shaderProgram: shader, descriptor: pipelineDescriptor)
     }
     
     /**

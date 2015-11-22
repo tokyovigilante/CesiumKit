@@ -147,6 +147,31 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     ),
     /*
     /**
+             * An automatic GLSL uniform representing the depth after
+             * only the globe has been rendered and packed into an RGBA texture.
+             *
+             * @private
+             *
+             * @alias czm_globeDepthTexture
+             * @glslUniform
+             *
+             * @example
+             * // GLSL declaration
+             * uniform sampler2D czm_globeDepthTexture;
+             *
+             * // Get the depth at the current fragment
+             * vec2 coords = gl_FragCoord.xy / czm_viewport.zw;
+             * float depth = czm_unpackDepth(texture2D(czm_globeDepthTexture, coords));
+             */
+            czm_globeDepthTexture : new AutomaticUniform({
+                size : 1,
+                datatype : WebGLConstants.SAMPLER_2D,
+                getValue : function(uniformState) {
+                    return uniformState.globeDepthTexture;
+                }
+            }),
+    
+    /**
     * An automatic GLSL uniform representing a 4x4 model transformation matrix that
     * transforms model coordinates to world coordinates.
     *
@@ -1068,6 +1093,21 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     }),
     
     /**
+             * The distances to the frustum planes. The top, bottom, left and right distances are
+             * the x, y, z, and w components, respectively.
+             *
+             * @alias czm_frustumPlanes
+             * @glslUniform
+             */
+            czm_frustumPlanes : new AutomaticUniform({
+                size : 1,
+                datatype : WebGLConstants.FLOAT_VEC4,
+                getValue : function(uniformState) {
+                    return uniformState.frustumPlanes;
+                }
+            }),
+    
+            /**
     * An automatic GLSL uniform representing the sun position in world coordinates.
     *
     * @alias czm_sunPositionWC

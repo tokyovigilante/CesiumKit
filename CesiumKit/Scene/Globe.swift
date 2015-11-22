@@ -38,10 +38,6 @@ class Globe {
     var _rsColor: RenderState? = nil
     var _rsColorWithoutDepthTest: RenderState? = nil
     
-    var _clearDepthCommand: ClearCommand
-    
-    var _depthCommand: DrawCommand
-    
     var _northPoleCommand: DrawCommand
     
     var _southPoleCommand: DrawCommand
@@ -88,18 +84,6 @@ class Globe {
 
     private var _oceanNormalMapUrl: String? = nil
     private var _oceanNormalMapChanged = false
-    
-    /**
-    * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
-    * against the terrain surface, or false if such primitives should always be drawn on top
-    * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
-    * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
-    * switched can sometimes make a primitive that should be on the surface disappear underneath it.
-    *
-    * @type {Boolean}
-    * @default false
-    */
-    var depthTestAgainstTerrain = false
     
     /**
     * The maximum screen-space error used to drive level-of-detail refinement.  Higher
@@ -157,16 +141,25 @@ class Globe {
     */
     var showWaterEffect = true
     
-    var _oceanNormalMap: Texture? = nil
+    /**
+     * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
+     * against the terrain surface, or false if such primitives should always be drawn on top
+     * of terrain unless they're on the opposite side of the globe.  The disadvantage of depth
+     * testing primitives against terrain is that slight numerical noise or terrain level-of-detail
+     * switched can sometimes make a primitive that should be on the surface disappear underneath it.
+     *
+     * @type {Boolean}
+     * @default false
+     *
+     */
+    var depthTestAgainstTerrain = false
     
-    var _zoomedOutOceanSpecularIntensity: Float = 0.5
+    private var _oceanNormalMap: Texture? = nil
     
-    private var _hasWaterMask = false
-    
-    private var _hasVertexNormals = false
+    private var _zoomedOutOceanSpecularIntensity: Float = 0.5
     
     lazy var drawUniforms: Dictionary<String, () -> Any> = {
-        
+        // FIXME: Convert drawUniforms to UniformMap
         weak var weakSelf = self
         return [
             /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
@@ -185,44 +178,24 @@ class Globe {
             return _surface.tileProvider.baseColor
         }
         set (value) {
-            //_surface.tileProvider.baseColor = value
+            var tileProvider = _surface.tileProvider
+            tileProvider.baseColor = value
         }
     }
     
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
-    
+        
+        terrainProvider = EllipsoidTerrainProvider(
+            ellipsoid : ellipsoid
+        )
+        
         self.ellipsoid = ellipsoid
-        terrainProvider = EllipsoidTerrainProvider(ellipsoid : ellipsoid)
+        
         imageryLayers = ImageryLayerCollection()
         
         _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
         
-        let datatype = ComponentDatatype.Float32
-        let numTexCoordComponents: Int
-        if terrainProvider.hasVertexNormals {
-            numTexCoordComponents = 3
-        } else {
-            numTexCoordComponents = 2
-        }
-        
-        let position3DAndHeightLength = 4
-        
-        let attributes = [
-            //position3DAndHeight
-            VertexAttributes(
-                bufferIndex: 1,
-                format: .Float4,
-                offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize),
-            // texCoordAndEncodedNormals
-            VertexAttributes(
-                bufferIndex: 1,
-                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
-                offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize)
-        ]
-        
-        let vertexDescriptor = VertexDescriptor(attributes: attributes)
+        let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
         
         _surfaceShaderSet = GlobeSurfaceShaderSet(
             baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
@@ -237,17 +210,11 @@ class Globe {
             )
         )
         
-        _clearDepthCommand = ClearCommand(depth: 1.0, stencil: 0/*, owner: self*/)
-        _depthCommand = DrawCommand(
-            boundingVolume: BoundingSphere(center: Cartesian3.zero(), radius: Ellipsoid.wgs84().maximumRadius),
-            pass: Pass.Opaque//,
-            /*owner: self*/)
-        
         _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
         _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
     }
     
-    func updateVertexDescriptor () -> VertexDescriptor {
+    /*func updateVertexDescriptor () -> VertexDescriptor {
         let datatype = ComponentDatatype.Float32
         let numTexCoordComponents: Int
         if terrainProvider.hasVertexNormals {
@@ -274,7 +241,7 @@ class Globe {
         ]
         
         return VertexDescriptor(attributes: attributes)
-    }
+    }*/
 
     
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
@@ -296,7 +263,7 @@ class Globe {
     *
     * @example
     * // find intersection of ray through a pixel and the globe
-    * var ray = scene.camera.getPickRay(windowCoordinates);
+    * var ray = viewer.camera.getPickRay(windowCoordinates);
     * var intersection = globe.pick(ray, scene);
     */
     func pick(ray: Ray, scene: Scene) -> Cartesian3? {
@@ -331,7 +298,7 @@ class Globe {
         sphereIntersections.sortInPlace(createComparePickTileFunction(ray.origin))
         
         for sphereIntersection in sphereIntersections {
-            if let intersection = sphereIntersection.pick(ray, scene: scene, cullBackFaces: true) {
+            if let intersection = sphereIntersection.pick(ray, mode: scene.mode, projection: scene.mapProjection, cullBackFaces: true) {
                 return intersection
             }
         }
@@ -404,91 +371,54 @@ class Globe {
         var ray = scratchGetHeightRay;
         Cartesian3.normalize(cartesian, ray.direction);
         
-        var intersection = tile.data.pick(ray, undefined, false, scratchGetHeightIntersection);
+        var intersection = tile.data.pick(ray, undefined, undefined, false, scratchGetHeightIntersection);
         if (!defined(intersection)) {
         return undefined;
         }
         
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
-
-    func computeDepthQuad(frameState frameState: FrameState) -> [Float] {
-        
-        var depthQuad = [Float](count: 12, repeatedValue: 0.0)//(count: 12, repeatedValue: 0.0)
-        
-        let radii = ellipsoid.radii
-        
-        // Find the corresponding position in the scaled space of the ellipsoid.
-        let q = ellipsoid.oneOverRadii.multiplyComponents(frameState.camera!.positionWC)
-        
-        let qMagnitude = q.magnitude()
-        let qUnit = q.normalize()
-        
-        // Determine the east and north directions at q.
-        let eUnit = q.cross(Cartesian3.unitZ()).normalize()
-        let nUnit = qUnit.cross(eUnit).normalize()
-        
-        // Determine the radius of the 'limb' of the ellipsoid.
-        let wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
-        
-        // Compute the center and offsets.
-        let center = qUnit.multiplyByScalar(qMagnitude)
-        let scalar = wMagnitude / qMagnitude;
-        let eastOffset = eUnit.multiplyByScalar(scalar)
-        let northOffset = nUnit.multiplyByScalar(scalar)
-        
-        // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-        let upperLeft = center.add(northOffset).subtract(eastOffset).multiplyComponents(radii)
-        let lowerLeft = center.subtract(northOffset).subtract(eastOffset).multiplyComponents(radii)
-        let upperRight = center.add(northOffset).add(eastOffset).multiplyComponents(radii)
-        let lowerRight = center.subtract(northOffset).add(eastOffset).multiplyComponents(radii)
-        
-        upperLeft.pack(&depthQuad, startingIndex: 0)
-        lowerLeft.pack(&depthQuad, startingIndex: 3)
-        upperRight.pack(&depthQuad, startingIndex: 6)
-        lowerRight.pack(&depthQuad, startingIndex: 9)
-        
-        return depthQuad
-    }
     
-    /*var cartographicScratch = new Cartographic(0.0, 0.0);
+    /*var rightScratch = new Cartesian3();
+    var upScratch = new Cartesian3();
+    var negativeZ = Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3());
+    var cartographicScratch = new Cartographic(0.0, 0.0);
     var pt1Scratch = new Cartesian3();
     var pt2Scratch = new Cartesian3();*/
     
     func computePoleQuad(frameState frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
         //FIXME: PoleQuad
         /*
-        let negativeZ = Cartesian3.unitZ().negate()
-        
         cartographicScratch.longitude = 0.0;
         cartographicScratch.latitude = maxGivenLat;
         var pt1 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
         
         cartographicScratch.longitude = Math.PI;
         var pt2 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt2Scratch);
-        var radius = pt1.subtract(pt2).magnitude() * 0.5
+        
+        var radius = Cartesian3.magnitude(Cartesian3.subtract(pt1, pt2, rightScratch), rightScratch) * 0.5;
         
         cartographicScratch.longitude = 0.0;
         cartographicScratch.latitude = maxLat;
         var center = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
         
-        var right: Cartesian3
-        var dir = frameState.camera.direction
-        if (1.0 - negativeZ.dot(dir) < Math.Epsilon6) {
-            right = Cartesian3.unitX()
+        var right;
+        var dir = frameState.camera.direction;
+        if (1.0 - Cartesian3.dot(negativeZ, dir) < CesiumMath.EPSILON6) {
+        right = Cartesian3.UNIT_X;
         } else {
-            right = dir.cross(Cartesian3.unitX()).normalize()
+        right = Cartesian3.normalize(Cartesian3.cross(dir, Cartesian3.UNIT_Z, rightScratch), rightScratch);
         }
         
-        var screenRight = center.add(right.multiplyByScalar(radius))
-        var screenUp = center.add(Cartesian3.unitZ().cross(right).normalize().multiplyByScalar(radius))
+        var screenRight = Cartesian3.add(center, Cartesian3.multiplyByScalar(right, radius, rightScratch), rightScratch);
+        var screenUp = Cartesian3.add(center, Cartesian3.multiplyByScalar(Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, right, upScratch), upScratch), radius, upScratch), upScratch);
         
-        Transforms.pointToWindowCoordinates(viewProjMatrix, viewportTransformation, center, center)
-        Transforms.pointToWindowCoordinates(viewProjMatrix, viewportTransformation, screenRight, screenRight)
-        Transforms.pointToWindowCoordinates(viewProjMatrix, viewportTransformation, screenUp, screenUp)
+        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, center, center);
+        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, screenRight, screenRight);
+        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, screenUp, screenUp);
         
-        var halfWidth = floor(max(screenUp.distance(center), screenRight.distance(center)))
-        var halfHeight = halfWidth
+        var halfWidth = Math.floor(Math.max(Cartesian3.distance(screenUp, center), Cartesian3.distance(screenRight, center)));
+        var halfHeight = halfWidth;
         */
         return BoundingRectangle()
             /*floor(center.x) - halfWidth,
@@ -558,7 +488,7 @@ class Globe {
         })
         }
         });
-        globe._northPoleCommand.vertexArray = context.createVertexArrayFromGeometry({
+        globe._northPoleCommand.vertexArray = VertexArray.fromGeometry({
         geometry : geometry,
         attributeLocations : {
         position : 0
@@ -602,7 +532,7 @@ class Globe {
         })
         }
         });
-        globe._southPoleCommand.vertexArray = context.createVertexArrayFromGeometry({
+        globe._southPoleCommand.vertexArray = VertexArray.fromGeometry({
         geometry : geometry,
         attributeLocations : {
         position : 0
@@ -649,7 +579,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context context: Context, frameState: FrameState, inout commandList: [DrawCommand]) {
+    func update(context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if !show {
             return
         }
@@ -673,32 +603,15 @@ class Globe {
             if mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView {
                 
                 cullEnabled = true
-                var depthEnabled = RenderState.DepthTest()
-                depthEnabled.enabled = true
                 
                 _rsColor = RenderState(
-                    cullFace: cullEnabled ? .Back : .None,
-                    depthTest: depthEnabled
+                    cullFace: cullEnabled ? .Back : .None
                 )
                 
                 _rsColorWithoutDepthTest = RenderState(
                     cullFace: cullEnabled ? .Back : .None
                 )
 
-                _depthCommand.renderState = RenderState(
-                    cullFace: cullEnabled ? .Back : .None,
-                    depthTest:RenderState.DepthTest(
-                        enabled: true,
-                        function: .Always
-                    ),
-                    colorMask: RenderState.ColorMask(
-                        red: false,
-                        green: false,
-                        blue: false,
-                        alpha: false
-                    )
-                )
-                
             } else {
                 _rsColor = RenderState(
                     cullFace: cullEnabled ? .Back : .None
@@ -708,38 +621,9 @@ class Globe {
         }
         
         _mode = mode
-
-        /*_northPoleCommand.renderState = _rsColorWithoutDepthTest
-        _southPoleCommand.renderState = _rsColorWithoutDepthTest*/
         
-        // update depth plane
-        /*var depthQuad = computeDepthQuad(frameState: frameState)
-        var depthIndices = [0, 1, 2, 2, 1, 3]
-        
-        // depth plane
-        if _depthCommand.vertexArray == nil {
-            var geometry = Geometry(
-                    attributes: GeometryAttributes(
-                        position: GeometryAttribute(
-                            componentDatatype: ComponentDatatype.Float32,
-                            componentsPerAttribute: 3,
-                            values: SerializedType.fromFloatArray(depthQuad))
-                        ),
-                    indices : depthIndices,
-                    primitiveType : PrimitiveType.Triangles
-            )
-            _depthCommand.vertexArray = context.createVertexArrayFromGeometry(
-                geometry: geometry,
-                attributeLocations: ["position": 0],
-                bufferUsage: .DynamicDraw)
-        } else {
-            _depthCommand.vertexArray?.attribute(0).vertexBuffer?.copyFromArrayView(SerializedType.fromFloatArray(depthQuad))
-        }
-        
-        if _depthCommand.shaderProgram == nil {
-             _depthCommand.shaderProgram = context.createShaderProgram(vertexShaderString: Shaders["GlobeVSDepth"]!, fragmentShaderString: Shaders["GlobeFSDepth"]!, attributeLocations: ["position" : 0])
-        }*/
-        
+        _northPoleCommand.renderState = _rsColorWithoutDepthTest
+        _southPoleCommand.renderState = _rsColorWithoutDepthTest
         
         let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
         
@@ -811,22 +695,12 @@ class Globe {
             tileProvider.enableLighting = enableLighting
             
             _surface.update(context: context, frameState: frameState, commandList: &commandList)
-            
-            // render depth plane
-            if (mode == .Scene3D || mode == .ColumbusView) {
-                if (!depthTestAgainstTerrain) {
-                    //commandList.append(_clearDepthCommand)
-                    if (mode == .Scene3D) {
-                        //commandList.append(_depthCommand)
-                    }
-                }
-            }
         }
         
         if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            //commandList.append(_depthCommand)
+            _surface.update(context: context, frameState: frameState, commandList: &commandList)
         }
     }
 

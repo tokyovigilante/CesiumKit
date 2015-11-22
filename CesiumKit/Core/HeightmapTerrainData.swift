@@ -74,7 +74,7 @@ import Foundation
 * });
 */
 
-class HeightmapTerrainData: TerrainData {
+class HeightmapTerrainData: TerrainData, Equatable {
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
     * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
@@ -92,6 +92,10 @@ class HeightmapTerrainData: TerrainData {
     private let _childTileMask: Int
     
     private let _structure: HeightmapTessellator.Structure
+    
+    let waterMask: [UInt8]?
+    
+    let createdByUpsampling: Bool
         
     init (
         buffer: [UInt16],
@@ -111,7 +115,8 @@ class HeightmapTerrainData: TerrainData {
             
             _structure = structure
         
-            super.init(waterMask: waterMask, createdByUpsampling: createdByUpsampling)
+            self.waterMask = waterMask
+            self.createdByUpsampling = createdByUpsampling
     }
     
     /**
@@ -125,7 +130,7 @@ class HeightmapTerrainData: TerrainData {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    override func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
         
         var heightSample: Double
         
@@ -151,7 +156,7 @@ class HeightmapTerrainData: TerrainData {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    override func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
+    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
         var bitNumber = 2 // northwest child
         if childX != thisX * 2 {
             ++bitNumber // east child
@@ -175,7 +180,7 @@ class HeightmapTerrainData: TerrainData {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    override func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh {
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, completionBlock: (TerrainMesh?) -> ()) {
         let ellipsoid = tilingScheme.ellipsoid
         let nativeRectangle = tilingScheme.tileXYToNativeRectangle(x: x, y: y, level: level)
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -214,17 +219,28 @@ class HeightmapTerrainData: TerrainData {
             structure: _structure)
         let boundingSphere3D = BoundingSphere.fromVertices(statistics.vertices, center: center, stride: numberOfAttributes)
         
+        let orientedBoundingBox: OrientedBoundingBox?
+        
+        if (rectangle.width < M_PI_2 + Math.Epsilon5) {
+            // Here, rectangle.width < pi/2, and rectangle.height < pi
+            // (though it would still work with rectangle.width up to pi)
+            orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, minimumHeight: statistics.minimumHeight, maximumHeight: statistics.maximumHeight, ellipsoid: ellipsoid)
+        } else {
+            orientedBoundingBox = nil
+        }
+        
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
         let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: statistics.vertices, stride: numberOfAttributes, center: center)
-        return TerrainMesh(
+        let mesh = TerrainMesh(
             center: center,
             vertices: statistics.vertices,
             indices: EllipsoidTerrainProvider.getRegularGridIndices(width: arrayWidth, height: arrayHeight),
             minimumHeight: statistics.minimumHeight,
             maximumHeight: statistics.maximumHeight,
             boundingSphere3D: boundingSphere3D,
-            occludeePointInScaledSpace: occludeePointInScaledSpace!
-        )
+            occludeePointInScaledSpace: occludeePointInScaledSpace!,
+            orientedBoundingBox: orientedBoundingBox)
+        completionBlock(mesh)
     }
 
     /**
@@ -242,22 +258,23 @@ class HeightmapTerrainData: TerrainData {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    override func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData {
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) {
 
         let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
         
-        var result: TerrainData
+        let result: TerrainData
         
         if _width % 2 == 1 && _height % 2 == 1 {
             // We have an odd number of posts greater than 2 in each direction,
             // so we can upsample by simply dropping half of the posts in each direction.
-            return upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
+            result = upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
         } else {
             // The number of posts in at least one direction is even, so we must upsample
             // by interpolating heights.
-            return upsampleByInterpolating(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
+            result = upsampleByInterpolating(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
         }
+        completionBlock(result)
     }
     
     private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
@@ -566,7 +583,6 @@ class HeightmapTerrainData: TerrainData {
             }
         }
     }
-
 }
 
 func ==(lhs: HeightmapTerrainData, rhs: HeightmapTerrainData) -> Bool {

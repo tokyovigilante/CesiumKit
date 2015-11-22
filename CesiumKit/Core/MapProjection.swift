@@ -1,5 +1,5 @@
 //
-//  Projection.swift
+//  MapProjection.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 11/06/14.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol Projection {
+public protocol MapProjection {
     
     var ellipsoid: Ellipsoid { get }
     var semimajorAxis: Double { get }
