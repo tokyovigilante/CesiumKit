@@ -173,8 +173,7 @@ class Context {
         
         _commandQueue = device.newCommandQueue()
         
-        pipelineCache = PipelineCache(context: self, device: device)
-        
+        pipelineCache = PipelineCache(device: device)
         id = NSUUID().UUIDString
         
         _inflight_semaphore = dispatch_semaphore_create(4)//kInFlightCommandBuffers)
@@ -200,7 +199,9 @@ class Context {
         _currentRenderState = rs
         _defaultFramebuffer = Framebuffer(maximumColorAttachments: limits.maximumColorAttachments)
         _defaultPassState = PassState()
+        
         _defaultPassState.context = self
+        pipelineCache.context = self
 
         
         /**

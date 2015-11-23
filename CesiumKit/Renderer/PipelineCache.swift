@@ -15,7 +15,7 @@ class PipelineCache {
     /**
     * @private
     */
-    weak var context: Context!
+    weak var context: Context! = nil
     
     weak var device: MTLDevice!
     
@@ -25,11 +25,11 @@ class PipelineCache {
     
     var nextRenderPipelineId = 0
     
-    init (context: Context, device: MTLDevice) {
+    init (device: MTLDevice) {
         self.device = device
         _optimizer = GLSLOptimizer(.Metal)
     }
-    
+        
     /**
     * Returns a shader program from the cache, or creates and caches a new shader program,
     * given the GLSL vertex and fragment shader source and attribute locations.
