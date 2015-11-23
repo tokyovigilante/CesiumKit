@@ -534,8 +534,8 @@ struct RenderState/*: Printable*/ {
         } else {
             actualViewport = viewport!
         }
-        /*
-        context.uniformState.viewport = actualViewport*/
+        
+        context.uniformState.viewport = actualViewport
         encoder.setViewport(MTLViewport(originX: actualViewport.x, originY: actualViewport.y, width: actualViewport.width, height: actualViewport.height, znear: 0.0, zfar: 1.0))
     }
     
