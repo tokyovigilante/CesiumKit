@@ -746,7 +746,7 @@ public class ImageryLayer {
         
         if reproject == nil {
             
-            var positions = [Float32](count: 2*64*2, repeatedValue: 0.0)
+            var positions = [Float32]()//count: 2*64*2, repeatedValue: 0.0)
             let position0: Float = 0.0
             let position1: Float = 1.0
             

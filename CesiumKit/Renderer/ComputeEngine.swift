@@ -1,4 +1,4 @@
-//
+ //
 //  ComputeEngine.swift
 //  CesiumKit
 //
@@ -80,17 +80,12 @@ class ComputeEngine {
         drawCommand.uniformMap = computeCommand.uniformMap
         
         let renderPass = context.createRenderPass(passState)
-        
         drawCommand.execute(context, renderPass: renderPass)
-        
         renderPass.complete()
         //FIXME: postExecute
         if let postExecute = computeCommand.postExecute {
             postExecute(computeCommand.outputTexture!)
         }
-        /*if (computeCommand.postExecute)) {
-        computeCommand.postExecute(outputTexture);
-        }*/
     }
     
 }
