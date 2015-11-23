@@ -15,6 +15,8 @@ class PipelineCache {
     /**
     * @private
     */
+    weak var context: Context!
+    
     weak var device: MTLDevice!
     
     private var _optimizer: GLSLOptimizer!
@@ -23,7 +25,7 @@ class PipelineCache {
     
     var nextRenderPipelineId = 0
     
-    init (device: MTLDevice) {
+    init (context: Context, device: MTLDevice) {
         self.device = device
         _optimizer = GLSLOptimizer(.Metal)
     }
@@ -86,7 +88,7 @@ class PipelineCache {
         pipelineDescriptor.vertexFunction = shader.metalVertexFunction
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        pipelineDescriptor.colorAttachments[0].pixelFormat = context.view.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         

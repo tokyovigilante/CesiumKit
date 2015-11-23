@@ -173,7 +173,7 @@ class Context {
         
         _commandQueue = device.newCommandQueue()
         
-        pipelineCache = PipelineCache(device: device)
+        pipelineCache = PipelineCache(context: self, device: device)
         
         id = NSUUID().UUIDString
         

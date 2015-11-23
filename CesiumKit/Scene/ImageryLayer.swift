@@ -524,7 +524,8 @@ public class ImageryLayer {
             }
             // Imagery does not need to be discarded, so upload it to GL.
             let texture = Texture(context: context, options: TextureOptions(
-                source : .Image(imagery.image!))
+                source : .Image(imagery.image!),
+                pixelFormat: .RGBA8Unorm)
             )
 
             //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
@@ -825,7 +826,7 @@ public class ImageryLayer {
             options: TextureOptions(
                 width: width,
                 height: height,
-                pixelFormat: texture.pixelFormat,
+                pixelFormat: context.view.colorPixelFormat,
                 premultiplyAlpha: texture.premultiplyAlpha,
                 textureUsage: textureUsage
             )
