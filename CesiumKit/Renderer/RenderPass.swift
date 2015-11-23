@@ -33,10 +33,10 @@ class RenderPass {
         let passDescriptor = passState.framebuffer?.renderPassDescriptor ?? defaultFramebuffer.renderPassDescriptor
         commandEncoder = buffer.renderCommandEncoderWithDescriptor(passDescriptor)
         
-        // FIXME: temp
+        // FIXME: move fillmode to renderstate
         commandEncoder.setTriangleFillMode(.Fill)
-        commandEncoder.setFrontFacingWinding(.CounterClockwise)
-        commandEncoder.setCullMode(.Back)
+        //commandEncoder.setFrontFacingWinding(.CounterClockwise)
+        //commandEncoder.setCullMode(.Back)
     }
     
     func applyRenderState(renderState: RenderState) {
