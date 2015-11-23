@@ -867,7 +867,7 @@ class UniformState {
     
     func cleanViewport() {
         if _viewportDirty {
-            var v = _viewport
+            let v = _viewport
             
             _viewportOrthographicMatrix = Matrix4.computeOrthographicOffCenter(left: v.x, right: v.x + v.width, bottom: v.y, top: v.y + v.height, near: 0.0, far: 1.0)
             _viewportTransformation = Matrix4.computeViewportTransformation(v, nearDepthRange: 0.0, farDepthRange: 1.0)

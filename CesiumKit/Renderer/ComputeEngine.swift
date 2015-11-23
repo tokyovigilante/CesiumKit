@@ -67,9 +67,12 @@ class ComputeEngine {
         
         let vertexArray = computeCommand.vertexArray ?? context.getViewportQuadVertexArray()
         let pipeline = computeCommand.pipeline ?? createViewportQuadPipeline(computeCommand.fragmentShaderSource!)
-        let renderState = RenderState(viewport: BoundingRectangle(width: Double(outputTexture.width), height: Double(outputTexture.height)))
+        let renderState = RenderState(
+            windingOrder: .CounterClockwise,
+            viewport: BoundingRectangle(width: Double(outputTexture.width), height: Double(outputTexture.height)))
         
-        var clearCommand = ClearCommand(color: Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0))
+        
+        var clearCommand = ClearCommand(color: Cartesian4(fromRed: 1.0, green: 0.0, blue: 0.0, alpha: 0.0))
         clearCommand.renderState = renderState
         clearCommand.execute(context, passState: passState)
         

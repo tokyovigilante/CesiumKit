@@ -699,6 +699,11 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         b *= 2.0
         c *= -2.0
         
+        /*return Matrix4(
+            a, 0.0, 0.0, 0.0,
+            0.0, b, 0.0, 0.0,
+            0.0, 0.0, c, 0.0,
+            tx, ty, tz, 1.0)*/
         return Matrix4(
             a, 0.0, 0.0, tx,
             0.0, b, 0.0, ty,

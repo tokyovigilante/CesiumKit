@@ -831,7 +831,7 @@ public class ImageryLayer {
                 textureUsage: textureUsage
             )
         )
-        //outputTexture.sampler = reproject.sampler
+        outputTexture.sampler = reproject.sampler
             
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].loadAction = .DontCare
