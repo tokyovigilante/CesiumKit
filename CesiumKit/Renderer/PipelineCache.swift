@@ -52,13 +52,14 @@ class PipelineCache {
         pipeline: RenderPipeline?,
         vertexShaderSource vss: ShaderSource,
         fragmentShaderSource fss: ShaderSource,
-        vertexDescriptor: VertexDescriptor?) -> RenderPipeline? {
+        vertexDescriptor: VertexDescriptor?,
+        depthStencil: Bool) -> RenderPipeline? {
         
         if let existingPipeline = pipeline {
             existingPipeline.count = 0
             releasePipeline(existingPipeline)
         }
-            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor)
+            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, depthStencil: depthStencil)
     }
     
     /**
@@ -71,8 +72,8 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?) -> RenderPipeline {
-
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?, depthStencil: Bool) -> RenderPipeline {
+        // FIXME: Cache
         let shader = ShaderProgram(
             device: device,
             optimizer: _optimizer,
@@ -86,8 +87,8 @@ class PipelineCache {
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float_Stencil8
-        pipelineDescriptor.stencilAttachmentPixelFormat = .Depth32Float_Stencil8
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         
         pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
         

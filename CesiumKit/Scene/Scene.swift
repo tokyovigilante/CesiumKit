@@ -1378,11 +1378,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     }
     
     func executeComputeCommands () {
-        let computeRenderPass = context.createRenderPass()
+        // each command has a different render target so needs separate pass
+
         for command in _computeCommandList {
             command.execute(_computeEngine)
         }
-        computeRenderPass.complete()
+
     }
 
     func executeOverlayCommands() {
@@ -1466,6 +1467,7 @@ function callAfterRenderFunctions(frameState) {
         //frameState.creditDisplay.beginFrame();
         
         uniformState.update(context, frameState: frameState)
+        _computeCommandList.removeAll()
         _commandList.removeAll()
         _overlayCommandList.removeAll()
     

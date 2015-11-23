@@ -21,7 +21,7 @@ class ComputeCommand: Command {
     * @type {VertexArray}
     * @default undefined
     */
-    let vertexArray: VertexArray?
+    var vertexArray: VertexArray?
     
     /**
     * The fragment shader source. The default vertex shader is ViewportQuadVS.
@@ -29,7 +29,7 @@ class ComputeCommand: Command {
     * @type {ShaderSource}
     * @default undefined
     */
-    let fragmentShaderSource: ShaderSource?
+    var fragmentShaderSource: ShaderSource?
     
     /**
     * The shader program to apply.
@@ -37,7 +37,7 @@ class ComputeCommand: Command {
     * @type {ShaderProgram}
     * @default undefined
     */
-    let pipeline: RenderPipeline?
+    var pipeline: RenderPipeline?
     
     /**
     * An object with functions whose names match the uniforms in the shader program
@@ -46,7 +46,7 @@ class ComputeCommand: Command {
     * @type {Object}
     * @default undefined
     */
-    let uniformMap: UniformMap?
+    var uniformMap: UniformMap?
     
     /**
     * Texture to use for offscreen rendering.
@@ -54,7 +54,7 @@ class ComputeCommand: Command {
     * @type {Texture}
     * @default undefined
     */
-    let outputTexture: Texture?
+    var outputTexture: Texture?
     
     /**
     * Function that is called immediately before the ComputeCommand is executed. Used to
@@ -63,7 +63,7 @@ class ComputeCommand: Command {
     * @type {Function}
     * @default undefined
     */
-    let preExecute: ((ComputeCommand) -> ())?
+    var preExecute: ((ComputeCommand) -> ())?
     
     /**
     * Function that is called after the ComputeCommand is executed. Takes the output
@@ -72,7 +72,7 @@ class ComputeCommand: Command {
     * @type {Function}
     * @default undefined
     */
-    let postExecute: ((Texture) -> ())?
+    var postExecute: ((Texture) -> ())?
     
     /**
     * Whether the renderer resources will persist beyond this call. If not, they

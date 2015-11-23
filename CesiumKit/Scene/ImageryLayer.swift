@@ -185,11 +185,6 @@ public class ImageryLayer {
     */
     var isBaseLayer = false
     
-    /**
-    * Uniform map for texture reprojection
-    */
-    private var uniformMap = ImageryLayerUniformMap()
-    
     init (
         imageryProvider: ImageryProvider,
         rectangle: Rectangle = Rectangle.maxValue(),
@@ -570,7 +565,6 @@ public class ImageryLayer {
                         self.reprojectToGeographic(command, context: context, texture: texture, rectangle: rectangle)
                     },
                     postExecute: { outputTexture in
-                        //texture.destroy();
                         imagery.texture = outputTexture
                         self.finalizeReprojectTexture(context, imagery: imagery, texture: outputTexture)
                     },
@@ -616,6 +610,25 @@ public class ImageryLayer {
         }
         
         imagery.state = ImageryState.READY;*/
+        if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
+            var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
+            if mipmapSampler == nil {
+                mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
+            }
+            // FIXME: Mipmaps
+            context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
+        } else {
+            var nonMipmapSampler = context.cache["imageryLayer_nonMipmapSampler"] as! Sampler?
+            if nonMipmapSampler == nil {
+                nonMipmapSampler = Sampler(context: context)
+                context.cache["imageryLayer_nonMipmapSampler"] = nonMipmapSampler!
+            }
+            texture.sampler = nonMipmapSampler!
+        }
+        dispatch_async(dispatch_get_main_queue(), {
+            // dispatch_async(context.renderQueue, {
+            imagery.state = .Ready
+        })
     }
     
     func generateMipmaps (context: Context, imagery: Imagery) {
@@ -667,18 +680,18 @@ public class ImageryLayer {
     }
     
     class Reproject {
-        //var framebuffer: Framebuffer? = nil
-        var renderPassDescriptor: MTLRenderPassDescriptor
-        let vertexArray: VertexArray
+        let vertexBuffer: Buffer
+        let vertexAttributes: [VertexAttributes]
         let pipeline: RenderPipeline
-        var renderState: RenderState? = nil
         let sampler: Sampler
+        let indexBuffer: Buffer
         
-        init (vertexArray: VertexArray, pipeline: RenderPipeline, renderPassDescriptor: MTLRenderPassDescriptor, sampler: Sampler) {
-            self.vertexArray = vertexArray
+        init (vertexBuffer: Buffer, vertexAttributes: [VertexAttributes], pipeline: RenderPipeline, sampler: Sampler, indexBuffer: Buffer) {
+            self.vertexBuffer = vertexBuffer
+            self.vertexAttributes = vertexAttributes
             self.pipeline = pipeline
-            self.renderPassDescriptor = renderPassDescriptor
             self.sampler = sampler
+            self.indexBuffer = indexBuffer
         }
         
         deinit {
@@ -745,7 +758,6 @@ public class ImageryLayer {
             }
             
             let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
-            let webMercatorTBuffer = Buffer(device: context.device, componentDatatype: .Float32, sizeInBytes: 64 * 2 * 4)
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
 
@@ -769,26 +781,22 @@ public class ImageryLayer {
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
-            let vertexArray = VertexArray(buffers: [vertexBuffer, webMercatorTBuffer], attributes: vertexAttributes, vertexCount: positions.count, indexBuffer: indexBuffer)
-            
             let pipeline = context.pipelineCache.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorFS"]!]),
-                vertexDescriptor: vertexDescriptor
+                vertexDescriptor: vertexDescriptor,
+                depthStencil: false
             )
 
             let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
             let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
-            
-            let renderPassDescriptor = MTLRenderPassDescriptor()
-            renderPassDescriptor.colorAttachments[0].loadAction = .DontCare
-            renderPassDescriptor.colorAttachments[0].storeAction = .Store
-            
+
             reproject = Reproject(
-                vertexArray: vertexArray,
+                vertexBuffer: vertexBuffer,
+                vertexAttributes: vertexAttributes,
                 pipeline: pipeline,
-                renderPassDescriptor: renderPassDescriptor,
-                sampler: sampler)
+                sampler: sampler,
+                indexBuffer: indexBuffer)
             
             context.cache["imageryLayer_reproject"] = reproject
         }
@@ -797,6 +805,8 @@ public class ImageryLayer {
         
         let width = texture.width
         let height = texture.height
+            
+        let uniformMap = ImageryLayerUniformMap()
         
         uniformMap.textureDimensions = [Float(width), Float(height)]
         uniformMap.texture = texture
@@ -808,23 +818,30 @@ public class ImageryLayer {
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
         let oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
         
+        let textureUsage: MTLTextureUsage = [.RenderTarget, .ShaderRead]
+            
         let outputTexture = Texture(
             context: context,
             options: TextureOptions(
                 width: width,
                 height: height,
                 pixelFormat: texture.pixelFormat,
-                premultiplyAlpha: texture.premultiplyAlpha
+                premultiplyAlpha: texture.premultiplyAlpha,
+                textureUsage: textureUsage
             )
         )
-        reproject.renderPassDescriptor.colorAttachments[0].texture = outputTexture.metalTexture
+        //outputTexture.sampler = reproject.sampler
+            
+        let renderPassDescriptor = MTLRenderPassDescriptor()
+        renderPassDescriptor.colorAttachments[0].loadAction = .DontCare
+        renderPassDescriptor.colorAttachments[0].storeAction = .Store
+        renderPassDescriptor.colorAttachments[0].texture = outputTexture.metalTexture
 
         let south = rectangle.south
         let north = rectangle.north
         
         var webMercatorT = [Float]()
         
-        //var outputIndex = 0;
         for webMercatorTIndex in 0..<64 {
             let fraction = Double(webMercatorTIndex) / 63.0
             let latitude = Math.lerp(p: south, q: north, time: fraction)
@@ -834,30 +851,14 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
             webMercatorT.append(mercatorFraction)
         }
-        
         let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
+
+        let vertexArray = VertexArray(buffers: [reproject.vertexBuffer, webMercatorTBuffer], attributes: reproject.vertexAttributes, vertexCount: 64 * 2, indexBuffer: reproject.indexBuffer)
         
-        if reproject.renderState == nil {
-            reproject.renderState = RenderState(viewport: BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height)))
-        }
-        
-        /*if reproject!.renderState!.viewport == nil ||
-        reproject!.renderState!.viewport!.width != width ||
-        reproject!.renderState!.viewport!.height != height {*/
-        //  reproject!.renderState!.viewport = BoundingRectangle(x: 0.0, y: 0.0, width: Double(width), height: Double(height))
-        //}
-        
-        /*let drawCommand = DrawCommand(
-            //framebuffer: reproject!.framebuffer,
-            //pipeline: reproject!.pipeline,
-            renderState: reproject!.renderState,
-            vertexArray: reproject!.vertexArray,
-            uniformMap: uniformMap
-        )
-        drawCommand.pipeline = reproject.pipeline
-        //drawCommand.execute(context: context, pass: )
-        //return outputTexture
-        return drawCommand*/
+        command.pipeline = reproject.pipeline
+        command.outputTexture = outputTexture
+        command.uniformMap = uniformMap
+        command.vertexArray = vertexArray
     }
     
     /**

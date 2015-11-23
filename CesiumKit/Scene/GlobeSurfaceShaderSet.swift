@@ -175,7 +175,7 @@ class GlobeSurfaceShaderSet {
             vs.sources.append(getPositionMode(sceneMode))
             vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
             
-            let pipeline = RenderPipeline.fromCache(context: context, vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor)
+            let pipeline = RenderPipeline.fromCache(context: context, vertexShaderSource: vs, fragmentShaderSource: fs, vertexDescriptor: vertexDescriptor, depthStencil: true)
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 
             surfacePipeline = pipelinesByFlags![flags]
@@ -206,7 +206,8 @@ class GlobeSurfaceShaderSet {
                 context : context,
                 vertexShaderSource : vs,
                 fragmentShaderSource : fs,
-                vertexDescriptor: vertexDescriptor
+                vertexDescriptor: vertexDescriptor,
+                depthStencil: true
             )
             _pickPipelines[flags] = pickShader
         }

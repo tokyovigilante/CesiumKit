@@ -52,7 +52,7 @@ struct TextureOptions {
     
     let textureUsage: MTLTextureUsage
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .RGBA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true, textureUsage: MTLTextureUsage = .ShaderRead) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true, textureUsage: MTLTextureUsage = .ShaderRead) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source

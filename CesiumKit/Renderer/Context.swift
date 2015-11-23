@@ -348,8 +348,7 @@ class Context {
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
 
         commandEncoder.setRenderPipelineState(renderPipeline.state)
-        
-        
+                
         //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
 
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
