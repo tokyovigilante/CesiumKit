@@ -318,7 +318,7 @@ class ContextLimits {
             
             #elseif os(iOS)
             let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.iOS_GPUFamily1_v1
-            _highestSupportedFeatureSet = .iOS_GPUFamily1_v1
+            highestSupportedFeatureSet = .iOS_GPUFamily1_v1
             
         #endif
         for (var featureSet = maxKnownFeatureSet.rawValue; featureSet >= 0; --featureSet)

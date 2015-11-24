@@ -29,9 +29,18 @@ class Buffer {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         if array != nil {
-            metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeManaged)
+            #if os(OSX)
+                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeManaged)
+            #elseif os(iOS)
+                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeShared)
+            #endif
         } else {
-            metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeManaged)
+            #if os(OSX)
+                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeManaged)
+
+            #elseif os(iOS)
+                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeShared)
+            #endif
         }
         
         self.componentDatatype = componentDatatype

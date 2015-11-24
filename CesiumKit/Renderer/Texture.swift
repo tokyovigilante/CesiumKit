@@ -50,9 +50,9 @@ struct TextureOptions {
     
     let premultiplyAlpha: Bool
     
-    let textureUsage: MTLTextureUsage
+    let usage: MTLTextureUsage
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = true, premultiplyAlpha: Bool = true, textureUsage: MTLTextureUsage = .ShaderRead) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -61,7 +61,7 @@ struct TextureOptions {
         self.pixelFormat = pixelFormat
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
-        self.textureUsage = textureUsage
+        self.usage = usage
     }
 }
 
@@ -77,7 +77,7 @@ class Texture {
     
     var premultiplyAlpha = true
     
-    let textureUsage: MTLTextureUsage
+    let usage: MTLTextureUsage
     
     var mipmapped: Bool = false
 
@@ -112,7 +112,7 @@ class Texture {
         
         pixelFormat = options.pixelFormat
         premultiplyAlpha = options.premultiplyAlpha
-        textureUsage = options.textureUsage
+        usage = options.usage
         //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
         mipmapped = false
 
@@ -144,11 +144,16 @@ class Texture {
         // FIXME: mipmapping
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
             width: width, height: height, mipmapped: false/*mipmapped*/)
-        textureDescriptor.usage = textureUsage
+        textureDescriptor.usage = usage
         
-        if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Depth24Unorm_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
+        if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
             textureDescriptor.storageMode = .Private
         }
+        #if os(OSX)
+            if pixelFormat == .Depth24Unorm_Stencil8 {
+                textureDescriptor.storageMode = .Private
+            }
+        #endif
         metalTexture = context.device.newTextureWithDescriptor(textureDescriptor)
         
          if let source = source {
@@ -208,7 +213,7 @@ class Texture {
         self.height = metalTexture.height
         self.pixelFormat = metalTexture.pixelFormat
         self.textureFilterAnisotropic = true
-        self.textureUsage = metalTexture.usage
+        self.usage = metalTexture.usage
         self.premultiplyAlpha = true
     }
     /*

@@ -1694,7 +1694,9 @@ Scene.prototype.pick = function(windowPosition) {
     func pickPosition (windowPosition: Cartesian2) -> Cartesian3? {
         
         assert(_globeDepth != nil, "Picking from the depth buffer is not supported. Check pickPositionSupported.")
-        assertionFailure("Not implemented")
+        return Cartesian3()
+            
+        //assertionFailure("Not implemented")
         let uniformState = context.uniformState
         /*
         var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
