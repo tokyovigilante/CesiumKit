@@ -687,23 +687,14 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     */
     static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
-        var a = 1.0 / (right - left)
-        var b = 1.0 / (top - bottom)
-        var c = 1.0 / (far - near)
+        let a = 2.0 / (right - left)
+        let b = 2.0 / (top - bottom)
+        let c = 1.0 / (far - near)
         
-        let tx = -(right + left) * a
-        let ty = -(top + bottom) * b
-        let tz = -(far + near) * c
+        let tx = (right + left) / (left - right)
+        let ty = (top + bottom) / (bottom - top)
+        let tz = near / (far - near)
         
-        a *= 2.0
-        b *= 2.0
-        c *= -2.0
-        
-        /*return Matrix4(
-            a, 0.0, 0.0, 0.0,
-            0.0, b, 0.0, 0.0,
-            0.0, 0.0, c, 0.0,
-            tx, ty, tz, 1.0)*/
         return Matrix4(
             a, 0.0, 0.0, tx,
             0.0, b, 0.0, ty,
@@ -788,7 +779,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * // Example 2.  Create viewport transformation using the context's viewport.
     * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
     */
-    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 0.0) -> Matrix4 {
+    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
         
         let x = viewport.x
         let y = viewport.y
