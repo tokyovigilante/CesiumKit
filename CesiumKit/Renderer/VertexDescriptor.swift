@@ -27,6 +27,8 @@ class VertexDescriptor {
         let bufferIndex = attributes.first?.bufferIndex ?? 1
         // Set up layout descriptor
         metalDescriptor.layouts[bufferIndex].stepFunction = .PerVertex
+        metalDescriptor.layouts[bufferIndex].stepRate = 1
+
         
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](count: attributes.count, repeatedValue: false)

@@ -1466,7 +1466,7 @@ function callAfterRenderFunctions(frameState) {
         //frameState.creditDisplay.beginFrame();
         
         uniformState.update(context, frameState: frameState)
-        //_computeCommandList.removeAll()
+        _computeCommandList.removeAll()
         _commandList.removeAll()
         _overlayCommandList.removeAll()
     

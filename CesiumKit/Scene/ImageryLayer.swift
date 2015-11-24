@@ -10,96 +10,96 @@ import Foundation
 import Metal
 
 /**
-* An imagery layer that displays tiled image data from a single imagery provider
-* on a {@link Globe}.
-*
-* @alias ImageryLayer
-* @constructor
-*
-* @param {ImageryProvider} imageryProvider The imagery provider to use.
-*/
+ * An imagery layer that displays tiled image data from a single imagery provider
+ * on a {@link Globe}.
+ *
+ * @alias ImageryLayer
+ * @constructor
+ *
+ * @param {ImageryProvider} imageryProvider The imagery provider to use.
+ */
 public class ImageryLayer {
     
     /**
-    * This value is used as the default brightness for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the brightness of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
+     * This value is used as the default brightness for the imagery layer if one is not provided during construction
+     * or by the imagery provider. This value does not modify the brightness of the imagery.
+     * @type {Number}
+     * @default 1.0
+     */
     let defaultBrightness: Float = 1.0
     
     /**
-    * This value is used as the default contrast for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the contrast of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
+     * This value is used as the default contrast for the imagery layer if one is not provided during construction
+     * or by the imagery provider. This value does not modify the contrast of the imagery.
+     * @type {Number}
+     * @default 1.0
+     */
     let defaultContrast: Float = 1.0
     
     /**
-    * This value is used as the default hue for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the hue of the imagery.
-    * @type {Number}
-    * @default 0.0
-    */
+     * This value is used as the default hue for the imagery layer if one is not provided during construction
+     * or by the imagery provider. This value does not modify the hue of the imagery.
+     * @type {Number}
+     * @default 0.0
+     */
     let defaultHue: Float = 0.0
     
     /**
-    * This value is used as the default saturation for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the saturation of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
+     * This value is used as the default saturation for the imagery layer if one is not provided during construction
+     * or by the imagery provider. This value does not modify the saturation of the imagery.
+     * @type {Number}
+     * @default 1.0
+     */
     let defaultSaturation: Float = 1.0
     
     /**
-    * This value is used as the default gamma for the imagery layer if one is not provided during construction
-    * or by the imagery provider. This value does not modify the gamma of the imagery.
-    * @type {Number}
-    * @default 1.0
-    */
+     * This value is used as the default gamma for the imagery layer if one is not provided during construction
+     * or by the imagery provider. This value does not modify the gamma of the imagery.
+     * @type {Number}
+     * @default 1.0
+     */
     let defaultGamma: Float = 1.0
     
     var imageryProvider: ImageryProvider
     
     /**
-    * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
-    *        can limit the visible portion of the imagery provider.
-    */
+     * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
+     *        can limit the visible portion of the imagery provider.
+     */
     private let _rectangle: Rectangle
     
     /**
-    * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the alpha is required, and it is expected to return
-    *                          the alpha value to use for the tile.
-    */
+     * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
+     *                          This can either be a simple number or a function with the signature
+     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+     *                          current frame state, this layer, and the x, y, and level coordinates of the
+     *                          imagery tile for which the alpha is required, and it is expected to return
+     *                          the alpha value to use for the tile.
+     */
     let alpha: (() -> Float)
     
     /**
-    * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
-    *                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the brightness is required, and it is expected to return
-    *                          the brightness value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    */
+     * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
+     *                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
+     *                          This can either be a simple number or a function with the signature
+     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+     *                          current frame state, this layer, and the x, y, and level coordinates of the
+     *                          imagery tile for which the brightness is required, and it is expected to return
+     *                          the brightness value to use for the tile.  The function is executed for every
+     *                          frame and for every tile, so it must be fast.
+     */
     let brightness: (() -> Float)
     
     /**
-    * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
-    *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the contrast is required, and it is expected to return
-    *                          the contrast value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    */
+     * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
+     *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
+     *                          This can either be a simple number or a function with the signature
+     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+     *                          current frame state, this layer, and the x, y, and level coordinates of the
+     *                          imagery tile for which the contrast is required, and it is expected to return
+     *                          the contrast value to use for the tile.  The function is executed for every
+     *                          frame and for every tile, so it must be fast.
+     */
     let contrast: (() -> Float)
     
     /*
@@ -114,31 +114,31 @@ public class ImageryLayer {
     let hue: (() -> Float)
     
     /**
-    * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
-    *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates
-    *                          of the imagery tile for which the saturation is required, and it is expected to return
-    *                          the contrast value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    */
+     * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
+     *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
+     *                          This can either be a simple number or a function with the signature
+     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+     *                          current frame state, this layer, and the x, y, and level coordinates
+     *                          of the imagery tile for which the saturation is required, and it is expected to return
+     *                          the contrast value to use for the tile.  The function is executed for every
+     *                          frame and for every tile, so it must be fast.
+     */
     let saturation: (() -> Float)
     
     /**
-    * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
-    *                          This can either be a simple number or a function with the signature
-    *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
-    *                          current frame state, this layer, and the x, y, and level coordinates of the
-    *                          imagery tile for which the gamma is required, and it is expected to return
-    *                          the gamma value to use for the tile.  The function is executed for every
-    *                          frame and for every tile, so it must be fast.
-    */
+     * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
+     *                          This can either be a simple number or a function with the signature
+     *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
+     *                          current frame state, this layer, and the x, y, and level coordinates of the
+     *                          imagery tile for which the gamma is required, and it is expected to return
+     *                          the gamma value to use for the tile.  The function is executed for every
+     *                          frame and for every tile, so it must be fast.
+     */
     let gamma: (() -> Float)
     
     /**
-    * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
-    */
+     * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
+     */
     let show: Bool
     
     // The value of the show property on the last update.
@@ -159,9 +159,9 @@ public class ImageryLayer {
     private let _minimumTerrainLevel: Int?
     
     /**
-    * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
-    *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
-    */
+     * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
+     *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
+     */
     private let _maximumTerrainLevel: Int?
     
     
@@ -212,18 +212,18 @@ public class ImageryLayer {
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
     }
-
+    
     /**
-    * Create skeletons for the imagery tiles that partially or completely overlap a given terrain
-    * tile.
-    *
-    * @private
-    *
-    * @param {QuadtreeTile} tile The terrain tile.
-    * @param {TerrainProvider} terrainProvider The terrain provider associated with the terrain tile.
-    * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery list.
-    * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
-    */
+     * Create skeletons for the imagery tiles that partially or completely overlap a given terrain
+     * tile.
+     *
+     * @private
+     *
+     * @param {QuadtreeTile} tile The terrain tile.
+     * @param {TerrainProvider} terrainProvider The terrain provider associated with the terrain tile.
+     * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery list.
+     * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
+     */
     func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
         let surfaceTile = tile.data!
         
@@ -254,7 +254,7 @@ public class ImageryLayer {
         // always fully contains the ImageryProvider's rectangle.
         let imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
         var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
-
+        
         var rectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
         
         if overlapRectangle != nil {
@@ -294,7 +294,7 @@ public class ImageryLayer {
             }
             rectangle = overlapRectangle!
             //Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.north)
-
+            
         }
         
         var latitudeClosestToEquator = 0.0
@@ -383,7 +383,7 @@ public class ImageryLayer {
             
             imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: northwestTileCoordinates.y, level: imageryLevel)
             clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
-
+            
             maxU = min(1.0, (clippedImageryRectangle.east - terrainRectangle.west) / terrainRectangle.width)
             
             // If this is the eastern-most imagery tile mapped to this terrain tile,
@@ -401,7 +401,7 @@ public class ImageryLayer {
                 
                 imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: j, level: imageryLevel)
                 clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
-
+                
                 minV = max(0.0, (clippedImageryRectangle.south - terrainRectangle.south) / terrainRectangle.height)
                 
                 // If this is the southern-most imagery tile mapped to this terrain tile,
@@ -422,16 +422,16 @@ public class ImageryLayer {
     }
     
     /**
-    * Calculate the translation and scale for a particular {@link TileImagery} attached to a
-    * particular terrain tile.
-    *
-    * @private
-    *
-    * @param {Tile} tile The terrain tile.
-    * @param {TileImagery} tileImagery The imagery tile mapping.
-    * @returns {Cartesian4} The translation and scale where X and Y are the translation and Z and W
-    *          are the scale.
-    */
+     * Calculate the translation and scale for a particular {@link TileImagery} attached to a
+     * particular terrain tile.
+     *
+     * @private
+     *
+     * @param {Tile} tile The terrain tile.
+     * @param {TileImagery} tileImagery The imagery tile mapping.
+     * @returns {Cartesian4} The translation and scale where X and Y are the translation and Z and W
+     *          are the scale.
+     */
     func calculateTextureTranslationAndScale (tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4 {
         let imageryRectangle = tileImagery.readyImagery!.rectangle!
         let terrainRectangle = tile.rectangle
@@ -449,22 +449,22 @@ public class ImageryLayer {
     }
     
     /**
-    * Request a particular piece of imagery from the imagery provider.  This method handles raising an
-    * error event if the request fails, and retrying the request if necessary.
-    *
-    * @private
-    *
-    * @param {Imagery} imagery The imagery to request.
-    */
+     * Request a particular piece of imagery from the imagery provider.  This method handles raising an
+     * error event if the request fails, and retrying the request if necessary.
+     *
+     * @private
+     *
+     * @param {Imagery} imagery The imagery to request.
+     */
     func requestImagery (context: Context, imagery: Imagery) {
         
         imagery.state = .Transitioning
-
+        
         
         dispatch_async(context.networkQueue, {
             
             dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
-
+            
             let completionBlock: (CGImageRef? -> Void) = { (image) in
                 
                 dispatch_semaphore_signal(context.networkSemaphore)
@@ -492,13 +492,13 @@ public class ImageryLayer {
     }
     
     /**
-    * Create a WebGL texture for a given {@link Imagery} instance.
-    *
-    * @private
-    *
-    * @param {Context} context The rendered context to use to create textures.
-    * @param {Imagery} imagery The imagery for which to create a texture.
-    */
+     * Create a WebGL texture for a given {@link Imagery} instance.
+     *
+     * @private
+     *
+     * @param {Context} context The rendered context to use to create textures.
+     * @param {Imagery} imagery The imagery for which to create a texture.
+     */
     func createTexture (context: Context, imagery: Imagery) {
         dispatch_async(context.textureLoadQueue, {
             
@@ -525,12 +525,15 @@ public class ImageryLayer {
             // Imagery does not need to be discarded, so upload it to GL.
             let texture = Texture(context: context, options: TextureOptions(
                 source : .Image(imagery.image!),
-                pixelFormat: .RGBA8Unorm)
+                pixelFormat: .RGBA8Unorm,
+                flipY: true, // CGImage
+                usage: .ShaderRead
+                )
             )
-
+            
             //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             dispatch_async(dispatch_get_main_queue(), {
-            //dispatch_async(context.renderQueue, {
+                //dispatch_async(context.renderQueue, {
                 imagery.texture = texture
                 imagery.image = nil
                 imagery.state = ImageryState.TextureLoaded
@@ -539,75 +542,75 @@ public class ImageryLayer {
     }
     
     /**
-    * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
-    * mipmaps for the geographic texture.
-    *
-    * @private
-    *
-    * @param {Context} context The rendered context to use.
-    * @param {Imagery} imagery The imagery instance to reproject.
-    */
+     * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
+     * mipmaps for the geographic texture.
+     *
+     * @private
+     *
+     * @param {Context} context The rendered context to use.
+     * @param {Imagery} imagery The imagery instance to reproject.
+     */
     func reprojectTexture (context: Context, inout commandList: [Command], imagery: Imagery) {
-
+        
         var texture = imagery.texture!
-            let rectangle = imagery.rectangle!
-            
-            // Reproject this texture if it is not already in a geographic projection and
-            // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
-            // avoids precision problems in the reprojection transformation while making
-            // no noticeable difference in the georeferencing of the image.
-            let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
-            let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
-            if !isGeographic && pixelGap {
-                let computeCommand = ComputeCommand(
-                    // Update render resources right before execution instead of now.
-                    // This allows different ImageryLayers to share the same vao and buffers.
-                    preExecute: { command in
-                        self.reprojectToGeographic(command, context: context, texture: texture, rectangle: rectangle)
-                    },
-                    postExecute: { outputTexture in
-                        imagery.texture = outputTexture
-                        self.finalizeReprojectTexture(context, imagery: imagery, texture: outputTexture)
-                    },
-                    persists: true,
-                    owner : self
-                )
-                commandList.append(computeCommand)
-            } else {
-                //dispatch_async(dispatch_get_main_queue(),  {
-                    finalizeReprojectTexture(context, imagery: imagery, texture: texture)
-                //})
-            }
+        let rectangle = imagery.rectangle!
+        
+        // Reproject this texture if it is not already in a geographic projection and
+        // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
+        // avoids precision problems in the reprojection transformation while making
+        // no noticeable difference in the georeferencing of the image.
+        let pixelGap: Bool = rectangle.width / Double(texture.width) > pow(10, -5)
+        let isGeographic = self.imageryProvider.tilingScheme is GeographicTilingScheme
+        if !isGeographic && pixelGap {
+            let computeCommand = ComputeCommand(
+                // Update render resources right before execution instead of now.
+                // This allows different ImageryLayers to share the same vao and buffers.
+                preExecute: { command in
+                    self.reprojectToGeographic(command, context: context, texture: texture, rectangle: rectangle)
+                },
+                postExecute: { outputTexture in
+                    imagery.texture = outputTexture
+                    self.finalizeReprojectTexture(context, imagery: imagery, texture: outputTexture)
+                },
+                persists: true,
+                owner : self
+            )
+            commandList.append(computeCommand)
+        } else {
+            //dispatch_async(dispatch_get_main_queue(),  {
+            finalizeReprojectTexture(context, imagery: imagery, texture: texture)
+            //})
+        }
         
     }
     func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture) {
         /*
         // Use mipmaps if this texture has power-of-two dimensions.
         if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
-            var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
-            if (!defined(mipmapSampler)) {
-                var maximumSupportedAnisotropy = ContextLimits.maximumTextureFilterAnisotropy;
-                mipmapSampler = context.cache.imageryLayer_mipmapSampler = new Sampler({
-                    wrapS : TextureWrap.CLAMP_TO_EDGE,
-                    wrapT : TextureWrap.CLAMP_TO_EDGE,
-                    minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
-                    magnificationFilter : TextureMagnificationFilter.LINEAR,
-                    maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
-                });
-            }
-            texture.generateMipmap(MipmapHint.NICEST);
-            texture.sampler = mipmapSampler;
+        var mipmapSampler = context.cache.imageryLayer_mipmapSampler;
+        if (!defined(mipmapSampler)) {
+        var maximumSupportedAnisotropy = ContextLimits.maximumTextureFilterAnisotropy;
+        mipmapSampler = context.cache.imageryLayer_mipmapSampler = new Sampler({
+        wrapS : TextureWrap.CLAMP_TO_EDGE,
+        wrapT : TextureWrap.CLAMP_TO_EDGE,
+        minificationFilter : TextureMinificationFilter.LINEAR_MIPMAP_LINEAR,
+        magnificationFilter : TextureMagnificationFilter.LINEAR,
+        maximumAnisotropy : Math.min(maximumSupportedAnisotropy, defaultValue(imageryLayer._maximumAnisotropy, maximumSupportedAnisotropy))
+        });
+        }
+        texture.generateMipmap(MipmapHint.NICEST);
+        texture.sampler = mipmapSampler;
         } else {
-            var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
-            if (!defined(nonMipmapSampler)) {
-                nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = new Sampler({
-                    wrapS : TextureWrap.CLAMP_TO_EDGE,
-                    wrapT : TextureWrap.CLAMP_TO_EDGE,
-                    minificationFilter : TextureMinificationFilter.LINEAR,
-                    magnificationFilter : TextureMagnificationFilter.LINEAR
-                });
-            }
-            texture.sampler = nonMipmapSampler;
+        var nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler;
+        if (!defined(nonMipmapSampler)) {
+        nonMipmapSampler = context.cache.imageryLayer_nonMipmapSampler = new Sampler({
+        wrapS : TextureWrap.CLAMP_TO_EDGE,
+        wrapT : TextureWrap.CLAMP_TO_EDGE,
+        minificationFilter : TextureMinificationFilter.LINEAR,
+        magnificationFilter : TextureMagnificationFilter.LINEAR
+        });
+        }
+        texture.sampler = nonMipmapSampler;
         }
         
         imagery.state = ImageryState.READY;*/
@@ -698,14 +701,14 @@ public class ImageryLayer {
         deinit {
             // FIXME: destroy
             //if framebuffer != nil {
-                //this.framebuffer.destroy()
+            //this.framebuffer.destroy()
             //}
             //this.vertexArray.destroy();
             //shaderProgram.destroy();
         }
     }
     
-        func reprojectToGeographic(command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
+    func reprojectToGeographic(command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
         
         // This function has gone through a number of iterations, because GPUs are awesome.
         //
@@ -751,7 +754,7 @@ public class ImageryLayer {
             let position1: Float = 1.0
             
             for j in 0..<64 {
-                let y = Float(j) / 63.0
+                let y = 1 - Float(j) / 63.0
                 positions.append(position0)
                 positions.append(y)
                 positions.append(position1)
@@ -761,7 +764,7 @@ public class ImageryLayer {
             let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
-
+            
             let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
             
             let vertexAttributes = [
@@ -769,16 +772,18 @@ public class ImageryLayer {
                 VertexAttributes(
                     bufferIndex: 1,
                     index: 0,
-                    format: .Float4,
+                    format: .Float2,
                     offset: 0,
-                    size: sizeof(Float) * 4),
+                    size: sizeof(Float) * 2
+                ),
                 // webMercatorT
                 VertexAttributes(
                     bufferIndex: 2,
                     index: 1,
-                    format: .Float2,
+                    format: .Float,
                     offset: 0,
-                    size: sizeof(Float) * 2)
+                    size: sizeof(Float)
+                )
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
             
@@ -788,10 +793,10 @@ public class ImageryLayer {
                 vertexDescriptor: vertexDescriptor,
                 depthStencil: false
             )
-
+            
             let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
             let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
-
+            
             reproject = Reproject(
                 vertexBuffer: vertexBuffer,
                 vertexAttributes: vertexAttributes,
@@ -806,7 +811,7 @@ public class ImageryLayer {
         
         let width = texture.width
         let height = texture.height
-            
+        
         let uniformMap = ImageryLayerUniformMap()
         
         uniformMap.textureDimensions = [Float(width), Float(height)]
@@ -819,25 +824,6 @@ public class ImageryLayer {
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
         let oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
         
-        let textureUsage: MTLTextureUsage = [.RenderTarget, .ShaderRead]
-            
-        let outputTexture = Texture(
-            context: context,
-            options: TextureOptions(
-                width: width,
-                height: height,
-                pixelFormat: context.view.colorPixelFormat,
-                premultiplyAlpha: texture.premultiplyAlpha,
-                textureUsage: textureUsage
-            )
-        )
-        outputTexture.sampler = reproject.sampler
-            
-        let renderPassDescriptor = MTLRenderPassDescriptor()
-        renderPassDescriptor.colorAttachments[0].loadAction = .DontCare
-        renderPassDescriptor.colorAttachments[0].storeAction = .Store
-        renderPassDescriptor.colorAttachments[0].texture = outputTexture.metalTexture
-
         let south = rectangle.south
         let north = rectangle.north
         
@@ -853,8 +839,22 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
         }
         let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
-
-        let vertexArray = VertexArray(buffers: [reproject.vertexBuffer, webMercatorTBuffer], attributes: reproject.vertexAttributes, vertexCount: 64 * 2, indexBuffer: reproject.indexBuffer)
+        
+        let vertexArray = VertexArray(buffers: [reproject.vertexBuffer, webMercatorTBuffer], attributes: reproject.vertexAttributes, vertexCount: 128, indexBuffer: reproject.indexBuffer)
+        
+        let textureUsage: MTLTextureUsage = [.RenderTarget, .ShaderRead]
+        
+        let outputTexture = Texture(
+            context: context,
+            options: TextureOptions(
+                width: width,
+                height: height,
+                pixelFormat: context.view.colorPixelFormat,
+                premultiplyAlpha: texture.premultiplyAlpha,
+                usage: textureUsage
+            )
+        )
+        outputTexture.sampler = reproject.sampler
         
         command.pipeline = reproject.pipeline
         command.outputTexture = outputTexture
@@ -863,12 +863,12 @@ public class ImageryLayer {
     }
     
     /**
-    * Gets the level with the specified world coordinate spacing between texels, or less.
-    *
-    * @param {Number} texelSpacing The texel spacing for which to find a corresponding level.
-    * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
-    * @returns {Number} The level with the specified texel spacing or less.
-    */
+     * Gets the level with the specified world coordinate spacing between texels, or less.
+     *
+     * @param {Number} texelSpacing The texel spacing for which to find a corresponding level.
+     * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
+     * @returns {Number} The level with the specified texel spacing or less.
+     */
     func levelWithMaximumTexelSpacing(texelSpacing texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme

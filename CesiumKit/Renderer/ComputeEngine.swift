@@ -72,7 +72,7 @@ class ComputeEngine {
             viewport: BoundingRectangle(width: Double(outputTexture.width), height: Double(outputTexture.height)))
         
         
-        var clearCommand = ClearCommand(color: Cartesian4(fromRed: 1.0, green: 0.0, blue: 0.0, alpha: 0.0))
+        var clearCommand = ClearCommand(color: Cartesian4(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
         clearCommand.renderState = renderState
         clearCommand.execute(context, passState: passState)
         
