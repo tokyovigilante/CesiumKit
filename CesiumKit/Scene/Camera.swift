@@ -784,12 +784,12 @@ public class Camera: DRU {
         _transform = transform
         _transformChanged = true
         updateMembers()
-        let inverse = _actualInvTransform
         
-        self.position = inverse.multiplyByPoint(position)
-        self.direction = inverse.multiplyByPointAsVector(direction)
-        self.up = inverse.multiplyByPointAsVector(up)
-        self.right = direction.cross(up)
+        self.position = _actualInvTransform.multiplyByPoint(position)
+        self.direction = _actualInvTransform.multiplyByPointAsVector(direction)
+        self.up = _actualInvTransform.multiplyByPointAsVector(up)
+        self.right = self.direction.cross(self.up)
+        updateMembers()
     }
     
     private func setView3D(
@@ -797,15 +797,13 @@ public class Camera: DRU {
         positionCartographic cartographicIn: Cartographic? = nil,
         heading headingIn: Double? = nil,
         pitch pitchIn: Double? = nil,
-        roll rollIn: Double? = nil,
-        ellipsoid: Ellipsoid? = nil)
+        roll rollIn: Double? = nil)
     {
-        
         let cartesian: Cartesian3
         
         if cartesianIn == nil {
             if cartographicIn != nil {
-                cartesian = (ellipsoid ?? _projection.ellipsoid).cartographicToCartesian(cartographicIn!)
+                cartesian = _projection.ellipsoid.cartographicToCartesian(cartographicIn!)
             } else {
                 cartesian = positionWC
             }
@@ -814,12 +812,31 @@ public class Camera: DRU {
         }
         
         let currentTransform = transform
-        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: ellipsoid ?? _projection.ellipsoid)
+        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
         
         position = Cartesian3.zero()
         
         let rotQuat = Quaternion(fromHeading: heading! - M_PI_2, pitch: pitch!, roll: roll!)
+        let rotMat = Matrix3(fromQuaternion: rotQuat)
+        
+        direction = rotMat.column(0)
+        up = rotMat.column(2)
+        
+        right = direction.cross(up)
+        
+        _setTransform(currentTransform)
+    }
+    
+    public func setView3DPosition(position cartographic: Cartographic, rotation rotQuat: Quaternion) {
+        
+        let cartesian = _projection.ellipsoid.cartographicToCartesian(cartographic)
+        let currentTransform = transform
+        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
+        _setTransform(localTransform)
+        
+        position = Cartesian3.zero()
+        
         let rotMat = Matrix3(fromQuaternion: rotQuat)
         
         direction = rotMat.column(0)
@@ -950,7 +967,7 @@ public class Camera: DRU {
      *     roll : 0.0                             // default value
      * });
      */
-    func setView (
+    public func setView (
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
         heading headingIn: Double? = nil,
@@ -969,7 +986,7 @@ public class Camera: DRU {
         let ellipsoid = projection.ellipsoid
         
         if _mode == .Scene3D {
-            setView3D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll, ellipsoid: ellipsoid)
+            setView3D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll)
         } else if _mode == SceneMode.Scene2D {
             setView2D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll, ellipsoid: ellipsoid, projection: projection)
         } else {
@@ -1126,7 +1143,6 @@ public class Camera: DRU {
     * @see Camera#moveDown
     */
     func move (direction: Cartesian3, amount: Double) {
-        var cameraPosition = position
         position = position.add(direction.multiplyByScalar(amount))
         if _mode == SceneMode.Scene2D {
             assertionFailure("unimplemented")

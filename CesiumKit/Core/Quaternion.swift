@@ -26,28 +26,28 @@ public struct Quaternion {
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0
+    public var z: Double = 0.0
     
     /**
     * The W component.
     * @type {Number}
     * @default 0.0
     */
-    var w: Double = 0.0
+    public var w: Double = 0.0
     
     public init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
         self.x = x
@@ -378,9 +378,9 @@ public struct Quaternion {
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
     
-    func inverse () -> Quaternion {
+    public func inverse () -> Quaternion {
         let result = conjugate()
-        return multiplyByScalar(1.0 / magnitudeSquared())
+        return result.multiplyByScalar(1.0 / magnitudeSquared())
     }
     /*
     /**
