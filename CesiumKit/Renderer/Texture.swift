@@ -9,6 +9,8 @@
 import CoreGraphics
 import Metal
 
+private let _colorSpace = CGColorSpaceCreateDeviceRGB()//CGImageGetColorSpace(imageRef)
+
 enum TextureSource {
     case Image(CGImageRef)
     case ImageBuffer(Imagebuffer)
@@ -183,12 +185,11 @@ class Texture {
                 
                 let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
                 
-                let colorSpace = CGImageGetColorSpace(imageRef)
 
                 // Allocate a textureData with the above properties:
                 let textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
 
-                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
+                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, _colorSpace, bitmapInfo.rawValue)
                 assert(contextRef != nil, "contextRef == nil")
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
                 if flipY {
