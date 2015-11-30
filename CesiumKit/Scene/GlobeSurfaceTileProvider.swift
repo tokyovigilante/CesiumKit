@@ -243,6 +243,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if _renderState == nil {
             
             _renderState = RenderState(
+                device: context.device,
                 cullFace: .Back,
                 depthTest: RenderState.DepthTest(enabled: true, function: .Less)
             )
@@ -251,6 +252,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if _blendRenderState == nil {
             
             _blendRenderState = RenderState(
+                device: context.device,
                 cullFace: .Back,
                 depthTest: RenderState.DepthTest(enabled: true, function: .LessOrEqual),
                 blending: BlendingState.AlphaBlend(Cartesian4())
@@ -275,6 +277,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func updateForPick (context context: Context, frameState: FrameState, inout commandList: [Command]) {
         if _pickRenderState == nil {
             _pickRenderState = RenderState(
+                device: context.device,
                 colorMask: RenderState.ColorMask(
                     red : false,
                     green : false,
