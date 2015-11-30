@@ -174,16 +174,16 @@ class HeightmapTessellator {
                 ++endCol
             }
             
-            let vertexCount = (endRow - startRow) * (endCol - startCol) * 6
+            //let vertexCount = (endRow - startRow) * (endCol - startCol) * 6
             
-            var vertices = [Float](count: vertexCount, repeatedValue: 0.0)
+            var vertices = [Float]()//count: vertexCount, repeatedValue: 0.0)
             
-            for (var rowIndex = startRow; rowIndex < endRow; ++rowIndex) {
+            for rowIndex in startRow..<endRow {
                 var row = rowIndex
-                if (row < 0) {
+                if row < 0 {
                     row = 0
                 }
-                if (row >= height) {
+                if row >= height {
                     row = height - 1
                 }
                 
@@ -201,12 +201,12 @@ class HeightmapTessellator {
                 
                 let v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
                 
-                for (var colIndex = startCol; colIndex < endCol; ++colIndex) {
-                    var col = colIndex;
-                    if (col < 0) {
+                for colIndex in startCol..<endCol {
+                    var col = colIndex
+                    if col < 0 {
                         col = 0
                     }
-                    if (col >= width) {
+                    if col >= width {
                         col = width - 1
                     }
                     
@@ -259,16 +259,16 @@ class HeightmapTessellator {
                     let rSurfaceY = kY * oneOverGamma
                     let rSurfaceZ = kZ * oneOverGamma
                     
-                    vertices[vertexArrayIndex++] = Float(rSurfaceX + nX * heightSample - relativeToCenter.x)
-                    vertices[vertexArrayIndex++] = Float(rSurfaceY + nY * heightSample - relativeToCenter.y)
-                    vertices[vertexArrayIndex++] = Float(rSurfaceZ + nZ * heightSample - relativeToCenter.z)
+                    vertices.append(Float(rSurfaceX + nX * heightSample - relativeToCenter.x))
+                    vertices.append(Float(rSurfaceY + nY * heightSample - relativeToCenter.y))
+                    vertices.append(Float(rSurfaceZ + nZ * heightSample - relativeToCenter.z))
                     
-                    vertices[vertexArrayIndex++] = Float(heightSample)
+                    vertices.append(Float(heightSample))
                     
                     let u = (longitude - geographicWest) / (geographicEast - geographicWest)
                     
-                    vertices[vertexArrayIndex++] = Float(u)
-                    vertices[vertexArrayIndex++] = Float(v)
+                    vertices.append(Float(u))
+                    vertices.append(Float(v))
                 }
             }
             
