@@ -213,7 +213,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     public var maximumLevel: Int {
         get {
             assert(_ready, "maximumLevel must not be called before the imagery provider is ready.")
-            return _maximumLevel
+            return 18//_maximumLevel
         }
     }
     private var _maximumLevel = 0
@@ -495,6 +495,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
+        if level > maximumLevel {
+            print("oops")
+        }
         let url = buildImageUrl(x: x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
         
