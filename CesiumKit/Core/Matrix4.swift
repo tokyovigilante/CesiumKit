@@ -687,13 +687,16 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     */
     static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
+        // Converted to Metal NDC coordinates - z: [0-1]
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205348(v=vs.85).aspx
+        
         let a = 2.0 / (right - left)
         let b = 2.0 / (top - bottom)
-        let c = 1.0 / (far - near)
+        let c = 1.0 / (near - far)
         
         let tx = (right + left) / (left - right)
         let ty = (top + bottom) / (bottom - top)
-        let tz = near / (far - near)
+        let tz = near / (near - far)
         
         return Matrix4(
             a, 0.0, 0.0, tx,
@@ -715,13 +718,16 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @returns The modified result parameter.
     */
     static func computePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
-        let column0Row0 = 2.0 * near / (right - left)
-        let column1Row1 = 2.0 * near / (top - bottom)
+        // Converted to Metal NDC coordinates - z: [0-1]
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205354(v=vs.85).aspx
+        
+        let column0Row0 = 2.0 * near / (right - left) // w
+        let column1Row1 = 2.0 * near / (top - bottom) // h
         let column2Row0 = (right + left) / (right - left)
         let column2Row1 = (top + bottom) / (top - bottom)
-        let column2Row2 = -(far + near) / (far - near)
+        let column2Row2 = far / (near - far) // Q
         let column2Row3 = -1.0
-        let column3Row2 = -2.0 * far * near / (far - near)
+        let column3Row2 = near * far / (near - far)
                 
         return Matrix4(
             column0Row0, 0.0, column2Row0, 0.0,
