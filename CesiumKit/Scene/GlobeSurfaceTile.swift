@@ -528,7 +528,6 @@ class GlobeSurfaceTile: QuadTreeTileData {
             // Data is assumed to be available for root tiles.
             return true
         }
-        return false
         if parent?.data?.terrainData == nil {
             // Parent tile data is not yet received or upsampled, so assume (for now) that this
             // child tile is not available.

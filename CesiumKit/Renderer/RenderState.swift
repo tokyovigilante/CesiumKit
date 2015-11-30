@@ -148,10 +148,12 @@ struct RenderState/*: Printable*/ {
     
     struct DepthRange {
         var near = 0.0
-        var far = 0.0
+        var far = 1.0
     }
     
     let depthRange: DepthRange// = DepthRange()
+    
+    private let _depthStencilState: MTLDepthStencilState?
     
     struct DepthTest {
         var enabled: Bool = false
@@ -208,6 +210,7 @@ struct RenderState/*: Printable*/ {
     let hash: String
     
     init(
+        device: MTLDevice,
         windingOrder: WindingOrder = WindingOrder.CounterClockwise,
         cullFace: CullFace = .Back,
         polygonOffset: PolygonOffset = PolygonOffset(),
@@ -299,6 +302,14 @@ struct RenderState/*: Printable*/ {
             hash += "v" + (viewport == nil ? "0" : "x\(viewport!.x)y\(viewport!.y)w\(viewport!.width)h\(viewport!.height)")
             
             self.hash = hash
+            
+            let depthStencilDescriptor = MTLDepthStencilDescriptor()
+
+            if self.depthTest.enabled {
+                depthStencilDescriptor.depthCompareFunction = depthTest.function.toMetal()
+                depthStencilDescriptor.depthWriteEnabled = true
+            }
+            _depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
     }
     
     /*func validate() {
@@ -449,16 +460,20 @@ struct RenderState/*: Printable*/ {
     func applyDepthRange() {
         glDepthRangef(GLclampf(depthRange.near), GLclampf(depthRange.far))
     }
-    
-    func applyDepthTest() {
+    */
+    func applyDepthTest(encoder: MTLRenderCommandEncoder) {
         
-        enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
+        // FIXME: store descriptor
+        if depthTest.enabled {
+            encoder.setDepthStencilState(_depthStencilState)
+        }
+        /*enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
         
         if (depthTest.enabled) {
             glDepthFunc(depthTest.function.toGL())
-        }
+        }*/
     }
-    
+    /*
     func applyColorMask() {
         glColorMask(
             GLboolean(Int(colorMask.red)),
@@ -545,9 +560,9 @@ struct RenderState/*: Printable*/ {
         /*applyCull()
         applyLineWidth()
         applyPolygonOffset()
-        applyDepthRange()
-        applyDepthTest()
-        applyColorMask()
+        applyDepthRange()*/
+        applyDepthTest(encoder)
+        /*applyColorMask()
         applyDepthMask()
         applyStencilMask()
         applySampleCoverage()

@@ -192,7 +192,7 @@ class Context {
         _debug = (0, 0)
         
         let us = UniformState()
-        let rs = RenderState()
+        let rs = RenderState(device: device)
         
         _defaultRenderState = rs
         uniformState = us
@@ -290,9 +290,8 @@ class Context {
             colorAttachment.storeAction = .Store
             colorAttachment.clearColor = MTLClearColorMake(c.red, c.green, c.blue, c.alpha)
         } else {
-            colorAttachment.loadAction = .DontCare
-            colorAttachment.storeAction = .DontCare
-            
+            colorAttachment.loadAction = .Load
+            colorAttachment.storeAction = .Store
         }
         
         let depthAttachment = passDescriptor.depthAttachment
@@ -300,20 +299,20 @@ class Context {
             depthAttachment.loadAction = .Clear
             depthAttachment.storeAction = .DontCare
             depthAttachment.clearDepth = d
-        } else {
+        } /*else {
             depthAttachment.loadAction = .DontCare
             depthAttachment.storeAction = .DontCare
-        }
+        }*/
         
         let stencilAttachment = passDescriptor.stencilAttachment
         if let s = s {
             stencilAttachment.loadAction = .Clear
             stencilAttachment.storeAction = .Store
             stencilAttachment.clearStencil = s
-        } else {
+        }/*else {
             stencilAttachment.loadAction = .DontCare
             stencilAttachment.storeAction = .DontCare
-        }
+        }*/
     }
     
     func draw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {

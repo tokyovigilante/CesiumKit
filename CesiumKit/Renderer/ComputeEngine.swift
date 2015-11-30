@@ -68,7 +68,7 @@ class ComputeEngine {
         let vertexArray = computeCommand.vertexArray ?? context.getViewportQuadVertexArray()
         let pipeline = computeCommand.pipeline ?? createViewportQuadPipeline(computeCommand.fragmentShaderSource!)
         let renderState = RenderState(
-            windingOrder: .CounterClockwise,
+            device: context.device,
             viewport: BoundingRectangle(width: Double(outputTexture.width), height: Double(outputTexture.height)))
         
         

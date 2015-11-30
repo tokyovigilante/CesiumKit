@@ -605,15 +605,18 @@ class Globe {
                 cullEnabled = true
                 
                 _rsColor = RenderState(
+                    device: context.device,
                     cullFace: cullEnabled ? .Back : .None
                 )
                 
                 _rsColorWithoutDepthTest = RenderState(
+                    device: context.device,
                     cullFace: cullEnabled ? .Back : .None
                 )
 
             } else {
                 _rsColor = RenderState(
+                    device: context.device,
                     cullFace: cullEnabled ? .Back : .None
                 )
                 _rsColorWithoutDepthTest = _rsColor
