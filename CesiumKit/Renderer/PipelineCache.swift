@@ -58,10 +58,10 @@ class PipelineCache {
         depthStencil: Bool) -> RenderPipeline? {
         
         if let existingPipeline = pipeline {
-            existingPipeline.count = 0
             releasePipeline(existingPipeline)
         }
-            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, depthStencil: depthStencil)
+            
+        return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, depthStencil: depthStencil)
     }
     
     /**
@@ -74,13 +74,24 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor: VertexDescriptor?, depthStencil: Bool) -> RenderPipeline {
-        // FIXME: Cache
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, depthStencil: Bool) -> RenderPipeline {
+
+        let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
+        
+        let keyword = combinedShaders.keyword + (depthStencil ? "depth" : "nodepth")
+        
+        if let pipeline = _pipelines[keyword] {
+            //pipeline.count++
+            print("cached")
+            return pipeline
+        }
+        
         let shader = ShaderProgram(
             device: device,
             optimizer: _optimizer,
             vertexShaderSource: vss,
-            fragmentShaderSource: fss
+            fragmentShaderSource: fss,
+            combinedShaders: combinedShaders
         )
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
@@ -92,9 +103,14 @@ class PipelineCache {
         pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         
-        pipelineDescriptor.vertexDescriptor = vertexDescriptor?.metalDescriptor
+        pipelineDescriptor.vertexDescriptor = descriptor?.metalDescriptor
         
-        return RenderPipeline(device: device, shaderProgram: shader, descriptor: pipelineDescriptor)
+        pipelineDescriptor.label = keyword
+        
+        let pipeline = RenderPipeline(device: device, shaderProgram: shader, descriptor: pipelineDescriptor)
+        _pipelines[keyword] = pipeline
+        pipeline.count++
+        return pipeline
     }
     
     /**
@@ -107,6 +123,7 @@ class PipelineCache {
     * @param {ShaderProgram} shader The shader to decrement
     */
     func releasePipeline(pipeline: RenderPipeline) {
+        pipeline.count--
         if --pipeline.count < 1 {
             _pipelines.removeValueForKey(pipeline.keyword)
         }

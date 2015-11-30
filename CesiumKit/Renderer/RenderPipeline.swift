@@ -15,7 +15,7 @@ class RenderPipeline {
     let shaderProgram: ShaderProgram
     
     var keyword: String {
-        return shaderProgram.keyword
+        return state.label ?? ""
     }
     
     var count: Int = 0

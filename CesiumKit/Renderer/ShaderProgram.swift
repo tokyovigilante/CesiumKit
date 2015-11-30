@@ -80,12 +80,10 @@ class ShaderProgram {
     
     var maximumTextureUnitIndex: Int = 0
     
-    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) {
-        
+    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, combinedShaders: (vst: String, fst: String, keyword: String)) {
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
         fragmentShaderSource = fss
-        let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
         _vertexShaderText = combinedShaders.vst
         _fragmentShaderText = combinedShaders.fst
         keyword = combinedShaders.keyword
