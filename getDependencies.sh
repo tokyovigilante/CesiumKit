@@ -11,8 +11,5 @@ git clone https://github.com/tokyovigilante/glsl-optimizer --depth 1
 
 echo "Cloning AlamoFire"
 git clone https://github.com/Alamofire/Alamofire
-cd alamofire
-git checkout swift-2.0
-cd ..
 
 echo "Ready to build CesiumKit" 
