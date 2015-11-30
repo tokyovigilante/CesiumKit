@@ -493,9 +493,9 @@ public struct Cartesian3: Packable, Equatable {
         let cosLatitude = cos(latitude);
         let n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
         let k = n.multiplyComponents(ellipsoid.radiiSquared)
-        let gamma = sqrt(n.dot(k));
+        let gamma = sqrt(n.dot(k))
         
-        return k.divideByScalar(gamma).add(n.multiplyByScalar(height));
+        return k.divideByScalar(gamma).add(n.multiplyByScalar(height))
     }
     
     /**
