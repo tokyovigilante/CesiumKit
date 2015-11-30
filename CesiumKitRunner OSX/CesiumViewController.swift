@@ -43,7 +43,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         
         //_globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
         
-        _globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
+        //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
         
         //Murrumbeena
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(-90), range: 1000))

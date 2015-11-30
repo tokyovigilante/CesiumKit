@@ -465,7 +465,7 @@ struct RenderState/*: Printable*/ {
         
         // FIXME: store descriptor
         if depthTest.enabled {
-            encoder.setDepthStencilState(_depthStencilState)
+            //encoder.setDepthStencilState(_depthStencilState)
         }
         /*enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
         
