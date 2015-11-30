@@ -21,7 +21,7 @@ import Foundation
 *
 * @see GeographicProjection
 */
-struct WebMercatorProjection: Projection {
+struct WebMercatorProjection: MapProjection {
     
     let ellipsoid: Ellipsoid
     let semimajorAxis: Double
@@ -74,7 +74,7 @@ struct WebMercatorProjection: Projection {
         } else if (clampedLat < -WebMercatorProjection.maximumLatitude) {
             clampedLat = -WebMercatorProjection.maximumLatitude;
         }
-        var sinLatitude = sin(clampedLat);
+        let sinLatitude = sin(clampedLat);
         return 0.5 * log((1.0 + sinLatitude) / (1.0 - sinLatitude));
     }
     

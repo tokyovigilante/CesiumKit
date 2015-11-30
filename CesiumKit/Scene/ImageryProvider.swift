@@ -6,35 +6,37 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
-    /**
-    * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
-    * interface and is not intended to be instantiated directly.
-    *
-    * @alias ImageryProvider
-    * @constructor
-    *
-    * @see ArcGisMapServerImageryProvider
-    * @see SingleTileImageryProvider
-    * @see BingMapsImageryProvider
-    * @see GoogleEarthImageryProvider
-    * @see OpenStreetMapImageryProvider
-    * @see WebMapTileServiceImageryProvider
-    * @see WebMapServiceImageryProvider
-    *
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
-    * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
-    */
-public protocol ImageryProvider {
+import Foundation
 
 /**
-* The default alpha blending value of this provider, with 0.0 representing fully transparent and
-* 1.0 representing fully opaque.
+* Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
+* interface and is not intended to be instantiated directly.
 *
-* @type {Number}
-* @default undefined
+* @alias ImageryProvider
+* @constructor
+*
+* @see ArcGisMapServerImageryProvider
+* @see SingleTileImageryProvider
+* @see BingMapsImageryProvider
+* @see GoogleEarthImageryProvider
+* @see OpenStreetMapImageryProvider
+* @see WebMapTileServiceImageryProvider
+* @see WebMapServiceImageryProvider
+*
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers.html|Cesium Sandcastle Imagery Layers Demo}
+* @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
-    var defaultAlpha: Double { get }
+public protocol ImageryProvider {
+
+    /**
+    * The default alpha blending value of this provider, with 0.0 representing fully transparent and
+    * 1.0 representing fully opaque.
+    *
+    * @type {Number}
+    * @default undefined
+    */
+    var defaultAlpha: Float { get }
+    
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -42,7 +44,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultBrightness: Double { get }
+    var defaultBrightness: Float { get }
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -51,7 +53,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultContrast: Double { get }
+    var defaultContrast: Float { get }
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -59,7 +61,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultHue: Double { get }
+    var defaultHue: Float { get }
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -68,7 +70,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultSaturation: Double { get }
+    var defaultSaturation: Float { get }
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -76,7 +78,7 @@ public protocol ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    var defaultGamma: Double { get }
+    var defaultGamma: Float { get }
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -196,7 +198,7 @@ public protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func tileCredits (#x: Int, y: Int, level: Int) -> [Credit]
+    func tileCredits (x x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -220,5 +222,30 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(#x: Int, y: Int, level: Int) -> UIImage?
+    func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void))
+    
+    /**
+     * Asynchronously determines what features, if any, are located at a given longitude and latitude within
+     * a tile.  This function should not be called before {@link ImageryProvider#ready} returns true.
+     * This function is optional, so it may not exist on all ImageryProviders.
+     *
+     * @function
+     *
+     * @param {Number} x The tile X coordinate.
+     * @param {Number} y The tile Y coordinate.
+     * @param {Number} level The tile level.
+     * @param {Number} longitude The longitude at which to pick features.
+     * @param {Number} latitude  The latitude at which to pick features.
+     * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
+     *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
+     *                   instances.  The array may be empty if no features are found at the given location.
+     *                   It may also be undefined if picking is not supported.
+     */
+    func pickFeatures (x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]?
+}
+
+extension ImageryProvider {
+    public func pickFeatures (x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]? {
+        return nil
+    }
 }

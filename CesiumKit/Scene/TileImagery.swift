@@ -36,7 +36,13 @@ class TileImagery {
     * Frees the resources held by this instance.
     */
     deinit {
+        if readyImagery != nil {
+            readyImagery!.releaseReference()
+        }
         
+        if loadingImagery != nil {
+            loadingImagery!.releaseReference()
+        }
     }
     
     /**
@@ -46,11 +52,11 @@ class TileImagery {
     * @param {Context} context The context.
     * @returns {Boolean} True if this instance is done loading; otherwise, false.
     */
-    func processStateMachine (tile: QuadtreeTile, context: Context) -> Bool {
+    func processStateMachine (tile: QuadtreeTile, context: Context, inout commandList: [Command]) -> Bool {
         
-        var imageryLayer = loadingImagery!.imageryLayer
+        let imageryLayer = loadingImagery!.imageryLayer
         
-        loadingImagery!.processStateMachine(context)
+        loadingImagery!.processStateMachine(context, commandList: &commandList)
         
         if loadingImagery!.state == .Ready {
             if readyImagery != nil {
@@ -91,14 +97,13 @@ class TileImagery {
                 // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery
                 // tiles may not be attached directly to a terrain tile.  Such tiles will never load if
                 // we don't do it here.
-                closestAncestorThatNeedsLoading.processStateMachine(context)
+                closestAncestorThatNeedsLoading.processStateMachine(context, commandList: &commandList)
                 return false
             } else {
                 // This imagery tile is failed or invalid, and we have the "best available" substitute.  So we're done loading.
                 return true // done loading
             }
         }
-        
         return false // not done loading
     }
 

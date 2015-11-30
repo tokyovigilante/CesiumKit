@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
-
+import Metal
 
 /**
 * The state for a particular rendering pass.  This is used to supplement the state
@@ -15,7 +14,7 @@ import Foundation
 *
 * @private
 */
-struct PassState {
+class PassState {
     /**
     * The context used to execute commands for this pass.
     *
@@ -31,7 +30,7 @@ struct PassState {
     * @type {Framebuffer}
     * @default undefined
     */
-    var framebuffer: Framebuffer? = nil
+    var framebuffer: Framebuffer! = nil
     
     /**
     * When defined, this overrides the blending property of a {@link DrawCommand}'s render state.

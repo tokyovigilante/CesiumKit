@@ -149,13 +149,13 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
         let right2 = direction.cross(up)
         
-        var nearCenter = direction.multiplyByScalar(near).add(position)
+        let nearCenter = direction.multiplyByScalar(near).add(position)
         
-        var farCenter = direction.multiplyByScalar(far).add(position)
+        let farCenter = direction.multiplyByScalar(far).add(position)
         
         var planes = [Cartesian4]()
         
@@ -214,21 +214,21 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var distance = Cesium.Cartesian3.magnitude(toCenterProj);
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight), distance);
     */
-    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
         update()
         
-        var width = drawingBufferDimensions.x
-        var height = drawingBufferDimensions.y
+        let width = drawingBufferDimensions.x
+        let height = drawingBufferDimensions.y
         
         assert(width > 0 && height > 0, "drawingBufferDimensions.y must be greater than zero")
         
         let localDistance = distance ?? near
         
-        var inverseNear = 1.0 / near
+        let inverseNear = 1.0 / near
         var tanTheta = top * inverseNear
-        var pixelHeight = 2.0 * localDistance * tanTheta / height;
+        let pixelHeight = 2.0 * localDistance * tanTheta / height;
         tanTheta = right * inverseNear
-        var pixelWidth = 2.0 * localDistance * tanTheta / width
+        let pixelWidth = 2.0 * localDistance * tanTheta / width
         
         return Cartesian2(x: pixelWidth, y: pixelHeight);
     }
@@ -243,20 +243,13 @@ class PerspectiveOffCenterFrustum: Frustum {
 
         var result = target ?? PerspectiveOffCenterFrustum()
         
+        // force update of clone to compute matrices
         result.right = right
         result.left = left
         result.top = top
         result.bottom = bottom
         result.near = near
         result.far = far
-        
-        // force update of clone to compute matrices
-        /*result._left = Double.NaN
-        result._right = Double.NaN
-        result._top = Double.NaN
-        result._bottom = Double.NaN
-        result._near = Double.NaN
-        result._far = Double.NaN*/
         
         return result
     }

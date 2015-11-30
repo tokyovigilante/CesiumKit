@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 private class DependencyNode: Equatable {
     
     var name: String
@@ -111,7 +113,7 @@ struct ShaderSource {
         // Combine shader sources, generally for pseudo-polymorphism, e.g., czm_getMaterial.
         var combinedSources = ""
         
-        for (i, source) in enumerate(sources) {
+        for (i, source) in sources.enumerate() {
                 // #line needs to be on its own line.
                 combinedSources += "\n#line 0\n" + sources[i];
         }
@@ -152,17 +154,17 @@ struct ShaderSource {
             result = "#version " + version!
         }
         
-        if isFragmentShader {
+        /*if isFragmentShader {
             result += "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
             "precision highp float;\n" +
             "#else\n" +
             "precision mediump float;\n" +
             "#endif\n\n"
-        }
+        }*/
         
         // Prepend #defines for uber-shaders
         for define in defines {
-            if count(define) != 0 {
+            if define.characters.count != 0 {
                 result += "#define " + define + "\n"
             }
         }
@@ -206,13 +208,13 @@ struct ShaderSource {
         // generate a dependency graph for builtin functions
         
         var dependencyNodes = [DependencyNode]()
-        var root = getDependencyNode("main", glslSource: shaderSource, nodes: &dependencyNodes)
+        let root = getDependencyNode("main", glslSource: shaderSource, nodes: &dependencyNodes)
         generateDependencies(root, dependencyNodes: &dependencyNodes)
         sortDependencies(&dependencyNodes)
         
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
-        return reverse(dependencyNodes)
+        return Array(dependencyNodes.reverse())
             .reduce("", combine: { $0 + $1.glslSource + "\n" })
             .replace(root.glslSource, "")
     }
@@ -257,10 +259,10 @@ struct ShaderSource {
                 } else if let uniform = AutomaticUniforms[match] {
                     elementSource = uniform.declaration(match)
                 } else {
-                    println("uniform \(match) not found")
+                    print("uniform \(match) not found")
                 }
                 if elementSource != nil {
-                    var referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
+                    let referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)
                     currentNode.dependsOn.append(referencedNode)
                     referencedNode.requiredBy.append(currentNode)
                     
@@ -278,7 +280,7 @@ struct ShaderSource {
         var allNodes = [DependencyNode]()
         
         while (dependencyNodes.count > 0) {
-            var node = dependencyNodes.removeLast()
+            let node = dependencyNodes.removeLast()
             allNodes.append(node)
             
             if node.requiredBy.count == 0 {
@@ -293,7 +295,7 @@ struct ShaderSource {
             for (var i = 0; i < currentNode.dependsOn.count; ++i) {
                 // remove the edge from the graph
                 let referencedNode = currentNode.dependsOn[i]
-                var index = find(referencedNode.requiredBy, currentNode)
+                let index = referencedNode.requiredBy.indexOf(currentNode)
                 if (index != nil) {
                     referencedNode.requiredBy.removeAtIndex(index!)
                 }

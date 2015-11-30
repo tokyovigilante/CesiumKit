@@ -6,25 +6,25 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class CubeMapFace {
     
     let texture: Int
     let target: Int
     let targetFace: Int
-    let pixelFormat: PixelFormat
-    let pixelDatatype: PixelDatatype
+    //let pixelFormat: PixelFormat
+    //let pixelDatatype: PixelDatatype
     private let size: Int
     private let preMultiplyAlpha: Bool
     private let flipY: Bool
     
-    init(texture: Int, target: Int, targetFace: Int, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
+    init(texture: Int, target: Int, targetFace: Int/*, pixelFormat: PixelFormat, pixelDatatype: PixelDatatype*/, size: Int, preMultiplyAlpha: Bool, flipY: Bool) {
         self.texture = texture
         self.target = target
         self.targetFace = targetFace
-        self.pixelFormat = pixelFormat
-        self.pixelDatatype = pixelDatatype
+        //self.pixelFormat = pixelFormat
+        //self.pixelDatatype = pixelDatatype
         self.size = size
         self.preMultiplyAlpha = preMultiplyAlpha
         self.flipY = flipY
@@ -62,7 +62,7 @@ class CubeMapFace {
         
         assert(xOffset + source.width <= size, "xOffset + source.width must be less than or equal to width")
         assert(yOffset + source.height <= size, "yOffset + source.height must be less than or equal to height")
-        
+        /*
         glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
         //glpixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
@@ -70,7 +70,7 @@ class CubeMapFace {
         glBindTexture(GLenum(target), GLuint(texture))
 
         // FIXME: glTexSubImage2D(GLenum(target), GLint(0), GLint(xOffset), GLint(yOffset), GLsizei(source.width), GLsizei(source.height), GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(source.arrayBufferView))
-        glBindTexture(GLenum(target), 0)
+        glBindTexture(GLenum(target), 0)*/
 
 
     }
@@ -110,12 +110,12 @@ class CubeMapFace {
         assert(xOffset + copyWidth <= size, "xOffset + source.width must be less than or equal to width")
         assert(yOffset + copyHeight <= size, "yOffset + source.height must be less than or equal to height")
     
-        assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
+        //assert(pixelDatatype != PixelDatatype.Float, "Cannot call copyFromFramebuffer when the texture pixel data type is FLOAT")
         
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(GLenum(target), GLuint(texture))
+        //glActiveTexture(GLenum(GL_TEXTURE0))
+        //glBindTexture(GLenum(target), GLuint(texture))
         // FIXME: glCopyTexSubImage2D(GLenum(targetFace), 0, GLsizei(xOffset), GLsizei(yOffset), GLsizei(framebufferXOffset), GLsizei(framebufferYOffset), GLsizei(copyWidth), GLsizei(copyHeight))
-        glBindTexture(GLenum(target), 0)
+        //glBindTexture(GLenum(target), 0)
     }
 
 }

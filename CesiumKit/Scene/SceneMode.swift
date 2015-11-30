@@ -52,7 +52,7 @@ public enum SceneMode: Int {
     * @param {SceneMode} value The scene mode
     * @returns {Number} The morph time
     */
-    func morphTime() -> Double? {
+    var morphTime: Double? {
         switch self {
         case .Scene3D:
             return 1.0

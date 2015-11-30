@@ -6,16 +6,16 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import Metal
 
 /**
 * Represents a command to the renderer for clearing a framebuffer.
 *
 * @private
 */
-class ClearCommand: Command {
+struct ClearCommand {
 
-    let boundingVolume: Intersectable? = nil
+    let boundingVolume: BoundingVolume? = nil
     let cull: Bool = false
     
     /**
@@ -43,7 +43,7 @@ class ClearCommand: Command {
     *
     * @default undefined
     */
-    var stencil: Int?
+    var stencil: UInt32?
     
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
@@ -84,13 +84,6 @@ class ClearCommand: Command {
     
     var debugOverlappingFrustums: Int = 0
     var executeInClosestFrustum: Bool = false
-    /**
-    * The pass when to render.
-    *
-    * @type {Pass}
-    * @default undefined
-    */
-    var pass: Pass? = nil
 
     /**
     * Clears color to (0.0, 0.0, 0.0, 0.0); depth to 1.0; and stencil to 0.
@@ -99,21 +92,21 @@ class ClearCommand: Command {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: Int? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil/*, owner: AnyObject*/) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil) {
+        
         self.color = color
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
         self.framebuffer = framebuffer
-        //self.owner = owner
     }
     
-    class func all() -> ClearCommand {
-        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil, framebuffer: nil/*, owner: unowned*/)
+    static func all() -> ClearCommand {
+        return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil)
     }
-    
-    func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
-        context.clear(clearCommand: self, passState: passState)
+
+    func execute(context: Context, passState: PassState?) {
+        context.clear(self, passState: passState)
     }
     
 }

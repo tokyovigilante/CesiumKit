@@ -98,8 +98,7 @@ class HeightmapTessellator {
     * });
     */
     class func computeVertices (
-        inout vertices: [Float],
-        heightmap: [SerializedType],
+        heightmap heightmap: [UInt16],
         height: Int,
         width: Int,
         skirtHeight: Double,
@@ -109,7 +108,7 @@ class HeightmapTessellator {
         relativeToCenter: Cartesian3 = Cartesian3.zero(),
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
-        ) () -> (maximumHeight: Double, minimumHeight: Double) {
+        ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
         
             // This function tends to be a performance hotspot for terrain rendering,
             // so it employs a lot of inlining and unrolling as an optimization.
@@ -143,7 +142,6 @@ class HeightmapTessellator {
                 geographicNorth = rectangle!.north
             }
             
-            //var structure = defaultValue(options.structure, HeightmapTessellator.DEFAULT_STRUCTURE);
             let heightScale = structure.heightScale
             let heightOffset = structure.heightOffset
             let elementsPerHeight = structure.elementsPerHeight
@@ -176,12 +174,16 @@ class HeightmapTessellator {
                 ++endCol
             }
             
-            for (var rowIndex = startRow; rowIndex < endRow; ++rowIndex) {
+            //let vertexCount = (endRow - startRow) * (endCol - startCol) * 6
+            
+            var vertices = [Float]()//count: vertexCount, repeatedValue: 0.0)
+            
+            for rowIndex in startRow..<endRow {
                 var row = rowIndex
-                if (row < 0) {
+                if row < 0 {
                     row = 0
                 }
-                if (row >= height) {
+                if row >= height {
                     row = height - 1
                 }
                 
@@ -193,18 +195,18 @@ class HeightmapTessellator {
                     latitude = Math.toRadians(latitude)
                 }
                 
-                var cosLatitude = cos(latitude)
-                var nZ = sin(latitude)
-                var kZ = radiiSquaredZ * nZ
+                let cosLatitude = cos(latitude)
+                let nZ = sin(latitude)
+                let kZ = radiiSquaredZ * nZ
                 
-                var v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
+                let v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
                 
-                for (var colIndex = startCol; colIndex < endCol; ++colIndex) {
-                    var col = colIndex;
-                    if (col < 0) {
+                for colIndex in startCol..<endCol {
+                    var col = colIndex
+                    if col < 0 {
                         col = 0
                     }
-                    if (col >= width) {
+                    if col >= width {
                         col = width - 1
                     }
                     
@@ -216,21 +218,21 @@ class HeightmapTessellator {
                         longitude = Math.toRadians(longitude)
                     }
                     
-                    var terrainOffset = row * (width * stride) + col * stride
+                    let terrainOffset = row * (width * stride) + col * stride
                     
                     var heightSample: Double
                     if (elementsPerHeight == 1) {
-                        heightSample = heightmap[terrainOffset].doubleValue()
+                        heightSample = Double(heightmap[terrainOffset])
                     } else {
                         heightSample = 0
                         
                         if isBigEndian {
                             for (var elementOffset = 0; elementOffset < elementsPerHeight; ++elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
+                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         } else {
                             for (var elementOffset = elementsPerHeight - 1; elementOffset >= 0; --elementOffset) {
-                                heightSample = (heightSample * elementMultiplier) + heightmap[terrainOffset + elementOffset].doubleValue()
+                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         }
                     }
@@ -244,35 +246,36 @@ class HeightmapTessellator {
                         heightSample -= skirtHeight
                     }
                     
-                    var nX = cosLatitude * cos(longitude)
-                    var nY = cosLatitude * sin(longitude)
+                    let nX = cosLatitude * cos(longitude)
+                    let nY = cosLatitude * sin(longitude)
                     
-                    var kX = radiiSquaredX * nX
-                    var kY = radiiSquaredY * nY
+                    let kX = radiiSquaredX * nX
+                    let kY = radiiSquaredY * nY
                     
-                    var gamma = sqrt((kX * nX) + (kY * nY) + (kZ * nZ))
-                    var oneOverGamma = 1.0 / gamma
+                    let gamma = sqrt((kX * nX) + (kY * nY) + (kZ * nZ))
+                    let oneOverGamma = 1.0 / gamma
                     
-                    var rSurfaceX = kX * oneOverGamma
-                    var rSurfaceY = kY * oneOverGamma
-                    var rSurfaceZ = kZ * oneOverGamma
+                    let rSurfaceX = kX * oneOverGamma
+                    let rSurfaceY = kY * oneOverGamma
+                    let rSurfaceZ = kZ * oneOverGamma
                     
-                    vertices[vertexArrayIndex++] = Float(rSurfaceX + nX * heightSample - relativeToCenter.x)
-                    vertices[vertexArrayIndex++] = Float(rSurfaceY + nY * heightSample - relativeToCenter.y)
-                    vertices[vertexArrayIndex++] = Float(rSurfaceZ + nZ * heightSample - relativeToCenter.z)
+                    vertices.append(Float(rSurfaceX + nX * heightSample - relativeToCenter.x))
+                    vertices.append(Float(rSurfaceY + nY * heightSample - relativeToCenter.y))
+                    vertices.append(Float(rSurfaceZ + nZ * heightSample - relativeToCenter.z))
                     
-                    vertices[vertexArrayIndex++] = Float(heightSample)
+                    vertices.append(Float(heightSample))
                     
-                    var u = (longitude - geographicWest) / (geographicEast - geographicWest)
+                    let u = (longitude - geographicWest) / (geographicEast - geographicWest)
                     
-                    vertices[vertexArrayIndex++] = Float(u)
-                    vertices[vertexArrayIndex++] = Float(v)
+                    vertices.append(Float(u))
+                    vertices.append(Float(v))
                 }
             }
             
             return (
                 maximumHeight : maximumHeight,
-                minimumHeight : minimumHeight
+                minimumHeight : minimumHeight,
+                vertices: vertices
             )
     }
 

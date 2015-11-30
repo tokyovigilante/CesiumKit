@@ -11,6 +11,7 @@ enum ImageryState {
     Transitioning,
     Received,
     TextureLoaded,
+    Reprojected,
     Ready,
     Failed,
     Invalid,

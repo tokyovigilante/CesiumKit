@@ -25,7 +25,6 @@ import Foundation
 *   st : true
 * });
 *
-* @see Geometry#attributes
 * @see Packable*
 */
 struct VertexFormat {

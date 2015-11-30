@@ -85,7 +85,7 @@ class PerspectiveFrustum: Frustum {
     var far = 500000000.0
     private var _far = Double.NaN
     
-    private var _offCenterFrustum = PerspectiveOffCenterFrustum()
+    var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
         assert(fov != Double.NaN && aspectRatio != Double.NaN && near != Double.NaN && far != Double.NaN, "fov, aspectRatio, near, or far parameters are not set")
@@ -154,7 +154,7 @@ class PerspectiveFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         update()
         return _offCenterFrustum.computeCullingVolume(position: position, direction: direction, up: up)
     }
@@ -173,10 +173,7 @@ class PerspectiveFrustum: Frustum {
     * @example
     * // Example 1
     * // Get the width and height of a pixel.
-    * var pixelSize = camera.frustum.getPixelSize({
-    *     width : canvas.clientWidth,
-    *     height : canvas.clientHeight
-    * });
+    * var pixelSize = camera.frustum.getPixelSize({ width : canvas.clientWidth, height : canvas.clientHeight });
     *
     * @example
     * // Example 2
@@ -192,7 +189,7 @@ class PerspectiveFrustum: Frustum {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
         update()
         return _offCenterFrustum.pixelSize(drawingBufferDimensions: drawingBufferDimensions, distance: distance)
     }
@@ -207,18 +204,15 @@ class PerspectiveFrustum: Frustum {
         
         var result = target ?? PerspectiveFrustum()
         
+        // force update of clone to compute matrices
         result.aspectRatio = aspectRatio
         result.fov = fov
         result.near = near
         result.far = far
         
-        // force update of clone to compute matrices
-        /*result._aspectRatio = Double.NaN
-        result._fov = Double.NaN
-        result._near = Double.NaN
-        result._far = Double.NaN*/
-        
-        //result._offCenterFrustum = _offCenterFrustum.clone()
+        if let result = result as? PerspectiveFrustum {
+            result._offCenterFrustum = _offCenterFrustum.clone(PerspectiveOffCenterFrustum()) as! PerspectiveOffCenterFrustum
+        }
 
         return result
     }

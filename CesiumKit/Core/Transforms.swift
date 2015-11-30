@@ -600,7 +600,7 @@ struct Transforms {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
-    static func pointToWindowCoordinates(#modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    static func pointToWindowCoordinates(modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var result = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix: modelViewProjectionMatrix, viewportTransformation: viewportTransformation, point: point)
         result.y = 2.0 * viewportTransformation[5] - result.y
@@ -611,7 +611,7 @@ struct Transforms {
     /**
     * @private
     */
-    private static func pointToGLWindowCoordinates (#modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    private static func pointToGLWindowCoordinates (modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
         coords.multiplyByScalar(1.0 / coords.w)
@@ -619,6 +619,51 @@ struct Transforms {
         
         return Cartesian2(fromCartesian4: coords)
     }
-
+    /*
+        var normalScratch = new Cartesian3();
+        var rightScratch = new Cartesian3();
+        var upScratch = new Cartesian3();
+    
+        /**
+         * @private
+         */
+        Transforms.rotationMatrixFromPositionVelocity = function(position, velocity, ellipsoid, result) {
+            //>>includeStart('debug', pragmas.debug);
+            if (!defined(position)) {
+                throw new DeveloperError('position is required.');
+            }
+    
+            if (!defined(velocity)) {
+                throw new DeveloperError('velocity is required.');
+            }
+            //>>includeEnd('debug');
+    
+            var normal = defaultValue(ellipsoid, Ellipsoid.WGS84).geodeticSurfaceNormal(position, normalScratch);
+            var right = Cartesian3.cross(velocity, normal, rightScratch);
+            if (Cartesian3.equalsEpsilon(right, Cartesian3.ZERO, CesiumMath.EPSILON6)) {
+                right = Cartesian3.clone(Cartesian3.UNIT_X, right);
+            }
+    
+            var up = Cartesian3.cross(right, velocity, upScratch);
+           Cartesian3.cross(velocity, up, right);
+            Cartesian3.negate(right, right);
+    
+            if (!defined(result)) {
+                result = new Matrix3();
+           }
+    
+            result[0] = velocity.x;
+            result[1] = velocity.y;
+            result[2] = velocity.z;
+            result[3] = right.x;
+            result[4] = right.y;
+            result[5] = right.z;
+            result[6] = up.x;
+            result[7] = up.y;
+            result[8] = up.z;
+    
+            return result;
+        };
+    */
 }
 

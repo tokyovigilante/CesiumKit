@@ -191,7 +191,7 @@ struct GeometryPipeline {
             boundingSphere : newBoundingSphere
         });
     };
-
+*/
     /**
      * Creates an object that maps attribute names to unique locations (indices)
      * for matching vertex attributes and shader programs.
@@ -207,13 +207,8 @@ struct GeometryPipeline {
      * //   'normal' : 1
      * // }
      */
-    GeometryPipeline.createAttributeLocations = function(geometry) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(geometry)) {
-            throw new DeveloperError('geometry is required.');
-        }
-        //>>includeEnd('debug')
-
+    static func createAttributeLocations (geometry: Geometry) -> [VertexAttributes] {
+        /*
         // There can be a WebGL performance hit when attribute 0 is disabled, so
         // assign attribute locations to well-known attributes.
         var semantics = [
@@ -258,10 +253,10 @@ struct GeometryPipeline {
                 indices[name] = j++;
             }
         }
-
-        return indices;
-    };
-
+*/
+        return [VertexAttributes]()//indices
+    }
+/*
     /**
      * Reorders a geometry's attributes and <code>indices</code> to achieve better performance from the GPU's pre-vertex-shader cache.
      *

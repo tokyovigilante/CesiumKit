@@ -20,7 +20,7 @@ import Foundation
 * @see BoundingRectangle
 * @see Packable
 */
-struct BoundingSphere: Intersectable {
+struct BoundingSphere: BoundingVolume {
     /**
     * The center point of the sphere.
     * @type {Cartesian3}
@@ -73,9 +73,9 @@ struct BoundingSphere: Intersectable {
             
             currentPos = points[i]
             
-            var x = currentPos.x
-            var y = currentPos.y
-            var z = currentPos.z
+            let x = currentPos.x
+            let y = currentPos.y
+            let z = currentPos.z
             
             // Store points containing the the smallest and largest components
             if (x < xMin.x) {
@@ -104,9 +104,9 @@ struct BoundingSphere: Intersectable {
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        var xSpan = xMax.subtract(xMin).magnitudeSquared()
-        var ySpan = yMax.subtract(yMin).magnitudeSquared()
-        var zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared()
+        let ySpan = yMax.subtract(yMin).magnitudeSquared()
+        let zSpan = zMax.subtract(zMin).magnitudeSquared()
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -144,7 +144,7 @@ struct BoundingSphere: Intersectable {
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
         
-        var naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0;
@@ -152,20 +152,20 @@ struct BoundingSphere: Intersectable {
             currentPos = points[i]
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            var r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude()
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            var oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
             if (oldCenterToPointSquared > radiusSquared) {
-                var oldCenterToPoint = sqrt(oldCenterToPointSquared)
+                let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
                 ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5
                 radiusSquared = ritterRadius * ritterRadius
                 // Calculate center of new Ritter sphere
-                var oldToNew = oldCenterToPoint - ritterRadius
+                let oldToNew = oldCenterToPoint - ritterRadius
                 ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
                 ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
@@ -189,7 +189,7 @@ struct BoundingSphere: Intersectable {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    static func fromRectangle2D(rectangle: Rectangle?, projection: Projection = GeographicProjection()) -> BoundingSphere {
+    static func fromRectangle2D(rectangle: Rectangle?, projection: MapProjection = GeographicProjection()) -> BoundingSphere {
         return BoundingSphere.fromRectangleWithHeights2D(rectangle, projection: projection, minimumHeight: 0.0, maximumHeight: 0.0)
     }
 
@@ -206,7 +206,7 @@ struct BoundingSphere: Intersectable {
     */
     static func fromRectangleWithHeights2D(
         rectangle: Rectangle?,
-        projection: Projection = GeographicProjection(),
+        projection: MapProjection = GeographicProjection(),
         minimumHeight: Double = 0.0,
         maximumHeight: Double = 0.0) -> BoundingSphere {
 
@@ -222,9 +222,9 @@ struct BoundingSphere: Intersectable {
             let lowerLeft = projection.project(fromRectangle2DSouthwest)
             let upperRight = projection.project(fromRectangle2DNortheast)
             
-            var width = upperRight.x - lowerLeft.x
-            var height = upperRight.y - lowerLeft.y
-            var elevation = upperRight.z - lowerLeft.z
+            let width = upperRight.x - lowerLeft.x
+            let height = upperRight.y - lowerLeft.y
+            let elevation = upperRight.z - lowerLeft.z
             
             return BoundingSphere(
                 center: Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5),
@@ -260,7 +260,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
     * algorithms, a naive algorithm and Ritter's algorithm. The smaller of the two spheres is used to
     * ensure a tight fit.
     *
-    * @param {Cartesian3[]} positions An array of points that the bounding sphere will enclose.  Each point
+    * @param {Number[]} positions An array of points that the bounding sphere will enclose.  Each point
     *        is formed from three elements in the array in the order X, Y, Z.
     * @param {Cartesian3} [center=Cartesian3.ZERO] The position to which the positions are relative, which need not be the
     *        origin of the coordinate system.  This is useful when the positions are to be used for
@@ -319,11 +319,11 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         var yMax = currentPos
         var zMax = currentPos
         
-        var numElements = positions.count
+        let numElements = positions.count
         for (var i = 0; i < numElements; i += stride) {
-            var x = Double(positions[i]) + center.x
-            var y = Double(positions[i + 1]) + center.y
-            var z = Double(positions[i + 2]) + center.z
+            let x = Double(positions[i]) + center.x
+            let y = Double(positions[i + 1]) + center.y
+            let z = Double(positions[i + 2]) + center.z
             
             currentPos.x = x
             currentPos.y = y
@@ -356,9 +356,9 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        var xSpan = xMax.subtract(xMin).magnitudeSquared()
-        var ySpan = yMax.subtract(yMin).magnitudeSquared()
-        var zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared()
+        let ySpan = yMax.subtract(yMin).magnitudeSquared()
+        let zSpan = zMax.subtract(zMin).magnitudeSquared()
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -397,7 +397,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
         
-        var naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
@@ -407,20 +407,20 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
             currentPos.z = Double(positions[i + 2]) + center.z
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            var r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude()
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            var oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
             if (oldCenterToPointSquared > radiusSquared) {
-                var oldCenterToPoint = sqrt(oldCenterToPointSquared)
+                let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
                 ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5
                 radiusSquared = ritterRadius * ritterRadius
                 // Calculate center of new Ritter sphere
-                var oldToNew = oldCenterToPoint - ritterRadius
+                let oldToNew = oldCenterToPoint - ritterRadius
                 ritterCenter.x = (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) / oldCenterToPoint
                 ritterCenter.y = (ritterRadius * ritterCenter.y + oldToNew * currentPos.y) / oldCenterToPoint
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
@@ -441,8 +441,8 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
 * Computes a bounding sphere from the corner points of an axis-aligned bounding box.  The sphere
 * tighly and fully encompases the box.
 *
-* @param {Number} [corner] The minimum height over the rectangle.
-* @param {Number} [oppositeCorner] The maximum height over the rectangle.
+* @param {Cartesian3} [corner] The minimum height over the rectangle.
+* @param {Cartesian3} [oppositeCorner] The maximum height over the rectangle.
 * @param {BoundingSphere} [result] The object onto which to store the result.
 *
 * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
@@ -541,6 +541,20 @@ BoundingSphere.fromEllipsoid = function(ellipsoid, result) {
     return result;
     };
 
+        +var fromBoundingSpheresScratch = new Cartesian3();
+    
+        /**
+         * Computes a tight-fitting bounding sphere enclosing the provided array of bounding spheres.
+         *
+         * @param {BoundingSphere[]} boundingSpheres The array of bounding spheres.
+         * @param {BoundingSphere} [result] The object onto which to store the result.
+         * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
+        */
+        BoundingSphere.fromBoundingSpheres = function(boundingSpheres, result) {
+            if (!defined(result)) {
+                result = new BoundingSphere();
+            }
+    
 /**
 * Duplicates a BoundingSphere instance.
 *
@@ -600,8 +614,8 @@ BoundingSphere.pack = function(value, array, startingIndex) {
 *
 * @param {Number[]} array The packed array.
 * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-* @param {Cartesian3} [result] The object into which to store the result.
-*/
+* @param {BoundingSphere} [result] The object into which to store the result.
+* @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if one was not provided.*/
 BoundingSphere.unpack = function(array, startingIndex, result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(array)) {
@@ -633,12 +647,28 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
     */
     func union(other: BoundingSphere) -> BoundingSphere {
         
-        var newCenter = center.add(other.center).multiplyByScalar(0.5)
+        let leftCenter = self.center
+        let leftRadius = self.radius
+        let rightCenter = other.center
+        let rightRadius = other.radius
         
-        var radius1 = center.subtract(newCenter).magnitude() + radius
-        var radius2 = other.center.subtract(newCenter).magnitude() + other.radius
+        let toRightCenter = rightCenter.subtract(leftCenter)
+        let centerSeparation = toRightCenter.magnitude()
         
-        return BoundingSphere(center: newCenter, radius: max(radius1, radius2))
+        if leftRadius >= (centerSeparation + rightRadius) {
+            return self
+        }
+        
+        if rightRadius >= (centerSeparation + leftRadius) {
+            return other
+        }
+        
+        // There are two tangent points, one on far side of each sphere.
+        let halfDistanceBetweenTangentPoints = (leftRadius + centerSeparation + rightRadius) * 0.5
+        
+        // Compute the center point halfway between the two tangent points.
+        let center = toRightCenter.multiplyByScalar((-leftRadius + halfDistanceBetweenTangentPoints) / centerSeparation)
+        return BoundingSphere(center: center.add(leftCenter), radius: halfDistanceBetweenTangentPoints)
     }
 /*
 var expandScratch = new Cartesian3();
@@ -671,21 +701,19 @@ BoundingSphere.expand = function(sphere, point, result) {
     return result;
 };
 */
-/**
-* Determines which side of a plane a sphere is located.
-*
-* @param {BoundingSphere} sphere The bounding sphere to test.
-* @param {Cartesian4} plane The coefficients of the plane in the for ax + by + cz + d = 0
-*                           where the coefficients a, b, c, and d are the components x, y, z,
-*                           and w of the {@link Cartesian4}, respectively.
-* @returns {Intersect} {@link Intersect.INSIDE} if the entire sphere is on the side of the plane
-*                      the normal is pointing, {@link Intersect.OUTSIDE} if the entire sphere is
-*                      on the opposite side, and {@link Intersect.INTERSECTING} if the sphere
-*                      intersects the plane.
-*/
-    func intersect(plane: Cartesian4) -> Intersect {
+    /**
+    * Determines which side of a plane a sphere is located.
+    *
+    * @param {BoundingSphere} sphere The bounding sphere to test.
+    * @param {Plane} plane The plane to test against.
+    * @returns {Intersect} {@link Intersect.INSIDE} if the entire sphere is on the side of the plane
+    *                      the normal is pointing, {@link Intersect.OUTSIDE} if the entire sphere is
+    *                      on the opposite side, and {@link Intersect.INTERSECTING} if the sphere
+    *                      intersects the plane.
+    */
+    func intersectPlane(plane: Plane) -> Intersect {
 
-        let distanceToPlane = Cartesian3(fromCartesian4: plane).dot(center) + plane.w
+        let distanceToPlane = plane.normal.dot(center) + plane.distance
         
         if distanceToPlane < -radius {
             // The center point is negative side of the plane normal
@@ -741,7 +769,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
 * });
 */
     func distanceSquaredTo(cartesian: Cartesian3) -> Double {
-        var diff = center.subtract(cartesian)
+        let diff = center.subtract(cartesian)
         return diff.magnitudeSquared() - radius * radius
     }
 /*
@@ -781,19 +809,18 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     return result;
 };
 */
-/**
-* The distances calculated by the vector from the center of the bounding sphere to position projected onto direction
-* plus/minus the radius of the bounding sphere.
-* <br>
-* If you imagine the infinite number of planes with normal direction, this computes the smallest distance to the
-* closest and farthest planes from position that intersect the bounding sphere.
-*
-* @param {BoundingSphere} sphere The bounding sphere to calculate the distance to.
-* @param {Cartesian3} position The position to calculate the distance from.
-* @param {Cartesian3} direction The direction from position.
-* @param {Cartesian2} [result] A Cartesian2 to store the nearest and farthest distances.
-* @returns {Interval} The nearest and farthest distances on the bounding sphere from position in direction.
-*/
+    /**
+    * The distances calculated by the vector from the center of the bounding sphere to position projected onto direction
+    * plus/minus the radius of the bounding sphere.
+    * <br>
+    * If you imagine the infinite number of planes with normal direction, this computes the smallest distance to the
+    * closest and farthest planes from position that intersect the bounding sphere.
+    *
+    * @param {BoundingSphere} sphere The bounding sphere to calculate the distance to.
+    * @param {Cartesian3} position The position to calculate the distance from.
+    * @param {Cartesian3} direction The direction from position.
+    * @returns {Interval} The nearest and farthest distances on the bounding sphere from position in direction.
+    */
     func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval {
         
         let toCenter = center.subtract(position)
@@ -944,8 +971,19 @@ BoundingSphere.equals = function(left, right) {
 BoundingSphere.prototype.intersect = function(plane) {
     return BoundingSphere.intersect(this, plane);
 };
-
-/**
+*/
+    /**
+    * Determines whether or not a sphere is hidden from view by the occluder.
+    *
+    * @param {BoundingSphere} sphere The bounding sphere surrounding the occludee object.
+    * @param {Occluder} occluder The occluder.
+    * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
+    */
+    func isOccluded (occluder: Occluder) -> Bool {
+        return !occluder.isBoundingSphereVisible(self)
+    }
+    /*
+    /**
 * Compares this BoundingSphere against the provided BoundingSphere componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.
 *

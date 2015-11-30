@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import Foundation
+import Metal
 
 /**
 * A mesh plus related metadata for a single tile of terrain.  Instances of this type are
@@ -58,7 +58,7 @@ struct TerrainMesh {
     * Index buffers (if any) generated from indices.
     * @type {Dictionary<String, IndexBuffer>}
     */
-    var indexBuffer: IndexBuffer? = nil //s = [String: IndexBuffer]()
+    var indexBuffer: Buffer? = nil
     
     /**
     * The lowest height in the tile, in meters above the ellipsoid.
@@ -92,9 +92,15 @@ struct TerrainMesh {
     * may be higher.
     * @type {Number}
     */
-    let vertexStride: Int
+    let stride: Int
+
+    /**
+    * A bounding box that completely contains the tile.
+    * @type {OrientedBoundingBox}
+    */
+    let orientedBoundingBox: OrientedBoundingBox?
     
-    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6) {
+    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?) {
         self.center = center
         self.vertices = vertices
         self.indices = indices
@@ -102,6 +108,7 @@ struct TerrainMesh {
         self.maximumHeight = maximumHeight
         self.boundingSphere3D = boundingSphere3D
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
-        self.vertexStride = vertexStride
+        self.stride = vertexStride
+        self.orientedBoundingBox = orientedBoundingBox
     }
 }

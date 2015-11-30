@@ -20,7 +20,7 @@ import Foundation
 * @param {ComponentDatatype} [options.componentDatatype] The datatype of each component in the attribute, e.g., individual elements in values.
 * @param {Number} [options.componentsPerAttribute] A number between 1 and 4 that defines the number of components in an attributes.
 * @param {Boolean} [options.normalize=false] When <code>true</code> and <code>componentDatatype</code> is an integer format, indicate that the components should be mapped to the range [0, 1] (unsigned) or [-1, 1] (signed) when they are accessed as floating-point for rendering.
-* @param {Number[]} [options.values] The values for the attributes stored in a typed array.
+* @param {Number[TypedArray]} [options.values] The values for the attributes stored in a typed array.
 *
 * @exception {DeveloperError} options.componentsPerAttribute must be between 1 and 4.
 *
@@ -32,7 +32,7 @@ import Foundation
 *     position : new Cesium.GeometryAttribute({
 *       componentDatatype : Cesium.ComponentDatatype.FLOAT,
 *       componentsPerAttribute : 3,
-*       values : [
+*       values : new Float32Array([
 *         0.0, 0.0, 0.0,
 *         7500000.0, 0.0, 0.0,
 *         0.0, 7500000.0, 0.0
@@ -53,7 +53,9 @@ class GeometryAttribute {
     *
     * @default undefined
     */
-    var componentDatatype: ComponentDatatype
+    var componentDatatype: ComponentDatatype {
+        return buffer.componentDatatype
+    }
     
     /**
     * A number between 1 and 4 that defines the number of components in an attributes.
@@ -122,21 +124,19 @@ class GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var values: [SerializedType]?
+    var buffer: Buffer
     
     var vertexCount: Int {
         get {
-            if values == nil { return 0 }
-            return values!.count / componentsPerAttribute
+            return buffer.length / componentDatatype.elementSize / componentsPerAttribute
         }
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: [SerializedType]) {
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, buffer: Buffer) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
-        self.componentDatatype = componentDatatype
         self.componentsPerAttribute = componentsPerAttribute
         self.normalize = normalize
-        self.values = values
+        self.buffer = buffer
     }
 }
 

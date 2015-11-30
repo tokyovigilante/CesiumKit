@@ -108,7 +108,7 @@ public class ImageryLayerCollection {
     // FIXME: ImageryProvider
     public func addImageryProvider(imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
         
-        var layer = ImageryLayer(imageryProvider: imageryProvider)
+        let layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)
         return layer
     }
@@ -304,6 +304,129 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
     
     this.layerMoved.raiseEvent(layer, 0, index);
 };
+        var applicableRectangleScratch = new Rectangle();
+    
+        /**
+         * Asynchronously determines the imagery layer features that are intersected by a pick ray.  The intersected imagery
+         * layer features are found by invoking {@link ImageryProvider#pickFeatures} for each imagery layer tile intersected
+         * by the pick ray.  To compute a pick ray from a location on the screen, use {@link Camera.getPickRay}.
+         *
+         * @param {Ray} ray The ray to test for intersection.
+         * @param {Scene} scene The scene.
+         * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise that resolves to an array of features intersected by the pick ray.
+         *                                             If it can be quickly determined that no features are intersected (for example,
+         *                                             because no active imagery providers support {@link ImageryProvider#pickFeatures}
+         *                                             or because the pick ray does not intersect the surface), this function will
+         *                                             return undefined.
+         *
+         * @example
+         * var pickRay = viewer.camera.getPickRay(windowPosition);
+         * var featuresPromise = viewer.imageryLayers.pickImageryLayerFeatures(pickRay, viewer.scene);
+         * if (!Cesium.defined(featuresPromise)) {
+         *     console.log('No features picked.');
+         * } else {
+         *     Cesium.when(featuresPromise, function(features) {
+         *         // This function is called asynchronously when the list if picked features is available.
+         *         console.log('Number of features: ' + features.length);
+         *         if (features.length > 0) {
+         *             console.log('First feature name: ' + features[0].name);
+         *         }
+         *     });
+         * }
+         */
+        ImageryLayerCollection.prototype.pickImageryLayerFeatures = function(ray, scene) {
+            // Find the picked location on the globe.
+            var pickedPosition = scene.globe.pick(ray, scene);
+            if (!defined(pickedPosition)) {
+                return undefined;
+            }
+    
+            var pickedLocation = scene.globe.ellipsoid.cartesianToCartographic(pickedPosition);
+    
+            // Find the terrain tile containing the picked location.
+            var tilesToRender = scene.globe._surface._tilesToRender;
+            var length = tilesToRender.length;
+            var pickedTile;
+    
+            for (var textureIndex = 0; !defined(pickedTile) && textureIndex < tilesToRender.length; ++textureIndex) {
+                var tile = tilesToRender[textureIndex];
+                if (Rectangle.contains(tile.rectangle, pickedLocation)) {
+                    pickedTile = tile;
+                }
+            }
+    
+            if (!defined(pickedTile)) {
+                return undefined;
+            }
+    
+            // Pick against all attached imagery tiles containing the pickedLocation.
+            var tileExtent = pickedTile.rectangle;
+            var imageryTiles = pickedTile.data.imagery;
+    
+            var promises = [];
+            for (var i = imageryTiles.length - 1; i >= 0; --i) {
+                var terrainImagery = imageryTiles[i];
+                var imagery = terrainImagery.readyImagery;
+                if (!defined(imagery)) {
+                    continue;
+                }
+                var provider = imagery.imageryLayer.imageryProvider;
+                if (!defined(provider.pickFeatures)) {
+                    continue;
+                }
+    
+                if (!Rectangle.contains(imagery.rectangle, pickedLocation)) {
+                    continue;
+                }
+    
+                // If this imagery came from a parent, it may not be applicable to its entire rectangle.
+                // Check the textureCoordinateRectangle.
+                var applicableRectangle = applicableRectangleScratch;
+    
+                var epsilon = 1 / 1024; // 1/4 of a pixel in a typical 256x256 tile.
+                applicableRectangle.west = CesiumMath.lerp(pickedTile.rectangle.west, pickedTile.rectangle.east, terrainImagery.textureCoordinateRectangle.x - epsilon);
+                applicableRectangle.east = CesiumMath.lerp(pickedTile.rectangle.west, pickedTile.rectangle.east, terrainImagery.textureCoordinateRectangle.z + epsilon);
+                applicableRectangle.south = CesiumMath.lerp(pickedTile.rectangle.south, pickedTile.rectangle.north, terrainImagery.textureCoordinateRectangle.y - epsilon);
+                applicableRectangle.north = CesiumMath.lerp(pickedTile.rectangle.south, pickedTile.rectangle.north, terrainImagery.textureCoordinateRectangle.w + epsilon);
+                if (!Rectangle.contains(applicableRectangle, pickedLocation)) {
+                    continue;
+                }
+    
+                var promise = provider.pickFeatures(imagery.x, imagery.y, imagery.level, pickedLocation.longitude, pickedLocation.latitude);
+                if (!defined(promise)) {
+                    continue;
+                }
+    
+                promises.push(promise);
+            }
+    
+            if (promises.length === 0) {
+                return undefined;
+            }
+    
+            return when.all(promises, function(results) {
+                var features = [];
+    
+                for (var resultIndex = 0; resultIndex < results.length; ++resultIndex) {
+                    var result = results[resultIndex];
+    
+                    if (defined(result) && result.length > 0) {
+                        for (var featureIndex = 0; featureIndex < result.length; ++featureIndex) {
+                            var feature = result[featureIndex];
+    
+                            // For features without a position, use the picked location.
+                            if (!defined(feature.position)) {
+                                feature.position = pickedLocation;
+                            }
+    
+                            features.push(feature);
+                        }
+                    }
+                }
+    
+                return features;
+            });
+        };
 
 /**
 * Returns true if this object was destroyed; otherwise, false.
@@ -347,7 +470,7 @@ ImageryLayerCollection.prototype.destroy = function() {
         var layersShownOrHidden = [ImageryLayer]()
         var layer: ImageryLayer
         
-        for (index, layer) in enumerate(_layers) {
+        for (index, layer) in _layers.enumerate() {
             layer.layerIndex = index
             
             if (layer.show) {
@@ -364,7 +487,7 @@ ImageryLayerCollection.prototype.destroy = function() {
                 layer._show = layer.show
             }
         }
-        for (index, layer) in enumerate(layersShownOrHidden) {
+        for (index, layer) in layersShownOrHidden.enumerate() {
             //FIXME: RaiseEvent
             layerShownOrHidden.raiseEvent()//layer, layer._layerIndex, layer.show)
         }

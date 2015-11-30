@@ -22,20 +22,20 @@ import Foundation
 */
 // FIXME: Pack
 
-struct Cartesian2: Packable, Equatable {
+public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The X component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The number of elements used to pack the object into an array.
@@ -43,7 +43,13 @@ struct Cartesian2: Packable, Equatable {
     */
     static let packedLength: Int = 2
     
-    init(x: Double = 0.0, y: Double = 0.0) {
+    public var description: String {
+        get {
+            return self.toString()
+        }
+    }
+    
+    public init(x: Double = 0.0, y: Double = 0.0) {
         self.x = x
         self.y = y
     }
@@ -85,8 +91,8 @@ struct Cartesian2: Packable, Equatable {
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian2.packedLength, "Array to short to pack")
-        array[startingIndex] = Float32(Float(x))
-        array[startingIndex+1] = Float32(Float(y))
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
     }
     
     
@@ -96,7 +102,7 @@ struct Cartesian2: Packable, Equatable {
     *
     * @param {Number[]} array The packed array.
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Cartesian2} [result] The object into which to store the result.
+    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.    
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian2 {
         assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
@@ -202,7 +208,7 @@ struct Cartesian2: Packable, Equatable {
     * // Returns 1.0
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(2.0, 0.0));
     */
-    func distance(other: Cartesian2) -> Double {
+    public func distance(other: Cartesian2) -> Double {
         return subtract(other).magnitude()
     }
     
@@ -230,7 +236,7 @@ struct Cartesian2: Packable, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func normalize() -> Cartesian2 {
-        var magnitude = self.magnitude();
+        let magnitude = self.magnitude();
         return Cartesian2(x: x / magnitude, y: y / magnitude)
     }
     
@@ -384,9 +390,10 @@ struct Cartesian2: Packable, Equatable {
     * @param {Cartesian2} [left] The first Cartesian.
     * @param {Cartesian2} [right] The second Cartesian.
     * @param {Number} relativeEpsilon The relative epsilon tolerance to use for equality testing.
-    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    
+    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
+    func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         return self == other ||
                 (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
                 Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon))
@@ -426,7 +433,7 @@ struct Cartesian2: Packable, Equatable {
     * @returns {String} A string representing the provided Cartesian in the format '(x, y)'.
     */
     func toString() -> String {
-        return "(\(x), \(y))"
+        return "(x:\(x), y:\(y))"
     }
 }
 
@@ -438,7 +445,7 @@ struct Cartesian2: Packable, Equatable {
 * @param {Cartesian2} [right] The second Cartesian.
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func == (left: Cartesian2, right: Cartesian2) -> Bool {
+public func == (left: Cartesian2, right: Cartesian2) -> Bool {
     return (left.x == right.x) && (left.y == right.y)
 }
 

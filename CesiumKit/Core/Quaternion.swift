@@ -26,30 +26,30 @@ public struct Quaternion {
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0
+    public var z: Double = 0.0
     
     /**
     * The W component.
     * @type {Number}
     * @default 0.0
     */
-    var w: Double = 0.0
+    public var w: Double = 0.0
     
-    init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
+    public init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
         self.x = x
         self.y = y
         self.z = z
@@ -65,10 +65,10 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    init(fromAxis axis: Cartesian3, angle: Double) {
-        var halfAngle = angle / 2.0
-        var s = sin(halfAngle)
-        var normAxis = axis.normalize()
+    public init(fromAxis axis: Cartesian3, angle: Double) {
+        let halfAngle = angle / 2.0
+        let s = sin(halfAngle)
+        let normAxis = axis.normalize()
         
         self.x = normAxis.x * s
         self.y = normAxis.y * s
@@ -88,11 +88,11 @@ public struct Quaternion {
     */
     init(fromRotationMatrix matrix: Matrix3) {
         
-        var m00 = matrix[0, 0]
-        var m11 = matrix[1, 1]
-        var m22 = matrix[2, 2]
+        let m00 = matrix[0, 0]
+        let m11 = matrix[1, 1]
+        let m22 = matrix[2, 2]
         
-        var trace = m00 + m11 + m22
+        let trace = m00 + m11 + m22
         
         var root: Double
         
@@ -118,8 +118,8 @@ public struct Quaternion {
             if (m22 > m00 && m22 > m11) {
                 i = 2
             }
-            var j = next[i]
-            var k = next[j]
+            let j = next[i]
+            let k = next[j]
             
             root = sqrt(matrix[i, i] - matrix[j, j] - matrix[k, k] + 1.0)
             
@@ -359,7 +359,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    func normalize () -> Quaternion {
+    public func normalize () -> Quaternion {
         let inverseMagnitude: Double = 1.0 / magnitude()
         return Quaternion(
             x: x * inverseMagnitude,
@@ -378,9 +378,9 @@ public struct Quaternion {
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
     
-    func inverse () -> Quaternion {
+    public func inverse () -> Quaternion {
         let result = conjugate()
-        return multiplyByScalar(1.0 / magnitudeSquared())
+        return result.multiplyByScalar(1.0 / magnitudeSquared())
     }
     /*
     /**
@@ -1066,7 +1066,7 @@ public struct Quaternion {
 * @param {Quaternion} [result] The object onto which to store the result.
 * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
 */
-func * (lhs: Quaternion, rhs: Quaternion) -> Quaternion {
+public func * (lhs: Quaternion, rhs: Quaternion) -> Quaternion {
     return rhs.multiply(lhs)
 }
 

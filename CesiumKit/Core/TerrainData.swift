@@ -18,7 +18,7 @@ import Foundation
 * @see HeightmapTerrainData
 * @see QuantizedMeshTerrainData
 */
-class TerrainData: Equatable {
+protocol TerrainData: class {
     
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
@@ -27,7 +27,7 @@ class TerrainData: Equatable {
     * @memberof TerrainData.prototype
     * @type {Uint8Array|Image|Canvas}
     */
-    var waterMask: [UInt8]?
+    var waterMask: [UInt8]? { get }
     
     /**
     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
@@ -38,13 +38,8 @@ class TerrainData: Equatable {
     *
     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
     */
-    var createdByUpsampling: Bool
-    
-    init(waterMask: [UInt8]? = nil, createdByUpsampling: Bool = false) {
-        self.waterMask = waterMask
-        self.createdByUpsampling = createdByUpsampling
-    }
-    
+    var createdByUpsampling: Bool { get }
+        
     /**
     * Computes the terrain height at a specified longitude and latitude.
     * @function
@@ -56,10 +51,7 @@ class TerrainData: Equatable {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(#rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
-        assert(false, "invalid base class")
-        return Double.NaN
-    }
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
     
     /**
     * Determines if a given child tile is available, based on the
@@ -74,10 +66,7 @@ class TerrainData: Equatable {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
-        assert(false, "invalid base class")
-        return false
-    }
+    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
     
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
@@ -91,10 +80,7 @@ class TerrainData: Equatable {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(#tilingScheme: TilingScheme, x: Int, y: Int, level: Int) -> TerrainMesh? {
-        assert(false, "invalid base class")
-        return nil
-    }
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, completionBlock: (TerrainMesh?) -> ())
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -111,13 +97,13 @@ class TerrainData: Equatable {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(#tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> TerrainData? {
-        assert(false, "invalid base class")
-        return nil
-    }
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ())
 }
 
-func ==(lhs: TerrainData, rhs: TerrainData) -> Bool {
-    assert(false, "invalid base class")
-    return false
+extension TerrainData {
+    
+    /*init(waterMask: [UInt8]? = nil, createdByUpsampling: Bool = false) {
+        self.waterMask = waterMask
+        self.createdByUpsampling = createdByUpsampling
+    }*/    
 }

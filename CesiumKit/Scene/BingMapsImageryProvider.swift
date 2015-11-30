@@ -1,4 +1,4 @@
-//
+ //
 //  BingMapsImageryProvider.swift
 //  CesiumKit
 //
@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit
 import Foundation
+import Alamofire
+#if os(OSX)
+import AppKit.NSImage
+#endif
 
 /**
 * Provides tiled imagery using the Bing Maps Imagery REST API.
@@ -65,6 +68,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     public struct Options {
         
+        public let queue: dispatch_queue_t? = nil
+        
         public let url: String
         
         public let key: String?
@@ -77,13 +82,16 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let tileDiscardPolicy: TileDiscardPolicy?
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy()) {
+        public let ellipsoid: Ellipsoid
+        
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
             self.url = url
             self.key = key
             self.tileProtocol = tileProtocol
             self.mapStyle = mapStyle
             self.culture = culture
             self.tileDiscardPolicy = tileDiscardPolicy
+            self.ellipsoid = ellipsoid
         }
     }
     
@@ -94,7 +102,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultAlpha: Double = 1.0
+    public let defaultAlpha: Float = 1.0
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -102,7 +110,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultBrightness: Double = 1.0
+    public let defaultBrightness: Float = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -111,7 +119,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultContrast: Double = 1.0
+    public let defaultContrast: Float = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -119,7 +127,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultHue: Double = 0.0
+    public let defaultHue: Float = 0.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -128,7 +136,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultSaturation: Double = 1.0
+    public let defaultSaturation: Float = 1.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -136,7 +144,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultGamma: Double
+    public let defaultGamma: Float
+    
+    public let queue: dispatch_queue_t? = nil
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -149,7 +159,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         }
     }
     private var _ready: Bool = false
-        
+    
     /**
     * Gets the rectangle, in radians, of the imagery provided by this instance.  This function should
     * not be called before {@link BingMapsImageryProvider#ready} returns true.
@@ -218,28 +228,28 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public var minimumLevel: Int? {
+     public var minimumLevel: Int? {
         get {
             assert(_ready, "minimumLevel must not be called before the imagery provider is ready.")
             return _minimumLevel
         }
     }
     private var _minimumLevel: Int? = nil
-
+    
     /**
     * Gets the tiling scheme used by the provider.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-
+    
     public var tilingScheme: TilingScheme {
         get {
             assert(_ready, "tilingScheme must not be called before the imagery provider is ready.")
             return _tilingScheme
         }
     }
-
+    
     private var _tilingScheme: TilingScheme
     
     /**
@@ -258,7 +268,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     }
     
     private var _tileDiscardPolicy: TileDiscardPolicy?
-
+    
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -266,27 +276,15 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    public var errorEvent: Event {
-        get {
-            return _errorEvent
-        }
-    }
-    private var _errorEvent = Event()
-    
+    public private (set) var errorEvent = Event()
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     * the source of the imagery.  This function should not be called before {@link BingMapsImageryProvider#ready} returns true.
     * @memberof BingMapsImageryProvider.prototype
     * @type {Credit}
     */
-    public var credit: Credit {
-        get {
-            return _credit
-        }
-    }
+    public private (set) var credit: Credit
     
-    private var _credit: Credit
-
     /**
     * Gets the proxy used by this provider.
     * @memberof ImageryProvider.prototype
@@ -339,7 +337,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     public init(options: Options = Options()) {
         
-
+        
         /**
         * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
         * By default, this is set to 1.3 for the "aerial" and "aerial with labels" map styles and 1.0 for
@@ -366,7 +364,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         _tileDiscardPolicy = options.tileDiscardPolicy
         //        this._proxy = options.proxy;
-        _credit = Credit(
+        credit = Credit(
             text: "Bing Imagery",
             imageUrl: nil/*BingMapsImageryProvider._logoData*/,
             link: "http://www.bing.com"
@@ -374,91 +372,87 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         _tilingScheme = WebMercatorTilingScheme(
             numberOfLevelZeroTilesX : 2,
-            numberOfLevelZeroTilesY : 2
+            numberOfLevelZeroTilesY : 2,
+            ellipsoid: options.ellipsoid
         )
         
-
         
-        _errorEvent = Event()
+        
+        errorEvent = Event()
         
         _ready = false
         
         //var metadataError;
         
-        var metadataSuccess = { (data: NSData) -> () in
+        let metadataSuccess = { (data: NSData) -> () in
             let metadata = JSON(data: data)
             let resource = metadata["resourceSets"][0]["resources"][0]
             self._tileWidth = resource["imageWidth"].intValue
             self._tileHeight = resource["imageHeight"].intValue
             self._maximumLevel = resource["zoomMax"].intValue - 1
             self._imageUrlSubdomains = resource["imageUrlSubdomains"]
-
+            
             let imageUrlTemplate = resource["imageUrl"].stringValue.replace("{culture}", self.culture)
-
+            
             // Force HTTPS
             self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
             
             
-        // Install the default tile discard policy if none has been supplied.
+            // Install the default tile discard policy if none has been supplied.
             //FIXME: Tile discard policy
-        /*if (!defined(that._tileDiscardPolicy)) {
-        that._tileDiscardPolicy = new DiscardMissingTileImagePolicy({
-        missingImageUrl : buildImageUrl(that, 0, 0, that._maximumLevel),
-        pixelsToCheck : [new Cartesian2(0, 0), new Cartesian2(120, 140), new Cartesian2(130, 160), new Cartesian2(200, 50), new Cartesian2(200, 200)],
-        disableCheckIfAllPixelsAreTransparent : true
-        });
-        }*/
+            /*if (!defined(that._tileDiscardPolicy)) {
+            that._tileDiscardPolicy = new DiscardMissingTileImagePolicy({
+            missingImageUrl : buildImageUrl(that, 0, 0, that._maximumLevel),
+            pixelsToCheck : [new Cartesian2(0, 0), new Cartesian2(120, 140), new Cartesian2(130, 160), new Cartesian2(200, 50), new Cartesian2(200, 200)],
+            disableCheckIfAllPixelsAreTransparent : true
+            });
+            }*/
             // FIXME: attribution
-        /*
-        var attributionList = that._attributionList = resource.imageryProviders;
-        if (!attributionList) {
-        attributionList = that._attributionList = [];
-        }
-        
-        for (var attributionIndex = 0, attributionLength = attributionList.length; attributionIndex < attributionLength; ++attributionIndex) {
-        var attribution = attributionList[attributionIndex];
-        
-        attribution.credit = new Credit(attribution.attribution);
-        
-        var coverageAreas = attribution.coverageAreas;
-        
-        for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; areaIndex < areaLength; ++areaIndex) {
-        var area = coverageAreas[areaIndex];
-        var bbox = area.bbox;
-        area.bbox = new Rectangle(
-        CesiumMath.toRadians(bbox[1]),
-        CesiumMath.toRadians(bbox[0]),
-        CesiumMath.toRadians(bbox[3]),
-        CesiumMath.toRadians(bbox[2]));
-        }
-        }*/
-        
-        self._ready = true
-        //TileProviderError.handleSuccess(metadataError);*/
-        }
-        
-        var metadataFailure = { (error: String) -> () in
-            println(error)
-        /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
-        }
-        
-        var requestMetadata  = { () -> () in
-            
-            let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + BingMapsStyle.AerialWithLabels.rawValue//self.mapStyle.rawValue
-
-            request(.GET, metadataUrl, parameters: [
-                "incl" : "ImageryProviders",
-                "key" : self._key])
-                .response { (request, response, data, error) in
-                    if let error = error {
-                        metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
-                        return
-                    }
-                    metadataSuccess(data as! NSData!)
+            /*
+            var attributionList = that._attributionList = resource.imageryProviders;
+            if (!attributionList) {
+            attributionList = that._attributionList = [];
             }
+            
+            for (var attributionIndex = 0, attributionLength = attributionList.length; attributionIndex < attributionLength; ++attributionIndex) {
+            var attribution = attributionList[attributionIndex];
+            
+            attribution.credit = new Credit(attribution.attribution);
+            
+            var coverageAreas = attribution.coverageAreas;
+            
+            for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; areaIndex < areaLength; ++areaIndex) {
+            var area = coverageAreas[areaIndex];
+            var bbox = area.bbox;
+            area.bbox = new Rectangle(
+            CesiumMath.toRadians(bbox[1]),
+            CesiumMath.toRadians(bbox[0]),
+            CesiumMath.toRadians(bbox[3]),
+            CesiumMath.toRadians(bbox[2]));
+            }
+            }*/
+            
+            self._ready = true
+            //TileProviderError.handleSuccess(metadataError);*/
         }
-       
-        requestMetadata()
+        
+        let metadataFailure = { (error: String) -> () in
+            print(error)
+            /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
+        }
+        
+        
+        let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+        request(.GET, metadataUrl, parameters: [
+            "incl" : "ImageryProviders",
+            "key" : self._key])
+            .response { (request, response, data, error) in
+                if let error = error {
+                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
+                    return
+                }
+                metadataSuccess(data as NSData!)
+        }
     }
     
     
@@ -473,7 +467,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
         return [credit]
     }
     
@@ -499,15 +493,13 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
-        
         let url = buildImageUrl(x: x, y: y, level: level)
-        return loadImage(url)
-
+        loadImage(url, completionBlock: completionBlock)
+        
     }
-    
-    
+
     /**
     * Loads an image from a given URL.  If the server referenced by the URL already has
     * too many requests pending, this function will instead return undefined, indicating
@@ -519,24 +511,24 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (url: String) -> UIImage? {
-        if let imageData = NSData(contentsOfURL: NSURL(string: url)!) {
-            return UIImage(data: imageData)
+    public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
+        request(.GET, url)
+            .response { (request, response, data, error) in
+                if let error = error {
+                    print("error: \(error.localizedDescription)")
+                    return
+                }
+                #if os(iOS)
+                    let image = UIImage(data: data!)?.CGImage
+                    completionBlock(image)
+                #elseif os(OSX)
+                    let image = NSImage(data: data!)?.CGImage
+                    completionBlock(image)
+                #endif
         }
-        /*request(.GET, url)//, //parameters: [
-        //"incl" : "ImageryPrtoviders",
-        //"key" : self._key])
-        .response { (request, response, data, error) in
-        if let error = error {
-        metadataFailure("An error occurred while accessing \(metadataUrl): \(error.localizedDescription)")
-        return
-        }
-        metadataSuccess(data as NSData!)
-        }
-        }*/
-        return nil
+        
     }
-
+    
     /*
     /**
     * Gets the proxy used by this provider.
@@ -548,8 +540,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     return this._proxy;
     }
     },
-
-   
+    
+    
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -584,7 +576,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     return getRectangleAttribution(this._attributionList, level, rectangle);
     };
     */
-    
+
     /*BingMapsImageryProvider._logoData = 'data:image/png;base64,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';
     */
     /**
@@ -598,12 +590,12 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @see {@link http://msdn.microsoft.com/en-us/library/bb259689.aspx|Bing Maps Tile System}
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
-    func tileXYToQuadKey (#x: Int, y: Int, level: Int) -> String {
-    
+    func tileXYToQuadKey (x x: Int, y: Int, level: Int) -> String {
+        
         var quadkey = ""
         
         for ( var i = level; i >= 0; --i) {
-            var bitmask = 1 << i
+            let bitmask = 1 << i
             var digit = 0
             
             if ((x & bitmask) != 0) {
@@ -651,20 +643,20 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     };
     */
-    func buildImageUrl(#x: Int, y: Int, level: Int) -> String {
+    func buildImageUrl(x x: Int, y: Int, level: Int) -> String {
         var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
-        var subdomains = _imageUrlSubdomains!.arrayValue
-        var subdomainIndex = (x + y + level) % subdomains.count
+        let subdomains = _imageUrlSubdomains!.arrayValue
+        let subdomainIndex = (x + y + level) % subdomains.count
         imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
-
+        
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;
         if (defined(proxy)) {
-            imageUrl = proxy.getURL(imageUrl);
+        imageUrl = proxy.getURL(imageUrl);
         }
         */
         return imageUrl
@@ -701,9 +693,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     return result;
     }
-    
-    return BingMapsImageryProvider;
-    });
     */
-    
 }
+ 
+ 
+ 

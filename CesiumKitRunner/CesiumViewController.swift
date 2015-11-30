@@ -6,156 +6,109 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
-import GLKit
+import UIKit
 import CesiumKit
+import MetalKit
 
-class CesiumViewController: GLKViewController {
+class CesiumViewController: UIViewController, MTKViewDelegate {
     
-    var setup = false
+    private var _globe: CesiumGlobe!
     
-    private var lastFrameRateUpdate = NSDate()
+    @IBOutlet var _metalView: MTKView!
+    
+    override func viewDidLoad() {
+        
 
-    
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        let scaleFactor = UIScreen.mainScreen().nativeScale
+        view.contentScaleFactor = scaleFactor
 
-    }
-    
-    private var globe: CesiumGlobe!
-    
-    override func viewDidLoad () {
-        super.viewDidLoad()
-        setupContext()
-        setupGestureRecognisers()
-    }
-    
-    override func didReceiveMemoryWarning() {
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
         
-        super.didReceiveMemoryWarning()
-        
-        tearDownGL()
-        
-        let glView = self.view as! GLKView
-        
-        if EAGLContext.currentContext() == glView.context {
-            EAGLContext.setCurrentContext(nil)
-        }
-    }
-    
-    deinit {
-        
-        tearDownGL()
-        
-        let glView = self.view as! GLKView
-        
-        if EAGLContext.currentContext() == glView.context {
-            EAGLContext.setCurrentContext(nil)
-        }
-    }
-    
-    private func setupContext () {
-        
-        let view: GLKView = self.view as! GLKView
-       
-        view.context = EAGLContext(API: .OpenGLES3)
-
-        if !EAGLContext.setCurrentContext(view.context) {
-            println("Failed to set current OpenGL context!")
-            exit(1)
-        }
-        
-        // Configure renderbuffers created by the view
-        view.drawableColorFormat = .RGBA8888
-        view.drawableDepthFormat = .Format24
-        view.drawableStencilFormat = .Format8
-        
-        // Enable multisampling
-        //view.drawableMultisample = .Multisample4X
-        
-        preferredFramesPerSecond = 60
-
-        // enable Retina support on device
-        #if arch(i386) || arch(x86_64)
-            // render low-res for simulator (Software GL)
-            view.contentScaleFactor = UIScreen.mainScreen().scale * 0.25
-            #else
-            // render at native (screen pixel) scale for retina screens
-            view.contentScaleFactor = UIScreen.mainScreen().nativeScale
-        #endif
-        
-        // create globe
-        let options = CesiumOptions(
-            imageryProvider: nil)
-        globe = CesiumKit.CesiumGlobe(view: view, options: options)
-        globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider(options: BingMapsImageryProvider.Options(culture: "fr-FR")))
-        //globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
-        
-        //globe.scene.camera.setView()
-        
-        //Murrumbeena
-        //globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
-        //globe.scene.camera.lookUp(Math.toRadians(90))
-        //Wellington
-        //globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
-        //globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
-    }
-    
-    func setupGestureRecognisers() {
-        let pinch = UIPinchGestureRecognizer(target: self, action: Selector("handlePinchGesture:"))
-        view.addGestureRecognizer(pinch)
-    }
-    
-
-    
-    //MARK: - GLKView delegate
-    
-    override func glkView(view: GLKView!, drawInRect rect: CGRect) {
-        globe?.render(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
-        if -lastFrameRateUpdate.timeIntervalSinceNow > 1.0 {
-            lastFrameRateUpdate = NSDate()
-            let performanceString = String(format: "%.02f fps (%.0f ms)", 1/timeSinceLastDraw, timeSinceLastDraw * 1000)
-            println(performanceString)
-        }
-    }
-    
-    // MARK: - GLKViewControllerDelegate
-    func update () {
-        
-    }
-    
-    func tearDownGL () {
-        globe = nil
-    }
-    
-    func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {
-        
-        
-        if recognizer.scale < 1 {
-            println("Pinched")
-        } else {
-            println("Zoomed")
-        }
-        /*if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
-            [gesture setString:kPinchGesture];
-            if (((UIGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
-                if (((UIPinchGestureRecognizer*)sender).scale < 1) {
-                    NSLog(@"Pinched");
-                }
-                else {
-                    NSLog(@"Zoomed");
-                }
+        let renderSize = CGSizeMake(renderWidth, renderHeight)
                 
-            }*/
+        _metalView.delegate = self
+        
+        _metalView.device = MTLCreateSystemDefaultDevice()
+        _metalView.colorPixelFormat = .BGRA8Unorm
+        _metalView.depthStencilPixelFormat = .Depth32Float_Stencil8
+        _metalView.framebufferOnly = true
+        _metalView.preferredFramesPerSecond = 60
+
+        _metalView.drawableSize = renderSize
+        _metalView.autoResizeDrawable = true
+        
+    
+        let options = CesiumOptions(imageryProvider: nil)
+        
+        _globe = CesiumGlobe(view: _metalView, options: options)
+        
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        
+        //_globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
+        _globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 10), heading: 0, pitch: Math.toRadians(-90), roll: 0)
+        //Murrumbeena
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 10), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(0), range: 1000))
+        //Wellington
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
+        //_globe.scene.camera.viewRectangle(Rectangle.fromDegrees(west: 140.0, south: 20.0, east: 165.0, north: -90.0))
+        
+        //startRendering()
+
+    }
+    
+    /*override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        // propagate to CesiumKit
+        globe?.eventHandler.handleTouchStart(touches, screenScaleFactor: Double(view.contentScaleFactor))
+    }
+    
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        globe?.eventHandler.handleTouchMove(touches, screenScaleFactor: Double(view.contentScaleFactor))
+    }
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        globe?.eventHandler.handleTouchEnd(touches)
+    }
+    
+    override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
+        
+    }*/
+    
+    func startRendering () {
+        _metalView.paused = false
+    }
+    
+    func stopRendering () {
+        _metalView.paused = true
+    }
+    
+    func drawInMTKView(view: MTKView) {
+        let scaleFactor = view.contentScaleFactor
+        let viewBoundsSize = view.bounds.size
+        let renderWidth = viewBoundsSize.width * scaleFactor
+        let renderHeight = viewBoundsSize.height * scaleFactor
+        
+        let renderSize = CGSizeMake(renderWidth , renderHeight)
+        _globe.render(renderSize)
+    }
+    
+    func mtkView(view: MTKView, drawableSizeWillChange size: CGSize) {
+        //let scale = view.contentScaleFactor
+        //let layerSize = view.bounds.size
+        
+        //view.drawableSize = layerSize
+        /*
+        _metalView.metalLayer.contentsScale = scale
+        _metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
+        _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
     }
 }
 
-
-//helper extensions to pass arguments to GL land
-extension Array {
-    func size () -> Int {
-        return self.count * sizeofValue(self[0])
-    }
-}
 
 

@@ -53,7 +53,7 @@ protocol QuadtreeTileProvider {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance: Double { get set }
+    var lightingFadeOutDistance: Float { get set }
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -62,7 +62,7 @@ protocol QuadtreeTileProvider {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance: Double { get set }
+    var lightingFadeInDistance: Float { get set }
     
     var hasWaterMask: Bool { get set }
     
@@ -70,7 +70,7 @@ protocol QuadtreeTileProvider {
     
     var enableLighting: Bool { get set }
     
-    var zoomedOutOceanSpecularIntensity: Double { get set }
+    var zoomedOutOceanSpecularIntensity: Float { get set }
     
     var baseColor: Cartesian4 { get set }
     
@@ -108,7 +108,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func beginUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
+    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
@@ -121,7 +121,7 @@ protocol QuadtreeTileProvider {
     * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
     *        commands into this array.
     */
-    func endUpdate (#context: Context, frameState: FrameState, inout commandList: [Command])
+    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command])
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be
@@ -151,7 +151,7 @@ protocol QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (tile: QuadtreeTile, context: Context, frameState: FrameState)
+    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [Command], frameState: FrameState)
     
     /**
     * Determines the visibility of a given tile.  The tile may be fully visible, partially visible, or not

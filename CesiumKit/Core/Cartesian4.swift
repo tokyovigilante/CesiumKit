@@ -23,34 +23,53 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-public struct Cartesian4: Packable, Equatable, Printable {
+public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     /**
     * The X component.
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    var x: Double = 0.0 {
+        didSet {
+            _floatRepresentation[0] = Float(x)
+        }
+    }
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    var y: Double = 0.0 {
+        didSet {
+            _floatRepresentation[1] = Float(y)
+        }
+    }
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0
+    var z: Double = 0.0 {
+        didSet {
+            _floatRepresentation[2] = Float(z)
+        }
+    }
     
     /**
     * The W component.
     * @type {Number}
     * @default 0.0
     */
-    var w: Double = 0.0
+    var w: Double = 0.0 {
+        didSet {
+            _floatRepresentation[3] = Float(w)
+        }
+    }
+    
+    private var _floatRepresentation: [Float]
+    private let _floatPackedSize: Int
     
     public var description: String {
         return "(\(x), \(y), \(z), \(w))"
@@ -92,6 +111,8 @@ public struct Cartesian4: Packable, Equatable, Printable {
         self.y = y
         self.z = z
         self.w = w
+        _floatRepresentation = [Float(x), Float(y), Float(z), Float(w)]
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     /**
@@ -102,8 +123,8 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    static func fromColor (#red: Double, green: Double, blue: Double, alpha: Double) -> Cartesian4 {
-        return Cartesian4(x: red, y: green, z: blue, w: alpha)
+    init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
+        self.init(x: red, y: green, z: blue, w: alpha)
     }
     
     /**
@@ -113,12 +134,13 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack(inout array: [Float], startingIndex: Int) {
+    func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Cartesian4.packedLength, "Array too short")
-        array[startingIndex] = Float(x)
+        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
+        /*array[startingIndex] = Float(x)
         array[startingIndex+1] = Float(y)
         array[startingIndex+2] = Float(z)
-        array[startingIndex+3] = Float(w)
+        array[startingIndex+3] = Float(w)*/
     }
     
     /**
@@ -268,7 +290,7 @@ public struct Cartesian4: Packable, Equatable, Printable {
     * @returns {Cartesian4} The modified result parameter.
     */
     func normalize() -> Cartesian4 {
-        var magnitude = self.magnitude();
+        let magnitude = self.magnitude();
         return Cartesian4(x: x / magnitude, y: y / magnitude, z: z / magnitude, w: w / magnitude)
     }
     
@@ -417,10 +439,10 @@ public struct Cartesian4: Packable, Equatable, Printable {
     }
     
     func equalsArray (array: [Float], offset: Int) -> Bool {
-    return Float(x) == array[offset] &&
-    Float(y) == array[offset + 1] &&
-    Float(z) == array[offset + 2] &&
-    Float(w) == array[offset + 3]
+        return Float(x) == array[offset] &&
+            Float(y) == array[offset + 1] &&
+            Float(z) == array[offset + 2] &&
+            Float(w) == array[offset + 3]
     }
     
     /**

@@ -22,7 +22,7 @@ import Foundation
 *
 * @see WebMercatorProjection
 */
-public struct GeographicProjection: Projection {
+public struct GeographicProjection: MapProjection {
     
     public let ellipsoid: Ellipsoid
     public let semimajorAxis: Double
@@ -66,9 +66,9 @@ public struct GeographicProjection: Projection {
     *          created and returned.
     */
     public func unproject(cartesian: Cartesian3) -> Cartographic {
-        var longitude = cartesian.x * oneOverSemimajorAxis
-        var latitude = cartesian.y * oneOverSemimajorAxis
-        var height = cartesian.z
+        let longitude = cartesian.x * oneOverSemimajorAxis
+        let latitude = cartesian.y * oneOverSemimajorAxis
+        let height = cartesian.z
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
     }
     

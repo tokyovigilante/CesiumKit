@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Metal
+
 /**
 * A geometry representation with attributes forming vertices and optional index data
 * defining primitives.  Geometries and an {@link Appearance}, which describes the shading,
@@ -100,7 +102,7 @@ class Geometry {
     * geometry.attributes.position = new Cesium.GeometryAttribute({
     *   componentDatatype : Cesium.ComponentDatatype.FLOAT,
     *   componentsPerAttribute : 3,
-    *   values : new Float32Array()
+    *   values : new Float32Array(0)
     * });
     */
     let attributes: GeometryAttributes
@@ -123,7 +125,7 @@ class Geometry {
     *
     * @default undefined
     */
-    let primitiveType: PrimitiveType
+    let primitiveType: MTLPrimitiveType
     
     /**
     * An optional bounding sphere that fully encloses the geometry.  This is
@@ -145,7 +147,7 @@ class Geometry {
     */
     var boundingSphereCV: BoundingSphere? = nil
     
-    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: PrimitiveType = PrimitiveType.Triangles, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
+    init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: MTLPrimitiveType = .Triangle, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
         self.attributes = attributes
         self.indices = indices
         self.primitiveType = primitiveType
@@ -157,22 +159,22 @@ class Geometry {
     * Computes the number of vertices in a geometry.  The runtime is linear with
     * respect to the number of attributes in a vertex, not the number of vertices.
     *
-    * @param {Cartesian3} geometry The geometry.
+    * @param {Geometry} geometry The geometry.
     * @returns {Number} The number of vertices in the geometry.
     *
     * @example
     * var numVertices = Cesium.Geometry.computeNumberOfVertices(geometry);
     */
     func computeNumberOfVertices() -> Int {
-        var numberOfVertices = -1
+        let numberOfVertices = -1
         
-        for i in 0...5 {
-            if let attributeComponentCount = attributes[i]?.values?.count, componentsPerAttribute = attributes[i]?.componentsPerAttribute {
+        //for i in 0...5 {
+            /*if let attributeComponentCount = attributes[i]?.values?.count, componentsPerAttribute = attributes[i]?.componentsPerAttribute {
                 let num = attributeComponentCount / componentsPerAttribute
                 assert(numberOfVertices == num || numberOfVertices == -1, "All attribute lists must have the same number of attributes")
                 numberOfVertices = num
-            }
-        }
+            }*/
+        //}
         return numberOfVertices
     }
     

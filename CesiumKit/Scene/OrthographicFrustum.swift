@@ -162,7 +162,7 @@ struct OrthographicFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (#position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume  {
+    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume  {
         /*if (!defined(position)) {
     throw new DeveloperError('position is required.');
     }
@@ -284,7 +284,7 @@ struct OrthographicFrustum: Frustum {
     * // Get the width and height of a pixel.
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight));
     */
-    func pixelSize (#drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
 /*    update(this);
     
     //>>includeStart('debug', pragmas.debug);

@@ -33,7 +33,7 @@ import Foundation
 * @see Matrix4
 */
 // FIXME: Packable
-public struct Matrix3: DebugPrintable, Printable, Packable {
+public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Packable {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -43,7 +43,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     
     private var _grid: [Double] = [Double](count: packedLength, repeatedValue: 0.0)
     
-    init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0,
+    public init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0,
         _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0,
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0) {
             _grid[0] = column0Row0
@@ -63,7 +63,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @param {Quaternion} quaternion the quaternion to use.
     * @returns {Matrix3} The 3x3 rotation matrix from this quaternion.
     */
-    init(fromQuaternion quaternion: Quaternion) {
+    public init(fromQuaternion quaternion: Quaternion) {
         
         let x2 = quaternion.x * quaternion.x
         let xy = quaternion.x * quaternion.y
@@ -110,7 +110,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
         }
     }
     
-    func indexIsValid(#column: Int, row: Int) -> Bool {
+    func indexIsValid(column column: Int, row: Int) -> Bool {
         return row >= 0 && column >= 0 && (column * row) + row < Matrix3.packedLength
     }
     
@@ -158,13 +158,10 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
         return result
     }
     
-    static func fromMatrix4 (matrix: Matrix4) -> Matrix3 {
-        
-        var result = Matrix3()
+    init (fromMatrix4 matrix: Matrix4) {
         for index in 0..<Matrix3.packedLength {
-            result[index] = matrix[index]
+            _grid[index] = matrix[index]
         }
-        return result
     }
     
     /**
@@ -188,14 +185,10 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
     */
-    static func fromArray (array: [Double], startingIndex: Int = 0) -> Matrix3 {
-        
-        var result = Matrix3()
-        
+    init (fromArray array: [Double], startingIndex: Int = 0) {
         for index in 0..<Matrix3.packedLength {
-            result[index] = array[startingIndex + index]
+            _grid[index] = array[startingIndex + index]
         }
-        return result
     }
     /*
     /**
@@ -381,8 +374,8 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * var rotated = Cesium.Matrix3.multiplyByVector(m, p);
     */
     init (fromRotationX angle: Double) {
-        var cosAngle = cos(angle)
-        var sinAngle = sin(angle)
+        let cosAngle = cos(angle)
+        let sinAngle = sin(angle)
         
         _grid[0] = 1.0
         _grid[1] = 0.0
@@ -511,42 +504,31 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
             y: _grid[startIndex + 1],
             z: _grid[startIndex + 2])
     }
-    /*
+    
     /**
     * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian3 instance.
     *
     * @param {Matrix3} matrix The matrix to use.
     * @param {Number} index The zero-based index of the column to set.
     * @param {Cartesian3} cartesian The Cartesian whose values will be assigned to the specified column.
-    * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Matrix3} The modified result parameter.
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    Matrix3.setColumn = function(matrix, index, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(cartesian)) {
-    throw new DeveloperError('cartesian is required');
-    }
-    if (typeof index !== 'number' || index < 0 || index > 2) {
-    throw new DeveloperError('index must be 0, 1, or 2.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
+    func setColumn (index: Int, cartesian: Cartesian3) -> Matrix3 {
     
-    result = Matrix3.clone(matrix, result);
-    var startIndex = index * 3;
-    result[startIndex] = cartesian.x;
-    result[startIndex + 1] = cartesian.y;
-    result[startIndex + 2] = cartesian.z;
-    return result;
-    };
+        if index < 0 || index > 2 {
+            assertionFailure("index must be 0, 1, or 2.")
+        }
     
+        var result = self
+        let startIndex = index * 3
+        result[startIndex] = cartesian.x
+        result[startIndex + 1] = cartesian.y
+        result[startIndex + 2] = cartesian.z
+        return result
+    }
+    /*
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian3 instance.
     *
@@ -756,7 +738,7 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter.
     */
-    func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
+    public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
         
         let vX = cartesian.x
         let vY = cartesian.y
@@ -801,7 +783,38 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     result[8] = matrix[8] * scalar;
     return result;
     };
-    
+    */
+    /**
+    * Computes the product of a matrix times a (non-uniform) scale, as if the scale were a scale matrix.
+    *
+    * @param {Matrix3} matrix The matrix on the left-hand side.
+    * @param {Cartesian3} scale The non-uniform scale on the right-hand side.
+    * @param {Matrix3} result The object onto which to store the result.
+    * @returns {Matrix3} The modified result parameter.
+    *
+    * @see Matrix3.fromScale
+    * @see Matrix3.multiplyByUniformScale
+    *
+    * @example
+    * // Instead of Cesium.Matrix3.multiply(m, Cesium.Matrix3.fromScale(scale), m);
+    * Cesium.Matrix3.multiplyByScale(m, scale, m);
+    */
+    func multiplyByScale (scale: Cartesian3) -> Matrix3 {
+        
+        var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
+        
+        grid[0] = _grid[0] * scale.x
+        grid[1] = _grid[1] * scale.x
+        grid[2] = _grid[2] * scale.x
+        grid[3] = _grid[3] * scale.y
+        grid[4] = _grid[4] * scale.y
+        grid[5] = _grid[5] * scale.y
+        grid[6] = _grid[6] * scale.z
+        grid[7] = _grid[7] * scale.z
+        grid[8] = _grid[8] * scale.z
+        return Matrix3(fromArray: grid)
+    }
+    /*
     /**
     * Creates a negated copy of the provided matrix.
     *
@@ -1167,12 +1180,27 @@ public struct Matrix3: DebugPrintable, Printable, Packable {
     * @type {Matrix3}
     * @constant
     */
-    static func identity() -> Matrix3 {
+    public static func identity() -> Matrix3 {
         return Matrix3(
             1.0, 0.0, 0.0,
             0.0, 1.0, 0.0,
             0.0, 0.0, 1.0)
     }
+
+    /**
+    * An immutable Matrix3 instance initialized to the zero matrix.
+    *
+    * @type {Matrix3}
+    * @constant
+    */
+    public static func zero() -> Matrix3 {
+        return Matrix3(
+            0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0
+        )
+    }
+    
     /*
     /**
     * The index into Matrix3 for column 0, row 0.

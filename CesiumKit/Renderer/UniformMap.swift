@@ -7,6 +7,7 @@
 //
 
 typealias UniformFunc = (map: UniformMap) -> [Any]
+typealias FloatUniformFunc = (map: UniformMap) -> [Float]
 
 protocol UniformMap {
 
@@ -14,5 +15,8 @@ protocol UniformMap {
     
     subscript(name: String) -> UniformFunc? { get }
     
+    func floatUniform(name: String) -> FloatUniformFunc?
+    
+    func textureForUniform (uniform: UniformSampler) -> Texture?
 }
 

@@ -11,8 +11,8 @@ import Foundation
 extension String {
     subscript (r: Range<Int>) -> String {
         get {
-            let startIndex = advance(self.startIndex, r.startIndex)
-            let endIndex = advance(startIndex, r.endIndex - r.startIndex)
+            let startIndex = self.startIndex.advancedBy(r.startIndex)
+            let endIndex = self.startIndex.advancedBy(r.endIndex - r.startIndex)
             
             return self[Range(start: startIndex, end: endIndex)]
         }
@@ -23,7 +23,7 @@ extension String {
     }
     
     func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
-        return self.rangeOfString(findStr, options: nil, range: nil, locale: nil)?.startIndex
+        return self.rangeOfString(findStr, options: [], range: nil, locale: nil)?.startIndex
     }
 
 }

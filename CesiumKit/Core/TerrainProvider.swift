@@ -20,7 +20,7 @@ import Foundation
 * @see CesiumTerrainProvider
 * @see ArcGisImageServerTerrainProvider
 */
-// FIXME: make base class
+
 protocol TerrainProvider {
     
     /**
@@ -84,9 +84,14 @@ protocol TerrainProvider {
     * @returns {Uint16Array} The list of indices.
     */
     
+    /**
+    * Gets an array of vertex attributes describing the terrain vertices produced.
+    */
+    var vertexAttributes: [VertexAttributes] { get }
+    
     init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
     
-    static func getRegularGridIndices(#width: Int, height: Int) -> [Int]
+    static func getRegularGridIndices(width width: Int, height: Int) -> [Int]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -96,7 +101,7 @@ protocol TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    static func estimatedLevelZeroGeometricErrorForAHeightmap(#ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before
@@ -114,7 +119,7 @@ protocol TerrainProvider {
     *          returns undefined instead of a promise, it is an indication that too many requests are already
     *          pending and the request will be retried later.
     */
-    func requestTileGeometry(#x: Int, y: Int, level: Int/*, throttleRequests: Bool*/) -> TerrainData? //resolve: (TerrainData?) -> () )
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> () )
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
@@ -135,7 +140,7 @@ protocol TerrainProvider {
     * @param {Number} level The level of the tile for which to request geometry.
     * @returns {Boolean} Undefined if not supported by the terrain provider, otherwise true or false.
     */
-    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool?
+    func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool?
     
     /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
@@ -155,5 +160,41 @@ protocol TerrainProvider {
     * @type {Boolean}
     */
     var hasVertexNormals: Bool { get }
+}
+
+extension TerrainProvider {
+    
+    func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
+        return nil
+    }
+    
+    var vertexAttributes: [VertexAttributes] {
+        let datatype = ComponentDatatype.Float32
+        let numTexCoordComponents: Int
+        if hasVertexNormals {
+            numTexCoordComponents = 3
+        } else {
+            numTexCoordComponents = 2
+        }
+        
+        let position3DAndHeightLength = 4
+        
+        return [
+            //position3DAndHeight
+            VertexAttributes(
+                bufferIndex: 1,
+                index: 0,
+                format: .Float4,
+                offset: 0,
+                size: position3DAndHeightLength * datatype.elementSize),
+            // texCoordAndEncodedNormals
+            VertexAttributes(
+                bufferIndex: 1,
+                index: 1,
+                format: hasVertexNormals ? .Float3 : .Float2,
+                offset: position3DAndHeightLength * datatype.elementSize,
+                size: numTexCoordComponents * datatype.elementSize)
+        ]
+    }
 }
 

@@ -39,7 +39,7 @@ class TileReplacementQueue {
     *
     * @param {Number} maximumTiles The maximum number of tiles in the queue.
     */
-    func trimTiles(maximumTiles: Int) {
+    func trimTiles(context: Context, maximumTiles: Int) {
         var tileToTrim = tail
         var keepTrimming = true
         while keepTrimming && _lastBeforeStartOfFrame != nil && count > maximumTiles && tileToTrim != nil {
@@ -47,10 +47,10 @@ class TileReplacementQueue {
             // current frame.
             keepTrimming = tileToTrim! != _lastBeforeStartOfFrame
             
-            var previous = tileToTrim!.replacementPrevious
+            let previous = tileToTrim!.replacementPrevious
             
             if tileToTrim!.eligibleForUnloading {
-                tileToTrim!.freeResources()
+                tileToTrim!.freeResources(context)
                 remove(tileToTrim!)
             }
             tileToTrim = previous
@@ -58,8 +58,8 @@ class TileReplacementQueue {
     }
     
     func remove(item: QuadtreeTile) {
-        var previous = item.replacementPrevious
-        var next = item.replacementNext
+        let previous = item.replacementPrevious
+        let next = item.replacementNext
         
         if item == _lastBeforeStartOfFrame {
             _lastBeforeStartOfFrame = next

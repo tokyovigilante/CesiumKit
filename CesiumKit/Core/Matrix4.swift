@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 /**
 * A 4x4 matrix, indexable as a column-major order array.
 * Constructor parameters are in row-major order for code readability.
@@ -47,7 +49,7 @@
 * @see Packable
 */
 //FIXME: Packable
-public struct Matrix4: Packable, Equatable, Printable {
+public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     
     /**
     * The number of elements used to pack the object into an array.
@@ -56,6 +58,14 @@ public struct Matrix4: Packable, Equatable, Printable {
     static let packedLength = 16
     
     var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
+    
+    private var _floatRepresentation: [Float]
+    
+    var floatRepresentation: [Float] {
+        return _floatRepresentation
+    }
+    
+    private let _floatPackedSize: Int
 
     init(
         _ column0Row0: Double = 0.0,
@@ -91,11 +101,15 @@ public struct Matrix4: Packable, Equatable, Printable {
                 column3Row1,
                 column3Row2,
                 column3Row3]
+            _floatRepresentation = _grid.map({ Float($0) })
+            _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     init(grid: [Double]) {
         assert(grid.count == 16, "invalid grid length")
         _grid = grid
+        _floatRepresentation = _grid.map({ Float($0) })
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     subscript(index: Int) -> Double {
@@ -106,6 +120,7 @@ public struct Matrix4: Packable, Equatable, Printable {
         set {
             assert(index < Matrix4.packedLength, "Index out of range")
             _grid[index] = newValue
+            _floatRepresentation[index] = Float(newValue)
         }
     }
     
@@ -121,6 +136,7 @@ public struct Matrix4: Packable, Equatable, Printable {
         set {
             assert(indexIsValidForRow(row, column: column), "Index out of range")
             _grid[(column * 4) + row] = newValue
+            _floatRepresentation[(column * 4) + row] = Float(newValue)
         }
     }
 
@@ -132,13 +148,12 @@ public struct Matrix4: Packable, Equatable, Printable {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        for var index = 0; index < Matrix4.packedLength; ++index {
-            if array.count < startingIndex - Matrix4.packedLength {
-                array.append(Float(_grid[index]))
-            } else {
-                array[startingIndex + index] = Float(_grid[index])
-            }
-        }
+        assert(array.count - startingIndex >= Matrix4.packedLength, "Array too short")
+        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
+        /*for index in
+            0..<Matrix4.packedLength {
+            array[startingIndex + index] = Float(_grid[index])
+        }*/
     }
 
     /**
@@ -234,7 +249,7 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     
     return Matrix4.clone(values, result);
 };
-
+*/
 /**
 * Computes a Matrix4 instance from a row-major order array.
 * The resulting matrix will be in column-major order.
@@ -243,38 +258,30 @@ Matrix4.fromColumnMajorArray = function(values, result) {
 * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
-Matrix4.fromRowMajorArray = function(values, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(values)) {
-        throw new DeveloperError('values is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Matrix4(values[0], values[1], values[2], values[3],
-            values[4], values[5], values[6], values[7],
-            values[8], values[9], values[10], values[11],
-            values[12], values[13], values[14], values[15]);
-    }
-    result[0] = values[0];
-    result[1] = values[4];
-    result[2] = values[8];
-    result[3] = values[12];
-    result[4] = values[1];
-    result[5] = values[5];
-    result[6] = values[9];
-    result[7] = values[13];
-    result[8] = values[2];
-    result[9] = values[6];
-    result[10] = values[10];
-    result[11] = values[14];
-    result[12] = values[3];
-    result[13] = values[7];
-    result[14] = values[11];
-    result[15] = values[15];
-    return result;
-};
+    init(rowMajorArray: [Double]) {
+        assert(rowMajorArray.count == 16, "Invalid source array")
+        _grid = [Double](count: 16, repeatedValue: 0.0)
 
+        _grid[0] = rowMajorArray[0]
+        _grid[1] = rowMajorArray[4]
+        _grid[2] = rowMajorArray[8]
+        _grid[3] = rowMajorArray[12]
+        _grid[4] = rowMajorArray[1]
+        _grid[5] = rowMajorArray[5]
+        _grid[6] = rowMajorArray[9]
+        _grid[7] = rowMajorArray[13]
+        _grid[8] = rowMajorArray[2]
+        _grid[9] = rowMajorArray[6]
+        _grid[10] = rowMajorArray[10]
+        _grid[11] = rowMajorArray[14]
+        _grid[12] = rowMajorArray[3]
+        _grid[13] = rowMajorArray[7]
+        _grid[14] = rowMajorArray[11]
+        _grid[15] = rowMajorArray[15]
+        _floatRepresentation = _grid.map({ Float($0) })
+        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
+}
+/*
 /**
 * Computes a Matrix4 instance from a Matrix3 representing the rotation
 * and a Cartesian3 representing the translation.
@@ -285,14 +292,6 @@ Matrix4.fromRowMajorArray = function(values, result) {
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
 Matrix4.fromRotationTranslation = function(rotation, translation = Cartesian3.zero(), result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rotation)) {
-        throw new DeveloperError('rotation is required.');
-    }
-    if (!defined(translation)) {
-        throw new DeveloperError('translation is required.');
-    }
-    //>>includeEnd('debug');
     
     if (!defined(result)) {
         return new Matrix4(rotation[0], rotation[3], rotation[6], translation.x,
@@ -414,10 +413,10 @@ Matrix4.fromTranslationQuaternionRotationScale = function(translation, rotation,
 */
 Matrix4.fromTranslation = function(translation, result) {
     //>>includeStart('debug', pragmas.debug);
-    -        if (!defined(translation)) {
-    -            throw new DeveloperError('translation is required.');
-    -        }
-    -        //>>includeEnd('debug');
+            if (!defined(translation)) {
+                throw new DeveloperError('translation is required.');
+            }
+            //>>includeEnd('debug');
     return Matrix4.fromRotationTranslation(Matrix3.IDENTITY, translation, result);
 };
 
@@ -686,19 +685,18 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeOrthographicOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         
-        var a = 1.0 / (right - left)
-        var b = 1.0 / (top - bottom)
-        var c = 1.0 / (far - near)
+        // Converted to Metal NDC coordinates - z: [0-1]
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205348(v=vs.85).aspx
         
-        let tx = -(right + left) * a
-        let ty = -(top + bottom) * b
-        let tz = -(far + near) * c
+        let a = 2.0 / (right - left)
+        let b = 2.0 / (top - bottom)
+        let c = 1.0 / (near - far)
         
-        a *= 2.0
-        b *= 2.0
-        c *= -2.0
+        let tx = (right + left) / (left - right)
+        let ty = (top + bottom) / (bottom - top)
+        let tz = near / (near - far)
         
         return Matrix4(
             a, 0.0, 0.0, tx,
@@ -719,15 +717,17 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+        // Converted to Metal NDC coordinates - z: [0-1]
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205354(v=vs.85).aspx
         
-        let column0Row0 = 2.0 * near / (right - left)
-        let column1Row1 = 2.0 * near / (top - bottom)
+        let column0Row0 = 2.0 * near / (right - left) // w
+        let column1Row1 = 2.0 * near / (top - bottom) // h
         let column2Row0 = (right + left) / (right - left)
         let column2Row1 = (top + bottom) / (top - bottom)
-        let column2Row2 = -(far + near) / (far - near)
+        let column2Row2 = far / (near - far) // Q
         let column2Row3 = -1.0
-        let column3Row2 = -2.0 * far * near / (far - near)
+        let column3Row2 = near * far / (near - far)
                 
         return Matrix4(
             column0Row0, 0.0, column2Row0, 0.0,
@@ -747,7 +747,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeInfinitePerspectiveOffCenter (#left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+    static func computeInfinitePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
         let column2Row0 = (right + left) / (right - left)
@@ -760,8 +760,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             column0Row0, 0.0, column2Row0, 0.0,
             0.0, column1Row1, column2Row1, 0.0,
             0.0, 0.0, column2Row2, column3Row2,
-            0.0, 0.0, column2Row3, 0.0
-        )
+            0.0, 0.0, column2Row3, 0.0)
     }
 
     /**
@@ -786,7 +785,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * // Example 2.  Create viewport transformation using the context's viewport.
     * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
     */
-    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 0.0) -> Matrix4 {
+    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
         
         let x = viewport.x
         let y = viewport.y
@@ -884,7 +883,7 @@ Matrix4.getElementIndex = function(column, row) {
     
     return column * 4 + row;
 };
-
+*/
 /**
 * Retrieves a copy of the matrix column at the provided index as a Cartesian4 instance.
 *
@@ -912,40 +911,27 @@ Matrix4.getElementIndex = function(column, row) {
 *
 * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
 */
-Matrix4.getColumn = function(matrix, index, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required.');
-    }
     
-    if (typeof index !== 'number' || index < 0 || index > 3) {
-        throw new DeveloperError('index must be 0, 1, 2, or 3.');
+    func getColumn ( index: Int) -> Cartesian4 {
+        if index < 0 || index > 3 {
+            fatalError("index must be 0, 1, 2, or 3.")
+        }
+        
+        let startIndex = index * 4;
+        let x = _grid[startIndex];
+        let y = _grid[startIndex + 1]
+        let z = _grid[startIndex + 2]
+        let w = _grid[startIndex + 3]
+        
+        return Cartesian4(x: x, y: y, z: z, w: w)
     }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var startIndex = index * 4;
-    var x = matrix[startIndex];
-    var y = matrix[startIndex + 1];
-    var z = matrix[startIndex + 2];
-    var w = matrix[startIndex + 3];
-    
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
-};
-*/
+
 /**
 * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
 *
 * @param {Matrix4} matrix The matrix to use.
 * @param {Number} index The zero-based index of the column to set.
 * @param {Cartesian4} cartesian The Cartesian whose values will be assigned to the specified column.
-* @param {Cartesian4} result The object onto which to store the result.
 * @returns {Matrix4} The modified result parameter.
 *
 * @exception {DeveloperError} index must be 0, 1, 2, or 3.
@@ -968,17 +954,33 @@ Matrix4.getColumn = function(matrix, index, result) {
     func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        
-        var result = self._grid
-        
         let startIndex = index * 4
-        result[startIndex] = cartesian.x
-        result[startIndex + 1] = cartesian.y
-        result[startIndex + 2] = cartesian.z
-        result[startIndex + 3] = cartesian.w
-        return Matrix4(grid: result)
+        var grid = _grid
+        grid[startIndex] = cartesian.x
+        grid[startIndex + 1] = cartesian.y
+        grid[startIndex + 2] = cartesian.z
+        grid[startIndex + 3] = cartesian.w
+        return Matrix4(grid: grid)
     }
 
+    /**
+    * Computes a new matrix that replaces the translation in the rightmost column of the provided
+    * matrix with the provided translation.  This assumes the matrix is an affine transformation
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Cartesian3} translation The translation that replaces the translation of the provided matrix.
+    * @param {Cartesian4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    */
+    func setTranslation (translation: Cartesian3) -> Matrix4 {
+        var grid = _grid
+        grid[12] = translation.x
+        grid[13] = translation.y
+        grid[14] = translation.z
+        return Matrix4(grid: grid)
+    }
+    
+    
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
     *
@@ -1152,25 +1154,25 @@ Matrix4.getMaximumScale = function(matrix) {
         let right14: Double = other[14]
         let right15: Double = other[15]
         
-        var column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
-        var column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
-        var column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
-        var column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
+        let column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
+        let column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
+        let column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
+        let column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
         
-        var column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
-        var column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
-        var column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
-        var column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
+        let column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
+        let column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
+        let column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
+        let column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
         
-        var column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
-        var column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
-        var column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
-        var column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
+        let column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
+        let column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
+        let column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
+        let column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
         
-        var column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
-        var column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
-        var column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
-        var column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
+        let column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
+        let column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
+        let column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
+        let column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
         
         return Matrix4(
             column0Row0, column1Row0, column2Row0, column3Row0,
@@ -1245,7 +1247,7 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     return Matrix4(
         column0Row0, column1Row0, column2Row0, column3Row0,
         column0Row1, column1Row1, column2Row1, column3Row1,
-        column0Row2, column1Row1, column2Row2, column3Row2,
+        column0Row2, column1Row2, column2Row2, column3Row2,
         0.0, 0.0, 0.0, 1.0
     )
 }
@@ -1329,9 +1331,11 @@ func multiplyTransformation (other: Matrix4) -> Matrix4 {
     };
     
     /**
-    * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
-* by an implicit translation matrix defined by a {@link Cartesian3}.  This is an optimization
-* for <code>Matrix4.multiply(m, Matrix4.fromTranslation(position), m);</code> with less allocations and arithmetic operations.
+    * Multiplies an affine transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
+    * by an implicit non-uniform scale matrix.  This is an optimization
+    * for <code>Matrix4.multiply(m, Matrix4.fromUniformScale(scale), m);</code>, where
+    * <code>m</code> must be an affine matrix.
+    * This function performs fewer allocations and arithmetic operations.
 *
 * @param {Matrix4} matrix The matrix on the left-hand side.
 * @param {Cartesian3} translation The translation on the right-hand side.
@@ -1494,20 +1498,10 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
         let vZ: Double = cartesian.z
         let vW: Double = cartesian.w
         
-        //FIXME: compiler bug
-        let x1: Double = _grid[0] * vX + _grid[4] * vY
-        let x2: Double = _grid[8] * vZ + _grid[12] * vW
-        let x: Double = x1 + x2
-        let y1: Double = _grid[1] * vX + _grid[5] * vY
-        let y2: Double = _grid[9] * vZ + _grid[13] * vW
-        let y: Double = y1 + y2
-        let z1: Double = _grid[2] * vX + _grid[6] * vY
-        let z2: Double = _grid[10] * vZ + _grid[14] * vW
-        let z: Double = z1 + z2
-        let w1: Double = _grid[3] * vX + _grid[7] * vY
-        let w2: Double = _grid[11] * vZ + _grid[15] * vW
-        let w: Double = w1 + w2
-
+        let x: Double = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12] * vW
+        let y: Double = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13] * vW
+        let z: Double = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ + _grid[14] * vW
+        let w: Double = _grid[3] * vX + _grid[7] * vY + _grid[11] * vZ + _grid[15] * vW
         return Cartesian4(x: x, y: y, z: z, w: w)
     }
 
@@ -1554,9 +1548,9 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
 */
     func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
-        var vX = cartesian.x
-        var vY = cartesian.y
-        var vZ = cartesian.z
+        let vX = cartesian.x
+        let vY = cartesian.y
+        let vZ = cartesian.z
         
         let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12]
         let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13]
@@ -2036,6 +2030,15 @@ Matrix4.abs = function(matrix, result) {
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0)
     }
+    
+    static func zero() -> Matrix4 {
+        return Matrix4(
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0)
+    }
+
 /*
 /**
 * Duplicates the provided Matrix4 instance.

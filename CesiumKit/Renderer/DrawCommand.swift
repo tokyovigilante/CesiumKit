@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-protocol DrawCommandOwner: class {}
+import Metal
 
 /**
 * Represents a command to the renderer for drawing.
@@ -14,7 +14,7 @@ protocol DrawCommandOwner: class {}
 * @private
 */
 class DrawCommand: Command {
-    
+        
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
     * <p>
@@ -29,7 +29,18 @@ class DrawCommand: Command {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: Intersectable?
+    var boundingVolume: BoundingVolume?
+    
+    /**
+    * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
+    * {@link DrawCommand#boundingVolume} for plane intersection testing.
+    *
+    * @type {OrientedBoundingBox}
+    * @default undefined
+    *
+    * @see DrawCommand#debugShowBoundingVolume
+    */
+    var orientedBoundingBox: OrientedBoundingBox? = nil
     
     /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
@@ -57,7 +68,7 @@ class DrawCommand: Command {
     * @type {PrimitiveType}
     * @default PrimitiveType.TRIANGLES
     */
-    var primitiveType: PrimitiveType
+    var primitiveType: MTLPrimitiveType = .Triangle
     
     /**
     * The vertex array.
@@ -84,14 +95,6 @@ class DrawCommand: Command {
     var offset: Int = 0
     
     /**
-    * The shader program to apply.
-    *
-    * @type {ShaderProgram}
-    * @default undefined
-    */
-    var shaderProgram: ShaderProgram?
-    
-    /**
     * An object with functions whose names match the uniforms in the shader program
     * and return values to set those uniforms.
     *
@@ -100,23 +103,23 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
+    var uniformBufferProvider: UniformBufferProvider! = nil
+    
     /**
     * The render state.
     *
     * @type {RenderState}
     * @default undefined
-    *
-    * @see Context#createRenderState
     */
     var renderState: RenderState?
     
     /**
-    * The framebuffer to draw to.
+    * The render pipeline to apply.
     *
-    * @type {Framebuffer}
+    * @type {RenderPipeline}
     * @default undefined
     */
-    weak var framebuffer: Framebuffer?
+    var pipeline: RenderPipeline? = nil
     
     /**
     * The pass when to render.
@@ -124,7 +127,16 @@ class DrawCommand: Command {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass?
+    var pass: Pass = .Globe
+    
+    /**
+    * Specifies if this command is only to be executed in the frustum closest
+    * to the eye containing the bounding volume. Defaults to <code>false</code>.
+    *
+    * @type {Boolean}
+    * @default false
+    */
+    var executeInClosestFrustum: Bool = false
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -137,35 +149,26 @@ class DrawCommand: Command {
     *
     * @see Scene#debugCommandFilter
     */
-    weak var owner: DrawCommandOwner? = nil
+    var owner: AnyObject? = nil
     
     /**
-    * This property is for debugging only; it is not for production use nor is it optimized.
-    * <p>
-    * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
-    * </p>
-    *
-    * @type {Boolean}
-    * @default false
-    *
-    * @see DrawCommand#boundingVolume
-    */
+     * This property is for debugging only; it is not for production use nor is it optimized.
+     * <p>
+     * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
+     * </p>
+     *
+     * @type {Boolean}
+     * @default false
+     *
+     * @see DrawCommand#boundingVolume
+     */
     var debugShowBoundingVolume: Bool
     
     /**
-    * Used to implement Scene.debugShowFrustums.
-    * @private
-    */
+     * Used to implement Scene.debugShowFrustums.
+     * @private
+     */
     var debugOverlappingFrustums: Int
-
-    /**
-    * Specifies if this command is only to be executed in the frustum closest
-    * to the eye containing the bounding volume. Defaults to <code>false</code>.
-    *
-    * @type {Boolean}
-    * @default false
-    */
-    var executeInClosestFrustum: Bool = false
     
     /**
     * @private
@@ -173,19 +176,19 @@ class DrawCommand: Command {
     //var oit = undefined;
     
     init(
-        boundingVolume: Intersectable? = nil,
+        boundingVolume: BoundingVolume? = nil,
+        orientedBoundingBox: OrientedBoundingBox? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
-        primitiveType: PrimitiveType = PrimitiveType.Triangles,
+        primitiveType: MTLPrimitiveType = .Triangle,
         vertexArray: VertexArray? = nil,
         count: Int? = nil,
         offset: Int = 0,
-        shaderProgram: ShaderProgram? = nil,
         renderState: RenderState? = nil,
-        framebuffer: Framebuffer? = nil,
-        pass: Pass? = nil,
+        renderPipeline: RenderPipeline? = nil,
+        pass: Pass = .Globe,
         executeInClosestFrustum: Bool = false,
-        owner: DrawCommandOwner? = nil,
+        owner: AnyObject? = nil,
         debugShowBoundingVolume: Bool = false,
         debugOverlappingFrustums: Int = 0,
         uniformMap: UniformMap? = nil) {
@@ -195,9 +198,8 @@ class DrawCommand: Command {
             self.vertexArray = vertexArray
             self.count = count
             self.offset = offset
-            self.shaderProgram = shaderProgram
+            self.pipeline = renderPipeline
             self.renderState = renderState
-            self.framebuffer = framebuffer
             self.pass = pass
             self.executeInClosestFrustum = executeInClosestFrustum
             self.owner = owner
@@ -205,17 +207,16 @@ class DrawCommand: Command {
             self.debugOverlappingFrustums = debugOverlappingFrustums
             self.uniformMap = uniformMap
     }
-    
+
     /**
     * Executes the draw command.
     *
     * @param {Context} context The renderer context in which to draw.
-    * @param {PassState} [passState] The state for the current render pass.
+    * @param {RenderPass} [renderPass] The render pass this command is part of.
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
-    * @param {ShaderProgram} [shaderProgram] The shader program that will override the shader program of the command.
+    * @param {RenderPipeline} [renderPipeline] The render pipeline that will override the shader program of the command.
     */
-    func execute(#context: Context, passState: PassState? = nil, renderState: RenderState? = nil, shaderProgram: ShaderProgram? = nil) {
-        context.draw(self, passState: passState, renderState: renderState, shaderProgram: shaderProgram)
-
+    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
+        context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline)
     }
 }

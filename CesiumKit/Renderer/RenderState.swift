@@ -1,68 +1,165 @@
 //
-//  File.swift
+//  RenderState.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 15/06/14.
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
-private struct FuncsToApply {
-    var frontFace: Bool = false
-    var cull: Bool = false
-    var lineWidth: Bool = false
-    var polygonOffset: Bool = false
-    //var scissorTest: Bool = false
-    var depthRange: Bool = false
-    var depthTest: Bool = false
-    var colorMask: Bool = false
-    var depthMask: Bool = false
-    //var blending: Bool = false
-    var stencilMask: Bool = false
-    var stencilTest: Bool = false
-    var sampleCoverage: Bool = false
-    var viewPort: Bool = false
-}
+/**
+* Validates and then finds or creates an immutable render state, which defines the pipeline
+* state for a {@link DrawCommand} or {@link ClearCommand}.  All inputs states are optional.  Omitted states
+* use the defaults shown in the example below.
+*
+* @memberof Context
+*
+* @param {Object} [renderState] The states defining the render state as shown in the example below.
+*
+* @exception {RuntimeError} renderState.lineWidth is out of range.
+* @exception {DeveloperError} Invalid renderState.frontFace.
+* @exception {DeveloperError} Invalid renderState.cull.face.
+* @exception {DeveloperError} scissorTest.rectangle.width and scissorTest.rectangle.height must be greater than or equal to zero.
+* @exception {DeveloperError} renderState.depthRange.near can't be greater than renderState.depthRange.far.
+* @exception {DeveloperError} renderState.depthRange.near must be greater than or equal to zero.
+* @exception {DeveloperError} renderState.depthRange.far must be less than or equal to zero.
+* @exception {DeveloperError} Invalid renderState.depthTest.func.
+* @exception {DeveloperError} renderState.blending.color components must be greater than or equal to zero and less than or equal to one
+* @exception {DeveloperError} Invalid renderState.blending.equationRgb.
+* @exception {DeveloperError} Invalid renderState.blending.equationAlpha.
+* @exception {DeveloperError} Invalid renderState.blending.functionSourceRgb.
+* @exception {DeveloperError} Invalid renderState.blending.functionSourceAlpha.
+* @exception {DeveloperError} Invalid renderState.blending.functionDestinationRgb.
+* @exception {DeveloperError} Invalid renderState.blending.functionDestinationAlpha.
+* @exception {DeveloperError} Invalid renderState.stencilTest.frontFunction.
+* @exception {DeveloperError} Invalid renderState.stencilTest.backFunction.
+* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.fail.
+* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.zFail.
+* @exception {DeveloperError} Invalid renderState.stencilTest.frontOperation.zPass.
+* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.fail.
+* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.zFail.
+* @exception {DeveloperError} Invalid renderState.stencilTest.backOperation.zPass.
+* @exception {DeveloperError} renderState.viewport.width must be greater than or equal to zero.
+* @exception {DeveloperError} renderState.viewport.width must be less than or equal to the maximum viewport width.
+* @exception {DeveloperError} renderState.viewport.height must be greater than or equal to zero.
+* @exception {DeveloperError} renderState.viewport.height must be less than or equal to the maximum viewport height.
+*
+* @example
+* var defaults = {
+*     frontFace : WindingOrder.COUNTER_CLOCKWISE,
+*     cull : {
+*         enabled : false,
+*         face : CullFace.BACK
+*     },
+*     lineWidth : 1,
+*     polygonOffset : {
+*         enabled : false,
+*         factor : 0,
+*         units : 0
+*     },
+*     scissorTest : {
+*         enabled : false,
+*         rectangle : {
+*             x : 0,
+*             y : 0,
+*             width : 0,
+*             height : 0
+*         }
+*     },
+*     depthRange : {
+*         near : 0,
+*         far : 1
+*     },
+*     depthTest : {
+*         enabled : false,
+*         func : DepthFunction.LESS
+*      },
+*     colorMask : {
+*         red : true,
+*         green : true,
+*         blue : true,
+*         alpha : true
+*     },
+*     depthMask : true,
+*     stencilMask : ~0,
+*     blending : {
+*         enabled : false,
+*         color : {
+*             red : 0.0,
+*             green : 0.0,
+*             blue : 0.0,
+*             alpha : 0.0
+*         },
+*         equationRgb : BlendEquation.ADD,
+*         equationAlpha : BlendEquation.ADD,
+*         functionSourceRgb : BlendFunction.ONE,
+*         functionSourceAlpha : BlendFunction.ONE,
+*         functionDestinationRgb : BlendFunction.ZERO,
+*         functionDestinationAlpha : BlendFunction.ZERO
+*     },
+*     stencilTest : {
+*         enabled : false,
+*         frontFunction : StencilFunction.ALWAYS,
+*         backFunction : StencilFunction.ALWAYS,
+*         reference : 0,
+*         mask : ~0,
+*         frontOperation : {
+*             fail : StencilOperation.KEEP,
+*             zFail : StencilOperation.KEEP,
+*             zPass : StencilOperation.KEEP
+*         },
+*         backOperation : {
+*             fail : StencilOperation.KEEP,
+*             zFail : StencilOperation.KEEP,
+*             zPass : StencilOperation.KEEP
+*         }
+*     },
+*     sampleCoverage : {
+*         enabled : false,
+*         value : 1.0,
+*         invert : false
+*      }
+* };
 
-class RenderState/*: Printable*/ {
+* @see DrawCommand
+* @see ClearCommand
+*/
+struct RenderState/*: Printable*/ {
     
-    let frontFace: WindingOrder
+    let windingOrder: WindingOrder// = .CounterClockwise
     
-    struct Cull {
-        var enabled: Bool = false
-        var face = CullFace.Back
-    }
-    
-    let cull: Cull
+    let cullFace: CullFace// = .Back
     
     struct PolygonOffset {
         var enabled: Bool = false
-        var factor : GLfloat = 0.0
-        var units : GLfloat = 0.0
+        var factor : Float = 0.0
+        var units : Float = 0.0
     }
-    let polygonOffset: PolygonOffset
+    let polygonOffset: PolygonOffset// = PolygonOffset()
     
-    let lineWidth: Double
+    let lineWidth: Double// = 1.0
     
     struct ScissorTest {
         var enabled: Bool = false
         var rectangle: BoundingRectangle? = nil
     }
-    let scissorTest: ScissorTest
+    let scissorTest: ScissorTest// = ScissorTest()
     
     struct DepthRange {
         var near = 0.0
-        var far = 0.0
+        var far = 1.0
     }
     
-    let depthRange: DepthRange
+    let depthRange: DepthRange// = DepthRange()
+    
+    private let _depthStencilState: MTLDepthStencilState?
     
     struct DepthTest {
         var enabled: Bool = false
         var function: DepthFunction = .Less  // function, because func is a Swift keyword ;)
     }
-    let depthTest: DepthTest
+    let depthTest: DepthTest// = DepthTest()
     
     struct ColorMask {
         var red = true
@@ -70,53 +167,52 @@ class RenderState/*: Printable*/ {
         var blue = true
         var alpha = true
     }
-    let colorMask: ColorMask
+    let colorMask: ColorMask// = ColorMask()
     
-    let depthMask: Bool
+    let depthMask: Bool// = false
     
-    let stencilMask: GLuint
+    let stencilMask: Int// = 0
     
-    let blending: BlendingState
+    let blending: BlendingState// = BlendingState.Disabled()
     
     struct StencilTest {
         var enabled: Bool = false
-        var frontFunction: GLenum = GLenum(GL_ALWAYS)
-        var backFunction: GLenum = GLenum(GL_ALWAYS)
-        var reference: GLint = 0
-        var mask: GLuint = ~0
+        var frontFunction: Int = 0
+        var backFunction: Int = 0
+        var reference: Int = 0
+        var mask: Int = 0
         
         struct FrontOperation {
-            var fail: GLenum = GLenum(GL_KEEP)
-            var zFail: GLenum = GLenum(GL_KEEP)
-            var zPass: GLenum = GLenum(GL_KEEP)
+            var fail: MTLStencilOperation = .Keep
+            var zFail: MTLStencilOperation = .Keep
+            var zPass: MTLStencilOperation = .Keep
         }
         let frontOperation = FrontOperation()
         
         struct BackOperation {
-            var fail: GLenum = GLenum(GL_KEEP)
-            var zFail: GLenum = GLenum(GL_KEEP)
-            var zPass: GLenum = GLenum(GL_KEEP)
+            var fail: MTLStencilOperation = .Keep
+            var zFail: MTLStencilOperation = .Keep
+            var zPass: MTLStencilOperation = .Keep
         }
         let backOperation = BackOperation()
     }
-    let stencilTest: StencilTest
+    let stencilTest: StencilTest// = StencilTest()
     
     struct SampleCoverage {
         var enabled = false
-        var value: GLclampf = 1.0
-        var invert: GLboolean = GLboolean(GL_FALSE)
+        var value: Float = 1.0
+        var invert = false
     }
-    let sampleCoverage: SampleCoverage
+    let sampleCoverage: SampleCoverage// = SampleCoverage()
     
-    let viewport: BoundingRectangle?
+    let viewport: BoundingRectangle?// = nil
     
     let hash: String
     
-    private var _applyFunctions = [String : FuncsToApply]()
-
     init(
-        frontFace: WindingOrder = WindingOrder.CounterClockwise,
-        cull: Cull = Cull(),
+        device: MTLDevice,
+        windingOrder: WindingOrder = WindingOrder.CounterClockwise,
+        cullFace: CullFace = .Back,
         polygonOffset: PolygonOffset = PolygonOffset(),
         lineWidth: Double = 1.0,
         scissorTest: ScissorTest = ScissorTest(),
@@ -124,13 +220,13 @@ class RenderState/*: Printable*/ {
         depthTest: DepthTest = DepthTest(),
         colorMask: ColorMask = ColorMask(),
         depthMask: Bool = true,
-        stencilMask: GLuint = ~0,
+        stencilMask: Int = ~0,
         blending: BlendingState = BlendingState.Disabled(),
         stencilTest: RenderState.StencilTest = StencilTest(),
         sampleCoverage: RenderState.SampleCoverage = SampleCoverage(),
         viewport: BoundingRectangle? = nil) {
-            self.frontFace  = frontFace
-            self.cull  = cull
+            self.windingOrder = windingOrder
+            self.cullFace = cullFace
             self.polygonOffset  = polygonOffset
             self.lineWidth  = lineWidth
             self.scissorTest  = scissorTest
@@ -144,13 +240,30 @@ class RenderState/*: Printable*/ {
             self.sampleCoverage  = sampleCoverage
             self.viewport = viewport
             
-            var hash = ""
+            //FIXME: checks disabled
+            /*if self.lineWidth < ContextLimits.minimumAliasedLineWidth ||
+                self.lineWidth > ContextLimits.maximumAliasedLineWidth {
+                    fatalError("renderState.lineWidth is out of range.  Check minimumAliasedLineWidth and maximumAliasedLineWidth.")
+            }*/
             
+            assert(viewport == nil || (viewport != nil && viewport!.width > 0), "renderState.viewport.width must be greater than or equal to zero")
+            assert(viewport == nil || (viewport != nil && viewport!.height > 0), "renderState.viewport.height must be greater than or equal to zero")
+            /*
+            assert(viewport == nil || (viewport != nil && viewport!.height < context.limits.maximumViewportWidth), "renderState.viewport.width must be less than or equal to the maximum viewport width (" + maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
+                +            if (this.viewport.width > ContextLimits.maximumViewportWidth) {
+                    +                throw new DeveloperError('renderState.viewport.width must be less than or equal to the maximum viewport width (' + ContextLimits.maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
+                }
+                -            if (this.viewport.height > context.maximumViewportHeight) {
+                    -                throw new RuntimeError('renderState.viewport.height must be less than or equal to the maximum viewport height (' + this.maximumViewportHeight.toString() + ').  Check maximumViewportHeight.');
+                    +            if (this.viewport.height > ContextLimits.maximumViewportHeight) {
+                        +                throw new DeveloperError('renderState.viewport.height must be less than or equal to the maximum viewport height (' + ContextLimits.maximumViewportHeight.toString() + ').  Check maximumViewportHeight.');*/
+            var hash = ""
+
             // frontFace
-            hash += "\(self.frontFace.toGL())"
+            hash += "\(self.windingOrder.toMetal().rawValue)"
             
             // cull
-            hash += cull.enabled ? "c1" : "c0" + "\(cull.face.toGL())"
+            hash += "\(self.cullFace.toMetal().rawValue)"
             
             // polygonOffset
             hash += polygonOffset.enabled ? "p1" : "p0" + "f\(polygonOffset.factor)u\(polygonOffset.units)"
@@ -165,7 +278,7 @@ class RenderState/*: Printable*/ {
             hash += "dn\(depthRange.near)df\(depthRange.far)"
 
             // depthTest
-            hash += depthTest.enabled ? "d1" : "d0" + "df\(depthTest.function.toGL())"
+            hash += depthTest.enabled ? "d1" : "d0" + "df\(depthTest.function.toMetal().rawValue)"
 
             // colorMask
             hash += "cm" + (colorMask.red ? "1" : "0") + (colorMask.green ? "1" : "0") + (colorMask.blue ? "1" : "0") + (colorMask.alpha ? "1" : "0")
@@ -177,7 +290,7 @@ class RenderState/*: Printable*/ {
             hash += "sm\(stencilMask)"
             
             // blending
-            hash += "bs" + (blending.enabled ? "1" : "0") + "be\(blending.equationRgb.toGL())" + "ba\(blending.equationAlpha.toGL())" + "bfsr\(blending.functionSourceRgb.toGL())" + "bfsa\(blending.functionSourceAlpha.toGL())" + "bfdr\(blending.functionDestinationRgb.toGL())" + "bfda\(blending.functionDestinationAlpha.toGL())" + "x\(blending.color.x)y\(blending.color.y)z\(blending.color.z)w\(blending.color.w)"
+            hash += "bs" + (blending.enabled ? "1" : "0") + "be\(blending.equationRgb.toMetal().rawValue)" + "ba\(blending.equationAlpha.toMetal().rawValue)" + "bfsr\(blending.functionSourceRgb.toMetal().rawValue)" + "bfsa\(blending.functionSourceAlpha.toMetal().rawValue)" + "bfdr\(blending.functionDestinationRgb.toMetal().rawValue)" + "bfda\(blending.functionDestinationAlpha.toMetal().rawValue)" + "x\(blending.color.x)y\(blending.color.y)z\(blending.color.z)w\(blending.color.w)"
 
             // stencilTest
             hash += "st" + (stencilTest.enabled ? "1" : "0") + "ff\(stencilTest.frontFunction)" + "bf\(stencilTest.backFunction)" + "r\(stencilTest.reference)" + "m\(stencilTest.mask)" + "ff\(stencilTest.frontOperation.fail)" + "zf\(stencilTest.frontOperation.zFail)" + "zp\(stencilTest.frontOperation.zPass)" + "bf\(stencilTest.backOperation.fail)" + "bzf\(stencilTest.backOperation.zFail)" + "bzp\(stencilTest.backOperation.zPass)"
@@ -189,18 +302,15 @@ class RenderState/*: Printable*/ {
             hash += "v" + (viewport == nil ? "0" : "x\(viewport!.x)y\(viewport!.y)w\(viewport!.width)h\(viewport!.height)")
             
             self.hash = hash
-    }
-    
-    /*var description: String {
-        get {
-            let address: Pointer = Pointer(address: unsafeBitCast(self, UInt.self))
-            if let memory: Memory = Memory.read(address, knownSize: nil) {
-                return memory.hex()
+            
+            let depthStencilDescriptor = MTLDepthStencilDescriptor()
+
+            if self.depthTest.enabled {
+                depthStencilDescriptor.depthCompareFunction = depthTest.function.toMetal()
+                depthStencilDescriptor.depthWriteEnabled = true
             }
-            return address.description
-            return "renderState"
-        }
-    }*/
+            _depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
+    }
     
     /*func validate() {
     
@@ -306,27 +416,23 @@ class RenderState/*: Printable*/ {
         */
         
     //}
-    
+    /*
     func enableOrDisable(feature: GLenum, enable: Bool) {
         if enable {
             glEnable(feature)
         } else {
             glDisable(feature)
         }
+    }*/
+    
+    func applyWindingOrder(encoder: MTLRenderCommandEncoder) {
+        encoder.setFrontFacingWinding(windingOrder.toMetal())
     }
     
-    func applyFrontFace() {
-        glFrontFace(frontFace.toGL())
+    func applyCullFace(encoder: MTLRenderCommandEncoder) {
+        encoder.setCullMode(cullFace.toMetal())
     }
-    
-    func applyCull() {
-        enableOrDisable(GLenum(GL_CULL_FACE), enable: cull.enabled)
-        
-        if (cull.enabled) {
-            glCullFace(cull.face.toGL())
-        }
-    }
-    
+    /*
     func applyLineWidth() {
         glLineWidth(GLfloat(lineWidth))
     }
@@ -341,12 +447,12 @@ class RenderState/*: Printable*/ {
     
     func applyScissorTest(passState: PassState) {
         
-        var enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
+        let enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
         
         enableOrDisable(GLenum(GL_SCISSOR_TEST), enable: enabled)
         
         if (enabled) {
-            var rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
+            let rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
             glScissor(GLint(rectangle.x), GLint(rectangle.y), GLsizei(rectangle.width), GLsizei(rectangle.height))
         }
     }
@@ -354,16 +460,20 @@ class RenderState/*: Printable*/ {
     func applyDepthRange() {
         glDepthRangef(GLclampf(depthRange.near), GLclampf(depthRange.far))
     }
-    
-    func applyDepthTest() {
+    */
+    func applyDepthTest(encoder: MTLRenderCommandEncoder) {
         
-        enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
+        // FIXME: store descriptor
+        if depthTest.enabled {
+            encoder.setDepthStencilState(_depthStencilState)
+        }
+        /*enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
         
         if (depthTest.enabled) {
             glDepthFunc(depthTest.function.toGL())
-        }
+        }*/
     }
-    
+    /*
     func applyColorMask() {
         glColorMask(
             GLboolean(Int(colorMask.red)),
@@ -380,9 +490,13 @@ class RenderState/*: Printable*/ {
         glStencilMask(stencilMask)
     }
     
+    var applyBlendingColor = function(gl, color) {
+            gl.blendColor(color.red, color.green, color.blue, color.alpha);
+        };
+    
     func applyBlending(passState: PassState) {
         
-        var enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
+        let enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
         
         enableOrDisable(GLenum(GL_BLEND), enable: enabled)
         
@@ -406,10 +520,10 @@ class RenderState/*: Printable*/ {
             glStencilFuncSeparate(GLenum(GL_BACK), stencilTest.backFunction, stencilTest.reference, stencilTest.mask);
             glStencilFuncSeparate(GLenum(GL_FRONT), stencilTest.frontFunction, stencilTest.reference, stencilTest.mask);
             
-            var frontOperation = stencilTest.frontOperation;
+            let frontOperation = stencilTest.frontOperation;
             glStencilOpSeparate(GLenum(GL_FRONT), frontOperation.fail, frontOperation.zFail, frontOperation.zPass)
             
-            var backOperation = stencilTest.backOperation;
+            let backOperation = stencilTest.backOperation;
             glStencilOpSeparate(GLenum(GL_BACK), backOperation.fail, backOperation.zFail, backOperation.zPass)
         }
     }
@@ -422,13 +536,14 @@ class RenderState/*: Printable*/ {
             glSampleCoverage(sampleCoverage.value, sampleCoverage.invert)
         }
     }
+    */
     
-    
-    func applyViewport(passState: PassState) {
+    func applyViewport(encoder: MTLRenderCommandEncoder, passState: PassState) {
         
         var actualViewport = BoundingRectangle()
-        var context = passState.context!
-        if !(viewport != nil) {
+        let context = passState.context!
+        
+        if viewport == nil {
             actualViewport.width = Double(context.width)
             actualViewport.height = Double(context.height)
         } else {
@@ -436,153 +551,25 @@ class RenderState/*: Printable*/ {
         }
         
         context.uniformState.viewport = actualViewport
-        glViewport(GLint(actualViewport.x), GLint(actualViewport.y), GLint(actualViewport.width), GLint(actualViewport.height))
+        encoder.setViewport(MTLViewport(originX: actualViewport.x, originY: actualViewport.y, width: actualViewport.width, height: actualViewport.height, znear: 0.0, zfar: 1.0))
     }
     
-    private func conditionalApply(funcs: FuncsToApply, passState: PassState) {
-        
-        if funcs.frontFace {
-            applyFrontFace()
-        }
-        
-        if funcs.cull {
-            applyCull()
-        }
-        
-        if funcs.lineWidth {
-            applyLineWidth()
-        }
-        
-        if funcs.polygonOffset {
-            applyPolygonOffset()
-        }
-        
-        // For now, always apply because of passState
-        applyScissorTest(passState)
-        
-        if funcs.depthRange {
-            applyDepthRange()
-        }
-        
-        if funcs.depthTest {
-            applyDepthTest()
-        }
-        
-        if funcs.colorMask {
-            applyColorMask()
-        }
-        
-        if funcs.depthMask {
-            applyDepthMask()
-        }
-        
-        if funcs.stencilMask {
-            applyStencilMask()
-        }
-        
-        // For now, always apply because of passState
-        applyBlending(passState)
-        
-        if funcs.stencilTest {
-            applyStencilTest()
-        }
-        
-        if funcs.sampleCoverage {
-            applySampleCoverage()
-        }
-        
-        // For now, always apply because of passState
-        applyViewport(passState)
-    }
-
-    func apply(passState: PassState) {
-        applyFrontFace()
-        applyCull()
+    func apply(encoder: MTLRenderCommandEncoder, passState: PassState) {
+        applyWindingOrder(encoder)
+        applyCullFace(encoder)
+        /*applyCull()
         applyLineWidth()
         applyPolygonOffset()
-        applyScissorTest(passState)
-        applyDepthRange()
-        applyDepthTest()
-        applyColorMask()
+        applyDepthRange()*/
+        applyDepthTest(encoder)
+        /*applyColorMask()
         applyDepthMask()
         applyStencilMask()
-        applyBlending(passState)
-        applyStencilTest()
         applySampleCoverage()
-        applyViewport(passState)
-    }
-    
-    
-    private func createFunctions(previousState: RenderState) -> FuncsToApply {
-        var funcs = FuncsToApply()
-        
-        funcs.frontFace = previousState.frontFace != frontFace
-        
-        funcs.cull = previousState.cull.enabled != cull.enabled || previousState.cull.face != cull.face
-        
-        funcs.lineWidth = previousState.lineWidth != lineWidth
-        
-        funcs.polygonOffset = previousState.polygonOffset.enabled != polygonOffset.enabled ||
-            previousState.polygonOffset.factor != polygonOffset.factor ||
-            previousState.polygonOffset.units != polygonOffset.units
-        
-        // For now, always apply because of passState
-        //funcs.push(applyScissorTest);
-        
-        funcs.depthRange = previousState.depthRange.near != depthRange.near || previousState.depthRange.far != depthRange.far
-        
-        funcs.depthTest =  previousState.depthTest.enabled != depthTest.enabled || previousState.depthTest.function != depthTest.function
-        
-        funcs.colorMask = previousState.colorMask.red != colorMask.red ||
-            previousState.colorMask.green != colorMask.green ||
-            previousState.colorMask.blue != colorMask.blue ||
-            previousState.colorMask.alpha != colorMask.alpha
-        
-        funcs.depthMask = previousState.depthMask != depthMask
-        
-        // For now, always apply because of passState
-        //funcs.push(applyBlending);
-        
-        funcs.stencilMask = previousState.stencilMask != stencilMask
-        
-        funcs.stencilTest = previousState.stencilTest.enabled != stencilTest.enabled ||
-            previousState.stencilTest.frontFunction != stencilTest.frontFunction ||
-            previousState.stencilTest.backFunction != stencilTest.backFunction ||
-            previousState.stencilTest.reference != stencilTest.reference ||
-            previousState.stencilTest.mask != stencilTest.mask ||
-            previousState.stencilTest.frontOperation.fail != stencilTest.frontOperation.fail ||
-            previousState.stencilTest.frontOperation.zFail != stencilTest.frontOperation.zFail ||
-            previousState.stencilTest.backOperation.fail != stencilTest.backOperation.fail ||
-            previousState.stencilTest.backOperation.zFail != stencilTest.backOperation.zFail ||
-            previousState.stencilTest.backOperation.zPass != stencilTest.backOperation.zPass
-        
-        funcs.sampleCoverage = previousState.sampleCoverage.enabled != sampleCoverage.enabled ||
-            previousState.sampleCoverage.value != sampleCoverage.value ||
-            previousState.sampleCoverage.invert != sampleCoverage.invert
-        
-        // For now, always apply because of passState
-        //funcs.push(applyViewport);
-        
-        return funcs
-    }
-
-    func partialApply (previousState: RenderState, passState: PassState) {
-        // When a new render state is applied, instead of making WebGL calls for all the states or first
-        // comparing the states one-by-one with the previous state (basically a linear search), we take
-        // advantage of RenderState's immutability, and store a dynamically populated sparse data structure
-        // containing functions that make the minimum number of WebGL calls when transitioning from one state
-        // to the other.  In practice, this works well since state-to-state transitions generally only require a
-        // few WebGL calls, especially if commands are stored by state.
-        // FIXME: PartialApply
-        
-        var funcs = _applyFunctions[previousState.hash]
-        
-        if funcs == nil {
-            funcs = createFunctions(previousState)
-            _applyFunctions[previousState.hash] = funcs
-        }
-        
-        conditionalApply(funcs!, passState: passState)
+        applyScissorTest(passState)
+        applyBlending(passState)
+        applyStencilTest()*/
+        applyViewport(encoder, passState: passState)
     }
     
 /*

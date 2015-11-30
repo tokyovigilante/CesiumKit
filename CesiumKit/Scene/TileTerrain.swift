@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 /**
 * Manages details of the terrain load or upsample process.
 *
@@ -39,37 +40,48 @@ class TileTerrain {
     init (upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)? = nil) {
         self.upsampleDetails = upsampleDetails
     }
-    /*
-    TileTerrain.prototype.freeResources = function() {
-    this.state = TerrainState.UNLOADED;
-    this.data = undefined;
-    this.mesh = undefined;
     
-    if (defined(this.vertexArray)) {
-    var indexBuffer = this.vertexArray.indexBuffer;
-    
-    this.vertexArray.destroy();
-    this.vertexArray = undefined;
-    
-    if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
-    --indexBuffer.referenceCount;
-    if (indexBuffer.referenceCount === 0) {
-    indexBuffer.destroy();
-    }
-    }
-    }
-    };
-    */
-    func publishToTile(tile: QuadtreeTile) {
-        var surfaceTile = tile.data!
-        assert(mesh != nil, "mesh not created")
-        surfaceTile.center = mesh!.center
-
-        surfaceTile.minimumHeight = mesh!.minimumHeight
-        surfaceTile.maximumHeight = mesh!.maximumHeight
-        surfaceTile.boundingSphere3D = mesh!.boundingSphere3D
+    func freeResources (context: Context? = nil) {
+        self.state = .Unloaded
         
-        tile.data!.occludeePointInScaledSpace = mesh!.occludeePointInScaledSpace
+        let freeResourcesRaw = { () -> () in
+            self.data = nil
+            self.mesh = nil
+            
+            var indexBuffer: Buffer? = nil
+            if self.vertexArray != nil {
+                let indexBuffer = self.vertexArray!.indexBuffer
+                self.vertexArray = nil
+            }
+        }
+        /*if let context = context {
+            dispatch_async(context.processorQueue, freeResourcesRaw)
+        } else {*/
+            freeResourcesRaw()
+        //}
+        // FIXME: Index buffer
+        /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
+        --indexBuffer.referenceCount;
+        if (indexBuffer.referenceCount === 0) {
+        indexBuffer.destroy();
+        }
+        }*/
+    }
+
+
+    func publishToTile(tile: QuadtreeTile) {
+        let surfaceTile = tile.data!
+        guard let mesh = mesh else {
+            assertionFailure("mesh not created")
+            return
+        }
+        surfaceTile.center = mesh.center
+
+        surfaceTile.minimumHeight = mesh.minimumHeight
+        surfaceTile.maximumHeight = mesh.maximumHeight
+        surfaceTile.boundingSphere3D = mesh.boundingSphere3D
+        surfaceTile.orientedBoundingBox = mesh.orientedBoundingBox
+        tile.data!.occludeePointInScaledSpace = mesh.occludeePointInScaledSpace
         
         // Free the tile's existing vertex array, if any.
         surfaceTile.freeVertexArray()
@@ -79,180 +91,158 @@ class TileTerrain {
         vertexArray = nil
     }
     
-    func processLoadStateMachine (#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processLoadStateMachine (context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-            requestTileGeometry(terrainProvider: terrainProvider, x: x, y: y, level: level)
-        }
-        
-        if state == .Received {
+            requestTileGeometry(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
+        } else if state == .Received {
             transform(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
-        }
-        
-        if state == .Transformed {
+        } else if state == .Transformed {
             createResources(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
     }
     
     
-    func requestTileGeometry(#terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        weak var weakSelf = self
+    func requestTileGeometry(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         
-        var success = { (terrainData: TerrainData) -> () in
-
-        }
-        
-        var failure = { (error: String) -> () in
-            // Initially assume failure.  handleError may retry, in which case the state will
-            // change to RECEIVING or UNLOADED.
-            weakSelf?.state = TerrainState.Failed
-            
-            var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - \(error)"
-            /*terrainProvider._requestError = TileProviderError.handleError(
-            terrainProvider._requestError,
-            terrainProvider,
-            terrainProvider.errorEvent,
-            message,
-            x, y, level,
-            doRequest);*/
-            println(message)
-        }
-        Async.background {
-            self.state = .Receiving
-            var terrainData = terrainProvider.requestTileGeometry(x: x, y: y, level: level)
-            if let terrainData = terrainData {
-                Async.main {
-                    self.data = terrainData
-                    self.state = .Received
+        self.state = .Receiving
+        dispatch_async(context.processorQueue, {
+            terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
+                if let terrainData = terrainData {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.data = terrainData
+                        self.state = .Received
+                    })
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        // Initially assume failure.  handleError may retry, in which case the state will
+                        // change to RECEIVING or UNLOADED.
+                        self.state = TerrainState.Failed
+                        
+                        let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
+                        print(message)
+                        
+                    })
                 }
-            } else {
-                Async.main {
-                    // Initially assume failure.  handleError may retry, in which case the state will
-                    // change to RECEIVING or UNLOADED.
-                    weakSelf?.state = TerrainState.Failed
-                    
-                    var message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                    /*terrainProvider._requestError = TileProviderError.handleError(
-                    terrainProvider._requestError,
-                    terrainProvider,
-                    terrainProvider.errorEvent,
-                    message,
-                    x, y, level,
-                    doRequest);*/
-                    println(message)
-
-                }
-            }
-        }
+            })
+        })
     }
 
     func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-        
-        
-        assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
-        
-        var sourceData = upsampleDetails!.data
-        var sourceX = upsampleDetails!.x
-        var sourceY = upsampleDetails!.y
-        var sourceLevel = upsampleDetails!.level
+            
+            
+            assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
+            
+            var sourceData = upsampleDetails!.data
+            var sourceX = upsampleDetails!.x
+            var sourceY = upsampleDetails!.y
+            var sourceLevel = upsampleDetails!.level
             /*
             this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
             if (!defined(this.data)) {
-                // The upsample request has been deferred - try again later.
-                return;
+            // The upsample request has been deferred - try again later.
+            return;
             }
             
             this.state = TerrainState.RECEIVING;
             
             var that = this;
             when(this.data, function(terrainData) {
-                that.data = terrainData;
-                that.state = TerrainState.RECEIVED;
-                }, function() {
-                    that.state = TerrainState.FAILED;
-                });*/
+            that.data = terrainData;
+            that.state = TerrainState.RECEIVED;
+            }, function() {
+            that.state = TerrainState.FAILED;
+            });*/
         }
         
         /*if (this.state === TerrainState.RECEIVED) {
-            transform(this, context, terrainProvider, x, y, level);
+        transform(this, context, terrainProvider, x, y, level);
         }
         
         if (this.state === TerrainState.TRANSFORMED) {
-            createResources(this, context, terrainProvider, x, y, level);
+        createResources(this, context, terrainProvider, x, y, level);
         }*/
     }
 
-    func transform(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func transform(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
-        Async.background {
-            var mesh = self.data!.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level)
-            
-            if let mesh = mesh {
-                Async.main {
-                    self.mesh = mesh
-                    self.state = .Transformed
-                }
-            } else {
-                Async.main {
-                    self.state = .Failed
-                    var message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
-                    println(message)
-                }
-            }
+        guard let data = data else {
+            self.state = .Failed
+            let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - data missing"
+            print(message)
+            return
         }
+        
+        dispatch_async(context.processorQueue, {
+            data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, completionBlock: { mesh in
+                
+                if let mesh = mesh {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.mesh = mesh
+                        self.state = .Transformed
+                    })
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        //dispatch_async(context.renderQueue, {
+                        self.state = .Failed
+                        let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
+                        print(message)
+                    })
+                }
+            })
+        })
     }
-
-    func createResources(#context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        let datatype = ComponentDatatype.Float32
-        var terrainMesh = mesh!
-        let buffer = context.createVertexBuffer(
-            array: SerializedType.fromFloatArray(terrainMesh.vertices),
-            usage: BufferUsage.StaticDraw)
-
-        var stride: Int
-        var numTexCoordComponents: Int
-        if terrainProvider.hasVertexNormals {
-            stride = 7 * datatype.elementSize()
-            numTexCoordComponents = 3
-        } else {
-            stride = 6 * datatype.elementSize()
-            numTexCoordComponents = 2
-        }
-        
-        var position3DAndHeightLength = 4
-        
-        var attributes = [
-            VertexAttributes(
-                index: terrainAttributeLocations["position3DAndHeight"]!,
-                vertexBuffer: buffer,
-                componentsPerAttribute: position3DAndHeightLength,
-                componentDatatype: datatype,
-                offsetInBytes: 0,
-                strideInBytes: stride),
-            VertexAttributes(
-                index: terrainAttributeLocations["textureCoordAndEncodedNormals"]!,
-                vertexBuffer: buffer,
-                componentsPerAttribute : numTexCoordComponents,
-                componentDatatype: datatype,
-                offsetInBytes : position3DAndHeightLength * datatype.elementSize(),
-                strideInBytes : stride)
-        ]
-        
-        var indexBuffer = terrainMesh.indexBuffer
-        if indexBuffer == nil {
-            // FIXME geometry with > 64k indices
-            //let indices = terrainMesh.indices
-            //let indexDatatype = vertices.= 2) ?  IndexDatatype.UNSIGNED_SHORT : IndexDatatype.UNSIGNED_INT;
-            //indexBuffer = context.createIndexBuffer(indices, BufferUsage.STATIC_DRAW, indexDatatype);
-            indexBuffer = context.createIndexBuffer(
-                array: SerializedType.fromIntArray(terrainMesh.indices, datatype: .UnsignedShort),
-                usage: .StaticDraw,
-                indexDatatype: .UnsignedShort)
-            terrainMesh.indexBuffer = indexBuffer
-        }
-        vertexArray = context.createVertexArray(attributes, indexBuffer: indexBuffer)
-        state = .Ready
+    
+    func createResources(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        self.state = .Buffering
+        var terrainMesh = self.mesh!
+        dispatch_async(context.processorQueue, {
+            let datatype = ComponentDatatype.Float32
+            let meshBufferSize = terrainMesh.vertices.sizeInBytes
+            
+            let stride: Int
+            if terrainProvider.hasVertexNormals {
+                stride = 7 * datatype.elementSize
+            } else {
+                stride = 6 * datatype.elementSize
+            }
+            
+            let vertexCount = meshBufferSize / stride
+            
+            let vertexBuffer = Buffer(device: context.device, array: terrainMesh.vertices, componentDatatype: ComponentDatatype.Float32, sizeInBytes: meshBufferSize)
+            
+            var indexBuffer = terrainMesh.indexBuffer
+            if indexBuffer == nil {
+                // FIXME geometry with > 64k indices
+                let indices = terrainMesh.indices
+                if indices.count < Math.SixtyFourKilobytes {
+                    let indicesShort = indices.map({ UInt16($0) })
+                    indexBuffer = Buffer(
+                        device: context.device,
+                        array: indicesShort,
+                        componentDatatype: ComponentDatatype.UnsignedShort,
+                        sizeInBytes: indicesShort.sizeInBytes)
+                } else {
+                    let indicesInt = indices.map({ UInt32($0) })
+                    indexBuffer = Buffer(
+                        device: context.device,
+                        array: indicesInt,
+                        componentDatatype: ComponentDatatype.UnsignedInt,
+                        sizeInBytes: indicesInt.sizeInBytes)
+                }
+                terrainMesh.indexBuffer = indexBuffer!
+            }
+            let vertexArray = VertexArray(buffers: [vertexBuffer], attributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            dispatch_async(dispatch_get_main_queue(), {
+                //dispatch_async(context.renderQueue, {
+                self.vertexArray = vertexArray
+                self.state = .Ready
+            })
+        })
     }
     
 }

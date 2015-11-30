@@ -16,7 +16,7 @@
 * @alias GeometryAttributes
 * @constructor
 */
-class GeometryAttributes  {
+class GeometryAttributes {
     
     /**
     * The 3D position attribute.
@@ -122,7 +122,7 @@ class GeometryAttributes  {
         default:
             assert(false, "invalid attribute")
             return nil
-            }
+        }
     }
     
     func name(index: Int) -> String {
@@ -144,5 +144,28 @@ class GeometryAttributes  {
             return ""
         }
     }
+    
+}
 
+extension GeometryAttributes : SequenceType {
+    func generate() -> GeometryAttributesGenerator {
+        return GeometryAttributesGenerator(geometryAttributes: self)
+    }
+    
+    struct GeometryAttributesGenerator : GeneratorType {
+        
+        var geometryAttributes: GeometryAttributes
+        var index = 0
+        
+        init(geometryAttributes: GeometryAttributes) {
+            self.geometryAttributes = geometryAttributes
+        }
+        
+        mutating func next() -> GeometryAttribute? {
+            while geometryAttributes[index] == nil {
+                index++
+            }
+            return index < 6 ? geometryAttributes[index] : nil
+        }
+    }
 }

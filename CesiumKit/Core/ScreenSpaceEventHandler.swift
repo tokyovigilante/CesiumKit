@@ -6,30 +6,82 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class ScreenSpaceEventHandler {
-/*
-    /*global define*/
-    define([
-    './AssociativeArray',
-    './Cartesian2',
-    './defaultValue',
-    './defined',
-    './destroyObject',
-    './DeveloperError',
-    './KeyboardEventModifier',
-    './ScreenSpaceEventType'
-    ], function(
-    AssociativeArray,
-    Cartesian2,
-    defaultValue,
-    defined,
-    destroyObject,
-    DeveloperError,
-    KeyboardEventModifier,
-    ScreenSpaceEventType) {
-    "use strict";
+// FIXME: reimport from cesium and try to merge touch and pointer
+
+import Foundation
+
+enum MouseButton: Int {
+    case Left = 0,
+    Middle,
+    Right
+}
+
+protocol EventGeometry {}
+
+struct TouchStartEventGeometry: EventGeometry {
+    var position: Cartesian2
+}
+
+struct Touch2StartEventGeometry: EventGeometry {
+    var position1: Cartesian2
+    var position2: Cartesian2
+}
+
+struct TouchMoveEventGeometry: EventGeometry {
+    var startPosition: Cartesian2
+    var endPosition: Cartesian2
+}
+
+struct TouchEndEventGeometry: EventGeometry {
+    var position: Cartesian2
+}
+struct TouchClickEventGeometry: EventGeometry {
+    var position: Cartesian2
+}
+
+struct TouchPinchMovementEventGeometry: EventGeometry {
+    var distance = (
+        startPosition: Cartesian2(),
+        endPosition: Cartesian2()
+    )
+    var angleAndHeight = (
+        startPosition: Cartesian2(),
+        endPosition: Cartesian2()
+    )
+}
+
+typealias EventAction = (geometry: EventGeometry) -> ()
+
+public class ScreenSpaceEventHandler {
     
-    function getPosition(screenSpaceEventHandler, event, result) {
+    //private weak var _layer: CAMetalLayer!
+    
+    private var _inputEvents: [String: EventAction]
+    var _buttonDown: MouseButton? = nil
+    private var _isPinching = false
+    private var _seenAnyTouchEvents = false
+    
+    private var _primaryStartPosition = Cartesian2()
+    private var _primaryPosition = Cartesian2()
+    private var _primaryPreviousPosition = Cartesian2()
+    
+    private var _positions = [Int: Cartesian2]()
+    private var _previousPositions = [Int: Cartesian2]()
+    
+    //this._removalFunctions = [];
+    
+    // TODO: Revisit when doing mobile development. May need to be configurable
+    // or determined based on the platform?
+    private var _clickPixelTolerance = 5
+    
+    init(/*view: UIView, */_ something: Bool = false) {
+        //self._view = view
+        _inputEvents = Dictionary<String, EventAction>()
+        
+        registerListeners()
+    }
+    
+    /*function getPosition(screenSpaceEventHandler, event, result) {
     var element = screenSpaceEventHandler._element;
     if (element === document) {
     result.x = event.clientX;
@@ -42,15 +94,11 @@ class ScreenSpaceEventHandler {
     result.y = event.clientY - rect.top;
     return result;
     }
-    
-    function getInputEventKey(type, modifier) {
-    var key = type;
-    if (defined(modifier)) {
-    key += '+' + modifier;
+    */
+    func getInputEventKey(type: ScreenSpaceEventType, modifier: KeyboardEventModifier? = nil) -> String {
+        return "\(type.rawValue)" + (modifier != nil ? "+\(modifier!.rawValue)" : "")
     }
-    return key;
-    }
-    
+    /*
     function getModifier(event) {
     if (event.shiftKey) {
     return KeyboardEventModifier.SHIFT;
@@ -68,8 +116,8 @@ class ScreenSpaceEventHandler {
     MIDDLE : 1,
     RIGHT : 2
     };
-    
-    function registerListener(screenSpaceEventHandler, domType, element, callback) {
+    */
+    /*function registerListener(screenSpaceEventHandler, domType, element, callback) {
     var listener = function(e) {
     callback(screenSpaceEventHandler, e);
     };
@@ -79,55 +127,78 @@ class ScreenSpaceEventHandler {
     screenSpaceEventHandler._removalFunctions.push(function() {
     element.removeEventListener(domType, listener, false);
     });
+    }*/
+    
+    func registerListeners() {
+        /*
+        // some listeners may be registered on the document, so we still get events even after
+        // leaving the bounds of element.
+        // this is affected by the existence of an undocumented disableRootEvents property on element.
+        var alternateElement = !defined(element.disableRootEvents) ? document : element;
+        
+        if (defined(window.PointerEvent)) {
+        registerListener(screenSpaceEventHandler, 'pointerdown', element, handlePointerDown);
+        registerListener(screenSpaceEventHandler, 'pointerup', element, handlePointerUp);
+        registerListener(screenSpaceEventHandler, 'pointermove', element, handlePointerMove);
+        } else {
+        registerListener(screenSpaceEventHandler, 'mousedown', element, handleMouseDown);
+        registerListener(screenSpaceEventHandler, 'mouseup', alternateElement, handleMouseUp);
+        registerListener(screenSpaceEventHandler, 'mousemove', alternateElement, handleMouseMove);
+        registerListener(screenSpaceEventHandler, 'touchstart', element, handleTouchStart);
+        registerListener(screenSpaceEventHandler, 'touchend', alternateElement, handleTouchEnd);
+        registerListener(screenSpaceEventHandler, 'touchmove', alternateElement, handleTouchMove);
+        }
+        
+        registerListener(screenSpaceEventHandler, 'dblclick', element, handleDblClick);
+        
+        // detect available wheel event
+        var wheelEvent;
+        if ('onwheel' in element) {
+        // spec event type
+        wheelEvent = 'wheel';
+        } else if (defined(document.onmousewheel)) {
+        // legacy event type
+        wheelEvent = 'mousewheel';
+        } else {
+        // older Firefox
+        wheelEvent = 'DOMMouseScroll';
+        }
+        
+        registerListener(screenSpaceEventHandler, wheelEvent, element, handleWheel);*/
+    }
+    /*
+    func unregisterListeners() {
+    if let recognizers = _view.gestureRecognizers {
+    for recognizer in recognizers {
+    _view.removeGestureRecognizer(recognizer as! UIGestureRecognizer)
+    }
+    }
     }
     
-    function registerListeners(screenSpaceEventHandler) {
-    var element = screenSpaceEventHandler._element;
+    func handlePan (gestureRecognizer: UIPanGestureRecognizer) {
     
-    // some listeners may be registered on the document, so we still get events even after
-    // leaving the bounds of element.
-    // this is affected by the existence of an undocumented disableRootEvents property on element.
-    var alternateElement = !defined(element.disableRootEvents) ? document : element;
+    // moving single touch
+    let position = gestureRecognizer.translationInView(_view)
+    _primaryPosition.x = Double(position.x)
+    _primaryPosition.y = Double(position.y)
+    println("(\(_primaryPosition.x), \(_primaryPosition.y))")
     
-    if (defined(window.PointerEvent)) {
-    registerListener(screenSpaceEventHandler, 'pointerdown', element, handlePointerDown);
-    registerListener(screenSpaceEventHandler, 'pointerup', element, handlePointerUp);
-    registerListener(screenSpaceEventHandler, 'pointermove', element, handlePointerMove);
-    } else {
-    registerListener(screenSpaceEventHandler, 'mousedown', element, handleMouseDown);
-    registerListener(screenSpaceEventHandler, 'mouseup', alternateElement, handleMouseUp);
-    registerListener(screenSpaceEventHandler, 'mousemove', alternateElement, handleMouseMove);
-    registerListener(screenSpaceEventHandler, 'touchstart', element, handleTouchStart);
-    registerListener(screenSpaceEventHandler, 'touchend', alternateElement, handleTouchEnd);
-    registerListener(screenSpaceEventHandler, 'touchmove', alternateElement, handleTouchMove);
+    var previousPosition = _primaryPreviousPosition
+    
+    if let action = getInputAction(ScreenSpaceEventType.MouseMove, modifier: nil) {
+    
+    /*
+    Cartesian2.clone(previousPosition, touchMoveEvent.startPosition);
+    Cartesian2.clone(position, touchMoveEvent.endPosition);
+    */
+    //action(touchMoveEvent)
     }
+    _primaryPreviousPosition = _primaryPosition
     
-    registerListener(screenSpaceEventHandler, 'dblclick', element, handleDblClick);
+    //event.preventDefault()
+    }*/
     
-    // detect available wheel event
-    var wheelEvent;
-    if ('onwheel' in element) {
-    // spec event type
-    wheelEvent = 'wheel';
-    } else if (defined(document.onmousewheel)) {
-    // legacy event type
-    wheelEvent = 'mousewheel';
-    } else {
-    // older Firefox
-    wheelEvent = 'DOMMouseScroll';
-    }
-    
-    registerListener(screenSpaceEventHandler, wheelEvent, element, handleWheel);
-    }
-    
-    function unregisterListeners(screenSpaceEventHandler) {
-    var removalFunctions = screenSpaceEventHandler._removalFunctions;
-    for (var i = 0; i < removalFunctions.length; ++i) {
-    removalFunctions[i]();
-    }
-    }
-    
-    var mouseDownEvent = {
+    /*var mouseDownEvent = {
     position : new Cartesian2()
     };
     
@@ -325,270 +396,216 @@ class ScreenSpaceEventHandler {
     event.preventDefault();
     }
     }
-    
-    function handleTouchStart(screenSpaceEventHandler, event) {
-    screenSpaceEventHandler._seenAnyTouchEvents = true;
-    
-    var changedTouches = event.changedTouches;
-    
-    var i;
-    var length = changedTouches.length;
-    var touch;
-    var identifier;
-    var positions = screenSpaceEventHandler._positions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    positions.set(identifier, getPosition(screenSpaceEventHandler, touch, new Cartesian2()));
+    */
+    public func handleTouchStart(touches: Set<NSObject>, screenScaleFactor: Double) {
+        _seenAnyTouchEvents = true
+        
+        /*for (i, touch) in enumerate(touches) {
+            if let touch = touch as? UITouch {
+        
+                let position = touch.locationInView(_view)
+                _positions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
+            }
+        }
+        
+        fireTouchEvents()
+        
+        for (i, touch) in enumerate(touches) {
+            if let touch = touch as? UITouch {
+                
+                let position = touch.locationInView(_view)
+                _previousPositions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
+            }
+        }*/
     }
     
-    fireTouchEvents(screenSpaceEventHandler, event);
-    
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    previousPositions.set(identifier, Cartesian2.clone(positions.get(identifier)));
-    }
-    }
-    
-    function handleTouchEnd(screenSpaceEventHandler, event) {
-    screenSpaceEventHandler._seenAnyTouchEvents = true;
-    
-    var changedTouches = event.changedTouches;
-    
-    var i;
-    var length = changedTouches.length;
-    var touch;
-    var identifier;
-    var positions = screenSpaceEventHandler._positions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    positions.remove(identifier);
+    public func handleTouchMove(touches: Set<NSObject>, screenScaleFactor: Double) {
+        _seenAnyTouchEvents = true
+        
+        /*for (i, touch) in enumerate(touches) {
+            if let touch = touch as? UITouch {
+                let position = touch.locationInView(_view)
+                println("\(i): \(position.x):\(position.y)")
+                _positions[i] = Cartesian2(x: Double(position.x) * screenScaleFactor, y: Double(position.y) * screenScaleFactor)
+            }
+        }
+        
+        fireTouchMoveEvents()
+        
+        for (i, touch) in enumerate(touches) {
+            if let touch = touch as? UITouch {
+                
+                let position = touch.locationInView(_view)
+                _previousPositions[i] = Cartesian2(x: Double(position.x), y: Double(position.y))
+            }
+        }*/
     }
     
-    fireTouchEvents(screenSpaceEventHandler, event);
-    
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    previousPositions.remove(identifier);
-    }
-    }
-    
-    var touchStartEvent = {
-    position : new Cartesian2()
-    };
-    var touch2StartEvent = {
-    position1 : new Cartesian2(),
-    position2 : new Cartesian2()
-    };
-    var touchEndEvent = {
-    position : new Cartesian2()
-    };
-    var touchClickEvent = {
-    position : new Cartesian2()
-    };
-    
-    function fireTouchEvents(screenSpaceEventHandler, event) {
-    var modifier = getModifier(event);
-    var positions = screenSpaceEventHandler._positions;
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    var numberOfTouches = positions.length;
-    var action;
-    var clickAction;
-    
-    if (numberOfTouches !== 1 && screenSpaceEventHandler._buttonDown === MouseButton.LEFT) {
-    // transitioning from single touch, trigger UP and might trigger CLICK
-    screenSpaceEventHandler._buttonDown = undefined;
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.LEFT_UP, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(screenSpaceEventHandler._primaryPosition, touchEndEvent.position);
-    
-    action(touchEndEvent);
+    public func handleTouchEnd(touches: Set<NSObject>) {
+        _seenAnyTouchEvents = true
+        
+        _positions.removeAll()
+        /*for touch in touches {
+            if let touch = touch as? UITouch {
+                let tapCount = touch.tapCount
+                let position = touch.locationInView(_view)
+                _positions[tapCount] = nil
+            }
+        }*/
+        
+        fireTouchEvents()
+        
+        _previousPositions.removeAll()
+
+/*        for (i, touch) in enumerate(touches) {
+            if let touch = touch as? UITouch {
+                
+                let position = touch.locationInView(_view)
+                _previousPositions[i] = nil
+            }
+        }*/
+        
     }
     
-    if (numberOfTouches === 0) {
-    // releasing single touch, check for CLICK
-    clickAction = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.LEFT_CLICK, modifier);
-    
-    if (defined(clickAction)) {
-    var startPosition = screenSpaceEventHandler._primaryStartPosition;
-    var endPosition = previousPositions.values[0];
-    var xDiff = startPosition.x - endPosition.x;
-    var yDiff = startPosition.y - endPosition.y;
-    var totalPixels = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-    
-    if (totalPixels < screenSpaceEventHandler._clickPixelTolerance) {
-    Cartesian2.clone(screenSpaceEventHandler._primaryPosition, touchClickEvent.position);
-    
-    clickAction(touchClickEvent);
-    }
-    }
-    }
-    
-    // Otherwise don't trigger CLICK, because we are adding more touches.
-    }
-    
-    if (numberOfTouches !== 2 && screenSpaceEventHandler._isPinching) {
-    // transitioning from pinch, trigger PINCH_END
-    screenSpaceEventHandler._isPinching = false;
-    
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.PINCH_END, modifier);
-    
-    if (defined(action)) {
-    action();
-    }
-    }
-    
-    if (numberOfTouches === 1) {
-    // transitioning to single touch, trigger DOWN
-    var position = positions.values[0];
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryPosition);
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryStartPosition);
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryPreviousPosition);
-    
-    screenSpaceEventHandler._buttonDown = MouseButton.LEFT;
-    
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.LEFT_DOWN, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(position, touchStartEvent.position);
-    
-    action(touchStartEvent);
-    }
-    
-    event.preventDefault();
-    }
-    
-    if (numberOfTouches === 2) {
-    // transitioning to pinch, trigger PINCH_START
-    screenSpaceEventHandler._isPinching = true;
-    
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.PINCH_START, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(positions.values[0], touch2StartEvent.position1);
-    Cartesian2.clone(positions.values[1], touch2StartEvent.position2);
-    
-    action(touch2StartEvent);
-    }
-    }
-    }
-    
-    function handleTouchMove(screenSpaceEventHandler, event) {
-    screenSpaceEventHandler._seenAnyTouchEvents = true;
-    
-    var changedTouches = event.changedTouches;
-    
-    var i;
-    var length = changedTouches.length;
-    var touch;
-    var identifier;
-    var positions = screenSpaceEventHandler._positions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    var position = positions.get(identifier);
-    if (defined(position)) {
-    getPosition(screenSpaceEventHandler, touch, position);
-    }
+    func fireTouchEvents() {
+        
+        let modifier: KeyboardEventModifier? = nil// = getModifier(event);
+        let numberOfTouches = _positions.count
+        
+        var action: EventAction?
+        var clickAction: EventAction?
+        
+        if (numberOfTouches != 1 && _buttonDown == MouseButton.Left) {
+            // transitioning from single touch, trigger UP and might trigger CLICK
+            _buttonDown = nil
+            action = getInputAction(.LeftUp, modifier: modifier)
+            
+            if action != nil {
+                action!(geometry: TouchEndEventGeometry(position: _primaryPosition))
+            }
+            
+            if numberOfTouches == 0 {
+                // releasing single touch, check for CLICK
+                /*clickAction = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.LEFT_CLICK, modifier);
+                
+                if (defined(clickAction)) {
+                var startPosition = screenSpaceEventHandler._primaryStartPosition;
+                var endPosition = previousPositions.values[0];
+                var xDiff = startPosition.x - endPosition.x;
+                var yDiff = startPosition.y - endPosition.y;
+                var totalPixels = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+                
+                if (totalPixels < screenSpaceEventHandler._clickPixelTolerance) {
+                Cartesian2.clone(screenSpaceEventHandler._primaryPosition, touchClickEvent.position);
+                
+                clickAction(touchClickEvent);
+                }
+                }*/
+            }
+            
+            // Otherwise don't trigger CLICK, because we are adding more touches.*/
+        }
+        
+        if numberOfTouches != 2 && _isPinching {
+            // transitioning from pinch, trigger PINCH_END
+            _isPinching = false
+            
+            if let action = getInputAction(.PinchEnd, modifier: modifier) {
+                action(geometry: TouchEndEventGeometry(position: _primaryPosition))
+            }
+        }
+        
+        if numberOfTouches == 1 {
+            // transitioning to single touch, trigger DOWN
+            if let position = _positions[0] {
+                _buttonDown = .Left
+
+                _primaryPosition = position
+                _primaryStartPosition = position
+                _primaryPreviousPosition = position
+                
+                action = getInputAction(ScreenSpaceEventType.LeftDown, modifier: modifier)
+                
+                if action != nil {
+                    action!(geometry: TouchStartEventGeometry(position: position))
+                }
+            }
+        }
+        
+        if numberOfTouches == 2 {
+            // transitioning to pinch, trigger PINCH_START
+            _isPinching = true
+            
+            action = getInputAction(.PinchStart, modifier: modifier)
+            
+            if action != nil {
+                action!(geometry: Touch2StartEventGeometry(position1: _positions[0]!, position2: _positions[1]!))
+            }
+        }
     }
     
-    fireTouchMoveEvents(screenSpaceEventHandler, event);
-    
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    
-    for (i = 0; i < length; ++i) {
-    touch = changedTouches[i];
-    identifier = touch.identifier;
-    Cartesian2.clone(positions.get(identifier), previousPositions.get(identifier));
+    func fireTouchMoveEvents() {
+        let modifier: KeyboardEventModifier? = nil//  getModifier(event);
+        /*var positions = screenSpaceEventHandler._positions;
+        var previousPositions = screenSpaceEventHandler._previousPositions;
+        var numberOfTouches = positions.length;*/
+        var action: EventAction?
+        
+        let numberOfTouches = _positions.count
+        
+        if numberOfTouches == 1 && _buttonDown == .Left {
+            // moving single touch
+            if let position = _positions[0] {
+                _primaryPosition = position
+                let previousPosition = _primaryPreviousPosition
+                
+                action = getInputAction(.MouseMove, modifier: modifier)
+                
+                if action != nil {
+                    action!(geometry: TouchMoveEventGeometry(
+                        startPosition: previousPosition,
+                        endPosition: position)
+                    )
+                }
+                
+                _primaryPreviousPosition = position
+            }
+        } else if numberOfTouches == 2 && _isPinching {
+            // moving pinch
+            
+            action = getInputAction(.PinchMove, modifier: modifier)
+            if action != nil {
+                let position1 = _positions[0]!
+                let position2 = _positions[1]!
+                let previousPosition1 = _previousPositions[0] ?? _positions[0]!
+                let previousPosition2 = _previousPositions[1] ?? _positions[1]!
+                
+                let dX = position2.x - position1.x
+                let dY = position2.y - position1.y
+                let dist = sqrt(dX * dX + dY * dY) * 0.25
+                
+                let prevDX = previousPosition2.x - previousPosition1.x;
+                let prevDY = previousPosition2.y - previousPosition1.y;
+                let prevDist = sqrt(prevDX * prevDX + prevDY * prevDY) * 0.25
+                
+                let cY = (position2.y + position1.y) * 0.125
+                let prevCY = (previousPosition2.y + previousPosition1.y) * 0.125
+                let angle = atan2(dY, dX)
+                let prevAngle = atan2(prevDY, prevDX)
+                
+                let touchPinchMovementEvent = TouchPinchMovementEventGeometry(
+                    distance:
+                    (startPosition: Cartesian2(x: 0.0, y: prevDist),
+                        endPosition: Cartesian2(x: 0.0, y: dist)),
+                    angleAndHeight:
+                    (startPosition: Cartesian2(x: prevAngle, y: prevCY),
+                        endPosition: Cartesian2(x: angle, y: cY))
+                )
+                action!(geometry: touchPinchMovementEvent)
+            }
+        }
     }
-    }
-    
-    var touchMoveEvent = {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    };
-    var touchPinchMovementEvent = {
-    distance : {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    },
-    angleAndHeight : {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    }
-    };
-    
-    function fireTouchMoveEvents(screenSpaceEventHandler, event) {
-    var modifier = getModifier(event);
-    var positions = screenSpaceEventHandler._positions;
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    var numberOfTouches = positions.length;
-    var action;
-    
-    if (numberOfTouches === 1 && screenSpaceEventHandler._buttonDown === MouseButton.LEFT) {
-    // moving single touch
-    var position = positions.values[0];
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryPosition);
-    
-    var previousPosition = screenSpaceEventHandler._primaryPreviousPosition;
-    
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.MOUSE_MOVE, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(previousPosition, touchMoveEvent.startPosition);
-    Cartesian2.clone(position, touchMoveEvent.endPosition);
-    
-    action(touchMoveEvent);
-    }
-    
-    Cartesian2.clone(position, previousPosition);
-    
-    event.preventDefault();
-    } else if (numberOfTouches === 2 && screenSpaceEventHandler._isPinching) {
-    // moving pinch
-    
-    action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.PINCH_MOVE, modifier);
-    if (defined(action)) {
-    var position1 = positions.values[0];
-    var position2 = positions.values[1];
-    var previousPosition1 = previousPositions.values[0];
-    var previousPosition2 = previousPositions.values[1];
-    
-    var dX = position2.x - position1.x;
-    var dY = position2.y - position1.y;
-    var dist = Math.sqrt(dX * dX + dY * dY) * 0.25;
-    
-    var prevDX = previousPosition2.x - previousPosition1.x;
-    var prevDY = previousPosition2.y - previousPosition1.y;
-    var prevDist = Math.sqrt(prevDX * prevDX + prevDY * prevDY) * 0.25;
-    
-    var cY = (position2.y + position1.y) * 0.125;
-    var prevCY = (previousPosition2.y + previousPosition1.y) * 0.125;
-    var angle = Math.atan2(dY, dX);
-    var prevAngle = Math.atan2(prevDY, prevDX);
-    
-    Cartesian2.fromElements(0.0, prevDist, touchPinchMovementEvent.distance.startPosition);
-    Cartesian2.fromElements(0.0, dist, touchPinchMovementEvent.distance.endPosition);
-    
-    Cartesian2.fromElements(prevAngle, prevCY, touchPinchMovementEvent.angleAndHeight.startPosition);
-    Cartesian2.fromElements(angle, cY, touchPinchMovementEvent.angleAndHeight.endPosition);
-    
-    action(touchPinchMovementEvent);
-    }
-    }
-    }
-    
+    /*
     function handlePointerDown(screenSpaceEventHandler, event) {
     event.target.setPointerCapture(event.pointerId);
     
@@ -622,56 +639,8 @@ class ScreenSpaceEventHandler {
     handleMouseUp(screenSpaceEventHandler, event);
     }
     }
-    
-    function handlePointerMove(screenSpaceEventHandler, event) {
-    if (event.pointerType === 'touch') {
-    var positions = screenSpaceEventHandler._positions;
-    
-    var identifier = event.pointerId;
-    getPosition(screenSpaceEventHandler, event, positions.get(identifier));
-    
-    fireTouchMoveEvents(screenSpaceEventHandler, event);
-    
-    var previousPositions = screenSpaceEventHandler._previousPositions;
-    Cartesian2.clone(positions.get(identifier), previousPositions.get(identifier));
-    } else {
-    handleMouseMove(screenSpaceEventHandler, event);
-    }
-    }
-    
-    /**
-    * Handles user input events. Custom functions can be added to be executed on
-    * when the user enters input.
-    *
-    * @alias ScreenSpaceEventHandler
-    *
-    * @param {Canvas} [element=document] The element to add events to.
-    *
-    * @constructor
     */
-    var ScreenSpaceEventHandler = function(element) {
-    this._inputEvents = {};
-    this._buttonDown = undefined;
-    this._isPinching = false;
-    this._seenAnyTouchEvents = false;
     
-    this._primaryStartPosition = new Cartesian2();
-    this._primaryPosition = new Cartesian2();
-    this._primaryPreviousPosition = new Cartesian2();
-    
-    this._positions = new AssociativeArray();
-    this._previousPositions = new AssociativeArray();
-    
-    this._removalFunctions = [];
-    
-    // TODO: Revisit when doing mobile development. May need to be configurable
-    // or determined based on the platform?
-    this._clickPixelTolerance = 5;
-    
-    this._element = defaultValue(element, document);
-    
-    registerListeners(this);
-    };
     
     /**
     * Set a function to be executed on an input event.
@@ -684,19 +653,10 @@ class ScreenSpaceEventHandler {
     * @see ScreenSpaceEventHandler#getInputAction
     * @see ScreenSpaceEventHandler#removeInputAction
     */
-    ScreenSpaceEventHandler.prototype.setInputAction = function(action, type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(action)) {
-    throw new DeveloperError('action is required.');
+    func  setInputAction (type: ScreenSpaceEventType, modifier: KeyboardEventModifier?, action: EventAction) {
+        let key = getInputEventKey(type, modifier: modifier)
+        _inputEvents[key] = action
     }
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var key = getInputEventKey(type, modifier);
-    this._inputEvents[key] = action;
-    };
     
     /**
     * Returns the function to be executed on an input event.
@@ -708,17 +668,12 @@ class ScreenSpaceEventHandler {
     * @see ScreenSpaceEventHandler#setInputAction
     * @see ScreenSpaceEventHandler#removeInputAction
     */
-    ScreenSpaceEventHandler.prototype.getInputAction = function(type, modifier) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(type)) {
-    throw new DeveloperError('type is required.');
+    func getInputAction (type: ScreenSpaceEventType, modifier: KeyboardEventModifier?) -> EventAction? {
+        
+        let key = getInputEventKey(type, modifier: modifier)
+        return _inputEvents[key]
     }
-    //>>includeEnd('debug');
-    
-    var key = getInputEventKey(type, modifier);
-    return this._inputEvents[key];
-    };
-    
+    /*
     /**
     * Removes the function to be executed on an input event.
     *
@@ -754,6 +709,31 @@ class ScreenSpaceEventHandler {
     return false;
     };
     
+    
+    ScreenSpaceEventHandler.prototype.destroy = function() {
+    unregisterListeners(this);
+    
+    return destroyObject(this);
+    };
+    
+    return ScreenSpaceEventHandler;
+    });
+    */
+    /*func handlePointerMove(screenSpaceEventHandler, event) {
+    if (event.pointerType === 'touch') {
+    var positions = screenSpaceEventHandler._positions;
+    
+    var identifier = event.pointerId;
+    getPosition(screenSpaceEventHandler, event, positions.get(identifier));
+    
+    fireTouchMoveEvents(screenSpaceEventHandler, event);
+    
+    var previousPositions = screenSpaceEventHandler._previousPositions;
+    Cartesian2.clone(positions.get(identifier), previousPositions.get(identifier));
+    } else {
+    handleMouseMove(screenSpaceEventHandler, event);
+    }
+    }*/
     /**
     * Removes listeners held by this object.
     * <br /><br />
@@ -770,13 +750,8 @@ class ScreenSpaceEventHandler {
     * @example
     * handler = handler && handler.destroy();
     */
-    ScreenSpaceEventHandler.prototype.destroy = function() {
-    unregisterListeners(this);
+    deinit {
+        //unregisterListeners()
+    }
     
-    return destroyObject(this);
-    };
-    
-    return ScreenSpaceEventHandler;
-    });
-*/
 }

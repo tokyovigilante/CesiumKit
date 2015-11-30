@@ -6,194 +6,204 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class VertexArray {
     
-    private var _attributes = [VertexAttributes]()
+    let vertexBuffers: [Buffer]
     
-    var attributeCount: Int {
-        return _attributes.count
-    }
+    let attributes: [VertexAttributes]
     
     var vertexCount: Int
     
-    private var _vao: GLuint? = nil
+    let indexBuffer: Buffer?
     
-    let indexBuffer: IndexBuffer?
-
-    init(attributes: [VertexAttributes], indexBuffer: IndexBuffer?) {
-        
-        var vaAttributes = [VertexAttributes]()
-        var numberOfVertices = 1  // if every attribute is backed by a single value
-        self.vertexCount = numberOfVertices
+    let indexType: MTLIndexType
+    
+    
+    var numberOfIndices: Int {
+        return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
+    }
+    
+    init(buffers: [Buffer], attributes: [VertexAttributes], vertexCount: Int, indexType: MTLIndexType = .UInt16, indexBuffer: Buffer? = nil) {
+        self.vertexBuffers = buffers
+        self.attributes = attributes
+        self.vertexCount = vertexCount
+        self.indexType = indexType
         self.indexBuffer = indexBuffer
-
-        for var i = 0; i < attributes.count; ++i {
-            addAttribute(&vaAttributes, attribute: attributes[i], index: i)
-        }
-        
-        for var i = 0; i < vaAttributes.count; ++i {
-            var attribute = vaAttributes[i]
-            
-            if attribute.vertexBuffer != nil {
-                // This assumes that each vertex buffer in the vertex array has the same number of vertices.
-                var bytes = (attribute.strideInBytes != 0) ? attribute.strideInBytes : attribute.componentsPerAttribute * attribute.componentDatatype.elementSize()
-                numberOfVertices = attribute.vertexBuffer!.sizeInBytes / bytes
-                break
-            }
-        }
-        
-        // Verify all attribute names are unique
-        var uniqueIndices = [Bool](count: vaAttributes.count, repeatedValue: false)
-        for var j = 0; j < vaAttributes.count; ++j {
-            var index = vaAttributes[j].index
-            if (uniqueIndices[index]) {
-                assert(!uniqueIndices[index], "Index \(index) is used by more than one attribute.")
-            }
-            uniqueIndices[index] = true
-        }
-        self.vertexCount = numberOfVertices
-        self._attributes = vaAttributes
-        
-        // Setup VAO
-        var vao: GLuint = 0
-        glGenVertexArrays(1, &vao)
-        glBindVertexArray(vao)
-        bind()
-        glBindVertexArray(0)
-        _vao = vao
     }
     
-    private func addAttribute(inout attributes: [VertexAttributes], attribute: VertexAttributes, index: Int) {
+    /**
+    * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
+    * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
+    * memory for use with rendering.
+    * <br /><br />
+    * The <code>geometry</code> argument should use the standard layout like the geometry returned by {@link BoxGeometry}.
+    * <br /><br />
+    * <code>options</code> can have four properties:
+    * <ul>
+    *   <li><code>geometry</code>:  The source geometry containing data used to create the vertex array.</li>
+    *   <li><code>attributeLocations</code>:  An object that maps geometry attribute names to vertex shader attribute locations.</li>
+    *   <li><code>bufferUsage</code>:  The expected usage pattern of the vertex array's buffers.  On some WebGL implementations, this can significantly affect performance.  See {@link BufferUsage}.  Default: <code>BufferUsage.DYNAMIC_DRAW</code>.</li>
+    *   <li><code>interleave</code>:  Determines if all attributes are interleaved in a single vertex buffer or if each attribute is stored in a separate vertex buffer.  Default: <code>false</code>.</li>
+    * </ul>
+    * <br />
+    * If <code>options</code> is not specified or the <code>geometry</code> contains no data, the returned vertex array is empty.
+    *
+    * @param {Object} options An object defining the geometry, attribute indices, buffer usage, and vertex layout used to create the vertex array.
+    *
+    * @exception {RuntimeError} Each attribute list must have the same number of vertices.
+    * @exception {DeveloperError} The geometry must have zero or one index lists.
+    * @exception {DeveloperError} Index n is used by more than one attribute.
+    *
+    * @see Buffer#createVertexBuffer
+    * @see Buffer#createIndexBuffer
+    * @see GeometryPipeline.createAttributeLocations
+    * @see ShaderProgram
+    *
+    * @example
+    * // Example 1. Creates a vertex array for rendering a box.  The default dynamic draw
+    * // usage is used for the created vertex and index buffer.  The attributes are not
+    * // interleaved by default.
+    * var geometry = new BoxGeometry();
+    * var va = VertexArray.fromGeometry({
+    *     context            : context,
+    *     geometry           : geometry,
+    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
+    * });
+    *
+    * @example
+    * // Example 2. Creates a vertex array with interleaved attributes in a
+    * // single vertex buffer.  The vertex and index buffer have static draw usage.
+    * var va = VertexArray.fromGeometry({
+    *     context            : context,
+    *     geometry           : geometry,
+    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
+    *     bufferUsage        : BufferUsage.STATIC_DRAW,
+    *     interleave         : true
+    * });
+    *
+    * @example
+    * // Example 3.  When the caller destroys the vertex array, it also destroys the
+    * // attached vertex buffer(s) and index buffer.
+    * va = va.destroy();
+    */
+    convenience init(fromGeometry geometry: Geometry, interleave: Bool = false) {
         
-        var hasVertexBuffer = attribute.vertexBuffer != nil
-        var hasValue = attribute.value != nil
-        var componentsPerAttribute = (attribute.value != nil) ? attribute.value!.length : attribute.componentsPerAttribute
         
-        // FIXME: vertexbuffer.value
-        assert(hasVertexBuffer != hasValue, "attribute must have a vertexBuffer or a value. It must have either a vertexBuffer property defining per-vertex data or a value property defining data for all vertices")
+        /*var context = options.context;
+        var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
         
-        assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4, "attribute.value.length must be in the range [1, 4]")
-
-        /*if (defined(attribute.strideInBytes) && (attribute.strideInBytes > 255)) {
-            // WebGL limit.  Not in GL ES.
-            throw new DeveloperError('attribute must have a strideInBytes less than or equal to 255 or not specify it.');
-        }*/
-        var attr = attribute.copy()
+        var bufferUsage = defaultValue(options.bufferUsage, BufferUsage.DYNAMIC_DRAW);
         
-        if (hasVertexBuffer) {
-            // Common case: vertex buffer for per-vertex data
-            attr.vertexAttrib = { (attr: VertexAttributes) in
-                glBindBuffer(BufferTarget.ArrayBuffer.toGL(), attr.vertexBuffer!.buffer)
-                glVertexAttribPointer(
-                    GLuint(attr.index),
-                    GLint(attr.componentsPerAttribute),
-                    attr.componentDatatype.toGL(),
-                    attr.normalize ? GLboolean(GL_TRUE) : GLboolean(GL_FALSE),
-                    GLsizei(attr.strideInBytes),
-                    UnsafePointer<Void>(bitPattern: attr.offsetInBytes)
-                )
-                glEnableVertexAttribArray(GLuint(attr.index))
-            }
+        var attributeLocations = defaultValue(options.attributeLocations, defaultValue.EMPTY_OBJECT);
+        var interleave = defaultValue(options.interleave, false);
+        var createdVAAttributes = options.vertexArrayAttributes;
+        
+        var name;
+        var attribute;
+        var vertexBuffer;
+        var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];*/
+        //let attributes = geometry.attributes
+        let vertexAttributes = GeometryPipeline.createAttributeLocations(geometry)
+        
+        if (interleave) {
+            // Use a single vertex buffer with interleaved vertices.
+            /*var interleavedAttributes = interleaveAttributes(attributes);
+            if (defined(interleavedAttributes)) {
+            vertexBuffer = Buffer.createVertexBuffer({
+            context : context,
+            typedArray : interleavedAttributes.buffer,
+            usage : bufferUsage
+            });
+            var offsetsInBytes = interleavedAttributes.offsetsInBytes;
+            var strideInBytes = interleavedAttributes.vertexSizeInBytes;
             
-            attr.disableVertexAttribArray = { (attr: VertexAttributes) in
-                glDisableVertexAttribArray(GLuint(attr.index))
-            }
-        } else {
-            // Less common case: value array for the same data for each vertex
-            /*switch (attr.componentsPerAttribute) {
-            case 1:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib1fv(this.index, this.value);
-                };
-                break;
-            case 2:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib2fv(this.index, this.value);
-                };
-                break;
-            case 3:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib3fv(this.index, this.value);
-                };
-                break;
-            case 4:
-                attr.vertexAttrib = function(gl) {
-                    gl.vertexAttrib4fv(this.index, this.value);
-                };
-                break;
-            }
+            for (name in attributes) {
+            if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
+            attribute = attributes[name];
             
-            attr.disableVertexAttribArray = function(gl) {
-            };*/
-        }
-        
-        attributes.append(attr)
-    }
-    
-    private func bind() {
-        
-        for attribute in _attributes {
-            if attribute.enabled {
-                attribute.vertexAttrib(attr: attribute)
+            if (defined(attribute.values)) {
+            // Common case: per-vertex attributes
+            vaAttributes.push({
+            index : attributeLocations[name],
+            vertexBuffer : vertexBuffer,
+            componentDatatype : attribute.componentDatatype,
+            componentsPerAttribute : attribute.componentsPerAttribute,
+            normalize : attribute.normalize,
+            offsetInBytes : offsetsInBytes[name],
+            strideInBytes : strideInBytes
+            });
+            } else {
+            // Constant attribute for all vertices
+            vaAttributes.push({
+            index : attributeLocations[name],
+            value : attribute.value,
+            componentDatatype : attribute.componentDatatype,
+            normalize : attribute.normalize
+            });
             }
-        }
-
-        if indexBuffer != nil {
-            glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), indexBuffer!.buffer)
-        }
-    }
-
-/*
-defineProperties(VertexArray.prototype, {
-numberOfAttributes : {
-get : function() {
-return this._attributes.length;
-}
-
-},
-indexBuffer : {
-get : function() {
-return this._indexBuffer;
-}
-}
-});
-*/
-/**
-* index is the location in the array of attributes, not the index property of an attribute.
-*/
-    func attribute(index: Int) -> VertexAttributes {
-        return _attributes[index]
-    }
-
-    func _bind() {
-        if _vao != nil {
-            glBindVertexArray(_vao!)
-        } else {
-                bind()
             }
-    }
-
-    func _unBind() {
-        if _vao != nil {
-            glBindVertexArray(0)
+            }
+            }*/
         } else {
-            for attribute in _attributes {
-                if attribute.enabled {
-                    attribute.disableVertexAttribArray(attr: attribute)
+            // One vertex buffer per attribute.
+            for attribute in vertexAttributes {
+                /*if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
+                attribute = attributes[name];
+                
+                var componentDatatype = attribute.componentDatatype;
+                if (componentDatatype === ComponentDatatype.DOUBLE) {
+                componentDatatype = ComponentDatatype.FLOAT;
                 }
-            }
-            if indexBuffer != nil {
-                glBindBuffer(BufferTarget.ElementArrayBuffer.toGL(), 0)
+                
+                vertexBuffer = undefined;
+                if (defined(attribute.values)) {
+                vertexBuffer = Buffer.createVertexBuffer({
+                context : context,
+                typedArray : ComponentDatatype.createTypedArray(componentDatatype, attribute.values),
+                usage : bufferUsage
+                });
+                }
+                
+                vaAttributes.push({
+                index : attributeLocations[name],
+                vertexBuffer : vertexBuffer,
+                value : attribute.value,
+                componentDatatype : componentDatatype,
+                componentsPerAttribute : attribute.componentsPerAttribute,
+                normalize : attribute.normalize
+                });
+                }*/
             }
         }
-    }
-
-    deinit {
-        if _vao != nil {
-            glDeleteVertexArrays(1, &_vao!)
+        /*
+        var indexBuffer;
+        var indices = geometry.indices;
+        if (defined(indices)) {
+        if ((Geometry.computeNumberOfVertices(geometry) > CesiumMath.SIXTY_FOUR_KILOBYTES) && context.elementIndexUint) {
+        indexBuffer = Buffer.createIndexBuffer({
+        context : context,
+        typedArray : new Uint32Array(indices),
+        usage : bufferUsage,
+        indexDatatype : IndexDatatype.UNSIGNED_INT
+        });
+        } else{
+        indexBuffer = Buffer.createIndexBuffer({
+        context : context,
+        typedArray : new Uint16Array(indices),
+        usage : bufferUsage,
+        indexDatatype : IndexDatatype.UNSIGNED_SHORT
+        });
         }
+    }*/
+    
+        self.init(buffers: [geometry.attributes.normal!.buffer], attributes: vertexAttributes, vertexCount: 0)
+    //    attributes : vaAttributes,
+    //  indexBuffer : indexBuffer
+    // }
     }
+    
+    
 }
 

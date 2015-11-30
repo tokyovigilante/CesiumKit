@@ -63,7 +63,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {Boolean}
     */
     var ready = true
-
+    
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
     private let _terrainData: HeightmapTerrainData
@@ -85,12 +85,12 @@ class EllipsoidTerrainProvider: TerrainProvider {
 
         // FIXME: terraindata
         _terrainData = HeightmapTerrainData(
-            buffer: SerializedType.fromUInt16Array([UInt16](count: 16 * 16, repeatedValue: 0)),
+            buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
             width : 16,
             height : 16)
     }
 
-    class func getRegularGridIndices(#width: Int, height: Int) -> [Int] {
+    class func getRegularGridIndices(width width: Int, height: Int) -> [Int] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]
@@ -104,12 +104,12 @@ class EllipsoidTerrainProvider: TerrainProvider {
             
             var index = 0
             var indicesIndex = 0
-            for j in 0..<height-1 {
-                for i in 0..<width-1 {
-                    var upperLeft = index
-                    var lowerLeft = upperLeft + width
-                    var lowerRight = lowerLeft + 1
-                    var upperRight = upperLeft + 1
+            for _ in 0..<height-1 {
+                for _ in 0..<width-1 {
+                    let upperLeft = index
+                    let lowerLeft = upperLeft + width
+                    let lowerRight = lowerLeft + 1
+                    let upperRight = upperLeft + 1
                     
                     indices![indicesIndex++] = upperLeft
                     indices![indicesIndex++] = lowerLeft
@@ -132,7 +132,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     }
     
     class func estimatedLevelZeroGeometricErrorForAHeightmap(
-        #ellipsoid: Ellipsoid,
+        ellipsoid ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             
@@ -155,16 +155,8 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          pending and the request will be retried later.
      */
     
-    func requestTileGeometry(#x: Int, y: Int, level: Int/*, throttleRequests: Bool = true*/) -> TerrainData? {
-        
-        return _terrainData
-        //resolve(terrainData)
-        /*dispatch_async(terrainProcessorQueue, {
-            // FIXME: Do expensive work to make terrainData
-            dispatch_async(dispatch_get_main_queue(),  {
-                resolve(nil)
-            })
-        })*/
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
+        completionBlock(_terrainData)
     }
 
     /**
@@ -195,9 +187,5 @@ class EllipsoidTerrainProvider: TerrainProvider {
             return false
         }
     }
-    
-    func getTileDataAvailable(#x: Int, y: Int, level: Int) -> Bool? {
-        return nil
-    }
-    
+
 }

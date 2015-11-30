@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-enum TerrainState: Int, Printable {
+enum TerrainState: Int, CustomStringConvertible {
     
     case Failed = 0,
     Unloaded,
@@ -14,6 +14,7 @@ enum TerrainState: Int, Printable {
     Received,
     Transforming,
     Transformed,
+    Buffering,
     Ready
     
     var description: String {
@@ -31,6 +32,8 @@ enum TerrainState: Int, Printable {
                 return "Transforming"
             case .Transformed:
                 return "Transformed"
+            case .Buffering:
+                return "Buffering"
             case .Ready:
                 return "Ready"
             }

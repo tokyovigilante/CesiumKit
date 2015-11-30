@@ -6,24 +6,21 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIScreen
-import Foundation
-import OpenGLES
-import GLKit
+import MetalKit
 
 /**
 Describes Globe object options
 
-:param: Clock [options.clock=new Clock()] The clock to use to control current time.
-:param: imageryProvider [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
-:param: terrainProvider [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
-:param: skyBox [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
-:param: sceneMode [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
-:param: scene3DOnly Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
-:param: mapProjection [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
-:param: Boolean [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
-:param: Number [options.targetFrameRate] The target frame rate when using the default render loop.
-:param: Boolean [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+- parameter Clock: [options.clock=new Clock()] The clock to use to control current time.
+- parameter imageryProvider: [options.imageryProvider=new BingMapsImageryProvider()] The imagery provider to serve as the base layer. If set to false, no imagery provider will be added.
+- parameter terrainProvider: [options.terrainProvider=new EllipsoidTerrainProvider] The terrain provider.
+- parameter skyBox: [options.skyBox] The skybox used to render the stars.  When <code>undefined</code>, the default stars are used.
+- parameter sceneMode: [options.sceneMode=SceneMode.SCENE3D] The initial scene mode.
+- parameter scene3DOnly: Boolean [options.scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
+- parameter mapProjection: [options.mapProjection=new GeographicProjection()] The map projection to use in 2D and Columbus View modes.
+- parameter Boolean: [options.useDefaultRenderLoop=true] True if this widget should control the render loop, false otherwise.
+- parameter Number: [options.targetFrameRate] The target frame rate when using the default render loop.
+- parameter Boolean: [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
 public struct CesiumOptions {
     
@@ -33,7 +30,7 @@ public struct CesiumOptions {
     //public var skyBox: SkyBox? = nil
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
-    public var mapProjection: Projection = GeographicProjection()
+    public var mapProjection: MapProjection = GeographicProjection()
     public var showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
@@ -46,7 +43,7 @@ public struct CesiumOptions {
         imageryProvider: ImageryProvider? = nil,
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
-        mapProjection: Projection = GeographicProjection(),
+        mapProjection: MapProjection = GeographicProjection(),
         targetFrameRate: Int = 60,
         showRenderLoopErrors: Bool = true,
         resolutionScale: Double = 0.5) {
@@ -123,9 +120,7 @@ public class CesiumGlobe {
     var showRenderLoopErrors = false
     
     var _lastFrameTime: NSDate?
-        
-    let view: GLKView
-    
+            
     /**
     * Gets the scene.
     * @memberof CesiumWidget.prototype
@@ -161,7 +156,11 @@ public class CesiumGlobe {
     *
     * @type {ScreenSpaceEventHandler}
     */
-    var screenSpaceEventHandler: ScreenSpaceEventHandler
+    public var eventHandler: ScreenSpaceEventHandler {
+        get {
+            return scene.screenSpaceCameraController._aggregator.eventHandler
+        }
+    }
     
     /**
     * Gets the collection of image layers that will be rendered on the globe.
@@ -212,9 +211,8 @@ public class CesiumGlobe {
     */
     public let clock: Clock
 
-    public init (view: GLKView, options: CesiumOptions) {
+    public init (view: MTKView, options: CesiumOptions) {
 
-        self.view = view
         /*
         var creditContainer = document.createElement('div');
         creditContainer.className = 'cesium-widget-credits';
@@ -241,7 +239,7 @@ public class CesiumGlobe {
             /*            }*/)
         scene.globe = globe
         scene.camera.constrainedAxis = Cartesian3.unitZ()
-        scene.backgroundColor = Cartesian4.fromColor(red: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
+        scene.backgroundColor = Cartesian4(fromRed: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
         
         /*var creditDisplay = scene.frameState.creditDisplay;
         
@@ -275,18 +273,19 @@ public class CesiumGlobe {
         //Set the terrain provider
         scene.terrainProvider = options.terrainProvider
         
-        self.screenSpaceEventHandler = ScreenSpaceEventHandler(/*canvas*/)
+        //self.screenSpaceEventHandler = ScreenSpaceEventHandler(view: view)
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
         
         if self.sceneMode == SceneMode.Scene2D {
-            self.scene.morphTo2D(duration: 0)
+            self.scene.morphTo2D(0)
         }
         if self.sceneMode == SceneMode.ColumbusView {
-            self.scene.morphToColumbusView(duration: 0)
+            self.scene.morphToColumbusView(0)
         }
-        
-        configureCanvasSize(CGSizeMake(CGFloat(view.drawableWidth), CGFloat(view.drawableHeight)))
+        print(view.drawableSize)
+        print(view.bounds.size)
+        configureCanvasSize(Cartesian2(x: Double(view.drawableSize.width), y: Double(view.drawableSize.height)))
         configureCameraFrustum()
 
         // FIXME: Render errors
@@ -343,11 +342,9 @@ public class CesiumGlobe {
         requestAnimationFrame(render)*/
     }
 
-    func configureCanvasSize(size: CGSize) {
+    func configureCanvasSize(size: Cartesian2) {
         
-        scene.drawableWidth = Int(size.width)
-        scene.drawableHeight = Int(size.height)
-        
+        scene.resize(size)
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
         
     }
@@ -361,7 +358,7 @@ public class CesiumGlobe {
                 scene.camera.frustum.aspectRatio = Double(width) / Double(height)
             } else {
                 scene.camera.frustum.top = scene.camera.frustum.right * (Double(height) / Double(width))
-                scene.camera.frustum.bottom = -scene.camera.frustum.top;
+                scene.camera.frustum.bottom = -scene.camera.frustum.top
             }
         }
     }
@@ -380,10 +377,9 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
     public func showErrorPanel(title: String, message: String, error: String) {
-        println(title)
-        println(message)
-        println(error)
-        /*
+        print(title, terminator: "")
+        print(message, terminator: "")
+        print(error, terminator: "")   /*
         // FIXME Error display
         var element = this._element;
         var overlay = document.createElement('div');
@@ -469,8 +465,8 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * This function is called automatically as needed unless
     * <code>useDefaultRenderLoop</code> is set to false.
     */
-    func resize(size: CGSize) {
-        if scene.drawableWidth == Int(size.width) && scene.drawableHeight == Int(size.height) {
+    func resize(size: Cartesian2) {
+        if scene.drawableWidth == Int(size.x) && scene.drawableHeight == Int(size.y) {
             return
         }
         configureCanvasSize(size)
@@ -489,9 +485,10 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
             println(performanceString)
         }*/
 
-        resize(size)
+
+        resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
         scene.initializeFrame()
-        var currentTime = clock.tick()
+        let currentTime = clock.tick()
         if _canRender {
             scene.render(currentTime)
             //_lastFrameTime = NSDate()

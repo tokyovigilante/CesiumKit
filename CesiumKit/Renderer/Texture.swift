@@ -6,23 +6,22 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
-import OpenGLES
+import CoreGraphics
+import Metal
+
+private let _colorSpace = CGColorSpaceCreateDeviceRGB()//CGImageGetColorSpace(imageRef)
 
 enum TextureSource {
+    case Image(CGImageRef)
     case ImageBuffer(Imagebuffer)
-    case FrameBuffer(Framebuffer)
-    case Image(UIImage)
     
     var width: Int {
         get {
             switch self {
             case .Image(let image):
-                return Int(image.size.width)
+                return CGImageGetWidth(image)
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.width
-            default:
-                assertionFailure("not implemented")
             }
         }
     }
@@ -31,11 +30,9 @@ enum TextureSource {
         get {
             switch self {
             case .Image(let image):
-                return Int(image.size.height)
+                return Int(CGImageGetHeight(image))
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.height
-            default:
-                assertionFailure("not implemented")
             }
         }
     }
@@ -49,49 +46,47 @@ struct TextureOptions {
     
     let height: Int
     
-    let pixelFormat: PixelFormat
-    
-    let pixelDatatype: PixelDatatype
+    let pixelFormat: MTLPixelFormat
     
     let flipY: Bool
     
     let premultiplyAlpha: Bool
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: PixelFormat = .RGBA, pixelDatatype: PixelDatatype = .UnsignedByte, flipY: Bool = true, premultiplyAlpha: Bool = true) {
+    let usage: MTLTextureUsage
+    
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
         self.width = source != nil ? source!.width : width!
         self.height = source != nil ? source!.height : height!
         self.pixelFormat = pixelFormat
-        self.pixelDatatype = pixelDatatype
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
+        self.usage = usage
     }
 }
 
 class Texture {
     
-    var width: Int
+    let width: Int
     
-    var height: Int
+    let height: Int
     
-    let pixelFormat: PixelFormat
-    
-    var pixelDatatype: PixelDatatype
-    
-    var options: TextureOptions
+    let pixelFormat: MTLPixelFormat
     
     var textureFilterAnisotropic = true
     
     var premultiplyAlpha = true
+    
+    let usage: MTLTextureUsage
+    
+    var mipmapped: Bool = false
 
     weak var context: Context?
     
-    var textureName: GLuint
+    var metalTexture: MTLTexture!
     
-    let textureTarget = GLenum(GL_TEXTURE_2D)
-
     /**
     * The sampler to use when sampling this texture.
     * Create a sampler by calling {@link Context#createSampler}.  If this
@@ -101,39 +96,12 @@ class Texture {
     * @memberof Texture.prototype
     * @type {Object}
     */
-    var sampler: Sampler! {
-        didSet {
-            if pixelDatatype == .Float {
-                if (sampler.minificationFilter != .Nearest &&
-                    sampler.minificationFilter != .NearestMipmapNearest) {
-                        assertionFailure("Only NEAREST and NEAREST_MIPMAP_NEAREST minification filters are supported for floating point textures.")
-                }
-                
-                if (sampler.magnificationFilter != .Nearest) {
-                    assertionFailure("Only the NEAREST magnification filter is supported for floating point textures.")
-                }
-            }
-            
-            glActiveTexture(GLenum(GL_TEXTURE0))
-            glBindTexture(textureTarget, textureName)
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MIN_FILTER), sampler.minificationFilter.toGL())
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAG_FILTER), sampler.magnificationFilter.toGL());
-            
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_S), sampler.wrapS.toGL())
-            glTexParameteri(textureTarget, GLenum(GL_TEXTURE_WRAP_T), sampler.wrapT.toGL())
-            if textureFilterAnisotropic {
-                glTexParameteri(textureTarget, GLenum(GL_TEXTURE_MAX_ANISOTROPY_EXT), sampler.maximumAnisotropy)
-            }
-            glBindTexture(textureTarget, 0)
-        }
-    }
-
+    var sampler: Sampler! = nil
+        
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
-    
-        self.options = options
-        
+
         let source = options.source
         
         if options.source == nil {
@@ -144,19 +112,17 @@ class Texture {
             height = source!.height
         }
         
-        pixelFormat = .RGBA//options.pixelFormat
-        
-        pixelDatatype = options.pixelDatatype
-        
+        pixelFormat = options.pixelFormat
         premultiplyAlpha = options.premultiplyAlpha
-        
-        textureName = 0
+        usage = options.usage
+        //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
+        mipmapped = false
 
         assert(width > 0, "Width must be greater than zero.")
-        assert(width <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
+        assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
-        assert(self.height <= context.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.maximumTextureSize)")
-        
+        assert(self.height <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
+        /*
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
         }
@@ -173,78 +139,83 @@ class Texture {
         }
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
-        // http://media.tojicode.com/webglCamp4/#20
-        var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
-        var flipY = options.flipY
+        // http://media.tojicode.com/webglCamp4/#20*/
+        //var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
+        let flipY = options.flipY
         
-        glGenTextures(1, &textureName)
+        // FIXME: mipmapping
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
+            width: width, height: height, mipmapped: false/*mipmapped*/)
+        textureDescriptor.usage = usage
         
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(textureTarget, textureName)
+        if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
+            textureDescriptor.storageMode = .Private
+        }
+        #if os(OSX)
+            if pixelFormat == .Depth24Unorm_Stencil8 {
+                textureDescriptor.storageMode = .Private
+            }
+        #endif
+        metalTexture = context.device.newTextureWithDescriptor(textureDescriptor)
         
          if let source = source {
-            glPixelStorei(GLenum(GL_UNPACK_ALIGNMENT), 4)
-            //glPixelStorei(GL_UNPACK, <#param: GLint#>)
-            //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, preMultiplyAlpha);
-            //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY)
-            
             switch source {
             case .ImageBuffer(let imagebuffer):
                 // Source: typed array
                 var pixelBuffer = imagebuffer.arrayBufferView
-            /*    // FIXME - glTexImage2D
-                //glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(pixelFormat), GLsizei(width), GLsizei(height), 0, GLenum(pixelFormat), GLenum(pixelDatatype), UnsafePointer<Void>(pixelBuffer))*/
-            case .FrameBuffer(let framebuffer):
-                // Source: framebuffer
-                if framebuffer !== context.defaultFramebuffer {
-                    framebuffer.bind()
-                }
-            /*    /*glCopyTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, source.xOffset, source.yOffset, width, height, 0)
-                
-                if (source.framebuffer != context.defaultFramebuffer) {
-                    source.framebuffer.unbind()*/*/
-            case .Image(let image): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
+            /* // FIXME - glTexImage2D
+                let region = MTLRegionMake2D(0, 0, width, height)
+                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: pixelBuffer, bytesPerRow: bytesPerRow)*/
+            case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 //Extract info for your image
-                let imageRef = image.CGImage
                 let width = CGImageGetWidth(imageRef)
                 let height = CGImageGetHeight(imageRef)
-                let bytesPerPixel: Int = pixelFormat == PixelFormat.RGB ? 4 : pixelDatatype.bytesPerElement * pixelFormat.byteCount // RGB CGImage must have Alpha
-                
-                // Allocate a textureData with the above properties:
-                var textureData = [UInt8](count: width * height * bytesPerPixel, repeatedValue: UInt8(0)) // if 4 components per pixel (RGBA)
-                
-                let colorSpace = CGImageGetColorSpace(imageRef)
+                let bytesPerPixel: Int = 4
                 let bytesPerRow = bytesPerPixel * width
-                let bitsPerComponent = pixelDatatype.bytesPerElement * 8
+                let bitsPerComponent = 8
+
                 
                 let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
                 
-                /*var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
+                var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
                 
                 rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-                rawBitmapInfo |= CGBitmapInfo(alphaInfo.rawValue).rawValue*/
+                rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
                 
-                let bitmapInfo = CGBitmapInfo(alphaInfo.rawValue)
+                let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
                 
-                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+
+                // Allocate a textureData with the above properties:
+                let textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
+
+                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, _colorSpace, bitmapInfo.rawValue)
+                assert(contextRef != nil, "contextRef == nil")
                 let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-                let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-                CGContextConcatCTM(contextRef, flipVertical)
+                if flipY {
+                    let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
+                    CGContextConcatCTM(contextRef, flipVertical)
+                }
                 CGContextDrawImage(contextRef, imageRect, imageRef)
                 
-                // Set-up your texture:
-                glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, textureData)
+                // Copy to texture
+                let region = MTLRegionMake2D(0, 0, width, height)
+                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: textureData, bytesPerRow: bytesPerRow)
             }
-
-        } else {
-            glTexImage2D(textureTarget, 0, GLint(pixelFormat.toGL()), GLsizei(width), GLsizei(height), 0, pixelFormat.toGL(), pixelDatatype.rawValue, UnsafePointer<Void>(bitPattern: 0))
         }
-        glBindTexture(textureTarget, GLenum(0))
-        
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
-        //self.dimensions = Cartesian2(x: Double(width), y: Double(height))*/
+    }
+    
+    init (context: Context, metalTexture: MTLTexture) {
+        self.context = context
+        self.metalTexture = metalTexture
+        self.width = metalTexture.width
+        self.height = metalTexture.height
+        self.pixelFormat = metalTexture.pixelFormat
+        self.textureFilterAnisotropic = true
+        self.usage = metalTexture.usage
+        self.premultiplyAlpha = true
     }
     /*
     defineProperties(Texture.prototype, {
@@ -449,22 +420,21 @@ class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    func generateMipmap (hint: MipmapHint = .DontCare) {
+    func generateMipmaps () {
 
-        assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
         
-        assert(width > 1 && Math.isPowerOfTwo(width), "width must be a power of two to call generateMipmap()")
-
-        assert(height > 1 && Math.isPowerOfTwo(height), "height must be a power of two to call generateMipmap")
+        //assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
         
-        glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
+        assert(mipmapped, "mipmapping must be enabled during texture creation")
+        
+        /*glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
         glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(textureTarget, textureName)
         glGenerateMipmap(textureTarget)
-        glBindTexture(textureTarget, 0)
-}
+        glBindTexture(textureTarget, 0)*/
+    }
 
     deinit {
-        glDeleteTextures(1, &textureName)
+        //glDeleteTextures(1, &textureName)
     }
 }

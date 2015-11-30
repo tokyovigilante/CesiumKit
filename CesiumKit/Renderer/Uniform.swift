@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import GLSLOptimizer
 
-enum UniformDataType: GLenum {
+enum UniformDataType: UInt {
     
     case FloatVec1 = 5126, // GLenum(GL_FLOAT)
     FloatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
@@ -67,227 +67,149 @@ enum UniformDataType: GLenum {
         }
     }
     
+    func elementCount () -> Int {
+        switch self {
+        case .FloatVec1:
+            return 1
+        case .FloatVec2:
+            return 2
+        case .FloatVec3:
+            return 3
+        case .FloatVec4:
+            return 4
+        case .IntVec1:
+            return 1
+        case .IntVec2:
+            return 2
+        case .IntVec3:
+            return 3
+        case .IntVec4:
+            return 4
+        case .BoolVec1:
+            return 1
+        case .BoolVec2:
+            return 2
+        case .BoolVec3:
+            return 3
+        case .BoolVec4:
+            return 4
+        case .FloatMatrix2:
+            return 4
+        case .FloatMatrix3:
+            return 9
+        case .FloatMatrix4:
+            return 16
+        case .Sampler2D:
+            return 1
+        case .SamplerCube:
+            return 1
+        }
+    }
 }
 
-// represents WebGLActiveInfo
-struct ActiveUniformInfo {
-    
-    let name: String
-    
-    let size: GLsizei
-    
-    let type: UniformDataType
-    
-    static func dataType (rawType: GLenum) -> UniformDataType {
-        
-        let dataType = UniformDataType(rawValue: rawType)
-        assert(dataType != nil, "Invalid raw uniform datatype enum")
-        
-        return dataType!
-    }
+enum UniformType {
+    case Manual, // u_
+    Automatic, // czm_
+    Sampler
 }
 
 class Uniform {
     
-    let name: String
+    private let _desc: GLSLShaderVariableDescription
+
+    var type: UniformType
+
+    let elementCount: Int
+
+    var name: String {
+        return _desc.name
+    }
     
-    private let _activeUniform: ActiveUniformInfo
+    var location: Int {
+        return Int(_desc.location)
+    }
     
-    private let _locations: [GLint]
-    
-    private var location: GLint {
-        return _locations[0]
+    var rawSize: Int {
+        return Int(_desc.rawSize())
     }
     
     var isSingle: Bool {
-        get {
-            return _activeUniform.name.indexOf("[") == nil
-        }
+        return _desc.arraySize == -1
     }
     
-    var datatype: GLenum {
-        get {
-            return self._activeUniform.type.rawValue
-        }
+    var datatype: GLSLOptBasicType {
+        return self._desc.type
     }
     
-    init (activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _activeUniform = activeUniform
-        self.name = name
-        _locations = locations
-        
+    init (desc: GLSLShaderVariableDescription, type: UniformType) {
+        _desc = desc
+        self.type = type
+        elementCount = Int(desc.elementCount())
     }
-
+    
     func setValues(newValues: [Any]) {
         assertionFailure("Invalid base class")
     }
     
-    func set() {
+    func set(buffer: Buffer) {
         assertionFailure("Invalid base class")
     }
     
-    static func create(#activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) -> Uniform {
-        switch activeUniform.type {
-            /*case .FloatVec1:
-            return UniformFloatVec1(activeUniform: activeUniform, name: name, locations: locations)*/
-            case .FloatVec2:
-            return UniformFloatVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatVec3:
-            return UniformFloatVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatVec4:
-            return UniformFloatVec4(activeUniform: activeUniform, name: name, locations: locations)
-            /*case .IntVec1:
-            return UniformIntVec1(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec2:
-            return UniformIntVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec3:
-            return UniformIntVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .IntVec4:
-            return UniformIntVec4(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec1:
-            return UniformBoolVec1(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec2:
-            return UniformBoolVec2(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec3:
-            return UniformBoolVec3(activeUniform: activeUniform, name: name, locations: locations)
-            case .BoolVec4:
-            return UniformBoolVec4(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatMatrix2:
-            return UniformFloatMatrix2(activeUniform: activeUniform, name: name, locations: locations)
-            case .FloatMatrix3:
-            return UniformFloatMatrix3(activeUniform: activeUniform, name: name, locations: locations)*/
-            case .FloatMatrix4:
-            return UniformFloatMatrix4(activeUniform: activeUniform, name: name, locations: locations)
-        case .Sampler2D:
-            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)
-            /*case .SamplerCube:
-            return UniformSampler(activeUniform: activeUniform, name: name, locations: locations)*/
+    static func create(desc desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+        switch desc.type {
+        case .Float:
+            return UniformFloat(desc: desc, type: type)
+            /*case Int // kGlslTypeInt,
+            return UniformFloat(variableDescription: variableDescription)
+            case Bool // kGlslTypeBool,
+            return UniformBool(variableDescription: variableDescription)*/
+        case .Tex2D: // kGlslTypeTex2D,
+            return UniformSampler(desc: desc, type: type)
+        case .Tex3D: // kGlslTypeTex3D,
+            return UniformSampler(desc: desc, type: type)
+        case .TexCube: // kGlslTypeTexCube,
+            return UniformSampler(desc: desc, type: type)
         default:
             assertionFailure("Unimplemented")
+            return UniformFloat(desc: desc, type: type)
         }
     }
     
 }
 
-/*
-for (index, location) in enumerate(_locations) {
-switch _values[index] {
-case .FloatVec1(let value):
-if _isDirty[index] {
-glUniform1f(location, GLfloat(value))
-}*/
-
-class UniformFloatVec2: Uniform {
+class UniformFloat: Uniform {
     
-    private var _values: [Cartesian2]
+    private var _values: [Float]
+    private var _newValues: [Float]
     
-    private var _arrayBuffer: [Float]
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 2, repeatedValue: 0.0)
-        _values = [Cartesian2]()
-        
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
+    func setFloatValues(newValues: [Float]) {
+        /*assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
+        memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))*/
+        //_newValues = newValues
     }
     
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Cartesian2 })
+    override func set(buffer: Buffer) {
+        memcpy(buffer.data+Int(_desc.location), _values, Int(_desc.rawSize()))
     }
     
-    override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*2) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*2)
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniform2fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
-        }
-    }
-}
-
-
-class UniformFloatVec3: Uniform {
-    
-    private var _values: [Cartesian3]
-    
-    private var _arrayBuffer: [Float]
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 3, repeatedValue: 0.0)
-        _values = [Cartesian3]()
-        
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Cartesian3 })
-    }
-    
-    override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*3) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*3)
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniform3fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
-        }
-    }
-    
-}
-
-class UniformFloatVec4: Uniform {
-    
-    private var _values: [Cartesian4]
-    
-    private var _arrayBuffer: [Float]
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 4, repeatedValue: 0.0)
-        _values = [Cartesian4]()
-        
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        /*_values = [Cartesian4]()
-        for newValue in newValues {
-            _values.append(newValue as! Cartesian4)
+    func isChanged () -> Bool {
+        /*    if (memcmp(&_values, &_newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))) != 0 {
+        memcpy(&_values, _newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
+        return true
         }*/
-        _values = newValues.map({ $0 as! Cartesian4 })
+        return false
     }
     
-    override func set () {
-        var changed = false
+    override init(desc: GLSLShaderVariableDescription, type: UniformType) {
         
-        for i in 0..<_locations.count {
-            let cartesian = _values[i]
-            if !cartesian.equalsArray(_arrayBuffer, offset: i*4) {
-                cartesian.pack(&_arrayBuffer, startingIndex: i*4)
-                changed = true
-            }
-        }
+        _values = [Float](count: Int(desc.elementCount()), repeatedValue: 0.0)
+        _newValues = _values
         
-        if changed {
-            glUniform4fv(_locations[0], GLsizei(_locations.count), UnsafePointer<GLfloat>(_arrayBuffer))
-        }
+        super.init(desc: desc, type: type)
     }
+    
 }
+
 /*
 case gl.INT:
 case gl.BOOL:
@@ -343,81 +265,54 @@ var length = value.length;
 for (var i = 0; i < length; ++i) {
 gl.uniformMatrix3fv(locations[i], false, Matrix3.toArray(value[i], scratchUniformMatrix3));
 }*/
+/*
+class UniformFloatMatrix4: FloatUniform {
 
-
-class UniformFloatMatrix4: Uniform {
-    
-    private var _values: [Matrix4]
-    
-    private var _arrayBuffer: [Float]
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        
-        _arrayBuffer = [Float](count: locations.count * 16, repeatedValue: 0.0)
-        _values = [Matrix4]()
-        
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Matrix4 })
-    }
-    
-    override func set () {
-        var changed = false
-        
-        for i in 0..<_locations.count {
-            let matrix = _values[i]
-            if !matrix.equalsArray(_arrayBuffer, offset: i*16) {
-                matrix.pack(&_arrayBuffer, startingIndex: i*16)
-                changed = true
-            }
-        }
-        
-        if changed {
-            glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_arrayBuffer))
-        }
-    }
-    
+override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
+super.init(activeUniform: activeUniform, name: name, locations: locations)
 }
+
+override func set () {
+if isChanged() {
+glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE), UnsafePointer<GLfloat>(_values))
+}
+}
+
+}*/
 
 
 class UniformSampler: Uniform {
     
-    private var _textureUnitIndex: GLint = 0
+    private var _textureUnitIndex: Int = 0
     
     private var _values: [Texture]!
-    
-    override init(activeUniform: ActiveUniformInfo, name: String, locations: [GLint]) {
-        super.init(activeUniform: activeUniform, name: name, locations: locations)
-    }
     
     override func setValues(newValues: [Any]) {
         _values = newValues.map({ $0 as! Texture })
     }
     
-    override func set () {
+    override func set(buffer: Buffer) {
         
-        let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
+        //let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
         
-        for (index, location) in enumerate(_locations) {
-            
-            glActiveTexture(textureUnitIndex + GLenum(index))
-            glBindTexture(_values[index].textureTarget, _values[index].textureName)
-        }
+        /*for (index, location) in enumerate(_locations) {
+        
+        glActiveTexture(textureUnitIndex + GLenum(index))
+        glBindTexture(_values[index].textureTarget, _values[index].textureName)
+        }*/
     }
     
-    func setSampler (textureUnitIndex: GLint) -> GLint {
+    func setSampler (textureUnitIndex: Int) -> Int {
         
         self._textureUnitIndex = textureUnitIndex
         
-        let count = self._locations.count
+        /*let count = self._locations.count
         for i in 0..<count {
-            let index = textureUnitIndex + i
-            glUniform1i(self._locations[i], index)
+        let index = textureUnitIndex + i
+        glUniform1i(self._locations[i], index)
         }
-        
-        return self._textureUnitIndex + count
+        */
+        return self._textureUnitIndex// + count
     }
     
 }

@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-import UIKit
 import CoreGraphics
 import CoreText
+import Foundation
 
 /**
 * An {@link ImageryProvider} that draws a box around every rendered tile in the tiling scheme, and draws
@@ -20,6 +20,9 @@ import CoreText
 *
 * @param {Object} [options] Object with the following properties:
 * @param {TilingScheme} [options.tilingScheme=new GeographicTilingScheme()] The tiling scheme for which to draw tiles.
+* @param {Ellipsoid} [options.ellipsoid] The ellipsoid.  If the tilingScheme is specified,
+*                    this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
+*                    parameter is specified, the WGS84 ellipsoid is used.
 * @param {Color} [options.color=Color.YELLOW] The color to draw the tile box and label.
 * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
@@ -30,14 +33,27 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
         
-        let color: Cartesian4 = Cartesian4.fromColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+        
+        let color = Cartesian4(fromRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
         let tileWidth: Int = 256
         
         let tileHeight: Int = 256
     }
     
-    public let color: Cartesian4
+    var color: Cartesian4 {
+        get {
+            return Cartesian4.fromArray(_colorArray.map({ Float($0) }))
+        }
+        set (newColor) {
+            var floatColorArray = [Float](count: 4, repeatedValue: 0.0)
+            newColor.pack(&floatColorArray)
+            _colorArray = floatColorArray.map({ CGFloat($0) })
+        }
+    }
+
+    private var _colorArray: [CGFloat]!
 
     /**
     * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -46,7 +62,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultAlpha: Double = 1.0
+    public let defaultAlpha: Float = 1.0
     
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
@@ -55,7 +71,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultBrightness: Double = 1.0
+    public let defaultBrightness: Float = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -64,7 +80,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultContrast: Double = 1.0
+    public let defaultContrast: Float = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -72,7 +88,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultHue: Double = 1.0
+    public let defaultHue: Float = 1.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -81,7 +97,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultSaturation: Double = 1.0
+    public let defaultSaturation: Float = 1.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -89,7 +105,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultGamma: Double = 1.0
+    public let defaultGamma: Float = 1.0
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -205,9 +221,9 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
         
         tilingScheme = options.tilingScheme
-        color = options.color
         tileWidth = options.tileWidth
         tileHeight = options.tileHeight
+        color = options.color
     }
 
     /**
@@ -221,7 +237,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (#x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
         return [credit]
     }
     
@@ -247,38 +263,61 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(#x: Int, y: Int, level: Int) -> UIImage? {
+    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
+    
+        let bytesPerPixel: Int = 4
+        let bytesPerRow = bytesPerPixel * tileWidth
+        let bitsPerComponent = 8
         
-        let size = CGSizeMake(CGFloat(tileWidth), CGFloat(256.0))
+        let alphaInfo = CGImageAlphaInfo.PremultipliedLast
         
-        UIGraphicsBeginImageContext(size)
+        let bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
         
-        let context = UIGraphicsGetCurrentContext()
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
         
-        let drawColor = UIColor(red: CGFloat(color.red), green: CGFloat(color.green), blue: CGFloat(color.blue), alpha: CGFloat(color.alpha))
-        CGContextSetStrokeColorWithColor(context, drawColor.CGColor)
+        let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue | alphaInfo.rawValue)
         
-        // border
-        let rect = CGRectMake(1.0, 1.0, size.width-2.0, size.height-2.0)
-        CGContextClearRect(context, rect)
-        CGContextStrokeRectWithWidth(context, rect, 2.0)
+        assert(contextRef != nil, "contextRef == nil")
         
-        // label
-        let string = "L\(level)X\(x)Y\(y)" as NSString
-        let font = UIFont(name: "Helvetica Neue", size: 36.0)
-        assert(font != nil, "Could not create UIFont")
+        let rgbSpace = CGColorSpaceCreateDeviceRGB()
+        let drawColor = CGColorCreate(rgbSpace, _colorArray)
+        
+        CGContextSetStrokeColorWithColor(contextRef, drawColor)
+        
+        let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
+        CGContextClearRect(contextRef, borderRect)
+        CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
+        
+        let tileString = "L\(level)X\(x)Y\(y)"
+        
+        let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), tileString)
+        
+        let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
+        CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
-        let attr = [NSFontAttributeName: font!, NSForegroundColorAttributeName: drawColor]
-        let textSize = string.sizeWithAttributes(attr)
+        CGContextSetFillColorWithColor(contextRef, drawColor)
+        CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorFromContextAttributeName, kCFBooleanTrue)
         
-        let textRect = CGRectMake(size.width/2 - textSize.width/2, size.height/2 - textSize.height/2, textSize.width, textSize.height)
-        string.drawInRect(textRect, withAttributes: attr)
+        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+        var fitRange = CFRangeMake(0, 0)
+        let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, borderRect.size, &fitRange)
         
+        let pathZeroX = borderRect.size.width / 2 - textSize.width / 2
+        let pathZeroY = borderRect.size.height / 2 - textSize.height / 2
+        let pathRect = CGRectMake(pathZeroX, pathZeroY, textSize.width, textSize.height)
+        
+        let path = CGPathCreateMutable()
+        CGPathAddRect(path, nil, pathRect)
+        
+        let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
+        CTFrameDraw(frame, contextRef!)
+        
+        let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
+        CGContextConcatCTM(contextRef, flipVertical)
+    
+        completionBlock(CGBitmapContextCreateImage(contextRef))
 
-        let result = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return result
     }
     
 }

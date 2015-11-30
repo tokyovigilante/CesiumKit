@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-import UIKit.UIImage
+import Foundation
 
 /**
 * Stores details about a tile of imagery.
@@ -28,13 +28,15 @@ class Imagery {
     
     var rectangle: Rectangle? = nil
     
-    var image: UIImage? = nil
+    var image: CGImageRef? = nil
     
     var imageUrl: String? = nil
     
     var state: ImageryState = .Unloaded
     
     var texture: Texture? = nil
+    
+    var reprojectCommand: DrawCommand? = nil
     
     var credits = [Credit]()
     
@@ -55,7 +57,7 @@ class Imagery {
         }
         
         if rectangle == nil && imageryLayer.imageryProvider.ready {
-            var tilingScheme = imageryLayer.imageryProvider.tilingScheme
+            let tilingScheme = imageryLayer.imageryProvider.tilingScheme
             self.rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         } else {
             self.rectangle = rectangle
@@ -63,7 +65,7 @@ class Imagery {
     }
 
     class func createPlaceholder(imageryLayer: ImageryLayer) -> Imagery {
-        var result = Imagery(imageryLayer: imageryLayer, level: 0, x: 0, y: 0)
+        let result = Imagery(imageryLayer: imageryLayer, level: 0, x: 0, y: 0)
         result.addReference()
         result.state = .PlaceHolder
         return result
@@ -87,10 +89,10 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (context: Context) {
+    func processStateMachine (context: Context, inout commandList: [Command]) {
         if (state == .Unloaded) {
             state = .Transitioning
-            imageryLayer.requestImagery(self)
+            imageryLayer.requestImagery(context, imagery: self)
         }
         if (state == .Received) {
             state = .Transitioning
@@ -98,7 +100,11 @@ class Imagery {
         }
         if (state == .TextureLoaded) {
             state = .Transitioning
-            imageryLayer.reprojectTexture(context, imagery: self)
+            imageryLayer.reprojectTexture(context, commandList: &commandList, imagery: self)
+        }
+        if (state == .Reprojected) {
+            state = .Transitioning
+            imageryLayer.generateMipmaps(context, imagery: self)
         }
     }
     

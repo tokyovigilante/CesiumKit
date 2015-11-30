@@ -8,16 +8,16 @@
 
 import Foundation
 
-public func deleteDuplicates<S:ExtensibleCollectionType where S.Generator.Element: Equatable>(seq:S)-> S {
-    let s = reduce(seq, S()){
-        ac, x in contains(ac,x) ? ac : ac + [x]
+public func deleteDuplicates<S:RangeReplaceableCollectionType where S.Generator.Element: Equatable>(seq:S)-> S {
+    let s = seq.reduce(S()){
+        ac, x in ac.contains(x) ? ac : ac + [x]
     }
     return s
 }
 
 extension Array {
-    func size () -> Int {
-        return self.count * sizeofValue(self[0])
+    var sizeInBytes: Int {
+        return self.count * strideofValue(self[0])
     }
 }
 

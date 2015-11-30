@@ -2,63 +2,49 @@
 //  Buffer.swift
 //  CesiumKit
 //
-//  Created by Ryan Walklin on 14/09/14.
-//  Copyright (c) 2014 Test Toast. All rights reserved.
+//  Created by Ryan Walklin on 26/05/2015.
+//  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-import OpenGLES
+import Metal
 
 class Buffer {
     
-    var target: BufferTarget
+    let metalBuffer: MTLBuffer
     
-    var sizeInBytes: Int
+    var componentDatatype: ComponentDatatype
     
-    var usage: BufferUsage
+    var data: UnsafeMutablePointer<Void> {
+        return metalBuffer.contents()
+    }
     
-    var buffer: GLuint
+    let length: Int
     
-    //var vertexArrayDestroyable = true
-    
-    init (target: BufferTarget, array: [SerializedType]? = nil, sizeInBytes: Int? = nil, usage: BufferUsage = .StaticDraw) {
-        assert(array != nil || sizeInBytes  != nil, "typedArrayOrSizeInBytes must be either a typed array or a number")
+    /**
+    * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
+    * copied to the buffer and can be released (or automatically released via ARC)
+    */
+    init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
         
-        var bufferSize: Int
+        assert(sizeInBytes > 0, "bufferSize must be greater than zero")
+        
         if array != nil {
-            bufferSize = array!.sizeInBytes
+            #if os(OSX)
+                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeManaged)
+            #elseif os(iOS)
+                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeShared)
+            #endif
         } else {
-            bufferSize = sizeInBytes!
-        }
-        assert(bufferSize > 0, "typedArrayOrSizeInBytes must be greater than zero")
-        
-        var buffer: GLuint = 0
-        glGenBuffers(1, &buffer)
-        glBindBuffer(target.toGL(), buffer)
-        var data: UnsafePointer<Void>
-        if array != nil {
-            data = array!.data().bytes
-        } else {
-            data = nil
-        }
-        glBufferData(target.toGL(), GLsizeiptr(bufferSize), data, usage.toGL())
-        glBindBuffer(target.toGL(), 0)
+            #if os(OSX)
+                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeManaged)
 
-        self.target = target
-        self.sizeInBytes = bufferSize
-        self.buffer = buffer
-        self.usage = usage
-    }
-
-    func copyFromArrayView (arrayView: [SerializedType], offsetInBytes: Int = 0) {
+            #elseif os(iOS)
+                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeShared)
+            #endif
+        }
         
-        assert(offsetInBytes + arrayView.sizeInBytes <= sizeInBytes, "This buffer is not large enough.")
-        
-        glBindBuffer(target.toGL(), buffer)
-        glBufferSubData(target.toGL(), offsetInBytes, arrayView.sizeInBytes, arrayView.data().bytes)
-        glBindBuffer(target.toGL(), 0)
+        self.componentDatatype = componentDatatype
+        self.length = sizeInBytes
     }
     
-    deinit {
-        glDeleteBuffers(1, &buffer)
-    }
 }
