@@ -12,20 +12,26 @@ import Metal
 class TextureProvider {
     
     let capacity: Int
-    let options: TextureOptions
     
-    private var _textures = [Texture]()
+    private let _options: TextureOptions
+    
+    var width: Int {
+        return _options.width
+    }
+    
+    var height: Int {
+        return _options.height
+    }
+    
+    private let _textures: [Texture]
     
     private var memBarrierIndex: Int = 0
     
     init (context: Context, capacity: Int, options: TextureOptions) {
         
         self.capacity = capacity
-        self.options = options
-        
-        for _ in 0..<capacity {
-            _textures.append(Texture(context: context, options: options))
-        }
+        _options = options
+        _textures = [Texture](count: capacity, repeatedValue: Texture(context: context, options: options))
     }
     
     func nextTexture() -> Texture {

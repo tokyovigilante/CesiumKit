@@ -57,31 +57,41 @@ class Framebuffer {
             self.stencilTexture = stencilTexture
             
             assert(colorTextures == nil || colorTextures!.count <= Int(maximumColorAttachments), "The number of color attachments exceeds the number supported.")
-            
-            if let colorTextures = self.colorTextures {
-                for (i, colorTexture) in colorTextures.enumerate() {
-                    _rpd.colorAttachments[i].texture = colorTexture.metalTexture
-                }
-            }
-            
-            _rpd.depthAttachment.texture = self.depthTexture?.metalTexture
-            _rpd.stencilAttachment.texture = self.stencilTexture?.metalTexture
+            updateRenderPassDescriptor()
     }
     
     func updateFromDrawable (context: Context, drawable: CAMetalDrawable, depthStencil: MTLTexture?) {
         
         colorTextures = [Texture(context: context, metalTexture: drawable.texture)]
+        depthTexture = depthStencil == nil ? nil : Texture(context: context, metalTexture: depthStencil!)
+        stencilTexture = depthTexture
         
-        _rpd.colorAttachments[0].texture = drawable.texture
-        _rpd.colorAttachments[0].storeAction = .Store
-        
-        if let depthStencil = depthStencil {
-            _rpd.depthAttachment.texture = depthStencil
-            _rpd.stencilAttachment.texture = depthStencil
+        updateRenderPassDescriptor()
+    }
+    
+    func update (colorTextures colorTextures: [Texture]?, depthTexture: Texture?, stencilTexture: Texture?) {
+        self.colorTextures = colorTextures
+        self.depthTexture = depthTexture
+        self.stencilTexture = stencilTexture
+        updateRenderPassDescriptor()
+    }
+    
+    private func updateRenderPassDescriptor () {
+        if let colorTextures = self.colorTextures {
+            for (i, colorTexture) in colorTextures.enumerate() {
+                _rpd.colorAttachments[i].texture = colorTexture.metalTexture
+                _rpd.colorAttachments[i].storeAction = .Store
+            }
         } else {
-            _rpd.depthAttachment.texture = nil
-            _rpd.stencilAttachment.texture = nil
+            for i in 0..<maximumColorAttachments {
+                _rpd.colorAttachments[i].texture = nil
+                _rpd.colorAttachments[i].loadAction = .DontCare
+                _rpd.colorAttachments[i].storeAction = .DontCare
+            }
         }
+        
+        _rpd.depthAttachment.texture = self.depthTexture?.metalTexture
+        _rpd.stencilAttachment.texture = self.stencilTexture?.metalTexture
     }
     
     func clearDrawable () {

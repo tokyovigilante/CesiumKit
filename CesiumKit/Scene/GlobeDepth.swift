@@ -7,15 +7,16 @@
 //
 
 import Foundation
+import Metal
 
 class GlobeDepth {
 
-    private var _colorTextureProvider: TextureProvider? = nil
-    private var _depthStencilTextureProvider: TextureProvider? = nil
-    private var _globeDepthTextureProvider: TextureProvider? = nil
+    private var _colorTextureProvider: TextureProvider! = nil
+    private var _depthStencilTextureProvider: TextureProvider! = nil
+    private var _globeDepthTextureProvider: TextureProvider! = nil
 
-    private (set) var framebuffer: Framebuffer? = nil
-    private var _copyDepthFramebuffer: Framebuffer? = nil
+    let framebuffer = Framebuffer(maximumColorAttachments: 1)
+    private let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
     
     private var _clearColorCommand: ClearCommand? = nil
     private var _copyColorCommand: ClearCommand? = nil
@@ -25,7 +26,7 @@ class GlobeDepth {
 this._debugGlobeDepthViewportCommand = undefined;
 };
 
-function executeDebugGlobeDepth(globeDepth, context, passState) {
+    function executeDebugGlobeDepth(globeDepth, context, passState) {
 if (!defined(globeDepth._debugGlobeDepthViewportCommand)) {
 var fs =
 'uniform sampler2D u_texture;\n' +
@@ -59,72 +60,50 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
         _globeDepthTextureProvider = nil
     }
 
-func destroyFramebuffers() {
-    framebuffer = nil
-    _copyDepthFramebuffer = nil
-}
-/*
-function createTextures(globeDepth, context, width, height) {
-globeDepth._colorTexture = new Texture({
-context : context,
-width : width,
-height : height,
-pixelFormat : PixelFormat.RGBA,
-pixelDatatype : PixelDatatype.UNSIGNED_BYTE
-});
-
-globeDepth._depthStencilTexture = new Texture({
-context : context,
-width : width,
-height : height,
-pixelFormat : PixelFormat.DEPTH_STENCIL,
-pixelDatatype : PixelDatatype.UNSIGNED_INT_24_8_WEBGL
-});
-
-globeDepth._globeDepthTexture = new Texture({
-context : context,
-width : width,
-height : height,
-pixelFormat : PixelFormat.RGBA,
-pixelDatatype : PixelDatatype.UNSIGNED_BYTE
-});
-}
-*/
-    func createFramebuffers(context: Context, width: Int, height: Int) {
-        destroyTextures()
-        destroyFramebuffers()
-        /*
-        createTextures(globeDepth, context, width, height);
+    func createTextures(context: Context, width: Int, height: Int) {
+        _colorTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+            width : width,
+            height : height,
+            pixelFormat: .BGRA8Unorm)
+        )
         
-        globeDepth.framebuffer = new Framebuffer({
-            context : context,
-            colorTextures : [globeDepth._colorTexture],
-            depthStencilTexture : globeDepth._depthStencilTexture,
-            destroyAttachments : false
-        });
+        _depthStencilTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+            width : width,
+            height : height,
+            pixelFormat : .Depth32Float_Stencil8)
+        )
         
-        globeDepth._copyDepthFramebuffer = new Framebuffer({
-            context : context,
-            colorTextures : [globeDepth._globeDepthTexture],
-            destroyAttachments : false
-        });*/
+        _globeDepthTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+            width : width,
+            height : height,
+            pixelFormat : .RGBA8Unorm)
+        )
     }
 
     func updateFramebuffers(context: Context) {
         let width = Int(context.width)
         let height = Int(context.height)
         
-        let textureChanged = _colorTexture == nil || _colorTexture!.width != width || _colorTexture!.height != height
-        if framebuffer == nil || textureChanged {
-            createFramebuffers(context, width: width, height: height)
-        } else {
-            advanceFramebufferTextures()
+        let textureChanged = _colorTextureProvider == nil || _colorTextureProvider.width != width || _colorTextureProvider.height != height
+        if textureChanged {
+            destroyTextures()
+            createTextures(context, width: width, height: height)
         }
+        assert(_colorTextureProvider != nil, "_colorTextureProvider == nil")
+        assert(_depthStencilTextureProvider != nil, "_depthStencilTextureProvider == nil")
+        assert(_globeDepthTextureProvider != nil, "_globeDepthTextureProvider == nil")
+
+        let depthStencilTexture = _depthStencilTextureProvider.nextTexture()
+        framebuffer.update(
+            colorTextures: [_colorTextureProvider.nextTexture()],
+            depthTexture: depthStencilTexture,
+            stencilTexture: depthStencilTexture)
+        _copyDepthFramebuffer.update(
+            colorTextures: [_globeDepthTextureProvider.nextTexture()],
+            depthTexture: nil,
+            stencilTexture: nil)
     }
-    
-    func advanceFramebufferTextures () {
-        
-    }
+
 /*
 function updateCopyCommands(globeDepth, context) {
 if (!defined(globeDepth._copyDepthCommand)) {
@@ -191,6 +170,20 @@ executeDebugGlobeDepth(this, context, passState);
 
 
     func executeCopyColor (context: Context, passState: PassState) {
+        // FIXME create abstract blit class
+        let origin = MTLOriginMake(0, 0, 0)
+        let size = MTLSizeMake(_colorTextureProvider.width, _colorTextureProvider.height, 1)
+        let blitEncoder = context.createBlitCommandEncoder()
+        blitEncoder.copyFromTexture(framebuffer.colorTextures![0].metalTexture,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: origin,
+            sourceSize: size,
+            toTexture: passState.framebuffer.colorTextures![0].metalTexture,
+            destinationSlice: 0,
+            destinationLevel: 0,
+            destinationOrigin: origin)
+        context.completeBlitPass(blitEncoder)
         /*if (defined(this._copyColorCommand)) {
             this._copyColorCommand.execute(context, passState);
         }*/
@@ -203,31 +196,5 @@ executeDebugGlobeDepth(this, context, passState);
             clear.execute(context, passState: passState)
         }
     }
-/*
-GlobeDepth.prototype.isDestroyed = function() {
-return false;
-};
-
-GlobeDepth.prototype.destroy = function() {
-destroyTextures(this);
-destroyFramebuffers(this);
-
-if (defined(this._copyColorCommand)) {
-this._copyColorCommand.shaderProgram = this._copyColorCommand.shaderProgram.destroy();
-}
-
-if (defined(this._copyDepthCommand)) {
-this._copyDepthCommand.shaderProgram = this._copyDepthCommand.shaderProgram.destroy();
-}
-
-var command = this._debugGlobeDepthViewportCommand;
-if (defined(command)) {
-command.shaderProgram = command.shaderProgram.destroy();
-}
-
-return destroyObject(this);
-};
-
-return GlobeDepth;
-});*/
+    
 }

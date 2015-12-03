@@ -505,7 +505,8 @@ public class Scene {
     * @type Boolean
     * @default true
     */
-    var fxaa = true
+    // FIXME: FXAA
+    var fxaa = false//true
     
     /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
@@ -1135,7 +1136,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         var moonVisible = isVisible(moonCommand, frameState);*/
         
         // Preserve the reference to the original framebuffer.
-        let originalFramebuffer = passState.framebuffer
+        let originalFramebuffer = passState.framebuffer ?? context.defaultFramebuffer
         
         // Create a working frustum from the original camera frustum
         let frustum: Frustum
@@ -1154,7 +1155,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
         let useGlobeDepthFramebuffer = !picking && _globeDepth != nil
         if useGlobeDepthFramebuffer {
-            // FIXME: globeDepth
             _globeDepth!.update(context)
             _globeDepth!.clear(context, passState: passState, clearColor: clearColor)
         }

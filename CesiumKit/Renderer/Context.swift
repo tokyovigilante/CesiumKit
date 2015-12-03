@@ -77,7 +77,7 @@ class Context {
     private let _defaultRenderState: RenderState
     
     private var _currentPassState: PassState? = nil
-    private var _defaultPassState: PassState
+    private let _defaultPassState: PassState
     
     private var _passStates = [Pass: PassState]()
     
@@ -151,12 +151,11 @@ class Context {
     var nextPickColor: [UInt32]
     
     /**
-    * Gets an object representing the currently bound framebuffer.  While this instance is not an actual
-    * {@link Framebuffer}, it is used to represent the default framebuffer in calls to
-    * {@link Context.createTexture2DFromFramebuffer}.
+    * Gets an object representing the currently bound framebuffer.  
+    * This represents the associated MTKView's drawable.
     * @type {Object}
     */
-    private let _defaultFramebuffer: Framebuffer
+    let defaultFramebuffer: Framebuffer
     
     init (view: MTKView) {
         
@@ -176,7 +175,7 @@ class Context {
         pipelineCache = PipelineCache(device: device)
         id = NSUUID().UUIDString
         
-        _inflight_semaphore = dispatch_semaphore_create(4)//kInFlightCommandBuffers)
+        _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
         
         networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_SERIAL)
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
@@ -197,9 +196,8 @@ class Context {
         _defaultRenderState = rs
         uniformState = us
         _currentRenderState = rs
-        _defaultFramebuffer = Framebuffer(maximumColorAttachments: limits.maximumColorAttachments)
+        defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
-        
         _defaultPassState.context = self
         pipelineCache.context = self
 
@@ -247,7 +245,7 @@ class Context {
             return false
         }
         //assert(_drawable != nil, "drawable == nil")
-        _defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
+        defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         
         _commandBuffer = _commandQueue.commandBuffer()
         
@@ -262,7 +260,7 @@ class Context {
     
     func createRenderPass(passState: PassState? = nil) -> RenderPass {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: _defaultFramebuffer)
+        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: defaultFramebuffer)
         return pass
     }
     
@@ -274,9 +272,17 @@ class Context {
         pass.applyRenderState(renderState)
     }
     
+    func createBlitCommandEncoder () -> MTLBlitCommandEncoder {
+        return _commandBuffer.blitCommandEncoder()
+    }
+    
+    func completeBlitPass (encoder: MTLBlitCommandEncoder) {
+        encoder.endEncoding()
+    }
+    
     func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
         
-        let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? _defaultFramebuffer
+        let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? defaultFramebuffer
 
         let passDescriptor = framebuffer.renderPassDescriptor
         
@@ -410,7 +416,7 @@ class Context {
         _commandBuffer.commit()
         
         _drawable = nil
-        _defaultFramebuffer.clearDrawable()
+        defaultFramebuffer.clearDrawable()
         
         _commandBuffer = nil
         /*
