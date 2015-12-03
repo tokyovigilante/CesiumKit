@@ -9,44 +9,14 @@
 import Foundation
 
 class GlobeDepth {
-/*/*global define*/
-define([
-'../Core/Color',
-'../Core/defined',
-'../Core/defineProperties',
-'../Core/destroyObject',
-'../Core/PixelFormat',
-'../Renderer/ClearCommand',
-'../Renderer/Framebuffer',
-'../Renderer/PixelDatatype',
-'../Renderer/RenderState',
-'../Renderer/Texture',
-'../Shaders/PostProcessFilters/PassThrough'
-], function(
-Color,
-defined,
-defineProperties,
-destroyObject,
-PixelFormat,
-ClearCommand,
-Framebuffer,
-PixelDatatype,
-RenderState,
-Texture,
-PassThrough) {
-"use strict";
 
-/**
-* @private
-*/
-var GlobeDepth = function() {
-this._colorTexture = undefined;
-this._depthStencilTexture = undefined;
-this._globeDepthTexture = undefined;
-*/
-    var framebuffer: Framebuffer? = nil
-/*this._copyDepthFramebuffer = undefined;
-*/
+    private var _colorTextureProvider: TextureProvider? = nil
+    private var _depthStencilTextureProvider: TextureProvider? = nil
+    private var _globeDepthTextureProvider: TextureProvider? = nil
+
+    private (set) var framebuffer: Framebuffer? = nil
+    private var _copyDepthFramebuffer: Framebuffer? = nil
+    
     private var _clearColorCommand: ClearCommand? = nil
     private var _copyColorCommand: ClearCommand? = nil
     private var _copyDepthCommand: ClearCommand? = nil
@@ -82,18 +52,18 @@ owner : globeDepth
 
 globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
 }
+*/
+    func destroyTextures() {
+        _colorTextureProvider = nil
+        _depthStencilTextureProvider = nil
+        _globeDepthTextureProvider = nil
+    }
 
-function destroyTextures(globeDepth) {
-globeDepth._colorTexture = globeDepth._colorTexture && !globeDepth._colorTexture.isDestroyed() && globeDepth._colorTexture.destroy();
-globeDepth._depthStencilTexture = globeDepth._depthStencilTexture && !globeDepth._depthStencilTexture.isDestroyed() && globeDepth._depthStencilTexture.destroy();
-globeDepth._globeDepthTexture = globeDepth._globeDepthTexture && !globeDepth._globeDepthTexture.isDestroyed() && globeDepth._globeDepthTexture.destroy();
+func destroyFramebuffers() {
+    framebuffer = nil
+    _copyDepthFramebuffer = nil
 }
-
-function destroyFramebuffers(globeDepth) {
-globeDepth.framebuffer = globeDepth.framebuffer && !globeDepth.framebuffer.isDestroyed() && globeDepth.framebuffer.destroy();
-globeDepth._copyDepthFramebuffer = globeDepth._copyDepthFramebuffer && !globeDepth._copyDepthFramebuffer.isDestroyed() && globeDepth._copyDepthFramebuffer.destroy();
-}
-
+/*
 function createTextures(globeDepth, context, width, height) {
 globeDepth._colorTexture = new Texture({
 context : context,
@@ -119,38 +89,43 @@ pixelFormat : PixelFormat.RGBA,
 pixelDatatype : PixelDatatype.UNSIGNED_BYTE
 });
 }
+*/
+    func createFramebuffers(context: Context, width: Int, height: Int) {
+        destroyTextures()
+        destroyFramebuffers()
+        /*
+        createTextures(globeDepth, context, width, height);
+        
+        globeDepth.framebuffer = new Framebuffer({
+            context : context,
+            colorTextures : [globeDepth._colorTexture],
+            depthStencilTexture : globeDepth._depthStencilTexture,
+            destroyAttachments : false
+        });
+        
+        globeDepth._copyDepthFramebuffer = new Framebuffer({
+            context : context,
+            colorTextures : [globeDepth._globeDepthTexture],
+            destroyAttachments : false
+        });*/
+    }
 
-function createFramebuffers(globeDepth, context, width, height) {
-destroyTextures(globeDepth);
-destroyFramebuffers(globeDepth);
-
-createTextures(globeDepth, context, width, height);
-
-globeDepth.framebuffer = new Framebuffer({
-context : context,
-colorTextures : [globeDepth._colorTexture],
-depthStencilTexture : globeDepth._depthStencilTexture,
-destroyAttachments : false
-});
-
-globeDepth._copyDepthFramebuffer = new Framebuffer({
-context : context,
-colorTextures : [globeDepth._globeDepthTexture],
-destroyAttachments : false
-});
-}
-
-function updateFramebuffers(globeDepth, context) {
-var width = context.drawingBufferWidth;
-var height = context.drawingBufferHeight;
-
-var colorTexture = globeDepth._colorTexture;
-var textureChanged = !defined(colorTexture) || colorTexture.width !== width || colorTexture.height !== height;
-if (!defined(globeDepth.framebuffer) || textureChanged) {
-createFramebuffers(globeDepth, context, width, height);
-}
-}
-
+    func updateFramebuffers(context: Context) {
+        let width = Int(context.width)
+        let height = Int(context.height)
+        
+        let textureChanged = _colorTexture == nil || _colorTexture!.width != width || _colorTexture!.height != height
+        if framebuffer == nil || textureChanged {
+            createFramebuffers(context, width: width, height: height)
+        } else {
+            advanceFramebufferTextures()
+        }
+    }
+    
+    func advanceFramebufferTextures () {
+        
+    }
+/*
 function updateCopyCommands(globeDepth, context) {
 if (!defined(globeDepth._copyDepthCommand)) {
 var fs =
@@ -201,8 +176,8 @@ executeDebugGlobeDepth(this, context, passState);
 };*/
 
     func update (context: Context) {
-        //assertionFailure("stub")
-        //updateFramebuffers(this, context);
+
+        updateFramebuffers(context)
         //updateCopyCommands(this, context);
         //context.uniformState.globeDepthTexture = undefined;
     }

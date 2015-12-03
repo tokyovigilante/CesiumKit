@@ -30,11 +30,8 @@ class UniformBufferProvider {
     }
     
     func nextBuffer() -> Buffer {
-        
         let buffer = buffers[memBarrierIndex]
-
         memBarrierIndex = (memBarrierIndex + 1) % capacity
-
         return buffer
     }
 

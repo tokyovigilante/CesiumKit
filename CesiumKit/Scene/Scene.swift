@@ -1305,15 +1305,19 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             for command in frustumCommands.commands[.Ground]! {
                 executeCommand(command, renderPass: groundRenderPass)
             }
+            groundRenderPass.complete()
+
             
             if clearGlobeDepth {
+                let groundDepthRenderPass = context.createRenderPass(passState)
+                
                 clearDepth.execute(context, passState: passState)
                 if useDepthPlane {
                     _depthPlane.execute(context, renderPass: groundRenderPass)
                 }
+                
+                groundDepthRenderPass.complete()
             }
-            
-            groundRenderPass.complete()
             
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
