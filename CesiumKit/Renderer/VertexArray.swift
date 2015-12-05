@@ -150,8 +150,7 @@ class VertexArray {
                 guard let geometryAttribute = geometry.attributes[i] else {
                     continue
                 }
-                let name = geometry.attributes.name(i)
-                print(name)
+                
                 var componentDatatype = geometryAttribute.componentDatatype
                 if componentDatatype == .Float64 {
                     componentDatatype = .Float32

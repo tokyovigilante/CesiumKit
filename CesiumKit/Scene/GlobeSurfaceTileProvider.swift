@@ -278,12 +278,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if _pickRenderState == nil {
             _pickRenderState = RenderState(
                 device: context.device,
-                colorMask: RenderState.ColorMask(
-                    red : false,
-                    green : false,
-                    blue : false,
-                    alpha : false
-                ),
                 depthTest: RenderState.DepthTest(
                     enabled : true,
                     function: .Less

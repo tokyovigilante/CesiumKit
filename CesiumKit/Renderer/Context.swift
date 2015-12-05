@@ -393,7 +393,7 @@ class Context {
             
             for (i, attribute) in va.attributes.enumerate() {
                 if let buffer = attribute.buffer {
-                commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: i+1)
+                    commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: attribute.bufferIndex)
                 }
             }
             

@@ -50,4 +50,13 @@ class Buffer {
         self.length = sizeInBytes
     }
     
+    func copyFromArray (array: UnsafePointer<Void>, length arrayLength: Int, offset: Int = 0) {
+        assert(offset + arrayLength <= length, "This buffer is not large enough")
+        
+        memcpy(data, array+offset, length)
+        #if os(OSX)
+            metalBuffer.didModifyRange(NSMakeRange(offset, arrayLength))
+        #endif
+    }
+    
 }

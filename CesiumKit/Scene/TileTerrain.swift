@@ -238,7 +238,8 @@ class TileTerrain {
             }
             var attributes = terrainProvider.vertexAttributes
             attributes[0].buffer = vertexBuffer
-            let vertexArray = VertexArray(attributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            //attributes[1].buffer = vertexBuffer
+            let vertexArray = VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                 self.vertexArray = vertexArray

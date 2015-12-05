@@ -48,7 +48,13 @@ class ComputeEngine {
                 normalize: false)
         ]
         
-        return RenderPipeline.fromCache(context: context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes), depthStencil: false)
+        return RenderPipeline.fromCache(
+            context: context,
+            vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]),
+            fragmentShaderSource: fragmentShaderSource,
+            vertexDescriptor: VertexDescriptor(attributes: attributes),
+            colorMask: nil,
+            depthStencil: false)
     }
     
     func execute (computeCommand: ComputeCommand) {

@@ -75,12 +75,6 @@ import Metal
 *         enabled : false,
 *         func : DepthFunction.LESS
 *      },
-*     colorMask : {
-*         red : true,
-*         green : true,
-*         blue : true,
-*         alpha : true
-*     },
 *     depthMask : true,
 *     stencilMask : ~0,
 *     blending : {
@@ -161,14 +155,6 @@ struct RenderState/*: Printable*/ {
     }
     let depthTest: DepthTest// = DepthTest()
     
-    struct ColorMask {
-        var red = true
-        var green = true
-        var blue = true
-        var alpha = true
-    }
-    let colorMask: ColorMask// = ColorMask()
-    
     let depthMask: Bool// = false
     
     let stencilMask: Int// = 0
@@ -218,7 +204,6 @@ struct RenderState/*: Printable*/ {
         scissorTest: ScissorTest = ScissorTest(),
         depthRange: DepthRange = DepthRange(),
         depthTest: DepthTest = DepthTest(),
-        colorMask: ColorMask = ColorMask(),
         depthMask: Bool = true,
         stencilMask: Int = ~0,
         blending: BlendingState = BlendingState.Disabled(),
@@ -232,7 +217,6 @@ struct RenderState/*: Printable*/ {
             self.scissorTest  = scissorTest
             self.depthRange  = depthRange
             self.depthTest  = depthTest
-            self.colorMask  = colorMask
             self.depthMask = depthMask
             self.stencilMask  = stencilMask
             self.blending  = blending
@@ -279,9 +263,6 @@ struct RenderState/*: Printable*/ {
 
             // depthTest
             hash += depthTest.enabled ? "d1" : "d0" + "df\(depthTest.function.toMetal().rawValue)"
-
-            // colorMask
-            hash += "cm" + (colorMask.red ? "1" : "0") + (colorMask.green ? "1" : "0") + (colorMask.blue ? "1" : "0") + (colorMask.alpha ? "1" : "0")
 
             // depthMask
             hash += "dm" + (depthMask ? "1" : "0")
@@ -473,15 +454,8 @@ struct RenderState/*: Printable*/ {
             glDepthFunc(depthTest.function.toGL())
         }*/
     }
-    /*
-    func applyColorMask() {
-        glColorMask(
-            GLboolean(Int(colorMask.red)),
-            GLboolean(Int(colorMask.green)),
-            GLboolean(Int(colorMask.blue)),
-            GLboolean(Int(colorMask.alpha)))
-    }
     
+    /*
     func applyDepthMask() {
         glDepthMask(GLboolean(Int(depthMask)))
     }
@@ -562,7 +536,7 @@ struct RenderState/*: Printable*/ {
         applyPolygonOffset()
         applyDepthRange()*/
         applyDepthTest(encoder)
-        /*applyColorMask()
+        /*
         applyDepthMask()
         applyStencilMask()
         applySampleCoverage()
@@ -609,12 +583,6 @@ far : renderState.depthRange.far
 depthTest : {
 enabled : renderState.depthTest.enabled,
 func : renderState.depthTest.func
-},
-colorMask : {
-red : renderState.colorMask.red,
-green : renderState.colorMask.green,
-blue : renderState.colorMask.blue,
-alpha : renderState.colorMask.alpha
 },
 depthMask : renderState.depthMask,
 stencilMask : renderState.stencilMask,

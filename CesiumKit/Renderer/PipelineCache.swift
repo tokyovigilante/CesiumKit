@@ -55,13 +55,14 @@ class PipelineCache {
         vertexShaderSource vss: ShaderSource,
         fragmentShaderSource fss: ShaderSource,
         vertexDescriptor: VertexDescriptor?,
+        colorMask: ColorMask?,
         depthStencil: Bool) -> RenderPipeline? {
         
         if let existingPipeline = pipeline {
             releasePipeline(existingPipeline)
         }
             
-        return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, depthStencil: depthStencil)
+            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, colorMask: colorMask, depthStencil: depthStencil)
     }
     
     /**
@@ -74,11 +75,11 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, depthStencil: Bool) -> RenderPipeline {
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool) -> RenderPipeline {
 
         let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
         
-        let keyword = combinedShaders.keyword + (depthStencil ? "depth" : "nodepth")
+        let keyword = combinedShaders.keyword + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth")
         
         if let pipeline = _pipelines[keyword] {
             //pipeline.count++
@@ -100,6 +101,9 @@ class PipelineCache {
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = context.view.colorPixelFormat
+        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.All
+        pipelineDescriptor.colorAttachments[0].writeMask = colorWriteMask
+        
         pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         

@@ -1410,4 +1410,22 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     }
     })
     };*/
+
+
+        /**
+         * An automatic GLSL uniform scalar used to mix a color with the fog color based on the distance to the camera.
+         *
+         * @alias czm_fogDensity
+         * @glslUniform
+         *
+         * @see czm_fog
+         */
+    "czm_fogDensity": AutomaticUniform(
+        size : 1,
+        datatype: UniformDataType.FloatVec1,
+        getValue: { (uniformState: UniformState) in
+        return [Float(0.0)]//Float(uniformState.fogDensity)
+        }
+    )
+
 ]

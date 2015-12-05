@@ -91,12 +91,6 @@ class DepthPlane {
                 depthTest: RenderState.DepthTest(
                     enabled: true,
                     function: .Always
-                ),
-                colorMask: RenderState.ColorMask(
-                    red: false,
-                    green: false,
-                    blue: false,
-                    alpha: false
                 )
             )
             // position
@@ -114,6 +108,12 @@ class DepthPlane {
                 vertexShaderSource: ShaderSource(sources: [Shaders["DepthPlaneVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["DepthPlaneFS"]!]),
                 vertexDescriptor: VertexDescriptor(attributes: _attributes!),
+                colorMask: ColorMask(
+                    red: false,
+                    green: false,
+                    blue: false,
+                    alpha: false
+                ),
                 depthStencil: true)
             _command = DrawCommand(
                 boundingVolume: BoundingSphere(
@@ -126,7 +126,7 @@ class DepthPlane {
             )
         }
         // update depth plane
-        let depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)
+        var depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)
         
         // depth plane
         if _va == nil {
@@ -154,9 +154,7 @@ class DepthPlane {
             )
             _command!.vertexArray = _va
         } else {
-            assertionFailure("unimplemented")
-            _va!.attributes[0].buffer?.data
-            this._va.at0).vertexBuffer.copyFromArrayView(depthQuad);
+            _va!.attributes[0].buffer?.copyFromArray(depthQuad, length: depthQuad.sizeInBytes)
         }
     }
     

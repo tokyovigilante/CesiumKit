@@ -1313,7 +1313,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 
                 clearDepth.execute(context, passState: passState)
                 if useDepthPlane {
-                    _depthPlane.execute(context, renderPass: groundRenderPass)
+                    _depthPlane.execute(context, renderPass: groundDepthRenderPass)
                 }
                 
                 groundDepthRenderPass.complete()
