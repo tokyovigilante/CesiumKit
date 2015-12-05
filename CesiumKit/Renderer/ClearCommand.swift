@@ -80,7 +80,7 @@ struct ClearCommand {
     * @see Scene#debugCommandFilter
     */
     // FIXME: Owner
-    //unowned var owner: AnyObject
+    weak var owner: AnyObject? = nil
     
     var debugOverlappingFrustums: Int = 0
     var executeInClosestFrustum: Bool = false
@@ -92,13 +92,14 @@ struct ClearCommand {
     *
     * @constant
     */
-    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil) {
+    init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, owner: AnyObject? = nil) {
         
         self.color = color
         self.depth = depth
         self.stencil = stencil
         self.renderState = renderState
         self.framebuffer = framebuffer
+        self.owner = owner
     }
     
     static func all() -> ClearCommand {

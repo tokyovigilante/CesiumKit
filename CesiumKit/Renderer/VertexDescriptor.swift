@@ -7,11 +7,13 @@
 //
 
 struct VertexAttributes {
+    var buffer: Buffer?
     let bufferIndex: Int
     let index: Int
     let format: VertexType
     let offset: Int
     let size: Int
+    let normalize: Bool
 }
 
 import Metal

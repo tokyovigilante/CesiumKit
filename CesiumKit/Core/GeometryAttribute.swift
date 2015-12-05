@@ -53,9 +53,7 @@ class GeometryAttribute {
     *
     * @default undefined
     */
-    var componentDatatype: ComponentDatatype {
-        return buffer.componentDatatype
-    }
+    var componentDatatype: ComponentDatatype
     
     /**
     * A number between 1 and 4 that defines the number of components in an attributes.
@@ -124,19 +122,38 @@ class GeometryAttribute {
     *   0.0, 7500000.0, 0.0
     * ]);
     */
-    var buffer: Buffer
+    var values: Buffer? = nil
     
     var vertexCount: Int {
-        get {
-            return buffer.length / componentDatatype.elementSize / componentsPerAttribute
+        if values == nil {
+            return 0
         }
+        return values!.count / componentsPerAttribute
     }
     
-    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, buffer: Buffer) {
+    var vertexArraySize: Int {
+        if values == nil {
+            return 0
+        }
+        return values!.length
+    }
+
+    /**
+     Gets individual attribute size in bytes.
+     
+     - returns: Attribute size
+     */
+    var size: Int {
+        return componentDatatype.elementSize * componentsPerAttribute
+    }
+    
+    init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: Buffer? = nil) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
+        self.componentDatatype = componentDatatype
         self.componentsPerAttribute = componentsPerAttribute
         self.normalize = normalize
-        self.buffer = buffer
+        self.values = values
     }
+    
 }
 

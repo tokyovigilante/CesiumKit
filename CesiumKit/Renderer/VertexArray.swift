@@ -10,9 +10,9 @@ import Metal
 
 class VertexArray {
     
-    let vertexBuffers: [Buffer]
+    //let vertexBuffers: [Buffer]
     
-    let attributes: [VertexAttributes]
+    var attributes: [VertexAttributes]
     
     var vertexCount: Int
     
@@ -25,8 +25,7 @@ class VertexArray {
         return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
     }
     
-    init(buffers: [Buffer], attributes: [VertexAttributes], vertexCount: Int, indexType: MTLIndexType = .UInt16, indexBuffer: Buffer? = nil) {
-        self.vertexBuffers = buffers
+    init(attributes: [VertexAttributes], vertexCount: Int, indexType: MTLIndexType = .UInt16, indexBuffer: Buffer? = nil) {
         self.attributes = attributes
         self.vertexCount = vertexCount
         self.indexType = indexType
@@ -34,64 +33,63 @@ class VertexArray {
     }
     
     /**
-    * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
-    * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
-    * memory for use with rendering.
-    * <br /><br />
-    * The <code>geometry</code> argument should use the standard layout like the geometry returned by {@link BoxGeometry}.
-    * <br /><br />
-    * <code>options</code> can have four properties:
-    * <ul>
-    *   <li><code>geometry</code>:  The source geometry containing data used to create the vertex array.</li>
-    *   <li><code>attributeLocations</code>:  An object that maps geometry attribute names to vertex shader attribute locations.</li>
-    *   <li><code>bufferUsage</code>:  The expected usage pattern of the vertex array's buffers.  On some WebGL implementations, this can significantly affect performance.  See {@link BufferUsage}.  Default: <code>BufferUsage.DYNAMIC_DRAW</code>.</li>
-    *   <li><code>interleave</code>:  Determines if all attributes are interleaved in a single vertex buffer or if each attribute is stored in a separate vertex buffer.  Default: <code>false</code>.</li>
-    * </ul>
-    * <br />
-    * If <code>options</code> is not specified or the <code>geometry</code> contains no data, the returned vertex array is empty.
-    *
-    * @param {Object} options An object defining the geometry, attribute indices, buffer usage, and vertex layout used to create the vertex array.
-    *
-    * @exception {RuntimeError} Each attribute list must have the same number of vertices.
-    * @exception {DeveloperError} The geometry must have zero or one index lists.
-    * @exception {DeveloperError} Index n is used by more than one attribute.
-    *
-    * @see Buffer#createVertexBuffer
-    * @see Buffer#createIndexBuffer
-    * @see GeometryPipeline.createAttributeLocations
-    * @see ShaderProgram
-    *
-    * @example
-    * // Example 1. Creates a vertex array for rendering a box.  The default dynamic draw
-    * // usage is used for the created vertex and index buffer.  The attributes are not
-    * // interleaved by default.
-    * var geometry = new BoxGeometry();
-    * var va = VertexArray.fromGeometry({
-    *     context            : context,
-    *     geometry           : geometry,
-    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
-    * });
-    *
-    * @example
-    * // Example 2. Creates a vertex array with interleaved attributes in a
-    * // single vertex buffer.  The vertex and index buffer have static draw usage.
-    * var va = VertexArray.fromGeometry({
-    *     context            : context,
-    *     geometry           : geometry,
-    *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
-    *     bufferUsage        : BufferUsage.STATIC_DRAW,
-    *     interleave         : true
-    * });
-    *
-    * @example
-    * // Example 3.  When the caller destroys the vertex array, it also destroys the
-    * // attached vertex buffer(s) and index buffer.
-    * va = va.destroy();
-    */
-    convenience init(fromGeometry geometry: Geometry, interleave: Bool = false) {
+     * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
+     * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
+     * memory for use with rendering.
+     * <br /><br />
+     * The <code>geometry</code> argument should use the standard layout like the geometry returned by {@link BoxGeometry}.
+     * <br /><br />
+     * <code>options</code> can have four properties:
+     * <ul>
+     *   <li><code>geometry</code>:  The source geometry containing data used to create the vertex array.</li>
+     *   <li><code>attributeLocations</code>:  An object that maps geometry attribute names to vertex shader attribute locations.</li>
+     *   <li><code>bufferUsage</code>:  The expected usage pattern of the vertex array's buffers.  On some WebGL implementations, this can significantly affect performance.  See {@link BufferUsage}.  Default: <code>BufferUsage.DYNAMIC_DRAW</code>.</li>
+     *   <li><code>interleave</code>:  Determines if all attributes are interleaved in a single vertex buffer or if each attribute is stored in a separate vertex buffer.  Default: <code>false</code>.</li>
+     * </ul>
+     * <br />
+     * If <code>options</code> is not specified or the <code>geometry</code> contains no data, the returned vertex array is empty.
+     *
+     * @param {Object} options An object defining the geometry, attribute indices, buffer usage, and vertex layout used to create the vertex array.
+     *
+     * @exception {RuntimeError} Each attribute list must have the same number of vertices.
+     * @exception {DeveloperError} The geometry must have zero or one index lists.
+     * @exception {DeveloperError} Index n is used by more than one attribute.
+     *
+     * @see Buffer#createVertexBuffer
+     * @see Buffer#createIndexBuffer
+     * @see GeometryPipeline.createAttributeLocations
+     * @see ShaderProgram
+     *
+     * @example
+     * // Example 1. Creates a vertex array for rendering a box.  The default dynamic draw
+     * // usage is used for the created vertex and index buffer.  The attributes are not
+     * // interleaved by default.
+     * var geometry = new BoxGeometry();
+     * var va = VertexArray.fromGeometry({
+     *     context            : context,
+     *     geometry           : geometry,
+     *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
+     * });
+     *
+     * @example
+     * // Example 2. Creates a vertex array with interleaved attributes in a
+     * // single vertex buffer.  The vertex and index buffer have static draw usage.
+     * var va = VertexArray.fromGeometry({
+     *     context            : context,
+     *     geometry           : geometry,
+     *     attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
+     *     bufferUsage        : BufferUsage.STATIC_DRAW,
+     *     interleave         : true
+     * });
+     *
+     * @example
+     * // Example 3.  When the caller destroys the vertex array, it also destroys the
+     * // attached vertex buffer(s) and index buffer.
+     * va = va.destroy();
+     */
+    convenience init(fromGeometry geometry: Geometry, context: Context, interleave: Bool = false) {
         
-        
-        /*var context = options.context;
+        /*
         var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
         
         var bufferUsage = defaultValue(options.bufferUsage, BufferUsage.DYNAMIC_DRAW);
@@ -105,105 +103,238 @@ class VertexArray {
         var vertexBuffer;
         var vaAttributes = (defined(createdVAAttributes)) ? createdVAAttributes : [];*/
         //let attributes = geometry.attributes
-        let vertexAttributes = GeometryPipeline.createAttributeLocations(geometry)
-        
+        //let vertexAttributes = GeometryPipeline.createAttributeLocations(geometry)
+        var vertexCount = 0
+        var vertexAttributes = [VertexAttributes]()
         if (interleave) {
             // Use a single vertex buffer with interleaved vertices.
-            /*var interleavedAttributes = interleaveAttributes(attributes);
-            if (defined(interleavedAttributes)) {
-            vertexBuffer = Buffer.createVertexBuffer({
-            context : context,
-            typedArray : interleavedAttributes.buffer,
-            usage : bufferUsage
-            });
-            var offsetsInBytes = interleavedAttributes.offsetsInBytes;
-            var strideInBytes = interleavedAttributes.vertexSizeInBytes;
-            
-            for (name in attributes) {
-            if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-            attribute = attributes[name];
-            
-            if (defined(attribute.values)) {
-            // Common case: per-vertex attributes
-            vaAttributes.push({
-            index : attributeLocations[name],
-            vertexBuffer : vertexBuffer,
-            componentDatatype : attribute.componentDatatype,
-            componentsPerAttribute : attribute.componentsPerAttribute,
-            normalize : attribute.normalize,
-            offsetInBytes : offsetsInBytes[name],
-            strideInBytes : strideInBytes
-            });
-            } else {
-            // Constant attribute for all vertices
-            vaAttributes.push({
-            index : attributeLocations[name],
-            value : attribute.value,
-            componentDatatype : attribute.componentDatatype,
-            normalize : attribute.normalize
-            });
+            if let interleavedAttributes = VertexArray.interleaveAttributes(context, attributes: geometry.attributes) {
+                let vertexBuffer = interleavedAttributes.buffer
+                let offsetsInBytes = interleavedAttributes.offsetsInBytes
+                //var strideInBytes = interleavedAttributes.vertexSizeInBytes
+                
+                for (index, geometryAttribute) in geometry.attributes.enumerate() {
+                    /*if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
+                    attribute = attributes[name];*/
+                    
+                    if geometryAttribute.values != nil {
+                        // Common case: per-vertex attributes
+                        vertexAttributes.append(VertexAttributes(
+                            buffer: index == 0 ? vertexBuffer : nil,
+                            bufferIndex: 1,
+                            index: index,
+                            format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
+                            offset: offsetsInBytes[index],
+                            size: geometryAttribute.size,
+                            normalize: false
+                            )
+                            /*index : attributeLocations[name],
+                            vertexBuffer : vertexBuffer,
+                            componentDatatype : attribute.componentDatatype,
+                            componentsPerAttribute : attribute.componentsPerAttribute,
+                            normalize : attribute.normalize,
+                            offsetInBytes : offsetsInBytes[name],
+                            strideInBytes : strideInBytes*/
+                        )
+                    } else {
+                        // Constant attribute for all vertices
+                        /*vaAttributes.push({
+                        index : attributeLocations[name],
+                        value : attribute.value,
+                        componentDatatype : attribute.componentDatatype,
+                        normalize : attribute.normalize
+                        });
+                        }*/
+                    }
+                }
             }
-            }
-            }
-            }*/
         } else {
             // One vertex buffer per attribute.
-            for attribute in vertexAttributes {
-                /*if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-                attribute = attributes[name];
+            for (index, attribute) in geometry.attributes.enumerate() {
                 
-                var componentDatatype = attribute.componentDatatype;
-                if (componentDatatype === ComponentDatatype.DOUBLE) {
-                componentDatatype = ComponentDatatype.FLOAT;
+                let name = geometry.attributes.name(index)
+                print(name)
+                var componentDatatype = attribute.componentDatatype
+                if componentDatatype == .Float64 {
+                    componentDatatype = .Float32
                 }
                 
-                vertexBuffer = undefined;
-                if (defined(attribute.values)) {
-                vertexBuffer = Buffer.createVertexBuffer({
-                context : context,
-                typedArray : ComponentDatatype.createTypedArray(componentDatatype, attribute.values),
-                usage : bufferUsage
-                });
+                let vertexBuffer = attribute.values
+                if let vertexBuffer = vertexBuffer {
+                    vertexCount = max(vertexCount, vertexBuffer.count)
                 }
                 
-                vaAttributes.push({
-                index : attributeLocations[name],
-                vertexBuffer : vertexBuffer,
-                value : attribute.value,
-                componentDatatype : componentDatatype,
-                componentsPerAttribute : attribute.componentsPerAttribute,
-                normalize : attribute.normalize
-                });
-                }*/
+                vertexAttributes.append(VertexAttributes(
+                    buffer: vertexBuffer,
+                    bufferIndex: index+1,
+                    index: 0,
+                    format: componentDatatype.toVertexType(attribute.componentsPerAttribute),
+                    offset: 0,
+                    size: attribute.size,
+                    normalize: attribute.normalize
+                    )
+                )
             }
         }
-        /*
-        var indexBuffer;
-        var indices = geometry.indices;
-        if (defined(indices)) {
-        if ((Geometry.computeNumberOfVertices(geometry) > CesiumMath.SIXTY_FOUR_KILOBYTES) && context.elementIndexUint) {
-        indexBuffer = Buffer.createIndexBuffer({
-        context : context,
-        typedArray : new Uint32Array(indices),
-        usage : bufferUsage,
-        indexDatatype : IndexDatatype.UNSIGNED_INT
-        });
-        } else{
-        indexBuffer = Buffer.createIndexBuffer({
-        context : context,
-        typedArray : new Uint16Array(indices),
-        usage : bufferUsage,
-        indexDatatype : IndexDatatype.UNSIGNED_SHORT
-        });
+        let indexBuffer: Buffer?
+        let indices = geometry.indices
+        if indices != nil {
+            if indices!.count < Math.SixtyFourKilobytes {
+                let indicesShort = indices!.map({ UInt16($0) })
+                indexBuffer = Buffer(
+                    device: context.device,
+                    array: indicesShort,
+                    componentDatatype: ComponentDatatype.UnsignedShort,
+                    sizeInBytes: indicesShort.sizeInBytes)
+            } else {
+                let indicesInt = indices!.map({ UInt32($0) })
+                indexBuffer = Buffer(
+                    device: context.device,
+                    array: indicesInt,
+                    componentDatatype: ComponentDatatype.UnsignedInt,
+                    sizeInBytes: indicesInt.sizeInBytes)
+            }
+        } else {
+            indexBuffer = nil
         }
-    }*/
-    
-        self.init(buffers: [geometry.attributes.normal!.buffer], attributes: vertexAttributes, vertexCount: 0)
-    //    attributes : vaAttributes,
-    //  indexBuffer : indexBuffer
-    // }
+        self.init(attributes: vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
     }
     
+    class func computeNumberOfVertices(attribute: GeometryAttribute) -> Int {
+        guard let values = attribute.values else {
+            return 0
+        }
+        return values.count / attribute.componentsPerAttribute
+    }
+    
+    class func interleaveAttributes(context: Context, attributes: GeometryAttributes) -> (
+        buffer : Buffer,
+        offsetsInBytes : [Int],
+        vertexSizeInBytes : Int
+        )? {
+            
+            // Extract attribute names.
+            var attributeIndices = [Int]()
+            for (index, attribute) in attributes.enumerate() {
+                // Attribute needs to have per-vertex values; not a constant value for all vertices.
+                attributeIndices.append(index)
+                
+                if (attribute.componentDatatype == ComponentDatatype.Float64) {
+                    attribute.componentDatatype = ComponentDatatype.Float32
+                    var doubleArray = [Double](count: attribute.vertexCount, repeatedValue: 0.0)
+                    let geometryArraySize = attribute.vertexArraySize
+                    doubleArray.withUnsafeMutableBufferPointer ({ pointer in
+                            assertionFailure("compiler error")
+                            // memcpy(pointer, attribute.values!.data, geometryArraySize)
+                    })
+                    attribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                }
+            }
+            
+            // Validation.  Compute number of vertices.
+            var numberOfVertices = 0
+            
+            if (attributeIndices.count > 0) {
+                numberOfVertices = VertexArray.computeNumberOfVertices(attributes[attributeIndices.first!]!)
+                
+                for j in 1..<attributeIndices.count {
+                    let currentNumberOfVertices = computeNumberOfVertices(attributes[attributeIndices[j]]!)
+                    
+                    assert(currentNumberOfVertices == numberOfVertices, "Each attribute list must have the same number of vertices.")
+                }
+            }
+            
+            // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
+            attributeIndices.sortInPlace({ a, b in
+                return attributes[a]!.componentDatatype.elementSize > attributes[b]!.componentDatatype.elementSize
+            })
+            // Compute sizes and strides.
+            var vertexSizeInBytes = 0
+            var offsetsInBytes = [Int]()
+            
+            for attribute in attributes {
+                offsetsInBytes.append(vertexSizeInBytes)
+                vertexSizeInBytes += attribute.size
+            }
+            
+            if (vertexSizeInBytes > 0) {
+                // Pad each vertex to be a multiple of the largest component datatype so each
+                // attribute can be addressed using typed arrays.
+                let maxComponentSizeInBytes = attributes[attributeIndices.first!]!.componentDatatype.elementSize // Sorted large to small
+                let remainder = vertexSizeInBytes % maxComponentSizeInBytes
+                if remainder != 0 {
+                    vertexSizeInBytes += maxComponentSizeInBytes - remainder
+                }
+                
+                // Total vertex buffer size in bytes, including per-vertex padding.
+                let vertexBufferSizeInBytes = numberOfVertices * vertexSizeInBytes
+                
+                // Create array for interleaved vertices.  Each attribute has a different view (pointer) into the array.
+                var buffer = Buffer(
+                    device: context.device,
+                    array: nil,
+                    componentDatatype: .Float32,
+                    sizeInBytes: vertexBufferSizeInBytes)
+                for i in 0..<numberOfVertices {
+                    var attributeIndex = 0
+                    for index in attributeIndices {
+                        let attribute = attributes[index]!
+                        //let array = attribute.values as! [UInt8]
+                        let elementSize = attribute.componentDatatype.elementSize
+                        let sourceOffset = i * elementSize
+                        let destinationOffset = (i + attributeIndex) * maxComponentSizeInBytes
+                        //array.with
+                        //array.withUnsafeBufferPointer({ arrayBuffer in
+                          //  memcpy(&buffer+destinationOffset, ////arrayBuffer.baseAddress+sourceOffset, elementSize)
+                        //})
+                        attributeIndex++
+                    }
+                }
+                let vertexBuffer = buffer
+                
+                /*
+                var views = {};
+                
+                for (j = 0; j < namesLength; ++j) {
+                name = names[j];
+                var sizeInBytes = ComponentDatatype.getSizeInBytes(attributes[name].componentDatatype);
+                
+                views[name] = {
+                pointer : ComponentDatatype.createTypedArray(attributes[name].componentDatatype, buffer),
+                index : offsetsInBytes[name] / sizeInBytes, // Offset in ComponentType
+                strideInComponentType : vertexSizeInBytes / sizeInBytes
+                };
+                }
+                
+                // Copy attributes into one interleaved array.
+                // PERFORMANCE_IDEA:  Can we optimize these loops?
+                for (j = 0; j < numberOfVertices; ++j) {
+                for ( var n = 0; n < namesLength; ++n) {
+                name = names[n];
+                attribute = attributes[name];
+                var values = attribute.values;
+                var view = views[name];
+                var pointer = view.pointer;
+                
+                var numberOfComponents = attribute.componentsPerAttribute;
+                for ( var k = 0; k < numberOfComponents; ++k) {
+                pointer[view.index + k] = values[(j * numberOfComponents) + k];
+                }
+                
+                view.index += view.strideInComponentType;
+                }
+                }*/
+                
+                return (
+                    buffer : vertexBuffer,
+                    offsetsInBytes : offsetsInBytes,
+                    vertexSizeInBytes : vertexSizeInBytes
+                )
+            }
+            
+            // No attributes to interleave.
+            return nil
+    }
     
 }
 

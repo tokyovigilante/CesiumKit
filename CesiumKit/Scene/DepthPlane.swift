@@ -9,55 +9,14 @@
 import Foundation
 
 class DepthPlane {
-    /*
-    /*global define*/
-    define([
-    '../Core/BoundingSphere',
-    '../Core/Cartesian3',
-    '../Core/ComponentDatatype',
-    '../Core/defined',
-    '../Core/FeatureDetection',
-    '../Core/Geometry',
-    '../Core/GeometryAttribute',
-    '../Core/PrimitiveType',
-    '../Renderer/BufferUsage',
-    '../Renderer/DrawCommand',
-    '../Renderer/RenderState',
-    '../Renderer/ShaderProgram',
-    '../Renderer/VertexArray',
-    '../Shaders/DepthPlaneFS',
-    '../Shaders/DepthPlaneVS',
-    './DepthFunction',
-    './Pass',
-    './SceneMode'
-    ], function(
-    BoundingSphere,
-    Cartesian3,
-    ComponentDatatype,
-    defined,
-    FeatureDetection,
-    Geometry,
-    GeometryAttribute,
-    PrimitiveType,
-    BufferUsage,
-    DrawCommand,
-    RenderState,
-    ShaderProgram,
-    VertexArray,
-    DepthPlaneFS,
-    DepthPlaneVS,
-    DepthFunction,
-    Pass,
-    SceneMode) {
-    "use strict";
     
     /**
     * @private
     */
-    var DepthPlane = function() {
-    this._rs = undefined;
-    this._sp = undefined;
-    this._va = undefined;*/
+    private var _rs: RenderState? = nil
+    private var _attributes: [VertexAttributes]? = nil
+    private var _pipeline: RenderPipeline? = nil
+    private var _va: VertexArray? = nil
     private var _command: DrawCommand? = nil
     private var _mode: SceneMode = .Scene3D
     /*
@@ -67,129 +26,138 @@ class DepthPlane {
     var scratchCartesian2 = new Cartesian3();
     var scratchCartesian3 = new Cartesian3();
     var scratchCartesian4 = new Cartesian3();
-    
-    function computeDepthQuad(ellipsoid, frameState) {
-    var radii = ellipsoid.radii;
-    var p = frameState.camera.positionWC;
-    
-    // Find the corresponding position in the scaled space of the ellipsoid.
-    var q = Cartesian3.multiplyComponents(ellipsoid.oneOverRadii, p, scratchCartesian1);
-    
-    var qMagnitude = Cartesian3.magnitude(q);
-    var qUnit = Cartesian3.normalize(q, scratchCartesian2);
-    
-    // Determine the east and north directions at q.
-    var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3), scratchCartesian3);
-    var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian4), scratchCartesian4);
-    
-    // Determine the radius of the 'limb' of the ellipsoid.
-    var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
-    
-    // Compute the center and offsets.
-    var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian1);
-    var scalar = wMagnitude / qMagnitude;
-    var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
-    var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
-    
-    // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-    var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
-    Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-    Cartesian3.pack(upperLeft, depthQuadScratch, 0);
-    
-    var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
-    Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-    Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
-    
-    var upperRight = Cartesian3.add(center, northOffset, scratchCartesian4);
-    Cartesian3.add(upperRight, eastOffset, upperRight);
-    Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-    Cartesian3.pack(upperRight, depthQuadScratch, 6);
-    
-    var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian4);
-    Cartesian3.add(lowerRight, eastOffset, lowerRight);
-    Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-    Cartesian3.pack(lowerRight, depthQuadScratch, 9);
-    
-    return depthQuadScratch;
-    }
     */
+    private func computeDepthQuad(ellipsoid: Ellipsoid, frameState: FrameState) -> [Float] {
+        let radii = ellipsoid.radii
+        let p = frameState.camera!.positionWC
+        
+        // Find the corresponding position in the scaled space of the ellipsoid.
+        let q = ellipsoid.oneOverRadii.multiplyComponents(p)
+        
+        let qMagnitude = q.magnitude()
+        let qUnit = q.normalize()
+        
+        // Determine the east and north directions at q.
+        let eUnit = Cartesian3.unitZ().cross(q).normalize()
+        let nUnit = qUnit.cross(eUnit).normalize()
+        
+        // Determine the radius of the 'limb' of the ellipsoid.
+        let wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
+        
+        // Compute the center and offsets.
+        let center = qUnit.multiplyByScalar(1.0 / qMagnitude)
+        let scalar = wMagnitude / qMagnitude
+        let eastOffset = eUnit.multiplyByScalar(scalar)
+        let northOffset = nUnit.multiplyByScalar(scalar)
+        
+        var depthQuad = [Float](count: 12, repeatedValue: 0.0)
+        // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
+        let upperLeft = center
+            .add(northOffset)
+            .subtract(eastOffset)
+        radii.multiplyComponents(upperLeft).pack(&depthQuad, startingIndex: 0)
+        
+        let lowerLeft = center
+            .subtract(northOffset)
+            .subtract(eastOffset)
+        radii.multiplyComponents(lowerLeft).pack(&depthQuad, startingIndex: 3)
+        
+        let upperRight = center
+            .add(northOffset)
+            .add(eastOffset)
+        radii.multiplyComponents(upperRight).pack(&depthQuad, startingIndex: 6)
+        
+        let lowerRight = center
+            .subtract(northOffset)
+            .add(eastOffset)
+        radii.multiplyComponents(lowerRight).pack(&depthQuad, startingIndex: 9)
+        
+        return depthQuad
+    }
+    
     func update (context: Context, frameState: FrameState) {
         _mode = frameState.mode
         
         if frameState.mode != .Scene3D {
             return
         }
-        //FIXME: unimplemented
-        /*
-        var ellipsoid = frameState.mapProjection.ellipsoid;
         
-        if (!defined(this._command)) {
-            this._rs = RenderState.fromCache({ // Write depth, not color
-                cull : {
-                    enabled : true
-                },
-                depthTest : {
-                    enabled : true,
-                    func : DepthFunction.ALWAYS
-                },
-                colorMask : {
-                    red : false,
-                    green : false,
-                    blue : false,
-                    alpha : false
-                }
-            });
-            
-            this._sp = ShaderProgram.fromCache({
-                context : context,
-                vertexShaderSource : DepthPlaneVS,
-                fragmentShaderSource : DepthPlaneFS,
-                attributeLocations : {
-                    position : 0
-                }
-            });
-            
-            this._command = new DrawCommand({
-                renderState : this._rs,
-                shaderProgram : this._sp,
-                boundingVolume : new BoundingSphere(Cartesian3.ZERO, ellipsoid.maximumRadius),
-                pass : Pass.OPAQUE,
-                owner : this
-            });
+        var ellipsoid = frameState.mapProjection.ellipsoid
+        
+        if _command == nil {
+            _rs = RenderState( // Write depth, not color
+                device: context.device,
+                cullFace: .Back,
+                depthTest: RenderState.DepthTest(
+                    enabled: true,
+                    function: .Always
+                ),
+                colorMask: RenderState.ColorMask(
+                    red: false,
+                    green: false,
+                    blue: false,
+                    alpha: false
+                )
+            )
+            // position
+            _attributes = [VertexAttributes(
+                buffer: nil,
+                bufferIndex: 1,
+                index: 0,
+                format: .Float3,
+                offset: 0,
+                size: strideof(Float) * 3,
+                normalize: false
+                )]
+            _pipeline = RenderPipeline.fromCache(
+                context: context,
+                vertexShaderSource: ShaderSource(sources: [Shaders["DepthPlaneVS"]!]),
+                fragmentShaderSource: ShaderSource(sources: [Shaders["DepthPlaneFS"]!]),
+                vertexDescriptor: VertexDescriptor(attributes: _attributes!),
+                depthStencil: true)
+            _command = DrawCommand(
+                boundingVolume: BoundingSphere(
+                    center: Cartesian3.zero(),
+                    radius: ellipsoid.maximumRadius),
+                renderState: _rs,
+                renderPipeline: _pipeline,
+                pass: .Opaque,
+                owner: self
+            )
         }
-        
         // update depth plane
-        var depthQuad = computeDepthQuad(ellipsoid, frameState);
+        let depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)
         
         // depth plane
-        if (!defined(this._va)) {
-            var geometry = new Geometry({
-                attributes : {
-                    position : new GeometryAttribute({
-                    componentDatatype : ComponentDatatype.FLOAT,
-                    componentsPerAttribute : 3,
-                    values : depthQuad
-                    })
-                },
+        if _va == nil {
+            let geometry = Geometry(
+                attributes: GeometryAttributes(
+                    position: GeometryAttribute(
+                        componentDatatype : .Float32,
+                        componentsPerAttribute: 3,
+                        values: Buffer(
+                            device: context.device,
+                            array: depthQuad,
+                            componentDatatype: .Float32,
+                            sizeInBytes: depthQuad.sizeInBytes
+                        )
+                    )
+                    
+                ),
                 indices : [0, 1, 2, 2, 1, 3],
-                primitiveType : PrimitiveType.TRIANGLES
-            });
+                primitiveType : .Triangle
+            )
             
-            this._va = VertexArray.fromGeometry({
-                context : context,
-                geometry : geometry,
-                attributeLocations : {
-                    position : 0
-                },
-                bufferUsage : BufferUsage.DYNAMIC_DRAW
-            });
-            
-            this._command.vertexArray = this._va;
+            _va = VertexArray(
+                fromGeometry: geometry,
+                //vertexAttributes: _attributes!,
+                context : context
+            )
+            _command!.vertexArray = _va
         } else {
-            this._va.getAttribute(0).vertexBuffer.copyFromArrayView(depthQuad);
-        }*/
+            assertionFailure("unimplemented")
+            //this._va.at0).vertexBuffer.copyFromArrayView(depthQuad);
+        }
     }
     
     func execute (context: Context, renderPass: RenderPass) {

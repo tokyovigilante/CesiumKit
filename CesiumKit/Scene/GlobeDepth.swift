@@ -18,9 +18,18 @@ class GlobeDepth {
     let framebuffer = Framebuffer(maximumColorAttachments: 1)
     private let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
     
-    private var _clearColorCommand: ClearCommand? = nil
+    private var _clearColorCommand: ClearCommand
     private var _copyColorCommand: ClearCommand? = nil
     private var _copyDepthCommand: ClearCommand? = nil
+    
+    init () {
+        _clearColorCommand = ClearCommand(
+            color: Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
+            stencil: 0
+        )
+        _clearColorCommand.owner = self
+        
+    }
 
 /*
 this._debugGlobeDepthViewportCommand = undefined;
@@ -125,28 +134,6 @@ owner : globeDepth
 });
 }
 
-globeDepth._copyDepthCommand.framebuffer = globeDepth._copyDepthFramebuffer;
-
-if (!defined(globeDepth._copyColorCommand)) {
-globeDepth._copyColorCommand = context.createViewportQuadCommand(PassThrough, {
-renderState : RenderState.fromCache(),
-uniformMap : {
-u_texture : function() {
-return globeDepth._colorTexture;
-}
-},
-owner : globeDepth
-});
-}
-
-if (!defined(globeDepth._clearColorCommand)) {
-globeDepth._clearColorCommand = new ClearCommand({
-color : new Color(0.0, 0.0, 0.0, 0.0),
-stencil : 0.0,
-owner : globeDepth
-});
-}
-
 globeDepth._clearColorCommand.framebuffer = globeDepth.framebuffer;
 }
 
@@ -158,7 +145,6 @@ executeDebugGlobeDepth(this, context, passState);
 
         updateFramebuffers(context)
         //updateCopyCommands(this, context);
-        //context.uniformState.globeDepthTexture = undefined;
     }
 
     func executeCopyDepth (context: Context, passState: PassState) {
@@ -184,17 +170,11 @@ executeDebugGlobeDepth(this, context, passState);
             destinationLevel: 0,
             destinationOrigin: origin)
         context.completeBlitPass(blitEncoder)
-        /*if (defined(this._copyColorCommand)) {
-            this._copyColorCommand.execute(context, passState);
-        }*/
     }
     
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
-        if _clearColorCommand != nil {
-            var clear = _clearColorCommand!
-            clear.color = clearColor
-            clear.execute(context, passState: passState)
-        }
+        _clearColorCommand.color = clearColor
+        _clearColorCommand.execute(context, passState: passState)
     }
     
 }

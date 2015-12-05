@@ -30,18 +30,22 @@ class ComputeEngine {
         let attributes = [
             // attribute vec4 position;
             VertexAttributes(
+                buffer: nil,
                 bufferIndex: 1,
                 index: 0,
                 format: .Float4,
                 offset: 0,
-                size: 16),
+                size: 16,
+                normalize: false),
             // attribute vec2 textureCoordinates;
             VertexAttributes(
+                buffer: nil,
                 bufferIndex: 1,
                 index: 1,
                 format: .Float2,
                 offset: 16,
-                size: 8)
+                size: 8,
+                normalize: false)
         ]
         
         return RenderPipeline.fromCache(context: context, vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]), fragmentShaderSource: fragmentShaderSource, vertexDescriptor: VertexDescriptor(attributes: attributes), depthStencil: false)

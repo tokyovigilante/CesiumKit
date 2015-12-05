@@ -182,18 +182,22 @@ extension TerrainProvider {
         return [
             //position3DAndHeight
             VertexAttributes(
+                buffer: nil,
                 bufferIndex: 1,
                 index: 0,
                 format: .Float4,
                 offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize),
+                size: position3DAndHeightLength * datatype.elementSize,
+                normalize: false),
             // texCoordAndEncodedNormals
             VertexAttributes(
+                buffer: nil,
                 bufferIndex: 1,
                 index: 1,
                 format: hasVertexNormals ? .Float3 : .Float2,
                 offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize)
+                size: numTexCoordComponents * datatype.elementSize,
+                normalize: false)
         ]
     }
 }

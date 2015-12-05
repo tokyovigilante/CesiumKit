@@ -18,14 +18,18 @@ class Buffer {
         return metalBuffer.contents()
     }
     
+    // bytes
     let length: Int
     
+    var count: Int {
+        return length / componentDatatype.elementSize
+    }
+    
     /**
-    * Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
-    * copied to the buffer and can be released (or automatically released via ARC)
+     Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
+     copied to the buffer and can be released (or automatically released via ARC). 
     */
     init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int) {
-        
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         if array != nil {
@@ -37,7 +41,6 @@ class Buffer {
         } else {
             #if os(OSX)
                 metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeManaged)
-
             #elseif os(iOS)
                 metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeShared)
             #endif

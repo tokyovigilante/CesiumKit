@@ -12,6 +12,7 @@
 *
 * @alias ComponentDatatype
 */
+
 enum ComponentDatatype {
     /**
     * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type
@@ -107,6 +108,27 @@ enum ComponentDatatype {
         case .Float64:
             return sizeof(Double)
         }
+    }
+    
+    func toVertexType (attributeCount: Int) -> VertexType {
+        var metalIndex: UInt = 0
+        switch (self) {
+        case .Byte:
+            metalIndex = VertexType.Char2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .UnsignedByte:
+            metalIndex = VertexType.UChar2.rawValue  + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .Short:
+            metalIndex = VertexType.Short2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .UnsignedShort:
+            metalIndex = VertexType.UShort2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .UnsignedInt:
+            metalIndex = VertexType.UInt.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        case .Float32:
+            metalIndex = VertexType.Float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        case .Float64:
+            metalIndex = VertexType.Float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        }
+        return VertexType(rawValue: metalIndex) ?? .Invalid
     }
     
 }

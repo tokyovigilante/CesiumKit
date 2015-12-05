@@ -770,19 +770,23 @@ public class ImageryLayer {
             let vertexAttributes = [
                 //position
                 VertexAttributes(
+                    buffer: vertexBuffer,
                     bufferIndex: 1,
                     index: 0,
                     format: .Float2,
                     offset: 0,
-                    size: sizeof(Float) * 2
+                    size: sizeof(Float) * 2,
+                    normalize: false
                 ),
                 // webMercatorT
                 VertexAttributes(
+                    buffer: nil,
                     bufferIndex: 2,
                     index: 1,
                     format: .Float,
                     offset: 0,
-                    size: sizeof(Float)
+                    size: sizeof(Float),
+                    normalize: false
                 )
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
@@ -839,8 +843,9 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
         }
         let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
-        
-        let vertexArray = VertexArray(buffers: [reproject.vertexBuffer, webMercatorTBuffer], attributes: reproject.vertexAttributes, vertexCount: 128, indexBuffer: reproject.indexBuffer)
+        var attributes = reproject.vertexAttributes
+        attributes[1].buffer = webMercatorTBuffer
+        let vertexArray = VertexArray(attributes: reproject.vertexAttributes, vertexCount: 128, indexBuffer: reproject.indexBuffer)
         
         let textureUsage: MTLTextureUsage = [.RenderTarget, .ShaderRead]
         

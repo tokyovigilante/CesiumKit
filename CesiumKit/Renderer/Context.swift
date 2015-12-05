@@ -391,8 +391,10 @@ class Context {
             
             commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
             
-            for (i, buffer) in va.vertexBuffers.enumerate() {
+            for (i, attribute) in va.attributes.enumerate() {
+                if let buffer = attribute.buffer {
                 commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: i+1)
+                }
             }
             
             commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 0)
@@ -471,18 +473,30 @@ class Context {
                 position: GeometryAttribute(
                     componentDatatype: .Float32,
                     componentsPerAttribute: 2,
-                    buffer: Buffer(device: device, array: UnsafePointer<Void>([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
+                    values: Buffer(
+                        device: device,
+                        array: [1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0].map({ Float($0)}),
+                        componentDatatype: .Float32,
+                        sizeInBytes: 8 * strideof(Float)
+                    )
                 ), // position
                 st: GeometryAttribute(
                     componentDatatype: .Float32,
                     componentsPerAttribute: 2,
-                    buffer: Buffer(device: device, array: UnsafePointer<Void>([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]), componentDatatype: .Float32, sizeInBytes: 32)
-                )), // textureCoordinates
+                    values: Buffer(
+                        device: device,
+                        array: [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0].map({ Float($0)}),
+                        componentDatatype: .Float32,
+                        sizeInBytes: 8 * strideof(Float)
+                    )
+                )
+            ), // textureCoordinates
             indices: [0, 1, 2, 0, 2, 3]
             )
         
         let vertexArray = VertexArray(
             fromGeometry: geometry,
+            context: self,
             interleave : true
         )
     

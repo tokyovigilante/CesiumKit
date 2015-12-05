@@ -236,7 +236,9 @@ class TileTerrain {
                 }
                 terrainMesh.indexBuffer = indexBuffer!
             }
-            let vertexArray = VertexArray(buffers: [vertexBuffer], attributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            var attributes = terrainProvider.vertexAttributes
+            attributes[0].buffer = vertexBuffer
+            let vertexArray = VertexArray(attributes: terrainProvider.vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {
                 //dispatch_async(context.renderQueue, {
                 self.vertexArray = vertexArray
