@@ -16,7 +16,7 @@
 * @alias GeometryAttributes
 * @constructor
 */
-class GeometryAttributes {
+struct GeometryAttributes {
     
     /**
     * The 3D position attribute.
@@ -90,6 +90,8 @@ class GeometryAttributes {
     */
     var color: GeometryAttribute? = nil
     
+    static let count = 6
+    
     init(
         position: GeometryAttribute? = nil,
         normal: GeometryAttribute? = nil,
@@ -147,25 +149,3 @@ class GeometryAttributes {
     
 }
 
-extension GeometryAttributes : SequenceType {
-    func generate() -> GeometryAttributesGenerator {
-        return GeometryAttributesGenerator(geometryAttributes: self)
-    }
-    
-    struct GeometryAttributesGenerator : GeneratorType {
-        
-        var geometryAttributes: GeometryAttributes
-        var index = 0
-        
-        init(geometryAttributes: GeometryAttributes) {
-            self.geometryAttributes = geometryAttributes
-        }
-        
-        mutating func next() -> GeometryAttribute? {
-            while geometryAttributes[index] == nil {
-                index++
-            }
-            return index < 6 ? geometryAttributes[index] : nil
-        }
-    }
-}

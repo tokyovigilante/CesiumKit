@@ -113,31 +113,26 @@ class VertexArray {
                 let offsetsInBytes = interleavedAttributes.offsetsInBytes
                 //var strideInBytes = interleavedAttributes.vertexSizeInBytes
                 
-                for (index, geometryAttribute) in geometry.attributes.enumerate() {
-                    /*if (attributes.hasOwnProperty(name) && defined(attributes[name])) {
-                    attribute = attributes[name];*/
+                for i in 0..<GeometryAttributes.count {
+                    
+                    guard let geometryAttribute = geometry.attributes[i] else {
+                        continue
+                    }
                     
                     if geometryAttribute.values != nil {
                         // Common case: per-vertex attributes
                         vertexAttributes.append(VertexAttributes(
-                            buffer: index == 0 ? vertexBuffer : nil,
+                            buffer: i == 0 ? vertexBuffer : nil,
                             bufferIndex: 1,
-                            index: index,
+                            index: i,
                             format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
-                            offset: offsetsInBytes[index],
+                            offset: offsetsInBytes[i],
                             size: geometryAttribute.size,
-                            normalize: false
-                            )
-                            /*index : attributeLocations[name],
-                            vertexBuffer : vertexBuffer,
-                            componentDatatype : attribute.componentDatatype,
-                            componentsPerAttribute : attribute.componentsPerAttribute,
-                            normalize : attribute.normalize,
-                            offsetInBytes : offsetsInBytes[name],
-                            strideInBytes : strideInBytes*/
-                        )
+                            normalize: geometryAttribute.normalize
+                        ))
                     } else {
                         // Constant attribute for all vertices
+                        assertionFailure("unimplemented")
                         /*vaAttributes.push({
                         index : attributeLocations[name],
                         value : attribute.value,
@@ -150,28 +145,31 @@ class VertexArray {
             }
         } else {
             // One vertex buffer per attribute.
-            for (index, attribute) in geometry.attributes.enumerate() {
+            for i in 0..<GeometryAttributes.count {
                 
-                let name = geometry.attributes.name(index)
+                guard let geometryAttribute = geometry.attributes[i] else {
+                    continue
+                }
+                let name = geometry.attributes.name(i)
                 print(name)
-                var componentDatatype = attribute.componentDatatype
+                var componentDatatype = geometryAttribute.componentDatatype
                 if componentDatatype == .Float64 {
                     componentDatatype = .Float32
                 }
                 
-                let vertexBuffer = attribute.values
+                let vertexBuffer = geometryAttribute.values
                 if let vertexBuffer = vertexBuffer {
                     vertexCount = max(vertexCount, vertexBuffer.count)
                 }
                 
                 vertexAttributes.append(VertexAttributes(
                     buffer: vertexBuffer,
-                    bufferIndex: index+1,
+                    bufferIndex: i+1,
                     index: 0,
-                    format: componentDatatype.toVertexType(attribute.componentsPerAttribute),
+                    format: componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
                     offset: 0,
-                    size: attribute.size,
-                    normalize: attribute.normalize
+                    size: geometryAttribute.size,
+                    normalize: geometryAttribute.normalize
                     )
                 )
             }
@@ -215,17 +213,20 @@ class VertexArray {
             
             // Extract attribute names.
             var attributeIndices = [Int]()
-            for (index, attribute) in attributes.enumerate() {
+            for i in 0..<GeometryAttributes.count {
+                
+                guard let attribute = attributes[i] else {
+                    continue
+                }
                 // Attribute needs to have per-vertex values; not a constant value for all vertices.
-                attributeIndices.append(index)
+                attributeIndices.append(i)
                 
                 if (attribute.componentDatatype == ComponentDatatype.Float64) {
                     attribute.componentDatatype = ComponentDatatype.Float32
                     var doubleArray = [Double](count: attribute.vertexCount, repeatedValue: 0.0)
                     let geometryArraySize = attribute.vertexArraySize
-                    doubleArray.withUnsafeMutableBufferPointer ({ pointer in
-                            assertionFailure("compiler error")
-                            // memcpy(pointer, attribute.values!.data, geometryArraySize)
+                    doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
+                        memcpy(pointer.baseAddress, attribute.values!.data, geometryArraySize)
                     })
                     attribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }
@@ -252,7 +253,8 @@ class VertexArray {
             var vertexSizeInBytes = 0
             var offsetsInBytes = [Int]()
             
-            for attribute in attributes {
+            for index in attributeIndices {
+                let attribute = attributes[index]!
                 offsetsInBytes.append(vertexSizeInBytes)
                 vertexSizeInBytes += attribute.size
             }
@@ -281,12 +283,11 @@ class VertexArray {
                         let attribute = attributes[index]!
                         //let array = attribute.values as! [UInt8]
                         let elementSize = attribute.componentDatatype.elementSize
+                        let source = attribute.values!.data
+                        let target = buffer.data
                         let sourceOffset = i * elementSize
-                        let destinationOffset = (i + attributeIndex) * maxComponentSizeInBytes
-                        //array.with
-                        //array.withUnsafeBufferPointer({ arrayBuffer in
-                          //  memcpy(&buffer+destinationOffset, ////arrayBuffer.baseAddress+sourceOffset, elementSize)
-                        //})
+                        let targetOffset = (i + attributeIndex) * maxComponentSizeInBytes
+                        memcpy(target+targetOffset, source+sourceOffset, elementSize)
                         attributeIndex++
                     }
                 }

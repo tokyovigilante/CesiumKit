@@ -150,13 +150,13 @@ class DepthPlane {
             
             _va = VertexArray(
                 fromGeometry: geometry,
-                //vertexAttributes: _attributes!,
                 context : context
             )
             _command!.vertexArray = _va
         } else {
             assertionFailure("unimplemented")
-            //this._va.at0).vertexBuffer.copyFromArrayView(depthQuad);
+            _va!.attributes[0].buffer?.data
+            this._va.at0).vertexBuffer.copyFromArrayView(depthQuad);
         }
     }
     
