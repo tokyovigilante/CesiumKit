@@ -11,9 +11,9 @@ import Metal
 
 class GlobeDepth {
 
-    private var _colorTextureProvider: TextureProvider! = nil
-    private var _depthStencilTextureProvider: TextureProvider! = nil
-    private var _globeDepthTextureProvider: TextureProvider! = nil
+    private var _colorTexture: Texture! = nil
+    private var _depthStencilTexture: Texture! = nil
+    private var _globeDepthTexture: Texture! = nil
 
     let framebuffer = Framebuffer(maximumColorAttachments: 1)
     private let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
@@ -64,25 +64,25 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
 }
 */
     func destroyTextures() {
-        _colorTextureProvider = nil
-        _depthStencilTextureProvider = nil
-        _globeDepthTextureProvider = nil
+        _colorTexture = nil
+        _depthStencilTexture = nil
+        _globeDepthTexture = nil
     }
 
     func createTextures(context: Context, width: Int, height: Int) {
-        _colorTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+        _colorTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
             pixelFormat: .BGRA8Unorm)
         )
         
-        _depthStencilTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+        _depthStencilTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
             pixelFormat : .Depth32Float_Stencil8)
         )
         
-        _globeDepthTextureProvider = TextureProvider(context: context, capacity: 3, options: TextureOptions(
+        _globeDepthTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
             pixelFormat : .RGBA8Unorm)
@@ -93,22 +93,21 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
         let width = Int(context.width)
         let height = Int(context.height)
         
-        let textureChanged = _colorTextureProvider == nil || _colorTextureProvider.width != width || _colorTextureProvider.height != height
+        let textureChanged = _colorTexture == nil || _colorTexture.width != width || _colorTexture.height != height
         if textureChanged {
             destroyTextures()
             createTextures(context, width: width, height: height)
         }
-        assert(_colorTextureProvider != nil, "_colorTextureProvider == nil")
-        assert(_depthStencilTextureProvider != nil, "_depthStencilTextureProvider == nil")
-        assert(_globeDepthTextureProvider != nil, "_globeDepthTextureProvider == nil")
+        assert(_colorTexture != nil, "_colorTexture == nil")
+        assert(_depthStencilTexture != nil, "_depthStencilTexture == nil")
+        assert(_globeDepthTexture != nil, "_globeDepthTexture == nil")
 
-        let depthStencilTexture = _depthStencilTextureProvider.nextTexture()
         framebuffer.update(
-            colorTextures: [_colorTextureProvider.nextTexture()],
-            depthTexture: depthStencilTexture,
-            stencilTexture: depthStencilTexture)
+            colorTextures: [_colorTexture],
+            depthTexture: _depthStencilTexture,
+            stencilTexture: _depthStencilTexture)
         _copyDepthFramebuffer.update(
-            colorTextures: [_globeDepthTextureProvider.nextTexture()],
+            colorTextures: [_globeDepthTexture],
             depthTexture: nil,
             stencilTexture: nil)
     }
@@ -158,7 +157,7 @@ executeDebugGlobeDepth(this, context, passState);
     func executeCopyColor (context: Context, passState: PassState) {
         // FIXME create abstract blit class
         let origin = MTLOriginMake(0, 0, 0)
-        let size = MTLSizeMake(_colorTextureProvider.width, _colorTextureProvider.height, 1)
+        let size = MTLSizeMake(_colorTexture.width, _colorTexture.height, 1)
         let blitEncoder = context.createBlitCommandEncoder()
         blitEncoder.copyFromTexture(framebuffer.colorTextures![0].metalTexture,
             sourceSlice: 0,
