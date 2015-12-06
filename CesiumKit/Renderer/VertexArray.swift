@@ -112,7 +112,8 @@ class VertexArray {
                 let vertexBuffer = interleavedAttributes.buffer
                 let offsetsInBytes = interleavedAttributes.offsetsInBytes
                 //var strideInBytes = interleavedAttributes.vertexSizeInBytes
-                
+                var vaCount = 0
+
                 for i in 0..<GeometryAttributes.count {
                     
                     guard let geometryAttribute = geometry.attributes[i] else {
@@ -122,14 +123,15 @@ class VertexArray {
                     if geometryAttribute.values != nil {
                         // Common case: per-vertex attributes
                         vertexAttributes.append(VertexAttributes(
-                            buffer: i == 0 ? vertexBuffer : nil,
+                            buffer: vaCount == 0 ? vertexBuffer : nil,
                             bufferIndex: 1,
-                            index: i,
+                            index: vaCount,
                             format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
-                            offset: offsetsInBytes[i],
+                            offset: offsetsInBytes[vaCount],
                             size: geometryAttribute.size,
                             normalize: geometryAttribute.normalize
                         ))
+                        vaCount++
                     } else {
                         // Constant attribute for all vertices
                         assertionFailure("unimplemented")
@@ -145,6 +147,7 @@ class VertexArray {
             }
         } else {
             // One vertex buffer per attribute.
+            var vaCount = 0
             for i in 0..<GeometryAttributes.count {
                 
                 guard let geometryAttribute = geometry.attributes[i] else {
@@ -163,7 +166,7 @@ class VertexArray {
                 
                 vertexAttributes.append(VertexAttributes(
                     buffer: vertexBuffer,
-                    bufferIndex: i+1,
+                    bufferIndex: vaCount+1, // uniform buffer is [0]
                     index: 0,
                     format: componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
                     offset: 0,
@@ -171,6 +174,7 @@ class VertexArray {
                     normalize: geometryAttribute.normalize
                     )
                 )
+                vaCount++
             }
         }
         let indexBuffer: Buffer?

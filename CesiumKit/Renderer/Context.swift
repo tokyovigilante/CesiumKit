@@ -505,23 +505,24 @@ class Context {
         return vertexArray
     }
 
-    func createViewportQuadCommand (fragmentShaderSource: ShaderSource, overrides: AnyObject) {
-/*overrides = defaultValue(overrides, defaultValue.EMPTY_OBJECT);
-
-return new DrawCommand({
-vertexArray : this.getViewportQuadVertexArray(),
-primitiveType : PrimitiveType.TRIANGLES,
-renderState : overrides.renderState,
-shaderProgram : ShaderProgram.fromCache({
-context : this,
-vertexShaderSource : ViewportQuadVS,
-fragmentShaderSource : fragmentShaderSource,
-attributeLocations : viewportQuadAttributeLocations
-}),
-uniformMap : overrides.uniformMap,
-owner : overrides.owner,
-framebuffer : overrides.framebuffer)*/
-}
+    func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true) -> DrawCommand {
+        
+        let vertexArray = getViewportQuadVertexArray()
+        return DrawCommand(
+            vertexArray: vertexArray,
+            uniformMap: overrides?.uniformMap,
+            framebuffer: overrides?.framebuffer,
+            renderState: overrides?.renderState,
+            renderPipeline: RenderPipeline.fromCache(
+                context: self,
+                vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]),
+                fragmentShaderSource: fss,
+                vertexDescriptor: VertexDescriptor(attributes: vertexArray.attributes),
+                depthStencil: depthStencil
+            ),
+            owner: self
+        )
+    }
 
     /*
     Context.prototype.createPickFramebuffer = function() {

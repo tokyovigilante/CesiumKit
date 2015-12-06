@@ -34,7 +34,6 @@ class FXAA {
         let width = context.width
         let height = context.height
         
-        var fxaaTexture = _texture
         let textureChanged = _texture == nil || _texture!.width != width || _texture!.height != height
         if textureChanged {
             _depthTexture = nil
@@ -54,7 +53,7 @@ class FXAA {
                     options: TextureOptions(
                     width: width,
                     height: height,
-                    pixelFormat: .Depth32Float,
+                    pixelFormat: .Depth32Float_Stencil8,
                     usage: .RenderTarget)
                 )
             } /*else {
@@ -68,39 +67,35 @@ class FXAA {
         }
         
         if _fbo == nil || textureChanged {
-            /*
-            _fbo = new Framebuffer({
-                context : context,
-                colorTextures : [this._texture],
-                depthTexture : this._depthTexture,
-                depthRenderbuffer : this._depthRenderbuffer,
-                destroyAttachments : false
-            });*/
+            
+            _fbo = Framebuffer(
+                maximumColorAttachments: 1,
+                colorTextures : [_texture!],
+                depthTexture : _depthTexture
+            )
         }
-        /*
-        if (!defined(this._command)) {
-            this._command = context.createViewportQuadCommand(FXAAFS, {
-                renderState : RenderState.fromCache(),
-                owner : this
-            });
-        }*/
-        /*
-        if (textureChanged) {
-            var that = this;
-            var step = new Cartesian2(1.0 / this._texture.width, 1.0 / this._texture.height);
-            this._command.uniformMap = {
-                u_texture : function() {
-                    return that._texture;
-                },
-                u_step : function() {
-                    return step;
-                }
-            };
-        }*/
+        
+        if _command == nil {
+            var overrides = ViewportQuadOverrides()
+            overrides.renderState =  RenderState(device: context.device)
+            overrides.owner = self
+            _command = context.createViewportQuadCommand(
+                fragmentShaderSource: ShaderSource(sources: [Shaders["FXAAFS"]!]),
+                overrides: overrides
+            )
+        }
+        
+        if textureChanged {
+            let step = Cartesian2(x: 1.0 / Double(_texture!.width), y: 1.0 / Double(_texture!.height))
+            let uniformMap = FXAAUniformMap()
+            uniformMap.texture = _texture
+            step.pack(&uniformMap.step)
+            _command!.uniformMap = uniformMap
+        }
     }
 
     func execute (context: Context, renderPass: RenderPass) {
-        _command!.execute(context, renderPass: renderPass)
+        //_command!.execute(context, renderPass: renderPass)
     }
     
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
@@ -119,3 +114,38 @@ class FXAA {
     }
 
 }
+
+class FXAAUniformMap: UniformMap {
+    
+    var step = [Float](count: 2, repeatedValue: 0.0)
+    
+    var texture : Texture?
+    
+    private var _uniforms: [String: UniformFunc] = [
+        
+        "u_texture": { (map: UniformMap) -> [Any] in
+            return [(map as! FXAAUniformMap).texture!]
+        }
+    ]
+    
+    private var _floatUniforms: [String: FloatUniformFunc] = [
+        
+        "u_step": { (map: UniformMap) -> [Float] in
+            return (map as! FXAAUniformMap).step
+        }
+    ]
+    
+    func uniform(name: String) -> UniformFunc? {
+        return _uniforms[name]
+    }
+    
+    func floatUniform(name: String) -> FloatUniformFunc? {
+        return _floatUniforms[name]
+    }
+    
+    func textureForUniform(uniform: UniformSampler) -> Texture? {
+        return texture
+    }
+    
+}
+

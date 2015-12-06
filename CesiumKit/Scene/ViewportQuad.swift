@@ -180,3 +180,16 @@ class ViewportQuad {
 
 */
 }
+
+struct ViewportQuadOverrides {
+    
+    var renderState: RenderState? = nil
+    
+    var uniformMap: UniformMap? = nil
+
+    var framebuffer: Framebuffer? = nil
+    
+    var owner: AnyObject? = nil
+}
+
+
