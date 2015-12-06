@@ -205,7 +205,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
             arrayWidth += 2
             arrayHeight += 2
         }
-                
+        
         let statistics = HeightmapTessellator.computeVertices(
             heightmap: _buffer,
             height: _height,

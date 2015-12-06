@@ -109,7 +109,7 @@ class HeightmapTessellator {
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
         ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
-        
+            
             // This function tends to be a performance hotspot for terrain rendering,
             // so it employs a lot of inlining and unrolling as an optimization.
             // In particular, the functionality of Ellipsoid.cartographicToCartesian
@@ -174,9 +174,7 @@ class HeightmapTessellator {
                 ++endCol
             }
             
-            //let vertexCount = (endRow - startRow) * (endCol - startCol) * 6
-            
-            var vertices = [Float]()//count: vertexCount, repeatedValue: 0.0)
+            var vertices = [Float]()
             
             for rowIndex in startRow..<endRow {
                 var row = rowIndex
@@ -278,5 +276,5 @@ class HeightmapTessellator {
                 vertices: vertices
             )
     }
-
+    
 }

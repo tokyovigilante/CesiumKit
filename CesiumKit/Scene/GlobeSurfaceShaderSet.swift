@@ -181,7 +181,7 @@ class GlobeSurfaceShaderSet {
                 fragmentShaderSource: fs,
                 vertexDescriptor: vertexDescriptor,
                 colorMask: nil,
-                depthStencil: true
+                depthStencil: context.depthTexture
             )
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 

@@ -19,14 +19,7 @@ class DepthPlane {
     private var _va: VertexArray? = nil
     private var _command: DrawCommand? = nil
     private var _mode: SceneMode = .Scene3D
-    /*
     
-    var depthQuadScratch = FeatureDetection.supportsTypedArrays() ? new Float32Array(12) : [];
-    var scratchCartesian1 = new Cartesian3();
-    var scratchCartesian2 = new Cartesian3();
-    var scratchCartesian3 = new Cartesian3();
-    var scratchCartesian4 = new Cartesian3();
-    */
     private func computeDepthQuad(ellipsoid: Ellipsoid, frameState: FrameState) -> [Float] {
         let radii = ellipsoid.radii
         let p = frameState.camera!.positionWC
@@ -82,7 +75,7 @@ class DepthPlane {
             return
         }
         
-        var ellipsoid = frameState.mapProjection.ellipsoid
+        let ellipsoid = frameState.mapProjection.ellipsoid
         
         if _command == nil {
             _rs = RenderState( // Write depth, not color
@@ -114,7 +107,8 @@ class DepthPlane {
                     blue: false,
                     alpha: false
                 ),
-                depthStencil: true)
+                depthStencil: true
+            )
             _command = DrawCommand(
                 boundingVolume: BoundingSphere(
                     center: Cartesian3.zero(),

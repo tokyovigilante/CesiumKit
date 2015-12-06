@@ -221,12 +221,6 @@ class TileUniformMap: UniformMap {
         dayTextureOneOverGamma = [Float](count: maxTextureCount, repeatedValue: 0.0)
     }
     
-    subscript(name: String) -> UniformFunc? {
-        get {
-            return uniform(name)
-        }
-    }
-    
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
     }

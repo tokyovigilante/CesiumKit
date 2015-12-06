@@ -69,8 +69,6 @@
 		9410139C19FB037D00FFAD81 /* VertexArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EF194DBDDF00012DC4 /* VertexArray.swift */; };
 		9410139E19FB037D00FFAD81 /* WindingOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241019C99C860040042F /* WindingOrder.swift */; };
 		941013BC19FB039E00FFAD81 /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
-		941072CD1C0D63E00095A86F /* TextureProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941072CC1C0D63E00095A86F /* TextureProvider.swift */; };
-		941072CE1C0D63E00095A86F /* TextureProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941072CC1C0D63E00095A86F /* TextureProvider.swift */; };
 		9413113019F3842F00FFAD81 /* EllipsoidalOccluderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */; };
 		9413113219F385BC00FFAD81 /* Ellipsoid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943744F71945D5320017FE14 /* Ellipsoid.swift */; };
 		9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */; };
@@ -658,7 +656,6 @@
 		940D88E91BFF313E0095A86F /* FXAA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FXAA.swift; sourceTree = "<group>"; };
 		940F3AC2194C5E4400E6E6E3 /* GeographicTilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicTilingScheme.swift; sourceTree = "<group>"; };
 		9410135419FA49FA00FFAD81 /* CameraTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraTests.swift; path = Scene/CameraTests.swift; sourceTree = "<group>"; };
-		941072CC1C0D63E00095A86F /* TextureProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureProvider.swift; sourceTree = "<group>"; };
 		9413112F19F3842F00FFAD81 /* EllipsoidalOccluderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidalOccluderTests.swift; path = Core/EllipsoidalOccluderTests.swift; sourceTree = "<group>"; };
 		9413B7841A37B8D900FFAD81 /* CesiumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CesiumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTerrainProvider.swift; sourceTree = "<group>"; };
@@ -1049,7 +1046,6 @@
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
 				945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */,
 				9465B0251956F5DE00355D2C /* Texture.swift */,
-				941072CC1C0D63E00095A86F /* TextureProvider.swift */,
 				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
 				94889B891B286E990095A86F /* UniformBufferProvider.swift */,
 				9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */,
@@ -1743,7 +1739,6 @@
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
 				9413B7A71A37B93100FFAD81 /* Clock.swift in Sources */,
 				9413B7DE1A37B93D00FFAD81 /* CubeMap.swift in Sources */,
-				941072CD1C0D63E00095A86F /* TextureProvider.swift in Sources */,
 				9413B7AC1A37B93100FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
 				9413B7CC1A37B93100FFAD81 /* TerrainData.swift in Sources */,
 				9413B80F1A37B94500FFAD81 /* QuadtreeTile.swift in Sources */,
@@ -1876,7 +1871,6 @@
 				9478215C1B5A2D7C0095A86F /* BingMapsImageryProvider.swift in Sources */,
 				9478215D1B5A2D7C0095A86F /* BingMapsStyle.swift in Sources */,
 				9478215E1B5A2D7C0095A86F /* BlendEquation.swift in Sources */,
-				941072CE1C0D63E00095A86F /* TextureProvider.swift in Sources */,
 				9478215F1B5A2D7C0095A86F /* BlendFunction.swift in Sources */,
 				947821601B5A2D7C0095A86F /* BlendingState.swift in Sources */,
 				947821611B5A2D7C0095A86F /* Camera.swift in Sources */,

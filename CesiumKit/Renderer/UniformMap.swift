@@ -20,3 +20,12 @@ protocol UniformMap {
     func textureForUniform (uniform: UniformSampler) -> Texture?
 }
 
+extension UniformMap {
+    
+    subscript(name: String) -> UniformFunc? {
+        get {
+            return uniform(name)
+        }
+    }
+
+}

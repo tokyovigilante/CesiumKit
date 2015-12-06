@@ -29,7 +29,7 @@ class DrawCommand: Command {
     *
     * @see DrawCommand#debugShowBoundingVolume
     */
-    var boundingVolume: BoundingVolume?
+    var boundingVolume: BoundingVolume? = nil
     
     /**
     * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
@@ -106,11 +106,19 @@ class DrawCommand: Command {
     var uniformBufferProvider: UniformBufferProvider! = nil
     
     /**
-    * The render state.
+    * The framebuffer to draw to.
     *
-    * @type {RenderState}
+    * @type {Framebuffer}
     * @default undefined
     */
+    var framebuffer: Framebuffer? = nil
+    
+    /**
+     * The render state.
+     *
+     * @type {RenderState}
+     * @default undefined
+     */
     var renderState: RenderState?
     
     /**
@@ -184,14 +192,16 @@ class DrawCommand: Command {
         vertexArray: VertexArray? = nil,
         count: Int? = nil,
         offset: Int = 0,
+        uniformMap: UniformMap? = nil,
+        framebuffer: Framebuffer? = nil,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
         pass: Pass = .Globe,
         executeInClosestFrustum: Bool = false,
         owner: AnyObject? = nil,
         debugShowBoundingVolume: Bool = false,
-        debugOverlappingFrustums: Int = 0,
-        uniformMap: UniformMap? = nil) {
+        debugOverlappingFrustums: Int = 0
+        ) {
             self.boundingVolume = boundingVolume
             self.cull = cull
             self.primitiveType = primitiveType
