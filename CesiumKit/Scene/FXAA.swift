@@ -7,132 +7,84 @@
 //
 
 import Foundation
+import MetalKit
 
 class FXAA {
-    /*
-    /*global define*/
-    define([
-    '../Core/Cartesian2',
-    '../Core/Color',
-    '../Core/defined',
-    '../Core/destroyObject',
-    '../Core/PixelFormat',
-    '../Renderer/ClearCommand',
-    '../Renderer/Framebuffer',
-    '../Renderer/PixelDatatype',
-    '../Renderer/Renderbuffer',
-    '../Renderer/RenderbufferFormat',
-    '../Renderer/RenderState',
-    '../Renderer/Texture',
-    '../Shaders/PostProcessFilters/FXAA'
-    ], function(
-    Cartesian2,
-    Color,
-    defined,
-    destroyObject,
-    PixelFormat,
-    ClearCommand,
-    Framebuffer,
-    PixelDatatype,
-    Renderbuffer,
-    RenderbufferFormat,
-    RenderState,
-    Texture,
-    FXAAFS) {
-    "use strict";
-    
     /**
     * @private
     */
-    var FXAA = function(context) {
-    this._texture = undefined;
-    this._depthTexture = undefined;
-    this._depthRenderbuffer = undefined;
-    */
+    private var _texture: Texture? = nil
+    private var _depthTexture: Texture? = nil
+    //var _depthRenderbuffer = undefined;
+    
     private var _fbo: Framebuffer? = nil
-    /*this._command = undefined;
+    private var _command: DrawCommand? = nil
     
-    var clearCommand = new ClearCommand({
-    color : new Color(0.0, 0.0, 0.0, 0.0),
-    depth : 1.0,
-    owner : this
-    });
-    this._clearCommand = clearCommand;
-    };
+    private var _clearCommand: ClearCommand
     
-    function destroyResources(fxaa) {
-    fxaa._fbo = fxaa._fbo && fxaa._fbo.destroy();
-    fxaa._texture = fxaa._texture && fxaa._texture.destroy();
-    fxaa._depthTexture = fxaa._depthTexture && fxaa._depthTexture.destroy();
-    fxaa._depthRenderbuffer = fxaa._depthRenderbuffer && fxaa._depthRenderbuffer.destroy();
-    
-    fxaa._fbo = undefined;
-    fxaa._texture = undefined;
-    fxaa._depthTexture = undefined;
-    fxaa._depthRenderbuffer = undefined;
-    
-    if (defined(fxaa._command)) {
-    fxaa._command.shaderProgram = fxaa._command.shaderProgram && fxaa._command.shaderProgram.destroy();
-    fxaa._command = undefined;
+    init () {
+        _clearCommand = ClearCommand(
+            color : Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
+            depth : 1.0
+        )
+        _clearCommand.owner = self
     }
-    }
-    */
+
     func update (context: Context) {
-        /*var width = context.drawingBufferWidth;
-        var height = context.drawingBufferHeight;
+        let width = context.width
+        let height = context.height
         
-        var fxaaTexture = this._texture;
-        var textureChanged = !defined(fxaaTexture) || fxaaTexture.width !== width || fxaaTexture.height !== height;
-        if (textureChanged) {
-            this._texture = this._texture && this._texture.destroy();
-            this._depthTexture = this._depthTexture && this._depthTexture.destroy();
-            this._depthRenderbuffer = this._depthRenderbuffer && this._depthRenderbuffer.destroy();
+        var fxaaTexture = _texture
+        let textureChanged = _texture == nil || _texture!.width != width || _texture!.height != height
+        if textureChanged {
+            _depthTexture = nil
+            //this._depthRenderbuffer = this._depthRenderbuffer && this._depthRenderbuffer.destroy();
             
-            this._texture = new Texture({
-                context : context,
-                width : width,
-                height : height,
-                pixelFormat : PixelFormat.RGBA,
-                pixelDatatype : PixelDatatype.UNSIGNED_BYTE
-            });
+            _texture = Texture(
+                context: context,
+                options: TextureOptions(
+                    width: width,
+                    height: height,
+                    usage: .RenderTarget)
+                )
             
-            if (context.depthTexture) {
-                this._depthTexture = new Texture({
-                    context : context,
-                    width : width,
-                    height : height,
-                    pixelFormat : PixelFormat.DEPTH_COMPONENT,
-                    pixelDatatype : PixelDatatype.UNSIGNED_SHORT
-                });
-            } else {
+            if context.depthTexture {
+                _depthTexture = Texture(
+                    context: context,
+                    options: TextureOptions(
+                    width: width,
+                    height: height,
+                    pixelFormat: .Depth32Float,
+                    usage: .RenderTarget)
+                )
+            } /*else {
                 this._depthRenderbuffer = new Renderbuffer({
                     context : context,
                     width : width,
                     height : height,
                     format : RenderbufferFormat.DEPTH_COMPONENT16
                 });
-            }
+            }*/
         }
         
-        if (!defined(this._fbo) || textureChanged) {
-            this._fbo = this._fbo && this._fbo.destroy();
-            
-            this._fbo = new Framebuffer({
+        if _fbo == nil || textureChanged {
+            /*
+            _fbo = new Framebuffer({
                 context : context,
                 colorTextures : [this._texture],
                 depthTexture : this._depthTexture,
                 depthRenderbuffer : this._depthRenderbuffer,
                 destroyAttachments : false
-            });
+            });*/
         }
-        
+        /*
         if (!defined(this._command)) {
             this._command = context.createViewportQuadCommand(FXAAFS, {
                 renderState : RenderState.fromCache(),
                 owner : this
             });
-        }
-        
+        }*/
+        /*
         if (textureChanged) {
             var that = this;
             var step = new Cartesian2(1.0 / this._texture.width, 1.0 / this._texture.height);
@@ -146,38 +98,24 @@ class FXAA {
             };
         }*/
     }
+
+    func execute (context: Context, renderPass: RenderPass) {
+        _command!.execute(context, renderPass: renderPass)
+    }
     
-    /*
-    FXAA.prototype.execute = function(context, passState) {
-    this._command.execute(context, passState);
-    };
-    */
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
-        /*var framebuffer = passState.framebuffer;
+        let framebuffer = passState.framebuffer
         
-        passState.framebuffer = this._fbo;
-        Color.clone(clearColor, this._clearCommand.color);
-        this._clearCommand.execute(context, passState);
+        passState.framebuffer = _fbo
+        _clearCommand.color = clearColor
+        _clearCommand.execute(context, passState: passState)
         
-        passState.framebuffer = framebuffer;*/
+        passState.framebuffer = framebuffer
     }
     
     
     func getColorFramebuffer() -> Framebuffer? {
         return _fbo
     }
-    /*
-    FXAA.prototype.isDestroyed = function() {
-    return false;
-    };
-    
-    FXAA.prototype.destroy = function() {
-    destroyResources(this);
-    return destroyObject(this);
-    };
-    
-    return FXAA;
-    });
 
-    */
 }

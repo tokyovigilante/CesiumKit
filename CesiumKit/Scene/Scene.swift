@@ -180,7 +180,7 @@ public class Scene {
     private var _overlayCommandList = [DrawCommand]()
     
     
-    // TODO: OIT and FXAA
+    // TODO: OIT
     
     private var _globeDepth: GlobeDepth? = nil
     private var _depthPlane = DepthPlane()
@@ -505,8 +505,7 @@ public class Scene {
     * @type Boolean
     * @default true
     */
-    // FIXME: FXAA
-    var fxaa = false//true
+    var fxaa = true
     
     /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
@@ -1315,7 +1314,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 if useDepthPlane {
                     _depthPlane.execute(context, renderPass: groundDepthRenderPass)
                 }
-                
                 groundDepthRenderPass.complete()
             }
             
@@ -1370,9 +1368,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 passState.framebuffer = _fxaa.getColorFramebuffer()
                 _globeDepth!.executeCopyColor(context, passState: passState)
             }
-            
             passState.framebuffer = originalFramebuffer
-            //_fxaa.execute(context, passState)
+            let fxaaRenderPass = context.createRenderPass(passState)
+            _fxaa.execute(context, renderPass: fxaaRenderPass)
+            fxaaRenderPass.complete()
         }
         
         if !useOIT && !useFXAA && useGlobeDepthFramebuffer {
@@ -1922,7 +1921,6 @@ Scene.prototype.isDestroyed = function() {
         this._transitioner.destroy();
         
         this._oit.destroy();
-        this._fxaa.destroy();
         
         this._context = this._context && this._context.destroy();
         this._frameState.creditDisplay.destroy();
