@@ -126,7 +126,7 @@ class DepthPlane {
             )
         }
         // update depth plane
-        var depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)
+        let depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)
         
         // depth plane
         if _va == nil {
@@ -163,18 +163,5 @@ class DepthPlane {
             _command?.execute(context, renderPass: renderPass)
         }
     }
-    /*
-    DepthPlane.prototype.isDestroyed = function() {
-    return false;
-    };
-    
-    DepthPlane.prototype.destroy = function() {
-    this._sp = this._sp && this._sp.destroy();
-    this._va = this._va && this._va.destroy();
-    };
-    
-    return DepthPlane;
-    });
 
-    */
 }

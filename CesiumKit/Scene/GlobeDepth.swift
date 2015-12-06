@@ -153,7 +153,6 @@ executeDebugGlobeDepth(this, context, passState);
         }*/
     }
 
-
     func executeCopyColor (context: Context, passState: PassState) {
         // FIXME create abstract blit class
         let origin = MTLOriginMake(0, 0, 0)
