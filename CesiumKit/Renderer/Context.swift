@@ -50,9 +50,9 @@ class Context {
     
     private (set) var depthTexture: Bool = true
     
-    var allowTextureFilterAnisotropic = true
+    var allowTextureFilterAnisotropic: Bool = true
     
-    var textureFilterAnisotropic = true
+    var textureFilterAnisotropic: Bool = true
     
     struct glOptions {
         
@@ -475,7 +475,12 @@ class Context {
                     componentsPerAttribute: 2,
                     values: Buffer(
                         device: device,
-                        array: [1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0].map({ Float($0)}),
+                        array: [
+                            -1.0, -1.0,
+                            1.0, -1.0,
+                            1.0, 1.0,
+                            -1.0, 1.0
+                        ].map({ Float($0)}),
                         componentDatatype: .Float32,
                         sizeInBytes: 8 * strideof(Float)
                     )

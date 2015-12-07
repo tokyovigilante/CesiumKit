@@ -107,7 +107,7 @@ class DepthPlane {
                     blue: false,
                     alpha: false
                 ),
-                depthStencil: true
+                depthStencil: context.depthTexture
             )
             _command = DrawCommand(
                 boundingVolume: BoundingSphere(

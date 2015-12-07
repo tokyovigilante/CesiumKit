@@ -1200,7 +1200,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             passState.framebuffer = _fxaa.getColorFramebuffer()
         }
         
-        if passState.framebuffer != nil {
+        if passState.framebuffer !== context.defaultFramebuffer {
             _clearColorCommand.execute(context, passState: passState)
         }
         

@@ -44,7 +44,7 @@ class FXAA {
                 options: TextureOptions(
                     width: width,
                     height: height,
-                    usage: .RenderTarget)
+                    usage: [.ShaderRead, .RenderTarget])
                 )
             
             if context.depthTexture {
@@ -95,7 +95,7 @@ class FXAA {
     }
 
     func execute (context: Context, renderPass: RenderPass) {
-        //_command!.execute(context, renderPass: renderPass)
+        _command!.execute(context, renderPass: renderPass)
     }
     
     func clear (context: Context, passState: PassState, clearColor: Cartesian4) {

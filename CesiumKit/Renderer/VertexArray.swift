@@ -275,7 +275,7 @@ class VertexArray {
                 let vertexBufferSizeInBytes = numberOfVertices * vertexSizeInBytes
                 
                 // Create array for interleaved vertices.  Each attribute has a different view (pointer) into the array.
-                var buffer = Buffer(
+                let buffer = Buffer(
                     device: context.device,
                     array: nil,
                     componentDatatype: .Float32,
@@ -285,13 +285,14 @@ class VertexArray {
                     for index in attributeIndices {
                         let attribute = attributes[index]!
                         //let array = attribute.values as! [UInt8]
-                        let elementSize = attribute.componentDatatype.elementSize
+                        let elementSize = attribute.size
                         let source = attribute.values!.data
                         let target = buffer.data
                         let sourceOffset = i * elementSize
-                        let targetOffset = (i + attributeIndex) * maxComponentSizeInBytes
+                        let targetOffset = i * vertexSizeInBytes + attributeIndex
+                        
                         memcpy(target+targetOffset, source+sourceOffset, elementSize)
-                        attributeIndex++
+                        attributeIndex += elementSize
                     }
                 }
                 let vertexBuffer = buffer

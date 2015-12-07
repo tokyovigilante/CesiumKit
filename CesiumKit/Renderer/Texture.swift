@@ -11,6 +11,8 @@ import Metal
 
 private let _colorSpace = CGColorSpaceCreateDeviceRGB()//CGImageGetColorSpace(imageRef)
 
+private var _defaultSampler: Sampler! = nil
+
 enum TextureSource {
     case Image(CGImageRef)
     case ImageBuffer(Imagebuffer)
@@ -96,7 +98,7 @@ class Texture {
     * @memberof Texture.prototype
     * @type {Object}
     */
-    var sampler: Sampler! = nil
+    var sampler: Sampler
         
     //var dimensions: Cartesian2
 
@@ -117,6 +119,11 @@ class Texture {
         usage = options.usage
         //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
         mipmapped = false
+        
+        if _defaultSampler == nil {
+            _defaultSampler = Sampler(context: context)
+        }
+        sampler = _defaultSampler
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
@@ -216,6 +223,10 @@ class Texture {
         self.textureFilterAnisotropic = true
         self.usage = metalTexture.usage
         self.premultiplyAlpha = true
+        if _defaultSampler == nil {
+            _defaultSampler = Sampler(context: context)
+        }
+        sampler = _defaultSampler
     }
     /*
     defineProperties(Texture.prototype, {
