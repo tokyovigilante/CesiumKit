@@ -27,7 +27,7 @@ public struct CesiumOptions {
     public var clock = Clock()
     public var imageryProvider: ImageryProvider? = nil
     var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
-    //public var skyBox: SkyBox? = nil
+    public var skyBox: SkyBox? = nil
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
     public var mapProjection: MapProjection = GeographicProjection()
@@ -247,22 +247,23 @@ public class CesiumGlobe {
         creditDisplay.addDefaultCredit(cesiumCredit);*/
 
         
-        // FIXME: Skybox disabled
-        /*(var skyBox = options.skyBox;
-        if (!defined(skyBox)) {
-        skyBox = new SkyBox({
-        sources : {
-        positiveX : getDefaultSkyBoxUrl('px'),
-        negativeX : getDefaultSkyBoxUrl('mx'),
-        positiveY : getDefaultSkyBoxUrl('py'),
-        negativeY : getDefaultSkyBoxUrl('my'),
-        positiveZ : getDefaultSkyBoxUrl('pz'),
-        negativeZ : getDefaultSkyBoxUrl('mz')
-        }*/
+        var skyBox = options.skyBox
+        if skyBox == nil {
+            skyBox = SkyBox(
+                sources: SkyBoxResourceSources(
+                    positiveX: SkyBox.getDefaultSkyBoxUrl("px"),
+                    negativeX: SkyBox.getDefaultSkyBoxUrl("mx"),
+                    positiveY: SkyBox.getDefaultSkyBoxUrl("py"),
+                    negativeY: SkyBox.getDefaultSkyBoxUrl("my"),
+                    positiveZ: SkyBox.getDefaultSkyBoxUrl("pz"),
+                    negativeZ: SkyBox.getDefaultSkyBoxUrl("mz")
+                )
+            )
+        }
         
+        scene.skyBox = skyBox;
         // FIXME: UFOs disabled
-        /*scene.skyBox = skyBox;
-        scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
+        /*scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
         scene.sun = new Sun();
         scene.moon = new Moon();*/
 

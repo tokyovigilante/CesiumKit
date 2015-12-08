@@ -18,6 +18,7 @@ import Foundation
 * @constructor
 */
 struct FrameState {
+    
     /**
     * The current mode of the scene.
     * @type {SceneMode}

@@ -505,7 +505,7 @@ public class Scene {
     * @type Boolean
     * @default true
     */
-    var fxaa = true
+    var fxaa = false
     
     /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
@@ -1125,7 +1125,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         // Manage celestial and terrestrial environment effects.
         let renderPass = frameState.passes.render
-        //let skyBoxCommand = renderPass && skyBox != nil ? scene.skyBox.update(context, frameState) : nil
+        let skyBoxCommand: DrawCommand? = (renderPass && skyBox != nil) ? skyBox!.update(context, frameState: frameState) : nil
         /*var skyAtmosphereCommand = (renderPass && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
         var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
@@ -1211,11 +1211,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         context.uniformState.updateFrustum(frustum)
         
         let spaceRenderPass = context.createRenderPass(passState)
-        /*
-        if (defined(skyBoxCommand)) {
-            executeCommand(skyBoxCommand, scene, context, passState);
-        }
         
+        if let skyBoxCommand = skyBoxCommand {
+            executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
+        }
+        /*
         if (defined(skyAtmosphereCommand)) {
             executeCommand(skyAtmosphereCommand, scene, context, passState);
         }

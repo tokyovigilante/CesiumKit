@@ -25,5 +25,11 @@ import AppKit.NSImage
             }
         }
     }
+
+    extension CGImageRef {
+        func fromFile (file: String) -> CGImageRef? {
+            return nil
+        }
+    }
 #endif
 
