@@ -490,7 +490,11 @@ class Context {
                     componentsPerAttribute: 2,
                     values: Buffer(
                         device: device,
-                        array: [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0].map({ Float($0)}),
+                        array: [ // Flipped for Metal texture coordinates (top-left  = (0, 0))
+                            0.0, 1.0,
+                            1.0, 1.0,
+                            1.0, 0.0,
+                            0.0, 0.0].map({ Float($0)}),
                         componentDatatype: .Float32,
                         sizeInBytes: 8 * strideof(Float)
                     )
