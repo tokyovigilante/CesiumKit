@@ -159,7 +159,6 @@
 		9410138619FB037500FFAD81 /* WebMercatorTilingScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */; };
 		9410138A19FB037D00FFAD81 /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
 		9410138C19FB037D00FFAD81 /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
-		9410138D19FB037D00FFAD81 /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
 		9410138E19FB037D00FFAD81 /* CullFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240E19C9919D0040042F /* CullFace.swift */; };
 		9410138F19FB037D00FFAD81 /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		9410139019FB037D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
@@ -244,7 +243,6 @@
 		9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
 		9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC4194D699400012DC4 /* Context.swift */; };
 		9413B7DE1A37B93D00FFAD81 /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
-		9413B7DF1A37B93D00FFAD81 /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
 		9413B7E01A37B93D00FFAD81 /* CullFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240E19C9919D0040042F /* CullFace.swift */; };
 		9413B7E11A37B93D00FFAD81 /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
@@ -444,7 +442,6 @@
 		9478213E1B5A2D7B0095A86F /* ClearCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F81A194DB87400012DC4 /* ClearCommand.swift */; };
 		947821401B5A2D7C0095A86F /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B87DC4194D699400012DC4 /* Context.swift */; };
 		947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9465B0271956F61400355D2C /* CubeMap.swift */; };
-		947821421B5A2D7C0095A86F /* CubeMapFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */; };
 		947821431B5A2D7C0095A86F /* CullFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A240E19C9919D0040042F /* CullFace.swift */; };
 		947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
@@ -958,7 +955,6 @@
 		94C6E5571B1475BF0095A86F /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
 		94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCoordinateImageryProvider.swift; sourceTree = "<group>"; };
 		94CB63FC1A38465600FFAD81 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMapFace.swift; sourceTree = "<group>"; };
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
 		94CD3FAE199B6F8A00012DC4 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomaticUniforms.swift; sourceTree = "<group>"; };
@@ -1403,7 +1399,6 @@
 				94B87DC4194D699400012DC4 /* Context.swift */,
 				949090711BCCE3D5001A40C8 /* ContextLimits.swift */,
 				9465B0271956F61400355D2C /* CubeMap.swift */,
-				94CD3FAA199B5A1A00012DC4 /* CubeMapFace.swift */,
 				947A240E19C9919D0040042F /* CullFace.swift */,
 				947A241219C99DDB0040042F /* DepthTest.swift */,
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
@@ -2225,7 +2220,6 @@
 				940D88EA1BFF313E0095A86F /* FXAA.swift in Sources */,
 				9413B7C51A37B93100FFAD81 /* Quaternion.swift in Sources */,
 				945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */,
-				9413B7DF1A37B93D00FFAD81 /* CubeMapFace.swift in Sources */,
 				9413B8011A37B94500FFAD81 /* GlobeSurfaceTileProvider.swift in Sources */,
 				9413B7EC1A37B93D00FFAD81 /* ShaderProgram.swift in Sources */,
 				9413B8181A37B94500FFAD81 /* TerrainState.swift in Sources */,
@@ -2315,7 +2309,6 @@
 				9478213E1B5A2D7B0095A86F /* ClearCommand.swift in Sources */,
 				947821401B5A2D7C0095A86F /* Context.swift in Sources */,
 				947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */,
-				947821421B5A2D7C0095A86F /* CubeMapFace.swift in Sources */,
 				9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */,
 				947821431B5A2D7C0095A86F /* CullFace.swift in Sources */,
 				947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */,
@@ -2440,7 +2433,6 @@
 				9410136C19FB037500FFAD81 /* Geometry.swift in Sources */,
 				9413B8231A37B94800FFAD81 /* CullingVolume.swift in Sources */,
 				9413B8251A37B94800FFAD81 /* Frustum.swift in Sources */,
-				9410138D19FB037D00FFAD81 /* CubeMapFace.swift in Sources */,
 				9413113319F38CC200FFAD81 /* EllipsoidalOccluder.swift in Sources */,
 				9413B83B1A37B94800FFAD81 /* Scene.swift in Sources */,
 				9413113719F3A07B00FFAD81 /* Cartesian4.swift in Sources */,
