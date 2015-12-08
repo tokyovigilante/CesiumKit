@@ -250,18 +250,18 @@ public class CesiumGlobe {
         var skyBox = options.skyBox
         if skyBox == nil {
             skyBox = SkyBox(
-                sources: SkyBoxResourceSources(
-                    positiveX: SkyBox.getDefaultSkyBoxUrl("px"),
-                    negativeX: SkyBox.getDefaultSkyBoxUrl("mx"),
-                    positiveY: SkyBox.getDefaultSkyBoxUrl("py"),
-                    negativeY: SkyBox.getDefaultSkyBoxUrl("my"),
-                    positiveZ: SkyBox.getDefaultSkyBoxUrl("pz"),
-                    negativeZ: SkyBox.getDefaultSkyBoxUrl("mz")
-                )
+                sources: [
+                    SkyBox.getDefaultSkyBoxUrl("px"),
+                    SkyBox.getDefaultSkyBoxUrl("mx"),
+                    SkyBox.getDefaultSkyBoxUrl("py"),
+                    SkyBox.getDefaultSkyBoxUrl("my"),
+                    SkyBox.getDefaultSkyBoxUrl("pz"),
+                    SkyBox.getDefaultSkyBoxUrl("mz")
+                ]
             )
         }
         
-        scene.skyBox = skyBox;
+        scene.skyBox = skyBox
         // FIXME: UFOs disabled
         /*scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
         scene.sun = new Sun();

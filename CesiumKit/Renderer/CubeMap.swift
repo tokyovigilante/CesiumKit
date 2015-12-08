@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CubeMap {
+class CubeMap: Texture {
 /*
 /**
      * @private
@@ -219,4 +219,40 @@ class CubeMap {
     return CubeMap;
 });
 */
+    class func loadImagesForSources (sources: [String]) -> CubeMapSources
+    {
+        let sourceURLs = urlsForSources(sources)
+        let cgImageSources = sourceURLs.map({ CGImageRef.fromURL($0)! })
+        /*
+        if let sources = sources as? SkyBoxResourceSources {
+        let bundle = NSBundle.mainBundle()
+        bundle.pathForResource(sources.positiveX, ofType: "jpg")
+        return SkyBoxImageSources(
+        positiveX: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType:"jpg")),
+        negativeX: CGImageRef.fromFile(bundle.pathForResource(sources.negativeX, ofType: "jpg")),
+        positiveY: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
+        negativeY: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
+        positiveZ: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
+        negativeZ: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg"))
+        )
+        }*/
+        return CubeMapSources(sources: cgImageSources)
+    }
+    
+    private class func urlsForSources (sources: [String]) -> [NSURL] {
+        let type = sources[0].referenceType
+
+        
+        let sourceURLs: [NSURL]
+        let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") ?? NSBundle.mainBundle()
+        switch type {
+        case .BundleResource:
+            sourceURLs = sources.map({ bundle.URLForImageResource($0)! })
+        case .FilePath:
+            sourceURLs = sources.map({ NSURL(fileURLWithPath: $0, isDirectory: false) })
+        case .NetworkURL:
+            sourceURLs = sources.map({ NSURL(string: $0)! })
+        }
+        return sourceURLs
+    }
 }

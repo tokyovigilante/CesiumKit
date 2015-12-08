@@ -34,39 +34,32 @@ extension CGImageRef: CubeMapSourceReference {
     
 }
 
-struct CubeMapSources<T: CubeMapSourceReference> {
-    let sources: [T]
-    
-    init (sourceReferences: [T]) {
-        assert(sourceReferences.count == 6, "invalid source array")
-
-        assertionFailure("convert")
-        self.sources = sourceReferences
-    }
+struct CubeMapSources {
+    let sources: [CGImageRef]
 }
 extension CubeMapSources {
 
-    var positiveX: T {
+    var positiveX: CGImageRef {
         return sources[0]
     }
     
-    var negativeX: T {
+    var negativeX: CGImageRef {
         return sources[1]
     }
 
-    var positiveY: T {
+    var positiveY: CGImageRef {
         return sources[2]
     }
 
-    var negativeY: T {
+    var negativeY: CGImageRef {
         return sources[3]
     }
 
-    var positiveZ: T {
+    var positiveZ: CGImageRef {
         return sources[4]
     }
 
-    var negativeZ: T {
+    var negativeZ: CGImageRef {
         return sources[5]
     }
 
@@ -120,7 +113,7 @@ struct SkyBoxImageSources: SkyBoxSources {
 
 public class SkyBox {
     
-    var sources: CubeMapSources<CGImageRef> {
+    var sources: CubeMapSources {
         didSet {
             _sourcesUpdated = true
         }
@@ -137,9 +130,14 @@ public class SkyBox {
     
     private var _command: DrawCommand
     
-    private var _cubeMap: CubeMap? = nil
+    private var _cubeMap: Texture? = nil
     
-    init (sources: CubeMapSources<CGImageRef>, show: Bool = true) {
+    convenience init (sources: [String], show: Bool = true) {
+        self.init(sources: CubeMap.loadImagesForSources(sources))
+    }
+
+    
+    init (sources: CubeMapSources, show: Bool = true) {
         self.sources = sources
         self.show = show
         _cubeMap = nil
@@ -175,10 +173,18 @@ public class SkyBox {
         }
         
         if _sourcesUpdated {
-            /*_cubeMap = CubeMap(
-            context: context,
-            source: sources
-            )*/
+            let width = Int(CGImageGetWidth(sources.positiveX))
+            _cubeMap = Texture(
+                context: context,
+                options: TextureOptions(
+                    source: .CubeMap(sources),
+                    width: width,
+                    height: width,
+                    cubeMap: true,
+                    flipY: true,
+                    usage: .ShaderRead
+                )
+            )
         }
         /*
         var command = this._command;
@@ -224,23 +230,6 @@ public class SkyBox {
         return _command
     }
         
-    private func loadImagesForSources (sources: [CubeMapSourceReference]) -> CubeMapSources<CGImageRef> {
-        /*
-        if let sources = sources as? SkyBoxResourceSources {
-            let bundle = NSBundle.mainBundle()
-            bundle.pathForResource(sources.positiveX, ofType: "jpg")
-            return SkyBoxImageSources(
-                positiveX: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType:"jpg")),
-                negativeX: CGImageRef.fromFile(bundle.pathForResource(sources.negativeX, ofType: "jpg")),
-                positiveY: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
-                negativeY: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
-                positiveZ: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg")),
-                negativeZ: CGImageRef.fromFile(bundle.pathForResource(sources.positiveX, ofType: "jpg"))
-            )
-        }*/
-        return CubeMapSources<CGImageRef>(sourceReferences: [CGImageRef]())
-    }
-
     public class func getDefaultSkyBoxUrl (face: String) -> String {
         return "tycho2t3_80_" + face
     }
