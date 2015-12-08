@@ -1213,7 +1213,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         let spaceRenderPass = context.createRenderPass(passState)
         
         if let skyBoxCommand = skyBoxCommand {
-            executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
+            //executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
         }
         /*
         if (defined(skyAtmosphereCommand)) {

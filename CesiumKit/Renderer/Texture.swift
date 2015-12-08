@@ -9,13 +9,14 @@
 import CoreGraphics
 import Metal
 
-private let _colorSpace = CGColorSpaceCreateDeviceRGB()//CGImageGetColorSpace(imageRef)
+private let _colorSpace = CGColorSpaceCreateDeviceRGB()!//CGImageGetColorSpace(imageRef)
 
 private var _defaultSampler: Sampler! = nil
 
 enum TextureSource {
     case Image(CGImageRef)
     case ImageBuffer(Imagebuffer)
+    case CubeMap(CubeMapSources)
     
     var width: Int {
         get {
@@ -24,6 +25,8 @@ enum TextureSource {
                 return CGImageGetWidth(image)
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.width
+            case .CubeMap(let sources):
+                return CGImageGetWidth(sources.negativeX)
             }
         }
     }
@@ -35,6 +38,8 @@ enum TextureSource {
                 return Int(CGImageGetHeight(image))
             case .ImageBuffer(let imagebuffer):
                 return imagebuffer.height
+            case .CubeMap(let sources):
+                return CGImageGetHeight(sources.negativeX)
             }
         }
     }
@@ -48,6 +53,8 @@ struct TextureOptions {
     
     let height: Int
     
+    let cubeMap: Bool
+    
     let pixelFormat: MTLPixelFormat
     
     let flipY: Bool
@@ -56,12 +63,13 @@ struct TextureOptions {
     
     let usage: MTLTextureUsage
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
         self.width = source != nil ? source!.width : width!
         self.height = source != nil ? source!.height : height!
+        self.cubeMap = cubeMap
         self.pixelFormat = pixelFormat
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
@@ -74,6 +82,8 @@ class Texture {
     let width: Int
     
     let height: Int
+    
+    let cubeMap: Bool
     
     let pixelFormat: MTLPixelFormat
     
@@ -106,7 +116,7 @@ class Texture {
 
         let source = options.source
         
-        if options.source == nil {
+        if source == nil {
             width = options.width
             height = options.height
         } else {
@@ -114,6 +124,7 @@ class Texture {
             height = source!.height
         }
         
+        cubeMap = options.cubeMap
         pixelFormat = options.pixelFormat
         premultiplyAlpha = options.premultiplyAlpha
         usage = options.usage
@@ -129,6 +140,7 @@ class Texture {
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
+        
         /*
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
@@ -151,8 +163,13 @@ class Texture {
         let flipY = options.flipY
         
         // FIXME: mipmapping
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
-            width: width, height: height, mipmapped: false/*mipmapped*/)
+        let textureDescriptor: MTLTextureDescriptor
+        if cubeMap {
+            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat, size: width, mipmapped: false)
+        } else {
+            textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
+                width: width, height: height, mipmapped: false/*mipmapped*/)
+        }
         textureDescriptor.usage = usage
         
         if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
@@ -175,40 +192,36 @@ class Texture {
                 metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: pixelBuffer, bytesPerRow: bytesPerRow)*/
             case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
-                //Extract info for your image
-                let width = CGImageGetWidth(imageRef)
-                let height = CGImageGetHeight(imageRef)
-                let bytesPerPixel: Int = 4
-                let bytesPerRow = bytesPerPixel * width
-                let bitsPerComponent = 8
-
-                
-                let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
-                
-                var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
-                
-                rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-                rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
-                
-                let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-                
-
-                // Allocate a textureData with the above properties:
-                let textureData = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
-
-                let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(textureData), width, height, bitsPerComponent, bytesPerRow, _colorSpace, bitmapInfo.rawValue)
-                assert(contextRef != nil, "contextRef == nil")
-                let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
-                if flipY {
-                    let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-                    CGContextConcatCTM(contextRef, flipVertical)
-                }
-                CGContextDrawImage(contextRef, imageRect, imageRef)
-                
+                let textureData = imageRef.renderToPixelArray(
+                    colorSpace: _colorSpace,
+                    premultiplyAlpha: premultiplyAlpha,
+                    flipY: flipY
+                )
                 // Copy to texture
                 let region = MTLRegionMake2D(0, 0, width, height)
-                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: textureData, bytesPerRow: bytesPerRow)
+                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
+            case .CubeMap(let sources):
+
+                let region = MTLRegionMake2D(0, 0, width, height)
+
+                for slice in 0..<6 {
+                    let textureData = sources.sources[slice].renderToPixelArray(
+                        colorSpace: _colorSpace,
+                        premultiplyAlpha: premultiplyAlpha,
+                        flipY: flipY
+                    )
+                    // Copy to texture
+                    metalTexture.replaceRegion(
+                        region,
+                        mipmapLevel: 0,
+                        slice: slice,
+                        withBytes: textureData.array,
+                        bytesPerRow: textureData.bytesPerRow,
+                        bytesPerImage: textureData.bytesPerRow * height
+                    )
+                }
             }
+            
         }
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
@@ -219,6 +232,7 @@ class Texture {
         self.metalTexture = metalTexture
         self.width = metalTexture.width
         self.height = metalTexture.height
+        self.cubeMap = metalTexture.textureType == .TypeCube
         self.pixelFormat = metalTexture.pixelFormat
         self.textureFilterAnisotropic = true
         self.usage = metalTexture.usage
