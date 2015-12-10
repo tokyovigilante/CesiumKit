@@ -192,20 +192,21 @@ public class SkyBox {
             let uniformMap = SkyBoxUniformMap()
             uniformMap.cubemap = _cubemap
             _command.uniformMap = uniformMap
+            
+            let geometry = BoxGeometry(
+                fromDimensions: Cartesian3(x: 2.0, y: 2.0, z: 2.0),
+                vertexFormat : VertexFormat.PositionOnly()
+            ).createGeometry(context)
+            
+            
+            let attributeLocations = GeometryPipeline.createAttributeLocations(geometry)
+            
+            _command.vertexArray = VertexArray(
+                fromGeometry: geometry,
+                context: context,
+                attributeLocations: attributeLocations
+            )
             /*
-            let geometry = BoxGeometry.createGeometry(BoxGeometry.fromDimensions({
-                dimensions : new Cartesian3(2.0, 2.0, 2.0),
-                vertexFormat : VertexFormat.POSITION_ONLY
-            }));
-            var attributeLocations = GeometryPipeline.createAttributeLocations(geometry);
-            
-            command.vertexArray = VertexArray.fromGeometry({
-                context : context,
-                geometry : geometry,
-                attributeLocations : attributeLocations,
-                bufferUsage : BufferUsage.STATIC_DRAW
-            });
-            
             command.shaderProgram = ShaderProgram.fromCache({
                 context : context,
                 vertexShaderSource : SkyBoxVS,
