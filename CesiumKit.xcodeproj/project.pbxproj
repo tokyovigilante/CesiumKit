@@ -550,6 +550,8 @@
 		949E09F51BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */; };
 		949E09F61BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */; };
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
+		94AB53FC1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
+		94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
 		94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC671F1B539ED9001A40C8 /* RenderPass.swift */; };
 		94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */; };
 		94B119931C13038A0095A86F /* ColorMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B119921C13038A0095A86F /* ColorMask.swift */; };
@@ -930,6 +932,7 @@
 		949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidGeodesic.swift; sourceTree = "<group>"; };
 		949E67A419D6BCB200012DC4 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		94A833161A80C81800FFAD81 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftRegex.swift; path = Platform/SwiftRegex.swift; sourceTree = "<group>"; };
+		94AB53F51C18FA040095A86F /* BoxGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxGeometry.swift; sourceTree = "<group>"; };
 		94AC671F1B539ED9001A40C8 /* RenderPass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPass.swift; sourceTree = "<group>"; };
 		94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPipeline.swift; sourceTree = "<group>"; };
 		94B119921C13038A0095A86F /* ColorMask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorMask.swift; sourceTree = "<group>"; };
@@ -1321,6 +1324,7 @@
 				947E32311BC0D485001A40C8 /* AttributeCompression.swift */,
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
+				94AB53F51C18FA040095A86F /* BoxGeometry.swift */,
 				94BC43561948189A007117F2 /* Cartesian2.swift */,
 				948D03DA19449DC900DC0E52 /* Cartesian3.swift */,
 				948D03E01944F1E200DC0E52 /* Cartesian4.swift */,
@@ -1330,6 +1334,7 @@
 				9491BBB11949D156007C1C4C /* Credit.swift */,
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
+				949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */,
 				941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */,
 				9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */,
 				94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */,
@@ -1375,7 +1380,6 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
-				949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2138,6 +2142,7 @@
 				9413B8131A37B94500FFAD81 /* SceneMode.swift in Sources */,
 				941F557C1AA17FEC00FFAD81 /* Renderbuffer.swift in Sources */,
 				947E32301BC0D10F001A40C8 /* ImageExtensions.swift in Sources */,
+				94AB53FC1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
 				9413B7CB1A37B93100FFAD81 /* Spherical.swift in Sources */,
 				941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */,
 				9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */,
@@ -2380,6 +2385,7 @@
 				9478217C1B5A2D7C0095A86F /* QuadtreePrimitive.swift in Sources */,
 				9478217D1B5A2D7C0095A86F /* QuadtreeTile.swift in Sources */,
 				9478217E1B5A2D7C0095A86F /* QuadtreeTileLoadState.swift in Sources */,
+				94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
 				9478217F1B5A2D7C0095A86F /* QuadtreeTileProvider.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,

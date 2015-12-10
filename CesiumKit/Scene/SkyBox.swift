@@ -130,7 +130,7 @@ public class SkyBox {
     
     private var _command: DrawCommand
     
-    private var _cubeMap: Texture? = nil
+    private var _cubemap: Texture? = nil
     
     convenience init (sources: [String], show: Bool = true) {
         self.init(sources: CubeMap.loadImagesForSources(sources))
@@ -140,7 +140,7 @@ public class SkyBox {
     init (sources: CubeMapSources, show: Bool = true) {
         self.sources = sources
         self.show = show
-        _cubeMap = nil
+        _cubemap = nil
         _command = DrawCommand(
             modelMatrix: Matrix4.identity()
         )
@@ -174,7 +174,7 @@ public class SkyBox {
         
         if _sourcesUpdated {
             let width = Int(CGImageGetWidth(sources.positiveX))
-            _cubeMap = Texture(
+            _cubemap = Texture(
                 context: context,
                 options: TextureOptions(
                     source: .CubeMap(sources),
@@ -186,19 +186,14 @@ public class SkyBox {
                 )
             )
         }
-        /*
-        var command = this._command;
         
-        if (!defined(command.vertexArray)) {
-            var that = this;
+        if _command.vertexArray == nil {
             
-            command.uniformMap = {
-                u_cubeMap: function() {
-                    return that._cubeMap;
-                }
-            };
-            
-            var geometry = BoxGeometry.createGeometry(BoxGeometry.fromDimensions({
+            let uniformMap = SkyBoxUniformMap()
+            uniformMap.cubemap = _cubemap
+            _command.uniformMap = uniformMap
+            /*
+            let geometry = BoxGeometry.createGeometry(BoxGeometry.fromDimensions({
                 dimensions : new Cartesian3(2.0, 2.0, 2.0),
                 vertexFormat : VertexFormat.POSITION_ONLY
             }));
@@ -220,17 +215,26 @@ public class SkyBox {
             
             command.renderState = RenderState.fromCache({
                 blending : BlendingState.ALPHA_BLEND
-            });
+            });*/
+        }
+    
+        if _cubemap == nil {
+            return nil
         }
         
-        if (!defined(this._cubeMap)) {
-            return undefined;
-        }
-        */
         return _command
     }
         
     public class func getDefaultSkyBoxUrl (face: String) -> String {
         return "tycho2t3_80_" + face
+    }
+}
+
+class SkyBoxUniformMap: UniformMap {
+    
+    var cubemap : Texture?
+    
+    func textureForUniform(uniform: UniformSampler) -> Texture? {
+        return cubemap
     }
 }

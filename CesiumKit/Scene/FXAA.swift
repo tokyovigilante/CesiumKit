@@ -146,6 +146,5 @@ class FXAAUniformMap: UniformMap {
     func textureForUniform(uniform: UniformSampler) -> Texture? {
         return texture
     }
-    
 }
 

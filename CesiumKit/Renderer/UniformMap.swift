@@ -22,10 +22,22 @@ protocol UniformMap {
 
 extension UniformMap {
     
-    subscript(name: String) -> UniformFunc? {
-        get {
-            return uniform(name)
-        }
+    func uniform(name: String) -> UniformFunc? {
+        return nil
     }
+    
+    subscript(name: String) -> UniformFunc? {
+            return uniform(name)
+    }
+    
+    func floatUniform(name: String) -> FloatUniformFunc? {
+        return nil
+    }
+    
+    func textureForUniform (uniform: UniformSampler) -> Texture? {
+        return nil
+    }
+    
+
 
 }
