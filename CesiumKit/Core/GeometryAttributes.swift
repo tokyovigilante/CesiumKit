@@ -18,6 +18,8 @@
 */
 struct GeometryAttributes {
     
+    private var _attributes = [String: GeometryAttribute]()
+    
     /**
     * The 3D position attribute.
     * <p>
@@ -28,7 +30,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var position: GeometryAttribute? = nil
+    var position: GeometryAttribute? {
+        get {
+            return _attributes["position"]
+        }
+        set (position) {
+            _attributes["position"] = position
+        }
+    }
     
     /**
     * The normal attribute (normalized), which is commonly used for lighting.
@@ -40,7 +49,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var normal: GeometryAttribute? = nil
+    var normal: GeometryAttribute? {
+        get {
+            return _attributes["normal"]
+        }
+        set (normal) {
+            _attributes["normal"] = normal
+        }
+    }
     
     /**
     * The 2D texture coordinate attribute.
@@ -52,7 +68,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var st: GeometryAttribute? = nil
+     var st: GeometryAttribute? {
+        get {
+            return _attributes["st"]
+        }
+        set (st) {
+            _attributes["st"] = st
+        }
+    }
     
     /**
     * The binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
@@ -64,7 +87,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var binormal: GeometryAttribute? = nil
+    var binormal: GeometryAttribute? {
+        get {
+            return _attributes["binormal"]
+        }
+        set (binormal) {
+            _attributes["binormal"] = binormal
+        }
+    }
     
     /**
     * The tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
@@ -76,7 +106,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var tangent: GeometryAttribute? = nil
+    var tangent: GeometryAttribute? {
+        get {
+            return _attributes["tangent"]
+        }
+        set (tangent) {
+            _attributes["tangent"] = tangent
+        }
+    }
     
     /**
     * The color attribute.
@@ -88,9 +125,14 @@ struct GeometryAttributes {
     *
     * @default undefined
     */
-    var color: GeometryAttribute? = nil
-    
-    static let count = 6
+    var color: GeometryAttribute? {
+        get {
+            return _attributes["color"]
+        }
+        set (color) {
+            _attributes["color"] = color
+        }
+    }
     
     init(
         position: GeometryAttribute? = nil,
@@ -99,12 +141,12 @@ struct GeometryAttributes {
         binormal: GeometryAttribute? = nil,
         tangent: GeometryAttribute? = nil,
         color: GeometryAttribute? = nil) {
-            self.position = position
-            self.normal = normal
-            self.st = st
-            self.binormal = binormal
-            self.tangent = tangent
-            self.color = color
+            _attributes["position"] = position
+            _attributes["normal"] = normal
+            _attributes["st"] = st
+            _attributes["binormal"] = binormal
+            _attributes["tangent"] = tangent
+            _attributes["color"] = color
     }
     
     subscript(index: Int) -> GeometryAttribute? {
@@ -127,25 +169,27 @@ struct GeometryAttributes {
         }
     }
     
-    func name(index: Int) -> String {
-        switch index {
-        case 0:
-            return "position"
-        case 1:
-            return "normal"
-        case 2:
-            return "st"
-        case 3:
-            return "binormal"
-        case 4:
-            return "tangent"
-        case 5:
-            return "color"
-        default:
-            assert(false, "invalid name")
-            return ""
+    subscript(name: String) -> GeometryAttribute? {
+        return _attributes[name]
+    }
+
+}
+
+extension GeometryAttributes: SequenceType {
+    
+    typealias Generator = AnyGenerator<GeometryAttribute>
+    
+    func generate() -> Generator {
+        var index = 0
+        return anyGenerator {
+            while index < self._attributes.count {
+                let attribute = self[index++]
+                if attribute != nil {
+                    return attribute
+                }
+            }
+            return nil
         }
     }
-    
 }
 

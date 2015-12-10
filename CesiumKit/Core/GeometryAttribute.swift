@@ -124,6 +124,11 @@ class GeometryAttribute {
     */
     var values: Buffer? = nil
     
+    /**
+    Optional name for custom attributes
+    */
+    var name: String? = nil
+    
     var vertexCount: Int {
         if values == nil {
             return 0

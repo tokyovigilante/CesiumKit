@@ -207,54 +207,53 @@ struct GeometryPipeline {
      * //   'normal' : 1
      * // }
      */
-    static func createAttributeLocations (geometry: Geometry) -> [VertexAttributes] {
-        /*
+    static func createAttributeLocations (geometry: Geometry) -> [String: Int] {
+        
         // There can be a WebGL performance hit when attribute 0 is disabled, so
         // assign attribute locations to well-known attributes.
-        var semantics = [
-            'position',
-            'positionHigh',
-            'positionLow',
-
+        let semantics = [
+            "position",
+            "positionHigh",
+            "positionLow",
+            
             // From VertexFormat.position - after 2D projection and high-precision encoding
-            'position3DHigh',
-            'position3DLow',
-            'position2DHigh',
-            'position2DLow',
-
+            "position3DHigh",
+            "position3DLow",
+            "position2DHigh",
+            "position2DLow",
+            
             // From Primitive
-            'pickColor',
-
+            "pickColor",
+            
             // From VertexFormat
-            'normal',
-            'st',
-            'binormal',
-            'tangent'
-        ];
+            "normal",
+            "st",
+            "binormal",
+            "tangent",
+            
+            // From compressing texture coordinates and normals
+            "compressedAttributes"
+        ]
 
-        var attributes = geometry.attributes;
-        var indices = {};
-        var j = 0;
-        var i;
-        var len = semantics.length;
+        let attributes = geometry.attributes
+        var indices = [String: Int]()
+        var j = 0
 
         // Attribute locations for well-known attributes
-        for (i = 0; i < len; ++i) {
-            var semantic = semantics[i];
-
-            if (defined(attributes[semantic])) {
-                indices[semantic] = j++;
+        for semantic in semantics {
+            if attributes[semantic] != nil {
+                indices[semantic] = j++
             }
         }
-
+        
         // Locations for custom attributes
-        for (var name in attributes) {
-            if (attributes.hasOwnProperty(name) && (!defined(indices[name]))) {
-                indices[name] = j++;
+        for attribute in attributes {
+            if attribute.name != nil && indices[attribute.name!] == nil {
+                indices[attribute.name!] = j++
             }
         }
-*/
-        return [VertexAttributes]()//indices
+
+        return indices
     }
 /*
     /**

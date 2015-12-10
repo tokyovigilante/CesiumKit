@@ -87,7 +87,7 @@ class VertexArray {
      * // attached vertex buffer(s) and index buffer.
      * va = va.destroy();
      */
-    convenience init(fromGeometry geometry: Geometry, context: Context, interleave: Bool = false) {
+    convenience init(fromGeometry geometry: Geometry, context: Context, attributeLocations: [String: Int], interleave: Bool = false) {
         
         /*
         var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
@@ -114,11 +114,11 @@ class VertexArray {
                 //var strideInBytes = interleavedAttributes.vertexSizeInBytes
                 var vaCount = 0
 
-                for i in 0..<GeometryAttributes.count {
+                for geometryAttribute in geometry.attributes {
                     
-                    guard let geometryAttribute = geometry.attributes[i] else {
+                    /*guard let geometryAttribute = geometry.attributes[i] else {
                         continue
-                    }
+                    }*/
                     
                     if geometryAttribute.values != nil {
                         // Common case: per-vertex attributes
@@ -148,11 +148,7 @@ class VertexArray {
         } else {
             // One vertex buffer per attribute.
             var vaCount = 0
-            for i in 0..<GeometryAttributes.count {
-                
-                guard let geometryAttribute = geometry.attributes[i] else {
-                    continue
-                }
+            for geometryAttribute in geometry.attributes {
                 
                 var componentDatatype = geometryAttribute.componentDatatype
                 if componentDatatype == .Float64 {
@@ -216,22 +212,19 @@ class VertexArray {
             
             // Extract attribute names.
             var attributeIndices = [Int]()
-            for i in 0..<GeometryAttributes.count {
+            for (i, geometryAttribute) in attributes.enumerate() {
                 
-                guard let attribute = attributes[i] else {
-                    continue
-                }
                 // Attribute needs to have per-vertex values; not a constant value for all vertices.
                 attributeIndices.append(i)
                 
-                if (attribute.componentDatatype == ComponentDatatype.Float64) {
-                    attribute.componentDatatype = ComponentDatatype.Float32
-                    var doubleArray = [Double](count: attribute.vertexCount, repeatedValue: 0.0)
-                    let geometryArraySize = attribute.vertexArraySize
+                if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
+                    geometryAttribute.componentDatatype = ComponentDatatype.Float32
+                    var doubleArray = [Double](count: geometryAttribute.vertexCount, repeatedValue: 0.0)
+                    let geometryArraySize = geometryAttribute.vertexArraySize
                     doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
-                        memcpy(pointer.baseAddress, attribute.values!.data, geometryArraySize)
+                        memcpy(pointer.baseAddress, geometryAttribute.values!.data, geometryArraySize)
                     })
-                    attribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }
             }
             

@@ -144,7 +144,8 @@ class DepthPlane {
             
             _va = VertexArray(
                 fromGeometry: geometry,
-                context : context
+                context : context,
+                attributeLocations: ["position": 0]
             )
             _command!.vertexArray = _va
         } else {

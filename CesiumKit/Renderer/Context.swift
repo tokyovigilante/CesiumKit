@@ -461,6 +461,11 @@ class Context {
     return pixels;
     };*/
     
+    private let viewportQuadAttributeLocations = [
+        "position" : 0,
+        "textureCoordinates": 1
+    ]
+    
     func getViewportQuadVertexArray () -> VertexArray {
         // Per-context cache for viewport quads
         
@@ -506,6 +511,7 @@ class Context {
         let vertexArray = VertexArray(
             fromGeometry: geometry,
             context: self,
+            attributeLocations: viewportQuadAttributeLocations,
             interleave : true
         )
     
@@ -513,7 +519,7 @@ class Context {
         
         return vertexArray
     }
-
+    
     func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true) -> DrawCommand {
         
         let vertexArray = getViewportQuadVertexArray()
