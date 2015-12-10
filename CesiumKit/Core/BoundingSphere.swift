@@ -35,6 +35,11 @@ struct BoundingSphere: BoundingVolume {
     */
     var radius: Double = 0.0
     
+    init (center: Cartesian3 = Cartesian3.zero(), radius: Double = 0.0) {
+        self.center = center
+        self.radius = radius
+    }
+    
     /**
     * Computes a tight-fitting bounding sphere enclosing a list of 3D Cartesian points.
     * The bounding sphere is computed by running two algorithms, a naive algorithm and
@@ -46,12 +51,6 @@ struct BoundingSphere: BoundingVolume {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    
-    init (center: Cartesian3 = Cartesian3.zero(), radius: Double = 0.0) {
-        self.center = center
-        self.radius = radius
-    }
-
     static func fromPoints (points: [Cartesian3]) -> BoundingSphere {
         
         var result = BoundingSphere()
