@@ -150,9 +150,18 @@ class VertexArray {
             var vaCount = 0
             for geometryAttribute in geometry.attributes {
                 
-                var componentDatatype = geometryAttribute.componentDatatype
+                /*var componentDatatype = geometryAttribute.componentDatatype
                 if componentDatatype == .Float64 {
                     componentDatatype = .Float32
+                }*/
+                if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
+                    geometryAttribute.componentDatatype = ComponentDatatype.Float32
+                    var doubleArray = [Double](count: geometryAttribute.vertexCount, repeatedValue: 0.0)
+                    let geometryArraySize = geometryAttribute.vertexArraySize
+                    doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
+                        memcpy(pointer.baseAddress, geometryAttribute.values!.data, geometryArraySize)
+                    })
+                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }
                 
                 let vertexBuffer = geometryAttribute.values
@@ -164,7 +173,7 @@ class VertexArray {
                     buffer: vertexBuffer,
                     bufferIndex: vaCount+1, // uniform buffer is [0]
                     index: 0,
-                    format: componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
+                    format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
                     offset: 0,
                     size: geometryAttribute.size,
                     normalize: geometryAttribute.normalize

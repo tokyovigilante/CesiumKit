@@ -282,7 +282,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     return uniformState.view3D; as Any
     }
     }),
-    
+    */
     /**
     * An automatic GLSL uniform representing a 3x3 view rotation matrix that
     * transforms vectors in world coordinates to eye coordinates.
@@ -302,14 +302,16 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     * // Example
     * vec3 eyeVector = czm_viewRotation * worldVector;
     */
-    czm_viewRotation : new AutomaticUniform({
-    size : 1,
-    datatype : WebGLRenderingContext.FLOAT_MAT3,
-    getValue : function(uniformState) {
-    return uniformState.viewRotation; as Any
-    }
-    }),
-    
+    "czm_viewRotation": AutomaticUniform(
+        size: 1,
+        datatype: .FloatMatrix3,
+        getValue: { (uniformState: UniformState) in
+            var result = [Float](count: 9, repeatedValue: 0.0)
+            uniformState.viewRotation.pack(&result)
+            return result
+        }
+    ),
+    /*
     /**
     * An automatic GLSL uniform representing a 3x3 view rotation matrix that
     * transforms vectors in 3D world coordinates to eye coordinates.  In 3D mode, this is identical to
@@ -1039,7 +1041,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     return uniformState.eyeHeight2D; as Any
     }
     }),
-    
+    */
     /**
     * An automatic GLSL uniform containing the near distance (<code>x</code>) and the far distance (<code>y</code>)
     * of the frustum defined by the camera.  This is the largest possible frustum, not an individual
@@ -1058,14 +1060,16 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     * // Example
     * float frustumLength = czm_entireFrustum.y - czm_entireFrustum.x;
     */
-    czm_entireFrustum : new AutomaticUniform({
-    size : 1,
-    datatype : WebGLRenderingContext.FLOAT_VEC2,
-    getValue : function(uniformState) {
-    return uniformState.entireFrustum; as Any
-    }
-    }),
-    
+    "czm_entireFrustum": AutomaticUniform(
+        size: 1,
+        datatype: .FloatVec2,
+        getValue: { (uniformState: UniformState) in
+            var result = [Float](count: 2, repeatedValue: 0.0)
+            uniformState.entireFrustum.pack(&result)
+            return result
+        }
+    ),
+    /*
     /**
     * An automatic GLSL uniform containing the near distance (<code>x</code>) and the far distance (<code>y</code>)
     * of the frustum defined by the camera.  This is the individual
@@ -1367,7 +1371,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     return uniformState.frameState.mode; as Any
     }
     }),
-    
+    */
     /**
     * An automatic GLSL uniform representing a 3x3 rotation matrix that transforms
     * from True Equator Mean Equinox (TEME) axes to the pseudo-fixed axes at the current scene time.
@@ -1385,14 +1389,16 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     * // Example
     * vec3 pseudoFixed = czm_temeToPseudoFixed * teme;
     */
-    czm_temeToPseudoFixed : new AutomaticUniform({
-    size : 1,
-    datatype : WebGLRenderingContext.FLOAT_MAT3,
-    getValue : function(uniformState) {
-    return uniformState.temeToPseudoFixedMatrix; as Any
-    }
-    }),
-    
+    "czm_temeToPseudoFixed": AutomaticUniform(
+        size : 1,
+        datatype : .FloatMatrix3,
+        getValue: { (uniformState: UniformState) in
+            var result = [Float](count: 9, repeatedValue: 0.0)
+            uniformState.temeToPseudoFixedMatrix.pack(&result)
+            return result
+        }
+    ),
+    /*
     /**
     * An automatic GLSL uniform representing the ratio of canvas coordinate space to canvas pixel space.
     *

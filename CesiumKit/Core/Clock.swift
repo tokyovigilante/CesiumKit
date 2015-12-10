@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
+import Foundation
+
 public class Clock {
 
     /* 
@@ -213,7 +215,7 @@ public class Clock {
     this.currentTime = currentTime;
     this._lastSystemTime = currentSystemTime;
     this.onTick.raiseEvent(this);*/
-    return JulianDate()// currentTime
+    return JulianDate()//JulianDate()// currentTime
     }
     
     }

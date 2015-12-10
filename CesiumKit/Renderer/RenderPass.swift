@@ -35,8 +35,7 @@ class RenderPass {
         
         // FIXME: move fillmode to renderstate
         commandEncoder.setTriangleFillMode(.Fill)
-        //commandEncoder.setFrontFacingWinding(.CounterClockwise)
-        //commandEncoder.setCullMode(.Back)
+
     }
     
     func applyRenderState(renderState: RenderState) {

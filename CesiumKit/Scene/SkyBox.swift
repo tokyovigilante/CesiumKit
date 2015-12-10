@@ -185,6 +185,7 @@ public class SkyBox {
                     usage: .ShaderRead
                 )
             )
+            _sourcesUpdated = false
         }
         
         if _command.vertexArray == nil {
@@ -206,18 +207,19 @@ public class SkyBox {
                 context: context,
                 attributeLocations: attributeLocations
             )
-            /*
-            command.shaderProgram = ShaderProgram.fromCache({
-                context : context,
-                vertexShaderSource : SkyBoxVS,
-                fragmentShaderSource : SkyBoxFS,
-                attributeLocations : attributeLocations
-            });
             
-            command.renderState = RenderState.fromCache({
-                blending : BlendingState.ALPHA_BLEND
-            });*/
-        }
+            _command.pipeline = RenderPipeline.fromCache(
+                context: context,
+                vertexShaderSource: ShaderSource(sources: [Shaders["SkyBoxVS"]!]),
+                fragmentShaderSource: ShaderSource(sources: [Shaders["SkyBoxFS"]!]),
+                vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
+                depthStencil: context.depthTexture
+            )
+                //attributeLocations : attributeLocations
+            
+            //command.renderState = RenderState.fromCache({
+              //  blending : BlendingState.ALPHA_BLEND
+            }
     
         if _cubemap == nil {
             return nil

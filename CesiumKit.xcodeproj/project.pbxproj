@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		94017BF81C0C5FB8001A40C8 /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9404C8701BBE9FF8001A40C8 /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94017C021C0C5FC4001A40C8 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ABF1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
+		9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
+		9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
+		9403AC941C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
 		940961E31C15A53C0095A86F /* moonSmall.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 940960791C15A53C0095A86F /* moonSmall.jpg */; };
 		940961E41C15A53C0095A86F /* moonSmall.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 940960791C15A53C0095A86F /* moonSmall.jpg */; };
 		940961E51C15A53C0095A86F /* 0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9409607D1C15A53C0095A86F /* 0.jpg */; };
@@ -745,6 +749,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9403AC8A1C19A449001A40C8 /* TimeStandard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeStandard.swift; sourceTree = "<group>"; };
+		9403AC921C19A610001A40C8 /* TimeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeConstants.swift; sourceTree = "<group>"; };
 		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
 		940960791C15A53C0095A86F /* moonSmall.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = moonSmall.jpg; sourceTree = "<group>"; };
 		9409607D1C15A53C0095A86F /* 0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 0.jpg; sourceTree = "<group>"; };
@@ -1375,11 +1381,13 @@
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
 				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
+				9403AC8A1C19A449001A40C8 /* TimeStandard.swift */,
 				94327176195468EA0011D8FC /* Transforms.swift */,
 				948B802D194D3BD900012DC4 /* VertexFormat.swift */,
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				9403AC921C19A610001A40C8 /* TimeConstants.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2157,10 +2165,12 @@
 				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
 				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
 				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
+				9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
 				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
+				9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */,
 				9413B7D71A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */,
 				9413B8141A37B94500FFAD81 /* SceneTransitioner.swift in Sources */,
 				9413B7A01A37B92900FFAD81 /* String.swift in Sources */,
@@ -2289,6 +2299,7 @@
 				947821271B5A2D7B0095A86F /* Matrix4.swift in Sources */,
 				947821281B5A2D7B0095A86F /* MergeSort.swift in Sources */,
 				947821291B5A2D7B0095A86F /* Occluder.swift in Sources */,
+				9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */,
 				943416B31BC8D843001A40C8 /* Command.swift in Sources */,
 				9478212A1B5A2D7B0095A86F /* Packable.swift in Sources */,
 				9478212B1B5A2D7B0095A86F /* MapProjection.swift in Sources */,
@@ -2368,6 +2379,7 @@
 				9478216D1B5A2D7C0095A86F /* GridImageryProvider.swift in Sources */,
 				9478216E1B5A2D7C0095A86F /* HeadingPitchRange.swift in Sources */,
 				9478216F1B5A2D7C0095A86F /* Imagery.swift in Sources */,
+				9403AC941C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				943416BD1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
 				947821701B5A2D7C0095A86F /* ImageryLayer.swift in Sources */,
 				947821711B5A2D7C0095A86F /* ImageryLayerCollection.swift in Sources */,

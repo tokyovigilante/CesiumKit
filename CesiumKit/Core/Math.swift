@@ -664,4 +664,10 @@ return 2.0 * radius * Math.sin(angle * 0.5);
 
 }
 
+extension Double {
+    var fractionalComponent: Double {
+        return self % 1.0
+    }
+}
+
 

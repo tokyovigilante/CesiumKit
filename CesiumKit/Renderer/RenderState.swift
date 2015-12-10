@@ -411,7 +411,8 @@ struct RenderState/*: Printable*/ {
     }
     
     func applyCullFace(encoder: MTLRenderCommandEncoder) {
-        encoder.setCullMode(cullFace.toMetal())
+        //encoder.setCullMode(cullFace.toMetal())
+        encoder.setCullMode(.None)
     }
     /*
     func applyLineWidth() {

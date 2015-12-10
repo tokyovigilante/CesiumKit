@@ -304,20 +304,11 @@ struct Transforms {
     */
     static func computeTemeToPseudoFixedMatrix (date: JulianDate) -> Matrix3 {
         
-        //FIXME:computeTemeToPseudoFixedMatrix
-        return Matrix3()
-        /*
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(date)) {
-        throw new DeveloperError('date is required.');
-        }
-        //>>includeEnd('debug');
-        
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
         
-        dateInUtc = JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
+        /*dateInUtc = JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
         var utcDayNumber = dateInUtc.dayNumber;
         var utcSecondsIntoDay = dateInUtc.secondsOfDay;
         
@@ -335,23 +326,18 @@ struct Transforms {
         var secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SECONDS_PER_DAY * 0.5) % TimeConstants.SECONDS_PER_DAY;
         var gha = angle + (ratio * secondsSinceMidnight);
         var cosGha = Math.cos(gha);
-        var sinGha = Math.sin(gha);
-        
-        if (!defined(result)) {
-        return new Matrix3(cosGha, sinGha, 0.0,
-        -sinGha, cosGha, 0.0,
-        0.0,    0.0, 1.0);
-        }
-        result[0] = cosGha;
-        result[1] = -sinGha;
-        result[2] = 0.0;
-        result[3] = sinGha;
-        result[4] = cosGha;
-        result[5] = 0.0;
-        result[6] = 0.0;
-        result[7] = 0.0;
-        result[8] = 1.0;
-        return result;*/
+        var sinGha = Math.sin(gha);*/
+        return Matrix3(
+            0.0, 0.0, 0.0,
+            -0.0, 0.0, 0.0,
+            0.0,    0.0, 1.0
+        )
+
+        /*return Matrix3(
+            cosGha, sinGha, 0.0,
+            -sinGha, cosGha, 0.0,
+            0.0,    0.0, 1.0
+        )*/
     }
     /*
     /**

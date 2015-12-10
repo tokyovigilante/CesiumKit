@@ -269,17 +269,16 @@ class UniformState {
         }
     }
     
-    /*  /**
+    /**
     * The 3x3 rotation matrix of the current view matrix ({@link UniformState#view}).
     * @memberof UniformState.prototype
     * @type {Matrix3}
     */
-    viewRotation : {
-    get : function() {
-    return this._viewRotation;
+    var viewRotation: Matrix3 {
+        return _viewRotation
     }
-    },
     
+    /*
     /**
     * @memberof UniformState.prototype
     * @type {Matrix3}
@@ -581,19 +580,17 @@ class UniformState {
     return this._inverseNormal3D;
     }
     },
-    
+    */
     /**
     * The near distance (<code>x</code>) and the far distance (<code>y</code>) of the frustum defined by the camera.
     * This is the largest possible frustum, not an individual frustum used for multi-frustum rendering.
     * @memberof UniformState.prototype
     * @type {Cartesian2}
     */
-    entireFrustum : {
-    get : function() {
-    return this._entireFrustum;
+    var entireFrustum: Cartesian2 {
+        return _entireFrustum
     }
-    },
-    
+    /*
     /**
     * The near distance (<code>x</code>) and the far distance (<code>y</code>) of the frustum defined by the camera.
     * This is the individual frustum used for multi-frustum rendering.
@@ -713,19 +710,18 @@ class UniformState {
     return this._encodedCameraPositionMC.low;
     }
     },
-    
+    */
     /**
     * A 3x3 matrix that transforms from True Equator Mean Equinox (TEME) axes to the
     * pseudo-fixed axes at the Scene's current time.
     * @memberof UniformState.prototype
     * @type {Matrix3}
     */
-    temeToPseudoFixedMatrix : {
-    get : function() {
-    return this._temeToPseudoFixed;
+    var temeToPseudoFixedMatrix: Matrix3 {
+        return _temeToPseudoFixed
     }
-    },
     
+    /*
     /**
     * Gets the scaling factor for transforming from the canvas
     * pixel space to canvas coordinate space.
@@ -861,8 +857,7 @@ class UniformState {
         updateFrustum(camera.frustum)
         
         self.frameState = frameState
-        // FIXME: _temeToPseudoFixed
-        //_temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
+        _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time!)
     };
     
     func cleanViewport() {

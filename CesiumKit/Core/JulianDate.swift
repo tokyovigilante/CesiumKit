@@ -7,31 +7,8 @@
 //
 
 struct JulianDate {
-   /* /*global define*/
-    define([
-    '../ThirdParty/sprintf',
-    './binarySearch',
-    './defaultValue',
-    './defined',
-    './DeveloperError',
-    './GregorianDate',
-    './isLeapYear',
-    './LeapSecond',
-    './TimeConstants',
-    './TimeStandard'
-    ], function(
-    sprintf,
-    binarySearch,
-    defaultValue,
-    defined,
-    DeveloperError,
-    GregorianDate,
-    isLeapYear,
-    LeapSecond,
-    TimeConstants,
-    TimeStandard) {
-    "use strict";
-    
+
+    /*
     var gregorianDateScratch = new GregorianDate();
     var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var daysInLeapFeburary = 29;
@@ -42,38 +19,39 @@ struct JulianDate {
     
     // we don't really need a leap second instance, anything with a julianDate property will do
     var binarySearchScratchLeapSecond = new LeapSecond();
+    */
     
-    function convertUtcToTai(julianDate) {
-    //Even though julianDate is in UTC, we'll treat it as TAI and
-    //search the leap second table for it.
-    binarySearchScratchLeapSecond.julianDate = julianDate;
-    var leapSeconds = JulianDate.leapSeconds;
-    var index = binarySearch(leapSeconds, binarySearchScratchLeapSecond, compareLeapSecondDates);
-    
-    if (index < 0) {
-    index = ~index;
+    func convertUtcToTai() {
+        //Even though julianDate is in UTC, we'll treat it as TAI and
+        //search the leap second table for it.
+        /*binarySearchScratchLeapSecond.julianDate = julianDate;
+        var leapSeconds = JulianDate.leapSeconds;
+        var index = binarySearch(leapSeconds, binarySearchScratchLeapSecond, compareLeapSecondDates);
+        
+        if (index < 0) {
+            index = ~index;
+        }
+        
+        if (index >= leapSeconds.length) {
+            index = leapSeconds.length - 1;
+        }
+        
+        var offset = leapSeconds[index].offset;
+        if (index > 0) {
+            //Now we have the index of the closest leap second that comes on or after our UTC time.
+            //However, if the difference between the UTC date being converted and the TAI
+            //defined leap second is greater than the offset, we are off by one and need to use
+            //the previous leap second.
+            var difference = JulianDate.secondsDifference(leapSeconds[index].julianDate, julianDate);
+            if (difference > offset) {
+                index--;
+                offset = leapSeconds[index].offset;
+            }
+        }
+        
+        JulianDate.addSeconds(julianDate, offset, julianDate);*/
     }
-    
-    if (index >= leapSeconds.length) {
-    index = leapSeconds.length - 1;
-    }
-    
-    var offset = leapSeconds[index].offset;
-    if (index > 0) {
-    //Now we have the index of the closest leap second that comes on or after our UTC time.
-    //However, if the difference between the UTC date being converted and the TAI
-    //defined leap second is greater than the offset, we are off by one and need to use
-    //the previous leap second.
-    var difference = JulianDate.secondsDifference(leapSeconds[index].julianDate, julianDate);
-    if (difference > offset) {
-    index--;
-    offset = leapSeconds[index].offset;
-    }
-    }
-    
-    JulianDate.addSeconds(julianDate, offset, julianDate);
-    }
-    
+    /*
     function convertTaiToUtc(julianDate, result) {
     binarySearchScratchLeapSecond.julianDate = julianDate;
     var leapSeconds = JulianDate.leapSeconds;
@@ -109,22 +87,24 @@ struct JulianDate {
     //we're converting, so we subtract one to get the correct LeapSecond instance.
     return JulianDate.addSeconds(julianDate, -leapSeconds[--index].offset, result);
     }
+    */
     
-    function setComponents(wholeDays, secondsOfDay, julianDate) {
-    var extraDays = (secondsOfDay / TimeConstants.SECONDS_PER_DAY) | 0;
-    wholeDays += extraDays;
-    secondsOfDay -= TimeConstants.SECONDS_PER_DAY * extraDays;
-    
-    if (secondsOfDay < 0) {
-    wholeDays--;
-    secondsOfDay += TimeConstants.SECONDS_PER_DAY;
+    mutating func setComponents(wholeDays wholeDays: Double, secondsOfDay: Double) {
+        
+        let extraDays = secondsOfDay - (secondsOfDay / TimeConstants.SecondsPerDay).fractionalComponent
+        
+        var wholeDays = wholeDays + extraDays
+        var secondsOfDay = secondsOfDay - TimeConstants.SecondsPerDay * extraDays
+        
+        if secondsOfDay < 0 {
+            wholeDays--
+            secondsOfDay += TimeConstants.SecondsPerDay
+        }
+        
+        _dayNumber = wholeDays
+        _secondsOfDay = secondsOfDay
     }
-    
-    julianDate.dayNumber = wholeDays;
-    julianDate.secondsOfDay = secondsOfDay;
-    return julianDate;
-    }
-    
+    /*
     function computeJulianDateComponents(year, month, day, hour, minute, second, millisecond) {
     // Algorithm from page 604 of the Explanatory Supplement to the
     // Astronomical Almanac (Seidelmann 1992).
@@ -183,34 +163,37 @@ struct JulianDate {
     * @param {Number} secondsOfDay The number of seconds into the current Julian Day Number.  Fractional seconds, negative seconds and seconds greater than a day will be handled correctly.
     * @param {TimeStandard} [timeStandard=TimeStandard.UTC] The time standard in which the first two parameters are defined.
     */
-    var JulianDate = function(julianDayNumber, secondsOfDay, timeStandard) {
-        /**
-        * Gets or sets the number of whole days.
-        * @type {Number}
-        */
-        this.dayNumber = undefined;
-        
-        /**
-        * Gets or sets the number of seconds into the current day.
-        * @type {Number}
-        */
-        this.secondsOfDay = undefined;
-        
-        julianDayNumber = defaultValue(julianDayNumber, 0.0);
-        secondsOfDay = defaultValue(secondsOfDay, 0.0);
-        timeStandard = defaultValue(timeStandard, TimeStandard.UTC);
-        
+    */
+    
+    /**
+    * Gets or sets the number of whole days.
+    * @type {Number}
+    */
+    private var _dayNumber: Double = Double.NaN
+    
+    /**
+    * Gets or sets the number of seconds into the current day.
+    * @type {Number}
+    */
+    private var _secondsOfDay: Double = Double.NaN
+    
+    init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .UTC) {
+
         //If julianDayNumber is fractional, make it an integer and add the number of seconds the fraction represented.
-        var wholeDays = julianDayNumber | 0;
-        secondsOfDay = secondsOfDay + (julianDayNumber - wholeDays) * TimeConstants.SECONDS_PER_DAY;
         
-        setComponents(wholeDays, secondsOfDay, this);
+        let partialDay = julianDayNumber % 1
+        let wholeDays = julianDayNumber - partialDay
         
-        if (timeStandard === TimeStandard.UTC) {
-            convertUtcToTai(this);
+        let secondsOfDay = secondsOfDay + partialDay * TimeConstants.SecondsPerDay
+        
+        setComponents(wholeDays: wholeDays, secondsOfDay: secondsOfDay)
+        
+        if timeStandard == .UTC {
+            //FIXME: UtcToTai
+            convertUtcToTai()
         }
     };
-    
+    /*
     /**
     * Creates a new instance from a JavaScript Date.
     *
