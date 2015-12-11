@@ -42,7 +42,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @type {Matrix3}
     * @default {@link Matrix3.IDENTITY}
     */
-    private (set) var halfAxes = Matrix3.zero()
+    private (set) var halfAxes = Matrix3.zero
     
     /**
     * Computes an instance of an OrientedBoundingBox of the given positions.

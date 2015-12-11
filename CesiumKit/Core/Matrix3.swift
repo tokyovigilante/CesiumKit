@@ -1180,26 +1180,19 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @type {Matrix3}
     * @constant
     */
-    public static func identity() -> Matrix3 {
-        return Matrix3(
+    public static let identity = Matrix3(
             1.0, 0.0, 0.0,
             0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0)
-    }
-
+            0.0, 0.0, 1.0
+    )
+    
     /**
     * An immutable Matrix3 instance initialized to the zero matrix.
     *
     * @type {Matrix3}
     * @constant
     */
-    public static func zero() -> Matrix3 {
-        return Matrix3(
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0
-        )
-    }
+    public static let zero = Matrix3()
     
     /*
     /**

@@ -50,7 +50,7 @@ import Accelerate
 * @see Matrix3
 * @see Packable
 */
-//FIXME: Packable
+
 public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     
     /**
@@ -59,7 +59,7 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     */
     static let packedLength = 16
     
-    var _grid: [Double]// = [Double](count: 16, repeatedValue: 0.0)
+    var _grid: [Double]
     
     private var _floatRepresentation: [Float]
     
@@ -67,7 +67,7 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
         return _floatRepresentation
     }
     
-    private let _floatPackedSize: Int
+    private let _floatPackedSize: Int = packedLength * strideof(Float)
 
     init(
         _ column0Row0: Double = 0.0,
@@ -102,16 +102,15 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
                 column3Row0,
                 column3Row1,
                 column3Row2,
-                column3Row3]
+                column3Row3
+            ]
             _floatRepresentation = _grid.map({ Float($0) })
-            _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     init(grid: [Double]) {
         assert(grid.count == 16, "invalid grid length")
         _grid = grid
         _floatRepresentation = _grid.map({ Float($0) })
-        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     subscript(index: Int) -> Double {
@@ -152,10 +151,6 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     func pack(inout array: [Float], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Matrix4.packedLength, "Array too short")
         memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
-        /*for index in
-            0..<Matrix4.packedLength {
-            array[startingIndex + index] = Float(_grid[index])
-        }*/
     }
 
     /**
@@ -168,47 +163,12 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     static func unpack(array: [Float], startingIndex: Int) -> Matrix4 {
         var result = [Double]()
         
-        for var index = 0; index < Matrix4.packedLength; ++index {
+        for index in 0..<Matrix4.packedLength {
             result[index] = Double(array[index])
         }
         return Matrix4(grid: result)
     }
 /*
-/**
-* Duplicates a Matrix4 instance.
-*
-* @param {Matrix4} matrix The matrix to duplicate.
-* @param {Matrix4} [result] The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter or a new Matrix4 instance if one was not provided. (Returns undefined if matrix is undefined)
-*/
-Matrix4.clone = function(matrix, result) {
-    if (!defined(matrix)) {
-        return undefined;
-    }
-    if (!defined(result)) {
-        return new Matrix4(matrix[0], matrix[4], matrix[8], matrix[12],
-            matrix[1], matrix[5], matrix[9], matrix[13],
-            matrix[2], matrix[6], matrix[10], matrix[14],
-            matrix[3], matrix[7], matrix[11], matrix[15]);
-    }
-    result[0] = matrix[0];
-    result[1] = matrix[1];
-    result[2] = matrix[2];
-    result[3] = matrix[3];
-    result[4] = matrix[4];
-    result[5] = matrix[5];
-    result[6] = matrix[6];
-    result[7] = matrix[7];
-    result[8] = matrix[8];
-    result[9] = matrix[9];
-    result[10] = matrix[10];
-    result[11] = matrix[11];
-    result[12] = matrix[12];
-    result[13] = matrix[13];
-    result[14] = matrix[14];
-    result[15] = matrix[15];
-    return result;
-};
 
 /**
 * Creates a Matrix4 from 16 consecutive elements in an array.
@@ -281,7 +241,6 @@ Matrix4.fromColumnMajorArray = function(values, result) {
         _grid[14] = rowMajorArray[11]
         _grid[15] = rowMajorArray[15]
         _floatRepresentation = _grid.map({ Float($0) })
-        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
 }
 /*
 /**
@@ -835,27 +794,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     func toArray() -> [Float] {
         return _grid.map({ Float($0) })
     }
-    /*func toArray() -> [Float] {
-        let result = [
-            Float(_grid[0]),
-            Float(_grid[1]),
-            Float(_grid[2]),
-            Float(_grid[3]),
-            Float(_grid[4]),
-            Float(_grid[5]),
-            Float(_grid[6]),
-            Float(_grid[7]),
-            Float(_grid[8]),
-            Float(_grid[9]),
-            Float(_grid[10]),
-            Float(_grid[11]),
-            Float(_grid[12]),
-            Float(_grid[13]),
-            Float(_grid[14]),
-            Float(_grid[15]),
-        ]
-        return result
-    }*/
+
 /*
 /**
 * Computes the array index of the element at the provided row and column.
@@ -886,34 +825,33 @@ Matrix4.getElementIndex = function(column, row) {
     return column * 4 + row;
 };
 */
-/**
-* Retrieves a copy of the matrix column at the provided index as a Cartesian4 instance.
-*
-* @param {Matrix4} matrix The matrix to use.
-* @param {Number} index The zero-based index of the column to retrieve.
-* @param {Cartesian4} result The object onto which to store the result.
-* @returns {Cartesian4} The modified result parameter.
-*
-* @exception {DeveloperError} index must be 0, 1, 2, or 3.
-*
-* @example
-* //returns a Cartesian4 instance with values from the specified column
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* //Example 1: Creates an instance of Cartesian
-* var a = Cesium.Matrix4.getColumn(m, 2);
-*
-* @example
-* //Example 2: Sets values for Cartesian instance
-* var a = new Cesium.Cartesian4();
-* Cesium.Matrix4.getColumn(m, 2, a);
-*
-* // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
-*/
-    
+    /**
+    * Retrieves a copy of the matrix column at the provided index as a Cartesian4 instance.
+    *
+    * @param {Matrix4} matrix The matrix to use.
+    * @param {Number} index The zero-based index of the column to retrieve.
+    * @param {Cartesian4} result The object onto which to store the result.
+    * @returns {Cartesian4} The modified result parameter.
+    *
+    * @exception {DeveloperError} index must be 0, 1, 2, or 3.
+    *
+    * @example
+    * //returns a Cartesian4 instance with values from the specified column
+    * // m = [10.0, 11.0, 12.0, 13.0]
+    * //     [14.0, 15.0, 16.0, 17.0]
+    * //     [18.0, 19.0, 20.0, 21.0]
+    * //     [22.0, 23.0, 24.0, 25.0]
+    *
+    * //Example 1: Creates an instance of Cartesian
+    * var a = Cesium.Matrix4.getColumn(m, 2);
+    *
+    * @example
+    * //Example 2: Sets values for Cartesian instance
+    * var a = new Cesium.Cartesian4();
+    * Cesium.Matrix4.getColumn(m, 2, a);
+    *
+    * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
+    */
     func getColumn ( index: Int) -> Cartesian4 {
         if index < 0 || index > 3 {
             fatalError("index must be 0, 1, 2, or 3.")
@@ -1112,14 +1050,14 @@ Matrix4.getMaximumScale = function(matrix) {
     return Cartesian3.maximumComponent(scratchScale);
 };
 */
-/**
-* Computes the product of two matrices.
-*
-* @param {Matrix4} left The first matrix.
-* @param {Matrix4} right The second matrix.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*/
+    /**
+    * Computes the product of two matrices.
+    *
+    * @param {Matrix4} left The first matrix.
+    * @param {Matrix4} right The second matrix.
+    * @param {Matrix4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    */
     func multiply (other: Matrix4) -> Matrix4 {
         
         let left0: Double = _grid[0]
@@ -1845,7 +1783,7 @@ Matrix4.abs = function(matrix, result) {
 
     private let scratchMatrix3Zero = Matrix3()
     private let scratchExpectedBottomRow = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
-    
+
     /**
     * Computes the inverse of the provided matrix using Cramers Rule.
     * If the determinant is zero, the matrix can not be inverted, and an exception is thrown.
