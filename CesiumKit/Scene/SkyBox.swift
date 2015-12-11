@@ -142,7 +142,7 @@ public class SkyBox {
         self.show = show
         _cubemap = nil
         _command = DrawCommand(
-            modelMatrix: Matrix4.identity()
+            modelMatrix: Matrix4.identity
         )
         _command.owner = self
     }

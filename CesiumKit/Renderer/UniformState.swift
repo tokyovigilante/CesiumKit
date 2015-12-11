@@ -21,14 +21,14 @@ class UniformState {
     private var _viewport = BoundingRectangle()
     private var _viewportCartesian4 = Cartesian4()
     private var _viewportDirty = false
-    private var _viewportOrthographicMatrix = Matrix4.identity()
-    private var _viewportTransformation = Matrix4.identity()
+    private var _viewportOrthographicMatrix = Matrix4.identity
+    private var _viewportTransformation = Matrix4.identity
     
-    private var _model = Matrix4.identity()
-    private var _view = Matrix4.identity()
-    private var _inverseView = Matrix4.identity()
-    private var _projection = Matrix4.identity()
-    private var _infiniteProjection = Matrix4.identity()
+    private var _model = Matrix4.identity
+    private var _view = Matrix4.identity
+    private var _inverseView = Matrix4.identity
+    private var _projection = Matrix4.identity
+    private var _infiniteProjection = Matrix4.identity
     
     private var _entireFrustum = Cartesian2()
     private var _currentFrustum = Cartesian2()
@@ -41,7 +41,7 @@ class UniformState {
     */
     private (set) var frameState = FrameState()
     
-    private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity())
+    private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity)
     
     // Derived members
     private var _view3DDirty = true

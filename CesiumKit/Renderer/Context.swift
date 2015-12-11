@@ -372,7 +372,7 @@ class Context {
         assert(count == nil || count! >= 0, "drawCommand.count must be omitted or greater than or equal to zero")
         
         
-        uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity()
+        uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity
         
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
         let bufferParams = renderPipeline.setUniforms(drawCommand, device: device, uniformState: uniformState)

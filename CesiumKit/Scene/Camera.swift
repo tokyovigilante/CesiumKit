@@ -256,10 +256,10 @@ public class Camera: DRU {
         return _transform
     }
     
-    private var _transform = Matrix4.identity()
-    private var _invTransform = Matrix4.identity()
-    private var _actualTransform = Matrix4.identity()
-    private var _actualInvTransform = Matrix4.identity()
+    private var _transform = Matrix4.identity
+    private var _invTransform = Matrix4.identity
+    private var _actualTransform = Matrix4.identity
+    private var _actualInvTransform = Matrix4.identity
     private var _transformChanged = false
     
     
@@ -646,7 +646,7 @@ public class Camera: DRU {
             _invTransform = _transform.inverseTransformation()
             
             if _mode == .ColumbusView || _mode == .Scene2D {
-                if _transform.equals(Matrix4.identity()) {
+                if _transform.equals(Matrix4.identity) {
                     _actualTransform = transform2D
                 } else if _mode == .ColumbusView {
                     assert(false, "unimplemented")
@@ -858,8 +858,7 @@ public class Camera: DRU {
     {
         
         let currentTransform = transform
-        _setTransform(Matrix4.identity())
-        
+        _setTransform(Matrix4.identity)
         var cartesian: Cartesian3! = cartesianIn
         var cartographic: Cartographic! = cartographicIn
         
@@ -899,7 +898,7 @@ public class Camera: DRU {
         var cartographic: Cartographic! = cartographicIn
         
         let currentTransform = transform
-        _setTransform(Matrix4.identity())
+        _setTransform(Matrix4.identity)
         
         if cartesian != nil && cartesian! != positionWC {
             cartographic = ellipsoid.cartesianToCartographic(cartesian)
@@ -1687,7 +1686,7 @@ public class Camera: DRU {
             
             up = up.normalize()
             
-            _setTransform(Matrix4.identity())
+            _setTransform(Matrix4.identity)
             direction = Cartesian3.unitZ().negate()
             right = direction.cross(self.up).normalize()
             

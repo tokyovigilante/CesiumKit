@@ -438,8 +438,8 @@ public class ScreenSpaceCameraController {
             distance = distanceMeasure - maxHeight
         }
         
-        var camera = _scene.camera
-        var mode = _scene.mode
+        let camera = _scene.camera
+        let mode = _scene.mode
         
         let pickedPosition: Cartesian3?
         if _globe != nil {
@@ -469,13 +469,13 @@ public class ScreenSpaceCameraController {
         
         if !sameStartPosition || rotatingZoom {
             if mode == SceneMode.Scene2D {
-                var worldPosition = _zoomWorldPosition
-                var endPosition = camera.position
+                let worldPosition = _zoomWorldPosition
+                let endPosition = camera.position
                 
                 if !(worldPosition == endPosition) {
-                    var direction = worldPosition.subtract(endPosition).normalize()
+                    let direction = worldPosition.subtract(endPosition).normalize()
                     
-                    var d = worldPosition.distance(endPosition) * distance / (camera.getMagnitude() * 0.5)
+                    let d = worldPosition.distance(endPosition) * distance / (camera.getMagnitude() * 0.5)
                     camera.move(direction, amount: d * 0.5)
                 }
             } else if mode == .Scene3D {
@@ -1134,7 +1134,7 @@ public class ScreenSpaceCameraController {
     func spin3D(startPosition: Cartesian2, movement: MouseMovement) {
         let camera = _scene.camera
         
-        if camera.transform != Matrix4.identity() {
+        if camera.transform != Matrix4.identity {
             rotate3D(startPosition, movement: movement)
             return
         }
@@ -1259,10 +1259,9 @@ public class ScreenSpaceCameraController {
     func pan3D(startPosition: Cartesian2, movement: MouseMovement, ellipsoid: Ellipsoid) {
         
         let camera = _scene.camera
-        let cameraPosMag = camera.position.magnitude()
         
-        var startMousePosition = movement.startPosition
-        var endMousePosition = movement.endPosition
+        let startMousePosition = movement.startPosition
+        let endMousePosition = movement.endPosition
         
         var p0: Cartesian3! = camera.pickEllipsoid(startMousePosition, ellipsoid: ellipsoid)
         var p1: Cartesian3! = camera.pickEllipsoid(endMousePosition, ellipsoid: ellipsoid)
@@ -1724,10 +1723,10 @@ public class ScreenSpaceCameraController {
         
         var transform: Matrix4? = nil
         var mag: Double = 0.0
-        if (camera.transform != Matrix4.identity()) {
+        if (camera.transform != Matrix4.identity) {
             transform = camera.transform
             mag = camera.position.magnitude()
-            camera._setTransform(Matrix4.identity())
+            camera._setTransform(Matrix4.identity)
         }
         
         var cartographic: Cartographic
@@ -1772,7 +1771,7 @@ public class ScreenSpaceCameraController {
     * @private
     */
     func update () {
-        if _scene.camera.transform != Matrix4.identity() {
+        if _scene.camera.transform != Matrix4.identity {
             _globe = nil
             _ellipsoid = Ellipsoid.unitSphere()
         } else {

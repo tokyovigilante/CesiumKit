@@ -1341,7 +1341,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             
             if globeDepth != nil && useGlobeDepthFramebuffer {
                 // PERFORMANCE_IDEA: Use MRT to avoid the extra copy.
-                let pickDepth = getPickDepth(index)
+                //let pickDepth = getPickDepth(index)
                 //pickDepth.update(context, depthTexture: globeDepth!.framebuffer!.depthStencilTexture!)
                 //pickDepth.executeCopyDepth(context, passState)
             }
@@ -1697,10 +1697,10 @@ Scene.prototype.pick = function(windowPosition) {
     func pickPosition (windowPosition: Cartesian2) -> Cartesian3? {
         
         assert(_globeDepth != nil, "Picking from the depth buffer is not supported. Check pickPositionSupported.")
-        return Cartesian3()
+        //return Cartesian3()
             
-        //assertionFailure("Not implemented")
-        let uniformState = context.uniformState
+        assertionFailure("Not implemented")
+        //let uniformState = context.uniformState
         /*
         var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
         drawingBufferPosition.y = this.drawingBufferHeight - drawingBufferPosition.y;

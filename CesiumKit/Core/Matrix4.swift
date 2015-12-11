@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import simd
+import Accelerate
 
 /**
 * A 4x4 matrix, indexable as a column-major order array.
@@ -1861,23 +1863,6 @@ Matrix4.abs = function(matrix, result) {
         // when a model's node has a [0, 0, 0] scale.
         if self.rotation().equalsEpsilon(scratchMatrix3Zero, epsilon: Math.Epsilon7) &&
             self.row(3) == scratchExpectedBottomRow {
-                /*result[0] = 0.0;
-                result[1] = 0.0;
-                result[2] = 0.0;
-                result[3] = 0.0;
-                result[4] = 0.0;
-                result[5] = 0.0;
-                result[6] = 0.0;
-                result[7] = 0.0;
-                result[8] = 0.0;
-                result[9] = 0.0;
-                result[10] = 0.0;
-                result[11] = 0.0;
-                result[12] = -matrix[12];
-                result[13] = -matrix[13];
-                result[14] = -matrix[14];
-                result[15] = 1.0;
-                return result;*/
                 return Matrix4(
                     0.0, 0.0, 0.0, -_grid[12],
                     0.0, 0.0, 0.0, -_grid[13],
@@ -2023,21 +2008,20 @@ Matrix4.abs = function(matrix, result) {
     * @type {Matrix4}
     * @constant
     */
-    static func identity() -> Matrix4 {
-        return Matrix4(
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0)
-    }
+    static let identity = Matrix4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    )
     
-    static func zero() -> Matrix4 {
-        return Matrix4(
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0)
-    }
+    
+    static let zero = Matrix4(
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0
+    )
 
 /*
 /**
