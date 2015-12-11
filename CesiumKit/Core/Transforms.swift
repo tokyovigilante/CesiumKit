@@ -302,15 +302,26 @@ struct Transforms {
     *    camera.lookAtTransform(transform, offset);
     * });
     */
-    static func computeTemeToPseudoFixedMatrix (date: JulianDate) -> Matrix3 {
+    
+    private let  _gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841
+    private let  _gmstConstant1 = 8640184.812866
+    private let  _gmstConstant2 = 0.093104
+    private let  _gmstConstant3 = -6.2E-6
+    private let  _rateCoef = 1.1772758384668e-19
+    private let  _wgs84WRPrecessing = 7.2921158553E-5
+    //private let  _twoPiOverSecondsInDay = CesiumMath.TWO_PI / 86400.0
+    
+    
+    static func computeTemeToPseudoFixedMatrix (date: NSDate) -> Matrix3 {
         
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
         
-        /*dateInUtc = JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
-        var utcDayNumber = dateInUtc.dayNumber;
-        var utcSecondsIntoDay = dateInUtc.secondsOfDay;
+        let dateInUtc = date//= JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
+        NSDateComponents
+        let utcDayNumber = dateInUtc//.
+        /*let utcSecondsIntoDay = dateInUtc.secondsOfDay;
         
         var t;
         var diffDays = utcDayNumber - 2451545;
@@ -327,13 +338,8 @@ struct Transforms {
         var gha = angle + (ratio * secondsSinceMidnight);
         var cosGha = Math.cos(gha);
         var sinGha = Math.sin(gha);*/
-        return Matrix3(
-            0.0, 0.0, 0.0,
-            -0.0, 0.0, 0.0,
-            0.0,    0.0, 1.0
-        )
 
-        /*return Matrix3(
+        return Matrix3()/*
             cosGha, sinGha, 0.0,
             -sinGha, cosGha, 0.0,
             0.0,    0.0, 1.0

@@ -24,13 +24,13 @@ Describes Globe object options
 */
 public struct CesiumOptions {
     
-    public var clock = Clock()
-    public var imageryProvider: ImageryProvider? = nil
-    var terrainProvider: TerrainProvider = EllipsoidTerrainProvider()
-    public var skyBox: SkyBox? = nil
+    public var clock: Clock
+    public var imageryProvider: ImageryProvider?
+    public var terrain: Bool
+    public var skyBox: Bool
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
-    public var mapProjection: MapProjection = GeographicProjection()
+    public var mapProjection: MapProjection
     public var showRenderLoopErrors = true
     
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
@@ -41,6 +41,8 @@ public struct CesiumOptions {
     public init(
         clock: Clock = Clock(),
         imageryProvider: ImageryProvider? = nil,
+        terrain: Bool = true,
+        skyBox: Bool = true,
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
         mapProjection: MapProjection = GeographicProjection(),
@@ -49,8 +51,10 @@ public struct CesiumOptions {
         resolutionScale: Double = 0.5) {
             self.clock = clock
             self.imageryProvider = imageryProvider
+            self.terrain = terrain
+            self.skyBox = skyBox
             self.sceneMode = sceneMode
-            self.scene3DOnly = false
+            self.scene3DOnly = scene3DOnly
             self.mapProjection = mapProjection
             self.showRenderLoopErrors = showRenderLoopErrors
     }
@@ -235,8 +239,8 @@ public class CesiumGlobe {
             creditContainer : creditContainer,
             mapProjection : options.mapProjection,*/
             useOIT: false,
-            scene3DOnly: true// FIXME: compiler options.scene3DOnly ?? false
-            /*            }*/)
+            scene3DOnly: options.scene3DOnly
+        )
         scene.globe = globe
         scene.camera.constrainedAxis = Cartesian3.unitZ()
         scene.backgroundColor = Cartesian4(fromRed: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
@@ -246,10 +250,8 @@ public class CesiumGlobe {
         var cesiumCredit = new Credit('Cesium', cesiumLogoData, 'http://cesiumjs.org/');
         creditDisplay.addDefaultCredit(cesiumCredit);*/
 
-        
-        var skyBox = options.skyBox
-        if skyBox == nil {
-            skyBox = SkyBox(
+        if options.skyBox {
+            scene.skyBox = SkyBox(
                 sources: [
                     SkyBox.getDefaultSkyBoxUrl("px"),
                     SkyBox.getDefaultSkyBoxUrl("mx"),
@@ -261,7 +263,6 @@ public class CesiumGlobe {
             )
         }
         
-        scene.skyBox = skyBox
         // FIXME: UFOs disabled
         /*scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
         scene.sun = new Sun();
@@ -272,7 +273,11 @@ public class CesiumGlobe {
         }
         
         //Set the terrain provider
-        scene.terrainProvider = options.terrainProvider
+        if options.terrain {
+            
+        } else {
+            scene.terrainProvider = EllipsoidTerrainProvider()
+        }
         
         //self.screenSpaceEventHandler = ScreenSpaceEventHandler(view: view)
         self.sceneMode = options.sceneMode
