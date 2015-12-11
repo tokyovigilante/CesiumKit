@@ -212,14 +212,14 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     return Matrix4.clone(values, result);
 };
 */
-/**
-* Computes a Matrix4 instance from a row-major order array.
-* The resulting matrix will be in column-major order.
-*
-* @param {Number[]} values The row-major order array.
-* @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
-* @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
-*/
+    /**
+    * Computes a Matrix4 instance from a row-major order array.
+    * The resulting matrix will be in column-major order.
+    *
+    * @param {Number[]} values The row-major order array.
+    * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
+    * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
+    */
     init(rowMajorArray: [Double]) {
         assert(rowMajorArray.count == 16, "Invalid source array")
         _grid = [Double](count: 16, repeatedValue: 0.0)
@@ -241,7 +241,7 @@ Matrix4.fromColumnMajorArray = function(values, result) {
         _grid[14] = rowMajorArray[11]
         _grid[15] = rowMajorArray[15]
         _floatRepresentation = _grid.map({ Float($0) })
-}
+    }
 /*
 /**
 * Computes a Matrix4 instance from a Matrix3 representing the rotation
@@ -687,14 +687,13 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         let column2Row0 = (right + left) / (right - left)
         let column2Row1 = (top + bottom) / (top - bottom)
         let column2Row2 = far / (near - far) // Q
-        let column2Row3 = -1.0
         let column3Row2 = near * far / (near - far)
                 
         return Matrix4(
             column0Row0, 0.0, column2Row0, 0.0,
             0.0, column1Row1, column2Row1, 0.0,
             0.0, 0.0, column2Row2, column3Row2,
-            0.0, 0.0, column2Row3, 0.0)
+            0.0, 0.0, -1.0, 0.0)
     }
     
     /**

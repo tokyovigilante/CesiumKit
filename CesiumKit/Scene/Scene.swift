@@ -673,7 +673,7 @@ public class Scene {
         updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
         
         // give frameState, camera, and screen space camera controller initial state before rendering
-        updateFrameState(0, time: JulianDate())
+        updateFrameState(0, time: NSDate())
         initializeFrame()
     }
 
@@ -711,7 +711,7 @@ public class Scene {
         passes.pick = false
     }
 
-    func updateFrameState(frameNumber: Int, time: JulianDate) {
+    func updateFrameState(frameNumber: Int, time: NSDate) {
 
         frameState.mode = mode
         frameState.morphTime = morphTime
@@ -1438,7 +1438,7 @@ function callAfterRenderFunctions(frameState) {
     }
 
     
-    func render(time: JulianDate) {
+    func render(time: NSDate) {
     
         /*if (!defined(time)) {
         time = JulianDate.now();

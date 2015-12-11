@@ -391,7 +391,7 @@ class Context {
             
             commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
             
-            for (i, attribute) in va.attributes.enumerate() {
+            for attribute in va.attributes {
                 if let buffer = attribute.buffer {
                     commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: attribute.bufferIndex)
                 }
@@ -403,6 +403,7 @@ class Context {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
                 commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)
             }
+            
             commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount

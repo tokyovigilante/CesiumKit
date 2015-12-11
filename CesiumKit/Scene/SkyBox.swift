@@ -111,7 +111,7 @@ struct SkyBoxImageSources: SkyBoxSources {
  * });
  */
 
-public class SkyBox {
+class SkyBox {
     
     var sources: CubeMapSources {
         didSet {
@@ -228,7 +228,7 @@ public class SkyBox {
         return _command
     }
         
-    public class func getDefaultSkyBoxUrl (face: String) -> String {
+    class func getDefaultSkyBoxUrl (face: String) -> String {
         return "tycho2t3_80_" + face
     }
 }

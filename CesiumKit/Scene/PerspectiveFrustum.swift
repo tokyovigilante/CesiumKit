@@ -213,7 +213,6 @@ class PerspectiveFrustum: Frustum {
         if let result = result as? PerspectiveFrustum {
             result._offCenterFrustum = _offCenterFrustum.clone(PerspectiveOffCenterFrustum()) as! PerspectiveOffCenterFrustum
         }
-
         return result
     }
     

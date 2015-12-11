@@ -34,7 +34,12 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         
         view.layer!.contentsScale = NSScreen.mainScreen()?.backingScaleFactor ?? 1.0
 
-        let options = CesiumOptions(imageryProvider: nil)
+        let options = CesiumOptions(
+            clock: Clock(clockStep: .SystemClock),
+            imageryProvider: nil,
+            terrain: true,
+            skyBox: true
+        )
         
         _globe = CesiumGlobe(view: _metalView, options: options)
         

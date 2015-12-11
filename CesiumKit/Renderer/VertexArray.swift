@@ -10,8 +10,6 @@ import Metal
 
 class VertexArray {
     
-    //let vertexBuffers: [Buffer]
-    
     var attributes: [VertexAttributes]
     
     var vertexCount: Int
@@ -150,18 +148,19 @@ class VertexArray {
             var vaCount = 0
             for geometryAttribute in geometry.attributes {
                 
-                /*var componentDatatype = geometryAttribute.componentDatatype
-                if componentDatatype == .Float64 {
-                    componentDatatype = .Float32
-                }*/
                 if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
                     geometryAttribute.componentDatatype = ComponentDatatype.Float32
-                    var doubleArray = [Double](count: geometryAttribute.vertexCount, repeatedValue: 0.0)
-                    let geometryArraySize = geometryAttribute.vertexArraySize
-                    doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
-                        memcpy(pointer.baseAddress, geometryAttribute.values!.data, geometryArraySize)
-                    })
-                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                    if let values = geometryAttribute.values {
+                        
+                        var doubleArray = [Double](count: values.count, repeatedValue: 0.0)
+                        let geometryArraySize = geometryAttribute.vertexArraySize
+                        
+                        doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
+                            memcpy(pointer.baseAddress, values.data, geometryArraySize)
+                        })
+                        geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                    }
+
                 }
                 
                 let vertexBuffer = geometryAttribute.values
