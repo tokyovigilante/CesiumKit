@@ -142,7 +142,7 @@ class SkyBox {
         self.show = show
         _cubemap = nil
         _command = DrawCommand(
-            modelMatrix: Matrix4.identity
+            modelMatrix: Matrix4.identity//.setTranslation(Cartesian3(x: 0.0, y: 0.0, z: 0.5))
         )
         _command.owner = self
     }
@@ -194,11 +194,16 @@ class SkyBox {
             uniformMap.cubemap = _cubemap
             _command.uniformMap = uniformMap
             
+
             let geometry = BoxGeometry(
                 fromDimensions: Cartesian3(x: 2.0, y: 2.0, z: 2.0),
                 vertexFormat : VertexFormat.PositionOnly()
-            ).createGeometry(context)
-            
+                ).createGeometry(context)
+            /*let geometry = BoxGeometry(
+                minimum: Cartesian3(x: -1.0, y: -1.0, z: 0.0),
+                maximum: Cartesian3(x: 1.0, y: 1.0, z: 1.0),
+                vertexFormat: VertexFormat.PositionOnly()
+                ).createGeometry(context)*/
             
             let attributeLocations = GeometryPipeline.createAttributeLocations(geometry)
             
@@ -217,10 +222,11 @@ class SkyBox {
             )
                 //attributeLocations : attributeLocations
             
-            //command.renderState = RenderState.fromCache({
-              //  blending : BlendingState.ALPHA_BLEND
-            }
-    
+            _command.renderState = RenderState(
+                device: context.device
+                //  blending : BlendingState.ALPHA_BLEND
+            )
+        }
         if _cubemap == nil {
             return nil
         }

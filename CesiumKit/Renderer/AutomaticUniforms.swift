@@ -18,7 +18,7 @@ struct AutomaticUniform {
     let getValue: (uniformState: UniformState) -> [Float]
     
     func declaration (name: String) -> String {
-        var declaration = "uniform \(datatype.declarationString()) \(name)"
+        var declaration = "uniform \(datatype.declarationString) \(name)"
         
         if size == 1 {
             declaration += ";"

@@ -7,6 +7,7 @@
 //
 
 import GLSLOptimizer
+import simd
 
 enum UniformDataType: UInt {
     
@@ -26,9 +27,9 @@ enum UniformDataType: UInt {
     FloatMatrix3 = 35675, // GLenum(GL_FLOAT_MAT3)
     FloatMatrix4 = 35676, // GLenum(GL_FLOAT_MAT4)
     Sampler2D = 35678, // GLenum(GL_SAMPLER_2D)
-    SamplerCube = 35680 // GLenum(GL_SAMPLER_CUBE
+    SamplerCube = 35680 // GLenum(GL_SAMPLER_CUBE)
     
-    func declarationString() -> String {
+    var declarationString: String {
         switch self {
         case .FloatVec1:
             return "float"
@@ -67,7 +68,7 @@ enum UniformDataType: UInt {
         }
     }
     
-    func elementCount () -> Int {
+    var elementCount: Int {
         switch self {
         case .FloatVec1:
             return 1
@@ -105,6 +106,75 @@ enum UniformDataType: UInt {
             return 1
         }
     }
+
+    var alignment: Int {
+        switch self {
+        case .FloatVec1:
+            return 4
+        case .FloatVec2:
+            return 8
+        case .FloatVec3:
+            return 16
+        case .FloatVec4:
+            return 16
+        case .IntVec1:
+            return 4
+        case .IntVec2:
+            return 8
+        case .IntVec3:
+            return 16
+        case .IntVec4:
+            return 16
+        case .BoolVec1:
+            return 1
+        case .BoolVec2:
+            return 2
+        case .BoolVec3:
+            return 4
+        case .BoolVec4:
+            return 4
+        case .FloatMatrix2:
+            return 8
+        case .FloatMatrix3:
+            return 16
+        case .FloatMatrix4:
+            return 16
+        default:
+            assertionFailure("not valid uniform type")
+            return 0
+        }
+    }
+    
+    var elementStride: Int {
+        switch self {
+        case .FloatVec1:
+            return strideof(Float)
+        case .FloatVec2:
+            return strideof(float2)
+        case .FloatVec3:
+            return strideof(float3)
+        case .FloatVec4:
+            return strideof(float4)
+        case .IntVec1:
+            return strideof(Int32)
+        case .IntVec2:
+            return strideof(int2)
+        case .IntVec3:
+            return strideof(int3)
+        case .IntVec4:
+            return strideof(int4)
+        case .FloatMatrix2:
+            return strideof(float2x2)
+        case .FloatMatrix3:
+            return strideof(float3x3)
+        case .FloatMatrix4:
+            return strideof(float4x4)
+        default:
+            assertionFailure("invalid element")
+            return 0
+        }
+    }
+    
 }
 
 enum UniformType {
@@ -116,10 +186,14 @@ enum UniformType {
 class Uniform {
     
     private let _desc: GLSLShaderVariableDescription
+    
+    let dataType: UniformDataType
 
-    var type: UniformType
+    let type: UniformType
 
     let elementCount: Int
+    
+    var offset: Int = -1
 
     var name: String {
         return _desc.name
@@ -137,14 +211,15 @@ class Uniform {
         return _desc.arraySize == -1
     }
     
-    var datatype: GLSLOptBasicType {
+    var basicType: GLSLOptBasicType {
         return self._desc.type
     }
     
-    init (desc: GLSLShaderVariableDescription, type: UniformType) {
+    init (desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
         _desc = desc
         self.type = type
         elementCount = Int(desc.elementCount())
+        self.dataType = dataType
     }
     
     func setValues(newValues: [Any]) {
@@ -156,23 +231,79 @@ class Uniform {
     }
     
     static func create(desc desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+        
         switch desc.type {
         case .Float:
-            return UniformFloat(desc: desc, type: type)
+            let dataType = inferDataTypeFromGLSLDescription(desc)
+            return UniformFloat(desc: desc, type: type, dataType: dataType)
             /*case Int // kGlslTypeInt,
             return UniformFloat(variableDescription: variableDescription)
             case Bool // kGlslTypeBool,
             return UniformBool(variableDescription: variableDescription)*/
         case .Tex2D: // kGlslTypeTex2D,
-            return UniformSampler(desc: desc, type: type)
-        case .Tex3D: // kGlslTypeTex3D,
-            return UniformSampler(desc: desc, type: type)
+            return UniformSampler(desc: desc, type: type, dataType: .Sampler2D)
+        //case .Tex3D: // kGlslTypeTex3D,
+          //  return UniformSampler(desc: desc, type: type, dataType: .Sampler3D)
         case .TexCube: // kGlslTypeTexCube,
-            return UniformSampler(desc: desc, type: type)
+            return UniformSampler(desc: desc, type: type, dataType: .SamplerCube)
         default:
             assertionFailure("Unimplemented")
-            return UniformFloat(desc: desc, type: type)
+            return UniformFloat(desc: desc, type: type, dataType: .FloatVec1)
         }
+    }
+    
+    static func inferDataTypeFromGLSLDescription (desc: GLSLShaderVariableDescription) -> UniformDataType {
+        
+        if desc.matSize == 1 { //vector
+            switch desc.vecSize {
+            case 1:
+                if desc.type == .Float { return .FloatVec1 }
+                if desc.type == .Int { return .IntVec1 }
+                if desc.type == .Bool { return .BoolVec1 }
+            case 2:
+                if desc.type == .Float { return .FloatVec2 }
+                if desc.type == .Int { return .IntVec2 }
+                if desc.type == .Bool { return .BoolVec2 }
+            case 3:
+                if desc.type == .Float { return .FloatVec3 }
+                if desc.type == .Int { return .IntVec3 }
+                if desc.type == .Bool { return .BoolVec3 }
+            case 4:
+                if desc.type == .Float { return .FloatVec4 }
+                if desc.type == .Int { return .IntVec4 }
+                if desc.type == .Bool { return .BoolVec4 }
+            default:
+                assertionFailure("unknown uniform type")
+            }
+        }
+        if desc.matSize == 2 { //Matrix2
+            switch desc.vecSize {
+            case 2:
+                if desc.type == .Float { return .FloatMatrix2 }
+            default:
+                assertionFailure("unknown uniform type")
+            }
+        }
+        if desc.matSize == 3 { // Matrix3
+            switch desc.vecSize {
+            case 3:
+                if desc.type == .Float { return .FloatMatrix3 }
+            default:
+                assertionFailure("unknown uniform type")
+            }
+        }
+        if desc.matSize == 4 { // Matrix4
+            switch desc.vecSize {
+            case 4:
+                if desc.type == .Float { return .FloatMatrix4 }
+
+            default:
+                assertionFailure("unknown uniform type")
+            }
+        }
+        assertionFailure("unknown uniform type")
+        return .FloatVec1
+        
     }
     
 }
@@ -200,12 +331,12 @@ class UniformFloat: Uniform {
         return false
     }
     
-    override init(desc: GLSLShaderVariableDescription, type: UniformType) {
+    override init(desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
         
         _values = [Float](count: Int(desc.elementCount()), repeatedValue: 0.0)
         _newValues = _values
         
-        super.init(desc: desc, type: type)
+        super.init(desc: desc, type: type, dataType: dataType)
     }
     
 }
