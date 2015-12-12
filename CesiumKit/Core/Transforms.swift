@@ -280,7 +280,7 @@ struct Transforms {
     private static let _gmstConstant3 = -6.2E-6
     private static let _rateCoef = 1.1772758384668e-19
     private static let _wgs84WRPrecessing = 7.2921158553E-5
-    private static let  _twoPiOverSecondsInDay = M_2_PI / 86400.0
+    private static let  _twoPiOverSecondsInDay = Math.TwoPi / 86400.0
     
     /**
     * Computes a rotation matrix to transform a point or vector from True Equator Mean Equinox (TEME) axes to the
@@ -307,10 +307,10 @@ struct Transforms {
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
         
-        let dateInUtc = date//= JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
+        let dateInUtc = date.utcDateForTAIOffsetDate()
         
         let utcComponents = dateInUtc.computeJulianDateComponents()
-        let utcDayNumber = utcComponents.dayNumber
+        let utcDayNumber = Double(utcComponents.dayNumber)
         let utcSecondsIntoDay = utcComponents.secondsOfDay
         
         let t: Double
@@ -322,19 +322,20 @@ struct Transforms {
         }
         
         let gmst0 = _gmstConstant0 + t * (_gmstConstant1 + t * (_gmstConstant2 + t * _gmstConstant3))
-        var angle = (gmst0 * twoPiOverSecondsInDay) % M_2_PI
-        var ratio = wgs84WRPrecessing + rateCoef * (utcDayNumber - 2451545.5);
-        var secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SECONDS_PER_DAY * 0.5) % TimeConstants.SECONDS_PER_DAY;
-        var gha = angle + (ratio * secondsSinceMidnight);
-        var cosGha = Math.cos(gha);
-        var sinGha = Math.sin(gha);
-
+        let angle = (gmst0 * _twoPiOverSecondsInDay) % Math.TwoPi
+        let ratio = _wgs84WRPrecessing + _rateCoef * (utcDayNumber - 2451545.5)
+        let secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SecondsPerDay * 0.5) % TimeConstants.SecondsPerDay
+        let gha = angle + (ratio * secondsSinceMidnight)
+        let cosGha = cos(gha)
+        let sinGha = sin(gha)
+        
         return Matrix3(
             cosGha, sinGha, 0.0,
             -sinGha, cosGha, 0.0,
             0.0,    0.0, 1.0
-        )*/
+        )
     }
+    
     /*
     /**
     * The source of IAU 2006 XYS data, used for computing the transformation between the
