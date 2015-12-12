@@ -198,7 +198,7 @@ struct RenderState/*: Printable*/ {
     init(
         device: MTLDevice,
         windingOrder: WindingOrder = WindingOrder.CounterClockwise,
-        cullFace: CullFace = .Back,
+        cullFace: CullFace = .None, // default cull disabled
         polygonOffset: PolygonOffset = PolygonOffset(),
         lineWidth: Double = 1.0,
         scissorTest: ScissorTest = ScissorTest(),
@@ -411,8 +411,7 @@ struct RenderState/*: Printable*/ {
     }
     
     func applyCullFace(encoder: MTLRenderCommandEncoder) {
-        //encoder.setCullMode(cullFace.toMetal())
-        encoder.setCullMode(.None)
+        encoder.setCullMode(cullFace.toMetal())
     }
     /*
     func applyLineWidth() {

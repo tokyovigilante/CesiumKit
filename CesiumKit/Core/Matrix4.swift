@@ -70,22 +70,10 @@ public struct Matrix4: Packable, Equatable, CustomStringConvertible {
     private let _floatPackedSize: Int = packedLength * strideof(Float)
 
     init(
-        _ column0Row0: Double = 0.0,
-        _ column1Row0: Double = 0.0,
-        _ column2Row0: Double = 0.0,
-        _ column3Row0: Double = 0.0,
-        _ column0Row1: Double = 0.0,
-        _ column1Row1: Double = 0.0,
-        _ column2Row1: Double = 0.0,
-        _ column3Row1: Double = 0.0,
-        _ column0Row2: Double = 0.0,
-        _ column1Row2: Double = 0.0,
-        _ column2Row2: Double = 0.0,
-        _ column3Row2: Double = 0.0,
-        _ column0Row3: Double = 0.0,
-        _ column1Row3: Double = 0.0,
-        _ column2Row3: Double = 0.0,
-        _ column3Row3: Double = 0.0) {
+        _ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0, _ column3Row0: Double = 0.0,
+        _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0, _ column3Row1: Double = 0.0,
+        _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
+        _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
             _grid = [
                 column0Row0,
                 column0Row1,
