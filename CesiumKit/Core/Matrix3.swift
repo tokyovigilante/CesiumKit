@@ -47,13 +47,13 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0,
         _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0) {
             _grid[0] = column0Row0
-            _grid[1] = column1Row0
-            _grid[2] = column2Row0
-            _grid[3] = column0Row1
+            _grid[1] = column0Row1
+            _grid[2] = column0Row2
+            _grid[3] = column1Row0
             _grid[4] = column1Row1
-            _grid[5] = column2Row1
-            _grid[6] = column0Row2
-            _grid[7] = column1Row2
+            _grid[5] = column1Row2
+            _grid[6] = column2Row0
+            _grid[7] = column2Row1
             _grid[8] = column2Row2
     }
     

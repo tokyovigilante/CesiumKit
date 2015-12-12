@@ -858,7 +858,7 @@ class UniformState {
         
         self.frameState = frameState
         _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time!)
-    };
+    }
     
     func cleanViewport() {
         if _viewportDirty {
