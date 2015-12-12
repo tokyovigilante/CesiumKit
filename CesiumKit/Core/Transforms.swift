@@ -272,17 +272,16 @@ struct Transforms {
     return Quaternion.fromRotationMatrix(rotation, result);
     };
     
-    
-    var gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841;
-    var gmstConstant1 = 8640184.812866;
-    var gmstConstant2 = 0.093104;
-    var gmstConstant3 = -6.2E-6;
-    var rateCoef = 1.1772758384668e-19;
-    var wgs84WRPrecessing = 7.2921158553E-5;
-    var twoPiOverSecondsInDay = CesiumMath.TWO_PI / 86400.0;
-    var dateInUtc = new JulianDate();
-    
     */
+    
+    private static let _gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841
+    private static let _gmstConstant1 = 8640184.812866
+    private static let _gmstConstant2 = 0.093104
+    private static let _gmstConstant3 = -6.2E-6
+    private static let _rateCoef = 1.1772758384668e-19
+    private static let _wgs84WRPrecessing = 7.2921158553E-5
+    private static let  _twoPiOverSecondsInDay = M_2_PI / 86400.0
+    
     /**
     * Computes a rotation matrix to transform a point or vector from True Equator Mean Equinox (TEME) axes to the
     * pseudo-fixed axes at a given time.  This method treats the UT1 time standard as equivalent to UTC.
@@ -302,16 +301,6 @@ struct Transforms {
     *    camera.lookAtTransform(transform, offset);
     * });
     */
-    
-    private let  _gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841
-    private let  _gmstConstant1 = 8640184.812866
-    private let  _gmstConstant2 = 0.093104
-    private let  _gmstConstant3 = -6.2E-6
-    private let  _rateCoef = 1.1772758384668e-19
-    private let  _wgs84WRPrecessing = 7.2921158553E-5
-    //private let  _twoPiOverSecondsInDay = CesiumMath.TWO_PI / 86400.0
-    
-    
     static func computeTemeToPseudoFixedMatrix (date: NSDate) -> Matrix3 {
         
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
@@ -319,27 +308,28 @@ struct Transforms {
         // we explicitly do not want to fail when inside the leap second.
         
         let dateInUtc = date//= JulianDate.addSeconds(date, -JulianDate.computeTaiMinusUtc(date), dateInUtc);
-        NSDateComponents
-        let utcDayNumber = dateInUtc//.
-        /*let utcSecondsIntoDay = dateInUtc.secondsOfDay;
         
-        var t;
-        var diffDays = utcDayNumber - 2451545;
-        if (utcSecondsIntoDay >= 43200.0) {
-        t = (diffDays + 0.5) / TimeConstants.DAYS_PER_JULIAN_CENTURY;
+        let utcComponents = dateInUtc.computeJulianDateComponents()
+        let utcDayNumber = utcComponents.dayNumber
+        let utcSecondsIntoDay = utcComponents.secondsOfDay
+        
+        let t: Double
+        let diffDays = Double(utcDayNumber - 2451545)
+        if utcSecondsIntoDay >= 43200.0 {
+            t = (diffDays + 0.5) / TimeConstants.DaysPerJulianCentury
         } else {
-        t = (diffDays - 0.5) / TimeConstants.DAYS_PER_JULIAN_CENTURY;
+            t = (diffDays - 0.5) / TimeConstants.DaysPerJulianCentury
         }
         
-        var gmst0 = gmstConstant0 + t * (gmstConstant1 + t * (gmstConstant2 + t * gmstConstant3));
-        var angle = (gmst0 * twoPiOverSecondsInDay) % CesiumMath.TWO_PI;
+        let gmst0 = _gmstConstant0 + t * (_gmstConstant1 + t * (_gmstConstant2 + t * _gmstConstant3))
+        var angle = (gmst0 * twoPiOverSecondsInDay) % M_2_PI
         var ratio = wgs84WRPrecessing + rateCoef * (utcDayNumber - 2451545.5);
         var secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SECONDS_PER_DAY * 0.5) % TimeConstants.SECONDS_PER_DAY;
         var gha = angle + (ratio * secondsSinceMidnight);
         var cosGha = Math.cos(gha);
-        var sinGha = Math.sin(gha);*/
+        var sinGha = Math.sin(gha);
 
-        return Matrix3()/*
+        return Matrix3(
             cosGha, sinGha, 0.0,
             -sinGha, cosGha, 0.0,
             0.0,    0.0, 1.0
