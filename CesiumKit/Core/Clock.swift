@@ -106,6 +106,12 @@ public class Clock {
     */
     var onTick = Event()
     
+    /**
+     Indicates whether the clock keeps TAI or UTC time. Must be explicitly set for safety (for navigation etc.).
+     Should always be set to false inside Cesium.
+     */
+    private (set) var isUTC: Bool
+    
     private var _lastSystemTime: NSDate
     
     public init(
@@ -116,7 +122,8 @@ public class Clock {
         clockStep: ClockStep = .SystemClockMultiplier,
         multiplier: Double = 1.0,
         canAnimate: Bool = true,
-        shouldAnimate: Bool = true) {
+        shouldAnimate: Bool = true,
+        isUTC: Bool) {
             
             
             var startTime: NSDate? = startTime
@@ -165,7 +172,14 @@ public class Clock {
         
             self.shouldAnimate = shouldAnimate
             
-            _lastSystemTime = NSDate.taiDate()
+            if isUTC {
+                _lastSystemTime = NSDate()
+
+            } else {
+                _lastSystemTime = NSDate.taiDate()
+            }
+            
+            self.isUTC = isUTC
     }
     
     /**
@@ -177,7 +191,13 @@ public class Clock {
      */
     func tick() -> NSDate {
         
-        let currentSystemTime = NSDate.taiDate()
+        let currentSystemTime: NSDate
+        if isUTC {
+            currentSystemTime = NSDate()
+        } else {
+            currentSystemTime = NSDate.taiDate()
+        }
+        
         var currentTime = self.currentTime.copy() as! NSDate
         
         if canAnimate && shouldAnimate {

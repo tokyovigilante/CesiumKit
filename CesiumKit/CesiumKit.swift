@@ -39,7 +39,7 @@ public struct CesiumOptions {
     /*/// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.*/
     
     public init(
-        clock: Clock = Clock(),
+        clock: Clock = Clock(isUTC: false),
         imageryProvider: ImageryProvider? = nil,
         terrain: Bool = true,
         skyBox: Bool = true,
