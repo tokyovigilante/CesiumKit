@@ -31,8 +31,8 @@ class UniformBufferProvider {
         _fragmentBufferSize = fragmentSize
         
         for _ in 0..<capacity {
-            vertexBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: vertexSize))
-            vertexBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: fragmentSize))
+            vertexBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: max(vertexSize, 256)))
+            fragmentBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: max(fragmentSize, 256)))
         }
     }
     

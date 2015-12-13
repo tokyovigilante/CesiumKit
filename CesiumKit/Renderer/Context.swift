@@ -397,7 +397,7 @@ class Context {
                 }
             }
             
-            commandEncoder.setFragmentBuffer(bufferParams.buffers.vertex.metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setFragmentBuffer(bufferParams.buffers.fragment.metalBuffer, offset: 0, atIndex: 0)
             
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)

@@ -1244,7 +1244,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             moonCommand.execute(context, passState);
         }*/
         spaceRenderPass.complete()
-        /*
+        
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
         scene: Scene,
@@ -1346,7 +1346,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 //pickDepth.executeCopyDepth(context, passState)
             }
         }
-        */
+        
         if debugShowGlobeDepth && useGlobeDepthFramebuffer {
             //var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
             //gd.executeDebugGlobeDepth(context, passState);
@@ -1473,7 +1473,7 @@ function callAfterRenderFunctions(frameState) {
         _commandList.removeAll()
         _overlayCommandList.removeAll()
     
-        //updatePrimitives()
+        updatePrimitives()
         createPotentiallyVisibleSet()
         
         let passState = _passState

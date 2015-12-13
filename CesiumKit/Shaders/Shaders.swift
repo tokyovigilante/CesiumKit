@@ -57,7 +57,7 @@ let Shaders: [String: String] = [
     
     "SkyBoxFS": "\nuniform samplerCube u_cubeMap;\n\nvarying vec3 v_texCoord;\n\nvoid main()\n{\n    vec3 rgb = textureCube(u_cubeMap, normalize(v_texCoord)).rgb;\n    gl_FragColor = vec4(rgb, czm_morphTime);\n}\n",
     
-    "SkyBoxVS": "\nattribute vec3 position;\n\nvarying vec3 v_texCoord;\n\nvoid main()\n{\n    vec3 p = czm_viewRotation * (czm_temeToPseudoFixed * (czm_entireFrustum.y * position));\n    gl_Position = czm_projection * vec4(p, 1.0);\n    v_texCoord = position.xyz;\n}\n",
+    "SkyBoxVS": "\nattribute vec3 position;\n\nvarying vec3 v_texCoord;\n\nvoid main()\n{\n    vec3 p = czm_entireFrustum.y * position; // czm_viewRotation * (czm_temeToPseudoFixed * (czm_entireFrustum.y * position));\n    gl_Position = czm_projection * vec4(p, 1.0);\n    v_texCoord = position.xyz;\n}\n",
     
     "SunFS": "\nuniform sampler2D u_texture;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    gl_FragColor = texture2D(u_texture, v_textureCoordinates);\n}\n",
     

@@ -210,7 +210,7 @@ class ShaderProgram {
     }
     
     func getUniformBufferSize () -> Int {
-        return _vertexUniforms.last?.offset ?? 0
+        return _vertexUniformSize + _fragmentUniformSize
     }
     
     private func setUniformBufferOffsets() {

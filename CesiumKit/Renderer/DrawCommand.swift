@@ -229,4 +229,5 @@ class DrawCommand: Command {
     func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
         context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline)
     }
+
 }
