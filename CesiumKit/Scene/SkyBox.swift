@@ -199,11 +199,6 @@ class SkyBox {
                 fromDimensions: Cartesian3(x: 2.0, y: 2.0, z: 2.0),
                 vertexFormat : VertexFormat.PositionOnly()
                 ).createGeometry(context)
-            /*let geometry = BoxGeometry(
-                minimum: Cartesian3(x: -1.0, y: -1.0, z: 0.0),
-                maximum: Cartesian3(x: 1.0, y: 1.0, z: 1.0),
-                vertexFormat: VertexFormat.PositionOnly()
-                ).createGeometry(context)*/
             
             let attributeLocations = GeometryPipeline.createAttributeLocations(geometry)
             

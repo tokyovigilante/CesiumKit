@@ -214,7 +214,7 @@ class Uniform {
     var isSingle: Bool {
         return _desc.arraySize == -1
     }
-    
+
     var basicType: GLSLOptBasicType {
         return self._desc.type
     }

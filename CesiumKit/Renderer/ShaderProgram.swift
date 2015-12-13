@@ -198,7 +198,7 @@ class ShaderProgram {
             maxAlignment = max(maxAlignment, uniform.dataType.alignment)
         }
         
-        for uniform in _vertexUniforms {
+        for uniform in _fragmentUniforms {
             maxAlignment = max(maxAlignment, uniform.dataType.alignment)
         }
         _uniformBufferAlignment = maxAlignment
@@ -218,21 +218,18 @@ class ShaderProgram {
         
         var offset = 0
         for uniform in _vertexUniforms {
-            let stride = elementStrideForUniform(uniform)
             uniform.offset = offset
-            print("size: \(stride), offset: \(offset)")
-            offset += stride
+            offset += elementStrideForUniform(uniform)
         }
-        assert(offset % _uniformBufferAlignment == 0, "invalid buffer alignment")
         vertexUniformSize = offset
+        
         offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
         fragmentUniformOffset = offset
         for uniform in _fragmentUniforms {
-            let stride = elementStrideForUniform(uniform)
             uniform.offset = offset
-            print("size: \(stride), offset: \(offset)")
-            offset += stride
+            offset += elementStrideForUniform(uniform)
         }
+        
         offset = ((offset + 255) / 256) * 256 // overall buffer size must be a multiple of 256
         assert(offset % _uniformBufferAlignment == 0, "invalid buffer alignment")
         fragmentUniformSize = offset - vertexUniformSize
@@ -275,19 +272,34 @@ class ShaderProgram {
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState) {
 
         let offset = uniform.offset
-
+        var uniformValue: [Float]!
         switch (uniform.type) {
         case .Automatic:
             if let automaticUniform = AutomaticUniforms[uniform.name] {
-                memcpy(buffer.data+offset, automaticUniform.getValue(uniformState: uniformState), uniform.rawSize)
+                uniformValue = automaticUniform.getValue(uniformState: uniformState)
             }
         case .Manual:
             if let uniformFloatFunc = uniformMap!.floatUniform(uniform.name) {
-                memcpy(buffer.data+offset, uniformFloatFunc(map: uniformMap!), uniform.rawSize)
+                uniformValue = uniformFloatFunc(map: uniformMap!)
             }
         case .Sampler:
-            assertionFailure("Sampler not implemented")
+            assertionFailure("Sampler not valid for setUniform")
+            uniformValue = [0.0]
+            return
         }
+        // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
+        if uniform.dataType == .FloatMatrix3 {
+            var paddedMatrix3 = uniformValue
+            paddedMatrix3.append(0.0)
+            paddedMatrix3.insert(0.0, atIndex: 7)
+            paddedMatrix3.insert(0.0, atIndex: 3)
+            paddedMatrix3.appendContentsOf([0.0, 0.0, 0.0, 0.0])
+            memcpy(buffer.data+offset, paddedMatrix3, uniform.dataType.elementStride)
+        } else {
+            memcpy(buffer.data+offset, uniformValue, uniform.rawSize)
+        }
+        
+
         //uniform.set(buffer)
     }
     
