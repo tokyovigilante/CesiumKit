@@ -38,17 +38,22 @@ class CesiumViewController: UIViewController, MTKViewDelegate {
 
         _metalView.drawableSize = renderSize
         _metalView.autoResizeDrawable = true
-        
+            
+        let options = CesiumOptions(
+            clock: Clock(clockStep: .SystemClock, isUTC: false),
+            imageryProvider: nil,
+            terrain: true,
+            skyBox: true,
+            scene3DOnly: false
+        )
     
-        let options = CesiumOptions(imageryProvider: nil)
-        
         _globe = CesiumGlobe(view: _metalView, options: options)
         
-        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
-        //_globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
-        _globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 10), heading: 0, pitch: Math.toRadians(-90), roll: 0)
+        _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
+        //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 10), heading: 0, pitch: Math.toRadians(-90), roll: 0)
         //Murrumbeena
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 10), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(0), range: 1000))
         //Wellington

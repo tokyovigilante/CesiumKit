@@ -23,9 +23,14 @@ class CubeMap {
         
         let sourceURLs: [NSURL]
         let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") ?? NSBundle.mainBundle()
+
         switch type {
         case .BundleResource:
-            sourceURLs = sources.map({ bundle.URLForImageResource($0)! })
+            #if os(OSX)
+                sourceURLs = sources.map({ bundle.URLForImageResource($0)! })
+            #elseif os(iOS)
+                sourceURLs = sources.map({ bundle.URLForResource($0, withExtension: "jpg")! })
+            #endif
         case .FilePath:
             sourceURLs = sources.map({ NSURL(fileURLWithPath: $0, isDirectory: false) })
         case .NetworkURL:

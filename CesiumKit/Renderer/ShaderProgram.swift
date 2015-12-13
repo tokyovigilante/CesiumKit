@@ -263,8 +263,9 @@ class ShaderProgram {
                 texturesValid = false
             }
         }
-        buffer.metalBuffer.didModifyRange(NSMakeRange(0, buffer.length))
-
+        #if os(OSX)
+            buffer.metalBuffer.didModifyRange(NSMakeRange(0, buffer.length))
+        #endif
         let fragmentOffset = command.pipeline!.shaderProgram.fragmentUniformOffset
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
     }

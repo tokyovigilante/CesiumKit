@@ -31,13 +31,16 @@ import Foundation
 
 extension CGImageRef {
     class func fromURL (url: NSURL) -> CGImageRef? {
+        if let imageData = NSData(contentsOfURL: url) {
         #if os(OSX)
-            let nsImage = NSImage(contentsOfURL: url)
+            let nsImage = NSImage(data: imageData)
             return nsImage?.CGImage
         #elseif os(iOS)
-            let uiImage = UIImage(contentsOfURL: url)
-            return uiImage.CGImage
+            let uiImage = UIImage(data: imageData)
+            return uiImage?.CGImage
         #endif
+        }
+        return nil
     }
     
     func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int) {

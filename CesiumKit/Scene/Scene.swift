@@ -1706,7 +1706,7 @@ Scene.prototype.pick = function(windowPosition) {
         assert(_globeDepth != nil, "Picking from the depth buffer is not supported. Check pickPositionSupported.")
         //return Cartesian3()
             
-        assertionFailure("Not implemented")
+        //assertionFailure("Not implemented")
         //let uniformState = context.uniformState
         /*
         var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
