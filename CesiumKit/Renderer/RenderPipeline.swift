@@ -30,19 +30,28 @@ class RenderPipeline {
             let state = try device.newRenderPipelineStateWithDescriptor(descriptor, options: [.ArgumentInfo], reflection: &reflectionInfo)
             for argument in reflectionInfo!.vertexArguments! {
                 //  process each MTLArgument
-                print("\(argument.name): \(argument.type.rawValue)")
-/*                public var name: String { get }
-                public var type: MTLArgumentType { get }
-                public var access: MTLArgumentAccess { get }
-                public var index: Int { get }
-                
-                public var active: Bool { get }
-                
-                // for buffer arguments
-                public var bufferAlignment: Int { get } // min alignment of starting offset in the buffer
-                public var bufferDataSize: Int { get } // sizeof(T) for T *argName
-                public var bufferDataType: MTLDataType { get } // MTLDataTypeFloat, MTLDataTypeFloat4, MTLDataTypeStruct, ...
-                public var bufferStructType: MTLStructType { get }*/
+                print(argument)
+                if argument.type == .Buffer {
+                    if argument.bufferDataType == .Struct {
+                        print("vertex")
+                        print(argument.bufferStructType.members.count)
+                        for member in argument.bufferStructType.members {
+                            print(member)
+                        }
+                    }
+                }
+            }
+            for argument in reflectionInfo!.fragmentArguments! {
+                //  process each MTLArgument
+                if argument.type == .Buffer {
+                    if argument.bufferDataType == .Struct {
+                        print("fragment")
+                        print(argument.bufferStructType.members.count)
+                        for member in argument.bufferStructType.members {
+                            print(member)
+                        }
+                    }
+                }
             }
             self.state = state
         } catch let error as NSError  {
@@ -61,7 +70,7 @@ class RenderPipeline {
         return context.pipelineCache.replaceRenderPipeline(pipeline, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil)
     }
     
-    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffers: (vertex:  Buffer, fragment: Buffer), texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
             command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(device)
         }

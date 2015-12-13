@@ -73,8 +73,9 @@ class ShaderProgram {
     
     private var _uniformBufferAlignment: Int = -1
     
-    private var _uniformBufferSize = -1
-    
+    private var _vertexUniformSize = -1
+    private var _fragmentUniformSize = -1
+
     let keyword: String
 
     var numberOfVertexAttributes: Int {
@@ -208,49 +209,58 @@ class ShaderProgram {
         return stride
     }
     
+    func getUniformBufferSize () -> Int {
+        return _vertexUniforms.last?.offset ?? 0
+    }
+    
     private func setUniformBufferOffsets() {
         
         var offset = 0
         for uniform in _vertexUniforms {
             let stride = elementStrideForUniform(uniform)
             uniform.offset = offset
-            offset += stride
             print("size: \(stride), offset: \(offset)")
+            offset += stride
         }
-        offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
+        assert(offset % _uniformBufferAlignment == 0, "invalid buffer alignment")
+        _vertexUniformSize = offset
+        offset = 0
+        //offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
         for uniform in _fragmentUniforms {
             let stride = elementStrideForUniform(uniform)
             uniform.offset = offset
-            offset += stride
             print("size: \(stride), offset: \(offset)")
+            offset += stride
         }
-        offset = ((offset + 255) / 256) * 256 // overall buffer size must be a multiple of 256
+        //offset = ((offset + 255) / 256) * 256 // overall buffer size must be a multiple of 256
         assert(offset % _uniformBufferAlignment == 0, "invalid buffer alignment")
-        _uniformBufferSize = max(offset, 256)
-    }
-    
-    func getUniformBufferSize () -> Int {
-        return _vertexUniforms.last?.offset ?? 0
+        _fragmentUniformSize = offset///max(offset, 256)
     }
 
     func createUniformBufferProvider(device: MTLDevice) -> UniformBufferProvider {
-        let provider = UniformBufferProvider(device: device, capacity: 3, sizeInBytes: _uniformBufferSize)
+        let provider = UniformBufferProvider(device: device, capacity: 3, vertexSize: _vertexUniformSize, fragmentSize: _fragmentUniformSize)
         return provider
     }
     
     //MARK:- Set uniforms
     
-    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffers: (vertex: Buffer, fragment: Buffer), texturesValid: Bool, textures: [Texture]) {
         
-        let buffer = command.uniformBufferProvider.nextBuffer()
+        let buffers = command.uniformBufferProvider.nextBuffer()
 
         for uniform in _vertexUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffers.vertex, uniformMap: command.uniformMap, uniformState: uniformState)
         }
+        #if os(OSX)
+            buffers.vertex.metalBuffer.didModifyRange(NSMakeRange(0, buffers.vertex.length))
+        #endif
         
         for uniform in _fragmentUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffers.fragment, uniformMap: command.uniformMap, uniformState: uniformState)
         }
+        #if os(OSX)
+            buffers.fragment.metalBuffer.didModifyRange(NSMakeRange(0, buffers.fragment.length))
+        #endif
         
         var textures = [Texture]()
         
@@ -262,11 +272,7 @@ class ShaderProgram {
                 texturesValid = false
             }
         }
-        #if os(OSX)
-            let modifiedSize = _fragmentUniforms.last?.offset ?? _vertexUniforms.last?.offset ?? 0
-            buffer.metalBuffer.didModifyRange(NSMakeRange(0, modifiedSize))
-        #endif
-        return (buffer: buffer, fragmentOffset: _fragmentUniforms.first?.offset ?? 0, texturesValid: texturesValid, textures: textures)
+        return (buffers: buffers, texturesValid: texturesValid, textures: textures)
     }
     
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState) {

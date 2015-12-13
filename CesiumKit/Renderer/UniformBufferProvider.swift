@@ -12,27 +12,35 @@ import Metal
 class UniformBufferProvider {
     
     let capacity: Int
-    let bufferSize: Int
+    private let _vertexBufferSize: Int
+    private let _fragmentBufferSize: Int
+    
+    var bufferSize: Int {
+        return _vertexBufferSize + _fragmentBufferSize
+    }
 
-    private var buffers = [Buffer]()
+    private var vertexBuffers = [Buffer]()
+    private var fragmentBuffers = [Buffer]()
     
     private var memBarrierIndex: Int = 0
     
-    
-    init (device: MTLDevice, capacity: Int, sizeInBytes: Int) {
+    init (device: MTLDevice, capacity: Int, vertexSize: Int, fragmentSize: Int) {
         
         self.capacity = capacity
-        self.bufferSize = sizeInBytes
+        _vertexBufferSize = vertexSize
+        _fragmentBufferSize = fragmentSize
         
-        for i in 0..<capacity {
-            buffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: sizeInBytes))
+        for _ in 0..<capacity {
+            vertexBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: vertexSize))
+            vertexBuffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: fragmentSize))
         }
     }
     
-    func nextBuffer() -> Buffer {
-        let buffer = buffers[memBarrierIndex]
+    func nextBuffer() -> (vertex: Buffer, fragment: Buffer) {
+        let vertexBuffer = vertexBuffers[memBarrierIndex]
+        let fragmentBuffer = fragmentBuffers[memBarrierIndex]
         memBarrierIndex = (memBarrierIndex + 1) % capacity
-        return buffer
+        return (vertexBuffer, fragmentBuffer)
     }
 
 }
