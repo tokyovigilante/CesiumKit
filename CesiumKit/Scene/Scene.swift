@@ -505,7 +505,7 @@ public class Scene {
     * @type Boolean
     * @default true
     */
-    var fxaa = false
+    var fxaa = true
     
     /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
@@ -616,6 +616,13 @@ public class Scene {
     init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
         context = Context(view: view)
+        
+        if let name = context.device.name {
+            if name.hasPrefix("NVIDIA") {
+                print("FXAA disabled - NVIDIA GPU")
+                fxaa = false
+            }
+        }
         
         _computeEngine = ComputeEngine(context: context)
         
