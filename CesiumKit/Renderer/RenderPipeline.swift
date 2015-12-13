@@ -22,37 +22,9 @@ class RenderPipeline {
     
     init (device: MTLDevice, shaderProgram: ShaderProgram, descriptor: MTLRenderPipelineDescriptor) {
         
-        var reflectionInfo: MTLAutoreleasedRenderPipelineReflection? = nil
         self.shaderProgram = shaderProgram
         do {
-            //let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
-            
-            let state = try device.newRenderPipelineStateWithDescriptor(descriptor, options: [.ArgumentInfo], reflection: &reflectionInfo)
-            for argument in reflectionInfo!.vertexArguments! {
-                //  process each MTLArgument
-                print(argument)
-                if argument.type == .Buffer {
-                    if argument.bufferDataType == .Struct {
-                        print("vertex")
-                        print(argument.bufferStructType.members.count)
-                        for member in argument.bufferStructType.members {
-                            print(member)
-                        }
-                    }
-                }
-            }
-            for argument in reflectionInfo!.fragmentArguments! {
-                //  process each MTLArgument
-                if argument.type == .Buffer {
-                    if argument.bufferDataType == .Struct {
-                        print("fragment")
-                        print(argument.bufferStructType.members.count)
-                        for member in argument.bufferStructType.members {
-                            print(member)
-                        }
-                    }
-                }
-            }
+            let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
             self.state = state
         } catch let error as NSError  {
             state = nil
