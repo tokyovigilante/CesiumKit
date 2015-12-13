@@ -248,8 +248,8 @@ struct GeometryPipeline {
         
         // Locations for custom attributes
         for attribute in attributes {
-            if attribute.name != nil && indices[attribute.name!] == nil {
-                indices[attribute.name!] = j++
+            if indices[attribute.name] == nil {
+                indices[attribute.name] = j++
             }
         }
 

@@ -127,7 +127,7 @@ class GeometryAttribute {
     /**
     Optional name for custom attributes
     */
-    var name: String? = nil
+    var name: String
     
     var vertexCount: Int {
         if values == nil {
@@ -158,6 +158,7 @@ class GeometryAttribute {
         self.componentsPerAttribute = componentsPerAttribute
         self.normalize = normalize
         self.values = values
+        self.name = "unknown"
     }
     
 }

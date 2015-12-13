@@ -219,11 +219,11 @@ class VertexArray {
         )? {
             
             // Extract attribute names.
-            var attributeIndices = [Int]()
+            var attributeNames = [String]()
             for (i, geometryAttribute) in attributes.enumerate() {
                 
                 // Attribute needs to have per-vertex values; not a constant value for all vertices.
-                attributeIndices.append(i)
+                attributeNames.append(geometryAttribute.name)
                 
                 if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
                     geometryAttribute.componentDatatype = ComponentDatatype.Float32
@@ -239,26 +239,26 @@ class VertexArray {
             // Validation.  Compute number of vertices.
             var numberOfVertices = 0
             
-            if (attributeIndices.count > 0) {
-                numberOfVertices = VertexArray.computeNumberOfVertices(attributes[attributeIndices.first!]!)
+            if (attributeNames.count > 0) {
+                numberOfVertices = VertexArray.computeNumberOfVertices(attributes[attributeNames.first!]!)
                 
-                for j in 1..<attributeIndices.count {
-                    let currentNumberOfVertices = computeNumberOfVertices(attributes[attributeIndices[j]]!)
+                for name in attributeNames {
+                    let currentNumberOfVertices = computeNumberOfVertices(attributes[name]!)
                     
                     assert(currentNumberOfVertices == numberOfVertices, "Each attribute list must have the same number of vertices.")
                 }
             }
             
             // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
-            attributeIndices.sortInPlace({ a, b in
+            attributeNames.sortInPlace({ a, b in
                 return attributes[a]!.componentDatatype.elementSize > attributes[b]!.componentDatatype.elementSize
             })
             // Compute sizes and strides.
             var vertexSizeInBytes = 0
             var offsetsInBytes = [Int]()
             
-            for index in attributeIndices {
-                let attribute = attributes[index]!
+            for name in attributeNames {
+                let attribute = attributes[name]!
                 offsetsInBytes.append(vertexSizeInBytes)
                 vertexSizeInBytes += attribute.size
             }
@@ -266,7 +266,7 @@ class VertexArray {
             if (vertexSizeInBytes > 0) {
                 // Pad each vertex to be a multiple of the largest component datatype so each
                 // attribute can be addressed using typed arrays.
-                let maxComponentSizeInBytes = attributes[attributeIndices.first!]!.componentDatatype.elementSize // Sorted large to small
+                let maxComponentSizeInBytes = attributes[attributeNames.first!]!.componentDatatype.elementSize // Sorted large to small
                 let remainder = vertexSizeInBytes % maxComponentSizeInBytes
                 if remainder != 0 {
                     vertexSizeInBytes += maxComponentSizeInBytes - remainder
@@ -283,9 +283,8 @@ class VertexArray {
                     sizeInBytes: vertexBufferSizeInBytes)
                 for i in 0..<numberOfVertices {
                     var attributeIndex = 0
-                    for index in attributeIndices {
-                        let attribute = attributes[index]!
-                        //let array = attribute.values as! [UInt8]
+                    for name in attributeNames {
+                        let attribute = attributes[name]!
                         let elementSize = attribute.size
                         let source = attribute.values!.data
                         let target = buffer.data

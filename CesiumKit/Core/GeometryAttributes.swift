@@ -18,6 +18,8 @@
 */
 struct GeometryAttributes {
     
+    private var _maxAttributes = 6
+    
     private var _attributes = [String: GeometryAttribute]()
     
     /**
@@ -35,6 +37,7 @@ struct GeometryAttributes {
             return _attributes["position"]
         }
         set (position) {
+            position?.name = "position"
             _attributes["position"] = position
         }
     }
@@ -54,6 +57,7 @@ struct GeometryAttributes {
             return _attributes["normal"]
         }
         set (normal) {
+            normal?.name = "normal"
             _attributes["normal"] = normal
         }
     }
@@ -73,6 +77,7 @@ struct GeometryAttributes {
             return _attributes["st"]
         }
         set (st) {
+            st?.name = "st"
             _attributes["st"] = st
         }
     }
@@ -92,6 +97,7 @@ struct GeometryAttributes {
             return _attributes["binormal"]
         }
         set (binormal) {
+            binormal?.name = "binormal"
             _attributes["binormal"] = binormal
         }
     }
@@ -111,6 +117,7 @@ struct GeometryAttributes {
             return _attributes["tangent"]
         }
         set (tangent) {
+            tangent?.name = "tangent"
             _attributes["tangent"] = tangent
         }
     }
@@ -130,6 +137,7 @@ struct GeometryAttributes {
             return _attributes["color"]
         }
         set (color) {
+            color?.name = "color"
             _attributes["color"] = color
         }
     }
@@ -147,6 +155,9 @@ struct GeometryAttributes {
             _attributes["binormal"] = binormal
             _attributes["tangent"] = tangent
             _attributes["color"] = color
+            for (name, attribute) in _attributes {
+                attribute.name = name
+            }
     }
     
     subscript(index: Int) -> GeometryAttribute? {
@@ -182,7 +193,7 @@ extension GeometryAttributes: SequenceType {
     func generate() -> Generator {
         var index = 0
         return anyGenerator {
-            while index < self._attributes.count {
+            while index < self._maxAttributes {
                 let attribute = self[index++]
                 if attribute != nil {
                     return attribute
