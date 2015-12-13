@@ -298,24 +298,8 @@ class ShaderProgram {
         } else {
             memcpy(buffer.data+offset, uniformValue, uniform.rawSize)
         }
-        
-
-        //uniform.set(buffer)
     }
-    
-    
-    /*private func setSamplerUniform(samplerUniforms: [Uniform]) -> GLint {
-        
-        /*var textureUnitIndex: Int = 0
-        
-        for uniform in samplerUniforms {
-            if let samplerUniform = uniform as? UniformSampler {
-                textureUnitIndex = samplerUniform.setSampler(textureUnitIndex)
-            }
-        }
-        
-        return textureUnitIndex*/
-    }**/
+
     /**
     * Creates a GLSL shader source string by sending the input through three stages:
     * <ul>
