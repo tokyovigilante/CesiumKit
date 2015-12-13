@@ -207,6 +207,10 @@ class Uniform {
         return Int(_desc.rawSize())
     }
     
+    var alignedSize: Int {
+        return dataType.elementStride * Int(_desc.arraySize > 0 ? _desc.arraySize : 1)
+    }
+    
     var isSingle: Bool {
         return _desc.arraySize == -1
     }

@@ -205,7 +205,7 @@ class ShaderProgram {
     }
     
     private func elementStrideForUniform (uniform: Uniform) -> Int {
-        var stride = uniform.dataType.elementStride
+        var stride = uniform.alignedSize
         if stride < _uniformBufferAlignment {
             stride = _uniformBufferAlignment
         } else {
