@@ -263,9 +263,10 @@ public class CesiumGlobe {
             )
         }
         
+        scene.skyAtmosphere = SkyAtmosphere(ellipsoid: ellipsoid)
+
         // FIXME: UFOs disabled
-        /*scene.skyAtmosphere = new SkyAtmosphere(ellipsoid);
-        scene.sun = new Sun();
+        /*scene.sun = new Sun();
         scene.moon = new Moon();*/
 
         if options.imageryProvider != nil {

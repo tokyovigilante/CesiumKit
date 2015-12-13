@@ -284,8 +284,7 @@ public class Scene {
     * @type {SkyAtmosphere}
     * @default undefined
     */
-    // TODO: SkyAtmosphere
-    //var skyAtmosphere: SkyAtmosphere = nil
+    var skyAtmosphere: SkyAtmosphere? = nil
     
     /**
     * The {@link Sun}.

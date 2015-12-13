@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		94017BF81C0C5FB8001A40C8 /* GLSLOptimizer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9404C8701BBE9FF8001A40C8 /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94017C021C0C5FC4001A40C8 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ABF1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		940240231C1D982D0095A86F /* SkyAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9402401C1C1D98140095A86F /* SkyAtmosphere.swift */; };
+		940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9402401C1C1D98140095A86F /* SkyAtmosphere.swift */; };
 		9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
@@ -728,6 +730,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9402401C1C1D98140095A86F /* SkyAtmosphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyAtmosphere.swift; sourceTree = "<group>"; };
 		9403AC8A1C19A449001A40C8 /* TimeStandard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeStandard.swift; sourceTree = "<group>"; };
 		9403AC921C19A610001A40C8 /* TimeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeConstants.swift; sourceTree = "<group>"; };
 		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
@@ -1485,6 +1488,7 @@
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
+				9402401C1C1D98140095A86F /* SkyAtmosphere.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -2088,6 +2092,7 @@
 				9413B7B61A37B93100FFAD81 /* HeightmapTessellator.swift in Sources */,
 				9413B7A41A37B93100FFAD81 /* Cartesian3.swift in Sources */,
 				949090731BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
+				940240231C1D982D0095A86F /* SkyAtmosphere.swift in Sources */,
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
 				941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				949C04341C1AD96A001A40C8 /* ClockStep.swift in Sources */,
@@ -2372,6 +2377,7 @@
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
+				940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */,
 				947821891B5A2D7C0095A86F /* TileReplacementQueue.swift in Sources */,
 				9478218A1B5A2D7C0095A86F /* TileTerrain.swift in Sources */,
 				943416BA1BC8D864001A40C8 /* ComputeCommand.swift in Sources */,
