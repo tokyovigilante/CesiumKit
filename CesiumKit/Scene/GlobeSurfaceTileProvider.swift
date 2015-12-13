@@ -849,7 +849,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 useWebMercatorProjection: useWebMercatorProjection
             )
             // recreate uniform buffer provider if shader program uniform size has changed
-            let pipelineUniformSize = command.pipeline!.shaderProgram.getUniformBufferSize()
+            let pipelineUniformSize = command.pipeline!.shaderProgram.uniformBufferSize
             if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
                 command.uniformBufferProvider = nil
             }

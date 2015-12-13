@@ -70,7 +70,7 @@ class RenderPipeline {
         return context.pipelineCache.replaceRenderPipeline(pipeline, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil)
     }
     
-    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffers: (vertex:  Buffer, fragment: Buffer), texturesValid: Bool, textures: [Texture]) {
+    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
             command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(device)
         }
