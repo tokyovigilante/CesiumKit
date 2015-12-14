@@ -27,15 +27,15 @@ class DepthPlane {
         // Find the corresponding position in the scaled space of the ellipsoid.
         let q = ellipsoid.oneOverRadii.multiplyComponents(p)
         
-        let qMagnitude = q.magnitude()
+        let qMagnitude = q.magnitude
         let qUnit = q.normalize()
         
         // Determine the east and north directions at q.
-        let eUnit = Cartesian3.unitZ().cross(q).normalize()
+        let eUnit = Cartesian3.unitZ.cross(q).normalize()
         let nUnit = qUnit.cross(eUnit).normalize()
         
         // Determine the radius of the 'limb' of the ellipsoid.
-        let wMagnitude = sqrt(q.magnitudeSquared() - 1.0)
+        let wMagnitude = sqrt(q.magnitudeSquared - 1.0)
         
         // Compute the center and offsets.
         let center = qUnit.multiplyByScalar(1.0 / qMagnitude)
@@ -111,7 +111,7 @@ class DepthPlane {
             )
             _command = DrawCommand(
                 boundingVolume: BoundingSphere(
-                    center: Cartesian3.zero(),
+                    center: Cartesian3.zero,
                     radius: ellipsoid.maximumRadius),
                 renderState: _rs,
                 renderPipeline: _pipeline,

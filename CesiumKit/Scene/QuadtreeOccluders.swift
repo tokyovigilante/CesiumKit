@@ -25,7 +25,7 @@ class QuadtreeOccluders {
     */
     let ellipsoid: EllipsoidalOccluder
     
-    init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3 = Cartesian3.zero()) {
+    init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3 = Cartesian3.zero) {
         self.ellipsoid = EllipsoidalOccluder(ellipsoid: ellipsoid, cameraPosition: cameraPosition)
     }
 }

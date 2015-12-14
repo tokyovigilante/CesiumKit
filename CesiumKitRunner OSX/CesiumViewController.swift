@@ -47,7 +47,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
-        _globe.scene.camera.constrainedAxis = Cartesian3.unitZ()
+        _globe.scene.camera.constrainedAxis = Cartesian3.unitZ
         
         //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 100), heading: 0, pitch: Math.toRadians(90), roll: 0)

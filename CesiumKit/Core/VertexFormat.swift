@@ -27,7 +27,7 @@ import Foundation
 *
 * @see Packable*
 */
-struct VertexFormat {
+struct VertexFormat: Packable {
     
     /**
     * When <code>true</code>, the vertex has a 3D position attribute.
@@ -210,16 +210,14 @@ struct VertexFormat {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack (inout array: [Float], startingIndex: Int? = nil) {
+    func pack (inout array: [Float], startingIndex: Int = 0) {
         
-        var startingIndex = startingIndex ?? 0
-        
-        array[startingIndex++] = position ? 1.0 : 0.0
-        array[startingIndex++] = normal ? 1.0 : 0.0
-        array[startingIndex++] = st ? 1.0 : 0.0
-        array[startingIndex++] = binormal ? 1.0 : 0.0
-        array[startingIndex++] = tangent ? 1.0 : 0.0
-        array[startingIndex++] = color ? 1.0 : 0.0
+        array[startingIndex] = position ? 1.0 : 0.0
+        array[startingIndex+1] = normal ? 1.0 : 0.0
+        array[startingIndex+2] = st ? 1.0 : 0.0
+        array[startingIndex+3] = binormal ? 1.0 : 0.0
+        array[startingIndex+4] = tangent ? 1.0 : 0.0
+        array[startingIndex+5] = color ? 1.0 : 0.0
     }
     
     /**
@@ -229,17 +227,15 @@ struct VertexFormat {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {VertexFormat} [result] The object into which to store the result.
     */
-    func unpack (array: [Float], startingIndex: Int? = nil) -> VertexFormat {
-        
-        var startingIndex = startingIndex ?? 0
+    static func unpack (array: [Float], startingIndex: Int = 0) -> VertexFormat {
         
         return VertexFormat(
-            position: [startingIndex++] == 1.0,
-            normal:   [startingIndex++] == 1.0,
-            st:       [startingIndex++] == 1.0,
-            binormal: [startingIndex++] == 1.0,
-            tangent:  [startingIndex++] == 1.0,
-            color:    [startingIndex++] == 1.0
+            position: array[startingIndex] == 1.0,
+            normal:   array[startingIndex+1] == 1.0,
+            st:       array[startingIndex+2] == 1.0,
+            binormal: array[startingIndex+3] == 1.0,
+            tangent:  array[startingIndex+4] == 1.0,
+            color:    array[startingIndex+5] == 1.0
         )
     }
     

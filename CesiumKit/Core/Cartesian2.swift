@@ -319,8 +319,8 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    func negate() -> Cartesian3 {
-        return Cartesian3(x: -x, y: -y)
+    func negate() -> Cartesian2 {
+        return Cartesian2(x: -x, y: -y)
     }
     
     /**

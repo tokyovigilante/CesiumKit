@@ -81,7 +81,7 @@ public struct Ellipsoid: Packable, Equatable {
     * @see Ellipsoid.WGS84
     * @see Ellipsoid.UNIT_SPHERE
     */
-    init (cartesian3 cartesian: Cartesian3 = Cartesian3.zero()) {
+    init (cartesian3 cartesian: Cartesian3 = Cartesian3.zero) {
         self.init(x: cartesian.x, y: cartesian.y, z: cartesian.z)
     }
     
@@ -167,7 +167,7 @@ public struct Ellipsoid: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
     func geodeticSurfaceNormal(cartesian: Cartesian3) -> Cartesian3 {
-        return cartesian.multiplyComponents(oneOverRadiiSquared).normalize();
+        return cartesian.multiplyComponents(oneOverRadiiSquared).normalize()
     }
     
     /**
@@ -238,7 +238,7 @@ public struct Ellipsoid: Packable, Equatable {
         let longitude = atan2(n.y, n.x)
         let latitude = asin(n.z)
         
-        let height = Double(Math.sign(h.dot(cartesian))) * h.magnitude()
+        let height = Double(Math.sign(h.dot(cartesian))) * h.magnitude
         
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
         
@@ -309,7 +309,7 @@ public struct Ellipsoid: Packable, Equatable {
         gradient.z = intersection.z * oneOverRadiiSquaredZ * 2.0
         
         // Compute the initial guess at the normal vector multiplier, lambda.
-        var lambda = (1.0 - ratio) * cartesian.magnitude() / (0.5 * gradient.magnitude())
+        var lambda = (1.0 - ratio) * cartesian.magnitude / (0.5 * gradient.magnitude)
         var correction = 0.0
         
         var funcMultiplier: Double

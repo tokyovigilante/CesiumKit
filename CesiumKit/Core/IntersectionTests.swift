@@ -204,7 +204,7 @@ return Cartesian3.add(ray.origin, result, result);
         
         let a = direction.dot(direction)
         let b = 2.0 * direction.dot(diff)
-        let c = diff.magnitudeSquared() - radiusSquared
+        let c = diff.magnitudeSquared - radiusSquared
         
         return solveQuadratic(a: a, b: b, c: c)
     }
@@ -287,7 +287,7 @@ var scratchW = new Cartesian3();
         let q = inverseRadii.multiplyComponents(ray.origin)
         let w = inverseRadii.multiplyComponents(ray.direction)
         
-        let q2 = q.magnitudeSquared()
+        let q2 = q.magnitudeSquared
         let qw = q.dot(w)
         
         var difference, w2, product, discriminant, temp: Double
@@ -302,7 +302,7 @@ var scratchW = new Cartesian3();
             // qw < 0.0.
             let qw2 = qw * qw
             difference = q2 - 1.0 // Positively valued.
-            w2 = w.magnitudeSquared()
+            w2 = w.magnitudeSquared
             product = w2 * difference
             
             if qw2 < product {
@@ -326,7 +326,7 @@ var scratchW = new Cartesian3();
         } else if q2 < 1.0 {
             // Inside ellipsoid (2 intersections).
             difference = q2 - 1.0 // Negatively valued.
-            w2 = w.magnitudeSquared()
+            w2 = w.magnitudeSquared
             product = w2 * difference // Negatively valued.
             
             discriminant = qw * qw - product
@@ -336,7 +336,7 @@ var scratchW = new Cartesian3();
             // q2 == 1.0. On ellipsoid.
             if qw < 0.0 {
                 // Looking inward.
-                w2 = w.magnitudeSquared()
+                w2 = w.magnitudeSquared
                 return Interval(start: 0.0, stop: -qw / w2)
             }
             // qw >= 0.0.  Looking outward or tangent.

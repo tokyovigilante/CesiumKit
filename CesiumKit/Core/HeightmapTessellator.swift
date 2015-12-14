@@ -105,7 +105,7 @@ class HeightmapTessellator {
         nativeRectangle: Rectangle,
         rectangle: Rectangle?,
         isGeographic: Bool = true,
-        relativeToCenter: Cartesian3 = Cartesian3.zero(),
+        relativeToCenter: Cartesian3 = Cartesian3.zero,
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
         ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {

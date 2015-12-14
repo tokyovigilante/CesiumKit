@@ -193,7 +193,7 @@ class Globe {
         
         imageryLayers = ImageryLayerCollection()
         
-        _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero())
+        _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero, radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero)
         
         let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
         

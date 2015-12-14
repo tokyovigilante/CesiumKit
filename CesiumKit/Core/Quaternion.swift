@@ -148,9 +148,9 @@ public struct Quaternion {
     */
     init(fromHeading heading: Double, pitch: Double, roll: Double) {
         let HPRQuaternion =
-            Quaternion(fromAxis: Cartesian3.unitY(), angle: -pitch) * // pitch
-            Quaternion(fromAxis: Cartesian3.unitX(), angle: roll) * // roll
-            Quaternion(fromAxis: Cartesian3.unitZ(), angle: -heading) // heading
+            Quaternion(fromAxis: Cartesian3.unitY, angle: -pitch) * // pitch
+            Quaternion(fromAxis: Cartesian3.unitX, angle: roll) * // roll
+            Quaternion(fromAxis: Cartesian3.unitZ, angle: -heading) // heading
         
         self.init(x: HPRQuaternion.x, y: HPRQuaternion.y, z: HPRQuaternion.z, w: HPRQuaternion.w)
     }
@@ -330,14 +330,8 @@ public struct Quaternion {
     * @param {Quaternion} quaternion The quaternion to conjugate.
     * @returns {Number} The magnitude squared.
     */
-    func magnitudeSquared () -> Double {
-        // FIXME: Compiler
-        let x2: Double = x*x
-        let y2: Double = y*y
-        let z2: Double = z*z
-        let w2: Double = w*w
-        return  x2 + y2 + z2 + w2
-        //return x*x + y*y + z*z + w*w
+    var magnitudeSquared: Double {
+        return x*x + y*y + z*z + w*w
     }
     
     /**
@@ -347,8 +341,8 @@ public struct Quaternion {
     * @param {Quaternion} quaternion The quaternion to conjugate.
     * @returns {Number} The magnitude.
     */
-    func magnitude () -> Double {
-        return sqrt(magnitudeSquared())
+    var magnitude: Double {
+        return sqrt(magnitudeSquared)
     }
     
     /**
@@ -360,7 +354,7 @@ public struct Quaternion {
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
     public func normalize () -> Quaternion {
-        let inverseMagnitude: Double = 1.0 / magnitude()
+        let inverseMagnitude: Double = 1.0 / magnitude
         return Quaternion(
             x: x * inverseMagnitude,
             y: y * inverseMagnitude,
@@ -380,7 +374,7 @@ public struct Quaternion {
     
     public func inverse () -> Quaternion {
         let result = conjugate()
-        return result.multiplyByScalar(1.0 / magnitudeSquared())
+        return result.multiplyByScalar(1.0 / magnitudeSquared)
     }
     /*
     /**

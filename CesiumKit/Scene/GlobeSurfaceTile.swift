@@ -330,13 +330,13 @@ class GlobeSurfaceTile: QuadTreeTileData {
         let westernMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.west, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
         
         // Compute the normal of the plane on the western edge of the tile.
-        surfaceTile.westNormal = westernMidpointCartesian.cross(Cartesian3.unitZ()).normalize()
+        surfaceTile.westNormal = westernMidpointCartesian.cross(Cartesian3.unitZ).normalize()
         
         // The middle latitude on the eastern edge.
         let easternMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.east, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
         
         // Compute the normal of the plane on the eastern edge of the tile.
-        surfaceTile.eastNormal = Cartesian3.unitZ().cross(easternMidpointCartesian).normalize()
+        surfaceTile.eastNormal = Cartesian3.unitZ.cross(easternMidpointCartesian).normalize()
         
         // Compute the normal of the plane bounding the southern edge of the tile.
         let southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast())

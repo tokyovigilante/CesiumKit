@@ -118,11 +118,7 @@ public struct Cartesian3: Packable, Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.    
     */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
-        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
-        let x = Double(array[startingIndex])
-        let y = Double(array[startingIndex+1])
-        let z = Double(array[startingIndex+2])
-        return Cartesian3(x: x, y: y, z: z)
+        return Cartesian3(fromArray: array, startingIndex: startingIndex)
     }
     
     
@@ -144,10 +140,18 @@ public struct Cartesian3: Packable, Equatable {
     * var v2 = [0.0, 0.0, 1.0, 2.0, 3.0];
     * var p2 = Cesium.Cartesian3.fromArray(v2, 2);
     */
-    init(fromArray array: [Double]) {
-        x = array[0]
-        y = array[1]
-        z = array[2]
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
+        x = array[startingIndex]
+        y = array[startingIndex+1]
+        z = array[startingIndex+2]
+    }
+    
+    init(fromArray array: [Float], startingIndex: Int = 0) {
+        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
+        x = Double(array[startingIndex])
+        y = Double(array[startingIndex+1])
+        z = Double(array[startingIndex+2])
     }
     
     /**
@@ -200,7 +204,7 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Cartesian3} cartesian The Cartesian instance whose squared magnitude is to be computed.
     * @returns {Number} The squared magnitude.
     */
-    func magnitudeSquared() -> Double {
+    var magnitudeSquared: Double {
         return x * x + y * y + z * z
     }
     
@@ -210,8 +214,8 @@ public struct Cartesian3: Packable, Equatable {
     * @param {Cartesian3} cartesian The Cartesian instance whose magnitude is to be computed.
     * @returns {Number} The magnitude.
     */
-    func magnitude() -> Double {
-        return sqrt(magnitudeSquared())
+    var magnitude: Double {
+        return sqrt(magnitudeSquared)
     }
     
     /**
@@ -226,7 +230,7 @@ public struct Cartesian3: Packable, Equatable {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(2.0, 0.0, 0.0));
     */
     func distance(other: Cartesian3) -> Double {
-        return subtract(other).magnitude()
+        return subtract(other).magnitude
     }
     
     /**
@@ -242,7 +246,7 @@ public struct Cartesian3: Packable, Equatable {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(3.0, 0.0, 0.0));
     */
     func distanceSquared(other: Cartesian3) -> Double {
-        return self.subtract(other).magnitudeSquared()
+        return self.subtract(other).magnitudeSquared
     }
 
     /** Computes the normalized form of the supplied Cartesian.
@@ -253,7 +257,6 @@ public struct Cartesian3: Packable, Equatable {
     */
     
     func normalize() -> Cartesian3 {
-        let magnitude = self.magnitude()
         return Cartesian3(x: x / magnitude, y: y / magnitude, z: z / magnitude)
     }
     
@@ -373,7 +376,7 @@ public struct Cartesian3: Packable, Equatable {
     */
     func angleBetween(other: Cartesian3) -> Double {
         let cosine = self.normalize().dot(other.normalize())
-        let sine = self.normalize().cross(other.normalize()).magnitude()
+        let sine = self.normalize().cross(other.normalize()).magnitude
         return atan2(sine, cosine)
     }
     
@@ -391,15 +394,15 @@ public struct Cartesian3: Packable, Equatable {
         
         if (f.x <= f.y) {
             if (f.x <= f.z) {
-                result = Cartesian3.unitX()
+                result = Cartesian3.unitX
             } else {
-                result = Cartesian3.unitZ()
+                result = Cartesian3.unitZ
             }
         } else {
             if (f.y <= f.z) {
-                result = Cartesian3.unitY()
+                result = Cartesian3.unitY
             } else {
-                result = Cartesian3.unitZ()
+                result = Cartesian3.unitZ
             }
         }
         
@@ -594,9 +597,7 @@ public struct Cartesian3: Packable, Equatable {
     * @constant
     */
     
-    public static func zero() -> Cartesian3 {
-        return Cartesian3(x: 0.0, y: 0.0, z: 0.0)
-    }
+    public static let zero: Cartesian3 = Cartesian3(x: 0.0, y: 0.0, z: 0.0)
     
     /**
     * An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
@@ -604,9 +605,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static func unitX() -> Cartesian3 {
-        return Cartesian3(x: 1.0, y: 0.0, z: 0.0)
-    }
+    public static let unitX: Cartesian3 = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
     
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
@@ -614,9 +613,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static func unitY() -> Cartesian3 {
-        return Cartesian3(x: 0.0, y: 1.0, z: 0.0)
-    }
+    public static let unitY: Cartesian3 = Cartesian3(x: 0.0, y: 1.0, z: 0.0)
     
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
@@ -624,9 +621,7 @@ public struct Cartesian3: Packable, Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static func unitZ() -> Cartesian3 {
-        return Cartesian3(x: 0.0, y: 0.0, z: 1.0)
-    }
+    public static let unitZ: Cartesian3 = Cartesian3(x: 0.0, y: 0.0, z: 1.0)
     
     /**
     * Creates a string representing this Cartesian in the format '(x, y, z)'.

@@ -29,9 +29,9 @@ struct Ray {
     */
     var direction: Cartesian3
     
-    init(origin: Cartesian3 = Cartesian3.zero(), direction: Cartesian3 = Cartesian3.zero()) {
+    init(origin: Cartesian3 = Cartesian3.zero, direction: Cartesian3 = Cartesian3.zero) {
         
-        if direction == Cartesian3.zero() {
+        if direction == Cartesian3.zero {
             self.direction = direction.normalize()
         }
         else {

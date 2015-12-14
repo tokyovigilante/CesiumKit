@@ -36,7 +36,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @type {Cartesian3}
     * @default {@link Cartesian3.ZERO}
     */
-    private (set) var center = Cartesian3.zero()
+    private (set) var center = Cartesian3.zero
     /**
     * The transformation matrix, to rotate the box to the right position.
     * @type {Matrix3}
@@ -402,8 +402,8 @@ struct OrientedBoundingBox: BoundingVolume {
     */
     func computePlaneDistances (position: Cartesian3, direction: Cartesian3) -> Interval {
     
-    var minDist = Double.infinity
-    var maxDist = Double.infinity * -1.0
+    let minDist = Double.infinity
+    let maxDist = Double.infinity * -1.0
         assertionFailure("not implemented")
     /*
     var center = box.center;
@@ -512,9 +512,9 @@ struct OrientedBoundingBox: BoundingVolume {
     */
     func isOccluded (occluder: Occluder) -> Bool {
 
-        let uHalf = halfAxes.column(0).magnitude()
-        let vHalf = halfAxes.column(1).magnitude()
-        let wHalf = halfAxes.column(2).magnitude()
+        let uHalf = halfAxes.column(0).magnitude
+        let vHalf = halfAxes.column(1).magnitude
+        let wHalf = halfAxes.column(2).magnitude
 
         return !occluder.isBoundingSphereVisible(BoundingSphere(center: center, radius: max(uHalf, vHalf, wHalf)))
     }

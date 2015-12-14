@@ -192,7 +192,7 @@ public class Camera: DRU {
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
             
-            var pitch = getPitch(direction: direction)
+            let pitch = getPitch(direction: direction)
             
             _setTransform(oldTransform)
             
@@ -428,7 +428,7 @@ public class Camera: DRU {
         // set default view
         viewRectangle(defaultViewRectangle, ellipsoid: projection.ellipsoid)
         
-        var mag = position.magnitude()
+        var mag = position.magnitude
         mag += mag * defaultViewFactor
         position  = position.normalize().multiplyByScalar(mag)
     }
@@ -455,7 +455,7 @@ public class Camera: DRU {
             // set default view
             viewRectangle(defaultViewRectangle)
             
-            var mag = position.magnitude()
+            var mag = position.magnitude
             mag += mag * defaultViewFactor
             position  = position.normalize().multiplyByScalar(mag)
     }
@@ -690,7 +690,7 @@ public class Camera: DRU {
                 //orthonormalize axes
                 direction = _direction.normalize()
                 
-                let invUpMag = 1.0 / up.magnitudeSquared()
+                let invUpMag = 1.0 / up.magnitudeSquared
                 let w0 = direction.multiplyByScalar(up.dot(direction) * invUpMag)
                 _up = up.subtract(w0).normalize()
                 up = _up
@@ -815,7 +815,7 @@ public class Camera: DRU {
         let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
         
-        position = Cartesian3.zero()
+        position = Cartesian3.zero
         
         let rotQuat = Quaternion(fromHeading: heading! - M_PI_2, pitch: pitch!, roll: roll!)
         let rotMat = Matrix3(fromQuaternion: rotQuat)
@@ -835,7 +835,7 @@ public class Camera: DRU {
         let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
         
-        position = Cartesian3.zero()
+        position = Cartesian3.zero
         
         let rotMat = Matrix3(fromQuaternion: rotQuat)
         
@@ -891,8 +891,8 @@ public class Camera: DRU {
         ellipsoid: Ellipsoid,
         projection: MapProjection)
     {
-        var pitch = -M_PI_2
-        var roll = 0.0
+        let pitch = -M_PI_2
+        let roll = 0.0
         
         var cartesian: Cartesian3! = cartesianIn
         var cartographic: Cartographic! = cartographicIn
@@ -1565,7 +1565,7 @@ public class Camera: DRU {
      */
     func getMagnitude() -> Double {
         if _mode == .Scene3D {
-            return position.magnitude()
+            return position.magnitude
         } else if _mode == .ColumbusView {
             return abs(position.z)
         } else if _mode == SceneMode.Scene2D {
@@ -1613,12 +1613,12 @@ public class Camera: DRU {
         let clampPitch = Math.clamp(pitch, min: -M_PI_2, max: M_PI_2)
         let clampHeading = Math.zeroToTwoPi(heading) - M_PI_2
         
-        let pitchQuat = Quaternion(fromAxis: Cartesian3.unitY(), angle: -clampPitch)
-        let headingQuat = Quaternion(fromAxis: Cartesian3.unitZ(), angle: -clampHeading)
+        let pitchQuat = Quaternion(fromAxis: Cartesian3.unitY, angle: -clampPitch)
+        let headingQuat = Quaternion(fromAxis: Cartesian3.unitZ, angle: -clampHeading)
         let rotQuat = pitchQuat.multiply(headingQuat)
         let rotMatrix = Matrix3(fromQuaternion: rotQuat)
         
-        return rotMatrix.multiplyByVector(Cartesian3.unitX()).negate().multiplyByScalar(range)
+        return rotMatrix.multiplyByVector(Cartesian3.unitX).negate().multiplyByScalar(range)
     }
     
     /**
@@ -1680,18 +1680,18 @@ public class Camera: DRU {
             up = offset.negate()
             up.z = 0.0
             
-            if up.magnitudeSquared() < Math.Epsilon10 {
-                up = Cartesian3.unitY()
+            if up.magnitudeSquared < Math.Epsilon10 {
+                up = Cartesian3.unitY
             }
             
             up = up.normalize()
             
             _setTransform(Matrix4.identity)
-            direction = Cartesian3.unitZ().negate()
+            direction = Cartesian3.unitZ.negate()
             right = direction.cross(self.up).normalize()
             
             let ratio = frustum.top / frustum.right
-            frustum.right = offset.magnitude() * 0.5
+            frustum.right = offset.magnitude * 0.5
             frustum.left = -frustum.right
             frustum.top = ratio * frustum.right
             frustum.bottom = -frustum.top
@@ -1701,9 +1701,9 @@ public class Camera: DRU {
         }
         position = offset
         direction = position.negate().normalize()
-        right = direction.cross(Cartesian3.unitZ()).normalize()
-        if right.magnitudeSquared() < Math.Epsilon10 {
-            right = Cartesian3.unitX()
+        right = direction.cross(Cartesian3.unitZ).normalize()
+        if right.magnitudeSquared < Math.Epsilon10 {
+            right = Cartesian3.unitX
         }
         up = right.cross(direction).normalize()
     }
@@ -1800,7 +1800,7 @@ public class Camera: DRU {
         
         let direction = ellipsoid.geodeticSurfaceNormal(center).negate()
         cameraRF.direction = direction
-        let right = direction.cross(Cartesian3.unitZ()).normalize()
+        let right = direction.cross(Cartesian3.unitZ).normalize()
         cameraRF.right = right
         let up = right.cross(direction)
         cameraRF.up = up

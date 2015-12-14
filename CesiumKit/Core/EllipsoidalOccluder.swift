@@ -37,7 +37,7 @@ class EllipsoidalOccluder {
     didSet {
         // See http://cesiumjs.org/2013/04/25/Horizon-culling/
         self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
-        self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared() - 1.0;
+        self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared - 1.0;
     }
     }
     var cameraPositionInScaledSpace: Cartesian3
@@ -49,7 +49,7 @@ class EllipsoidalOccluder {
         if cameraPosition != nil {
             self.cameraPosition = cameraPosition!
             self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
-            self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared() - 1.0;
+            self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared - 1.0;
         }
         else {
             self.cameraPosition = Cartesian3()
@@ -103,7 +103,7 @@ class EllipsoidalOccluder {
         let vt = occludeeScaledSpacePosition.subtract(cameraPositionInScaledSpace)
         let vtDotVc = -vt.dot(cameraPositionInScaledSpace)
         let isOccluded = vtDotVc > distanceToLimbInScaledSpaceSquared &&
-            vtDotVc * vtDotVc / vt.magnitudeSquared() > distanceToLimbInScaledSpaceSquared
+            vtDotVc * vtDotVc / vt.magnitudeSquared > distanceToLimbInScaledSpaceSquared
         return !isOccluded
     }
     
@@ -156,7 +156,8 @@ class EllipsoidalOccluder {
         directionToPoint: Cartesian3,
         vertices: [Float],
         stride: Int,
-        center: Cartesian3 = Cartesian3.zero()) -> Cartesian3? {
+        center: Cartesian3 = Cartesian3.zero
+        ) -> Cartesian3? {
             
             let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
             var resultMagnitude = 0.0
@@ -193,28 +194,28 @@ class EllipsoidalOccluder {
         
         // If the bounding sphere center is too close to the center of the occluder, it doesn't make
         // sense to try to horizon cull it.
-        if (bs.center.magnitude() < 0.1 * ellipsoid.minimumRadius) {
-            return nil;
+        if bs.center.magnitude < 0.1 * ellipsoid.minimumRadius {
+            return nil
         }
         return computeHorizonCullingPoint(bs.center, positions: positions)
     }
     
     func computeMagnitude(ellipsoid: Ellipsoid, position: Cartesian3, scaledSpaceDirectionToPoint: Cartesian3) -> Double {
         let scaledSpacePosition = ellipsoid.transformPositionToScaledSpace(position)
-        var magnitudeSquared = scaledSpacePosition.magnitudeSquared();
-        var magnitude = sqrt(magnitudeSquared);
-        let direction = scaledSpacePosition.divideByScalar(magnitude);
+        var magnitudeSquared = scaledSpacePosition.magnitudeSquared;
+        var magnitude = sqrt(magnitudeSquared)
+        let direction = scaledSpacePosition.divideByScalar(magnitude)
         
         // For the purpose of this computation, points below the ellipsoid are consider to be on it instead.
-        magnitudeSquared = max(1.0, magnitudeSquared);
-        magnitude = max(1.0, magnitude);
+        magnitudeSquared = max(1.0, magnitudeSquared)
+        magnitude = max(1.0, magnitude)
         
-        let cosAlpha = direction.dot(scaledSpaceDirectionToPoint);
-        let sinAlpha = direction.cross(scaledSpaceDirectionToPoint).magnitude();
-        let cosBeta = 1.0 / magnitude;
-        let sinBeta = sqrt(magnitudeSquared - 1.0) * cosBeta;
+        let cosAlpha = direction.dot(scaledSpaceDirectionToPoint)
+        let sinAlpha = direction.cross(scaledSpaceDirectionToPoint).magnitude
+        let cosBeta = 1.0 / magnitude
+        let sinBeta = sqrt(magnitudeSquared - 1.0) * cosBeta
         
-        return 1.0 / (cosAlpha * cosBeta - sinAlpha * sinBeta);
+        return 1.0 / (cosAlpha * cosBeta - sinAlpha * sinBeta)
     }
     
     func magnitudeToPoint(

@@ -16,7 +16,7 @@
 * @alias GeometryAttributes
 * @constructor
 */
-struct GeometryAttributes {
+class GeometryAttributes {
     
     private var _maxAttributes = 6
     

@@ -1131,9 +1131,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         // Manage celestial and terrestrial environment effects.
         let renderPass = frameState.passes.render
-        let skyBoxCommand: DrawCommand? = (renderPass && skyBox != nil) ? skyBox!.update(context, frameState: frameState) : nil
-        /*var skyAtmosphereCommand = (renderPass && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
-        var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
+        let skyBoxCommand: DrawCommand? = nil//(renderPass && skyBox != nil) ? skyBox!.update(context, frameState: frameState) : nil
+        let skyAtmosphereCommand: DrawCommand? = (renderPass && skyAtmosphere != nil) ? skyAtmosphere!.update(context, frameState: frameState) : nil
+        /*var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
         var sunComputeCommand = defined(sunCommands) ? sunCommands.computeCommand : undefined;
         var sunVisible = isVisible(sunDrawCommand, frameState);
@@ -1221,12 +1221,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         if let skyBoxCommand = skyBoxCommand {
             executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
         }
-        /*
-        if (defined(skyAtmosphereCommand)) {
-            executeCommand(skyAtmosphereCommand, scene, context, passState);
+        
+        if let skyAtmosphereCommand = skyAtmosphereCommand {
+            executeCommand(skyAtmosphereCommand, renderPass: spaceRenderPass)
         }
         
-        
+        /*
         if (sunVisible) {
             if (defined(sunComputeCommand)) {
                 sunComputeCommand.execute(scene._computeEngine);

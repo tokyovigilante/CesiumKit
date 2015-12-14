@@ -26,7 +26,7 @@ struct BoundingSphere: BoundingVolume {
     * @type {Cartesian3}
     * @default {@link Cartesian3.ZERO}
     */
-    var center: Cartesian3 = Cartesian3.zero()
+    var center: Cartesian3 = Cartesian3.zero
     
     /**
     * The radius of the sphere.
@@ -35,7 +35,7 @@ struct BoundingSphere: BoundingVolume {
     */
     var radius: Double = 0.0
     
-    init (center: Cartesian3 = Cartesian3.zero(), radius: Double = 0.0) {
+    init (center: Cartesian3 = Cartesian3.zero, radius: Double = 0.0) {
         self.center = center
         self.radius = radius
     }
@@ -103,9 +103,9 @@ struct BoundingSphere: BoundingVolume {
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        let xSpan = xMax.subtract(xMin).magnitudeSquared()
-        let ySpan = yMax.subtract(yMin).magnitudeSquared()
-        let zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared
+        let ySpan = yMax.subtract(yMin).magnitudeSquared
+        let zSpan = zMax.subtract(zMin).magnitudeSquared
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -129,19 +129,12 @@ struct BoundingSphere: BoundingVolume {
         ritterCenter.z = (diameter1.z + diameter2.z) * 0.5
         
         // Calculate the radius of the initial sphere found by Ritter's algorithm
-        var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared()
+        var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared
         var ritterRadius = sqrt(radiusSquared)
         
         // Find the center of the sphere found using the Naive method.
-        var minBoxPt = Cartesian3()
-        minBoxPt.x = xMin.x
-        minBoxPt.y = yMin.y
-        minBoxPt.z = zMin.z
-        
-        var maxBoxPt = Cartesian3()
-        maxBoxPt.x = xMax.x
-        maxBoxPt.y = yMax.y
-        maxBoxPt.z = zMax.z
+        let minBoxPt = Cartesian3(x: xMin.x, y: yMin.y, z: zMin.z)
+        let maxBoxPt = Cartesian3(x: xMax.x, y: yMax.y, z: zMax.z)
         
         let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
         
@@ -151,13 +144,13 @@ struct BoundingSphere: BoundingVolume {
             currentPos = points[i]
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            let r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared
             if (oldCenterToPointSquared > radiusSquared) {
                 let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
@@ -299,7 +292,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
     var fromPointsMaxBoxPt = new Cartesian3();
     var fromPointsNaiveCenterScratch = new Cartesian3();*/
     
-    static func fromVertices(positions: [Float], center: Cartesian3 = Cartesian3.zero(), stride: Int = 3) -> BoundingSphere {
+    static func fromVertices(positions: [Float], center: Cartesian3 = Cartesian3.zero, stride: Int = 3) -> BoundingSphere {
         
         var result = BoundingSphere()
         if (positions.count == 0) {
@@ -355,9 +348,9 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         }
         
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-        let xSpan = xMax.subtract(xMin).magnitudeSquared()
-        let ySpan = yMax.subtract(yMin).magnitudeSquared()
-        let zSpan = zMax.subtract(zMin).magnitudeSquared()
+        let xSpan = xMax.subtract(xMin).magnitudeSquared
+        let ySpan = yMax.subtract(yMin).magnitudeSquared
+        let zSpan = zMax.subtract(zMin).magnitudeSquared
         
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
@@ -382,7 +375,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
 
         
         // Calculate the radius of the initial sphere found by Ritter's algorithm
-        var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared()
+        var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared
         var ritterRadius = sqrt(radiusSquared)
         
         // Find the center of the sphere found using the Naive method.
@@ -406,13 +399,13 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
             currentPos.z = Double(positions[i + 2]) + center.z
             
             // Find the furthest point from the naive center to calculate the naive radius.
-            let r = currentPos.subtract(naiveCenter).magnitude()
+            let r = currentPos.subtract(naiveCenter).magnitude
             if (r > naiveRadius) {
                 naiveRadius = r
             }
             
             // Make adjustments to the Ritter Sphere to include all points.
-            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared()
+            let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared
             if (oldCenterToPointSquared > radiusSquared) {
                 let oldCenterToPoint = sqrt(oldCenterToPointSquared)
                 // Calculate new radius to include the point that lies outside
@@ -467,34 +460,22 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
     result.radius = Cartesian3.distance(center, oppositeCorner);
     return result;
 };
-
-/**
-* Creates a bounding sphere encompassing an ellipsoid.
-*
-* @param {Ellipsoid} ellipsoid The ellipsoid around which to create a bounding sphere.
-* @param {BoundingSphere} [result] The object onto which to store the result.
-*
-* @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
-*
-* @example
-* var boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
 */
-BoundingSphere.fromEllipsoid = function(ellipsoid, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(ellipsoid)) {
-        throw new DeveloperError('ellipsoid is required.');
+    /**
+    * Creates a bounding sphere encompassing an ellipsoid.
+    *
+    * @param {Ellipsoid} ellipsoid The ellipsoid around which to create a bounding sphere.
+    * @param {BoundingSphere} [result] The object onto which to store the result.
+    *
+    * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
+    *
+    * @example
+    * var boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
+    */
+    init (ellipsoid: Ellipsoid) {
+        self.init(center: Cartesian3.zero, radius: ellipsoid.maximumRadius)
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        result = new BoundingSphere();
-    }
-    
-    Cartesian3.clone(Cartesian3.ZERO, result.center);
-    result.radius = ellipsoid.maximumRadius;
-    return result;
-};
-    
+    /*
     /**
     * Computes a tight-fitting bounding sphere enclosing the provided array of bounding spheres.
     *
@@ -652,7 +633,7 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
         let rightRadius = other.radius
         
         let toRightCenter = rightCenter.subtract(leftCenter)
-        let centerSeparation = toRightCenter.magnitude()
+        let centerSeparation = toRightCenter.magnitude
         
         if leftRadius >= (centerSeparation + rightRadius) {
             return self
@@ -769,7 +750,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
 */
     func distanceSquaredTo(cartesian: Cartesian3) -> Double {
         let diff = center.subtract(cartesian)
-        return diff.magnitudeSquared() - radius * radius
+        return diff.magnitudeSquared - radius * radius
     }
 /*
 /**
@@ -824,7 +805,7 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
         
         let toCenter = center.subtract(position)
         let proj = direction.multiplyByScalar(direction.dot(toCenter))
-        let mag = proj.magnitude()
+        let mag = proj.magnitude
         
         return Interval(start: mag - radius, stop: mag + radius)
     }

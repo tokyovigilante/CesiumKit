@@ -1170,7 +1170,7 @@ public class ScreenSpaceCameraController {
                 _strafeStartPosition = mousePos!
                 strafe(startPosition, movement: movement)
             } else {
-                magnitude = _rotateStartPosition.magnitude()
+                magnitude = _rotateStartPosition.magnitude
                 ellipsoid = Ellipsoid(x: magnitude, y: magnitude, z: magnitude)
                 pan3D(startPosition, movement: movement, ellipsoid: ellipsoid)
             }
@@ -1183,12 +1183,12 @@ public class ScreenSpaceCameraController {
         
         if _globe != nil && height < minimumPickingTerrainHeight {
             if mousePos != nil {
-                if camera.position.magnitude() < mousePos!.magnitude() {
+                if camera.position.magnitude < mousePos!.magnitude {
                     _strafeStartPosition = mousePos!
                     _strafing = true
                     strafe(startPosition, movement: movement)
                 } else {
-                    magnitude = mousePos!.magnitude()
+                    magnitude = mousePos!.magnitude
                     let radii = Cartesian3(x: magnitude, y: magnitude, z: magnitude)
                     ellipsoid = Ellipsoid(cartesian3: radii)
                     pan3D(startPosition, movement: movement, ellipsoid: ellipsoid)
@@ -1220,7 +1220,7 @@ public class ScreenSpaceCameraController {
             camera.constrainedAxis = constrainedAxis
         }
     
-        let rho = camera.position.magnitude()
+        let rho = camera.position.magnitude
         var rotateRate = _rotateFactor * (rho - _rotateRateRangeAdjustment)
     
         if rotateRate > _maximumRotateRate {
@@ -1283,7 +1283,7 @@ public class ScreenSpaceCameraController {
             let dot = p0.dot(p1)
             let axis = p0.cross(p1)
             
-            if dot < 1.0 && !axis.equalsEpsilon(Cartesian3.zero(), relativeEpsilon: Math.Epsilon14) { // dot is in [0, 1]
+            if dot < 1.0 && !axis.equalsEpsilon(Cartesian3.zero, relativeEpsilon: Math.Epsilon14) { // dot is in [0, 1]
                 let angle = acos(dot)
                 camera.rotate(axis, angle: angle)
             }
@@ -1292,12 +1292,12 @@ public class ScreenSpaceCameraController {
             let basis1 = basis0.mostOrthogonalAxis().cross(basis0).normalize()
             let basis2 = basis0.cross(basis1)
             
-            let startRho = p0.magnitude()
+            let startRho = p0.magnitude
             let startDot = basis0.dot(p0)
             let startTheta = acos(startDot / startRho)
             let startRej = p0.subtract(basis0.multiplyByScalar(startDot)).normalize()
             
-            let endRho = p1.magnitude()
+            let endRho = p1.magnitude
             let endDot = basis0.dot(p1)
             let endTheta = acos(endDot / endRho)
             let endRej = p1.subtract(basis0.multiplyByScalar(endDot)).normalize()
@@ -1725,7 +1725,7 @@ public class ScreenSpaceCameraController {
         var mag: Double = 0.0
         if (camera.transform != Matrix4.identity) {
             transform = camera.transform
-            mag = camera.position.magnitude()
+            mag = camera.position.magnitude
             camera._setTransform(Matrix4.identity)
         }
         
@@ -1787,7 +1787,7 @@ public class ScreenSpaceCameraController {
         if mode == .Scene2D {
             update2D()
         } else if mode == .ColumbusView {
-            _horizontalRotationAxis = Cartesian3.unitZ()
+            _horizontalRotationAxis = Cartesian3.unitZ
             updateCV()
         } else if mode == .Scene3D {
             _horizontalRotationAxis = nil

@@ -147,6 +147,7 @@ class Geometry {
     */
     var boundingSphereCV: BoundingSphere? = nil
     
+    // FIXME: primitiveType vs geometryType
     init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: MTLPrimitiveType = .Triangle, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.None) {
         self.attributes = attributes
         self.indices = indices

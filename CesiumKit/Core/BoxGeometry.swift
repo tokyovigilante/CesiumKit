@@ -360,13 +360,13 @@ struct BoxGeometry {
         }
         
         let diff = max.subtract(min)
-        let radius = diff.magnitude() * 0.5
+        let radius = diff.magnitude * 0.5
         
         return Geometry(
             attributes: attributes,
             indices: indices,
             primitiveType: .Triangle,
-            boundingSphere: BoundingSphere(center: Cartesian3.zero(), radius: radius)
+            boundingSphere: BoundingSphere(center: Cartesian3.zero, radius: radius)
         )
     }
     

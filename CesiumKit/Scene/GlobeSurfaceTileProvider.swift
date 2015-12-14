@@ -440,9 +440,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             northeastCornerCartesian.y = northeastCornerCartesian.x
             northeastCornerCartesian.x = 0.0
             westNormal = negativeUnitY
-            eastNormal = Cartesian3.unitY()
+            eastNormal = Cartesian3.unitY
             southNormal = negativeUnitZ
-            northNormal = Cartesian3.unitZ()
+            northNormal = Cartesian3.unitZ
             maximumHeight = 0.0
         }
         

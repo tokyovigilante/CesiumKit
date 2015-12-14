@@ -73,14 +73,14 @@ class Occluder {
         
         // cameraPosition fills in the above values
         self.cameraPosition = cameraPosition
-        self.horizonPlaneNormal = Cartesian3.zero()
-        self.horizonPlanePosition = Cartesian3.zero()
+        self.horizonPlaneNormal = Cartesian3.zero
+        self.horizonPlanePosition = Cartesian3.zero
         updateCameraPosition()
     }
     
     func updateCameraPosition() {
         let cameraToOccluderVec = occluderPosition.subtract(cameraPosition)
-        var invCameraToOccluderDistance = cameraToOccluderVec.magnitudeSquared()
+        var invCameraToOccluderDistance = cameraToOccluderVec.magnitudeSquared
         let occluderRadiusSqrd = occluderRadius * occluderRadius
         
         if (invCameraToOccluderDistance > occluderRadiusSqrd) {
@@ -114,11 +114,11 @@ class Occluder {
     func isPointVisible(occludee: Cartesian3) -> Bool {
         if horizonDistance < Double.infinity {
             var tempVec = occludee.subtract(occluderPosition)
-            var temp = tempVec.magnitudeSquared() - (occluderRadius * occluderRadius)
+            var temp = tempVec.magnitudeSquared - (occluderRadius * occluderRadius)
             if (temp > 0.0) {
                 temp = sqrt(temp) + horizonDistance
                 tempVec = occludee.subtract(cameraPosition)
-                return temp * temp > tempVec.magnitudeSquared()
+                return temp * temp > tempVec.magnitudeSquared
             }
         }
         return false
@@ -148,12 +148,12 @@ class Occluder {
         if (self.horizonDistance < Double.infinity) {
             var tempVec = occludeePosition.subtract(occluderPosition)
             var temp = occluderRadius - occludeeRadius;
-            temp = tempVec.magnitudeSquared() - (temp * temp)
+            temp = tempVec.magnitudeSquared - (temp * temp)
             if (occludeeRadius < occluderRadius) {
                 if (temp > 0.0) {
                     temp = sqrt(temp) + horizonDistance
                     tempVec = occludeePosition.subtract(cameraPosition)
-                    return (temp * temp) + (occludeeRadius * occludeeRadius) > tempVec.magnitudeSquared()
+                    return (temp * temp) + (occludeeRadius * occludeeRadius) > tempVec.magnitudeSquared
                 }
                 return false
             }
@@ -162,7 +162,7 @@ class Occluder {
             // an uncommon case, the following code should rarely execute.
             if (temp > 0.0) {
                 tempVec = occludeePosition.subtract(cameraPosition)
-                let tempVecMagnitudeSquared = tempVec.magnitudeSquared()
+                let tempVecMagnitudeSquared = tempVec.magnitudeSquared
                 let occluderRadiusSquared = occluderRadius * occluderRadius
                 let occludeeRadiusSquared = occludeeRadius * occludeeRadius
                 if ((((horizonDistance * horizonDistance) + occluderRadiusSquared) * occludeeRadiusSquared) >
@@ -213,15 +213,15 @@ class Occluder {
         if (self.horizonDistance < Double.infinity) {
             // The camera is outside the occluder
             var tempVec = occludeePosition.subtract(occluderPosition)
-            var temp = occluderRadius - occludeeRadius;
-            let occluderToOccludeeDistSqrd = tempVec.magnitudeSquared()
+            var temp = occluderRadius - occludeeRadius
+            let occluderToOccludeeDistSqrd = tempVec.magnitudeSquared
             temp = occluderToOccludeeDistSqrd - (temp * temp)
             if (temp > 0.0) {
                 // The occludee is not completely inside the occluder
                 // Check to see if the occluder completely hides the occludee
                 temp = sqrt(temp) + horizonDistance;
                 tempVec = occludeePosition.subtract(cameraPosition)
-                let cameraToOccludeeDistSqrd = tempVec.magnitudeSquared()
+                let cameraToOccludeeDistSqrd = tempVec.magnitudeSquared
                 if (((temp * temp) + (occludeeRadius * occludeeRadius)) < cameraToOccludeeDistSqrd) {
                     return Visibility.None
                 }
