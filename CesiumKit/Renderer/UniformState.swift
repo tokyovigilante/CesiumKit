@@ -289,17 +289,17 @@ class UniformState {
     return this._viewRotation3D;
     }
     },
+    */
     
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
-    inverseView : {
-    get : function() {
-    return this._inverseView;
+    var inverseView: Matrix4 {
+        return _inverseView
     }
-    },
     
+    /*
     /**
     * the 4x4 inverse-view matrix that transforms from eye to 3D world coordinates.  In 3D mode, this is
     * identical to {@link UniformState#inverseView}, but in 2D and Columbus View it is a synthetic matrix
@@ -647,6 +647,7 @@ class UniformState {
     return this._sunPositionColumbusView;
     }
     },
+    */
     
     /**
     * A normalized vector to the sun in 3D world coordinates at the current scene time.  Even in 2D or
@@ -654,12 +655,10 @@ class UniformState {
     * @memberof UniformState.prototype
     * @type {Cartesian3}
     */
-    sunDirectionWC : {
-    get : function() {
-    return this._sunDirectionWC;
+    var sunDirectionWC: Cartesian3 {
+        return _sunDirectionWC;
     }
-    },
-    */
+    
     /**
     * A normalized vector to the sun in eye coordinates at the current scene time.  In 3D mode, this
     * returns the actual vector from the camera position to the sun position.  In 2D and Columbus View, it returns

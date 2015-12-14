@@ -1181,7 +1181,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
             return result
         }
     ),
-    /*
+    
     /**
     * An automatic GLSL uniform representing the normalized direction to the sun in world coordinates.
     * This is commonly used for directional lighting computations.
@@ -1197,14 +1197,16 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     * // GLSL declaration
     * uniform vec3 czm_sunDirectionWC;
     */
-    czm_sunDirectionWC : new AutomaticUniform({
-    size : 1,
-    datatype : WebGLRenderingContext.FLOAT_VEC3,
-    getValue : function(uniformState) {
-    return uniformState.sunDirectionWC; as Any
-    }
-    }),
-    */
+    "czm_sunDirectionWC": AutomaticUniform(
+        size: 1,
+        datatype: .FloatVec3,
+        getValue: { (uniformState: UniformState) in
+            var result = [Float](count: Cartesian3.packedLength, repeatedValue: 0.0)
+            uniformState.sunDirectionWC.pack(&result)
+            return result
+        }
+    ),
+    
     /**
     * An automatic GLSL uniform representing the normalized direction to the moon in eye coordinates.
     * This is commonly used for directional lighting computations.
@@ -1279,7 +1281,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     return uniformState.encodedCameraPositionMCLow; as Any
     }
     }),
-    
+    */
     /**
     * An automatic GLSL uniform representing the position of the viewer (camera) in world coordinates.
     *
@@ -1290,14 +1292,16 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     * // GLSL declaration
     * uniform vec3 czm_viewerPositionWC;
     */
-    czm_viewerPositionWC : new AutomaticUniform({
-    size : 1,
-    datatype : WebGLRenderingContext.FLOAT_VEC3,
-    getValue : function(uniformState) {
-    return Matrix4.getTranslation(uniformState.inverseView, viewerPositionWCScratch); as Any
-    }
-    }),
-    */
+    "czm_viewerPositionWC":  AutomaticUniform(
+        size : 1,
+        datatype : .FloatVec3,
+        getValue : { (uniformState: UniformState) in
+            var result = [Float](count: Cartesian3.packedLength, repeatedValue: 0.0)
+            uniformState.inverseView.translation().pack(&result)
+            return result
+        }
+    ),
+    
     /**
     * An automatic GLSL uniform representing the frame number. This uniform is automatically incremented
     * every frame.

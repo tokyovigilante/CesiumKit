@@ -126,23 +126,22 @@ class SkyBox {
      * @type {Boolean}
      * @default true
      */
-    var show: Bool
+    var show: Bool = true
     
     private var _command: DrawCommand
     
     private var _cubemap: Texture? = nil
     
-    convenience init (sources: [String], show: Bool = true) {
+    convenience init (sources: [String]) {
         self.init(sources: CubeMap.loadImagesForSources(sources))
     }
 
     
-    init (sources: CubeMapSources, show: Bool = true) {
+    init (sources: CubeMapSources) {
         self.sources = sources
-        self.show = show
         _cubemap = nil
         _command = DrawCommand(
-            modelMatrix: Matrix4.identity//.setTranslation(Cartesian3(x: 0.0, y: 0.0, z: 0.5))
+            modelMatrix: Matrix4.identity
         )
         _command.owner = self
     }
@@ -164,7 +163,7 @@ class SkyBox {
         }
         
         if frameState.mode != .Scene3D && frameState.mode != SceneMode.Morphing {
-                return nil
+            return nil
         }
         
         // The sky box is only rendered during the render pass; it is not pickable, it doesn't cast shadows, etc.
@@ -215,7 +214,6 @@ class SkyBox {
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
                 depthStencil: context.depthTexture
             )
-                //attributeLocations : attributeLocations
             
             _command.renderState = RenderState(
                 device: context.device
@@ -234,7 +232,7 @@ class SkyBox {
     }
 }
 
-class SkyBoxUniformMap: UniformMap {
+private class SkyBoxUniformMap: UniformMap {
     
     var cubemap : Texture?
     

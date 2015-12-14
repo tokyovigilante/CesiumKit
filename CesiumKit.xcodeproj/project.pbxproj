@@ -11,6 +11,8 @@
 		94017C021C0C5FC4001A40C8 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 945C3ABF1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		940240231C1D982D0095A86F /* SkyAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9402401C1C1D98140095A86F /* SkyAtmosphere.swift */; };
 		940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9402401C1C1D98140095A86F /* SkyAtmosphere.swift */; };
+		940240261C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940240251C1DA0230095A86F /* EllipsoidGeometry.swift */; };
+		940240271C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940240251C1DA0230095A86F /* EllipsoidGeometry.swift */; };
 		9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
@@ -731,6 +733,7 @@
 
 /* Begin PBXFileReference section */
 		9402401C1C1D98140095A86F /* SkyAtmosphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyAtmosphere.swift; sourceTree = "<group>"; };
+		940240251C1DA0230095A86F /* EllipsoidGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidGeometry.swift; sourceTree = "<group>"; };
 		9403AC8A1C19A449001A40C8 /* TimeStandard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeStandard.swift; sourceTree = "<group>"; };
 		9403AC921C19A610001A40C8 /* TimeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeConstants.swift; sourceTree = "<group>"; };
 		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
@@ -1327,6 +1330,7 @@
 				943744F71945D5320017FE14 /* Ellipsoid.swift */,
 				945D2DBB193D7FA900012DC4 /* EllipsoidalOccluder.swift */,
 				949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */,
+				940240251C1DA0230095A86F /* EllipsoidGeometry.swift */,
 				941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */,
 				9413F070194AB2E700FEE30C /* EllipsoidTerrainProvider.swift */,
 				94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */,
@@ -1478,6 +1482,7 @@
 				94E9B5DA1C0170E7001A40C8 /* SceneTransforms.swift */,
 				940CA70B19B1957A00A6E482 /* SceneTransitioner.swift */,
 				94E7A860199DD48000012DC4 /* ScreenSpaceCameraController.swift */,
+				9402401C1C1D98140095A86F /* SkyAtmosphere.swift */,
 				942CEED2199E063E00012DC4 /* SkyBox.swift */,
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
 				94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */,
@@ -1488,7 +1493,6 @@
 				94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */,
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
-				9402401C1C1D98140095A86F /* SkyAtmosphere.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -2065,6 +2069,7 @@
 				94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */,
 				9413B7B51A37B93100FFAD81 /* HeightmapTerrainData.swift in Sources */,
 				9413B7FF1A37B94500FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
+				940240261C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */,
 				949C042E1C1AD578001A40C8 /* NSDate+TAI.swift in Sources */,
 				9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */,
 				9413B7F51A37B94500FFAD81 /* BingMapsImageryProvider.swift in Sources */,
@@ -2373,6 +2378,7 @@
 				947821841B5A2D7C0095A86F /* SkyBox.swift in Sources */,
 				947821851B5A2D7C0095A86F /* TerrainState.swift in Sources */,
 				949C04351C1AD96A001A40C8 /* ClockStep.swift in Sources */,
+				940240271C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */,
 				947821861B5A2D7C0095A86F /* TileCoordinateImageryProvider.swift in Sources */,
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
