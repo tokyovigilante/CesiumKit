@@ -157,7 +157,7 @@ struct EllipsoidGeometry: Packable {
         let vertexCount = stackPartitions * slicePartitions
         var positions = [Double]()
     
-        //let numIndices = 6 * (slicePartitions - 1) * (stackPartitions - 1)
+        let numIndices = 6 * (slicePartitions - 1) * (stackPartitions - 1)
         var indices = [Int]()
     
         var normals: [Float]? = _vertexFormat.normal ? [Float]() : nil
@@ -303,11 +303,11 @@ struct EllipsoidGeometry: Packable {
             }
         }
         
-        for i in 0..<stackPartitions {
+        for i in 0..<(stackPartitions-1) {
             let topOffset = i * slicePartitions
             let bottomOffset = (i + 1) * slicePartitions
             
-            for j in 0..<slicePartitions - 1 {
+            for j in 0..<(slicePartitions - 1) {
                 indices.append(bottomOffset + j)
                 indices.append(bottomOffset + j + 1)
                 indices.append(topOffset + j + 1)

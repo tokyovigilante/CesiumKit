@@ -297,7 +297,7 @@ class ShaderProgram {
             uniformValue = [0.0]
             return
         }
-        print("\(uniform.name): \(uniformValue)")
+        //print("\(uniform.name): \(uniformValue)")
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
         if uniform.dataType == .FloatMatrix3 {
             var paddedMatrix3 = uniformValue
