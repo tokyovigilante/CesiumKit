@@ -198,10 +198,10 @@ class Uniform {
     var name: String {
         return _desc.name
     }
-    
+    /*
     var location: Int {
         return Int(_desc.location)
-    }
+    }*/
     
     var rawSize: Int {
         return Int(_desc.rawSize())

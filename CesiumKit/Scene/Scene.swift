@@ -1219,7 +1219,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         let spaceRenderPass = context.createRenderPass(passState)
         
         if let skyBoxCommand = skyBoxCommand {
-            executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
+            //executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
         }
         
         if let skyAtmosphereCommand = skyAtmosphereCommand {
@@ -1250,7 +1250,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             moonCommand.execute(context, passState);
         }*/
         spaceRenderPass.complete()
-        
+        /*
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
         scene: Scene,
@@ -1352,7 +1352,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 //pickDepth.executeCopyDepth(context, passState)
             }
         }
-        
+        */
         if debugShowGlobeDepth && useGlobeDepthFramebuffer {
             //var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
             //gd.executeDebugGlobeDepth(context, passState);
