@@ -205,21 +205,30 @@ class ShaderProgram {
     }
     
     private func elementStrideForUniform (uniform: Uniform) -> Int {
-        var stride = uniform.alignedSize
-        if stride < _uniformBufferAlignment {
-            stride = _uniformBufferAlignment
+        return uniform.alignedSize
+    }
+    
+    private func paddingRequredForUniform (uniform: Uniform, lastOffset: Int) -> Int {
+        
+        let currentAlignment = lastOffset % _uniformBufferAlignment
+        let requiredAlignment = uniform.dataType.alignment
+        
+        if requiredAlignment <= _uniformBufferAlignment - currentAlignment {
+            return 0
         } else {
-            stride += stride % _uniformBufferAlignment
+            return _uniformBufferAlignment - currentAlignment
         }
-        return stride
     }
     
     private func setUniformBufferOffsets() {
         
         var offset = 0
         for uniform in _vertexUniforms {
+            let padding = paddingRequredForUniform(uniform, lastOffset: offset)
+            offset += padding
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
+            print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
         }
         vertexUniformSize = offset
         
@@ -288,6 +297,7 @@ class ShaderProgram {
             uniformValue = [0.0]
             return
         }
+        print("\(uniform.name): \(uniformValue)")
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
         if uniform.dataType == .FloatMatrix3 {
             var paddedMatrix3 = uniformValue
