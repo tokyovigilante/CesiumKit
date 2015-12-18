@@ -56,13 +56,13 @@ class PipelineCache {
         fragmentShaderSource fss: ShaderSource,
         vertexDescriptor: VertexDescriptor?,
         colorMask: ColorMask?,
-        depthStencil: Bool) -> RenderPipeline? {
+        depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         if let existingPipeline = pipeline {
             releasePipeline(existingPipeline)
         }
             
-            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, colorMask: colorMask, depthStencil: depthStencil)
+            return getRenderPipeline(vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vertexDescriptor, colorMask: colorMask, depthStencil: depthStencil, blendingState: blendingState)
     }
     
     /**
@@ -75,11 +75,11 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool) -> RenderPipeline {
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline {
 
         let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
         
-        let keyword = combinedShaders.keyword + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth")
+        let keyword = combinedShaders.keyword + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
         if let pipeline = _pipelines[keyword] {
             //pipeline.count++
@@ -96,16 +96,29 @@ class PipelineCache {
         )
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        let color = pipelineDescriptor.colorAttachments[0]
         
         pipelineDescriptor.vertexFunction = shader.metalVertexFunction
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
-        pipelineDescriptor.colorAttachments[0].pixelFormat = context.view.colorPixelFormat
+        color.pixelFormat = context.view.colorPixelFormat
         let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.All
-        pipelineDescriptor.colorAttachments[0].writeMask = colorWriteMask
+        color.writeMask = colorWriteMask
         
         pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
         pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        
+        if let blendingState = blendingState {
+            color.blendingEnabled = true
+            color.rgbBlendOperation = blendingState.equationRgb.toMetal()
+            color.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
+            color.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
+
+            color.alphaBlendOperation = blendingState.equationAlpha.toMetal()
+            color.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
+            color.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
+
+        }
         
         pipelineDescriptor.vertexDescriptor = descriptor?.metalDescriptor
         

@@ -17,7 +17,7 @@
 * @namespace
 * @alias BlendingState
 */
-struct BlendingState {
+struct BlendingState: CustomStringConvertible {
     let enabled: Bool
     let equationRgb: BlendEquation
     let equationAlpha: BlendEquation
@@ -25,7 +25,7 @@ struct BlendingState {
     let functionSourceAlpha: BlendFunction
     let functionDestinationRgb: BlendFunction
     let functionDestinationAlpha: BlendFunction
-    let color: Cartesian4
+    let color: Cartesian4?
     
     /**
     * Blending is disabled.
@@ -41,7 +41,7 @@ struct BlendingState {
             functionSourceAlpha: .Zero,
             functionDestinationRgb: .Zero,
             functionDestinationAlpha: .Zero,
-            color: Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0))
+            color: nil)
     }
     
     /**
@@ -50,6 +50,17 @@ struct BlendingState {
     * @type {Object}
     * @constant
     */
+    static func AlphaBlend() -> BlendingState {
+        return BlendingState(enabled: true,
+            equationRgb : .Add,
+            equationAlpha : .Add,
+            functionSourceRgb : .SourceAlpha,
+            functionSourceAlpha : .SourceAlpha,
+            functionDestinationRgb : .OneMinusSourceAlpha,
+            functionDestinationAlpha : .OneMinusSourceAlpha,
+            color: nil)
+    }
+    
     static func AlphaBlend(color: Cartesian4) -> BlendingState {
         return BlendingState(enabled: true,
             equationRgb : .Add,
@@ -93,6 +104,12 @@ struct BlendingState {
             functionDestinationRgb : .One,
             functionDestinationAlpha : .One,
             color: color)
+    }
+    
+    var description: String {
+        return "r\(equationRgb.rawValue):a\(equationAlpha.rawValue):sr\(functionSourceRgb.rawValue):sa\(functionSourceAlpha.rawValue):dr\(functionDestinationRgb.rawValue):da\(functionDestinationAlpha.rawValue):c\(color?.description)"
+        
+        
     }
 
 }

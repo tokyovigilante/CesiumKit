@@ -159,8 +159,6 @@ struct RenderState/*: Printable*/ {
     
     let stencilMask: Int// = 0
     
-    let blending: BlendingState// = BlendingState.Disabled()
-    
     struct StencilTest {
         var enabled: Bool = false
         var frontFunction: Int = 0
@@ -219,7 +217,6 @@ struct RenderState/*: Printable*/ {
             self.depthTest  = depthTest
             self.depthMask = depthMask
             self.stencilMask  = stencilMask
-            self.blending  = blending
             self.stencilTest  = stencilTest
             self.sampleCoverage  = sampleCoverage
             self.viewport = viewport
@@ -270,9 +267,6 @@ struct RenderState/*: Printable*/ {
             // stencilMask
             hash += "sm\(stencilMask)"
             
-            // blending
-            hash += "bs" + (blending.enabled ? "1" : "0") + "be\(blending.equationRgb.toMetal().rawValue)" + "ba\(blending.equationAlpha.toMetal().rawValue)" + "bfsr\(blending.functionSourceRgb.toMetal().rawValue)" + "bfsa\(blending.functionSourceAlpha.toMetal().rawValue)" + "bfdr\(blending.functionDestinationRgb.toMetal().rawValue)" + "bfda\(blending.functionDestinationAlpha.toMetal().rawValue)" + "x\(blending.color.x)y\(blending.color.y)z\(blending.color.z)w\(blending.color.w)"
-
             // stencilTest
             hash += "st" + (stencilTest.enabled ? "1" : "0") + "ff\(stencilTest.frontFunction)" + "bf\(stencilTest.backFunction)" + "r\(stencilTest.reference)" + "m\(stencilTest.mask)" + "ff\(stencilTest.frontOperation.fail)" + "zf\(stencilTest.frontOperation.zFail)" + "zp\(stencilTest.frontOperation.zPass)" + "bf\(stencilTest.backOperation.fail)" + "bzf\(stencilTest.backOperation.zFail)" + "bzp\(stencilTest.backOperation.zPass)"
 
@@ -444,15 +438,9 @@ struct RenderState/*: Printable*/ {
     */
     func applyDepthTest(encoder: MTLRenderCommandEncoder) {
         
-        // FIXME: store descriptor
         if depthTest.enabled {
             encoder.setDepthStencilState(_depthStencilState)
         }
-        /*enableOrDisable(GLenum(GL_DEPTH_TEST), enable: depthTest.enabled)
-        
-        if (depthTest.enabled) {
-            glDepthFunc(depthTest.function.toGL())
-        }*/
     }
     
     /*
@@ -531,13 +519,11 @@ struct RenderState/*: Printable*/ {
     func apply(encoder: MTLRenderCommandEncoder, passState: PassState) {
         applyWindingOrder(encoder)
         applyCullFace(encoder)
-        /*applyCull()
-        applyLineWidth()
+        /*applyLineWidth()
         applyPolygonOffset()
         applyDepthRange()*/
         applyDepthTest(encoder)
-        /*
-        applyDepthMask()
+        /*applyDepthMask()
         applyStencilMask()
         applySampleCoverage()
         applyScissorTest(passState)
