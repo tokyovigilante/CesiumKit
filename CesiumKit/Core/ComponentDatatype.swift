@@ -13,6 +13,8 @@
 * @alias ComponentDatatype
 */
 
+import Metal
+
 enum ComponentDatatype {
     /**
     * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type
@@ -129,6 +131,18 @@ enum ComponentDatatype {
             metalIndex = VertexType.Float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
         }
         return VertexType(rawValue: metalIndex) ?? .Invalid
+    }
+    
+    func toMTLIndexType () -> MTLIndexType {
+        switch (self) {
+        case .UnsignedShort:
+            return .UInt16
+        case .UnsignedInt:
+            return .UInt32
+        default:
+            assertionFailure("invalid type for indices")
+            return .UInt16
+        }
     }
     
 }

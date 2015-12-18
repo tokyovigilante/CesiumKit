@@ -16,17 +16,13 @@ class VertexArray {
     
     let indexBuffer: Buffer?
     
-    let indexType: MTLIndexType
-    
-    
     var numberOfIndices: Int {
         return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
     }
     
-    init(attributes: [VertexAttributes], vertexCount: Int, indexType: MTLIndexType = .UInt16, indexBuffer: Buffer? = nil) {
+    init(attributes: [VertexAttributes], vertexCount: Int, indexBuffer: Buffer? = nil) {
         self.attributes = attributes
         self.vertexCount = vertexCount
-        self.indexType = indexType
         self.indexBuffer = indexBuffer
     }
     

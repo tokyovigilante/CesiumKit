@@ -385,7 +385,7 @@ class Context {
         let commandEncoder = renderPass.commandEncoder
         
         if let indexBuffer = va.indexBuffer {
-            let indexType = va.indexType
+            let indexType = va.indexBuffer!.componentDatatype.toMTLIndexType()
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             
