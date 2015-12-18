@@ -228,15 +228,17 @@ class ShaderProgram {
             offset += padding
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
-            print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
         }
         vertexUniformSize = offset
         
         offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
         fragmentUniformOffset = offset
         for uniform in _fragmentUniforms {
+            let padding = paddingRequredForUniform(uniform, lastOffset: offset)
+            offset += padding
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
+            print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
         }
         
         offset = ((offset + 255) / 256) * 256 // overall buffer size must be a multiple of 256
