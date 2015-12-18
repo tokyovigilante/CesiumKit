@@ -212,12 +212,13 @@ class SkyBox {
                 vertexShaderSource: ShaderSource(sources: [Shaders["SkyBoxVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["SkyBoxFS"]!]),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture
+                depthStencil: context.depthTexture,
+                blendingState: .AlphaBlend()
+
             )
             
             _command.renderState = RenderState(
                 device: context.device
-                //  blending : BlendingState.ALPHA_BLEND
             )
         }
         if _cubemap == nil {

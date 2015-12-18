@@ -656,7 +656,8 @@ class UniformState {
     * @type {Cartesian3}
     */
     var sunDirectionWC: Cartesian3 {
-        return _sunDirectionWC;
+        return Cartesian3(x: 0.868, y: 0.300, z: -0.397)
+        return _sunDirectionWC
     }
     
     /**
@@ -667,9 +668,7 @@ class UniformState {
     * @type {Cartesian3}
     */
     var sunDirectionEC: Cartesian3 {
-        get {
-            return _sunDirectionEC
-        }
+        return _sunDirectionEC
     }
     
     /**

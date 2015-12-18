@@ -96,7 +96,7 @@ class SkyAtmosphere {
             //FIXME: blending
             _command.renderState = RenderState(
                 device: context.device,
-                cullFace: .Back
+                cullFace: .Front
             )
             
             _rpSkyFromSpace = RenderPipeline.fromCache(
@@ -109,9 +109,8 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture/*,
-                blending : BlendingState.AlphaBlend()*/
-
+                depthStencil: context.depthTexture,
+                blendingState: .AlphaBlend()
             )
             
             
@@ -125,7 +124,8 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture
+                depthStencil: context.depthTexture,
+                blendingState: .AlphaBlend()
             )
             
         }

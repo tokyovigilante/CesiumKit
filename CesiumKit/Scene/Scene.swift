@@ -1131,7 +1131,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         // Manage celestial and terrestrial environment effects.
         let renderPass = frameState.passes.render
-        let skyBoxCommand: DrawCommand? = nil//(renderPass && skyBox != nil) ? skyBox!.update(context, frameState: frameState) : nil
+        let skyBoxCommand: DrawCommand? = (renderPass && skyBox != nil) ? skyBox!.update(context, frameState: frameState) : nil
         let skyAtmosphereCommand: DrawCommand? = (renderPass && skyAtmosphere != nil) ? skyAtmosphere!.update(context, frameState: frameState) : nil
         /*var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
         var sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
@@ -1219,7 +1219,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         let spaceRenderPass = context.createRenderPass(passState)
         
         if let skyBoxCommand = skyBoxCommand {
-            //executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
+            executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
         }
         
         if let skyAtmosphereCommand = skyAtmosphereCommand {
@@ -1250,7 +1250,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             moonCommand.execute(context, passState);
         }*/
         spaceRenderPass.complete()
-        /*
+        
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
         scene: Scene,
@@ -1352,7 +1352,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 //pickDepth.executeCopyDepth(context, passState)
             }
         }
-        */
+
         if debugShowGlobeDepth && useGlobeDepthFramebuffer {
             //var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
             //gd.executeDebugGlobeDepth(context, passState);
