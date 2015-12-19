@@ -348,12 +348,18 @@
 		943416BD1BC8D932001A40C8 /* ComputeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416BB1BC8D932001A40C8 /* ComputeEngine.swift */; };
 		944787D91A3D8BF200FFAD81 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		944787DA1A3D8BF500FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
+		9447FD971C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */; };
+		9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */; };
 		944C5BE91AB70D8700FFAD81 /* CesiumKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 944C5BE81AB70D8700FFAD81 /* CesiumKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
 		9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
 		9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
 		9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
+		945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
+		945B6A9B1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
+		945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6AA11C25781E0095A86F /* LeapSecond.swift */; };
+		945B6AA31C25781E0095A86F /* LeapSecond.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6AA11C25781E0095A86F /* LeapSecond.swift */; };
 		945BF6471AA9C00000FFAD81 /* GeometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6461AA9C00000FFAD81 /* GeometryType.swift */; };
 		945BF6491AAAD0AC00FFAD81 /* ShaderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */; };
 		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
@@ -836,6 +842,7 @@
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* MapProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapProjection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
+		9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Simon1994PlanetaryPositions.swift; sourceTree = "<group>"; };
 		944C5BE81AB70D8700FFAD81 /* CesiumKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CesiumKit.h; sourceTree = SOURCE_ROOT; };
 		94540422199F045600012DC4 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		94540424199F05D300012DC4 /* FrustumCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrustumCommands.swift; sourceTree = "<group>"; };
@@ -854,6 +861,8 @@
 		9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverTileDiscardPolicy.swift; sourceTree = "<group>"; };
 		9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Platform/SwiftyJSON.swift; sourceTree = "<group>"; };
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
+		945B6A991C2577730095A86F /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
+		945B6AA11C25781E0095A86F /* LeapSecond.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeapSecond.swift; sourceTree = "<group>"; };
 		945BF6461AA9C00000FFAD81 /* GeometryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryType.swift; sourceTree = "<group>"; };
 		945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderSource.swift; sourceTree = "<group>"; };
 		945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = CesiumKit/Platform/Dependencies/Alamofire/Alamofire.xcodeproj; sourceTree = "<group>"; };
@@ -1348,6 +1357,7 @@
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
+				945B6A991C2577730095A86F /* JulianDate.swift */,
 				94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */,
 				9444499D1948326C009D1703 /* MapProjection.swift */,
 				948D55E8194982AB005A4DD6 /* Math.swift */,
@@ -1365,6 +1375,7 @@
 				943D25B01947128A00263D91 /* Rectangle.swift */,
 				94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */,
 				94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */,
+				9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				94786824194A95B800B3F462 /* TerrainData.swift */,
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
@@ -1377,6 +1388,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				945B6AA11C25781E0095A86F /* LeapSecond.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2082,6 +2094,7 @@
 				9413B80B1A37B94500FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,
 				94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */,
 				9413B7C01A37B93100FFAD81 /* MergeSort.swift in Sources */,
+				945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
 				9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */,
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
@@ -2125,6 +2138,7 @@
 				94AB53FC1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
 				9413B7CB1A37B93100FFAD81 /* Spherical.swift in Sources */,
 				941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */,
+				9447FD971C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
 				9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */,
 				9413B7F71A37B94500FFAD81 /* BlendEquation.swift in Sources */,
 				9413B8191A37B94500FFAD81 /* TileDiscardPolicy.swift in Sources */,
@@ -2175,6 +2189,7 @@
 				9413B8071A37B94500FFAD81 /* ImageryState.swift in Sources */,
 				94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */,
 				9413B7E01A37B93D00FFAD81 /* CullFace.swift in Sources */,
+				945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */,
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
 				941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
@@ -2229,6 +2244,7 @@
 				947821041B5A2D7B0095A86F /* String.swift in Sources */,
 				947821051B5A2D7B0095A86F /* SwiftRegex.swift in Sources */,
 				947821061B5A2D7B0095A86F /* SwiftyJSON.swift in Sources */,
+				945B6A9B1C2577730095A86F /* JulianDate.swift in Sources */,
 				947821071B5A2D7B0095A86F /* BoundingRectangle.swift in Sources */,
 				947821081B5A2D7B0095A86F /* BoundingSphere.swift in Sources */,
 				947821091B5A2D7B0095A86F /* Cartesian2.swift in Sources */,
@@ -2273,6 +2289,7 @@
 				943416B31BC8D843001A40C8 /* Command.swift in Sources */,
 				9478212A1B5A2D7B0095A86F /* Packable.swift in Sources */,
 				9478212B1B5A2D7B0095A86F /* MapProjection.swift in Sources */,
+				945B6AA31C25781E0095A86F /* LeapSecond.swift in Sources */,
 				9478212C1B5A2D7B0095A86F /* Quaternion.swift in Sources */,
 				9478212D1B5A2D7B0095A86F /* Queue.swift in Sources */,
 				9478212E1B5A2D7B0095A86F /* Ray.swift in Sources */,
@@ -2340,6 +2357,7 @@
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
+				9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,
 				94B119941C13038A0095A86F /* ColorMask.swift in Sources */,

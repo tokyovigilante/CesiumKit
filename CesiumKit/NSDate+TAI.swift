@@ -53,6 +53,26 @@ extension NSDate {
         return self.dateByAddingTimeInterval(days * TimeConstants.SecondsPerDay)
     }
     
+    /**
+    Creates an NSDate from Julian date components
+    */
+    convenience init (julianDayNumber: Int, secondsOfDay: Double) {
+        let timeInterval = Double(julianDayNumber) + secondsOfDay / TimeConstants.SecondsPerDay
+        let macReferenceOffset = TimeConstants.JulianEpochToMacEpochDifference - timeInterval
+        self.init(timeIntervalSinceReferenceDate: macReferenceOffset)
+    }
+    
+    /**
+    * Computes the total number of whole and fractional days represented by the provided instance.
+    *
+    * @param {JulianDate} julianDate The date.
+    * @returns {Number} The Julian date as single floating point number.
+    */
+    func totalDays () -> Double {
+        let julianDate = self.computeJulianDateComponents()
+        return Double(julianDate.dayNumber) + (julianDate.secondsOfDay / TimeConstants.SecondsPerDay)
+    }
+    
     func computeJulianDateComponents() -> (dayNumber: Int, secondsOfDay: Double) {
         // Algorithm from page 604 of the Explanatory Supplement to the
         // Astronomical Almanac (Seidelmann 1992).

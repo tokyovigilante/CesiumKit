@@ -48,7 +48,7 @@ struct FrameState {
     * @type {JulianDate}
     * @default undefined
     */
-    var time: NSDate? = nil
+    var time: NSDate! = nil
     
     /**
     * The map projection to use in 2D and Columbus View modes.

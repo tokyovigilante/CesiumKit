@@ -99,4 +99,9 @@ struct TimeConstants {
     */
     static let ModifiedJulianDateDifference: Double = 2400000.5
     
+    /**
+    The number of days between the Julian epoch (4713-1-1 BCE) since the OS X reference date (2001-01-01T00:00Z)
+    */
+    static let JulianEpochToMacEpochDifference: Double = 2451910.5
+    
 }

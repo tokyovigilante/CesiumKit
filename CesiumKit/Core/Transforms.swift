@@ -335,7 +335,6 @@ struct Transforms {
             0.0,    0.0, 1.0
         )
     }
-    
     /*
     /**
     * The source of IAU 2006 XYS data, used for computing the transformation between the
@@ -371,7 +370,7 @@ struct Transforms {
     * indicates that the preload has completed.
     *
     * @param {TimeInterval} timeInterval The interval to preload.
-    * @returns {Promise} A promise that, when resolved, indicates that the preload has completed
+    * @returns {Promise.<undefined>} A promise that, when resolved, indicates that the preload has completed
     *          and evaluation of the transformation between the fixed and ICRF axes will
     *          no longer return undefined for a time inside the interval.
     *
@@ -381,7 +380,7 @@ struct Transforms {
     *
     * @example
     * var interval = new Cesium.TimeInterval(...);
-    * when(preloadIcrfFixed(interval), function() {
+    * when(Cesium.Transforms.preloadIcrfFixed(interval), function() {
     *     // the data is now loaded
     * });
     */
@@ -396,7 +395,7 @@ struct Transforms {
     
     return when.all([xysPromise, eopPromise]);
     };
-    
+    */
     /**
     * Computes a rotation matrix to transform a point or vector from the International Celestial
     * Reference Frame (GCRF/ICRF) inertial frame axes to the Earth-Fixed frame axes (ITRF)
@@ -423,29 +422,18 @@ struct Transforms {
     *   }
     * });
     */
-    Transforms.computeIcrfToFixedMatrix = function(date, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(date)) {
-    throw new DeveloperError('date is required.');
+    static func computeIcrfToFixedMatrix (date: NSDate) -> Matrix3? {
+        guard let fixedToIcrfMtx: Matrix3 = Transforms.computeFixedToIcrfMatrix(date) else {
+            return nil
+        }
+        return fixedToIcrfMtx.transpose()
     }
-    //>>includeEnd('debug');
-    if (!defined(result)) {
-    result = new Matrix3();
-    }
-    
-    var fixedToIcrfMtx = Transforms.computeFixedToIcrfMatrix(date, result);
-    if (!defined(fixedToIcrfMtx)) {
-    return undefined;
-    }
-    
-    return Matrix3.transpose(fixedToIcrfMtx, result);
-    };
-    
+    /*
     var xysScratch = new Iau2006XysSample(0.0, 0.0, 0.0);
     var eopScratch = new EarthOrientationParametersSample(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     var rotation1Scratch = new Matrix3();
     var rotation2Scratch = new Matrix3();
-    
+    */
     /**
     * Computes a rotation matrix to transform a point or vector from the Earth-Fixed frame axes (ITRF)
     * to the International Celestial Reference Frame (GCRF/ICRF) inertial frame axes
@@ -462,7 +450,7 @@ struct Transforms {
     *
     * @example
     * // Transform a point from the ICRF axes to the Fixed axes.
-    * var now = new Cesium.JulianDate();
+    * var now = Cesium.JulianDate.now();
     * var pointInFixed = Cesium.Cartesian3.fromDegrees(0.0, 0.0);
     * var fixedToIcrf = Cesium.Transforms.computeIcrfToFixedMatrix(now);
     * var pointInInertial = new Cesium.Cartesian3();
@@ -470,17 +458,9 @@ struct Transforms {
     *     pointInInertial = Cesium.Matrix3.multiplyByVector(fixedToIcrf, pointInFixed, pointInInertial);
     * }
     */
-    Transforms.computeFixedToIcrfMatrix = function(date, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(date)) {
-    throw new DeveloperError('date is required.');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    result = new Matrix3();
-    }
-    
+    static func computeFixedToIcrfMatrix (date: NSDate) -> Matrix3? {
+        return nil
+    /*
     // Compute pole wander
     var eop = Transforms.earthOrientationParameters.compute(date, eopScratch);
     if (!defined(eop)) {
@@ -571,9 +551,10 @@ struct Transforms {
     fToPfMtx[7] = sinyp * cossp - cosyp * sinxp * sinsp;
     fToPfMtx[8] = cosyp * cosxp;
     
-    return Matrix3.multiply(pfToIcrf, fToPfMtx, result);
-    };
-    */
+    return Matrix3.multiply(pfToIcrf, fToPfMtx, result);*/
+        return Matrix3.identity
+    }
+    
     /**
     * Transform a point from model coordinates to window coordinates.
     *

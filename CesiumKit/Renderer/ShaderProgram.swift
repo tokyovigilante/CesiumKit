@@ -74,7 +74,6 @@ class ShaderProgram {
     private var _uniformBufferAlignment: Int = -1
     
     private (set) var vertexUniformSize = -1
-    private (set) var fragmentUniformOffset = -1
     private (set) var fragmentUniformSize = -1
     
     var uniformBufferSize: Int {
@@ -229,10 +228,9 @@ class ShaderProgram {
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
         }
+        offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
         vertexUniformSize = offset
         
-        offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
-        fragmentUniformOffset = offset
         for uniform in _fragmentUniforms {
             let padding = paddingRequredForUniform(uniform, lastOffset: offset)
             offset += padding
@@ -277,7 +275,7 @@ class ShaderProgram {
         #if os(OSX)
             buffer.metalBuffer.didModifyRange(NSMakeRange(0, buffer.length))
         #endif
-        let fragmentOffset = command.pipeline!.shaderProgram.fragmentUniformOffset
+        let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
     }
     

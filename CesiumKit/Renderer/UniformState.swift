@@ -656,7 +656,6 @@ class UniformState {
     * @type {Cartesian3}
     */
     var sunDirectionWC: Cartesian3 {
-        return Cartesian3(x: 0.868, y: 0.300, z: -0.397)
         return _sunDirectionWC
     }
     
@@ -770,13 +769,14 @@ class UniformState {
     //var transformMatrix = new Matrix3();
     //var sunCartographicScratch = new Cartographic();
     func setSunAndMoonDirections(frameState: FrameState) {
-        // FIXME: setSunAndMoonDirections
-        /*if (!defined(Transforms.computeIcrfToFixedMatrix(frameState.time, transformMatrix))) {
-            transformMatrix = Transforms.computeTemeToPseudoFixedMatrix(frameState.time, transformMatrix);
+
+        var transformMatrix = Matrix3()
+        if Transforms.computeIcrfToFixedMatrix(frameState.time) == nil {
+            transformMatrix = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
         }
         
-        var position = Simon1994PlanetaryPositions.computeSunPositionInEarthInertialFrame(frameState.time, uniformState._sunPositionWC);
-        Matrix3.multiplyByVector(transformMatrix, position, position);
+        _sunPositionWC = Simon1994PlanetaryPositions.computeSunPositionInEarthInertialFrame(frameState.time)
+        /*Matrix3.multiplyByVector(transformMatrix, position, position);
         
         Cartesian3.normalize(position, uniformState._sunDirectionWC);
         
@@ -791,7 +791,7 @@ class UniformState {
         var projection = frameState.mapProjection;
         var ellipsoid = projection.ellipsoid;
         var sunCartographic = ellipsoid.cartesianToCartographic(uniformState._sunPositionWC, sunCartographicScratch);
-        projection.project(sunCartographic, uniformState._sunPositionColumbusView);*/
+        projection.project(sunCartographic, uniformState._sunPositionColumbusView)*/
     }
     
     /**
@@ -848,7 +848,7 @@ class UniformState {
         }
         
         //FIXME: setSunAndMoonDirections
-        //setSunAndMoonDirections(this, frameState);
+        setSunAndMoonDirections(frameState)
         
         _entireFrustum.x = camera.frustum.near
         _entireFrustum.y = camera.frustum.far
