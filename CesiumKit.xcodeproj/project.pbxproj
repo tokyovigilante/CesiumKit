@@ -919,7 +919,7 @@
 		9491BBAF1949D084007C1C4C /* TerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainProvider.swift; sourceTree = "<group>"; };
 		9491BBB11949D156007C1C4C /* Credit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		9491BBB51949D63A007C1C4C /* TilingScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilingScheme.swift; sourceTree = "<group>"; };
-		94985A651A38444C00FFAD81 /* CesiumKitRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CesiumKitRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		94985A651A38444C00FFAD81 /* CesiumKitRunner iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CesiumKitRunner iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		94985A681A38444C00FFAD81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94985A691A38444C00FFAD81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94985A6F1A38444C00FFAD81 /* CesiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CesiumViewController.swift; sourceTree = "<group>"; };
@@ -1548,7 +1548,7 @@
 			name = Platform;
 			sourceTree = "<group>";
 		};
-		94985A661A38444C00FFAD81 /* CesiumKitRunner */ = {
+		94985A661A38444C00FFAD81 /* CesiumKitRunner iOS */ = {
 			isa = PBXGroup;
 			children = (
 				94985A691A38444C00FFAD81 /* AppDelegate.swift */,
@@ -1558,6 +1558,7 @@
 				94985A761A38444C00FFAD81 /* LaunchScreen.xib */,
 				94985A671A38444C00FFAD81 /* Supporting Files */,
 			);
+			name = "CesiumKitRunner iOS";
 			path = CesiumKitRunner;
 			sourceTree = "<group>";
 		};
@@ -1576,7 +1577,7 @@
 				945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
-				94985A661A38444C00FFAD81 /* CesiumKitRunner */,
+				94985A661A38444C00FFAD81 /* CesiumKitRunner iOS */,
 				940A5AEB1B6D54400095A86F /* CesiumKitRunner OSX */,
 				94DC79241918425300012DC4 /* Frameworks */,
 				94DC79231918425300012DC4 /* Products */,
@@ -1588,7 +1589,7 @@
 			children = (
 				94DC79321918425300012DC4 /* CesiumKitTests.xctest */,
 				9413B7841A37B8D900FFAD81 /* CesiumKit.framework */,
-				94985A651A38444C00FFAD81 /* CesiumKitRunner.app */,
+				94985A651A38444C00FFAD81 /* CesiumKitRunner iOS.app */,
 				947820DB1B5A2C0E0095A86F /* CesiumKit.framework */,
 				947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */,
 				940A5AEA1B6D54400095A86F /* CesiumKitRunner OSX.app */,
@@ -1758,9 +1759,9 @@
 			productReference = 947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		94985A641A38444C00FFAD81 /* CesiumKitRunner */ = {
+		94985A641A38444C00FFAD81 /* CesiumKitRunner iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 94985A851A38444C00FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKitRunner" */;
+			buildConfigurationList = 94985A851A38444C00FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKitRunner iOS" */;
 			buildPhases = (
 				94985A611A38444C00FFAD81 /* Sources */,
 				94985A621A38444C00FFAD81 /* Frameworks */,
@@ -1772,9 +1773,9 @@
 			dependencies = (
 				94CA7E0C1A998E4200FFAD81 /* PBXTargetDependency */,
 			);
-			name = CesiumKitRunner;
+			name = "CesiumKitRunner iOS";
 			productName = CesiumKitRunner;
-			productReference = 94985A651A38444C00FFAD81 /* CesiumKitRunner.app */;
+			productReference = 94985A651A38444C00FFAD81 /* CesiumKitRunner iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		94DC79311918425300012DC4 /* CesiumKitTests */ = {
@@ -1849,7 +1850,7 @@
 			targets = (
 				94DC79311918425300012DC4 /* CesiumKitTests */,
 				9413B7831A37B8D900FFAD81 /* CesiumKit iOS */,
-				94985A641A38444C00FFAD81 /* CesiumKitRunner */,
+				94985A641A38444C00FFAD81 /* CesiumKitRunner iOS */,
 				947820DA1B5A2C0E0095A86F /* CesiumKit OSX */,
 				947820E31B5A2C0E0095A86F /* CesiumKit OSXTests */,
 				940A5AE91B6D54400095A86F /* CesiumKitRunner OSX */,
@@ -3069,7 +3070,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		94985A851A38444C00FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKitRunner" */ = {
+		94985A851A38444C00FFAD81 /* Build configuration list for PBXNativeTarget "CesiumKitRunner iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				94985A861A38444C00FFAD81 /* Debug */,
