@@ -47,6 +47,8 @@ class SkyAtmosphere {
     
     private let _command = DrawCommand()
     
+    private let _rayleighScaleDepth: Float = 0.25
+    
     private var _rpSkyFromSpace: RenderPipeline? = nil
     
     private var _rpSkyFromAtmosphere: RenderPipeline? = nil
@@ -55,9 +57,12 @@ class SkyAtmosphere {
         self.ellipsoid = ellipsoid
 
         let map = SkyAtmosphereUniformMap()
-        map.rayleighScaleDepth = 0.25
         map.fOuterRadius = Float(ellipsoid.radii.multiplyByScalar(1.025).maximumComponent())
+        map.fOuterRadius2 = map.fOuterRadius * map.fOuterRadius
         map.fInnerRadius = Float(ellipsoid.maximumRadius)
+        map.fScale = 1.0 / (map.fOuterRadius - map.fInnerRadius)
+        map.fScaleDepth = _rayleighScaleDepth
+        map.fScaleOverScaleDepth = map.fScale / map.fScaleDepth
         _command.uniformMap = map
         _command.owner = self
     }
@@ -77,10 +82,7 @@ class SkyAtmosphere {
             return nil
         }
     
-    
         if _command.vertexArray == nil {
-
-            
             let geometry = EllipsoidGeometry(
                 radii : ellipsoid.radii.multiplyByScalar(1.025),
                 slicePartitions : 256,
@@ -156,9 +158,15 @@ private class SkyAtmosphereUniformMap: UniformMap {
     
     var fOuterRadius = Float.NaN
     
+    var fOuterRadius2 = Float.NaN
+    
     var fInnerRadius = Float.NaN
     
-    var rayleighScaleDepth = Float.NaN
+    var fScale = Float.NaN
+    
+    var fScaleDepth = Float.NaN
+    
+    var fScaleOverScaleDepth = Float.NaN
 
     private var _floatUniforms: [String: FloatUniformFunc] = [
         
@@ -175,8 +183,7 @@ private class SkyAtmosphereUniformMap: UniformMap {
         },
         
         "fOuterRadius2": { (map: UniformMap) -> [Float] in
-            let fOuterRadius = (map as! SkyAtmosphereUniformMap).fOuterRadius
-            return [fOuterRadius * fOuterRadius]
+            return [(map as! SkyAtmosphereUniformMap).fOuterRadius2]
         },
         
         "fInnerRadius": { (map: UniformMap) -> [Float] in
@@ -184,18 +191,17 @@ private class SkyAtmosphereUniformMap: UniformMap {
         },
         
         "fScale": { (map: UniformMap) -> [Float] in
-            let saMap = map as! SkyAtmosphereUniformMap
-            return [1.0 / saMap.fOuterRadius - saMap.fInnerRadius]
+            return [(map as! SkyAtmosphereUniformMap).fScale]
         },
         
         "fScaleDepth": { (map: UniformMap) -> [Float] in
-            return [(map as! SkyAtmosphereUniformMap).rayleighScaleDepth]
+            return [(map as! SkyAtmosphereUniformMap).fScaleDepth]
         },
         
         
         "fScaleOverScaleDepth": { (map: UniformMap) -> [Float] in
             let saMap = map as! SkyAtmosphereUniformMap
-            return [(1.0 / (saMap.fOuterRadius - saMap.fInnerRadius)) / saMap.rayleighScaleDepth]
+            return [(map as! SkyAtmosphereUniformMap).fScaleOverScaleDepth]
         }
         
     ]
