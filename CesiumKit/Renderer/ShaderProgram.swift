@@ -236,7 +236,7 @@ class ShaderProgram {
             offset += padding
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
-            print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
+            //print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
         }
         
         offset = ((offset + 255) / 256) * 256 // overall buffer size must be a multiple of 256
