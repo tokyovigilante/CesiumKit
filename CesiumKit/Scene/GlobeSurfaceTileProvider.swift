@@ -204,12 +204,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         if _layerOrderChanged {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
-                if var imagery: [TileImagery] = tile.data?.imagery {
-                    imagery.sortInPlace(self.sortTileImageryByLayerIndex)
-                }
+                tile.data?.imagery.sortInPlace(self.sortTileImageryByLayerIndex)
             })
         }
-        
         _tilesToRenderByTextureCount.removeAll()
         _usedDrawCommands = 0
         

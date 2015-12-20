@@ -46,19 +46,19 @@ public class Clock {
     * The start time of the clock.
     * @type {JulianDate}
     */
-    var startTime: NSDate
+    var startTime: JulianDate
     
     /**
     * The stop time of the clock.
     * @type {JulianDate}
     */
-    var stopTime: NSDate
+    var stopTime: JulianDate
     
     /**
     * The current time.
     * @type {JulianDate}
     */
-    var currentTime: NSDate
+    var currentTime: JulianDate
     
     /**
      * Determines if calls to <code>tick</code> are frame dependent or system clock dependent.
@@ -115,48 +115,45 @@ public class Clock {
     private var _lastSystemTime: NSDate
     
     public init(
-        startTime: NSDate? = nil,
-        currentTime: NSDate? = nil,
-        stopTime: NSDate? = nil,
+        startTime: JulianDate? = nil,
+        currentTime: JulianDate? = nil,
+        stopTime: JulianDate? = nil,
         clockRange: ClockRange = .Unbounded,
         clockStep: ClockStep = .SystemClockMultiplier,
         multiplier: Double = 1.0,
         canAnimate: Bool = true,
         shouldAnimate: Bool = true,
         isUTC: Bool) {
-            
-            
-            var startTime: NSDate? = startTime
+            var startTime: JulianDate? = startTime
             let startTimeUndefined = startTime == nil
             
-            var stopTime: NSDate? = stopTime
+            var stopTime: JulianDate? = stopTime
             let stopTimeUndefined = stopTime == nil
             
-            var currentTime: NSDate? = currentTime
+            var currentTime: JulianDate? = currentTime
             let currentTimeUndefined = currentTime == nil
             
             if startTimeUndefined && stopTimeUndefined && currentTimeUndefined {
-                currentTime = NSDate.taiDate()
-                startTime = currentTime!.copy() as? NSDate
-                stopTime = startTime!.dateByAddingDays(1.0)
+                currentTime = JulianDate.now()
+                startTime = currentTime!
+                stopTime = startTime!.addDays(1.0)
             } else if startTimeUndefined && stopTimeUndefined {
-                startTime = currentTime!.copy() as? NSDate
-                stopTime = currentTime?.dateByAddingDays(1.0)
-            } else if startTimeUndefined && currentTimeUndefined {
-                startTime = stopTime!.dateByAddingDays(-1.0)
-                currentTime = startTime!.copy() as? NSDate
+                startTime = currentTime!
+                stopTime = currentTime?.addDays(1.0)
+                startTime = stopTime!.addDays(-1.0)
+                currentTime = startTime!
             } else if currentTimeUndefined && stopTimeUndefined {
-                currentTime = startTime?.copy() as? NSDate
-                stopTime = startTime!.dateByAddingDays(1.0)
+                currentTime = startTime!
+                stopTime = startTime!.addDays(1.0)
             } else if currentTimeUndefined {
-                currentTime = startTime!.copy() as? NSDate
+                currentTime = startTime!
             } else if stopTimeUndefined {
-                stopTime = currentTime!.dateByAddingDays(1.0)
+                stopTime = currentTime!.addDays(1.0)
             } else if startTimeUndefined {
-                startTime = currentTime!.copy() as? NSDate
+                startTime = currentTime!
             }
             
-            assert(startTime!.compare(stopTime!) == .OrderedAscending, "startTime must come before stopTime.")
+            assert(startTime!.lessThanOrEquals(stopTime!), "startTime must come before stopTime.")
             
             self.startTime = startTime!
             self.stopTime = stopTime!
@@ -189,39 +186,32 @@ public class Clock {
      *
      * @returns {JulianDate} The new value of the <code>currentTime</code> property.
      */
-    func tick() -> NSDate {
+    func tick() -> JulianDate {
         
-        let currentSystemTime: NSDate
-        if isUTC {
-            currentSystemTime = NSDate()
-        } else {
-            currentSystemTime = NSDate.taiDate()
-        }
-        
-        var currentTime = self.currentTime.copy() as! NSDate
+        let currentSystemTime = NSDate()
+        var currentTime = self.currentTime
         
         if canAnimate && shouldAnimate {
             if clockStep == .SystemClock {
-                currentTime = currentSystemTime
+                currentTime = JulianDate.now()
             } else {
                 if clockStep == .TickDependent {
-                    currentTime = currentTime.dateByAddingTimeInterval(multiplier)
+                    currentTime = currentTime.addSeconds(multiplier)
                 } else {
-                    currentTime = currentTime.dateByAddingTimeInterval(multiplier * currentSystemTime.timeIntervalSinceDate(_lastSystemTime))
+                    currentTime = currentTime.addSeconds(multiplier * currentSystemTime.timeIntervalSinceDate(_lastSystemTime))
                 }
-                
                 if clockRange == .Clamped {
-                    if currentTime.compare(startTime) == .OrderedAscending {
-                        currentTime = startTime.copy() as! NSDate
-                    } else if currentTime.compare(stopTime) == .OrderedDescending {
-                        currentTime = stopTime.copy() as! NSDate
+                    if currentTime.lessThan(startTime) {
+                        currentTime = startTime
+                    } else if currentTime.greaterThan(stopTime) {
+                        currentTime = stopTime
                     }
                 } else if clockRange == .LoopStop {
-                    if currentTime.compare(startTime) == .OrderedAscending {
-                        currentTime = startTime.copy() as! NSDate
+                    if currentTime.lessThan(startTime) {
+                        currentTime = startTime
                     }
-                    while currentTime.compare(stopTime) == .OrderedAscending {
-                        currentTime = currentTime.dateByAddingTimeInterval(stopTime.timeIntervalSinceDate(currentTime))
+                    while currentTime.greaterThan(stopTime) {
+                        currentTime = currentTime.addSeconds(currentTime.secondsDifference(stopTime))
                     }
                 }
             }

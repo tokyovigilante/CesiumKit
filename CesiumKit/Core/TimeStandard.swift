@@ -16,7 +16,7 @@ import Foundation
  *
  * @see JulianDate
  */
-enum TimeStandard {
+public enum TimeStandard {
     /**
     * Represents the coordinated Universal Time (UTC) time standard.
     *

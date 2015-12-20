@@ -43,26 +43,25 @@ extension Array {
     * var index = Cesium.binarySearch(numbers, 6, comparator); // 3
     */
     func binarySearch (itemToFind: Element, comparator: BinarySearchComparator) -> Int {
-
-    var low = 0;
-    var high = self.count - 1
-    /*var i;
-    var comparison;
-    
-    while (low <= high) {
-    i = ~~((low + high) / 2);
-    comparison = comparator(array[i], itemToFind);
-    if (comparison < 0) {
-    low = i + 1;
-    continue;
-    }
-    if (comparison > 0) {
-    high = i - 1;
-    continue;
-    }
-    return i;
-    }*/
-    return ~(high + 1)
+        var low = 0
+        var high = self.count - 1
+        var i: Int
+        var comparison: Int
+        
+        while low <= high {
+            i = Int(trunc(Double(low + high) / 2.0))
+            comparison = comparator(a: self[i], b: itemToFind)
+            if comparison < 0 {
+                low = i + 1
+                continue
+            }
+            if comparison > 0 {
+                high = i - 1
+                continue
+            }
+            return i;
+        }
+        return ~(high + 1)
     }
     
     /**

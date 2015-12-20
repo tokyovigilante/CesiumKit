@@ -775,7 +775,7 @@ class UniformState {
             transformMatrix = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
         }
         
-        _sunPositionWC = Simon1994PlanetaryPositions.computeSunPositionInEarthInertialFrame(frameState.time)
+        _sunPositionWC = Cartesian3(x: 0.5, y: 0.5, z: 0.5)//Simon1994PlanetaryPositions.sharedInstance.computeSunPositionInEarthInertialFrame(frameState.time)
         /*Matrix3.multiplyByVector(transformMatrix, position, position);
         
         Cartesian3.normalize(position, uniformState._sunDirectionWC);
@@ -801,7 +801,8 @@ class UniformState {
     *
     * @param {Object} frustum The frustum to synchronize with.
     */
-    func updateFrustum (var frustum: Frustum) {
+    func updateFrustum (frustum: Frustum) {
+        var frustum = frustum
         projection = frustum.projectionMatrix
         if frustum.infiniteProjectionMatrix != nil {
             infiniteProjection = frustum.infiniteProjectionMatrix!
@@ -993,8 +994,6 @@ class UniformState {
     func cleanNormal() {
         if (_normalDirty) {
             _normalDirty = false
-            
-            var m = _normal
             _normal = inverseModelView.rotation().transpose()
         }
     }

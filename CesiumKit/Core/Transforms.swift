@@ -301,20 +301,18 @@ struct Transforms {
     *    camera.lookAtTransform(transform, offset);
     * });
     */
-    static func computeTemeToPseudoFixedMatrix (date: NSDate) -> Matrix3 {
+    static func computeTemeToPseudoFixedMatrix (date: JulianDate) -> Matrix3 {
         
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
+        let dateInUtc = date.addSeconds(Double(-date.computeTaiMinusUtc()))
         
-        let dateInUtc = date.utcDateForTAIOffsetDate()
-        
-        let utcComponents = dateInUtc.computeJulianDateComponents()
-        let utcDayNumber = Double(utcComponents.dayNumber)
-        let utcSecondsIntoDay = utcComponents.secondsOfDay
+        let utcDayNumber = Double(dateInUtc.dayNumber)
+        let utcSecondsIntoDay = dateInUtc.secondsOfDay
         
         let t: Double
-        let diffDays = Double(utcDayNumber - 2451545)
+        let diffDays = utcDayNumber - 2451545.0
         if utcSecondsIntoDay >= 43200.0 {
             t = (diffDays + 0.5) / TimeConstants.DaysPerJulianCentury
         } else {
@@ -422,7 +420,7 @@ struct Transforms {
     *   }
     * });
     */
-    static func computeIcrfToFixedMatrix (date: NSDate) -> Matrix3? {
+    static func computeIcrfToFixedMatrix (date: JulianDate) -> Matrix3? {
         guard let fixedToIcrfMtx: Matrix3 = Transforms.computeFixedToIcrfMatrix(date) else {
             return nil
         }
@@ -458,7 +456,7 @@ struct Transforms {
     *     pointInInertial = Cesium.Matrix3.multiplyByVector(fixedToIcrf, pointInFixed, pointInInertial);
     * }
     */
-    static func computeFixedToIcrfMatrix (date: NSDate) -> Matrix3? {
+    static func computeFixedToIcrfMatrix (date: JulianDate) -> Matrix3? {
         return nil
     /*
     // Compute pole wander

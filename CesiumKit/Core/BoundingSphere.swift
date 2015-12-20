@@ -312,7 +312,7 @@ BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, r
         var zMax = currentPos
         
         let numElements = positions.count
-        for (var i = 0; i < numElements; i += stride) {
+        for i in 0.stride(to: numElements, by: stride) {
             let x = Double(positions[i]) + center.x
             let y = Double(positions[i + 1]) + center.y
             let z = Double(positions[i + 2]) + center.z

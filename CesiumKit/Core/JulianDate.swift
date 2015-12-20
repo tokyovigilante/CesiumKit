@@ -21,35 +21,39 @@ import Foundation
  * @param {Number} secondsOfDay The number of seconds into the current Julian Day Number.  Fractional seconds, negative seconds and seconds greater than a day will be handled correctly.
  * @param {TimeStandard} [timeStandard=TimeStandard.UTC] The time standard in which the first two parameters are defined.
  */
-struct JulianDate {
+public struct JulianDate {
     
     /**
      * Gets or sets the number of whole days.
      * @type {Number}
      */
-    private (set) var dayNumber: Double = Double.NaN
+    public private (set) var dayNumber: Int = -1
     
     /**
      * Gets or sets the number of seconds into the current day.
      * @type {Number}
      */
-    private (set) var secondsOfDay: Double
+    public private (set) var secondsOfDay: Double = Double.NaN
     
-    init(julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .UTC) {
+    public init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .UTC) {
 
         //If julianDayNumber is fractional, make it an integer and add the number of seconds the fraction represented.
         let wholeDays = julianDayNumber.wholeComponent
         let secondsOfDay = secondsOfDay + (julianDayNumber - wholeDays) * TimeConstants.SecondsPerDay
         
-        setComponents(wholeDays: wholeDays, secondsOfDay: secondsOfDay)
+        setComponents(wholeDays: Int(wholeDays), secondsOfDay: secondsOfDay)
         
-        if (timeStandard == TimeStandard.UTC) {
+        if timeStandard == .UTC {
             convertUtcToTai()
         }
     }
+    
+    public init (fromNSDate date: NSDate) {
+        let components = date.computeJulianDateComponents()
+        self.init(julianDayNumber: Double(components.dayNumber), secondsOfDay: components.secondsOfDay, timeStandard: .UTC)
+    }
 
     /*
-    
     var gregorianDateScratch = new GregorianDate();
     var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var daysInLeapFeburary = 29;
@@ -58,7 +62,7 @@ struct JulianDate {
         return Int(leapSecond.julianDate.compare(dateToFind.julianDate))
     }
     
-    func convertUtcToTai() {
+    func convertUtcToTai() -> JulianDate {
         //Even though julianDate is in UTC, we'll treat it as TAI and
         //search the leap second table for it.
         
@@ -71,24 +75,24 @@ struct JulianDate {
             index = ~index
         }
         
-        if index >= leapSeconds.count {
-            index = leapSeconds.count - 1
+        if index >= JulianDate._leapSeconds.count {
+            index = JulianDate._leapSeconds.count - 1
         }
         
-        var offset = JulianDate._leapSeconds[index].offset
+        var offset = Double(JulianDate._leapSeconds[index].offset)
         if index > 0 {
             //Now we have the index of the closest leap second that comes on or after our UTC time.
             //However, if the difference between the UTC date being converted and the TAI
             //defined leap second is greater than the offset, we are off by one and need to use
             //the previous leap second.
-            var difference = JulianDate.secondsDifference(leapSeconds[index].julianDate, julianDate);
+            let difference = JulianDate._leapSeconds[index].julianDate.secondsDifference(self)
             if difference > offset {
                 index--
-                offset = leapSeconds[index].offset;
+                offset = Double(JulianDate._leapSeconds[index].offset)
             }
         }
         
-        JulianDate.addSeconds(julianDate, offset, julianDate)
+        return self.addSeconds(offset)
     }
 
     /*
@@ -128,12 +132,12 @@ struct JulianDate {
     return JulianDate.addSeconds(julianDate, -leapSeconds[--index].offset, result);
     }
     */
-    mutating func setComponents(wholeDays wholeDays: Double, secondsOfDay: Double) {
+    mutating func setComponents(wholeDays wholeDays: Int, secondsOfDay: Double) {
         
-        let extraDays = secondsOfDay - (secondsOfDay / TimeConstants.SecondsPerDay).fractionalComponent
+        let extraDays = Int(trunc(secondsOfDay / TimeConstants.SecondsPerDay))
         
         var wholeDays = wholeDays + extraDays
-        var secondsOfDay = secondsOfDay - TimeConstants.SecondsPerDay * extraDays
+        var secondsOfDay = secondsOfDay - TimeConstants.SecondsPerDay * Double(extraDays)
         
         if secondsOfDay < 0 {
             wholeDays--
@@ -145,28 +149,6 @@ struct JulianDate {
     }
 
     /*
-    function computeJulianDateComponents(year, month, day, hour, minute, second, millisecond) {
-    // Algorithm from page 604 of the Explanatory Supplement to the
-    // Astronomical Almanac (Seidelmann 1992).
-    
-    var a = ((month - 14) / 12) | 0;
-    var b = year + 4800 + a;
-    var dayNumber = (((1461 * b) / 4) | 0) + (((367 * (month - 2 - 12 * a)) / 12) | 0) - (((3 * (((b + 100) / 100) | 0)) / 4) | 0) + day - 32075;
-    
-    // JulianDates are noon-based
-    hour = hour - 12;
-    if (hour < 0) {
-    hour += 24;
-    }
-    
-    var secondsOfDay = second + ((hour * TimeConstants.SECONDS_PER_HOUR) + (minute * TimeConstants.SECONDS_PER_MINUTE) + (millisecond * TimeConstants.SECONDS_PER_MILLISECOND));
-    
-    if (secondsOfDay >= 43200.0) {
-    dayNumber -= 1;
-    }
-    
-    return [dayNumber, secondsOfDay];
-    }
     
     //Regular expressions used for ISO8601 date parsing.
     //YYYY
@@ -472,7 +454,7 @@ struct JulianDate {
     
     return result;
     };
-    
+    */
     /**
     * Creates a new instance that represents the current system time.
     * This is equivalent to calling <code>JulianDate.fromDate(new Date());</code>.
@@ -480,10 +462,10 @@ struct JulianDate {
     * @param {JulianDate} [result] An existing instance to use for the result.
     * @returns {JulianDate} The modified result parameter or a new instance if none was provided.
     */
-    JulianDate.now = function(result) {
-    return JulianDate.fromDate(new Date(), result);
-    };
-    
+    static func now () -> JulianDate {
+        return JulianDate(fromNSDate: NSDate())
+    }
+    /*
     var toGregorianDateScratch = new JulianDate(0, 0, TimeStandard.TAI);
     
     /**
@@ -647,13 +629,13 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Number} A negative value if left is less than right, a positive value if left is greater than right, or zero if left and right are equal.
     */
-    func compare (other: JulianDate) -> Double {
+    func compare (other: JulianDate) -> Int {
         
         let julianDayNumberDifference = self.dayNumber - other.dayNumber
         if (julianDayNumberDifference != 0) {
-            return julianDayNumberDifference;
+            return julianDayNumberDifference
         }
-        return self.secondsOfDay - other.secondsOfDay
+        return Int(trunc(self.secondsOfDay - other.secondsOfDay))
     }
     /*
     /**
@@ -694,22 +676,17 @@ struct JulianDate {
     defined(right) &&
     Math.abs(JulianDate.secondsDifference(left, right)) <= epsilon);
     };
-    
+    */
     /**
     * Computes the total number of whole and fractional days represented by the provided instance.
     *
     * @param {JulianDate} julianDate The date.
     * @returns {Number} The Julian date as single floating point number.
     */
-    JulianDate.totalDays = function(julianDate) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(julianDate)) {
-    throw new DeveloperError('julianDate is required.');
+    func totalDays () -> Double {
+        return Double(dayNumber) + (secondsOfDay / TimeConstants.SecondsPerDay)
     }
-    //>>includeEnd('debug');
-    return julianDate.dayNumber + (julianDate.secondsOfDay / TimeConstants.SECONDS_PER_DAY);
-    };
-    */
+    
     /**
     * Computes the difference in seconds between the provided instance.
     *
@@ -717,19 +694,10 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Number} The difference, in seconds, when subtracting <code>right</code> from <code>left</code>.
     */
-    JulianDate.secondsDifference = function(left, right) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-    throw new DeveloperError('left is required.');
+    func secondsDifference (other: JulianDate) -> Double {
+        let dayDifference = Double(self.dayNumber - other.dayNumber) * TimeConstants.SecondsPerDay
+        return dayDifference + (self.secondsOfDay - other.secondsOfDay)
     }
-    if (!defined(right)) {
-    throw new DeveloperError('right is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var dayDifference = (left.dayNumber - right.dayNumber) * TimeConstants.SECONDS_PER_DAY;
-    return (dayDifference + (left.secondsOfDay - right.secondsOfDay));
-    };
     /*
     /**
     * Computes the difference in days between the provided instance.
@@ -752,26 +720,26 @@ struct JulianDate {
     var secondDifference = (left.secondsOfDay - right.secondsOfDay) / TimeConstants.SECONDS_PER_DAY;
     return dayDifference + secondDifference;
     };
-    
+    */
     /**
     * Computes the number of seconds the provided instance is ahead of UTC.
     *
     * @param {JulianDate} julianDate The date.
     * @returns {Number} The number of seconds the provided instance is ahead of UTC
     */
-    JulianDate.computeTaiMinusUtc = function(julianDate) {
-    binarySearchScratchLeapSecond.julianDate = julianDate;
-    var leapSeconds = JulianDate.leapSeconds;
-    var index = binarySearch(leapSeconds, binarySearchScratchLeapSecond, compareLeapSecondDates);
-    if (index < 0) {
-    index = ~index;
-    --index;
-    if (index < 0) {
-    index = 0;
+    func computeTaiMinusUtc () -> Int {
+        let binarySearchScratchLeapSecond = LeapSecond(julianDate: self, offset: 0)
+
+        var index = JulianDate._leapSeconds.binarySearch(binarySearchScratchLeapSecond, comparator: compareLeapSecondDates)
+        if index < 0 {
+            index = ~index
+            --index
+            if (index < 0) {
+                index = 0
+            }
+        }
+        return JulianDate._leapSeconds[index].offset
     }
-    }
-    return leapSeconds[index].offset;
-    };
     
     /**
     * Adds the provided number of seconds to the provided date instance.
@@ -781,22 +749,10 @@ struct JulianDate {
     * @param {JulianDate} result An existing instance to use for the result.
     * @returns {JulianDate} The modified result parameter.
     */
-    JulianDate.addSeconds = function(julianDate, seconds, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(julianDate)) {
-    throw new DeveloperError('julianDate is required.');
+    func addSeconds (seconds: Double) -> JulianDate {
+        return JulianDate(julianDayNumber: Double(self.dayNumber), secondsOfDay: secondsOfDay + seconds, timeStandard: .TAI)
     }
-    if (!defined(seconds)) {
-    throw new DeveloperError('seconds is required.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required.');
-    }
-    //>>includeEnd('debug');
-    
-    return setComponents(julianDate.dayNumber, julianDate.secondsOfDay + seconds, result);
-    };
-    
+    /*
     /**
     * Adds the provided number of minutes to the provided date instance.
     *
@@ -846,7 +802,7 @@ struct JulianDate {
     var newSecondsOfDay = julianDate.secondsOfDay + (hours * TimeConstants.SECONDS_PER_HOUR);
     return setComponents(julianDate.dayNumber, newSecondsOfDay, result);
     };
-    
+    */
     /**
     * Adds the provided number of days to the provided date instance.
     *
@@ -855,22 +811,9 @@ struct JulianDate {
     * @param {JulianDate} result An existing instance to use for the result.
     * @returns {JulianDate} The modified result parameter.
     */
-    JulianDate.addDays = function(julianDate, days, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(julianDate)) {
-    throw new DeveloperError('julianDate is required.');
+    func addDays (days: Double) -> JulianDate {
+        return JulianDate(julianDayNumber: Double(self.dayNumber) + days, secondsOfDay: self.secondsOfDay)
     }
-    if (!defined(days)) {
-    throw new DeveloperError('days is required.');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required.');
-    }
-    //>>includeEnd('debug');
-    
-    var newJulianDayNumber = julianDate.dayNumber + days;
-    return setComponents(newJulianDayNumber, julianDate.secondsOfDay, result);
-    };
     
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is earlier than <code>right</code>, <code>false</code> otherwise.
@@ -879,9 +822,9 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is earlier than <code>right</code>, <code>false</code> otherwise.
     */
-    JulianDate.lessThan = function(left, right) {
-    return JulianDate.compare(left, right) < 0;
-    };
+    func lessThan (other: JulianDate) -> Bool {
+        return self.compare(other) < 0
+    }
     
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is earlier than or equal to <code>right</code>, <code>false</code> otherwise.
@@ -890,9 +833,9 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is earlier than or equal to <code>right</code>, <code>false</code> otherwise.
     */
-    JulianDate.lessThanOrEquals = function(left, right) {
-    return JulianDate.compare(left, right) <= 0;
-    };
+    func lessThanOrEquals (other: JulianDate) -> Bool {
+        return self.compare(other) <= 0
+    }
     
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is later than <code>right</code>, <code>false</code> otherwise.
@@ -901,9 +844,9 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is later than <code>right</code>, <code>false</code> otherwise.
     */
-    JulianDate.greaterThan = function(left, right) {
-    return JulianDate.compare(left, right) > 0;
-    };
+    func greaterThan (other: JulianDate) -> Bool {
+        return self.compare(other) > 0
+    }
     
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is later than or equal to <code>right</code>, <code>false</code> otherwise.
@@ -912,20 +855,10 @@ struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is later than or equal to <code>right</code>, <code>false</code> otherwise.
     */
-    JulianDate.greaterThanOrEquals = function(left, right) {
-    return JulianDate.compare(left, right) >= 0;
-    };
-    
-    /**
-    * Duplicates this instance.
-    *
-    * @param {JulianDate} [result] An existing instance to use for the result.
-    * @returns {JulianDate} The modified result parameter or a new instance if none was provided.
-    */
-    JulianDate.prototype.clone = function(result) {
-    return JulianDate.clone(this, result);
-    };
-    
+    func greaterThanOrEquals (other: JulianDate) -> Bool {
+        return self.compare(other) >= 0
+    }
+    /*
     /**
     * Compares this and the provided instance and returns <code>true</code> if they are equal, <code>false</code> otherwise.
     *
