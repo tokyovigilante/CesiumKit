@@ -51,11 +51,11 @@ struct BoundingSphere: BoundingVolume {
     *
     * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
     */
-    static func fromPoints (points: [Cartesian3]) -> BoundingSphere {
+    init(fromPoints points: [Cartesian3]) {
         
-        var result = BoundingSphere()
         if (points.count == 0) {
-            return result
+            self.init()
+            return
         }
         
         var currentPos = points[points.startIndex]
@@ -164,13 +164,12 @@ struct BoundingSphere: BoundingVolume {
             }
         }
         if (ritterRadius < naiveRadius) {
-            result.center = ritterCenter
-            result.radius = ritterRadius
+            center = ritterCenter
+            radius = ritterRadius
         } else {
-            result.center = naiveCenter
-            result.radius = naiveRadius
+            center = naiveCenter
+            radius = naiveRadius
         }
-        return result
     }
    
     /**
@@ -181,8 +180,8 @@ struct BoundingSphere: BoundingVolume {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    static func fromRectangle2D(rectangle: Rectangle?, projection: MapProjection = GeographicProjection()) -> BoundingSphere {
-        return BoundingSphere.fromRectangleWithHeights2D(rectangle, projection: projection, minimumHeight: 0.0, maximumHeight: 0.0)
+    init (fromRectangle2D rectangle: Rectangle?, projection: MapProjection = GeographicProjection()) {
+        self.init(fromRectangleWithHeights2D: rectangle, projection: projection, minimumHeight: 0.0, maximumHeight: 0.0)
     }
 
     /**
@@ -196,14 +195,15 @@ struct BoundingSphere: BoundingVolume {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    static func fromRectangleWithHeights2D(
-        rectangle: Rectangle?,
+    init (
+        fromRectangleWithHeights2D rectangle: Rectangle?,
         projection: MapProjection = GeographicProjection(),
         minimumHeight: Double = 0.0,
-        maximumHeight: Double = 0.0) -> BoundingSphere {
+        maximumHeight: Double = 0.0) {
 
             if rectangle == nil {
-                return BoundingSphere()
+                self.init()
+                return
             }
             
             var fromRectangle2DSouthwest = rectangle!.southwest()
@@ -218,34 +218,27 @@ struct BoundingSphere: BoundingVolume {
             let height = upperRight.y - lowerLeft.y
             let elevation = upperRight.z - lowerLeft.z
             
-            return BoundingSphere(
-                center: Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5),
-                radius: sqrt(width * width + height * height + elevation * elevation) * 0.5)
+            
+            center = Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5)
+            radius = sqrt(width * width + height * height + elevation * elevation) * 0.5
+    }
+    
+    /**
+    * Computes a bounding sphere from an rectangle in 3D. The bounding sphere is created using a subsample of points
+    * on the ellipsoid and contained in the rectangle. It may not be accurate for all rectangles on all types of ellipsoids.
+    *
+    * @param {Rectangle} rectangle The valid rectangle used to create a bounding sphere.
+    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid used to determine positions of the rectangle.
+    * @param {Number} [surfaceHeight=0.0] The height above the surface of the ellipsoid.
+    * @param {BoundingSphere} [result] The object onto which to store the result.
+    * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
+    */
+    init (fromRectangle3D rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0) {
+        let positions: [Cartesian3]
+        positions = rectangle.subsample(ellipsoid, surfaceHeight: surfaceHeight)
+        self.init(fromPoints: positions)
     }
 
-/**
-* Computes a bounding sphere from an rectangle in 3D. The bounding sphere is created using a subsample of points
-* on the ellipsoid and contained in the rectangle. It may not be accurate for all rectangles on all types of ellipsoids.
-*
-* @param {Rectangle} rectangle The valid rectangle used to create a bounding sphere.
-* @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid used to determine positions of the rectangle.
-* @param {Number} [surfaceHeight=0.0] The height above the surface of the ellipsoid.
-* @param {BoundingSphere} [result] The object onto which to store the result.
-* @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
-*/
-    /*
-BoundingSphere.fromRectangle3D = function(rectangle, ellipsoid, surfaceHeight, result) {
-    ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-    surfaceHeight = defaultValue(surfaceHeight, 0.0);
-    
-    var positions;
-    if (defined(rectangle)) {
-        positions = Rectangle.subsample(rectangle, ellipsoid, surfaceHeight, fromRectangle3DScratch);
-    }
-    
-    return BoundingSphere.fromPoints(positions, result);
-};
-*/
     /**
     * Computes a tight-fitting bounding sphere enclosing a list of 3D points, where the points are
     * stored in a flat array in X, Y, Z, order.  The bounding sphere is computed by running two
