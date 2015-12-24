@@ -190,7 +190,7 @@ class EllipsoidalOccluder {
     */
     func computeHorizonCullingPointFromRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid) -> Cartesian3? {
         let positions = rectangle.subsample(ellipsoid)
-        let bs = BoundingSphere.fromPoints(positions)
+        let bs = BoundingSphere(fromPoints: positions)
         
         // If the bounding sphere center is too close to the center of the occluder, it doesn't make
         // sense to try to horizon cull it.

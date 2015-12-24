@@ -27,43 +27,13 @@ class Globe {
         
     private var _surface: QuadtreePrimitive
     
-    private let _northPoleCommand: DrawCommand
-    
-    private let _southPoleCommand: DrawCommand
-    
     /**
     * The terrain provider providing surface geometry for this globe.
     * @type {TerrainProvider}
     */
     var terrainProvider: TerrainProvider
     
-    private var _occluder: Occluder
-    
-    var _rsColor: RenderState? = nil
-    var _rsColorWithoutDepthTest: RenderState? = nil
-    
-    var drawNorthPole = false
-    var drawSouthPole = false
-    
     private var _mode = SceneMode.Scene3D
-
-    /**
-    * Determines the color of the north pole. If the day tile provider imagery does not
-    * extend over the north pole, it will be filled with this color before applying lighting.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3(2.0 / 255.0, 6.0 / 255.0, 18.0 / 255.0)
-    */
-    var northPoleColor = Cartesian4(x: 2.0 / 255.0, y: 6.0 / 255.0, z: 18.0 / 255.0, w: 1.0)
-    
-    /**
-    * Determines the color of the south pole. If the day tile provider imagery does not
-    * extend over the south pole, it will be filled with this color before applying lighting.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3(1.0, 1.0, 1.0)
-    */
-    var southPoleColor = Cartesian4(x: 1.0, y: 1.0, z: 1.0, w: 1.0)
     
     /**
     * Determines if the globe will be shown.
@@ -114,24 +84,6 @@ class Globe {
     var enableLighting = false
     
     /**
-    * The distance where everything becomes lit. This only takes effect
-    * when <code>enableLighting</code> is <code>true</code>.
-    *
-    * @type {Number}
-    * @default 6500000.0
-    */
-    var lightingFadeOutDistance: Float = 6500000
-    
-    /**
-    * The distance where lighting resumes. This only takes effect
-    * when <code>enableLighting</code> is <code>true</code>.
-    *
-    * @type {Number}
-    * @default 9000000.0
-    */
-    var lightingFadeInDistance: Float = 9000000
-        
-    /**
     * True if an animated wave effect should be shown in areas of the globe
     * covered by water; otherwise, false.  This property is ignored if the
     * <code>terrainProvider</code> does not provide a water mask.
@@ -158,16 +110,6 @@ class Globe {
     
     private var _zoomedOutOceanSpecularIntensity: Float = 0.5
     
-    lazy var drawUniforms: Dictionary<String, () -> Any> = {
-        // FIXME: Convert drawUniforms to UniformMap
-        weak var weakSelf = self
-        return [
-            /*"u_zoomedOutOceanSpecularIntensity": { return weakSelf._zoomedOutOceanSpecularIntensity },*/
-            "u_oceanNormalMap" : { return weakSelf!._oceanNormalMap! as Any },
-            //"u_lightingFadeDistance" :  { weakSelf!._lightingFadeDistance as Any }
-        ]
-        }()
-    
     /**
     * Gets or sets the color of the globe when no imagery is available.
     * @memberof Globe.prototype
@@ -193,8 +135,6 @@ class Globe {
         
         imageryLayers = ImageryLayerCollection()
         
-        _occluder = Occluder(occluderBoundingSphere: BoundingSphere(center: Cartesian3.zero, radius: ellipsoid.minimumRadius), cameraPosition: Cartesian3.zero)
-        
         let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
         
         _surfaceShaderSet = GlobeSurfaceShaderSet(
@@ -209,11 +149,6 @@ class Globe {
                 surfaceShaderSet: _surfaceShaderSet
             )
         )
-        
-        _northPoleCommand = DrawCommand(pass: Pass.Opaque)
-        _southPoleCommand = DrawCommand(pass: Pass.Opaque)
-        _northPoleCommand.owner = self
-        _southPoleCommand.owner = self
     }
     
     /*func updateVertexDescriptor () -> VertexDescriptor {
@@ -381,201 +316,7 @@ class Globe {
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
     
-    /*var rightScratch = new Cartesian3();
-    var upScratch = new Cartesian3();
-    var negativeZ = Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3());
-    var cartographicScratch = new Cartographic(0.0, 0.0);
-    var pt1Scratch = new Cartesian3();
-    var pt2Scratch = new Cartesian3();*/
     
-    func computePoleQuad(frameState frameState: FrameState, maxLat: Double, maxGivenLat: Double, viewProjMatrix: Matrix4, viewportTransformation: Matrix4) -> BoundingRectangle {
-        //FIXME: PoleQuad
-        /*
-        cartographicScratch.longitude = 0.0;
-        cartographicScratch.latitude = maxGivenLat;
-        var pt1 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
-        
-        cartographicScratch.longitude = Math.PI;
-        var pt2 = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt2Scratch);
-        
-        var radius = Cartesian3.magnitude(Cartesian3.subtract(pt1, pt2, rightScratch), rightScratch) * 0.5;
-        
-        cartographicScratch.longitude = 0.0;
-        cartographicScratch.latitude = maxLat;
-        var center = globe._ellipsoid.cartographicToCartesian(cartographicScratch, pt1Scratch);
-        
-        var right;
-        var dir = frameState.camera.direction;
-        if (1.0 - Cartesian3.dot(negativeZ, dir) < CesiumMath.EPSILON6) {
-        right = Cartesian3.UNIT_X;
-        } else {
-        right = Cartesian3.normalize(Cartesian3.cross(dir, Cartesian3.UNIT_Z, rightScratch), rightScratch);
-        }
-        
-        var screenRight = Cartesian3.add(center, Cartesian3.multiplyByScalar(right, radius, rightScratch), rightScratch);
-        var screenUp = Cartesian3.add(center, Cartesian3.multiplyByScalar(Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, right, upScratch), upScratch), radius, upScratch), upScratch);
-        
-        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, center, center);
-        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, screenRight, screenRight);
-        Transforms.pointToGLWindowCoordinates(viewProjMatrix, viewportTransformation, screenUp, screenUp);
-        
-        var halfWidth = Math.floor(Math.max(Cartesian3.distance(screenUp, center), Cartesian3.distance(screenRight, center)));
-        var halfHeight = halfWidth;
-        */
-        return BoundingRectangle()
-            /*floor(center.x) - halfWidth,
-            floor(center.y) - halfHeight,
-            halfWidth * 2.0,
-            halfHeight * 2.0)*/
- 
-    }
-    
-    func fillPoles(context context: Context, frameState: FrameState) {
-        
-        if frameState.mode != SceneMode.Scene3D {
-            return
-        }
-        
-        if !terrainProvider.ready {
-            return
-        }
-        
-        let terrainMaxRectangle = terrainProvider.tilingScheme.rectangle
-        
-        let viewProjMatrix = context.uniformState.viewProjection
-        
-        let viewPort = BoundingRectangle(width: Double(context.width), height: Double(context.height))
-
-        let viewportTransformation = Matrix4.computeViewportTransformation(viewPort, nearDepthRange: 0.0, farDepthRange: 1.0)
-        let latitudeExtension = 0.05
-        
-        var rectangle: Rectangle
-        var boundingVolume: BoundingVolume
-        var frustumCull: Bool
-        var occludeePoint: Cartesian3
-        var occluded: Bool
-        var geometry: Geometry
-        var rect: [Float]
-        
-        // handle north pole
-        if terrainMaxRectangle.north < M_PI_2 {
-            rectangle = Rectangle(east: -M_PI, south: terrainMaxRectangle.north, west: M_PI, north: M_PI_2)
-            boundingVolume = BoundingSphere(fromRectangle3D: rectangle, ellipsoid: ellipsoid)
-            frustumCull = frameState.cullingVolume!.visibility(boundingVolume) == .Outside
-            occludeePoint = _occluder.computeOccludeePointFromRectangle(rectangle, ellipsoid)
-            occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint, 0.0)) || !occluder.isBoundingSphereVisible(boundingVolume);
-            
-            globe._drawNorthPole = !frustumCull && !occluded;
-            if (globe._drawNorthPole) {
-                rect = computePoleQuad(globe, frameState, rectangle.north, rectangle.south - latitudeExtension, viewProjMatrix, viewportTransformation);
-                polePositionsScratch[0] = rect.x;
-                polePositionsScratch[1] = rect.y;
-                polePositionsScratch[2] = rect.x + rect.width;
-                polePositionsScratch[3] = rect.y;
-                polePositionsScratch[4] = rect.x + rect.width;
-                polePositionsScratch[5] = rect.y + rect.height;
-                polePositionsScratch[6] = rect.x;
-                polePositionsScratch[7] = rect.y + rect.height;
-                
-                if (!defined(globe._northPoleCommand.vertexArray)) {
-                    globe._northPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-                    geometry = new Geometry({
-                        attributes : {
-                            position : new GeometryAttribute({
-                            componentDatatype : ComponentDatatype.FLOAT,
-                            componentsPerAttribute : 2,
-                            values : polePositionsScratch
-                            })
-                        }
-                    });
-                    globe._northPoleCommand.vertexArray = VertexArray.fromGeometry({
-                        geometry : geometry,
-                        attributeLocations : {
-                            position : 0
-                        },
-                        bufferUsage : BufferUsage.STREAM_DRAW
-                    });
-                } else {
-                    globe._northPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
-                }
-            }
-        }
-        
-        // handle south pole
-        if terrainMaxRectangle.south > -M_PI_2 {
-            rectangle = new Rectangle(-Math.PI, -CesiumMath.PI_OVER_TWO, Math.PI, terrainMaxRectangle.south);
-            boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-            frustumCull = frameState.cullingVolume.computeVisibility(boundingVolume) === Intersect.OUTSIDE;
-            occludeePoint = Occluder.computeOccludeePointFromRectangle(rectangle, globe._ellipsoid);
-            occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint)) || !occluder.isBoundingSphereVisible(boundingVolume);
-            
-            globe._drawSouthPole = !frustumCull && !occluded;
-            if (globe._drawSouthPole) {
-                rect = computePoleQuad(globe, frameState, rectangle.south, rectangle.north + latitudeExtension, viewProjMatrix, viewportTransformation);
-                polePositionsScratch[0] = rect.x;
-                polePositionsScratch[1] = rect.y;
-                polePositionsScratch[2] = rect.x + rect.width;
-                polePositionsScratch[3] = rect.y;
-                polePositionsScratch[4] = rect.x + rect.width;
-                polePositionsScratch[5] = rect.y + rect.height;
-                polePositionsScratch[6] = rect.x;
-                polePositionsScratch[7] = rect.y + rect.height;
-                
-                if (!defined(globe._southPoleCommand.vertexArray)) {
-                    globe._southPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-                    geometry = new Geometry({
-                        attributes : {
-                            position : new GeometryAttribute({
-                            componentDatatype : ComponentDatatype.FLOAT,
-                            componentsPerAttribute : 2,
-                            values : polePositionsScratch
-                            })
-                        }
-                    });
-                    globe._southPoleCommand.vertexArray = VertexArray.fromGeometry({
-                        geometry : geometry,
-                        attributeLocations : {
-                            position : 0
-                        },
-                        bufferUsage : BufferUsage.STREAM_DRAW
-                    });
-                } else {
-                    globe._southPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
-                }
-            }
-        }
-        
-        var poleIntensity = 0.0;
-        var baseLayer = globe._imageryLayerCollection.length > 0 ? globe._imageryLayerCollection.get(0) : undefined;
-        if (defined(baseLayer) && defined(baseLayer.imageryProvider) && defined(baseLayer.imageryProvider.getPoleIntensity)) {
-            poleIntensity = baseLayer.imageryProvider.getPoleIntensity();
-        }
-        
-        var drawUniforms = {
-            u_dayIntensity : function() {
-                return poleIntensity;
-            }
-        };
-        
-        if (!defined(globe._northPoleCommand.uniformMap)) {
-            var northPoleUniforms = combine(drawUniforms, {
-                u_color : function() {
-                    return globe.northPoleColor;
-                }
-            });
-            globe._northPoleCommand.uniformMap = combine(northPoleUniforms, globe._drawUniforms);
-        }
-        
-        if (!defined(globe._southPoleCommand.uniformMap)) {
-            var southPoleUniforms = combine(drawUniforms, {
-                u_color : function() {
-                    return globe.southPoleColor;
-                }
-            });
-            globe._southPoleCommand.uniformMap = combine(southPoleUniforms, globe._drawUniforms);
-        }
-    }
-
 /**
 * @private
 */
@@ -590,43 +331,6 @@ class Globe {
         if (width == 0 || height == 0) {
             return
         }
-        
-        let mode = frameState.mode
-        //var projection = frameState.mapProjection
-        var modeChanged = false
-        
-        if _mode != mode || _rsColor == nil {
-            modeChanged = true
-            
-            var cullEnabled = false
-
-            if mode == SceneMode.Scene3D || mode == SceneMode.ColumbusView {
-                
-                cullEnabled = true
-                
-                _rsColor = RenderState(
-                    device: context.device,
-                    cullFace: cullEnabled ? .Back : .None
-                )
-                
-                _rsColorWithoutDepthTest = RenderState(
-                    device: context.device,
-                    cullFace: cullEnabled ? .Back : .None
-                )
-
-            } else {
-                _rsColor = RenderState(
-                    device: context.device,
-                    cullFace: cullEnabled ? .Back : .None
-                )
-                _rsColorWithoutDepthTest = _rsColor
-            }
-        }
-        
-        _mode = mode
-        
-        _northPoleCommand.renderState = _rsColorWithoutDepthTest
-        _southPoleCommand.renderState = _rsColorWithoutDepthTest
         
         let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
         
@@ -655,31 +359,11 @@ class Globe {
             +        }*/
         }
         
-        /*if (_northPoleCommand.shaderProgram == nil || _southPoleCommand.shaderProgram == nil) {
-            var poleShaderProgram = context.replaceShaderProgram(_northPoleCommand.shaderProgram, vertexShaderString: Shaders["GlobeVSPole"]!, fragmentShaderString: Shaders["GlobeFSPole"]!, attributeLocations: terrainAttributeLocations)
-            
-            _northPoleCommand.shaderProgram = poleShaderProgram
-            _southPoleCommand.shaderProgram = poleShaderProgram
-        }*/
-    
-        _occluder.cameraPosition = frameState.camera!.positionWC
-    
-        fillPoles(context: context, frameState: frameState)
-        
+        let mode = frameState.mode
         if (frameState.passes.render) {
-            // render quads to fill the poles
-            if (mode == SceneMode.Scene3D) {
-                if drawNorthPole {
-                    commandList.append(_northPoleCommand)
-                }
-                
-                if drawSouthPole {
-                    commandList.append(_southPoleCommand)
-                }
-            }
             
             // Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
-            if (mode == .Scene3D) {
+            if mode == .Scene3D {
                 _zoomedOutOceanSpecularIntensity = 0.5
             } else {
                 _zoomedOutOceanSpecularIntensity = 0.0
@@ -690,8 +374,6 @@ class Globe {
             
             var tileProvider = _surface.tileProvider
             tileProvider.terrainProvider = terrainProvider
-            tileProvider.lightingFadeOutDistance = lightingFadeOutDistance
-            tileProvider.lightingFadeInDistance = lightingFadeInDistance
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.hasWaterMask = hasWaterMask
             tileProvider.oceanNormalMap = _oceanNormalMap

@@ -333,8 +333,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         var boundingVolume: BoundingVolume = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
         
         if frameState.mode != .Scene3D {
-            var boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
-                tile.rectangle,
+            var boundingSphere = BoundingSphere(
+                fromRectangleWithHeights2D: tile.rectangle,
                 projection: frameState.mapProjection,
                 minimumHeight: surfaceTile.minimumHeight,
                 maximumHeight: surfaceTile.maximumHeight)
@@ -870,8 +870,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             var boundingSphere: BoundingSphere
 
             if frameState.mode != .Scene3D {
-                boundingSphere = BoundingSphere.fromRectangleWithHeights2D(
-                    tile.rectangle,
+                boundingSphere = BoundingSphere(
+                    fromRectangleWithHeights2D: tile.rectangle,
                     projection: frameState.mapProjection,
                     minimumHeight: surfaceTile.minimumHeight,
                     maximumHeight: surfaceTile.maximumHeight)

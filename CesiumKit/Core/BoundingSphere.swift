@@ -53,8 +53,9 @@ struct BoundingSphere: BoundingVolume {
     */
     init(fromPoints points: [Cartesian3]) {
         
+        self.init()
+
         if (points.count == 0) {
-            self.init()
             return
         }
         
@@ -163,7 +164,7 @@ struct BoundingSphere: BoundingVolume {
                 ritterCenter.z = (ritterRadius * ritterCenter.z + oldToNew * currentPos.z) / oldCenterToPoint
             }
         }
-        if (ritterRadius < naiveRadius) {
+        if ritterRadius < naiveRadius {
             center = ritterCenter
             radius = ritterRadius
         } else {
@@ -201,8 +202,9 @@ struct BoundingSphere: BoundingVolume {
         minimumHeight: Double = 0.0,
         maximumHeight: Double = 0.0) {
 
+            self.init()
+
             if rectangle == nil {
-                self.init()
                 return
             }
             
@@ -217,7 +219,6 @@ struct BoundingSphere: BoundingVolume {
             let width = upperRight.x - lowerLeft.x
             let height = upperRight.y - lowerLeft.y
             let elevation = upperRight.z - lowerLeft.z
-            
             
             center = Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5)
             radius = sqrt(width * width + height * height + elevation * elevation) * 0.5

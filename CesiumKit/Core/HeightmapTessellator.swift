@@ -156,9 +156,7 @@ class HeightmapTessellator {
             let radiiSquaredX = radiiSquared.x
             let radiiSquaredY = radiiSquared.y
             let radiiSquaredZ = radiiSquared.z
-            
-            var vertexArrayIndex: Int = 0
-            
+                        
             var minimumHeight = 65536.0
             var maximumHeight = -65536.0
             
