@@ -8,6 +8,6 @@
 
 import Foundation
 
-class CesiumTerrainProvider: TerrainProvider {
+class CesiumTerrainProvider/*: TerrainProvider*/ {
     
 }
