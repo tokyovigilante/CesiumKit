@@ -27,6 +27,10 @@ class Globe {
         
     private var _surface: QuadtreePrimitive
     
+    private let _northPoleCommand: DrawCommand
+    
+    private let _southPoleCommand: DrawCommand
+    
     /**
     * The terrain provider providing surface geometry for this globe.
     * @type {TerrainProvider}
@@ -37,10 +41,6 @@ class Globe {
     
     var _rsColor: RenderState? = nil
     var _rsColorWithoutDepthTest: RenderState? = nil
-    
-    var _northPoleCommand: DrawCommand
-    
-    var _southPoleCommand: DrawCommand
     
     var drawNorthPole = false
     var drawSouthPole = false
@@ -210,8 +210,10 @@ class Globe {
             )
         )
         
-        _northPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
-        _southPoleCommand = DrawCommand(pass: Pass.Opaque/*, owner: self*/)
+        _northPoleCommand = DrawCommand(pass: Pass.Opaque)
+        _southPoleCommand = DrawCommand(pass: Pass.Opaque)
+        _northPoleCommand.owner = self
+        _southPoleCommand.owner = self
     }
     
     /*func updateVertexDescriptor () -> VertexDescriptor {
@@ -429,151 +431,149 @@ class Globe {
     }
     
     func fillPoles(context context: Context, frameState: FrameState) {
-        //FIXME: Fillpoles
-        /*var terrainProvider = globe.terrainProvider;
-        if (frameState.mode !== SceneMode.SCENE3D) {
-        return;
+        
+        if frameState.mode != SceneMode.Scene3D {
+            return
         }
         
-        if (!terrainProvider.ready) {
-        return;
+        if !terrainProvider.ready {
+            return
         }
         
-        var terrainMaxRectangle = terrainProvider.tilingScheme.rectangle;
+        let terrainMaxRectangle = terrainProvider.tilingScheme.rectangle
         
-        var viewProjMatrix = context.uniformState.viewProjection;
-        var viewport = viewportScratch;
-        viewport.width = context.drawingBufferWidth;
-        viewport.height = context.drawingBufferHeight;
-        var viewportTransformation = Matrix4.computeViewportTransformation(viewport, 0.0, 1.0, vpTransformScratch);
-        var latitudeExtension = 0.05;
+        let viewProjMatrix = context.uniformState.viewProjection
         
-        var rectangle;
-        var boundingVolume;
-        var frustumCull;
-        var occludeePoint;
-        var occluded;
-        var geometry;
-        var rect;
-        var occluder = globe._occluder;
+        let viewPort = BoundingRectangle(width: Double(context.width), height: Double(context.height))
+
+        let viewportTransformation = Matrix4.computeViewportTransformation(viewPort, nearDepthRange: 0.0, farDepthRange: 1.0)
+        let latitudeExtension = 0.05
+        
+        var rectangle: Rectangle
+        var boundingVolume: BoundingVolume
+        var frustumCull: Bool
+        var occludeePoint: Cartesian3
+        var occluded: Bool
+        var geometry: Geometry
+        var rect: [Float]
         
         // handle north pole
-        if (terrainMaxRectangle.north < CesiumMath.PI_OVER_TWO) {
-        rectangle = new Rectangle(-Math.PI, terrainMaxRectangle.north, Math.PI, CesiumMath.PI_OVER_TWO);
-        boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-        frustumCull = frameState.cullingVolume.computeVisibility(boundingVolume) === Intersect.OUTSIDE;
-        occludeePoint = Occluder.computeOccludeePointFromRectangle(rectangle, globe._ellipsoid);
-        occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint, 0.0)) || !occluder.isBoundingSphereVisible(boundingVolume);
-        
-        globe._drawNorthPole = !frustumCull && !occluded;
-        if (globe._drawNorthPole) {
-        rect = computePoleQuad(globe, frameState, rectangle.north, rectangle.south - latitudeExtension, viewProjMatrix, viewportTransformation);
-        polePositionsScratch[0] = rect.x;
-        polePositionsScratch[1] = rect.y;
-        polePositionsScratch[2] = rect.x + rect.width;
-        polePositionsScratch[3] = rect.y;
-        polePositionsScratch[4] = rect.x + rect.width;
-        polePositionsScratch[5] = rect.y + rect.height;
-        polePositionsScratch[6] = rect.x;
-        polePositionsScratch[7] = rect.y + rect.height;
-        
-        if (!defined(globe._northPoleCommand.vertexArray)) {
-        globe._northPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-        geometry = new Geometry({
-        attributes : {
-        position : new GeometryAttribute({
-        componentDatatype : ComponentDatatype.FLOAT,
-        componentsPerAttribute : 2,
-        values : polePositionsScratch
-        })
-        }
-        });
-        globe._northPoleCommand.vertexArray = VertexArray.fromGeometry({
-        geometry : geometry,
-        attributeLocations : {
-        position : 0
-        },
-        bufferUsage : BufferUsage.STREAM_DRAW
-        });
-        } else {
-        globe._northPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
-        }
-        }
+        if terrainMaxRectangle.north < M_PI_2 {
+            rectangle = Rectangle(east: -M_PI, south: terrainMaxRectangle.north, west: M_PI, north: M_PI_2)
+            boundingVolume = BoundingSphere(fromRectangle3D: rectangle, ellipsoid: ellipsoid)
+            frustumCull = frameState.cullingVolume!.visibility(boundingVolume) == .Outside
+            occludeePoint = _occluder.computeOccludeePointFromRectangle(rectangle, ellipsoid)
+            occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint, 0.0)) || !occluder.isBoundingSphereVisible(boundingVolume);
+            
+            globe._drawNorthPole = !frustumCull && !occluded;
+            if (globe._drawNorthPole) {
+                rect = computePoleQuad(globe, frameState, rectangle.north, rectangle.south - latitudeExtension, viewProjMatrix, viewportTransformation);
+                polePositionsScratch[0] = rect.x;
+                polePositionsScratch[1] = rect.y;
+                polePositionsScratch[2] = rect.x + rect.width;
+                polePositionsScratch[3] = rect.y;
+                polePositionsScratch[4] = rect.x + rect.width;
+                polePositionsScratch[5] = rect.y + rect.height;
+                polePositionsScratch[6] = rect.x;
+                polePositionsScratch[7] = rect.y + rect.height;
+                
+                if (!defined(globe._northPoleCommand.vertexArray)) {
+                    globe._northPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
+                    geometry = new Geometry({
+                        attributes : {
+                            position : new GeometryAttribute({
+                            componentDatatype : ComponentDatatype.FLOAT,
+                            componentsPerAttribute : 2,
+                            values : polePositionsScratch
+                            })
+                        }
+                    });
+                    globe._northPoleCommand.vertexArray = VertexArray.fromGeometry({
+                        geometry : geometry,
+                        attributeLocations : {
+                            position : 0
+                        },
+                        bufferUsage : BufferUsage.STREAM_DRAW
+                    });
+                } else {
+                    globe._northPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
+                }
+            }
         }
         
         // handle south pole
-        if (terrainMaxRectangle.south > -CesiumMath.PI_OVER_TWO) {
-        rectangle = new Rectangle(-Math.PI, -CesiumMath.PI_OVER_TWO, Math.PI, terrainMaxRectangle.south);
-        boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-        frustumCull = frameState.cullingVolume.computeVisibility(boundingVolume) === Intersect.OUTSIDE;
-        occludeePoint = Occluder.computeOccludeePointFromRectangle(rectangle, globe._ellipsoid);
-        occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint)) || !occluder.isBoundingSphereVisible(boundingVolume);
-        
-        globe._drawSouthPole = !frustumCull && !occluded;
-        if (globe._drawSouthPole) {
-        rect = computePoleQuad(globe, frameState, rectangle.south, rectangle.north + latitudeExtension, viewProjMatrix, viewportTransformation);
-        polePositionsScratch[0] = rect.x;
-        polePositionsScratch[1] = rect.y;
-        polePositionsScratch[2] = rect.x + rect.width;
-        polePositionsScratch[3] = rect.y;
-        polePositionsScratch[4] = rect.x + rect.width;
-        polePositionsScratch[5] = rect.y + rect.height;
-        polePositionsScratch[6] = rect.x;
-        polePositionsScratch[7] = rect.y + rect.height;
-        
-        if (!defined(globe._southPoleCommand.vertexArray)) {
-        globe._southPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
-        geometry = new Geometry({
-        attributes : {
-        position : new GeometryAttribute({
-        componentDatatype : ComponentDatatype.FLOAT,
-        componentsPerAttribute : 2,
-        values : polePositionsScratch
-        })
-        }
-        });
-        globe._southPoleCommand.vertexArray = VertexArray.fromGeometry({
-        geometry : geometry,
-        attributeLocations : {
-        position : 0
-        },
-        bufferUsage : BufferUsage.STREAM_DRAW
-        });
-        } else {
-        globe._southPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
-        }
-        }
+        if terrainMaxRectangle.south > -M_PI_2 {
+            rectangle = new Rectangle(-Math.PI, -CesiumMath.PI_OVER_TWO, Math.PI, terrainMaxRectangle.south);
+            boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
+            frustumCull = frameState.cullingVolume.computeVisibility(boundingVolume) === Intersect.OUTSIDE;
+            occludeePoint = Occluder.computeOccludeePointFromRectangle(rectangle, globe._ellipsoid);
+            occluded = (occludeePoint && !occluder.isPointVisible(occludeePoint)) || !occluder.isBoundingSphereVisible(boundingVolume);
+            
+            globe._drawSouthPole = !frustumCull && !occluded;
+            if (globe._drawSouthPole) {
+                rect = computePoleQuad(globe, frameState, rectangle.south, rectangle.north + latitudeExtension, viewProjMatrix, viewportTransformation);
+                polePositionsScratch[0] = rect.x;
+                polePositionsScratch[1] = rect.y;
+                polePositionsScratch[2] = rect.x + rect.width;
+                polePositionsScratch[3] = rect.y;
+                polePositionsScratch[4] = rect.x + rect.width;
+                polePositionsScratch[5] = rect.y + rect.height;
+                polePositionsScratch[6] = rect.x;
+                polePositionsScratch[7] = rect.y + rect.height;
+                
+                if (!defined(globe._southPoleCommand.vertexArray)) {
+                    globe._southPoleCommand.boundingVolume = BoundingSphere.fromRectangle3D(rectangle, globe._ellipsoid);
+                    geometry = new Geometry({
+                        attributes : {
+                            position : new GeometryAttribute({
+                            componentDatatype : ComponentDatatype.FLOAT,
+                            componentsPerAttribute : 2,
+                            values : polePositionsScratch
+                            })
+                        }
+                    });
+                    globe._southPoleCommand.vertexArray = VertexArray.fromGeometry({
+                        geometry : geometry,
+                        attributeLocations : {
+                            position : 0
+                        },
+                        bufferUsage : BufferUsage.STREAM_DRAW
+                    });
+                } else {
+                    globe._southPoleCommand.vertexArray.getAttribute(0).vertexBuffer.copyFromArrayView(polePositionsScratch);
+                }
+            }
         }
         
         var poleIntensity = 0.0;
         var baseLayer = globe._imageryLayerCollection.length > 0 ? globe._imageryLayerCollection.get(0) : undefined;
         if (defined(baseLayer) && defined(baseLayer.imageryProvider) && defined(baseLayer.imageryProvider.getPoleIntensity)) {
-        poleIntensity = baseLayer.imageryProvider.getPoleIntensity();
+            poleIntensity = baseLayer.imageryProvider.getPoleIntensity();
         }
         
         var drawUniforms = {
-        u_dayIntensity : function() {
-        return poleIntensity;
-        }
+            u_dayIntensity : function() {
+                return poleIntensity;
+            }
         };
         
         if (!defined(globe._northPoleCommand.uniformMap)) {
-        var northPoleUniforms = combine(drawUniforms, {
-        u_color : function() {
-        return globe.northPoleColor;
-        }
-        });
-        globe._northPoleCommand.uniformMap = combine(northPoleUniforms, globe._drawUniforms);
+            var northPoleUniforms = combine(drawUniforms, {
+                u_color : function() {
+                    return globe.northPoleColor;
+                }
+            });
+            globe._northPoleCommand.uniformMap = combine(northPoleUniforms, globe._drawUniforms);
         }
         
         if (!defined(globe._southPoleCommand.uniformMap)) {
-        var southPoleUniforms = combine(drawUniforms, {
-        u_color : function() {
-        return globe.southPoleColor;
+            var southPoleUniforms = combine(drawUniforms, {
+                u_color : function() {
+                    return globe.southPoleColor;
+                }
+            });
+            globe._southPoleCommand.uniformMap = combine(southPoleUniforms, globe._drawUniforms);
         }
-        });
-        globe._southPoleCommand.uniformMap = combine(southPoleUniforms, globe._drawUniforms);
-        }*/
     }
 
 /**

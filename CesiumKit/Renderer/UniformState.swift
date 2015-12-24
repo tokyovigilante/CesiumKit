@@ -454,40 +454,35 @@ class UniformState {
             return _inverseModelView3D
         }
     }
-    /*
-    /**
-    * @memberof UniformState.prototype
-    * @type {Matrix4}
-    */
-    viewProjection : {
-    get : function() {
-    cleanViewProjection(this);
-    return this._viewProjection;
-    }
-    },
     
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
-    inverseViewProjection : {
-    get : function() {
-    cleanInverseViewProjection(this);
-    return this._inverseViewProjection;
+    var viewProjection: Matrix4 {
+        cleanViewProjection()
+        return _viewProjection
     }
-    },
+    
+    
+    /**
+    * @memberof UniformState.prototype
+    * @type {Matrix4}
     */
+    var inverseViewProjection: Matrix4 {
+        cleanInverseViewProjection()
+        return _inverseViewProjection
+    }
+    
     /**
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
     var modelViewProjection: Matrix4 {
-        get {
-            cleanModelViewProjection()
-            return _modelViewProjection
-            
-        }
+        cleanModelViewProjection()
+        return _modelViewProjection
     }
+    
     /*
     /**
     * @memberof UniformState.prototype
@@ -532,10 +527,8 @@ class UniformState {
     * @type {Matrix3}
     */
     var normal: Matrix3 {
-        get {
-            cleanNormal()
-            return _normal
-        }
+        cleanNormal()
+        return _normal
     }
 
     /**
@@ -547,11 +540,10 @@ class UniformState {
     * @type {Matrix3}
     */
     var normal3D: Matrix3 {
-        get {
-            cleanNormal3D()
-            return _normal3D
-        }
+        cleanNormal3D()
+        return _normal3D
     }
+    
     /*
     /**
     * An inverse 3x3 normal transformation matrix that transforms normal vectors in model coordinates
@@ -918,23 +910,21 @@ class UniformState {
             _inverseModelView3D = modelView3D.inverse()
         }
     }
-    /*
-    function cleanViewProjection(uniformState) {
-    if (uniformState._viewProjectionDirty) {
-    uniformState._viewProjectionDirty = false;
     
-    Matrix4.multiply(uniformState._projection, uniformState._view, uniformState._viewProjection);
-    }
+    func cleanViewProjection() {
+        if (_viewProjectionDirty) {
+            _viewProjectionDirty = false
+            _viewProjection = _projection.multiply(_view)
+        }
     }
     
-    function cleanInverseViewProjection(uniformState) {
-    if (uniformState._inverseViewProjectionDirty) {
-    uniformState._inverseViewProjectionDirty = false;
+    func cleanInverseViewProjection() {
+        if (_inverseViewProjectionDirty) {
+            _inverseViewProjectionDirty = false
+            _inverseViewProjection = viewProjection.inverse()
+        }
+    }
     
-    Matrix4.inverse(uniformState.viewProjection, uniformState._inverseViewProjection);
-    }
-    }
-    */
     func cleanModelViewProjection() {
         if _modelViewProjectionDirty {
             _modelViewProjectionDirty = false
