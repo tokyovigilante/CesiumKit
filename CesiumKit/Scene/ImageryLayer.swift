@@ -293,8 +293,6 @@ public class ImageryLayer {
                 rectangle.east = min(baseTerrainRectangle.east, baseImageryRectangle.east)
             }
             rectangle = overlapRectangle!
-            //Rectangle(west: overlapRectangle!.west, south: overlapRectangle!.south, east: overlapRectangle!.east, north: overlapRectangle!.north)
-            
         }
         
         var latitudeClosestToEquator = 0.0
@@ -372,7 +370,7 @@ public class ImageryLayer {
             maxU = min(1.0, (clippedImageryRectangle.west - terrainRectangle.west) / terrainRectangle.width)
         }
         
-        if (isBaseLayer && abs(clippedImageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
+        if (!isBaseLayer && abs(clippedImageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
             minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / terrainRectangle.height)
         }
         
