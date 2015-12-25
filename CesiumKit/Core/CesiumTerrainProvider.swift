@@ -52,179 +52,238 @@ import Foundation
  */
 class CesiumTerrainProvider: TerrainProvider {
     
-    private let _url: String
+    let url: String
 
     //private var _proxy: Proxy
     
-    private let _tilingScheme: TilingScheme
+    /**
+    * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
+    * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
+    * are passed an instance of {@link TileProviderError}.
+    * @memberof EllipsoidTerrainProvider.prototype
+    * @type {Event}
+    */
+    var errorEvent = Event()
+
+    /**
+    * Gets the tiling scheme used by the provider.  This function should
+    * not be called before {@link TerrainProvider#ready} returns true.
+    * @memberof TerrainProvider.prototype
+    * @type {TilingScheme}
+    */
+    let tilingScheme: TilingScheme
+    
+    /**
+     * Gets the ellipsoid used by the provider. Default is WGS84.
+     */
+    let ellipsoid: Ellipsoid
+    
+    /**
+     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
+     * the source of the terrain. This function should
+     * not be called before {@link TerrainProvider#ready} returns true.
+     * @memberof TerrainProvider.prototype
+     * @type {Credit}
+     */
+    var credit: Credit
+    
+    /**
+     * Gets a value indicating whether or not the provider is ready for use.
+     * @memberof TerrainProvider.prototype
+     * @type {Boolean}
+     */
+    private (set) var ready = false
+    
+    private let _levelZeroMaximumGeometricError: Double
+    
+    var heightmapTerrainQuality = 0.25
     
     private let _heightmapWidth = 65
-    
-    private let _levelZeroMazimumGeometricError: Int
     
     private var _heightmapStructure: HeightmapTerrainData? = nil
     
     /**
-    * Boolean flag that indicates if the Terrain Server can provide vertex normals.
-    * @type {Boolean}
-    * @default false
-    * @private
-    */
+     * Gets a value indicating whether or not the requested tiles include vertex normals.
+     * This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
+     * @memberof CesiumTerrainProvider.prototype
+     * @type {Boolean}
+     * @exception {DeveloperError} This property must not be called before {@link CesiumTerrainProvider#ready}
+     */
+    var hasVertexNormals: Bool {
+        //>>includeStart('debug', pragmas.debug)
+        assert(ready, "hasVertexNormals must not be called before the terrain provider is ready.")
+        // returns true if we can request vertex normals from the server
+        return _hasVertexNormals && requestVertexNormals
+    }
+    
+    /**
+     * Boolean flag that indicates if the Terrain Server can provide vertex normals.
+     * @type {Boolean}
+     * @default false
+     * @private
+     */
     private var _hasVertexNormals = false
+
+    /**
+     * Boolean flag that indicates if the client should request vertex normals from the server.
+     * Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
+     * if the server provides vertex normals.
+     * @memberof CesiumTerrainProvider.prototype
+     * @type {Boolean}
+     */
+    private (set) var requestVertexNormals: Bool
     
     /**
-    * Boolean flag that indicates if the client should request vertex normals from the server.
+     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
+     * indicates which areas of the globe are water rather than land, so they can be rendered
+     * as a reflective surface with animated waves.  This function should not be
+     * called before {@link CesiumTerrainProvider#ready} returns true.
+     * @memberof CesiumTerrainProvider.prototype
+     * @type {Boolean}
+     * @exception {DeveloperError} This property must not be called before {@link CesiumTerrainProvider#ready}
+     */
+    var hasWaterMask: Bool {
+        assert(ready, "hasWaterMask must not be called before the terrain provider is ready.")
+        return _hasWaterMask && _requestWaterMask
+    }
+    
+    private var _hasWaterMask = false
+    
+    private var _littleEndianExtensionSize = true
+    
+    /**
+    * Boolean flag that indicates if the client should request tile watermasks from the server.
     * @type {Boolean}
     * @default false
     * @private
     */
-    private var _requestVertexNormals: Bool
+    private let _requestWaterMask: Bool
     
-    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false) {
+    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false, credit: Credit = Credit(text: "CesiumKit")) {
         
-        _levelZeroMaximumGeometricError = CesiumTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(_heightmapWidth, _tilingScheme.getNumberOfXTilesAtLevel(0))
+        self.url = url
+        self.ellipsoid = ellipsoid
+        self.tilingScheme = tilingScheme
+        self.requestVertexNormals = requestVertexNormals
+        _requestWaterMask = requestWaterMask
+        self.credit = credit
         
-        _requestVertexNormals = requestVertexNormals
+        _levelZeroMaximumGeometricError = CesiumTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: _heightmapWidth, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
         
-        this._heightmapStructure = undefined;
-        this._hasWaterMask = false;
         
-
-
-        this._littleEndianExtensionSize = true;
-        /**
-        * Boolean flag that indicates if the client should request tile watermasks from the server.
-        * @type {Boolean}
-        * @default false
-        * @private
-        */
-        this._requestWaterMask = defaultValue(options.requestWaterMask, false);
+        //this._readyPromise = when.defer();
         
-        this._errorEvent = new Event();
-        
-        var credit = options.credit;
-        if (typeof credit === 'string') {
-            credit = new Credit(credit);
-        }
-        this._credit = credit;
-        
-        this._ready = false;
-        this._readyPromise = when.defer();
-        
-        var metadataUrl = joinUrls(this._url, 'layer.json');
-        if (defined(this._proxy)) {
+        let metadataUrl = NSURL(string: url)!.URLByAppendingPathComponent("layer.json")
+        /*if (defined(this._proxy)) {
             metadataUrl = this._proxy.getURL(metadataUrl);
+        }*/
+        /*var metadataError;
+        
+        func metadataSuccess(data) {
+            var message;
+            
+            if (!data.format) {
+                message = 'The tile format is not specified in the layer.json file.';
+                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return;
+            }
+            
+            if (!data.tiles || data.tiles.length === 0) {
+                message = 'The layer.json file does not specify any tile URL templates.';
+                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return;
+            }
+            
+            if (data.format === 'heightmap-1.0') {
+                that._heightmapStructure = {
+                    heightScale : 1.0 / 5.0,
+                    heightOffset : -1000.0,
+                    elementsPerHeight : 1,
+                    stride : 1,
+                    elementMultiplier : 256.0,
+                    isBigEndian : false
+                };
+                that._hasWaterMask = true;
+                that._requestWaterMask = true;
+            } else if (data.format.indexOf('quantized-mesh-1.') !== 0) {
+                message = 'The tile format "' + data.format + '" is invalid or not supported.';
+                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return;
+            }
+            
+            that._tileUrlTemplates = data.tiles;
+            for (var i = 0; i < that._tileUrlTemplates.length; ++i) {
+                var template = new Uri(that._tileUrlTemplates[i]);
+                var baseUri = new Uri(that._url);
+                if (template.authority && !baseUri.authority) {
+                    baseUri.authority = template.authority;
+                    baseUri.scheme = template.scheme;
+                }
+                that._tileUrlTemplates[i] = joinUrls(baseUri, template).toString().replace('{version}', data.version);
+            }
+            
+            that._availableTiles = data.available;
+            
+            if (!defined(that._credit) && defined(data.attribution) && data.attribution !== null) {
+                that._credit = new Credit(data.attribution);
+            }
+            
+            // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
+            // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
+            // deprecated, as the extensionLength for this extension was incorrectly using big endian.
+            // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
+            // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
+            // over 'vertexnormals' if both extensions are supported by the server.
+            if (defined(data.extensions) && data.extensions.indexOf('octvertexnormals') !== -1) {
+                that._hasVertexNormals = true;
+            } else if (defined(data.extensions) && data.extensions.indexOf('vertexnormals') !== -1) {
+                that._hasVertexNormals = true;
+                that._littleEndianExtensionSize = false;
+            }
+            if (defined(data.extensions) && data.extensions.indexOf('watermask') !== -1) {
+                that._hasWaterMask = true;
+            }
+            
+            that._ready = true;
+            that._readyPromise.resolve(true);
         }
+        
+        function metadataFailure(data) {
+            // If the metadata is not found, assume this is a pre-metadata heightmap tileset.
+            if (defined(data) && data.statusCode === 404) {
+                metadataSuccess({
+                    tilejson: '2.1.0',
+                    format : 'heightmap-1.0',
+                    version : '1.0.0',
+                    scheme : 'tms',
+                    tiles : [
+                    '{z}/{x}/{y}.terrain?v={version}'
+                    ]
+                });
+                return;
+            }
+            var message = 'An error occurred while accessing ' + metadataUrl + '.';
+            metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+        }
+        
+        function requestMetadata() {
+            var metadata = loadJson(metadataUrl);
+            when(metadata, metadataSuccess, metadataFailure);
+        }
+        
+        requestMetadata();*/
     }
-    
-    var that = this;
-    var metadataError;
-    /*
-    function metadataSuccess(data) {
-    var message;
-    
-    if (!data.format) {
-    message = 'The tile format is not specified in the layer.json file.';
-    metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-    return;
-    }
-    
-    if (!data.tiles || data.tiles.length === 0) {
-    message = 'The layer.json file does not specify any tile URL templates.';
-    metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-    return;
-    }
-    
-    if (data.format === 'heightmap-1.0') {
-    that._heightmapStructure = {
-    heightScale : 1.0 / 5.0,
-    heightOffset : -1000.0,
-    elementsPerHeight : 1,
-    stride : 1,
-    elementMultiplier : 256.0,
-    isBigEndian : false
-    };
-    that._hasWaterMask = true;
-    that._requestWaterMask = true;
-    } else if (data.format.indexOf('quantized-mesh-1.') !== 0) {
-    message = 'The tile format "' + data.format + '" is invalid or not supported.';
-    metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-    return;
-    }
-    
-    that._tileUrlTemplates = data.tiles;
-    for (var i = 0; i < that._tileUrlTemplates.length; ++i) {
-    var template = new Uri(that._tileUrlTemplates[i]);
-    var baseUri = new Uri(that._url);
-    if (template.authority && !baseUri.authority) {
-    baseUri.authority = template.authority;
-    baseUri.scheme = template.scheme;
-    }
-    that._tileUrlTemplates[i] = joinUrls(baseUri, template).toString().replace('{version}', data.version);
-    }
-    
-    that._availableTiles = data.available;
-    
-    if (!defined(that._credit) && defined(data.attribution) && data.attribution !== null) {
-    that._credit = new Credit(data.attribution);
-    }
-    
-    // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
-    // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
-    // deprecated, as the extensionLength for this extension was incorrectly using big endian.
-    // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
-    // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
-    // over 'vertexnormals' if both extensions are supported by the server.
-    if (defined(data.extensions) && data.extensions.indexOf('octvertexnormals') !== -1) {
-    that._hasVertexNormals = true;
-    } else if (defined(data.extensions) && data.extensions.indexOf('vertexnormals') !== -1) {
-    that._hasVertexNormals = true;
-    that._littleEndianExtensionSize = false;
-    }
-    if (defined(data.extensions) && data.extensions.indexOf('watermask') !== -1) {
-    that._hasWaterMask = true;
-    }
-    
-    that._ready = true;
-    that._readyPromise.resolve(true);
-    }
-    
-    function metadataFailure(data) {
-    // If the metadata is not found, assume this is a pre-metadata heightmap tileset.
-    if (defined(data) && data.statusCode === 404) {
-    metadataSuccess({
-    tilejson: '2.1.0',
-    format : 'heightmap-1.0',
-    version : '1.0.0',
-    scheme : 'tms',
-    tiles : [
-    '{z}/{x}/{y}.terrain?v={version}'
-    ]
-    });
-    return;
-    }
-    var message = 'An error occurred while accessing ' + metadataUrl + '.';
-    metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-    }
-    
-    function requestMetadata() {
-    var metadata = loadJson(metadataUrl);
-    when(metadata, metadataSuccess, metadataFailure);
-    }
-    
-    requestMetadata();
-    };
-    
-    /**
-    * When using the Quantized-Mesh format, a tile may be returned that includes additional extensions, such as PerVertexNormals, watermask, etc.
-    * This enumeration defines the unique identifiers for each type of extension data that has been appended to the standard mesh data.
-    *
-    * @namespace
-    * @alias QuantizedMeshExtensionIds
-    * @see CesiumTerrainProvider
-    * @private
-    */
-    var QuantizedMeshExtensionIds = {
+
+/**
+* When using the Quantized-Mesh format, a tile may be returned that includes additional extensions, such as PerVertexNormals, watermask, etc.
+* This enumeration defines the unique identifiers for each type of extension data that has been appended to the standard mesh data.
+*
+* @namespace
+* @alias QuantizedMeshExtensionIds
+* @see CesiumTerrainProvider
+* @private
+*/
+/*var QuantizedMeshExtensionIds = {
     /**
     * Oct-Encoded Per-Vertex Normals are included as an extension to the tile mesh
     *
@@ -241,21 +300,21 @@ class CesiumTerrainProvider: TerrainProvider {
     * @default 2
     */
     WATER_MASK: 2
-    };
-    
-    function getRequestHeader(extensionsList) {
-    if (!defined(extensionsList) || extensionsList.length === 0) {
-    return {
-    Accept : 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01'
 };
-} else {
-    var extensions = extensionsList.join('-');
-    return {
-        Accept : 'application/vnd.quantized-mesh;extensions=' + extensions + ',application/octet-stream;q=0.9,*/*;q=0.01'
-        };
-        }
-        }
-        
+
+function getRequestHeader(extensionsList) {
+    if (!defined(extensionsList) || extensionsList.length === 0) {
+        return {
+            //Accept : 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*;q=0.01'
+       /* };
+    } else {
+        var extensions = extensionsList.join('-');
+        return {
+            //Accept : 'application/vnd.quantized-mesh;extensions=' + extensions + ',application/octet-stream;q=0.9,*;q=0.01'
+       /* };
+    }
+}
+
         function createHeightmapTerrainData(provider, buffer, level, x, y, tmsY) {
         var heightBuffer = new Uint16Array(buffer, 0, provider._heightmapWidth * provider._heightmapWidth);
         return new HeightmapTerrainData({
@@ -428,7 +487,7 @@ class CesiumTerrainProvider: TerrainProvider {
         waterMask: waterMaskBuffer
         });
         }
-        
+        */*/*/
         /**
         * Requests the geometry for a given tile.  This function should not be called before
         * {@link CesiumTerrainProvider#ready} returns true.  The result must include terrain data and
@@ -447,9 +506,9 @@ class CesiumTerrainProvider: TerrainProvider {
         * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
         *            returns true.
         */
-        CesiumTerrainProvider.prototype.requestTileGeometry = function(x, y, level, throttleRequests) {
-        //>>includeStart('debug', pragmas.debug)
-        if (!this._ready) {
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
+    //>>includeStart('debug', pragmas.debug)
+        /*if (!this._ready) {
         throw new DeveloperError('requestTileGeometry must not be called before the terrain provider is ready.');
         }
         //>>includeEnd('debug');
@@ -501,9 +560,9 @@ class CesiumTerrainProvider: TerrainProvider {
         } else {
         return createQuantizedMeshTerrainData(that, buffer, level, x, y, tmsY);
         }
-        });
-        };
-        
+        });*/
+        }
+        /*
         defineProperties(CesiumTerrainProvider.prototype, {
         /**
         * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
@@ -576,61 +635,8 @@ class CesiumTerrainProvider: TerrainProvider {
         return this._readyPromise.promise;
         }
         },
-        
-        /**
-        * Gets a value indicating whether or not the provider includes a water mask.  The water mask
-        * indicates which areas of the globe are water rather than land, so they can be rendered
-        * as a reflective surface with animated waves.  This function should not be
-        * called before {@link CesiumTerrainProvider#ready} returns true.
-        * @memberof CesiumTerrainProvider.prototype
-        * @type {Boolean}
-        * @exception {DeveloperError} This property must not be called before {@link CesiumTerrainProvider#ready}
         */
-        hasWaterMask : {
-        get : function() {
-        //>>includeStart('debug', pragmas.debug)
-        if (!this._ready) {
-        throw new DeveloperError('hasWaterMask must not be called before the terrain provider is ready.');
-        }
-        //>>includeEnd('debug');
-        
-        return this._hasWaterMask && this._requestWaterMask;
-        }
-        },
-        
-        /**
-        * Gets a value indicating whether or not the requested tiles include vertex normals.
-        * This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
-        * @memberof CesiumTerrainProvider.prototype
-        * @type {Boolean}
-        * @exception {DeveloperError} This property must not be called before {@link CesiumTerrainProvider#ready}
-        */
-        hasVertexNormals : {
-        get : function() {
-        //>>includeStart('debug', pragmas.debug)
-        if (!this._ready) {
-        throw new DeveloperError('hasVertexNormals must not be called before the terrain provider is ready.');
-        }
-        //>>includeEnd('debug');
-        
-        // returns true if we can request vertex normals from the server
-        return this._hasVertexNormals && this._requestVertexNormals;
-        }
-        },
-        
-        /**
-        * Boolean flag that indicates if the client should request vertex normals from the server.
-        * Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
-        * if the server provides vertex normals.
-        * @memberof CesiumTerrainProvider.prototype
-        * @type {Boolean}
-        */
-        requestVertexNormals : {
-        get : function() {
-        return this._requestVertexNormals;
-        }
-        },
-        
+/*
         /**
         * Boolean flag that indicates if the client should request a watermask from the server.
         * Watermask data is appended to the standard tile mesh data only if the client requests the watermask and
@@ -644,17 +650,19 @@ class CesiumTerrainProvider: TerrainProvider {
         }
         }
         });
-        
-        /**
-        * Gets the maximum geometric error allowed in a tile at a given level.
-        *
-        * @param {Number} level The tile level for which to get the maximum geometric error.
-        * @returns {Number} The maximum geometric error.
         */
-        CesiumTerrainProvider.prototype.getLevelMaximumGeometricError = function(level) {
-        return this._levelZeroMaximumGeometricError / (1 << level);
-        };
-        
+    
+    /**
+     * Gets the maximum geometric error allowed in a tile at a given level.
+     *
+     * @param {Number} level The tile level for which to get the maximum geometric error.
+     * @returns {Number} The maximum geometric error.
+     */
+    func levelMaximumGeometricError (level: Int) -> Double {
+        return _levelZeroMaximumGeometricError / Double(1 << level)
+    }
+    
+        /*
         function getChildMaskForTile(terrainProvider, level, x, y) {
         var available = terrainProvider._availableTiles;
         if (!available || available.length === 0) {
@@ -716,11 +724,12 @@ class CesiumTerrainProvider: TerrainProvider {
         return CesiumTerrainProvider;
         });
 
-*/
-static func estimatedLevelZeroGeometricErrorForAHeightmap(
-    ellipsoid ellipsoid: Ellipsoid,
-    tileImageWidth: Int,
-    numberOfTilesAtLevelZero: Int) -> Double {
-        return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
-}
+    */
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(
+        ellipsoid ellipsoid: Ellipsoid,
+        tileImageWidth: Int,
+        numberOfTilesAtLevelZero: Int) -> Double {
+            return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
+    }
+    
 }
