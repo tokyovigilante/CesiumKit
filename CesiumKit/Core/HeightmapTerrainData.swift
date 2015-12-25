@@ -159,10 +159,10 @@ class HeightmapTerrainData: TerrainData, Equatable {
     func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
         var bitNumber = 2 // northwest child
         if childX != thisX * 2 {
-            ++bitNumber // east child
+            bitNumber += 1 // east child
         }
         if childY != thisY * 2 {
-            bitNumber -= 2; // south child
+            bitNumber -= 2 // south child
         }
         
         return _childTileMask & (1 << bitNumber) != 0
@@ -324,14 +324,16 @@ class HeightmapTerrainData: TerrainData, Equatable {
                 for j in leftInteger...rightInteger {
                     let index = (j * _width + i) * _structure.stride
                     for k in 0..<_structure.stride {
-                        heights[outputIndex++] = sourceHeights[index + k]
+                        heights[outputIndex] = sourceHeights[index + k]
+                        outputIndex += 1
                     }
                 }
             }
         } else {
             for j in topInteger...bottomInteger {
                 for i in leftInteger...rightInteger {
-                    heights[outputIndex++] = sourceHeights[j * _width + i]
+                    heights[outputIndex] = sourceHeights[j * _width + i]
+                    outputIndex += 1
                 }
             }
         }

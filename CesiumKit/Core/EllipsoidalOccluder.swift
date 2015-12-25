@@ -126,7 +126,7 @@ class EllipsoidalOccluder {
     func computeHorizonCullingPoint(directionToPoint: Cartesian3, positions: [Cartesian3]) -> Cartesian3? {
         let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
         var resultMagnitude = 0.0
-        for (var i = 0, len = positions.count; i < len; ++i) {
+        for i in 0..<positions.count {
             let candidateMagnitude = computeMagnitude(ellipsoid, position: positions[i], scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
             resultMagnitude = max(resultMagnitude, candidateMagnitude)
         }
@@ -159,21 +159,22 @@ class EllipsoidalOccluder {
         center: Cartesian3 = Cartesian3.zero
         ) -> Cartesian3? {
             
-            let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
-            var resultMagnitude = 0.0
-            
-            var positionScratch: Cartesian3
-            for (var i = 0; i < vertices.count; i += stride) {
-                positionScratch = Cartesian3(
-                    x: Double(vertices[i]) + center.x,
-                    y: Double(vertices[i + 1]) + center.y,
-                    z: Double(vertices[i + 2]) + center.z)
-                
-                let candidateMagnitude = computeMagnitude(ellipsoid, position: positionScratch, scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
-                resultMagnitude = max(resultMagnitude, candidateMagnitude)
-            }
-            return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)
-            
+        let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
+        
+        var resultMagnitude = 0.0
+        
+        var positionScratch: Cartesian3
+        for i in 0.stride(to: vertices.count, by: stride) {
+            positionScratch = Cartesian3(
+                x: Double(vertices[i]) + center.x,
+                y: Double(vertices[i + 1]) + center.y,
+                z: Double(vertices[i + 2]) + center.z
+            )
+            let candidateMagnitude = computeMagnitude(ellipsoid, position: positionScratch, scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
+            resultMagnitude = max(resultMagnitude, candidateMagnitude)
+        }
+        return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)
+        
     }
     
     /**

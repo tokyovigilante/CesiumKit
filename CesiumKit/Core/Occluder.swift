@@ -286,15 +286,17 @@ class Occluder {
         //For each position, determine the horizon intersection. Choose the position and intersection
         //that results in the greatest angle with the occcluder plane.
         let aRotationVector = anyRotationVector(occluderPosition: occluderPosition, occluderPlaneNormal: occluderPlaneNormal, occluderPlaneD: occluderPlaneD)
-        guard var dot = horizonToPlaneNormalDotProduct(
+        
+        var dot: Double! = horizonToPlaneNormalDotProduct(
             occluderBS: occluderBoundingSphere,
             occluderPlaneNormal: occluderPlaneNormal,
             occluderPlaneD: occluderPlaneD,
             anyRotationVector: aRotationVector,
             position: positions[0]
-            ) else {
-                //The position is inside the mimimum radius, which is invalid
-                return nil
+        )
+        if dot == nil {
+            //The position is inside the mimimum radius, which is invalid
+            return nil
         }
         var tempDot: Double?
         for position in positions {

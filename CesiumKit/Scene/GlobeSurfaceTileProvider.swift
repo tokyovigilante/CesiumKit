@@ -256,7 +256,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             )
         }
         // And the tile render commands to the command list, sorted by texture count.
-        for (count, tilesToRender) in _tilesToRenderByTextureCount {
+        for tilesToRender in _tilesToRenderByTextureCount.values {
             for tile in tilesToRender {
                 addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
             }
@@ -284,7 +284,6 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         _usedPickCommands = 0
         
         // Add the tile pick commands from the tiles drawn last frame.
-        var tilesToRenderByTextureCount = _tilesToRenderByTextureCount
         for i in 0..<_usedDrawCommands {
             addPickCommandsForTile(_drawCommands[i], context: context, frameState: frameState, commandList: &commandList)
         }
@@ -381,12 +380,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
         
         var readyTextureCount = 0
-        var tileImageryCollection = tile.data!.imagery
         
-        for ( var i = 0, len = tileImageryCollection.count; i < len; ++i) {
-            let tileImagery = tileImageryCollection[i]
+        for tileImagery in tile.data!.imagery {
             if tileImagery.readyImagery != nil && tileImagery.readyImagery!.imageryLayer.alpha() != 0.0 {
-                ++readyTextureCount
+                readyTextureCount += 1
             }
         }
         
@@ -397,7 +394,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         tileSet!.append(tile)
         _tilesToRenderByTextureCount[readyTextureCount] = tileSet
         
-        ++_debug.tilesRendered
+        _debug.tilesRendered += 1
         _debug.texturesRendered += readyTextureCount
     }
     
@@ -628,7 +625,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
 
         let surfaceTile = tile.data!
         
-        var viewMatrix = frameState.camera!.viewMatrix
+        let viewMatrix = frameState.camera!.viewMatrix
         
         var maxTextures = context.limits.maximumTextureImageUnits
 
@@ -639,10 +636,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         
         
         if showReflectiveOcean {
-            --maxTextures
+            maxTextures -= 1
         }
         if showOceanWaves {
-            --maxTextures
+            maxTextures -= 1
         }
         
         var rtc = surfaceTile.center
@@ -697,7 +694,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             }
         }
         
-        var centerEye = viewMatrix.multiplyByPoint(rtc)
+        let centerEye = viewMatrix.multiplyByPoint(rtc)
         let modifiedModelView = viewMatrix.setTranslation(centerEye)
         
         let tileImageryCollection = surfaceTile.imagery
@@ -736,7 +733,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             }
             
             
-            ++_usedDrawCommands
+            _usedDrawCommands += 1
             
             /*if (tile === tileProvider._debug.boundingSphereTile) {
                 // If a debug primitive already exists for this tile, it will not be
@@ -774,7 +771,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
 
                 let tileImagery = tileImageryCollection[imageryIndex]
                 let imagery = tileImagery.readyImagery
-                ++imageryIndex
+                imageryIndex += 1
                 
                 if imagery == nil || imagery!.state != .Ready || imagery!.imageryLayer.alpha() == 0.0 {
                     continue
@@ -817,7 +814,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                     }
                 }*/
                 
-                ++numberOfDayTextures
+                numberOfDayTextures += 1
             }
             
             // trim texture array to the used length so we don't end up using old textures
@@ -908,7 +905,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             pickCommand = _pickCommands[_usedPickCommands]
         }
         
-        ++_usedPickCommands
+        _usedPickCommands += 1
         
         let useWebMercatorProjection = frameState.mapProjection is WebMercatorProjection
         

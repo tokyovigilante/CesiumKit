@@ -8,6 +8,8 @@
 
 import Foundation
 
+private var regularGridIndexArrays: [Int: [Int: [Int]]] = [:]
+
 /**
 * Provides terrain or other geometry for the surface of an ellipsoid.  The surface geometry is
 * organized into a pyramid of tiles according to a {@link TilingScheme}.  This type describes an
@@ -89,8 +91,6 @@ protocol TerrainProvider {
     */
     var vertexAttributes: [VertexAttributes] { get }
     
-    init(tilingScheme: TilingScheme, ellipsoid: Ellipsoid)
-    
     static func getRegularGridIndices(width width: Int, height: Int) -> [Int]
     
     /**
@@ -101,7 +101,7 @@ protocol TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, heightmapTerrainQuality: Double, numberOfTilesAtLevelZero: Int) -> Double
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before
@@ -207,6 +207,46 @@ extension TerrainProvider {
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
-
+    
+    static func getRegularGridIndices(width width: Int, height: Int) -> [Int] {
+        assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
+        
+        var byWidth = regularGridIndexArrays[width]
+        if byWidth == nil {
+            byWidth = [:]
+            regularGridIndexArrays[width] = byWidth
+        }
+        var indices = byWidth![height]
+        if indices == nil {
+            indices = [Int](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            
+            var index = 0
+            var indicesIndex = 0
+            for _ in 0..<height-1 {
+                for _ in 0..<width-1 {
+                    let upperLeft = index
+                    let lowerLeft = upperLeft + width
+                    let lowerRight = lowerLeft + 1
+                    let upperRight = upperLeft + 1
+                    
+                    indices![indicesIndex++] = upperLeft
+                    indices![indicesIndex++] = lowerLeft
+                    indices![indicesIndex++] = upperRight
+                    indices![indicesIndex++] = upperRight
+                    indices![indicesIndex++] = lowerLeft
+                    indices![indicesIndex++] = lowerRight
+                    
+                    ++index
+                }
+                ++index
+            }
+            var unWrappedByWidth = byWidth!
+            
+            unWrappedByWidth[height] = indices!
+            regularGridIndexArrays[width] = unWrappedByWidth
+        }
+        
+        return indices!
+    }
 }
 

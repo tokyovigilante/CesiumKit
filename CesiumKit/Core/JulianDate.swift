@@ -87,7 +87,7 @@ public struct JulianDate {
             //the previous leap second.
             let difference = JulianDate._leapSeconds[index].julianDate.secondsDifference(self)
             if difference > offset {
-                index--
+                index -= 1
                 offset = Double(JulianDate._leapSeconds[index].offset)
             }
         }
@@ -140,7 +140,7 @@ public struct JulianDate {
         var secondsOfDay = secondsOfDay - TimeConstants.SecondsPerDay * Double(extraDays)
         
         if secondsOfDay < 0 {
-            wholeDays--
+            wholeDays -= 1
             secondsOfDay += TimeConstants.SecondsPerDay
         }
         
@@ -733,7 +733,7 @@ public struct JulianDate {
         var index = JulianDate._leapSeconds.binarySearch(binarySearchScratchLeapSecond, comparator: compareLeapSecondDates)
         if index < 0 {
             index = ~index
-            --index
+            index -= 1
             if (index < 0) {
                 index = 0
             }

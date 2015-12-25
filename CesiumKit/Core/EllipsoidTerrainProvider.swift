@@ -8,8 +8,6 @@
 
 import Foundation
 
-var regularGridIndexArrays: [Int: [Int: [Int]]] = [:]
-
 /**
      * A very simple {@link TerrainProvider} that produces geometry by tessellating an ellipsoidal
      * surface.
@@ -81,7 +79,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
 
         // Note: the 64 below does NOT need to match the actual vertex dimensions, because
         // the ellipsoid is significantly smoother than actual terrain.
-        _levelZeroMaximumGeometricError = TerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: ellipsoid, tileImageWidth: 64,numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
+        _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: ellipsoid, tileImageWidth: 64,numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
 
         // FIXME: terraindata
         _terrainData = HeightmapTerrainData(
@@ -90,47 +88,6 @@ class EllipsoidTerrainProvider: TerrainProvider {
             height : 16)
     }
 
-    class func getRegularGridIndices(width width: Int, height: Int) -> [Int] {
-        assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
-        
-        var byWidth = regularGridIndexArrays[width]
-        if byWidth == nil {
-            byWidth = [:]
-            regularGridIndexArrays[width] = byWidth
-        }
-        var indices = byWidth![height]
-        if indices == nil {
-            indices = [Int](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
-            
-            var index = 0
-            var indicesIndex = 0
-            for _ in 0..<height-1 {
-                for _ in 0..<width-1 {
-                    let upperLeft = index
-                    let lowerLeft = upperLeft + width
-                    let lowerRight = lowerLeft + 1
-                    let upperRight = upperLeft + 1
-                    
-                    indices![indicesIndex++] = upperLeft
-                    indices![indicesIndex++] = lowerLeft
-                    indices![indicesIndex++] = upperRight
-                    indices![indicesIndex++] = upperRight
-                    indices![indicesIndex++] = lowerLeft
-                    indices![indicesIndex++] = lowerRight
-                    
-                    ++index
-                }
-                ++index
-            }
-            var unWrappedByWidth = byWidth!
-            
-            unWrappedByWidth[height] = indices!
-            regularGridIndexArrays[width] = unWrappedByWidth
-        }
-        
-        return indices!
-    }
-    
     /**
      * Requests the geometry for a given tile.  This function should not be called before
      * {@link TerrainProvider#ready} returns true.  The result includes terrain
@@ -169,15 +126,11 @@ class EllipsoidTerrainProvider: TerrainProvider {
      * @returns {Boolean} True if the provider has a water mask; otherwise, false.
      */
     var hasWaterMask: Bool {
-        get {
-            return false
-        }
+        return false
     }
     
     var hasVertexNormals: Bool {
-        get {
-            return false
-        }
+        return false
     }
     
 }

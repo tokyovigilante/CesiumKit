@@ -31,8 +31,6 @@ public struct Credit: Equatable {
     
     public let link: String?
     
-   
-    
     /**
     * @memberof Credit.prototype
     * @type {Number}
@@ -57,8 +55,9 @@ public struct Credit: Equatable {
         if let creditToId = creditToId[key] {
             id = creditToId
         } else {
-            id = nextCreditId++
+            id = nextCreditId
             creditToId[key] = id
+            nextCreditId += 1
         }
     }
 }

@@ -387,7 +387,7 @@ struct BoundingSphere: BoundingVolume {
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
-        for (var i = 0; i < numElements; i += stride) {
+        for i in 0.stride(to: numElements, by: stride) {
             currentPos.x = Double(positions[i]) + center.x
             currentPos.y = Double(positions[i + 1]) + center.y
             currentPos.z = Double(positions[i + 2]) + center.z

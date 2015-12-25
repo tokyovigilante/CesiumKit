@@ -538,8 +538,7 @@ public struct Cartesian3: Packable, Equatable {
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
         var cartesians = [Cartesian3]()
-        var index = coordinates.count
-        for (var i = 0; i < coordinates.count; i += 2) {
+        for i in 0.stride(to: coordinates.count, by: 2) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
         }
         return cartesians
@@ -559,7 +558,7 @@ public struct Cartesian3: Packable, Equatable {
     static func fromDegreesArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
-        for (var i = 0; i < coordinates.count; i += 3) {
+        for i in 0.stride(to: coordinates.count, by: 3) {
             pos.append(Math.toRadians(coordinates[i]))
             pos.append(Math.toRadians(coordinates[i+1]))
             pos.append((coordinates[i+2]))
@@ -584,8 +583,7 @@ public struct Cartesian3: Packable, Equatable {
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         
         var cartesians = [Cartesian3]()
-        var index = coordinates.count
-        for (var i = 0; i < coordinates.count; i += 3) {
+        for i in 0.stride(to: coordinates.count, by: 3) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
         }
         return cartesians

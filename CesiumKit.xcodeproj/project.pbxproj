@@ -1807,7 +1807,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Test Toast";
 				TargetAttributes = {
 					940A5AE91B6D54400095A86F = {
@@ -2750,7 +2750,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.testtoast.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = CesiumKit;
 				SWIFT_INCLUDE_PATHS = "${SRCROOT}/CesiumKit/Platform";
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALID_ARCHS = arm64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

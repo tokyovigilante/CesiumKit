@@ -736,7 +736,7 @@ public class Scene {
     
     func updateFrustums(near near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
         
-        for (var m = 0; m < numFrustums; ++m) {
+        for m in 0..<numFrustums {
             let curNear = max(near, pow(farToNearRatio, Double(m)) * near)
             let curFar = min(far, farToNearRatio * curNear)
             

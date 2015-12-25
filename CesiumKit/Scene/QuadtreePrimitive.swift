@@ -280,9 +280,6 @@ class QuadtreePrimitive {
             return
         }
         
-        var i: Int
-        var len: Int
-        
         // Clear the render list.
         _tilesToRender.removeAll()
         _tileTraversalQueue.clear()
@@ -336,9 +333,9 @@ class QuadtreePrimitive {
             if tile.renderable && _tileProvider.computeTileVisibility(tile, frameState: frameState, occluders: _occluders) != .None {
                 _tileTraversalQueue.enqueue(tile)
             } else {
-                ++_debug.tilesCulled
+                _debug.tilesCulled += 1
                 if (!tile.renderable) {
-                    ++_debug.tilesWaitingForChildren
+                    _debug.tilesWaitingForChildren += 1
                 }
             }
         }
@@ -348,7 +345,7 @@ class QuadtreePrimitive {
         // This maximizes the average detail across the scene and results in fewer sharp transitions
         // between very different LODs.
         while let tile = _tileTraversalQueue.dequeue() {
-            ++_debug.tilesVisited
+            _debug.tilesVisited += 1
             
             _tileReplacementQueue.markTileRendered(tile)
             
@@ -372,7 +369,7 @@ class QuadtreePrimitive {
                     if _tileProvider.computeTileVisibility(child, frameState: frameState, occluders: _occluders) != .None {
                         _tileTraversalQueue.enqueue(child)
                     } else {
-                        ++_debug.tilesCulled
+                        _debug.tilesCulled += 1
                     }
                 }
             } else {
@@ -425,7 +422,7 @@ class QuadtreePrimitive {
     
     func addTileToRenderList(tile: QuadtreeTile) {
         _tilesToRender.append(tile)
-        ++_debug.tilesRendered
+        _debug.tilesRendered += 1
     }
     
     func queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(tile: QuadtreeTile) -> Bool {
@@ -444,7 +441,7 @@ class QuadtreePrimitive {
         }
         
         if (!allRenderable) {
-            ++_debug.tilesWaitingForChildren
+            _debug.tilesWaitingForChildren += 1
         }
         
         // If all children are upsampled from this tile, we just render this tile instead of its children.
@@ -467,8 +464,8 @@ class QuadtreePrimitive {
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         
-        let len = _tileLoadQueue.count
-        for var i = len - 1; i >= 0; --i {
+        let len = _tileLoadQueue.count - 1
+        for i in len.stride(through: 0, by: -1) {
             let tile = _tileLoadQueue[i]
             _tileReplacementQueue.markTileRendered(tile)
             _tileProvider.loadTile(tile, context: context, commandList: &commandList, frameState: frameState)

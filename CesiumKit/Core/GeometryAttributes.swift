@@ -194,7 +194,8 @@ extension GeometryAttributes: SequenceType {
         var index = 0
         return anyGenerator {
             while index < self._maxAttributes {
-                let attribute = self[index++]
+                let attribute = self[index]
+                index += 1
                 if attribute != nil {
                     return attribute
                 }

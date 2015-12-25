@@ -242,14 +242,16 @@ struct GeometryPipeline {
         // Attribute locations for well-known attributes
         for semantic in semantics {
             if attributes[semantic] != nil {
-                indices[semantic] = j++
+                indices[semantic] = j
+                j += 1
             }
         }
         
         // Locations for custom attributes
         for attribute in attributes {
             if indices[attribute.name] == nil {
-                indices[attribute.name] = j++
+                indices[attribute.name] = j
+                j += 1
             }
         }
 
