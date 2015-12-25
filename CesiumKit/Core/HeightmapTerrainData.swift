@@ -91,7 +91,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     
     private let _childTileMask: Int
     
-    private let _structure: HeightmapTessellator.Structure
+    private let _structure: HeightmapStructure
     
     let waterMask: [UInt8]?
     
@@ -102,7 +102,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         width: Int,
         height: Int,
         childTileMask: Int = 15,
-        structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure(),
+        structure: HeightmapStructure = HeightmapStructure(),
         waterMask: [UInt8]? = nil,
         createdByUpsampling: Bool = false
         ) {

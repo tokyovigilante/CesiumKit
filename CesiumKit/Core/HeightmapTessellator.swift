@@ -9,26 +9,26 @@
 import Foundation
 
 /**
+ * The default structure of a heightmap, as given to {@link HeightmapTessellator.computeVertices}.
+ *
+ * @constant
+ */
+struct HeightmapStructure {
+    let heightScale = 1.0
+    let heightOffset = 0.0
+    let elementsPerHeight = 1
+    let stride = 1
+    let elementMultiplier = 256.0
+    let isBigEndian = false
+}
+
+/**
 * Contains functions to create a mesh from a heightmap image.
 *
 * @namespace
 * @alias HeightmapTessellator
 */
 class HeightmapTessellator {
-
-    /**
-    * The default structure of a heightmap, as given to {@link HeightmapTessellator.computeVertices}.
-    *
-    * @constant
-    */
-    struct Structure {
-        let heightScale = 1.0
-        let heightOffset = 0.0
-        let elementsPerHeight = 1
-        let stride = 1
-        let elementMultiplier = 256.0
-        let isBigEndian = false
-    }
 
     /**
     * Fills an array of vertices from a heightmap image.  On return, the vertex data is in the order
@@ -107,7 +107,7 @@ class HeightmapTessellator {
         isGeographic: Bool = true,
         relativeToCenter: Cartesian3 = Cartesian3.zero,
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
-        structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
+        structure: HeightmapStructure = HeightmapStructure()
         ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
             
             // This function tends to be a performance hotspot for terrain rendering,

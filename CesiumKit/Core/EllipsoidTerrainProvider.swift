@@ -44,9 +44,9 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {TilingScheme}
     */
-    var tilingScheme: TilingScheme
+    let tilingScheme: TilingScheme
     
-    var ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+    let ellipsoid: Ellipsoid
     
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
@@ -62,7 +62,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
-    var ready = true
+    private (set) var ready = true
     
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
@@ -81,7 +81,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
 
         // Note: the 64 below does NOT need to match the actual vertex dimensions, because
         // the ellipsoid is significantly smoother than actual terrain.
-        _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: 64, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
+        _levelZeroMaximumGeometricError = TerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: ellipsoid, tileImageWidth: 64,numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
 
         // FIXME: terraindata
         _terrainData = HeightmapTerrainData(
@@ -129,14 +129,6 @@ class EllipsoidTerrainProvider: TerrainProvider {
         }
         
         return indices!
-    }
-    
-    class func estimatedLevelZeroGeometricErrorForAHeightmap(
-        ellipsoid ellipsoid: Ellipsoid,
-        tileImageWidth: Int,
-        numberOfTilesAtLevelZero: Int) -> Double {
-            
-            return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
     
     /**
@@ -187,5 +179,5 @@ class EllipsoidTerrainProvider: TerrainProvider {
             return false
         }
     }
-
+    
 }

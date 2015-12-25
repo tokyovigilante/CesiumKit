@@ -101,7 +101,7 @@ protocol TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, heightmapTerrainQuality: Double, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before
@@ -200,5 +200,13 @@ extension TerrainProvider {
                 normalize: false)
         ]
     }
+    
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(
+        ellipsoid ellipsoid: Ellipsoid,
+        tileImageWidth: Int,
+        numberOfTilesAtLevelZero: Int) -> Double {
+            return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
+    }
+
 }
 
