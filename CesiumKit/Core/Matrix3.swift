@@ -133,7 +133,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        for var index = 0; index < Matrix3.packedLength; ++index {
+        for index in 0..<Matrix3.packedLength {
             if array.count < startingIndex - Matrix3.packedLength {
                 array.append(Float(_grid[index]))
             } else {

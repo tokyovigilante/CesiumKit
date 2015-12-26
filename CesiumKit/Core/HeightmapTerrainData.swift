@@ -557,7 +557,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
                 height = Double(height) * elementMultiplier + Double(heights[trueIndex + i])
             }
         } else {
-            for var i = elementsPerHeight - 1; i >= 0; --i {
+            for i in (elementsPerHeight - 1).stride(through: 0, by: -1) {
                 height = height * elementMultiplier + Double(heights[trueIndex + i])
             }
         }
@@ -578,7 +578,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
                 workingDivisor /= elementMultiplier
             }
         } else {
-            for var i = elementsPerHeight - 1; i >= 0; --i {
+            for i in (elementsPerHeight - 1).stride(through: 0, by: -1) {
                 heights[trueIndex + i] = floor(workingHeight / workingDivisor)
                 workingHeight -= heights[trueIndex + i] * workingDivisor
                 workingDivisor /= elementMultiplier

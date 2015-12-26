@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 /**
  * A {@link TerrainProvider} that access terrain data in a Cesium terrain format.
@@ -100,7 +101,9 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private let _heightmapWidth = 65
     
-    private var _heightmapStructure: HeightmapTerrainData? = nil
+    private var _heightmapStructure: HeightmapStructure? = nil
+    
+    private var _tileUrlTemplates = [String]()
     
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
@@ -149,15 +152,15 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _hasWaterMask = false
     
-    private var _littleEndianExtensionSize = true
-    
     /**
-    * Boolean flag that indicates if the client should request tile watermasks from the server.
-    * @type {Boolean}
-    * @default false
-    * @private
-    */
-    private let _requestWaterMask: Bool
+     * Boolean flag that indicates if the client should request tile watermasks from the server.
+     * @type {Boolean}
+     * @default false
+     * @private
+     */
+    private var _requestWaterMask: Bool
+    
+    private var _littleEndianExtensionSize = true
     
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false, credit: Credit = Credit(text: "CesiumKit")) {
         
@@ -177,53 +180,62 @@ class CesiumTerrainProvider: TerrainProvider {
         /*if (defined(this._proxy)) {
             metadataUrl = this._proxy.getURL(metadataUrl);
         }*/
-        /*var metadataError;
+        var metadataError: NSError? = nil
         
-        func metadataSuccess(data) {
-            var message;
+        let metadataSuccess = { (data: NSData) in
             
-            if (!data.format) {
-                message = 'The tile format is not specified in the layer.json file.';
-                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return;
+            let metadata = JSON(data: data)
+            
+            var message: String? = nil
+
+            if metadata["format"].string == nil {
+                message = "The tile format is not specified in the layer.json file."
+                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return
+            }
+            let tiles = metadata["tiles"].array
+            if tiles == nil || tiles!.isEmpty {
+                message = "The layer.json file does not specify any tile URL templates."
+                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return
+            }
+            guard let format = metadata["format"].string else {
+                message = "The layer.json file does not specify a tile format."
+                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return
+            }
+            if format == "heightmap-1.0" {
+                self._heightmapStructure = HeightmapStructure(
+                    heightScale: 1.0 / 5.0,
+                    heightOffset: -1000.0,
+                    elementsPerHeight: 1,
+                    stride: 1,
+                    elementMultiplier: 256.0,
+                    isBigEndian: false
+            )
+                self._hasWaterMask = true
+                self._requestWaterMask = true
+            } else if !format.hasPrefix("quantized-mesh-1.") {
+                message = "The tile format '" + format + "' is invalid or not supported."
+                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                return
             }
             
-            if (!data.tiles || data.tiles.length === 0) {
-                message = 'The layer.json file does not specify any tile URL templates.';
-                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return;
-            }
-            
-            if (data.format === 'heightmap-1.0') {
-                that._heightmapStructure = {
-                    heightScale : 1.0 / 5.0,
-                    heightOffset : -1000.0,
-                    elementsPerHeight : 1,
-                    stride : 1,
-                    elementMultiplier : 256.0,
-                    isBigEndian : false
-                };
-                that._hasWaterMask = true;
-                that._requestWaterMask = true;
-            } else if (data.format.indexOf('quantized-mesh-1.') !== 0) {
-                message = 'The tile format "' + data.format + '" is invalid or not supported.';
-                metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return;
-            }
-            
-            that._tileUrlTemplates = data.tiles;
-            for (var i = 0; i < that._tileUrlTemplates.length; ++i) {
-                var template = new Uri(that._tileUrlTemplates[i]);
-                var baseUri = new Uri(that._url);
-                if (template.authority && !baseUri.authority) {
-                    baseUri.authority = template.authority;
-                    baseUri.scheme = template.scheme;
+            self._tileUrlTemplates = tiles!.map ({ $0.string! })
+            let baseURL = NSURLComponents(string: self.url)!
+            for templateString in self._tileUrlTemplates {
+                let template = NSURLComponents(string: templateString)
+                if template?.host != nil && baseURL.host == nil {
+                    baseURL.host = template!.host
+                    baseURL.user = template!.user
+                    baseURL.password = template!.password
+                    baseURL.scheme = template!.scheme
                 }
-                that._tileUrlTemplates[i] = joinUrls(baseUri, template).toString().replace('{version}', data.version);
+                //that._tileUrlTemplates[i] = joinUrls(baseUri, template).toString().replace('{version}', data.version);*/
             }
             
-            that._availableTiles = data.available;
-            
+            var _availableTiles = metadata["available"]
+            /*
             if (!defined(that._credit) && defined(data.attribution) && data.attribution !== null) {
                 that._credit = new Credit(data.attribution);
             }
@@ -245,12 +257,12 @@ class CesiumTerrainProvider: TerrainProvider {
             }
             
             that._ready = true;
-            that._readyPromise.resolve(true);
+            that._readyPromise.resolve(true);*/
         }
-        
-        function metadataFailure(data) {
+     
+        let metadataFailure = { (data: NSData) in
             // If the metadata is not found, assume this is a pre-metadata heightmap tileset.
-            if (defined(data) && data.statusCode === 404) {
+            /*if (defined(data) && data.statusCode === 404) {
                 metadataSuccess({
                     tilejson: '2.1.0',
                     format : 'heightmap-1.0',
@@ -263,15 +275,21 @@ class CesiumTerrainProvider: TerrainProvider {
                 return;
             }
             var message = 'An error occurred while accessing ' + metadataUrl + '.';
-            metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+            metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
-        function requestMetadata() {
-            var metadata = loadJson(metadataUrl);
-            when(metadata, metadataSuccess, metadataFailure);
+        let requestMetadata = {
+            request(.GET, metadataUrl)
+                .response { (request, response, data, error) in
+                    if let error = error {
+                        metadataFailure(data as NSData!)
+                        return
+                    }
+                    metadataSuccess(data as NSData!)
+            }
         }
         
-        requestMetadata();*/
+        requestMetadata()
     }
 
 /**
