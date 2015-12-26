@@ -574,6 +574,10 @@
 		94E5D9BF1AB4F1C800FFAD81 /* HeadingPitchRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E5D9BE1AB4F1C800FFAD81 /* HeadingPitchRange.swift */; };
 		94E9B5DB1C0170E7001A40C8 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9B5DA1C0170E7001A40C8 /* SceneTransforms.swift */; };
 		94E9B5DC1C0170E7001A40C8 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9B5DA1C0170E7001A40C8 /* SceneTransforms.swift */; };
+		94EB4D9B1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */; };
+		94EB4D9C1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */; };
+		94EB4DA31C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */; };
+		94EB4DA41C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */; };
 		94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
@@ -1002,6 +1006,8 @@
 		94E9B5DA1C0170E7001A40C8 /* SceneTransforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransforms.swift; sourceTree = "<group>"; };
 		94E9BA1A19550A9600012DC4 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		94E9BA1C19550B5E00012DC4 /* GeometryAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryAttribute.swift; sourceTree = "<group>"; };
+		94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshTerrainData.swift; sourceTree = "<group>"; };
+		94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSData+ArrayView.swift"; path = "Platform/NSData+ArrayView.swift"; sourceTree = "<group>"; };
 		94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OrientedBoundingBox.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -1401,6 +1407,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1552,6 +1559,7 @@
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
+				94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2112,6 +2120,7 @@
 				945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
 				9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */,
+				94EB4D9B1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */,
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
 				9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */,
 				9413B8041A37B94500FFAD81 /* ImageryLayer.swift in Sources */,
@@ -2221,6 +2230,7 @@
 				9415C94D1B547E7F001A40C8 /* PassState.swift in Sources */,
 				9413B8101A37B94500FFAD81 /* QuadtreeTileLoadState.swift in Sources */,
 				9413B7FA1A37B94500FFAD81 /* CullingVolume.swift in Sources */,
+				94EB4DA31C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */,
 				9413B8161A37B94500FFAD81 /* SkyBox.swift in Sources */,
 				9413B7CD1A37B93100FFAD81 /* TerrainMesh.swift in Sources */,
 				94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */,
@@ -2334,6 +2344,7 @@
 				9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */,
 				947821431B5A2D7C0095A86F /* CullFace.swift in Sources */,
 				947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */,
+				94EB4D9C1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */,
 				947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */,
 				9469077D1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
 				946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */,
@@ -2364,6 +2375,7 @@
 				947821591B5A2D7C0095A86F /* VertexType.swift in Sources */,
 				9478215A1B5A2D7C0095A86F /* WindingOrder.swift in Sources */,
 				9478215B1B5A2D7C0095A86F /* BingMapsAPI.swift in Sources */,
+				94EB4DA41C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */,
 				949090741BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9478215C1B5A2D7C0095A86F /* BingMapsImageryProvider.swift in Sources */,
 				9478215D1B5A2D7C0095A86F /* BingMapsStyle.swift in Sources */,

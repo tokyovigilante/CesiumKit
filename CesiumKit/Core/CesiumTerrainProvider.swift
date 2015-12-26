@@ -86,7 +86,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @memberof TerrainProvider.prototype
      * @type {Credit}
      */
-    var credit: Credit
+    private (set) var credit: Credit
     
     /**
      * Gets a value indicating whether or not the provider is ready for use.
@@ -105,6 +105,8 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _tileUrlTemplates = [String]()
     
+    private var _availableTiles: JSON!
+    
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
      * This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
@@ -113,7 +115,6 @@ class CesiumTerrainProvider: TerrainProvider {
      * @exception {DeveloperError} This property must not be called before {@link CesiumTerrainProvider#ready}
      */
     var hasVertexNormals: Bool {
-        //>>includeStart('debug', pragmas.debug)
         assert(ready, "hasVertexNormals must not be called before the terrain provider is ready.")
         // returns true if we can request vertex normals from the server
         return _hasVertexNormals && requestVertexNormals
@@ -220,10 +221,10 @@ class CesiumTerrainProvider: TerrainProvider {
                 //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                 return
             }
-            
-            self._tileUrlTemplates = tiles!.map ({ $0.string! })
-            let baseURL = NSURLComponents(string: self.url)!
-            for templateString in self._tileUrlTemplates {
+            let version = metadata["version"].string!
+            let baseURL: NSURLComponents = NSURLComponents(string: self.url)!
+            self._tileUrlTemplates = tiles!.map({
+                var templateString = $0.string!
                 let template = NSURLComponents(string: templateString)
                 if template?.host != nil && baseURL.host == nil {
                     baseURL.host = template!.host
@@ -231,13 +232,19 @@ class CesiumTerrainProvider: TerrainProvider {
                     baseURL.password = template!.password
                     baseURL.scheme = template!.scheme
                 }
-                //that._tileUrlTemplates[i] = joinUrls(baseUri, template).toString().replace('{version}', data.version);*/
-            }
+                if let string = template?.string {
+                    templateString = string
+                }
+                let url = baseURL.URL!
+                
+                let path = templateString.replace("{version}", version)
+                return url.absoluteString + "/" + path
+            })
             
-            var _availableTiles = metadata["available"]
-            /*
-            if (!defined(that._credit) && defined(data.attribution) && data.attribution !== null) {
-                that._credit = new Credit(data.attribution);
+            self._availableTiles = metadata["available"]
+            
+            if let attribution = metadata["attribution"].string {
+                self.credit = Credit(text: attribution)
             }
             
             // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
@@ -246,18 +253,19 @@ class CesiumTerrainProvider: TerrainProvider {
             // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
             // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
             // over 'vertexnormals' if both extensions are supported by the server.
-            if (defined(data.extensions) && data.extensions.indexOf('octvertexnormals') !== -1) {
-                that._hasVertexNormals = true;
-            } else if (defined(data.extensions) && data.extensions.indexOf('vertexnormals') !== -1) {
-                that._hasVertexNormals = true;
-                that._littleEndianExtensionSize = false;
+            if let extensions = metadata["extensions"].array?.map({ $0.string! }) {
+                if extensions.contains("octvertexnormals") {
+                    self._hasVertexNormals = true
+                } else if extensions.contains("vertexnormals") {
+                    self._hasVertexNormals = true
+                    self._littleEndianExtensionSize = false
+                }
+                if extensions.contains("watermask") {
+                    self._hasWaterMask = true
+                }
             }
-            if (defined(data.extensions) && data.extensions.indexOf('watermask') !== -1) {
-                that._hasWaterMask = true;
-            }
-            
-            that._ready = true;
-            that._readyPromise.resolve(true);*/
+            self.ready = true
+            //that._readyPromise.resolve(true);
         }
      
         let metadataFailure = { (data: NSData) in
@@ -288,7 +296,6 @@ class CesiumTerrainProvider: TerrainProvider {
                     metadataSuccess(data as NSData!)
             }
         }
-        
         requestMetadata()
     }
 
@@ -319,56 +326,57 @@ class CesiumTerrainProvider: TerrainProvider {
     */
     WATER_MASK: 2
 };
-
-function getRequestHeader(extensionsList) {
-    if (!defined(extensionsList) || extensionsList.length === 0) {
-        return {
-            //Accept : 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*;q=0.01'
-       /* };
-    } else {
-        var extensions = extensionsList.join('-');
-        return {
-            //Accept : 'application/vnd.quantized-mesh;extensions=' + extensions + ',application/octet-stream;q=0.9,*;q=0.01'
-       /* };
-    }
-}
-
-        function createHeightmapTerrainData(provider, buffer, level, x, y, tmsY) {
-        var heightBuffer = new Uint16Array(buffer, 0, provider._heightmapWidth * provider._heightmapWidth);
-        return new HeightmapTerrainData({
-        buffer : heightBuffer,
-        childTileMask : new Uint8Array(buffer, heightBuffer.byteLength, 1)[0],
-        waterMask : new Uint8Array(buffer, heightBuffer.byteLength + 1, buffer.byteLength - heightBuffer.byteLength - 1),
-        width : provider._heightmapWidth,
-        height : provider._heightmapWidth,
-        structure : provider._heightmapStructure
-        });
+*/
+    private func getRequestHeader(extensionsList: [String]?) -> [String: String] {
+        if extensionsList == nil || extensionsList!.count == 0 {
+            return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
+        } else {
+            let extensions = extensionsList!.joinWithSeparator("-")
+            return ["Accept" : "application/vnd.quantized-mesh;extensions=" + extensions + ",application/octet-stream;q=0.9,*/*;q=0.01"]
         }
+    }
+
+    /*
+     function createHeightmapTerrainData(provider, buffer, level, x, y, tmsY) {
+     var heightBuffer = new Uint16Array(buffer, 0, provider._heightmapWidth * provider._heightmapWidth);
+     return new HeightmapTerrainData({
+     buffer : heightBuffer,
+     childTileMask : new Uint8Array(buffer, heightBuffer.byteLength, 1)[0],
+     waterMask : new Uint8Array(buffer, heightBuffer.byteLength + 1, buffer.byteLength - heightBuffer.byteLength - 1),
+     width : provider._heightmapWidth,
+     height : provider._heightmapWidth,
+     structure : provider._heightmapStructure
+     });
+     }
+     */
+    
+    func createQuantizedMeshTerrainData(data: NSData, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (data: TerrainData) -> ()) {
+        var pos = 0
+        let cartesian3Elements = 3
+        let boundingSphereElements = cartesian3Elements + 1
+        let cartesian3Length = strideof(Double) * cartesian3Elements
+        let boundingSphereLength = strideof(Double) * boundingSphereElements
+        let encodedVertexElements = 3
+        let encodedVertexLength = sizeof(UInt16) * encodedVertexElements
+        let triangleElements = 3
+        let bytesPerIndex = sizeof(UInt16)
+        let triangleLength = bytesPerIndex * triangleElements
         
-        function createQuantizedMeshTerrainData(provider, buffer, level, x, y, tmsY) {
-        var pos = 0;
-        var cartesian3Elements = 3;
-        var boundingSphereElements = cartesian3Elements + 1;
-        var cartesian3Length = Float64Array.BYTES_PER_ELEMENT * cartesian3Elements;
-        var boundingSphereLength = Float64Array.BYTES_PER_ELEMENT * boundingSphereElements;
-        var encodedVertexElements = 3;
-        var encodedVertexLength = Uint16Array.BYTES_PER_ELEMENT * encodedVertexElements;
-        var triangleElements = 3;
-        var bytesPerIndex = Uint16Array.BYTES_PER_ELEMENT;
-        var triangleLength = bytesPerIndex * triangleElements;
-        
-        var view = new DataView(buffer);
-        var center = new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true));
-        pos += cartesian3Length;
-        
+        let center = Cartesian3(
+            x: data.getFloat64(pos),
+            y: data.getFloat64(pos + 8),
+            z: data.getFloat64(pos + 16)
+        )
+        pos += cartesian3Length
+        /*
         var minimumHeight = view.getFloat32(pos, true);
         pos += Float32Array.BYTES_PER_ELEMENT;
         var maximumHeight = view.getFloat32(pos, true);
         pos += Float32Array.BYTES_PER_ELEMENT;
         
         var boundingSphere = new BoundingSphere(
-        new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true)),
-        view.getFloat64(pos + cartesian3Length, true));
+            new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true)),
+            view.getFloat64(pos + cartesian3Length, true));
         pos += boundingSphereLength;
         
         var horizonOcclusionPoint = new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true));
@@ -380,9 +388,9 @@ function getRequestHeader(extensionsList) {
         pos += vertexCount * encodedVertexLength;
         
         if (vertexCount > 64 * 1024) {
-        // More than 64k vertices, so indices are 32-bit.
-        bytesPerIndex = Uint32Array.BYTES_PER_ELEMENT;
-        triangleLength = bytesPerIndex * triangleElements;
+            // More than 64k vertices, so indices are 32-bit.
+            bytesPerIndex = Uint32Array.BYTES_PER_ELEMENT;
+            triangleLength = bytesPerIndex * triangleElements;
         }
         
         // Decode the vertex buffer.
@@ -396,22 +404,22 @@ function getRequestHeader(extensionsList) {
         var height = 0;
         
         function zigZagDecode(value) {
-        return (value >> 1) ^ (-(value & 1));
+            return (value >> 1) ^ (-(value & 1));
         }
         
         for (i = 0; i < vertexCount; ++i) {
-        u += zigZagDecode(uBuffer[i]);
-        v += zigZagDecode(vBuffer[i]);
-        height += zigZagDecode(heightBuffer[i]);
-        
-        uBuffer[i] = u;
-        vBuffer[i] = v;
-        heightBuffer[i] = height;
+            u += zigZagDecode(uBuffer[i]);
+            v += zigZagDecode(vBuffer[i]);
+            height += zigZagDecode(heightBuffer[i]);
+            
+            uBuffer[i] = u;
+            vBuffer[i] = v;
+            heightBuffer[i] = height;
         }
         
         // skip over any additional padding that was added for 2/4 byte alignment
         if (pos % bytesPerIndex !== 0) {
-        pos += (bytesPerIndex - (pos % bytesPerIndex));
+            pos += (bytesPerIndex - (pos % bytesPerIndex));
         }
         
         var triangleCount = view.getUint32(pos, true);
@@ -424,11 +432,11 @@ function getRequestHeader(extensionsList) {
         // Copyright 2012 Google Inc., Apache 2.0 license.
         var highest = 0;
         for (i = 0; i < indices.length; ++i) {
-        var code = indices[i];
-        indices[i] = highest - code;
-        if (code === 0) {
-        ++highest;
-        }
+            var code = indices[i];
+            indices[i] = highest - code;
+            if (code === 0) {
+                ++highest;
+            }
         }
         
         var westVertexCount = view.getUint32(pos, true);
@@ -454,17 +462,17 @@ function getRequestHeader(extensionsList) {
         var encodedNormalBuffer;
         var waterMaskBuffer;
         while (pos < view.byteLength) {
-        var extensionId = view.getUint8(pos, true);
-        pos += Uint8Array.BYTES_PER_ELEMENT;
-        var extensionLength = view.getUint32(pos, provider._littleEndianExtensionSize);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        
-        if (extensionId === QuantizedMeshExtensionIds.OCT_VERTEX_NORMALS && provider._requestVertexNormals) {
-        encodedNormalBuffer = new Uint8Array(buffer, pos, vertexCount * 2);
-        } else if (extensionId === QuantizedMeshExtensionIds.WATER_MASK && provider._requestWaterMask) {
-        waterMaskBuffer = new Uint8Array(buffer, pos, extensionLength);
-        }
-        pos += extensionLength;
+            var extensionId = view.getUint8(pos, true);
+            pos += Uint8Array.BYTES_PER_ELEMENT;
+            var extensionLength = view.getUint32(pos, provider._littleEndianExtensionSize);
+            pos += Uint32Array.BYTES_PER_ELEMENT;
+            
+            if (extensionId === QuantizedMeshExtensionIds.OCT_VERTEX_NORMALS && provider._requestVertexNormals) {
+                encodedNormalBuffer = new Uint8Array(buffer, pos, vertexCount * 2);
+            } else if (extensionId === QuantizedMeshExtensionIds.WATER_MASK && provider._requestWaterMask) {
+                waterMaskBuffer = new Uint8Array(buffer, pos, extensionLength);
+            }
+            pos += extensionLength;
         }
         
         var skirtHeight = provider.getLevelMaximumGeometricError(level) * 5.0;
@@ -472,114 +480,116 @@ function getRequestHeader(extensionsList) {
         var rectangle = provider._tilingScheme.tileXYToRectangle(x, y, level);
         var orientedBoundingBox;
         if (rectangle.width < CesiumMath.PI_OVER_TWO + CesiumMath.EPSILON5) {
-        // Here, rectangle.width < pi/2, and rectangle.height < pi
-        // (though it would still work with rectangle.width up to pi)
-        
-        // The skirt is not included in the OBB computation. If this ever
-        // causes any rendering artifacts (cracks), they are expected to be
-        // minor and in the corners of the screen. It's possible that this
-        // might need to be changed - just change to `minimumHeight - skirtHeight`
-        // A similar change might also be needed in `upsampleQuantizedTerrainMesh.js`.
-        orientedBoundingBox = OrientedBoundingBox.fromRectangle(rectangle, minimumHeight, maximumHeight, provider._tilingScheme.ellipsoid);
+            // Here, rectangle.width < pi/2, and rectangle.height < pi
+            // (though it would still work with rectangle.width up to pi)
+            
+            // The skirt is not included in the OBB computation. If this ever
+            // causes any rendering artifacts (cracks), they are expected to be
+            // minor and in the corners of the screen. It's possible that this
+            // might need to be changed - just change to `minimumHeight - skirtHeight`
+            // A similar change might also be needed in `upsampleQuantizedTerrainMesh.js`.
+            orientedBoundingBox = OrientedBoundingBox.fromRectangle(rectangle, minimumHeight, maximumHeight, provider._tilingScheme.ellipsoid);
         }
         
         return new QuantizedMeshTerrainData({
-        center : center,
-        minimumHeight : minimumHeight,
-        maximumHeight : maximumHeight,
-        boundingSphere : boundingSphere,
-        orientedBoundingBox : orientedBoundingBox,
-        horizonOcclusionPoint : horizonOcclusionPoint,
-        quantizedVertices : encodedVertexBuffer,
-        encodedNormals : encodedNormalBuffer,
-        indices : indices,
-        westIndices : westIndices,
-        southIndices : southIndices,
-        eastIndices : eastIndices,
-        northIndices : northIndices,
-        westSkirtHeight : skirtHeight,
-        southSkirtHeight : skirtHeight,
-        eastSkirtHeight : skirtHeight,
-        northSkirtHeight : skirtHeight,
-        childTileMask: getChildMaskForTile(provider, level, x, tmsY),
-        waterMask: waterMaskBuffer
-        });
-        }
-        */*/*/
-        /**
-        * Requests the geometry for a given tile.  This function should not be called before
-        * {@link CesiumTerrainProvider#ready} returns true.  The result must include terrain data and
-        * may optionally include a water mask and an indication of which child tiles are available.
-        *
-        * @param {Number} x The X coordinate of the tile for which to request geometry.
-        * @param {Number} y The Y coordinate of the tile for which to request geometry.
-        * @param {Number} level The level of the tile for which to request geometry.
-        * @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
-        *                  or false if the request should be initiated regardless of the number of requests
-        *                  already in progress.
-        * @returns {Promise.<TerrainData>|undefined} A promise for the requested geometry.  If this method
-        *          returns undefined instead of a promise, it is an indication that too many requests are already
-        *          pending and the request will be retried later.
-        *
-        * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
-        *            returns true.
-        */
-    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
-    //>>includeStart('debug', pragmas.debug)
-        /*if (!this._ready) {
-        throw new DeveloperError('requestTileGeometry must not be called before the terrain provider is ready.');
-        }
-        //>>includeEnd('debug');
-        
-        var urlTemplates = this._tileUrlTemplates;
-        if (urlTemplates.length === 0) {
-        return undefined;
-        }
-        
-        var yTiles = this._tilingScheme.getNumberOfYTilesAtLevel(level);
-        
-        var tmsY = (yTiles - y - 1);
-        
-        var url = urlTemplates[(x + tmsY + level) % urlTemplates.length].replace('{z}', level).replace('{x}', x).replace('{y}', tmsY);
-        
-        var proxy = this._proxy;
-        if (defined(proxy)) {
-        url = proxy.getURL(url);
-        }
-        
-        var promise;
-        
-        var extensionList = [];
-        if (this._requestVertexNormals && this._hasVertexNormals) {
-        extensionList.push(this._littleEndianExtensionSize ? "octvertexnormals" : "vertexnormals");
-        }
-        if (this._requestWaterMask && this._hasWaterMask) {
-        extensionList.push("watermask");
-        }
-        
-        var tileLoader = function(tileUrl) {
-        return loadArrayBuffer(tileUrl, getRequestHeader(extensionList));
-        };
-        
-        throttleRequests = defaultValue(throttleRequests, true);
-        if (throttleRequests) {
-        promise = throttleRequestByServer(url, tileLoader);
-        if (!defined(promise)) {
-        return undefined;
-        }
-        } else {
-        promise = tileLoader(url);
-        }
-        
-        var that = this;
-        return when(promise, function(buffer) {
-        if (defined(that._heightmapStructure)) {
-        return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
-        } else {
-        return createQuantizedMeshTerrainData(that, buffer, level, x, y, tmsY);
-        }
+            center : center,
+            minimumHeight : minimumHeight,
+            maximumHeight : maximumHeight,
+            boundingSphere : boundingSphere,
+            orientedBoundingBox : orientedBoundingBox,
+            horizonOcclusionPoint : horizonOcclusionPoint,
+            quantizedVertices : encodedVertexBuffer,
+            encodedNormals : encodedNormalBuffer,
+            indices : indices,
+            westIndices : westIndices,
+            southIndices : southIndices,
+            eastIndices : eastIndices,
+            northIndices : northIndices,
+            westSkirtHeight : skirtHeight,
+            southSkirtHeight : skirtHeight,
+            eastSkirtHeight : skirtHeight,
+            northSkirtHeight : skirtHeight,
+            childTileMask: getChildMaskForTile(provider, level, x, tmsY),
+            waterMask: waterMaskBuffer
         });*/
+        completionBlock(data: QuantizedMeshTerrainData())
+    }
+ 
+    
+    /**
+     * Requests the geometry for a given tile.  This function should not be called before
+     * {@link CesiumTerrainProvider#ready} returns true.  The result must include terrain data and
+     * may optionally include a water mask and an indication of which child tiles are available.
+     *
+     * @param {Number} x The X coordinate of the tile for which to request geometry.
+     * @param {Number} y The Y coordinate of the tile for which to request geometry.
+     * @param {Number} level The level of the tile for which to request geometry.
+     * @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
+     *                  or false if the request should be initiated regardless of the number of requests
+     *                  already in progress.
+     * @returns {Promise.<TerrainData>|undefined} A promise for the requested geometry.  If this method
+     *          returns undefined instead of a promise, it is an indication that too many requests are already
+     *          pending and the request will be retried later.
+     *
+     * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
+     *            returns true.
+     */
+    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
+        assert(ready, "requestTileGeometry must not be called before the terrain provider is ready.")
+        
+        if _tileUrlTemplates.isEmpty {
+            completionBlock(nil)
         }
+        
+        let yTiles = tilingScheme.numberOfYTilesAtLevel(level)
+        
+        let tmsY = yTiles - y - 1
+        
+        let url = _tileUrlTemplates[(x + tmsY + level) % _tileUrlTemplates.count].replace("{z}", "\(level)").replace("{x}", "\(x)").replace("{y}", "\(tmsY)")
+        
+        /*
+         var proxy = this._proxy;
+         if (defined(proxy)) {
+         url = proxy.getURL(url);
+         }*/
+        
+        var extensionList = [String]()
+        if hasVertexNormals {
+            extensionList.append(_littleEndianExtensionSize ? "octvertexnormals" : "vertexnormals")
+        }
+        if _requestWaterMask && _hasWaterMask {
+            extensionList.append("watermask")
+        }
+        
+        let tileLoader = { (tileUrl: String) in
+            request(.GET, tileUrl, headers: self.getRequestHeader(extensionList))
+                .response { (request, response, data, error) in
+                    if let error = error {
+                        print(error.localizedDescription)
+                        return
+                    }
+                    var terrainData: TerrainData? = nil
+                    if self._heightmapStructure != nil {
+                        terrainData = nil
+                        //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
+                    } else {
+                        self.createQuantizedMeshTerrainData(data!, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
+                    }
+                    completionBlock(terrainData)
+            }
+        }
+        
+        /*if (throttleRequests) {
+         promise = throttleRequestByServer(url, tileLoader);
+         if (!defined(promise)) {
+         return undefined;
+         }
+         } else {
+         promise = tileLoader(url);
+         }*/
+        tileLoader(url)
+    }
+    
         /*
         defineProperties(CesiumTerrainProvider.prototype, {
         /**
