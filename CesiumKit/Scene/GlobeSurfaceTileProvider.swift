@@ -886,7 +886,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             
             command.boundingVolume = boundingSphere
             command.orientedBoundingBox = surfaceTile.orientedBoundingBox
-            commandList.append(command)
+            frameState.commandList.append(command)
             
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor

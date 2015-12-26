@@ -175,7 +175,6 @@ public class Scene {
     //this._sunPostProcess = undefined;
     
     private var _computeCommandList = [ComputeCommand]()
-    private var _commandList = [Command]()
     private var _frustumCommandsList = [FrustumCommands]()
     private var _overlayCommandList = [DrawCommand]()
     
@@ -720,6 +719,7 @@ public class Scene {
 
     func updateFrameState(frameNumber: Int, time: JulianDate) {
 
+        frameState.commandList.removeAll()
         frameState.mode = mode
         frameState.morphTime = morphTime
         frameState.mapProjection = mapProjection
@@ -819,8 +819,9 @@ public class Scene {
         // get user culling volume minus the far plane.
         var planes = frameState.cullingVolume!.planes[0...4]
         let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
+        frameState.cullingVolume = cullingVolume
         
-        for command in _commandList {
+        for command in frameState.commandList {
             
             if command.pass == .Compute {
                 _computeCommandList.append(command as! ComputeCommand)
@@ -1406,7 +1407,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     func updatePrimitives() {
     
         if globe != nil {
-            globe.update(context: context, frameState: frameState)
+            globe.update(context: context, frameState: &frameState)
         }
     /*
     _groundPrimitives.update(context, frameState, _commandList);
@@ -1473,7 +1474,6 @@ function callAfterRenderFunctions(frameState) {
         
         uniformState.update(context, frameState: frameState)
         _computeCommandList.removeAll()
-        _commandList.removeAll()
         _overlayCommandList.removeAll()
     
         updatePrimitives()
