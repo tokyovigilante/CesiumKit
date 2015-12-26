@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+extension NSData {
+    
+    func getFloat64(pos: Int, littleEndian: Bool = true) -> Double {
+        assert(self.length >= pos + sizeof(Double), "pos out of bounds")
+        var result: Double = 0.0
+        getBytes(&result, range: NSMakeRange(pos, sizeof(Double)))
+        return result
+    }
+}
