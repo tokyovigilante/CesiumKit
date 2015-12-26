@@ -23,9 +23,9 @@ class Globe {
     
     var imageryLayers: ImageryLayerCollection
     
-    private var _surfaceShaderSet: GlobeSurfaceShaderSet
+    private var _surfaceShaderSet: GlobeSurfaceShaderSet!
         
-    private var _surface: QuadtreePrimitive
+    private var _surface: QuadtreePrimitive!
     
     /**
     * The terrain provider providing surface geometry for this globe.
@@ -127,28 +127,18 @@ class Globe {
     
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         
-        terrainProvider = EllipsoidTerrainProvider(
+        /*terrainProvider = EllipsoidTerrainProvider(
             ellipsoid : ellipsoid
+        )*/
+        terrainProvider = CesiumTerrainProvider(
+            url: "https://assets.agi.com/stk-terrain/world",
+            requestVertexNormals: true
         )
         
         self.ellipsoid = ellipsoid
         
         imageryLayers = ImageryLayerCollection()
         
-        let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
-        
-        _surfaceShaderSet = GlobeSurfaceShaderSet(
-            baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
-            baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
-            vertexDescriptor: vertexDescriptor)
-        
-        _surface = QuadtreePrimitive(
-            tileProvider: GlobeSurfaceTileProvider(
-                terrainProvider: terrainProvider,
-                imageryLayers: imageryLayers,
-                surfaceShaderSet: _surfaceShaderSet
-            )
-        )
     }
     
     /*func updateVertexDescriptor () -> VertexDescriptor {
@@ -324,7 +314,28 @@ class Globe {
         if !show {
             return
         }
-
+        
+        if !terrainProvider.ready {
+            return
+        }
+        
+        if _surface == nil {
+            let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
+            
+            _surfaceShaderSet = GlobeSurfaceShaderSet(
+                baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
+                                        baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
+                                                                  vertexDescriptor: vertexDescriptor)
+            
+            _surface = QuadtreePrimitive(
+                tileProvider: GlobeSurfaceTileProvider(
+                    terrainProvider: terrainProvider,
+                    imageryLayers: imageryLayers,
+                    surfaceShaderSet: _surfaceShaderSet
+                )
+            )
+        }
+        
         let width = context.width
         let height = context.height
         
