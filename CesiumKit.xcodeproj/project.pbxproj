@@ -365,6 +365,8 @@
 		945E45041B17387E0095A86F /* VertexType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945E45031B17387E0095A86F /* VertexType.swift */; };
 		946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946007AD1AC2C97F0095A86F /* CameraEventType.swift */; };
 		946754401B78C21A001A40C8 /* Alamofire.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 945C3ABD1B5296B40095A86F /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9469077C1C2DFD970095A86F /* HeightmapStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9469077B1C2DFD970095A86F /* HeightmapStructure.swift */; };
+		9469077D1C2DFD970095A86F /* HeightmapStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9469077B1C2DFD970095A86F /* HeightmapStructure.swift */; };
 		946D129A1C2CBF2E001A40C8 /* CesiumTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D12991C2CBF2E001A40C8 /* CesiumTerrainProvider.swift */; };
 		946D129B1C2CBF2E001A40C8 /* CesiumTerrainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D12991C2CBF2E001A40C8 /* CesiumTerrainProvider.swift */; };
 		946D129E1C2CBF40001A40C8 /* ImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */; };
@@ -884,6 +886,7 @@
 		9465B0231956F5A400355D2C /* UniformState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniformState.swift; sourceTree = "<group>"; };
 		9465B0251956F5DE00355D2C /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		9465B0271956F61400355D2C /* CubeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubeMap.swift; sourceTree = "<group>"; };
+		9469077B1C2DFD970095A86F /* HeightmapStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapStructure.swift; sourceTree = "<group>"; };
 		94697DA11A25CA0E00FFAD81 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Platform/Array.swift; sourceTree = "<group>"; };
 		946D12991C2CBF2E001A40C8 /* CesiumTerrainProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumTerrainProvider.swift; sourceTree = "<group>"; };
 		946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageExtensions.swift; path = Platform/ImageExtensions.swift; sourceTree = "<group>"; };
@@ -1360,6 +1363,7 @@
 				945BF6461AA9C00000FFAD81 /* GeometryType.swift */,
 				942CF4BE19CD90AA00012DC4 /* HeightmapTerrainData.swift */,
 				94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */,
+				9469077B1C2DFD970095A86F /* HeightmapStructure.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
@@ -2092,6 +2096,7 @@
 				94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */,
 				9413B7B51A37B93100FFAD81 /* HeightmapTerrainData.swift in Sources */,
 				9413B7FF1A37B94500FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
+				9469077C1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
 				940240261C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */,
 				9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */,
 				9413B7F51A37B94500FFAD81 /* BingMapsImageryProvider.swift in Sources */,
@@ -2330,6 +2335,7 @@
 				947821431B5A2D7C0095A86F /* CullFace.swift in Sources */,
 				947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */,
 				947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */,
+				9469077D1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
 				946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */,
 				947821461B5A2D7C0095A86F /* Framebuffer.swift in Sources */,
 				947821471B5A2D7C0095A86F /* ImageBuffer.swift in Sources */,

@@ -9,20 +9,6 @@
 import Foundation
 
 /**
- * The default structure of a heightmap, as given to {@link HeightmapTessellator.computeVertices}.
- *
- * @constant
- */
-struct HeightmapStructure {
-    let heightScale = 1.0
-    let heightOffset = 0.0
-    let elementsPerHeight = 1
-    let stride = 1
-    let elementMultiplier = 256.0
-    let isBigEndian = false
-}
-
-/**
 * Contains functions to create a mesh from a heightmap image.
 *
 * @namespace
@@ -166,10 +152,10 @@ class HeightmapTessellator {
             var endCol = width
             
             if (skirtHeight > 0) {
-                --startRow
-                ++endRow
-                --startCol
-                ++endCol
+                startRow -= 1
+                endRow += 1
+                startCol -= 1
+                endCol += 1
             }
             
             var vertices = [Float]()
