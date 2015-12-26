@@ -132,7 +132,8 @@ class Globe {
         )*/
         terrainProvider = CesiumTerrainProvider(
             url: "https://assets.agi.com/stk-terrain/world",
-            requestVertexNormals: true
+            requestVertexNormals: true,
+            requestWaterMask: true
         )
         
         self.ellipsoid = ellipsoid
@@ -310,7 +311,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update(context context: Context, inout frameState: FrameState) {
         if !show {
             return
         }
@@ -390,13 +391,13 @@ class Globe {
             tileProvider.oceanNormalMap = _oceanNormalMap
             tileProvider.enableLighting = enableLighting
             
-            _surface.update(context: context, frameState: frameState, commandList: &commandList)
+            _surface.update(context: context, frameState: &frameState)
         }
         
         if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            _surface.update(context: context, frameState: frameState, commandList: &commandList)
+            _surface.update(context: context, frameState: &frameState)
         }
     }
 
