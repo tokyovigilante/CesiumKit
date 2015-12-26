@@ -20,11 +20,23 @@ import Foundation
 struct FrameState {
     
     /**
+     * The rendering context.
+     * @type {Context}
+     */
+    weak var context: Context!
+    
+    /**
     * The current mode of the scene.
     * @type {SceneMode}
     * @default {@link SceneMode.SCENE3D}
     */
     var mode = SceneMode.Scene3D
+    
+    /**
+    * An array of rendering commands.
+    * @type {DrawCommand[]}
+    */
+    var commandList = [Command]()
     
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
@@ -128,6 +140,34 @@ struct FrameState {
     * @default false
     */
     var scene3DOnly = false
+    
+    /*var fog = (//) (enabled: Bool, density: Double?, sse: Double?) = (
+        /**
+        * <code>true</code> if fog is enabled, <code>false</code> otherwise.
+        * @type {Boolean}
+        * @default false
+        */
+        enabled = false,
+        /**
+        * A positive number used to mix the color and fog color based on camera distance.
+        * @type {Number}
+        * @default undefined
+        */
+        density: Double? = nil,
+        /**
+        * A scalar used to modify the screen space error of geometry partially in fog.
+        * @type {Number}
+        * @default undefined
+        */
+        sse: Double? = nil
+    )*/
+    
+    /**
+    * A scalar used to exaggerate the terrain.
+    * @type {Number}
+    */
+    var terrainExaggeration = 1.0
+
 }
 
 

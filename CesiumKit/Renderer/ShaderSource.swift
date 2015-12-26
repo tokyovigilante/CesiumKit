@@ -292,7 +292,7 @@ struct ShaderSource {
             let currentNode = nodesWithoutIncomingEdges.removeAtIndex(0)
             
             dependencyNodes.append(currentNode)
-            for (var i = 0; i < currentNode.dependsOn.count; ++i) {
+            for (var i = 0; i < currentNode.dependsOn.count; i += 1) {
                 // remove the edge from the graph
                 let referencedNode = currentNode.dependsOn[i]
                 let index = referencedNode.requiredBy.indexOf(currentNode)

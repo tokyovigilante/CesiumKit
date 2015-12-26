@@ -1719,7 +1719,7 @@ Matrix4.abs = function(matrix, result) {
     * //Prints "Difference between both the matrices is not less than 0.1" on the console
     */
     func equalsEpsilon (other: Matrix4, epsilon: Double) -> Bool {
-        for var i = 0; i < 16; i++ {
+        for i in 0..<16 {
             if abs(_grid[i] - other[i]) >= epsilon {
                 return false
             }

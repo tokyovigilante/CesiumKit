@@ -143,7 +143,7 @@ class QuadtreeTile: Equatable {
     * @type {Object: QuadTreeTileData}
     * @default undefined
     */
-    var data: GlobeSurfaceTile/*QuadTreeTileData*/? = nil
+    var data: GlobeSurfaceTile? = nil
     
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
         
@@ -228,16 +228,16 @@ class QuadtreeTile: Equatable {
     *
     * @memberof QuadtreeTile
     */
-    func freeResources (context: Context? = nil) {
+    func freeResources () {
         state = .Start
         renderable = false
         upsampledFromParent = false
         
-        //data?.freeResources(context)
+        data?.freeResources()
         
         if _children != nil {
             for tile in _children! {
-                tile.freeResources(context)
+                tile.freeResources()
             }
             _children = nil
         }

@@ -152,7 +152,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     static func unpack(array: [Float], startingIndex: Int) -> Matrix3 {
         var result = Matrix3()
         
-        for var index = 0; index < Matrix3.packedLength; ++index {
+        for index in 0..<Matrix3.packedLength {
             result[index] = Double(array[index])
         }
         return result

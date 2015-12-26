@@ -631,7 +631,8 @@ public class Scene {
         
         id = NSUUID().UUIDString
             
-        frameState = FrameState(/*new CreditDisplay(creditContainer*/)
+        frameState = FrameState()
+        frameState.context = context/*new CreditDisplay(creditContainer*/
         frameState.scene3DOnly = scene3DOnly
         
         _passState = PassState()
@@ -1405,7 +1406,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     func updatePrimitives() {
     
         if globe != nil {
-            globe.update(context: context, frameState: frameState, commandList: &_commandList)
+            globe.update(context: context, frameState: frameState)
         }
     /*
     _groundPrimitives.update(context, frameState, _commandList);

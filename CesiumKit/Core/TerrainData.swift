@@ -51,7 +51,7 @@ protocol TerrainData: class {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
     
     /**
     * Determines if a given child tile is available, based on the
@@ -76,11 +76,12 @@ protocol TerrainData: class {
     * @param {Number} x The X coordinate of the tile for which to create the terrain data.
     * @param {Number} y The Y coordinate of the tile for which to create the terrain data.
     * @param {Number} level The level of the tile for which to create the terrain data.
+    * @param {Number} [exaggeration=1.0] The scale used to exaggerate the terrain.
     * @returns {Promise|TerrainMesh} A promise for the terrain mesh, or undefined if too many
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, completionBlock: (TerrainMesh?) -> ())
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ())
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -97,7 +98,7 @@ protocol TerrainData: class {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ())
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()?)
 }
 
 extension TerrainData {

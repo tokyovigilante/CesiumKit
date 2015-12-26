@@ -522,7 +522,7 @@ CesiumMath.factorial = function(n) {
         
         var result = n
         assert(maximumValue > minimumValue, "maximumValue must be greater than minimumValue")
-        ++result
+        result += 1
         if (result > maximumValue) {
             result = minimumValue
         }

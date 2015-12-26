@@ -49,14 +49,14 @@ class TileImagery {
     * Processes the load state machine for this instance.
     *
     * @param {Tile} tile The tile to which this instance belongs.
-    * @param {Context} context The context.
+    * @param {FrameState} frameState The frameState.
     * @returns {Boolean} True if this instance is done loading; otherwise, false.
     */
-    func processStateMachine (tile: QuadtreeTile, context: Context, inout commandList: [Command]) -> Bool {
+    func processStateMachine (tile: QuadtreeTile, inout frameState: FrameState) -> Bool {
         
         let imageryLayer = loadingImagery!.imageryLayer
         
-        loadingImagery!.processStateMachine(context, commandList: &commandList)
+        loadingImagery!.processStateMachine(frameState: &frameState)
         
         if loadingImagery!.state == .Ready {
             if readyImagery != nil {
@@ -97,7 +97,7 @@ class TileImagery {
                 // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery
                 // tiles may not be attached directly to a terrain tile.  Such tiles will never load if
                 // we don't do it here.
-                closestAncestorThatNeedsLoading.processStateMachine(context, commandList: &commandList)
+                closestAncestorThatNeedsLoading.processStateMachine(frameState: &frameState)
                 return false
             } else {
                 // This imagery tile is failed or invalid, and we have the "best available" substitute.  So we're done loading.

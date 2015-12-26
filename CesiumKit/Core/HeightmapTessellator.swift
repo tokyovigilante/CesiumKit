@@ -93,7 +93,8 @@ class HeightmapTessellator {
         isGeographic: Bool = true,
         relativeToCenter: Cartesian3 = Cartesian3.zero,
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
-        structure: HeightmapStructure = HeightmapStructure()
+        structure: HeightmapStructure = HeightmapStructure(),
+        exaggeration: Double
         ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
             
             // This function tends to be a performance hotspot for terrain rendering,
@@ -209,17 +210,17 @@ class HeightmapTessellator {
                         heightSample = 0
                         
                         if isBigEndian {
-                            for (var elementOffset = 0; elementOffset < elementsPerHeight; ++elementOffset) {
+                            for elementOffset in 0.stride(to: elementsPerHeight, by: 1) {
                                 heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         } else {
-                            for (var elementOffset = elementsPerHeight - 1; elementOffset >= 0; --elementOffset) {
+                            for elementOffset in (elementsPerHeight - 1).stride(through: 0, by: -1) {
                                 heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                             }
                         }
                     }
                     
-                    heightSample = heightSample * heightScale + heightOffset
+                    heightSample = heightSample * heightScale + heightOffset * exaggeration
                     
                     maximumHeight = max(maximumHeight, heightSample)
                     minimumHeight = min(minimumHeight, heightSample)

@@ -337,18 +337,18 @@ public class ImageryLayer {
         
         let northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
-            ++northwestTileCoordinates.y
+            northwestTileCoordinates.y += 1
         }
         if (abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
-            ++northwestTileCoordinates.x
+            northwestTileCoordinates.x += 1
         }
         
         let southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
         if (abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
-            --southeastTileCoordinates.y
+            southeastTileCoordinates.y -= 1
         }
         if (abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
-            --southeastTileCoordinates.x
+            southeastTileCoordinates.x -= 1
         }
         
         // Create TileImagery instances for each imagery tile overlapping this terrain tile.
@@ -413,7 +413,7 @@ public class ImageryLayer {
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
                 let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
                 surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), atIndex: insertionPoint!)
-                ++insertionPoint!
+                insertionPoint! += 1
             }
         }
         return true
@@ -454,10 +454,11 @@ public class ImageryLayer {
      *
      * @param {Imagery} imagery The imagery to request.
      */
-    func requestImagery (context: Context, imagery: Imagery) {
+    func requestImagery (frameState frameState: FrameState, imagery: Imagery) {
         
+        let context = frameState.context
+
         imagery.state = .Transitioning
-        
         
         dispatch_async(context.networkQueue, {
             
@@ -497,7 +498,10 @@ public class ImageryLayer {
      * @param {Context} context The rendered context to use to create textures.
      * @param {Imagery} imagery The imagery for which to create a texture.
      */
-    func createTexture (context: Context, imagery: Imagery) {
+    func createTexture (frameState frameState: FrameState, imagery: Imagery) {
+        
+        let context = frameState.context
+        
         dispatch_async(context.textureLoadQueue, {
             
             // If this imagery provider has a discard policy, use it to check if this
@@ -545,13 +549,14 @@ public class ImageryLayer {
      *
      * @private
      *
-     * @param {Context} context The rendered context to use.
+     * @param {FrameState} frameState The frameState.
      * @param {Imagery} imagery The imagery instance to reproject.
      */
-    func reprojectTexture (context: Context, inout commandList: [Command], imagery: Imagery) {
+    func reprojectTexture (inout frameState frameState: FrameState, imagery: Imagery) {
         
-        var texture = imagery.texture!
+        let texture = imagery.texture!
         let rectangle = imagery.rectangle!
+        let context = frameState.context
         
         // Reproject this texture if it is not already in a geographic projection and
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
@@ -573,11 +578,9 @@ public class ImageryLayer {
                 persists: true,
                 owner : self
             )
-            commandList.append(computeCommand)
+            frameState.commandList.append(computeCommand)
         } else {
-            //dispatch_async(dispatch_get_main_queue(),  {
             finalizeReprojectTexture(context, imagery: imagery, texture: texture)
-            //})
         }
         
     }
@@ -633,7 +636,9 @@ public class ImageryLayer {
         })
     }
     
-    func generateMipmaps (context: Context, imagery: Imagery) {
+    func generateMipmaps (inout frameState frameState: FrameState, imagery: Imagery) {
+        
+        let context = frameState.context
         // Use mipmaps if this texture has power-of-two dimensions.
         dispatch_async(context.textureLoadQueue, {
             let texture = imagery.texture!

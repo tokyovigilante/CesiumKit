@@ -130,7 +130,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double {
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
         
         var heightSample: Double
         
@@ -176,11 +176,12 @@ class HeightmapTerrainData: TerrainData, Equatable {
     * @param {Number} x The X coordinate of the tile for which to create the terrain data.
     * @param {Number} y The Y coordinate of the tile for which to create the terrain data.
     * @param {Number} level The level of the tile for which to create the terrain data.
+    * @param {Number} [exaggeration=1.0] The scale used to exaggerate the terrain.
     * @returns {Promise|TerrainMesh} A promise for the terrain mesh, or undefined if too many
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, completionBlock: (TerrainMesh?) -> ()) {
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) {
         let ellipsoid = tilingScheme.ellipsoid
         let nativeRectangle = tilingScheme.tileXYToNativeRectangle(x: x, y: y, level: level)
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -216,7 +217,8 @@ class HeightmapTerrainData: TerrainData, Equatable {
             isGeographic: tilingScheme is GeographicTilingScheme,
             relativeToCenter: center,
             ellipsoid: ellipsoid,
-            structure: _structure)
+            structure: _structure,
+            exaggeration: exaggeration)
         let boundingSphere3D = BoundingSphere.fromVertices(statistics.vertices, center: center, stride: numberOfAttributes)
         
         let orientedBoundingBox: OrientedBoundingBox?
@@ -258,7 +260,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) {
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()?) {
 
         let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")

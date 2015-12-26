@@ -160,7 +160,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         }
         _baseColor = Cartesian4()
         _firstPassInitialColor = Cartesian4()
-        baseColor = Cartesian4(fromRed: 0.1534, green: 0.8434, blue: 0.2665, alpha: 1.0)
+        baseColor = Cartesian4(fromRed: 0.0, green: 0.8434, blue: 0.2665, alpha: 1.0)
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
@@ -192,12 +192,9 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
     * or any other functions.
     *
-    * @param {Context} context The rendering context.
     * @param {FrameState} frameState The frame state.
-    * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
-    *        commands into this array.
     */
-    func beginUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func beginUpdate (inout frameState frameState: FrameState) {
         
         imageryLayers.update()
         
@@ -230,15 +227,13 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
     * and any other functions.
     *
-    * @param {Context} context The rendering context.
     * @param {FrameState} frameState The frame state.
-    * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
-    *        commands into this array.
     */
-    func endUpdate (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func endUpdate (inout frameState frameState: FrameState) {
 
+        let context = frameState.context
+        
         if _renderState == nil {
-            
             _renderState = RenderState(
                 device: context.device,
                 cullFace: .Back,
@@ -256,9 +251,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             )
         }
         // And the tile render commands to the command list, sorted by texture count.
+        
         for tilesToRender in _tilesToRenderByTextureCount.values {
             for tile in tilesToRender {
-                addDrawCommandsForTile(tile, context: context, frameState: frameState, commandList: &commandList)
+                addDrawCommandsForTile(tile, frameState: &frameState)
             }
         }
     }
@@ -310,8 +306,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     *
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
-    func loadTile (tile: QuadtreeTile, context: Context, inout commandList: [Command], frameState: FrameState) {
-        GlobeSurfaceTile.processStateMachine(tile, context: context, commandList: &commandList, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
+    func loadTile (tile: QuadtreeTile, inout frameState: FrameState) {
+        GlobeSurfaceTile.processStateMachine(tile, frameState: &frameState, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
     }
     
     
@@ -377,7 +373,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @param {FrameState} frameState The state information of the current rendering frame.
     * @param {DrawCommand[]} commandList The list of rendering commands.  This method may add additional commands to this list.
     */
-    func showTileThisFrame (tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func showTileThisFrame (tile: QuadtreeTile, inout frameState: FrameState) {
         
         var readyTextureCount = 0
         
@@ -620,27 +616,17 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     }
     
     */
-    func addDrawCommandsForTile(tile: QuadtreeTile, context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
         
         let viewMatrix = frameState.camera!.viewMatrix
         
-        var maxTextures = context.limits.maximumTextureImageUnits
-
         let waterMaskTexture = surfaceTile.waterMaskTexture
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
         let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
-        
-        
-        if showReflectiveOcean {
-            maxTextures -= 1
-        }
-        if showOceanWaves {
-            maxTextures -= 1
-        }
         
         var rtc = surfaceTile.center
         
@@ -711,6 +697,18 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             //debugDestroyPrimitive()
         }
         
+        let context = frameState.context
+
+        
+        var maxTextures = context.limits.maximumTextureImageUnits
+        
+        if showReflectiveOcean {
+            maxTextures -= 1
+        }
+        if showOceanWaves {
+            maxTextures -= 1
+        }
+        
         repeat {
             var numberOfDayTextures = 0
             
@@ -766,7 +764,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             var applyAlpha = false
             
             uniformMap.dayTextures.removeAll()
-
+            
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
 
                 let tileImagery = tileImageryCollection[imageryIndex]
@@ -887,7 +885,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             
             command.boundingVolume = boundingSphere
             command.orientedBoundingBox = surfaceTile.orientedBoundingBox
-            commandList.append(command)
+            frameState.commandList.append(command)
             
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor

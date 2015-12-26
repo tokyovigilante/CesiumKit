@@ -140,8 +140,8 @@ class PipelineCache {
     * @param {ShaderProgram} shader The shader to decrement
     */
     func releasePipeline(pipeline: RenderPipeline) {
-        pipeline.count--
-        if --pipeline.count < 1 {
+        pipeline.count -= 1
+        if pipeline.count < 1 {
             _pipelines.removeValueForKey(pipeline.keyword)
         }
     }

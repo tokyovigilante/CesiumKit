@@ -236,9 +236,9 @@ extension TerrainProvider {
                     indices![indicesIndex++] = lowerLeft
                     indices![indicesIndex++] = lowerRight
                     
-                    ++index
+                    index += 1
                 }
-                ++index
+                index += 1
             }
             var unWrappedByWidth = byWidth!
             

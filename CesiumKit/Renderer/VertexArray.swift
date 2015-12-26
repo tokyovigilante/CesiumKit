@@ -125,7 +125,7 @@ class VertexArray {
                             size: geometryAttribute.size,
                             normalize: geometryAttribute.normalize
                         ))
-                        vaCount++
+                        vaCount += 1
                     } else {
                         // Constant attribute for all vertices
                         assertionFailure("unimplemented")
@@ -174,7 +174,7 @@ class VertexArray {
                     normalize: geometryAttribute.normalize
                     )
                 )
-                vaCount++
+                vaCount += 1
             }
         }
         let indexBuffer: Buffer?

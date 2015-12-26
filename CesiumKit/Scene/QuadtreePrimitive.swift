@@ -220,17 +220,17 @@ class QuadtreePrimitive {
     * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
     *        commands to this array during the update call.
     */
-    func update (context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func update (context context: Context, inout frameState: FrameState) {
         if (frameState.passes.render) {
-            _tileProvider.beginUpdate(context: context, frameState: frameState, commandList: &commandList)
+            _tileProvider.beginUpdate(frameState: &frameState)
             selectTilesForRendering(context: context, frameState: frameState)
-            processTileLoadQueue(context: context, frameState: frameState, commandList: &commandList)
-            createRenderCommandsForSelectedTiles(context: context, frameState: frameState, commandList: &commandList)
-            _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList)
+            processTileLoadQueue(frameState: &frameState)
+            createRenderCommandsForSelectedTiles(frameState: &frameState)
+            _tileProvider.endUpdate(frameState: &frameState)
         }
         
         if (frameState.passes.pick && _tilesToRender.count > 0) {
-            _tileProvider.endUpdate(context: context, frameState: frameState, commandList: &commandList)
+            _tileProvider.endUpdate(frameState: &frameState)
         }
     }
     
@@ -452,7 +452,7 @@ class QuadtreePrimitive {
         _tileLoadQueue.append(tile)
     }
     
-    func processTileLoadQueue(context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func processTileLoadQueue(inout frameState frameState: FrameState) {
         
         if _tileLoadQueue.count == 0 {
             return
@@ -460,7 +460,7 @@ class QuadtreePrimitive {
         
         // Remove any tiles that were not used this frame beyond the number
         // we're allowed to keep.
-        _tileReplacementQueue.trimTiles(context, maximumTiles: tileCacheSize)
+        _tileReplacementQueue.trimTiles(tileCacheSize)
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         
@@ -468,7 +468,7 @@ class QuadtreePrimitive {
         for i in len.stride(through: 0, by: -1) {
             let tile = _tileLoadQueue[i]
             _tileReplacementQueue.markTileRendered(tile)
-            _tileProvider.loadTile(tile, context: context, commandList: &commandList, frameState: frameState)
+            _tileProvider.loadTile(tile, frameState: &frameState)
             if NSDate().compare(endTime) == NSComparisonResult.OrderedDescending {
                 break
             }
@@ -561,14 +561,14 @@ class QuadtreePrimitive {
         }*/
     }
     
-    func createRenderCommandsForSelectedTiles(context context: Context, frameState: FrameState, inout commandList: [Command]) {
+    func createRenderCommandsForSelectedTiles(inout frameState frameState: FrameState) {
         func tileDistanceSortFunction(a: QuadtreeTile, b: QuadtreeTile) -> Bool {
             return a.distance < b.distance
         }
         _tilesToRender.sortInPlace(tileDistanceSortFunction)
         
         for tile in _tilesToRender {
-            _tileProvider.showTileThisFrame(tile, context: context, frameState: frameState, commandList: &commandList)
+            _tileProvider.showTileThisFrame(tile, frameState: &frameState)
             
             if tile.frameRendered != frameState.frameNumber - 1 {
                 _tilesToUpdateHeights.append(tile)

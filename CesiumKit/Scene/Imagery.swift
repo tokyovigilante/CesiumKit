@@ -72,11 +72,11 @@ class Imagery {
     }
     
     func addReference() {
-        ++_referenceCount
+        _referenceCount += 1
     }
     
     func releaseReference() -> Int {
-        --_referenceCount
+        _referenceCount -= 1
         
         if _referenceCount == 0 {
             imageryLayer.removeImageryFromCache(self)
@@ -89,22 +89,22 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (context: Context, inout commandList: [Command]) {
+    func processStateMachine (inout frameState frameState: FrameState) {
         if (state == .Unloaded) {
             state = .Transitioning
-            imageryLayer.requestImagery(context, imagery: self)
+            imageryLayer.requestImagery(frameState: frameState, imagery: self)
         }
         if (state == .Received) {
             state = .Transitioning
-            imageryLayer.createTexture(context, imagery: self)
+            imageryLayer.createTexture(frameState: frameState, imagery: self)
         }
         if (state == .TextureLoaded) {
             state = .Transitioning
-            imageryLayer.reprojectTexture(context, commandList: &commandList, imagery: self)
+            imageryLayer.reprojectTexture(frameState: &frameState, imagery: self)
         }
         if (state == .Reprojected) {
             state = .Transitioning
-            imageryLayer.generateMipmaps(context, imagery: self)
+            imageryLayer.generateMipmaps(frameState: &frameState, imagery: self)
         }
     }
     

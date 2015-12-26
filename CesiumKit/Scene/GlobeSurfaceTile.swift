@@ -167,7 +167,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         let indices = mesh!.indices
         
         let length = indices.count
-        for (var i = 0; i < length; i += 3) {
+        for i in 0.stride(to: length, by: 3) {
             let i0 = indices[i]
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
@@ -184,23 +184,23 @@ class GlobeSurfaceTile: QuadTreeTileData {
         return nil
     }
     
-    func freeResources (context: Context? = nil) {
+    func freeResources () {
         
         waterMaskTexture = nil
         terrainData = nil
         
         if loadedTerrain != nil {
-            loadedTerrain!.freeResources(context)
+            loadedTerrain!.freeResources()
             loadedTerrain = nil
         }
         
         if upsampledTerrain != nil {
-            upsampledTerrain!.freeResources(context)
+            upsampledTerrain!.freeResources()
             upsampledTerrain = nil
         }
         
         if pickTerrain != nil {
-            pickTerrain!.freeResources(context)
+            pickTerrain!.freeResources()
             pickTerrain = nil
         }
         // FIXME:             tileImagery.freeResources()
@@ -223,7 +223,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         vertexArray = nil
     }
     
-    class func processStateMachine(tile: QuadtreeTile, context: Context, inout commandList: [Command], terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
+    class func processStateMachine(tile: QuadtreeTile, inout frameState: FrameState, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection) {
         
         if (tile.data == nil) {
             tile.data = GlobeSurfaceTile()
@@ -236,7 +236,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         }
         
         if tile.state == .Loading {
-            GlobeSurfaceTile.processTerrainStateMachine(tile, context: context, terrainProvider: terrainProvider)
+            GlobeSurfaceTile.processTerrainStateMachine(tile, frameState: frameState, terrainProvider: terrainProvider)
         }
         
         // The terrain is renderable as soon as we have a valid vertex array.
@@ -250,12 +250,14 @@ class GlobeSurfaceTile: QuadTreeTileData {
         var isUpsampledOnly = surfaceTile?.terrainData != nil && surfaceTile!.terrainData!.createdByUpsampling
         
         // Transition imagery states
-        var i, len: Int
+        var i = 0
         var tileImageryCollection = surfaceTile!.imagery
-        for i = 0, len = tileImageryCollection.count; i < len; ++i {
+        
+        while i < tileImageryCollection.count {
             let tileImagery = tileImageryCollection[i]
             if tileImagery.loadingImagery == nil {
                 isUpsampledOnly = false
+                i += 1
                 continue
             }
             if tileImagery.loadingImagery!.state == .PlaceHolder {
@@ -265,15 +267,13 @@ class GlobeSurfaceTile: QuadTreeTileData {
                     // at the same position.  Then continue the loop at the same index.
                     tileImageryCollection.removeAtIndex(i)
                     imageryLayer.createTileImagerySkeletons(tile, terrainProvider: terrainProvider, insertionPoint: i)
-                    --i
-                    len = tileImageryCollection.count
                     continue
                 } else {
                     isUpsampledOnly = false
                 }
             }
             
-            let thisTileDoneLoading = tileImagery.processStateMachine(tile, context: context, commandList: &commandList)
+            let thisTileDoneLoading = tileImagery.processStateMachine(tile, frameState: &frameState)
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.
@@ -281,12 +281,14 @@ class GlobeSurfaceTile: QuadTreeTileData {
             
             isUpsampledOnly = isUpsampledOnly && tileImagery.loadingImagery != nil &&
                 (tileImagery.loadingImagery!.state == .Failed || tileImagery.loadingImagery!.state == .Invalid)
+
+            i += 1
         }
         
         tile.upsampledFromParent = isUpsampledOnly
         
         // The tile becomes renderable when the terrain and all imagery data are loaded.
-        if i == len {
+        if i == tileImageryCollection.count {
             if isRenderable {
                 tile.renderable = true
             }
@@ -310,7 +312,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         
         // Map imagery tiles to this terrain tile
 
-        for (var i = 0, len = imageryLayerCollection.count; i < len; ++i) {
+        for i in 0..<imageryLayerCollection.count {
             if let layer = imageryLayerCollection[i] {
                 if layer.show {
                     layer.createTileImagerySkeletons(tile, terrainProvider: terrainProvider)
@@ -348,14 +350,14 @@ class GlobeSurfaceTile: QuadTreeTileData {
         surfaceTile.northNormal = westVector.cross(northwestCornerNormal).normalize()
     }
 
-    class func processTerrainStateMachine(tile: QuadtreeTile, context: Context, terrainProvider: TerrainProvider) {
+    class func processTerrainStateMachine(tile: QuadtreeTile, frameState: FrameState, terrainProvider: TerrainProvider) {
         let surfaceTile = tile.data!
         let loaded = surfaceTile.loadedTerrain
         let upsampled = surfaceTile.upsampledTerrain
         var suspendUpsampling = false
         
         if let loaded = loaded {
-            loaded.processLoadStateMachine(context: context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
+            loaded.processLoadStateMachine(frameState: frameState, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
             
             // Publish the terrain data on the tile as soon as it is available.
             // We'll potentially need it to upsample child tiles.
@@ -391,7 +393,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
         
         if !suspendUpsampling && upsampled != nil {
             
-            upsampled!.processUpsampleStateMachine(context, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
+            upsampled!.processUpsampleStateMachine(frameState: frameState, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
             /*
             // Publish the terrain data on the tile as soon as it is available.
             // We'll potentially need it to upsample child tiles.

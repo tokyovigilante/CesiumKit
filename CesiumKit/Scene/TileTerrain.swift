@@ -91,31 +91,30 @@ class TileTerrain {
         vertexArray = nil
     }
     
-    func processLoadStateMachine (context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processLoadStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-            requestTileGeometry(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            requestTileGeometry(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         } else if state == .Received {
-            transform(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         } else if state == .Transformed {
-            createResources(context: context, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
     }
     
-    
-    func requestTileGeometry(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func requestTileGeometry(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        
+        let context = frameState.context
         
         self.state = .Receiving
         dispatch_async(context.processorQueue, {
             terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
                 if let terrainData = terrainData {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         self.data = terrainData
                         self.state = .Received
                     })
                 } else {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         // Initially assume failure.  handleError may retry, in which case the state will
                         // change to RECEIVING or UNLOADED.
                         self.state = TerrainState.Failed
@@ -129,7 +128,7 @@ class TileTerrain {
         })
     }
 
-    func processUpsampleStateMachine (context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processUpsampleStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
             
             
@@ -166,7 +165,7 @@ class TileTerrain {
         }*/
     }
 
-    func transform(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func transform(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         self.state = .Transforming
 
         guard let data = data else {
@@ -176,18 +175,18 @@ class TileTerrain {
             return
         }
         
+        let context = frameState.context
+        
         dispatch_async(context.processorQueue, {
-            data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, completionBlock: { mesh in
+            data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, exaggeration: frameState.terrainExaggeration, completionBlock: { mesh in
                 
                 if let mesh = mesh {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         self.mesh = mesh
                         self.state = .Transformed
                     })
                 } else {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         self.state = .Failed
                         let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
                         print(message)
@@ -197,9 +196,13 @@ class TileTerrain {
         })
     }
     
-    func createResources(context context: Context, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func createResources(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+        
+        let context = frameState.context
+        
         self.state = .Buffering
         var terrainMesh = self.mesh!
+        
         dispatch_async(context.processorQueue, {
             let datatype = ComponentDatatype.Float32
             let meshBufferSize = terrainMesh.vertices.sizeInBytes

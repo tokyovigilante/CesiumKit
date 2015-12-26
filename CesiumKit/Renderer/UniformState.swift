@@ -39,7 +39,7 @@ class UniformState {
     * @type {FrameState}
     * @readonly
     */
-    private (set) var frameState = FrameState()
+    var frameState: FrameState! = nil
     
     private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity)
     
