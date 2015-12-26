@@ -357,10 +357,10 @@ class CesiumTerrainProvider: TerrainProvider {
         let cartesian3Length = strideof(Double) * cartesian3Elements
         let boundingSphereLength = strideof(Double) * boundingSphereElements
         let encodedVertexElements = 3
-        let encodedVertexLength = sizeof(UInt16) * encodedVertexElements
+        let encodedVertexLength = strideof(UInt16) * encodedVertexElements
         let triangleElements = 3
-        let bytesPerIndex = sizeof(UInt16)
-        let triangleLength = bytesPerIndex * triangleElements
+        var bytesPerIndex = strideof(UInt16)
+        var triangleLength = bytesPerIndex * triangleElements
         
         let center = Cartesian3(
             x: data.getFloat64(pos),
@@ -368,46 +368,71 @@ class CesiumTerrainProvider: TerrainProvider {
             z: data.getFloat64(pos + 16)
         )
         pos += cartesian3Length
-        /*
-        var minimumHeight = view.getFloat32(pos, true);
-        pos += Float32Array.BYTES_PER_ELEMENT;
-        var maximumHeight = view.getFloat32(pos, true);
-        pos += Float32Array.BYTES_PER_ELEMENT;
         
-        var boundingSphere = new BoundingSphere(
-            new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true)),
-            view.getFloat64(pos + cartesian3Length, true));
-        pos += boundingSphereLength;
+        let minimumHeight = data.getFloat32(pos)
+        pos += strideof(Float)
+        let maximumHeight = data.getFloat32(pos)
+        pos += strideof(Float)
         
-        var horizonOcclusionPoint = new Cartesian3(view.getFloat64(pos, true), view.getFloat64(pos + 8, true), view.getFloat64(pos + 16, true));
-        pos += cartesian3Length;
+        let boundingSphere = BoundingSphere(
+            center: Cartesian3(
+                x: data.getFloat64(pos),
+                y: data.getFloat64(pos + 8),
+                z: data.getFloat64(pos + 16)),
+            radius: data.getFloat64(pos + cartesian3Length)
+        )
+        pos += boundingSphereLength
         
-        var vertexCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var encodedVertexBuffer = new Uint16Array(buffer, pos, vertexCount * 3);
-        pos += vertexCount * encodedVertexLength;
+        let horizonOcclusionPoint = Cartesian3(
+            x: data.getFloat64(pos),
+            y: data.getFloat64(pos + 8),
+            z: data.getFloat64(pos + 16)
+        )
+        pos += cartesian3Length
         
-        if (vertexCount > 64 * 1024) {
+        let vertexCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
+        
+        let encodedVertexBuffer = data.getUInt16Array(pos, elementCount: vertexCount * encodedVertexElements)
+        pos += vertexCount * encodedVertexLength
+        
+        if vertexCount > Math.SixtyFourKilobytes {
             // More than 64k vertices, so indices are 32-bit.
-            bytesPerIndex = Uint32Array.BYTES_PER_ELEMENT;
-            triangleLength = bytesPerIndex * triangleElements;
+            bytesPerIndex = strideof(UInt32)
+            triangleLength = bytesPerIndex * triangleElements
         }
         
-        // Decode the vertex buffer.
-        var uBuffer = encodedVertexBuffer.subarray(0, vertexCount);
-        var vBuffer = encodedVertexBuffer.subarray(vertexCount, 2 * vertexCount);
-        var heightBuffer = encodedVertexBuffer.subarray(vertexCount * 2, 3 * vertexCount);
+        func zigZagDecode(value: UInt16) -> Int16 {
+            let int32Value = Int32(value)
+            return Int16((int32Value >> 1) ^ (-(int32Value & 1)))
+            
+        }
         
+        var u: UInt16 = 0
+        var v: UInt16 = 0
+        var height: UInt16 = 0
+        // Decode the vertex buffer.
+        let uBuffer = encodedVertexBuffer[0..<vertexCount].map({ (var value) -> UInt16 in
+            u = u &+ UInt16(bitPattern: zigZagDecode(value))
+            return u
+        })
+        var vBuffer = encodedVertexBuffer[vertexCount..<(vertexCount * 2)].map({ (var value) -> UInt16 in
+            v = v &+ UInt16(bitPattern: zigZagDecode(value))
+            return v
+        })
+        var heightBuffer = encodedVertexBuffer[(vertexCount * 2)..<(vertexCount * 3)].map({ (var value) -> UInt16 in
+            height = height &+ UInt16(bitPattern: zigZagDecode(value))
+            return height
+        })
+
+        /*
         var i;
         var u = 0;
         var v = 0;
         var height = 0;
+
         
-        function zigZagDecode(value) {
-            return (value >> 1) ^ (-(value & 1));
-        }
-        
-        for (i = 0; i < vertexCount; ++i) {
+        for i in 0..<vertexCount
             u += zigZagDecode(uBuffer[i]);
             v += zigZagDecode(vBuffer[i]);
             height += zigZagDecode(heightBuffer[i]);
