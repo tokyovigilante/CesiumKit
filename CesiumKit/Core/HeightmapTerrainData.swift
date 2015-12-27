@@ -88,14 +88,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
     private let _width: Int
     
     private let _height: Int
-    
-    private let _childTileMask: Int
-    
+        
     private let _structure: HeightmapStructure
     
     let waterMask: [UInt8]?
     
     let createdByUpsampling: Bool
+    
+    let childTileMask: Int
         
     init (
         buffer: [UInt16],
@@ -111,7 +111,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
             _width = width
             _height = height
             
-            _childTileMask = childTileMask
+            self.childTileMask = childTileMask
             
             _structure = structure
         
@@ -142,32 +142,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         
         return heightSample * _structure.heightScale + _structure.heightOffset
     }
-    
-    /**
-    * Determines if a given child tile is available, based on the
-    * {@link TerrainData#childTileMask}.  The given child tile coordinates are assumed
-    * to be one of the four children of this tile.  If non-child tile coordinates are
-    * given, the availability of the southeast child tile is returned.
-    * @function
-    *
-    * @param {Number} thisX The tile X coordinate of this (the parent) tile.
-    * @param {Number} thisY The tile Y coordinate of this (the parent) tile.
-    * @param {Number} childX The tile X coordinate of the child tile to check for availability.
-    * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
-    * @returns {Boolean} True if the child tile is available; otherwise, false.
-    */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
-        var bitNumber = 2 // northwest child
-        if childX != thisX * 2 {
-            bitNumber += 1 // east child
-        }
-        if childY != thisY * 2 {
-            bitNumber -= 2 // south child
-        }
         
-        return _childTileMask & (1 << bitNumber) != 0
-    }
-    
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
     * @function

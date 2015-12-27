@@ -308,7 +308,7 @@ class CesiumTerrainProvider: TerrainProvider {
 * @see CesiumTerrainProvider
 * @private
 */
-/*var QuantizedMeshExtensionIds = {
+    enum QuantizedMeshExtensionIds: UInt8 {
     /**
     * Oct-Encoded Per-Vertex Normals are included as an extension to the tile mesh
     *
@@ -316,7 +316,7 @@ class CesiumTerrainProvider: TerrainProvider {
     * @constant
     * @default 1
     */
-    OCT_VERTEX_NORMALS: 1,
+    case OctVertexNormals = 1
     /**
     * A watermask is included as an extension to the tile mesh
     *
@@ -324,9 +324,9 @@ class CesiumTerrainProvider: TerrainProvider {
     * @constant
     * @default 2
     */
-    WATER_MASK: 2
-};
-*/
+    case WaterMask
+}
+    
     private func getRequestHeader(extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
             return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
@@ -369,9 +369,9 @@ class CesiumTerrainProvider: TerrainProvider {
         )
         pos += cartesian3Length
         
-        let minimumHeight = data.getFloat32(pos)
+        let minimumHeight = Double(data.getFloat32(pos))
         pos += strideof(Float)
-        let maximumHeight = data.getFloat32(pos)
+        let maximumHeight = Double(data.getFloat32(pos))
         pos += strideof(Float)
         
         let boundingSphere = BoundingSphere(
@@ -393,7 +393,7 @@ class CesiumTerrainProvider: TerrainProvider {
         let vertexCount = Int(data.getUInt32(pos))
         pos += strideof(UInt32)
         
-        let encodedVertexBuffer = data.getUInt16Array(pos, elementCount: vertexCount * encodedVertexElements)
+        var encodedVertexBuffer = data.getUInt16Array(pos, elementCount: vertexCount * encodedVertexElements)
         pos += vertexCount * encodedVertexLength
         
         if vertexCount > Math.SixtyFourKilobytes {
@@ -405,106 +405,92 @@ class CesiumTerrainProvider: TerrainProvider {
         func zigZagDecode(value: UInt16) -> Int16 {
             let int32Value = Int32(value)
             return Int16((int32Value >> 1) ^ (-(int32Value & 1)))
-            
         }
         
         var u: UInt16 = 0
         var v: UInt16 = 0
         var height: UInt16 = 0
+        
         // Decode the vertex buffer.
-        let uBuffer = encodedVertexBuffer[0..<vertexCount].map({ (var value) -> UInt16 in
+        let uBuffer = encodedVertexBuffer[0..<vertexCount].map { (var value) -> UInt16 in
             u = u &+ UInt16(bitPattern: zigZagDecode(value))
             return u
-        })
-        var vBuffer = encodedVertexBuffer[vertexCount..<(vertexCount * 2)].map({ (var value) -> UInt16 in
+        }
+        let vBuffer = encodedVertexBuffer[vertexCount..<(vertexCount * 2)].map { (var value) -> UInt16 in
             v = v &+ UInt16(bitPattern: zigZagDecode(value))
             return v
-        })
-        var heightBuffer = encodedVertexBuffer[(vertexCount * 2)..<(vertexCount * 3)].map({ (var value) -> UInt16 in
+        }
+        let heightBuffer = encodedVertexBuffer[(vertexCount * 2)..<(vertexCount * 3)].map { (var value) -> UInt16 in
             height = height &+ UInt16(bitPattern: zigZagDecode(value))
             return height
-        })
-
-        /*
-        var i;
-        var u = 0;
-        var v = 0;
-        var height = 0;
-
-        
-        for i in 0..<vertexCount
-            u += zigZagDecode(uBuffer[i]);
-            v += zigZagDecode(vBuffer[i]);
-            height += zigZagDecode(heightBuffer[i]);
-            
-            uBuffer[i] = u;
-            vBuffer[i] = v;
-            heightBuffer[i] = height;
         }
-        
+        encodedVertexBuffer = uBuffer + vBuffer + heightBuffer
         // skip over any additional padding that was added for 2/4 byte alignment
-        if (pos % bytesPerIndex !== 0) {
-            pos += (bytesPerIndex - (pos % bytesPerIndex));
+        if pos % bytesPerIndex != 0 {
+            pos += (bytesPerIndex - (pos % bytesPerIndex))
         }
         
-        var triangleCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var indices = IndexDatatype.createTypedArrayFromArrayBuffer(vertexCount, buffer, pos, triangleCount * triangleElements);
-        pos += triangleCount * triangleLength;
+        let triangleCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
         
         // High water mark decoding based on decompressIndices_ in webgl-loader's loader.js.
         // https://code.google.com/p/webgl-loader/source/browse/trunk/samples/loader.js?r=99#55
         // Copyright 2012 Google Inc., Apache 2.0 license.
-        var highest = 0;
-        for (i = 0; i < indices.length; ++i) {
-            var code = indices[i];
-            indices[i] = highest - code;
-            if (code === 0) {
-                ++highest;
-            }
+        var highest = 0
+        
+        let indices = IndexDatatype
+            .createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: triangleCount * triangleElements)
+            .map { (value: Int) -> Int in
+                let result = highest - Int(value)
+                if value == 0 {
+                    highest += 1
+                }
+                return result
         }
         
-        var westVertexCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var westIndices = IndexDatatype.createTypedArrayFromArrayBuffer(vertexCount, buffer, pos, westVertexCount);
-        pos += westVertexCount * bytesPerIndex;
+        pos += triangleCount * triangleLength
+                
+        let westVertexCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
+        let westIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: westVertexCount)
+        pos += westVertexCount * bytesPerIndex
         
-        var southVertexCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var southIndices = IndexDatatype.createTypedArrayFromArrayBuffer(vertexCount, buffer, pos, southVertexCount);
-        pos += southVertexCount * bytesPerIndex;
+        let southVertexCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
+        let southIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: southVertexCount)
+        pos += southVertexCount * bytesPerIndex
         
-        var eastVertexCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var eastIndices = IndexDatatype.createTypedArrayFromArrayBuffer(vertexCount, buffer, pos, eastVertexCount);
-        pos += eastVertexCount * bytesPerIndex;
+        let eastVertexCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
+        let eastIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: eastVertexCount)
+        pos += eastVertexCount * bytesPerIndex
         
-        var northVertexCount = view.getUint32(pos, true);
-        pos += Uint32Array.BYTES_PER_ELEMENT;
-        var northIndices = IndexDatatype.createTypedArrayFromArrayBuffer(vertexCount, buffer, pos, northVertexCount);
-        pos += northVertexCount * bytesPerIndex;
+        let northVertexCount = Int(data.getUInt32(pos))
+        pos += strideof(UInt32)
+        let northIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: northVertexCount)
+        pos += northVertexCount * bytesPerIndex
         
-        var encodedNormalBuffer;
-        var waterMaskBuffer;
-        while (pos < view.byteLength) {
-            var extensionId = view.getUint8(pos, true);
-            pos += Uint8Array.BYTES_PER_ELEMENT;
-            var extensionLength = view.getUint32(pos, provider._littleEndianExtensionSize);
-            pos += Uint32Array.BYTES_PER_ELEMENT;
+        var encodedNormalBuffer: [UInt8]? = nil
+        var waterMaskBuffer: [UInt8]? = nil
+        while pos < data.length {
+            let extensionId = QuantizedMeshExtensionIds(rawValue: data.getUInt8(pos))
+            pos += strideof(UInt8)
+            let extensionLength = Int(data.getUInt32(pos, littleEndian: _littleEndianExtensionSize))
+            pos += strideof(UInt32)
             
-            if (extensionId === QuantizedMeshExtensionIds.OCT_VERTEX_NORMALS && provider._requestVertexNormals) {
-                encodedNormalBuffer = new Uint8Array(buffer, pos, vertexCount * 2);
-            } else if (extensionId === QuantizedMeshExtensionIds.WATER_MASK && provider._requestWaterMask) {
-                waterMaskBuffer = new Uint8Array(buffer, pos, extensionLength);
+            if extensionId == .OctVertexNormals && requestVertexNormals {
+                encodedNormalBuffer = data.getUInt8Array(pos, elementCount: vertexCount * 2)
+            } else if extensionId == .WaterMask && _requestWaterMask {
+                waterMaskBuffer = data.getUInt8Array(pos, elementCount: extensionLength)
             }
-            pos += extensionLength;
+            pos += extensionLength
         }
         
-        var skirtHeight = provider.getLevelMaximumGeometricError(level) * 5.0;
+        let skirtHeight = levelMaximumGeometricError(level) * 5.0
         
-        var rectangle = provider._tilingScheme.tileXYToRectangle(x, y, level);
-        var orientedBoundingBox;
-        if (rectangle.width < CesiumMath.PI_OVER_TWO + CesiumMath.EPSILON5) {
+        let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
+        let orientedBoundingBox: OrientedBoundingBox?
+        if (rectangle.width < M_PI_2 + Math.Epsilon5) {
             // Here, rectangle.width < pi/2, and rectangle.height < pi
             // (though it would still work with rectangle.width up to pi)
             
@@ -513,31 +499,38 @@ class CesiumTerrainProvider: TerrainProvider {
             // minor and in the corners of the screen. It's possible that this
             // might need to be changed - just change to `minimumHeight - skirtHeight`
             // A similar change might also be needed in `upsampleQuantizedTerrainMesh.js`.
-            orientedBoundingBox = OrientedBoundingBox.fromRectangle(rectangle, minimumHeight, maximumHeight, provider._tilingScheme.ellipsoid);
+            orientedBoundingBox = OrientedBoundingBox(
+                fromRectangle: rectangle,
+                minimumHeight: minimumHeight,
+                maximumHeight: maximumHeight,
+                ellipsoid: tilingScheme.ellipsoid
+            )
+        } else {
+            orientedBoundingBox = nil
         }
         
-        return new QuantizedMeshTerrainData({
-            center : center,
-            minimumHeight : minimumHeight,
-            maximumHeight : maximumHeight,
-            boundingSphere : boundingSphere,
-            orientedBoundingBox : orientedBoundingBox,
-            horizonOcclusionPoint : horizonOcclusionPoint,
-            quantizedVertices : encodedVertexBuffer,
-            encodedNormals : encodedNormalBuffer,
-            indices : indices,
-            westIndices : westIndices,
-            southIndices : southIndices,
-            eastIndices : eastIndices,
-            northIndices : northIndices,
-            westSkirtHeight : skirtHeight,
-            southSkirtHeight : skirtHeight,
-            eastSkirtHeight : skirtHeight,
-            northSkirtHeight : skirtHeight,
-            childTileMask: getChildMaskForTile(provider, level, x, tmsY),
+        let terrainData = QuantizedMeshTerrainData(
+            center: center,
+            minimumHeight: minimumHeight,
+            maximumHeight: maximumHeight,
+            boundingSphere: boundingSphere,
+            orientedBoundingBox: orientedBoundingBox,
+            horizonOcclusionPoint: horizonOcclusionPoint,
+            quantizedVertices: encodedVertexBuffer,
+            encodedNormals: encodedNormalBuffer,
+            indices: indices,
+            westIndices: westIndices,
+            southIndices: southIndices,
+            eastIndices: eastIndices,
+            northIndices: northIndices,
+            westSkirtHeight: skirtHeight,
+            southSkirtHeight: skirtHeight,
+            eastSkirtHeight: skirtHeight,
+            northSkirtHeight: skirtHeight,
+            childTileMask: getChildMaskForTile(level, x: x, y: tmsY),
             waterMask: waterMaskBuffer
-        });*/
-        completionBlock(data: QuantizedMeshTerrainData())
+        )
+        completionBlock(data: terrainData)
     }
  
     
@@ -715,41 +708,40 @@ class CesiumTerrainProvider: TerrainProvider {
         return _levelZeroMaximumGeometricError / Double(1 << level)
     }
     
-        /*
-        function getChildMaskForTile(terrainProvider, level, x, y) {
-        var available = terrainProvider._availableTiles;
-        if (!available || available.length === 0) {
-        return 15;
+    func getChildMaskForTile(level: Int, x: Int, y: Int) -> Int {
+        if _availableTiles?.array == nil || _availableTiles.array!.count == 0 {
+            return 15
         }
         
-        var childLevel = level + 1;
-        if (childLevel >= available.length) {
-        return 0;
+        let childLevel = level + 1
+        if childLevel >= _availableTiles.array?.count {
+            return 0
         }
+    
+        let levelAvailable = _availableTiles.array![childLevel]
         
-        var levelAvailable = available[childLevel];
+        var mask = 0
         
-        var mask = 0;
+        mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y) ? 1 : 0
+        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y) ? 2 : 0
+        mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y + 1) ? 4 : 0
+        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0
         
-        mask |= isTileInRange(levelAvailable, 2 * x, 2 * y) ? 1 : 0;
-        mask |= isTileInRange(levelAvailable, 2 * x + 1, 2 * y) ? 2 : 0;
-        mask |= isTileInRange(levelAvailable, 2 * x, 2 * y + 1) ? 4 : 0;
-        mask |= isTileInRange(levelAvailable, 2 * x + 1, 2 * y + 1) ? 8 : 0;
-        
-        return mask;
+        return mask
+    }
+    
+    func isTileInRange(levelAvailable: [JSON]?, x: Int, y: Int) -> Bool {
+        guard let levelAvailable = levelAvailable else {
+            return false
         }
-        
-        function isTileInRange(levelAvailable, x, y) {
-        for (var i = 0, len = levelAvailable.length; i < len; ++i) {
-        var range = levelAvailable[i];
-        if (x >= range.startX && x <= range.endX && y >= range.startY && y <= range.endY) {
-        return true;
+        for range in levelAvailable {
+            if x >= range["startX"].intValue && x <= range["endX"].intValue && y >= range["startY"].intValue && y <= range["endY"].intValue {
+                return true
+            }
         }
-        }
-        
-        return false;
-        }
-        
+        return false
+    }
+    /*
         /**
         * Determines whether data for a tile is available to be loaded.
         *

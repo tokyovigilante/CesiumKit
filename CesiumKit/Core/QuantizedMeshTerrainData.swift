@@ -1,4 +1,4 @@
-//
+    //
 //  QuantizedMeshTerrainData.swift
 //  CesiumKit
 //
@@ -83,126 +83,141 @@ import Foundation
  * });
  */
 class QuantizedMeshTerrainData: TerrainData {
-/*
- 
-  var QuantizedMeshTerrainData = function QuantizedMeshTerrainData(options) {
- //>>includeStart('debug', pragmas.debug)
- if (!defined(options) || !defined(options.quantizedVertices)) {
- throw new DeveloperError('options.quantizedVertices is required.');
- }
- if (!defined(options.indices)) {
- throw new DeveloperError('options.indices is required.');
- }
- if (!defined(options.minimumHeight)) {
- throw new DeveloperError('options.minimumHeight is required.');
- }
- if (!defined(options.maximumHeight)) {
- throw new DeveloperError('options.maximumHeight is required.');
- }
- if (!defined(options.maximumHeight)) {
- throw new DeveloperError('options.maximumHeight is required.');
- }
- if (!defined(options.boundingSphere)) {
- throw new DeveloperError('options.boundingSphere is required.');
- }
- if (!defined(options.horizonOcclusionPoint)) {
- throw new DeveloperError('options.horizonOcclusionPoint is required.');
- }
- if (!defined(options.westIndices)) {
- throw new DeveloperError('options.westIndices is required.');
- }
- if (!defined(options.southIndices)) {
- throw new DeveloperError('options.southIndices is required.');
- }
- if (!defined(options.eastIndices)) {
- throw new DeveloperError('options.eastIndices is required.');
- }
- if (!defined(options.northIndices)) {
- throw new DeveloperError('options.northIndices is required.');
- }
- if (!defined(options.westSkirtHeight)) {
- throw new DeveloperError('options.westSkirtHeight is required.');
- }
- if (!defined(options.southSkirtHeight)) {
- throw new DeveloperError('options.southSkirtHeight is required.');
- }
- if (!defined(options.eastSkirtHeight)) {
- throw new DeveloperError('options.eastSkirtHeight is required.');
- }
- if (!defined(options.northSkirtHeight)) {
- throw new DeveloperError('options.northSkirtHeight is required.');
- }
- //>>includeEnd('debug');
- 
- this._quantizedVertices = options.quantizedVertices;
- this._encodedNormals = options.encodedNormals;
- this._indices = options.indices;
- this._minimumHeight = options.minimumHeight;
- this._maximumHeight = options.maximumHeight;
- this._boundingSphere = options.boundingSphere;
- this._orientedBoundingBox = options.orientedBoundingBox;
- this._horizonOcclusionPoint = options.horizonOcclusionPoint;
- 
- var vertexCount = this._quantizedVertices.length / 3;
- var uValues = this._uValues = this._quantizedVertices.subarray(0, vertexCount);
- var vValues = this._vValues = this._quantizedVertices.subarray(vertexCount, 2 * vertexCount);
- this._heightValues = this._quantizedVertices.subarray(2 * vertexCount, 3 * vertexCount);
- 
- // We don't assume that we can count on the edge vertices being sorted by u or v.
- function sortByV(a, b) {
- return vValues[a] - vValues[b];
- }
- 
- function sortByU(a, b) {
- return uValues[a] - uValues[b];
- }
- 
- this._westIndices = sortIndicesIfNecessary(options.westIndices, sortByV, vertexCount);
- this._southIndices = sortIndicesIfNecessary(options.southIndices, sortByU, vertexCount);
- this._eastIndices = sortIndicesIfNecessary(options.eastIndices, sortByV, vertexCount);
- this._northIndices = sortIndicesIfNecessary(options.northIndices, sortByU, vertexCount);
- 
- this._westSkirtHeight = options.westSkirtHeight;
- this._southSkirtHeight = options.southSkirtHeight;
- this._eastSkirtHeight = options.eastSkirtHeight;
- this._northSkirtHeight = options.northSkirtHeight;
- 
- this._childTileMask = defaultValue(options.childTileMask, 15);
- 
- this._createdByUpsampling = defaultValue(options.createdByUpsampling, false);
- this._waterMask = options.waterMask;
- };
- 
- defineProperties(QuantizedMeshTerrainData.prototype, {*/
- /**
- * The water mask included in this terrain data, if any.  A water mask is a rectangular
- * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
- * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
- * @memberof QuantizedMeshTerrainData.prototype
- * @type {Uint8Array|Image|Canvas}
- */
-    var waterMask: [UInt8]? = nil
     
-    /*
- var arrayScratch = [];
- 
- function sortIndicesIfNecessary(indices, sortFunction, vertexCount) {
- arrayScratch.length = indices.length;
- 
- var needsSort = false;
- for (var i = 0, len = indices.length; i < len; ++i) {
- arrayScratch[i] = indices[i];
- needsSort = needsSort || (i > 0 && sortFunction(indices[i - 1], indices[i]) > 0);
- }
- 
- if (needsSort) {
- arrayScratch.sort(sortFunction);
- return IndexDatatype.createTypedArray(vertexCount, arrayScratch);
- } else {
- return indices;
- }
- }
- 
+    private let _quantizedVertices: [UInt16]
+    
+    private let _uValues: ArraySlice<UInt16>
+    
+    private let _vValues: ArraySlice<UInt16>
+    
+    private let _heightValues: ArraySlice<UInt16>
+    
+    private let _encodedNormals: [UInt8]?
+    
+    private let _indices: [Int]
+    
+    private let _minimumHeight: Double
+    
+    private let _maximumHeight: Double
+    
+    private let _boundingSphere: BoundingSphere
+    
+    private let _orientedBoundingBox: OrientedBoundingBox?
+    
+    private let _horizonOcclusionPoint: Cartesian3
+    
+    private var _westIndices: [Int]! = nil
+    private var _southIndices: [Int]! = nil
+    private var _eastIndices: [Int]! = nil
+    private var _northIndices: [Int]! = nil
+    
+    private let _westSkirtHeight: Double
+    private let _southSkirtHeight: Double
+    private let _eastSkirtHeight: Double
+    private let _northSkirtHeight: Double
+    
+    /**
+     * The water mask included in this terrain data, if any.  A water mask is a rectangular
+     * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
+     * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
+     * @memberof QuantizedMeshTerrainData.prototype
+     * @type {Uint8Array|Image|Canvas}
+     */
+    let waterMask: [UInt8]?
+    
+    /**
+     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
+     * terrain data.  If this value is false, the data was obtained from some other source, such
+     * as by downloading it from a remote server.  This method should return true for instances
+     * returned from a call to {@link HeightmapTerrainData#upsample}.
+     *
+     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
+     */
+    let createdByUpsampling: Bool
+    
+    var childTileMask: Int
+    
+    init (
+        center: Cartesian3,
+        minimumHeight: Double,
+        maximumHeight: Double,
+        boundingSphere: BoundingSphere,
+        orientedBoundingBox: OrientedBoundingBox?,
+        horizonOcclusionPoint: Cartesian3,
+        quantizedVertices: [UInt16],
+        encodedNormals: [UInt8]?,
+        indices: [Int],
+        westIndices: [Int],
+        southIndices: [Int],
+        eastIndices: [Int],
+        northIndices: [Int],
+        westSkirtHeight: Double,
+        southSkirtHeight: Double,
+        eastSkirtHeight: Double,
+        northSkirtHeight: Double,
+        childTileMask: Int = 15,
+        waterMask: [UInt8]?,
+        createdByUpsampling: Bool = false)
+    {
+        _quantizedVertices = quantizedVertices
+        _encodedNormals = encodedNormals
+        _indices = indices
+        _minimumHeight = minimumHeight
+        _maximumHeight = maximumHeight
+        _boundingSphere = boundingSphere
+        _orientedBoundingBox = orientedBoundingBox
+        _horizonOcclusionPoint = horizonOcclusionPoint
+        
+        let vertexCount = _quantizedVertices.count / 3
+        _uValues = _quantizedVertices[0..<vertexCount]
+        _vValues = _quantizedVertices[vertexCount..<(vertexCount * 2)]
+        _heightValues = _quantizedVertices[(vertexCount * 2)..<(vertexCount * 3)]
+        
+        _westSkirtHeight = westSkirtHeight
+        _southSkirtHeight = southSkirtHeight
+        _eastSkirtHeight = eastSkirtHeight
+        _northSkirtHeight = northSkirtHeight
+        
+        self.childTileMask = childTileMask
+        
+        self.createdByUpsampling = createdByUpsampling
+        self.waterMask = waterMask
+        
+        // We don't assume that we can count on the edge vertices being sorted by u or v.
+        let sortByV = { (a: Int, b: Int) -> Bool in
+            let startIndex = self._vValues.startIndex
+            return Int(self._vValues[startIndex + a]) - Int(self._vValues[startIndex + b]) <= 0
+        }
+        
+        let sortByU = { (a: Int, b: Int) -> Bool in
+            let startIndex = self._uValues.startIndex
+            return Int(self._uValues[startIndex + a]) - Int(self._uValues[startIndex + b]) <= 0
+        }
+        
+        _westIndices = sortIndicesIfNecessary(westIndices, sortFunction: sortByV, vertexCount: vertexCount)
+        _southIndices = sortIndicesIfNecessary(southIndices, sortFunction: sortByU, vertexCount: vertexCount)
+        _eastIndices = sortIndicesIfNecessary(eastIndices, sortFunction: sortByV, vertexCount: vertexCount)
+        _northIndices = sortIndicesIfNecessary(northIndices, sortFunction: sortByU, vertexCount: vertexCount)
+    }
+    
+    func sortIndicesIfNecessary(indices: [Int], sortFunction: (a: Int, b: Int) -> Bool, vertexCount: Int) -> [Int] {
+
+        var needsSort = false
+        for (i, index) in indices.enumerate() {
+            needsSort = needsSort || (i > 0 && !sortFunction(a: indices[i - 1], b: index))
+            if needsSort {
+                break
+            }
+        }
+        if needsSort {
+            return indices.sort(sortFunction)
+        }
+        return indices
+    }
+    
+    
+
+/*
  var createMeshTaskProcessor = new TaskProcessor('createVerticesFromQuantizedTerrainMesh');
  */
  /**
@@ -463,14 +478,4 @@ class QuantizedMeshTerrainData: TerrainData {
         return false
     }
  
-    /**
-     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
-     * terrain data.  If this value is false, the data was obtained from some other source, such
-     * as by downloading it from a remote server.  This method should return true for instances
-     * returned from a call to {@link HeightmapTerrainData#upsample}.
-     *
-     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
-     */
-    private (set) var createdByUpsampling: Bool = false
-
 }

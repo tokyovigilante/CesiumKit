@@ -582,6 +582,8 @@
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
 		94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
+		94FCEDC51C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
+		94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
 		94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
 /* End PBXBuildFile section */
 
@@ -1014,6 +1016,7 @@
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
+		94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshTerrainGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1367,9 +1370,9 @@
 				942CD41719553F9E00012DC4 /* GeometryAttributes.swift */,
 				940D794619C3F66900012DC4 /* GeometryPipeline.swift */,
 				945BF6461AA9C00000FFAD81 /* GeometryType.swift */,
+				9469077B1C2DFD970095A86F /* HeightmapStructure.swift */,
 				942CF4BE19CD90AA00012DC4 /* HeightmapTerrainData.swift */,
 				94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */,
-				9469077B1C2DFD970095A86F /* HeightmapStructure.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
@@ -1388,6 +1391,8 @@
 				94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				947E32341BC0D85E001A40C8 /* Plane.swift */,
+				94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */,
+				94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */,
 				948B802F194D462F00012DC4 /* Quaternion.swift */,
 				949E67A419D6BCB200012DC4 /* Queue.swift */,
 				946D25A919592BFD0080379D /* Ray.swift */,
@@ -1407,7 +1412,6 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
-				94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2138,6 +2142,7 @@
 				940240231C1D982D0095A86F /* SkyAtmosphere.swift in Sources */,
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
 				941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */,
+				94FCEDC51C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
 				949C04341C1AD96A001A40C8 /* ClockStep.swift in Sources */,
 				94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */,
 				943416BC1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
@@ -2402,6 +2407,7 @@
 				9478216F1B5A2D7C0095A86F /* Imagery.swift in Sources */,
 				9403AC941C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				943416BD1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
+				94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
 				947821701B5A2D7C0095A86F /* ImageryLayer.swift in Sources */,
 				947821711B5A2D7C0095A86F /* ImageryLayerCollection.swift in Sources */,
 				947821721B5A2D7C0095A86F /* ImageryLayerUniformMap.swift in Sources */,

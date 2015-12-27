@@ -39,6 +39,8 @@ protocol TerrainData: class {
     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
     */
     var createdByUpsampling: Bool { get }
+    
+    var childTileMask: Int { get }
         
     /**
     * Computes the terrain height at a specified longitude and latitude.
@@ -102,9 +104,29 @@ protocol TerrainData: class {
 }
 
 extension TerrainData {
-    
-    /*init(waterMask: [UInt8]? = nil, createdByUpsampling: Bool = false) {
-        self.waterMask = waterMask
-        self.createdByUpsampling = createdByUpsampling
-    }*/    
+
+    /**
+    * Determines if a given child tile is available, based on the
+    * {@link TerrainData#childTileMask}.  The given child tile coordinates are assumed
+    * to be one of the four children of this tile.  If non-child tile coordinates are
+    * given, the availability of the southeast child tile is returned.
+    * @function
+    *
+    * @param {Number} thisX The tile X coordinate of this (the parent) tile.
+    * @param {Number} thisY The tile Y coordinate of this (the parent) tile.
+    * @param {Number} childX The tile X coordinate of the child tile to check for availability.
+    * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
+    * @returns {Boolean} True if the child tile is available; otherwise, false.
+    */
+    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
+        var bitNumber = 2 // northwest child
+        if childX != thisX * 2 {
+            bitNumber += 1 // east child
+        }
+        if childY != thisY * 2 {
+            bitNumber -= 2 // south child
+        }
+        
+        return childTileMask & (1 << bitNumber) != 0
+    }
 }
