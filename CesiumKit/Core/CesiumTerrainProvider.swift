@@ -412,15 +412,15 @@ class CesiumTerrainProvider: TerrainProvider {
         var height: UInt16 = 0
         
         // Decode the vertex buffer.
-        let uBuffer = encodedVertexBuffer[0..<vertexCount].map { (var value) -> UInt16 in
+        let uBuffer = encodedVertexBuffer[0..<vertexCount].map { (value) -> UInt16 in
             u = u &+ UInt16(bitPattern: zigZagDecode(value))
             return u
         }
-        let vBuffer = encodedVertexBuffer[vertexCount..<(vertexCount * 2)].map { (var value) -> UInt16 in
+        let vBuffer = encodedVertexBuffer[vertexCount..<(vertexCount * 2)].map { (value) -> UInt16 in
             v = v &+ UInt16(bitPattern: zigZagDecode(value))
             return v
         }
-        let heightBuffer = encodedVertexBuffer[(vertexCount * 2)..<(vertexCount * 3)].map { (var value) -> UInt16 in
+        let heightBuffer = encodedVertexBuffer[(vertexCount * 2)..<(vertexCount * 3)].map { (value) -> UInt16 in
             height = height &+ UInt16(bitPattern: zigZagDecode(value))
             return height
         }

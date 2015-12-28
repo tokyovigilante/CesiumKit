@@ -24,7 +24,25 @@ class QuantizedTerrainMeshGenerator {
     
     
     
-    class func createVerticesFromQuantizedTerrainMesh(/*parameters, transferableObjects*/) {
+    class func createVerticesFromQuantizedTerrainMesh(
+        minimumHeight: Double,
+        maximumHeight: Double,
+        quantizedVertices: [UInt16],
+        octEncodedNormals: [UInt8]?,
+        indices: [Int],
+        westIndices: [Int],
+        southIndices: [Int],
+        eastIndices: [Int],
+        northIndices: [Int],
+        westSkirtHeight: Double,
+        southSkirtHeight: Double,
+        eastSkirtHeight: Double,
+        northSkirtHeight: Double,
+        rectangle: Rectangle,
+        relativeToCenter: Cartesian3,
+        ellipsoid: Ellipsoid
+        exaggeration: Double) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float], boundingSphere: BoundingSphere?, orientedBoundingBox: OrientedBoundingBox?, occludeePointInScaledSpace: Cartesian3?)
+    {
         /*var quantizedVertices = parameters.quantizedVertices;
         var quantizedVertexCount = quantizedVertices.length / 3;
         var octEncodedNormals = parameters.octEncodedNormals;
@@ -51,9 +69,9 @@ class QuantizedTerrainMeshGenerator {
         if (hasVertexNormals) {
         vertexStride += 1;
         }
-        
-        var vertexBuffer = new Float32Array(quantizedVertexCount * vertexStride + edgeVertexCount * vertexStride);
-        
+        */
+        var vertexBuffer = [Float32]()//new Float32Array(quantizedVertexCount * vertexStride + edgeVertexCount * vertexStride);
+        /*
         for (var i = 0, bufferIndex = 0, n = 0; i < quantizedVertexCount; ++i, bufferIndex += vertexStride, n += 2) {
         var u = uBuffer[i] / maxShort;
         var v = vBuffer[i] / maxShort;
@@ -80,7 +98,10 @@ class QuantizedTerrainMeshGenerator {
         
         var edgeTriangleCount = Math.max(0, (edgeVertexCount - 4) * 2);
         var indexBufferLength = parameters.indices.length + edgeTriangleCount * 3;
+        */
         var indexBuffer = IndexDatatype.createTypedArray(quantizedVertexCount + edgeVertexCount, indexBufferLength);
+        
+        /*
         indexBuffer.set(parameters.indices, 0);
         
         // Add skirts.
@@ -96,11 +117,11 @@ class QuantizedTerrainMeshGenerator {
         vertexBufferIndex += parameters.northIndices.length * vertexStride;
         
         transferableObjects.push(vertexBuffer.buffer, indexBuffer.buffer);
-        
-        return {
-        vertices : vertexBuffer.buffer,
-        indices : indexBuffer.buffer
-        };*/
+        */
+        return (
+        vertices: vertexBuffer,
+        indices: indexBuffer
+        )
     }
     
     func addSkirt(/*vertexBuffer, vertexBufferIndex, indexBuffer, indexBufferIndex, edgeVertices, center, ellipsoid, rectangle, skirtLength, isWestOrNorthEdge, hasVertexNormals*/) {

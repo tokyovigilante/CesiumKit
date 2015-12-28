@@ -230,7 +230,7 @@ public class CesiumGlobe {
         clock = options.clock
         _lastFrameTime = nil
         
-        globe = Globe(ellipsoid: ellipsoid)
+        globe = Globe(ellipsoid: ellipsoid, terrain: options.terrain)
         scene = Scene(
             view: view,
             globe: self.globe,

@@ -125,16 +125,19 @@ class Globe {
         }
     }
     
-    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool) {
         
-        /*terrainProvider = EllipsoidTerrainProvider(
-            ellipsoid : ellipsoid
-        )*/
-        terrainProvider = CesiumTerrainProvider(
-            url: "https://assets.agi.com/stk-terrain/world",
-            requestVertexNormals: true,
-            requestWaterMask: true
-        )
+        if terrain {
+            terrainProvider = CesiumTerrainProvider(
+                url: "https://assets.agi.com/stk-terrain/world",
+                requestVertexNormals: true,
+                requestWaterMask: true
+            )
+        } else {
+            terrainProvider = EllipsoidTerrainProvider(
+                ellipsoid : ellipsoid
+            )
+        }
         
         self.ellipsoid = ellipsoid
         

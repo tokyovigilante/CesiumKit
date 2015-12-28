@@ -233,29 +233,28 @@ class QuantizedMeshTerrainData: TerrainData {
  *          be retried later.
  */
     func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) {
- /*
- var ellipsoid = tilingScheme.ellipsoid;
- var rectangle = tilingScheme.tileXYToRectangle(x, y, level);
- exaggeration = defaultValue(exaggeration, 1.0);
- 
+  
+        let vertices = QuantizedMeshTerrainGenerator.computeVertices (
+            minimumHeight: _minimumHeight,
+            maximumHeight: _maximumHeight,
+            quantizedVertices : this._quantizedVertices,
+            octEncodedNormals : this._encodedNormals,
+            indices : this._indices,
+            westIndices : this._westIndices,
+            southIndices : this._southIndices,
+            eastIndices : this._eastIndices,
+            northIndices : this._northIndices,
+            westSkirtHeight : this._westSkirtHeight,
+            southSkirtHeight : this._southSkirtHeight,
+            eastSkirtHeight : this._eastSkirtHeight,
+            northSkirtHeight : this._northSkirtHeight,
+            rectangle : tilingScheme.tileXYToRectangle(x, y, level),
+            relativeToCenter : this._boundingSphere.center,
+            ellipsoid : tilingScheme.ellipsoid,
+            exaggeration: Double
+        ) -> ()
  var verticesPromise = createMeshTaskProcessor.scheduleTask({
- minimumHeight : this._minimumHeight,
- maximumHeight : this._maximumHeight,
- quantizedVertices : this._quantizedVertices,
- octEncodedNormals : this._encodedNormals,
- indices : this._indices,
- westIndices : this._westIndices,
- southIndices : this._southIndices,
- eastIndices : this._eastIndices,
- northIndices : this._northIndices,
- westSkirtHeight : this._westSkirtHeight,
- southSkirtHeight : this._southSkirtHeight,
- eastSkirtHeight : this._eastSkirtHeight,
- northSkirtHeight : this._northSkirtHeight,
- rectangle : rectangle,
- relativeToCenter : this._boundingSphere.center,
- ellipsoid : ellipsoid,
- exaggeration : exaggeration
+ 
  });
  
  if (!defined(verticesPromise)) {

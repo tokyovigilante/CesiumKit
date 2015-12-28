@@ -218,10 +218,10 @@ extension TerrainProvider {
         }
         var indices = byWidth![height]
         if indices == nil {
-            indices = [Int](count: (width - 1) * (height - 1) * 6, repeatedValue: 0)
+            indices = [Int]()//ount: (width - 1) * (height - 1) * 6, repeatedValue: 0)
             
             var index = 0
-            var indicesIndex = 0
+            //var indicesIndex = 0
             for _ in 0..<height-1 {
                 for _ in 0..<width-1 {
                     let upperLeft = index
@@ -229,13 +229,12 @@ extension TerrainProvider {
                     let lowerRight = lowerLeft + 1
                     let upperRight = upperLeft + 1
                     
-                    indices![indicesIndex++] = upperLeft
-                    indices![indicesIndex++] = lowerLeft
-                    indices![indicesIndex++] = upperRight
-                    indices![indicesIndex++] = upperRight
-                    indices![indicesIndex++] = lowerLeft
-                    indices![indicesIndex++] = lowerRight
-                    
+                    indices!.append(upperLeft)
+                    indices!.append(lowerLeft)
+                    indices!.append(upperRight)
+                    indices!.append(upperRight)
+                    indices!.append(lowerLeft)
+                    indices!.append(lowerRight)
                     index += 1
                 }
                 index += 1
