@@ -234,28 +234,26 @@ class QuantizedMeshTerrainData: TerrainData {
  */
     func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) {
   
-        let vertices = QuantizedMeshTerrainGenerator.computeVertices (
+        let vertices = QuantizedMeshTerrainGenerator.computeVertices(
             minimumHeight: _minimumHeight,
             maximumHeight: _maximumHeight,
-            quantizedVertices : this._quantizedVertices,
-            octEncodedNormals : this._encodedNormals,
-            indices : this._indices,
-            westIndices : this._westIndices,
-            southIndices : this._southIndices,
-            eastIndices : this._eastIndices,
-            northIndices : this._northIndices,
-            westSkirtHeight : this._westSkirtHeight,
-            southSkirtHeight : this._southSkirtHeight,
-            eastSkirtHeight : this._eastSkirtHeight,
-            northSkirtHeight : this._northSkirtHeight,
-            rectangle : tilingScheme.tileXYToRectangle(x, y, level),
-            relativeToCenter : this._boundingSphere.center,
+            quantizedVertices: _quantizedVertices,
+            octEncodedNormals: _encodedNormals,
+            indices: _indices,
+            westIndices: _westIndices,
+            southIndices: _southIndices,
+            eastIndices: _eastIndices,
+            northIndices: _northIndices,
+            westSkirtHeight: _westSkirtHeight,
+            southSkirtHeight : _southSkirtHeight,
+            eastSkirtHeight : _eastSkirtHeight,
+            northSkirtHeight : _northSkirtHeight,
+            rectangle : tilingScheme.tileXYToRectangle(x: x, y: y, level: level),
+            relativeToCenter : _boundingSphere.center,
             ellipsoid : tilingScheme.ellipsoid,
-            exaggeration: Double
-        ) -> ()
- var verticesPromise = createMeshTaskProcessor.scheduleTask({
- 
- });
+            exaggeration: exaggeration
+        )
+ /*
  
  if (!defined(verticesPromise)) {
  // Postponed

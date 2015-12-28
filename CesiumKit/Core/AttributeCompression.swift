@@ -8,21 +8,6 @@
 
 import Foundation
 
-/*
-/*global define*/
-define([
-'./Cartesian2',
-'./Cartesian3',
-'./defined',
-'./DeveloperError',
-'./Math'
-], function(
-Cartesian2,
-Cartesian3,
-defined,
-DeveloperError,
-CesiumMath) {
-"use strict";
 
 /**
 * Attribute compression and decompression functions.
@@ -32,7 +17,8 @@ CesiumMath) {
 *
 * @private
 */
-var AttributeCompression = {};
+class AttributeCompression {
+/*
 
 /**
 * Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
@@ -116,24 +102,19 @@ result.y = (1.0 - Math.abs(oldVX)) * CesiumMath.signNotZero(result.y);
 
 return Cartesian3.normalize(result, result);
 };
-
-/**
-* Packs an oct encoded vector into a single floating-point number.
-*
-* @param {Cartesian2} encoded The oct encoded vector.
-* @returns {Number} The oct encoded vector packed into a single float.
-*
-* @exception {DeveloperError} encoded is required.
 */
-AttributeCompression.octPackFloat = function(encoded) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(encoded)) {
-throw new DeveloperError('encoded is required.');
-}
-//>>includeEnd('debug');
-return 256.0 * encoded.x + encoded.y;
-};
-
+    /**
+    * Packs an oct encoded vector into a single floating-point number.
+    *
+    * @param {Cartesian2} encoded The oct encoded vector.
+    * @returns {Number} The oct encoded vector packed into a single float.
+    *
+    * @exception {DeveloperError} encoded is required.
+    */
+    class func octPackFloat (encoded: Cartesian2) -> Float32 {
+    return Float(256.0 * encoded.x + encoded.y)
+    }
+/*
 var scratchEncodeCart2 = new Cartesian2();
 
 /**
@@ -305,3 +286,4 @@ return result;
 
 return AttributeCompression;
 });*/
+}
