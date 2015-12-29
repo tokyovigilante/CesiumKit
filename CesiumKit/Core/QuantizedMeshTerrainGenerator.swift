@@ -21,7 +21,7 @@ private let nIndex = 6
 
 class QuantizedMeshTerrainGenerator {
     
-    class func computeVertices(
+    class func computeMesh (
         minimumHeight minimumHeight: Double,
         maximumHeight: Double,
         quantizedVertices: [UInt16],
@@ -38,7 +38,7 @@ class QuantizedMeshTerrainGenerator {
         rectangle: Rectangle,
         relativeToCenter: Cartesian3,
         ellipsoid: Ellipsoid,
-        exaggeration: Double) -> (vertices: [Float32], indices: [Int])//(maximumHeight: Double, minimumHeight: Double, vertices: [Float], boundingSphere: BoundingSphere?, orientedBoundingBox: OrientedBoundingBox?, occludeePointInScaledSpace: Cartesian3?)
+        exaggeration: Double) -> (boundingSphere: BoundingSphere?, center: Cartesian3, indices: [Int], maximumHeight: Double, minimumHeight: Double, occludeePointInScaledSpace: Cartesian3?, orientedBoundingBox: OrientedBoundingBox?, vertexStride: Int, vertices: [Float32])
     {
 
         let quantizedVertexCount = quantizedVertices.count / 3
@@ -64,10 +64,14 @@ class QuantizedMeshTerrainGenerator {
         
         var vertexBuffer = [Float32](count: quantizedVertexCount * vertexStride + edgeVertexCount * vertexStride, repeatedValue: 0.0)
         
-        for (var i = 0, bufferIndex = 0, n = 0; i < quantizedVertexCount; ++i, bufferIndex += vertexStride, n += 2) {
-            let u = Double(uBuffer[i]) / maxShort
-            let v = Double(vBuffer[i]) / maxShort
-            let height = Math.lerp(p: minimumHeight, q: maximumHeight, time: Double(heightBuffer[i]) / maxShort)
+        for (var i = 0, bufferIndex = 0, n = 0; i < quantizedVertexCount; i += 1, bufferIndex += vertexStride, n += 2) {
+            let uStartIndex = uBuffer.startIndex
+            let vStartIndex = vBuffer.startIndex
+            let hStartIndex = heightBuffer.startIndex
+            
+            let u = Double(uBuffer[uStartIndex + i]) / maxShort
+            let v = Double(vBuffer[vStartIndex + i]) / maxShort
+            let height = Math.lerp(p: minimumHeight, q: maximumHeight, time: Double(heightBuffer[hStartIndex + i]) / maxShort)
             
             let cartographic = Cartographic(
                 longitude: Math.lerp(p: west, q: east, time: u),
@@ -93,9 +97,7 @@ class QuantizedMeshTerrainGenerator {
         }
         
         let edgeTriangleCount = max(0, (edgeVertexCount - 4) * 2)
-        let indexBufferLength = indices.count + edgeTriangleCount * 3
-        
-        var indexBuffer = [Int]()//IndexDatatype.createTypedArray(quantizedVertexCount + edgeVertexCount, indexBufferLength)
+        var indexBuffer = indices + [Int](count: edgeTriangleCount * 3, repeatedValue: 0)
         
         
         //indexBuffer.set(parameters.indices, 0);
@@ -104,25 +106,32 @@ class QuantizedMeshTerrainGenerator {
         var vertexBufferIndex = quantizedVertexCount * vertexStride
         var indexBufferIndex = indices.count
         
-        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: indexBufferIndex, edgeVertices: westIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
+        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: westIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
         vertexBufferIndex += westIndices.count * vertexStride
-        /*indexBufferIndex = addSkirt(vertexBuffer, vertexBufferIndex, indexBuffer, indexBufferIndex, parameters.southIndices, center, ellipsoid, rectangle, parameters.southSkirtHeight, false, hasVertexNormals);
-        vertexBufferIndex += parameters.southIndices.length * vertexStride;
-        indexBufferIndex = addSkirt(vertexBuffer, vertexBufferIndex, indexBuffer, indexBufferIndex, parameters.eastIndices, center, ellipsoid, rectangle, parameters.eastSkirtHeight, false, hasVertexNormals);
-        vertexBufferIndex += parameters.eastIndices.length * vertexStride;
-        indexBufferIndex = addSkirt(vertexBuffer, vertexBufferIndex, indexBuffer, indexBufferIndex, parameters.northIndices, center, ellipsoid, rectangle, parameters.northSkirtHeight, true, hasVertexNormals);
-        vertexBufferIndex += parameters.northIndices.length * vertexStride;*/
+        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: southIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: southSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
+        vertexBufferIndex += southIndices.count * vertexStride
+        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: eastIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: eastSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
+        vertexBufferIndex += eastIndices.count * vertexStride;
+        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: northIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: northSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
+        vertexBufferIndex += northIndices.count * vertexStride
         
         //transferableObjects.push(vertexBuffer.buffer, indexBuffer.buffer);
         
         return (
-        vertices: vertexBuffer,
-        indices: indexBuffer
+            boundingSphere: nil,
+            center: relativeToCenter,
+            indices: indexBuffer,
+            maximumHeight: maximumHeight,
+            minimumHeight: minimumHeight,
+            occludeePointInScaledSpace: nil,
+            orientedBoundingBox: nil,
+            vertexStride: vertexStride,
+            vertices: vertexBuffer
         )
         //maximumHeight: Double, minimumHeight: Double, vertices: [Float], boundingSphere: BoundingSphere?, orientedBoundingBox: OrientedBoundingBox?, occludeePointInScaledSpace: Cartesian3?
     }
     
-    class func addSkirt(inout vertexBuffer: [Float32], vertexBufferIndex: Int, inout indexBuffer: [Int], indexBufferIndex: Int, edgeVertices: [Int  ], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool) {
+    class func addSkirt(inout vertexBuffer: [Float32], inout vertexBufferIndex: Int, inout indexBuffer: [Int], inout indexBufferIndex: Int, edgeVertices: [Int  ], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool) -> Int {
         
         let vertexStride: Int
         if hasVertexNormals {
@@ -156,44 +165,45 @@ class QuantizedMeshTerrainGenerator {
         }
         
         for (var i = start; i != end; i += increment) {
-            var index = edgeVertices[i];
-            /*var offset = index * vertexStride
-            var u = vertexBuffer[offset + uIndex]
-            var v = vertexBuffer[offset + vIndex]
-            var h = vertexBuffer[offset + hIndex]
+            let index = edgeVertices[i];
+            let offset = index * vertexStride
+            let u = Double(vertexBuffer[offset + uIndex])
+            let v = Double(vertexBuffer[offset + vIndex])
+            let h = Double(vertexBuffer[offset + hIndex])
             
-            cartographicScratch.longitude = CesiumMath.lerp(west, east, u);
-            cartographicScratch.latitude = CesiumMath.lerp(south, north, v);
-            cartographicScratch.height = h - skirtLength;
+            let cartographic = Cartographic(
+                longitude: Double(Math.lerp(p: west, q: east, time: u)),
+                latitude: Double(Math.lerp(p: south, q: north, time: v)),
+                height: h - skirtLength
+            )
             
-            var position = ellipsoid.cartographicToCartesian(cartographicScratch, cartesian3Scratch);
-            Cartesian3.subtract(position, center, position);
+            let position = ellipsoid.cartographicToCartesian(cartographic).subtract(center)
             
-            vertexBuffer[vertexBufferIndex++] = position.x;
-            vertexBuffer[vertexBufferIndex++] = position.y;
-            vertexBuffer[vertexBufferIndex++] = position.z;
-            vertexBuffer[vertexBufferIndex++] = cartographicScratch.height;
-            vertexBuffer[vertexBufferIndex++] = u;
-            vertexBuffer[vertexBufferIndex++] = v;
+            vertexBuffer.append(Float(position.x))
+            vertexBuffer.append(Float(position.y))
+            vertexBuffer.append(Float(position.z))
+            vertexBuffer.append(Float(cartographic.height))
+            vertexBuffer.append(Float(u))
+            vertexBuffer.append(Float(v))
             if (hasVertexNormals) {
-                vertexBuffer[vertexBufferIndex++] = vertexBuffer[offset + nIndex];
+                vertexBuffer.append(vertexBuffer[offset + nIndex])
             }
             
-            if (previousIndex !== -1) {
-                indexBuffer[indexBufferIndex++] = previousIndex;
-                indexBuffer[indexBufferIndex++] = vertexIndex - 1;
-                indexBuffer[indexBufferIndex++] = index;
+            if (previousIndex != -1) {
+                indexBuffer[indexBufferIndex++] = previousIndex
+                indexBuffer[indexBufferIndex++] = vertexIndex - 1
+                indexBuffer[indexBufferIndex++] = index
                 
-                indexBuffer[indexBufferIndex++] = vertexIndex - 1;
-                indexBuffer[indexBufferIndex++] = vertexIndex;
-                indexBuffer[indexBufferIndex++] = index;
+                indexBuffer[indexBufferIndex++] = vertexIndex - 1
+                indexBuffer[indexBufferIndex++] = vertexIndex
+                indexBuffer[indexBufferIndex++] = index
             }
             
-            previousIndex = index;
-            ++vertexIndex;*/
+            previousIndex = index
+            ++vertexIndex
         }
         
-        //return indexBufferIndex
+        return indexBufferIndex
     }
     
 }

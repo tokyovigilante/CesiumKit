@@ -232,9 +232,10 @@ class QuantizedMeshTerrainData: TerrainData {
  *          asynchronous mesh creations are already in progress and the operation should
  *          be retried later.
  */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) {
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ())
+    {
   
-        let vertices = QuantizedMeshTerrainGenerator.computeVertices(
+        let mesh = QuantizedMeshTerrainGenerator.computeMesh(
             minimumHeight: _minimumHeight,
             maximumHeight: _maximumHeight,
             quantizedVertices: _quantizedVertices,
@@ -253,40 +254,29 @@ class QuantizedMeshTerrainData: TerrainData {
             ellipsoid : tilingScheme.ellipsoid,
             exaggeration: exaggeration
         )
- /*
  
- if (!defined(verticesPromise)) {
- // Postponed
- return undefined;
- }
+        //let vertexCount = _quantizedVertices.count / 3  + _westIndices.count + _southIndices.count + _eastIndices.count + _northIndices.count
+        
+        //var rtc = result.center;
+        //var minimumHeight = result.minimumHeight;
+        //var maximumHeight = result.maximumHeight;
+        //var boundingSphere = defaultValue(result.boundingSphere, that._boundingSphere);
+        //var obb = defaultValue(result.orientedBoundingBox, _orientedBoundingBox);
+        //var occlusionPoint = defaultValue(result.occludeePointInScaledSpace, that._horizonOcclusionPoint);
+        //var stride = result.vertexStride;
  
- var that = this;
- return when(verticesPromise, function(result) {
- var vertexCount = that._quantizedVertices.length / 3;
- vertexCount += that._westIndices.length + that._southIndices.length + that._eastIndices.length + that._northIndices.length;
- var indicesTypedArray = IndexDatatype.createTypedArray(vertexCount, result.indices);
- 
- var vertices = new Float32Array(result.vertices);
- var rtc = result.center;
- var minimumHeight = result.minimumHeight;
- var maximumHeight = result.maximumHeight;
- var boundingSphere = defaultValue(result.boundingSphere, that._boundingSphere);
- var obb = defaultValue(result.orientedBoundingBox, that._orientedBoundingBox);
- var occlusionPoint = defaultValue(result.occludeePointInScaledSpace, that._horizonOcclusionPoint);
- var stride = result.vertexStride;
- 
- return new TerrainMesh(
- rtc,
- vertices,
- indicesTypedArray,
- minimumHeight,
- maximumHeight,
- boundingSphere,
- occlusionPoint,
- stride,
- obb);
- });*/
- }
+        let terrainMesh = TerrainMesh(
+            center: mesh.center,
+            vertices: mesh.vertices,
+            indices: mesh.indices,
+            minimumHeight: mesh.minimumHeight,
+            maximumHeight: mesh.maximumHeight,
+            boundingSphere3D: mesh.boundingSphere ?? _boundingSphere,
+            occludeePointInScaledSpace: mesh.occludeePointInScaledSpace ?? _horizonOcclusionPoint,
+            vertexStride: mesh.vertexStride,
+            orientedBoundingBox: mesh.orientedBoundingBox)
+        completionBlock(terrainMesh)
+    }
  /*
  var upsampleTaskProcessor = new TaskProcessor('upsampleQuantizedTerrainMesh');
  */
@@ -448,31 +438,5 @@ class QuantizedMeshTerrainData: TerrainData {
          return undefined;*/
         return nil
     }
- 
-    /**
-     * Determines if a given child tile is available, based on the
-     * {@link HeightmapTerrainData.childTileMask}.  The given child tile coordinates are assumed
-     * to be one of the four children of this tile.  If non-child tile coordinates are
-     * given, the availability of the southeast child tile is returned.
-     *
-     * @param {Number} thisX The tile X coordinate of this (the parent) tile.
-     * @param {Number} thisY The tile Y coordinate of this (the parent) tile.
-     * @param {Number} childX The tile X coordinate of the child tile to check for availability.
-     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
-     * @returns {Boolean} True if the child tile is available; otherwise, false.
-     */
-    func isChildAvailable (thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
-        /*
-         var bitNumber = 2; // northwest child
-         if (childX !== thisX * 2) {
-         ++bitNumber; // east child
-         }
-         if (childY !== thisY * 2) {
-         bitNumber -= 2; // south child
-         }
-         
-         return (this._childTileMask & (1 << bitNumber)) !== 0;*/
-        return false
-    }
- 
+  
 }
