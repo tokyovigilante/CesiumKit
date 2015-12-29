@@ -191,6 +191,8 @@ struct RenderState/*: Printable*/ {
     
     let viewport: BoundingRectangle?// = nil
     
+    var wireFrame: Bool = false
+    
     let hash: String
     
     init(
@@ -207,7 +209,8 @@ struct RenderState/*: Printable*/ {
         blending: BlendingState = BlendingState.Disabled(),
         stencilTest: RenderState.StencilTest = StencilTest(),
         sampleCoverage: RenderState.SampleCoverage = SampleCoverage(),
-        viewport: BoundingRectangle? = nil) {
+        viewport: BoundingRectangle? = nil,
+        wireFrame: Bool = false) {
             self.windingOrder = windingOrder
             self.cullFace = cullFace
             self.polygonOffset  = polygonOffset
@@ -220,6 +223,7 @@ struct RenderState/*: Printable*/ {
             self.stencilTest  = stencilTest
             self.sampleCoverage  = sampleCoverage
             self.viewport = viewport
+            self.wireFrame = wireFrame
             
             //FIXME: checks disabled
             /*if self.lineWidth < ContextLimits.minimumAliasedLineWidth ||
@@ -516,6 +520,14 @@ struct RenderState/*: Printable*/ {
         encoder.setViewport(MTLViewport(originX: actualViewport.x, originY: actualViewport.y, width: actualViewport.width, height: actualViewport.height, znear: 0.0, zfar: 1.0))
     }
     
+    func applyWireFrame(encoder: MTLRenderCommandEncoder) {
+        if wireFrame {
+            encoder.setTriangleFillMode(.Lines)
+        } else {
+            encoder.setTriangleFillMode(.Fill)
+        }
+    }
+    
     func apply(encoder: MTLRenderCommandEncoder, passState: PassState) {
         applyWindingOrder(encoder)
         applyCullFace(encoder)
@@ -530,6 +542,7 @@ struct RenderState/*: Printable*/ {
         applyBlending(passState)
         applyStencilTest()*/
         applyViewport(encoder, passState: passState)
+        applyWireFrame(encoder)
     }
     
 /*
