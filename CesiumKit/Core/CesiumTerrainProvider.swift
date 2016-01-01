@@ -291,7 +291,7 @@ class CesiumTerrainProvider: TerrainProvider {
         let requestMetadata = {
             request(.GET, metadataUrl)
                 .response(
-                    queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: false),
+                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: false),
                     completionHandler: { (request, response, data, error) in
                         if let error = error {
                             metadataFailure(data as NSData!)
@@ -300,7 +300,7 @@ class CesiumTerrainProvider: TerrainProvider {
                         metadataSuccess(data as NSData!)
                 })
         }
-        dispatch_async(NetworkManager.sharedInstance.getNetworkQueue(rateLimit: false), {
+        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: false), {
             requestMetadata()
         })
     }
@@ -588,24 +588,26 @@ class CesiumTerrainProvider: TerrainProvider {
         let tileLoader = { (tileUrl: String) in
             request(.GET, tileUrl, headers: self.getRequestHeader(extensionList))
                 .response(
-                    queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: throttleRequests),                    completionHandler: { (request, response, data, error) in
+                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests),                    completionHandler: { (request, response, data, error) in
                         if let error = error {
                             print(error.localizedDescription)
                             return
                         }
-                        var terrainData: TerrainData? = nil
-                        if self._heightmapStructure != nil {
-                            terrainData = nil
-                            //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
-                        } else {
-                            self.createQuantizedMeshTerrainData(data!, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
-                        }
-                        dispatch_async(dispatch_get_main_queue(), {
-                            completionBlock(terrainData)
+                        dispatch_async(QueueManager.sharedInstance.processorQueue, {
+                            var terrainData: TerrainData? = nil
+                            if self._heightmapStructure != nil {
+                                terrainData = nil
+                                //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
+                            } else {
+                                self.createQuantizedMeshTerrainData(data!, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
+                            }
+                            dispatch_async(dispatch_get_main_queue(), {
+                                completionBlock(terrainData)
+                            })
                         })
                 })
         }
-        dispatch_async(NetworkManager.sharedInstance.getNetworkQueue(rateLimit: throttleRequests), {
+        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), {
             tileLoader(url)
         })
     }

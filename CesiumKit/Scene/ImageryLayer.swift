@@ -458,7 +458,7 @@ public class ImageryLayer {
         
         imagery.state = .Transitioning
         
-        dispatch_async(NetworkManager.sharedInstance.getNetworkQueue(rateLimit: true), {
+        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: true), {
             
             let completionBlock: (CGImageRef? -> Void) = { (image) in
                 

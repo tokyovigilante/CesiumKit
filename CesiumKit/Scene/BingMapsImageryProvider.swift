@@ -448,7 +448,7 @@ public class BingMapsImageryProvider: ImageryProvider {
             "incl" : "ImageryProviders",
             "key" : self._key])
             .response(
-                queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: false),
+                queue: QueueManager.sharedInstance.networkQueue(rateLimit: false),
                 completionHandler: { (request, response, data, error) in
                     if let error = error {
                         metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
@@ -517,7 +517,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
         request(.GET, url)
             .response(
-                queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: true),
+                queue: QueueManager.sharedInstance.networkQueue(rateLimit: true),
                 completionHandler: { (request, response, data, error) in
                     if let error = error {
                         print("error: \(error.localizedDescription)")
