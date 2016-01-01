@@ -45,7 +45,7 @@ class ShaderProgram {
 
     var metalVertexFunction: MTLFunction!
     
-    private var _vertexUniforms: [Uniform]!
+    private var _vertexUniforms = [Uniform]()
     
     /**
     * GLSL source for the shader program's fragment shader.
@@ -67,9 +67,9 @@ class ShaderProgram {
 
     var metalFragmentFunction: MTLFunction!
     
-    private var _fragmentUniforms: [Uniform]!
+    private var _fragmentUniforms = [Uniform]()
     
-    private var _samplerUniforms: [UniformSampler]!
+    private var _samplerUniforms = [UniformSampler]()
     
     private var _uniformBufferAlignment: Int = -1
     
@@ -187,7 +187,9 @@ class ShaderProgram {
         let samplerUniformCount = _fragmentShader.textureCount()
         for i in 0..<samplerUniformCount {
             let desc =  _fragmentShader.textureDescription(i)
-            _samplerUniforms.append(Uniform.create(desc: desc, type: .Sampler) as! UniformSampler)
+            let samplerUniform = Uniform.create(desc: desc, type: .Sampler) as! UniformSampler
+            samplerUniform.setSampler(Int(i))
+            _samplerUniforms.append(samplerUniform)
         }
     }
     

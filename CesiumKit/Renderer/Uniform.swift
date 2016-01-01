@@ -418,7 +418,7 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 
 class UniformSampler: Uniform {
     
-    private var _textureUnitIndex: Int = 0
+    private (set) var textureUnitIndex: Int = 0
     
     private var _values: [Texture]!
     
@@ -437,17 +437,8 @@ class UniformSampler: Uniform {
         }*/
     }
     
-    func setSampler (textureUnitIndex: Int) -> Int {
-        
-        self._textureUnitIndex = textureUnitIndex
-        
-        /*let count = self._locations.count
-        for i in 0..<count {
-        let index = textureUnitIndex + i
-        glUniform1i(self._locations[i], index)
-        }
-        */
-        return self._textureUnitIndex// + count
+    func setSampler (textureUnitIndex: Int) {
+        self.textureUnitIndex = textureUnitIndex
     }
     
 }
