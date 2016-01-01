@@ -224,10 +224,16 @@ class TileUniformMap: UniformMap {
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
     }
-
-    func floatUniform(name: String) -> FloatUniformFunc? {
-        return _floatUniforms[name]
+    
+    func indexForFloatUniform(name: string) -> DictionaryIndex<String, FloatUniformFunc>? {
+        return _floatUniforms.indexForKey(name)
     }
+    
+    func floatUniform(index: Int) -> FloatUniformFunc {
+        let tuple = _floatUniforms[index].1
+        return tuple.1
+    }
+
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
         return dayTextures[uniform.textureUnitIndex]

@@ -253,16 +253,18 @@ class ShaderProgram {
     
     //MARK:- Set uniforms
     
+    private let nullUniformMap = NullUniformMap()
+    
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
         let buffer = command.uniformBufferProvider.nextBuffer()
-
+        let map = command.uniformMap ?? nullUniformMap
         for uniform in _vertexUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
         }
 
         for uniform in _fragmentUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: command.uniformMap, uniformState: uniformState)
+            setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
         }
         var textures = [Texture]()
         
@@ -281,7 +283,7 @@ class ShaderProgram {
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
     }
     
-    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap?, uniformState: UniformState) {
+    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap, uniformState: UniformState) {
 
         let offset = uniform.offset
         var uniformValue: [Float]!
@@ -291,8 +293,8 @@ class ShaderProgram {
                 uniformValue = automaticUniform.getValue(uniformState: uniformState)
             }
         case .Manual:
-            if let uniformFloatFunc = uniformMap!.floatUniform(uniform.name) {
-                uniformValue = uniformFloatFunc(map: uniformMap!)
+            if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
+                uniformValue = uniformFloatFunc(map: uniformMap)
             }
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
