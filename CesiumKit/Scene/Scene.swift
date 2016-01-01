@@ -759,7 +759,7 @@ public class Scene {
             command.debugOverlappingFrustums = 0
         }
         
-        for (index, frustumCommands) in _frustumCommandsList.enumerate() {
+        for frustumCommands in _frustumCommandsList {
             if distance.start > frustumCommands.far {
                 continue
             }
@@ -767,22 +767,22 @@ public class Scene {
             if distance.stop < frustumCommands.near {
                 break
             }
-            frustumCommands.commands[command.pass]!.append(command)
-            
+            frustumCommands.commands[command.pass.rawValue].append(command)
+            /*
             if _debugShowFrustums {
                 command.debugOverlappingFrustums |= (1 << index)
             }
-            
+            */
             if command.executeInClosestFrustum {
                 break
             }
-        }
+        }/*
         if _debugShowFrustums {
             // FIXME: debugShowFrustums
-            //let cf = _debugFrustumStatistics.commandsInFrustums
-            //cf[command.debugOverlappingFrustums] = defined(cf[command.debugOverlappingFrustums]) ? cf[command.debugOverlappingFrustums] + 1 : 1;
-            //++scene._debugFrustumStatistics.totalCommands;
-        }
+            let cf = _debugFrustumStatistics.commandsInFrustums
+            cf[command.debugOverlappingFrustums] = defined(cf[command.debugOverlappingFrustums]) ? cf[command.debugOverlappingFrustums] + 1 : 1;
+            ++scene._debugFrustumStatistics.totalCommands;
+        }*/
     }
 
     func createPotentiallyVisibleSet() {
@@ -1169,7 +1169,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         // Determine if there are any translucent surfaces in any of the frustums.
         var renderTranslucentCommands = false
         for frustum in _frustumCommandsList {
-            if frustum.commands[Pass.Translucent]!.count > 0 {
+            if frustum.commands[Pass.Translucent.rawValue].count > 0 {
                 renderTranslucentCommands = true
                 break
             }
@@ -1291,8 +1291,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             clearDepth.execute(context, passState: passState)
         
             let globeRenderPass = context.createRenderPass(passState)
+            let globeCommandList = frustumCommands.commands[Pass.Globe.rawValue]
             
-            for command in frustumCommands.commands[.Globe]! {
+            for command in globeCommandList {
                 executeCommand(command, renderPass: globeRenderPass)
             }
             
@@ -1308,8 +1309,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             globeRenderPass.complete()
             
             let groundRenderPass = context.createRenderPass(passState)
-            
-            for command in frustumCommands.commands[.Ground]! {
+            let groundCommandList = frustumCommands.commands[Pass.Ground.rawValue]
+            for command in groundCommandList {
                 executeCommand(command, renderPass: groundRenderPass)
             }
             groundRenderPass.complete()
@@ -1329,10 +1330,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             // Translucent geometry needs special handling (sorting/OIT).
             let startPass = Pass.Ground.rawValue + 1
             let endPass = Pass.Translucent.rawValue
+            
             for pass in startPass..<endPass {
                 let renderPass = context.createRenderPass(passState)
-                let commands = frustumCommands.commands[Pass(rawValue: pass)!]
-                for command in commands! {
+                let commands = frustumCommands.commands[pass]
+                
+                for command in commands {
                     executeCommand(command, renderPass: renderPass)
                 }
                 renderPass.complete()
@@ -1344,21 +1347,23 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 context.uniformState.updateFrustum(frustum)
             }
             
-            let commands = frustumCommands.commands[Pass.Translucent]!
+            let commands = frustumCommands.commands[Pass.Translucent.rawValue]
             executeTranslucentCommands(scene: self, executeFunction: executeCommand, passState: passState, commands: commands)
             
-            if globeDepth != nil && useGlobeDepthFramebuffer {
+            // FIXME: Pickdepth
+            /*if globeDepth != nil && useGlobeDepthFramebuffer {
                 // PERFORMANCE_IDEA: Use MRT to avoid the extra copy.
-                //let pickDepth = getPickDepth(index)
-                //pickDepth.update(context, depthTexture: globeDepth!.framebuffer!.depthStencilTexture!)
-                //pickDepth.executeCopyDepth(context, passState)
-            }
+                let pickDepth = getPickDepth(index)
+                pickDepth.update(context, depthTexture: globeDepth!.framebuffer!.depthStencilTexture!)
+                pickDepth.executeCopyDepth(context, passState)
+            }*/
         }
 
-        if debugShowGlobeDepth && useGlobeDepthFramebuffer {
-            //var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
-            //gd.executeDebugGlobeDepth(context, passState);
-        }
+        // FIXME: Pickdepth
+        /*if debugShowGlobeDepth && useGlobeDepthFramebuffer {
+            var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
+            gd.executeDebugGlobeDepth(context, passState);
+        }*/
         
         // FIXME: debugShowPickDepth
         /*if debugShowPickDepth && useGlobeDepthFramebuffer {
@@ -1390,7 +1395,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     
     func executeComputeCommands () {
         // each command has a different render target so needs separate pass
-        for command in _computeCommandList {
+        for command in _computeCommandList { 
             command.execute(_computeEngine)
         }
 

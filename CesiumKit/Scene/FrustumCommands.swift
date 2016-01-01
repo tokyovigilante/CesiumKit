@@ -21,7 +21,7 @@ class FrustumCommands {
     var near = 0.0
     var far = 0.0
 
-    var commands = [Pass: [DrawCommand]]()
+    var commands = Array<[DrawCommand]>()
     
     init (near: Double = 0.0, far: Double = 0.0) {
         self.near = near
@@ -30,9 +30,10 @@ class FrustumCommands {
     }
     
     func removeAll() {
-        for i in 0..<Pass.count {
+        commands = (0..<Pass.count).map { _ in [DrawCommand]() }
+        /*for i in 0..<Pass.count {
             commands[Pass(rawValue: i)!] = [DrawCommand]()
-        }
+        }*/
     }
     
 }
