@@ -56,7 +56,7 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(-90), range: 1000))
         
         // Everest
-        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.925278, latitude: 27.988056, height: 9000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
+        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
         
         //Wellington
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
