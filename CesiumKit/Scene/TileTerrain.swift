@@ -93,7 +93,7 @@ class TileTerrain {
     
     func processLoadStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {
-            requestTileGeometry(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            requestTileGeometry(terrainProvider, x: x, y: y, level: level)
         } else if state == .Received {
             transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         } else if state == .Transformed {
@@ -101,32 +101,25 @@ class TileTerrain {
         }
     }
     
-    func requestTileGeometry(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        
-        let context = frameState.context
+    func requestTileGeometry(terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         
         self.state = .Receiving
-        dispatch_async(context.processorQueue, {
-            terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: false, completionBlock: { terrainData in
-                if let terrainData = terrainData {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.data = terrainData
-                        self.state = .Received
-                    })
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        // Initially assume failure.  handleError may retry, in which case the state will
-                        // change to RECEIVING or UNLOADED.
-                        self.state = TerrainState.Failed
-                        
-                        let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                        print(message)
-                        
-                    })
-                }
-            })
+        terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: true, completionBlock: { terrainData in
+            if let terrainData = terrainData {
+                self.data = terrainData
+                self.state = .Received
+            } else {
+                // Initially assume failure.  handleError may retry, in which case the state will
+                // change to RECEIVING or UNLOADED.
+                self.state = TerrainState.Failed
+                
+                let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
+                print(message)
+            }
         })
     }
+    
+    
 
     func processUpsampleStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .Unloaded {

@@ -551,6 +551,8 @@
 		94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
 		94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC671F1B539ED9001A40C8 /* RenderPass.swift */; };
 		94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */; };
+		94ACB2D51C364B7E001A40C8 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACB2CE1C364900001A40C8 /* NetworkManager.swift */; };
+		94ACB2D61C364B7F001A40C8 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACB2CE1C364900001A40C8 /* NetworkManager.swift */; };
 		94B119931C13038A0095A86F /* ColorMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B119921C13038A0095A86F /* ColorMask.swift */; };
 		94B119941C13038A0095A86F /* ColorMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B119921C13038A0095A86F /* ColorMask.swift */; };
 		94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */; };
@@ -951,6 +953,7 @@
 		94AB53F51C18FA040095A86F /* BoxGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxGeometry.swift; sourceTree = "<group>"; };
 		94AC671F1B539ED9001A40C8 /* RenderPass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPass.swift; sourceTree = "<group>"; };
 		94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPipeline.swift; sourceTree = "<group>"; };
+		94ACB2CE1C364900001A40C8 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkManager.swift; path = Platform/NetworkManager.swift; sourceTree = "<group>"; };
 		94B119921C13038A0095A86F /* ColorMask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorMask.swift; sourceTree = "<group>"; };
 		94B87DC0194D678D00012DC4 /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Scene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		94B87DC4194D699400012DC4 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
@@ -1559,11 +1562,12 @@
 			children = (
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */,
+				94ACB2CE1C364900001A40C8 /* NetworkManager.swift */,
+				94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */,
 				946D129D1C2CBF40001A40C8 /* NSDate+TAI.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
-				94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2093,6 +2097,7 @@
 				9413B7CE1A37B93100FFAD81 /* TerrainProvider.swift in Sources */,
 				9413B7A61A37B93100FFAD81 /* Cartographic.swift in Sources */,
 				94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
+				94ACB2D51C364B7E001A40C8 /* NetworkManager.swift in Sources */,
 				9413B7D11A37B93100FFAD81 /* Transforms.swift in Sources */,
 				9413B7E11A37B93D00FFAD81 /* DepthTest.swift in Sources */,
 				9413B8151A37B94500FFAD81 /* ScreenSpaceCameraController.swift in Sources */,
@@ -2393,6 +2398,7 @@
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
+				94ACB2D61C364B7F001A40C8 /* NetworkManager.swift in Sources */,
 				9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,

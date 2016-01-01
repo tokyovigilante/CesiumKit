@@ -431,8 +431,9 @@ public class BingMapsImageryProvider: ImageryProvider {
             CesiumMath.toRadians(bbox[2]));
             }
             }*/
-            
-            self._ready = true
+            dispatch_async(dispatch_get_main_queue(), {
+                self._ready = true
+            })
             //TileProviderError.handleSuccess(metadataError);*/
         }
         
@@ -446,13 +447,15 @@ public class BingMapsImageryProvider: ImageryProvider {
         request(.GET, metadataUrl, parameters: [
             "incl" : "ImageryProviders",
             "key" : self._key])
-            .response { (request, response, data, error) in
-                if let error = error {
-                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
-                    return
-                }
-                metadataSuccess(data as NSData!)
-        }
+            .response(
+                queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: false),
+                completionHandler: { (request, response, data, error) in
+                    if let error = error {
+                        metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
+                        return
+                    }
+                    metadataSuccess(data as NSData!)
+            })
     }
     
     
@@ -513,20 +516,22 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
         request(.GET, url)
-            .response { (request, response, data, error) in
-                if let error = error {
-                    print("error: \(error.localizedDescription)")
-                    return
-                }
-                #if os(iOS)
-                    let image = UIImage(data: data!)?.CGImage
-                    completionBlock(image)
-                #elseif os(OSX)
-                    let image = NSImage(data: data!)?.CGImage
-                    completionBlock(image)
-                #endif
-        }
-        
+            .response(
+                queue: NetworkManager.sharedInstance.getNetworkQueue(rateLimit: true),
+                completionHandler: { (request, response, data, error) in
+                    if let error = error {
+                        print("error: \(error.localizedDescription)")
+                        return
+                    }
+                    #if os(iOS)
+                        let image = UIImage(data: data!)?.CGImage
+                    #elseif os(OSX)
+                        let image = NSImage(data: data!)?.CGImage
+                    #endif
+                    dispatch_async(dispatch_get_main_queue(), {
+                        completionBlock(image)
+                    })
+            })
     }
     
     /*

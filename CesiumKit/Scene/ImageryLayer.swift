@@ -454,22 +454,16 @@ public class ImageryLayer {
      *
      * @param {Imagery} imagery The imagery to request.
      */
-    func requestImagery (frameState frameState: FrameState, imagery: Imagery) {
+    func requestImagery (imagery: Imagery) {
         
-        let context = frameState.context
-
         imagery.state = .Transitioning
         
-        dispatch_async(context.networkQueue, {
-            
-            dispatch_semaphore_wait(context.networkSemaphore, DISPATCH_TIME_FOREVER)
+        dispatch_async(NetworkManager.sharedInstance.getNetworkQueue(rateLimit: true), {
             
             let completionBlock: (CGImageRef? -> Void) = { (image) in
                 
-                dispatch_semaphore_signal(context.networkSemaphore)
                 if let image = image {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         imagery.image = image
                         imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                         
@@ -477,7 +471,6 @@ public class ImageryLayer {
                     })
                 } else {
                     dispatch_async(dispatch_get_main_queue(), {
-                        //dispatch_async(context.renderQueue, {
                         imagery.state = .Failed
                         
                         let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"

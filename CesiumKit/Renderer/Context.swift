@@ -27,8 +27,6 @@ class Context {
     return view.renderQueue
     }
     }*/
-    let networkQueue: dispatch_queue_t
-    let networkSemaphore: dispatch_semaphore_t
     
     let processorQueue: dispatch_queue_t
     let textureLoadQueue: dispatch_queue_t
@@ -177,11 +175,8 @@ class Context {
         
         _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
         
-        networkQueue = dispatch_queue_create("com.testtoast.cesiumkit.networkqueue", DISPATCH_QUEUE_SERIAL)
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
         textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
-        
-        networkSemaphore = dispatch_semaphore_create(4)
         
         //antialias = true
         
