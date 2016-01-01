@@ -62,7 +62,7 @@ class QuantizedMeshTerrainGenerator {
             vertexStride = 6
         }
         
-        var vertexBuffer = [Float32](count: quantizedVertexCount * vertexStride + edgeVertexCount * vertexStride, repeatedValue: 0.0)
+        var vertexBuffer = [Float32]()
         
         for (var i = 0, bufferIndex = 0, n = 0; i < quantizedVertexCount; i += 1, bufferIndex += vertexStride, n += 2) {
             let uStartIndex = uBuffer.startIndex
@@ -81,41 +81,29 @@ class QuantizedMeshTerrainGenerator {
             
             let cartesian = ellipsoid.cartographicToCartesian(cartographic)
             
-            vertexBuffer[bufferIndex + xIndex] = Float(cartesian.x - relativeToCenter.x)
-            vertexBuffer[bufferIndex + yIndex] = Float(cartesian.y - relativeToCenter.y)
-            vertexBuffer[bufferIndex + zIndex] = Float(cartesian.z - relativeToCenter.z)
-            vertexBuffer[bufferIndex + hIndex] = Float(height)
-            vertexBuffer[bufferIndex + uIndex] = Float(u)
-            vertexBuffer[bufferIndex + vIndex] = Float(v)
+            vertexBuffer.append(Float(cartesian.x - relativeToCenter.x))
+            vertexBuffer.append(Float(cartesian.y - relativeToCenter.y))
+            vertexBuffer.append(Float(cartesian.z - relativeToCenter.z))
+            vertexBuffer.append(Float(height))
+            vertexBuffer.append(Float(u))
+            vertexBuffer.append(Float(v))
             if hasVertexNormals {
                 let toPack = Cartesian2(
                     x: Double(octEncodedNormals![n]),
                     y: Double(octEncodedNormals![n + 1])
                 )
-                vertexBuffer[bufferIndex + nIndex] = AttributeCompression.octPackFloat(toPack)
+                vertexBuffer.append(AttributeCompression.octPackFloat(toPack))
             }
         }
         
-        let edgeTriangleCount = max(0, (edgeVertexCount - 4) * 2)
-        var indexBuffer = indices + [Int](count: edgeTriangleCount * 3, repeatedValue: 0)
-        
-        
-        //indexBuffer.set(parameters.indices, 0);
+        var indexBuffer = indices
         
         // Add skirts.
-        var vertexBufferIndex = quantizedVertexCount * vertexStride
-        var indexBufferIndex = indices.count
-        
-        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: westIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
-        vertexBufferIndex += westIndices.count * vertexStride
-        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: southIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: southSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
-        vertexBufferIndex += southIndices.count * vertexStride
-        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: eastIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: eastSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
-        vertexBufferIndex += eastIndices.count * vertexStride;
-        indexBufferIndex = addSkirt(&vertexBuffer, vertexBufferIndex: &vertexBufferIndex, indexBuffer: &indexBuffer, indexBufferIndex: &indexBufferIndex, edgeVertices: northIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: northSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
-        vertexBufferIndex += northIndices.count * vertexStride
-        
-        //transferableObjects.push(vertexBuffer.buffer, indexBuffer.buffer);
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: westIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: southIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: southSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: eastIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: eastSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: northIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: northSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
+
         
         return (
             boundingSphere: nil,
@@ -128,10 +116,9 @@ class QuantizedMeshTerrainGenerator {
             vertexStride: vertexStride,
             vertices: vertexBuffer
         )
-        //maximumHeight: Double, minimumHeight: Double, vertices: [Float], boundingSphere: BoundingSphere?, orientedBoundingBox: OrientedBoundingBox?, occludeePointInScaledSpace: Cartesian3?
     }
     
-    class func addSkirt(inout vertexBuffer: [Float32], inout vertexBufferIndex: Int, inout indexBuffer: [Int], inout indexBufferIndex: Int, edgeVertices: [Int  ], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool) -> Int {
+    class func addSkirt(inout vertexBuffer: [Float32], inout indexBuffer: [Int], edgeVertices: [Int], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool) {
         
         let vertexStride: Int
         if hasVertexNormals {
@@ -144,16 +131,16 @@ class QuantizedMeshTerrainGenerator {
         if isWestOrNorthEdge {
             start = edgeVertices.count - 1
             end = -1;
-            increment = -1;
+            increment = -1
         } else {
             start = 0;
             end = edgeVertices.count
-            increment = 1;
+            increment = 1
         }
         
         var previousIndex = -1
         
-        var vertexIndex = vertexBufferIndex / vertexStride
+        var vertexIndex = vertexBuffer.count / vertexStride
         
         let north = rectangle.north
         let south = rectangle.south
@@ -164,8 +151,8 @@ class QuantizedMeshTerrainGenerator {
             east += Math.TwoPi
         }
         
-        for (var i = start; i != end; i += increment) {
-            let index = edgeVertices[i];
+        for i in start.stride(to: end, by: increment) {
+            let index = edgeVertices[i]
             let offset = index * vertexStride
             let u = Double(vertexBuffer[offset + uIndex])
             let v = Double(vertexBuffer[offset + vIndex])
@@ -190,20 +177,18 @@ class QuantizedMeshTerrainGenerator {
             }
             
             if (previousIndex != -1) {
-                indexBuffer[indexBufferIndex++] = previousIndex
-                indexBuffer[indexBufferIndex++] = vertexIndex - 1
-                indexBuffer[indexBufferIndex++] = index
+                indexBuffer.append(previousIndex)
+                indexBuffer.append(vertexIndex - 1)
+                indexBuffer.append(index)
                 
-                indexBuffer[indexBufferIndex++] = vertexIndex - 1
-                indexBuffer[indexBufferIndex++] = vertexIndex
-                indexBuffer[indexBufferIndex++] = index
+                indexBuffer.append(vertexIndex - 1)
+                indexBuffer.append(vertexIndex)
+                indexBuffer.append(index)
             }
             
             previousIndex = index
-            ++vertexIndex
+            vertexIndex += 1
         }
-        
-        return indexBufferIndex
     }
     
 }
