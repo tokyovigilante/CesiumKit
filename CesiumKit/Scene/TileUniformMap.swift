@@ -230,14 +230,7 @@ class TileUniformMap: UniformMap {
     }
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
-        var name = uniform.name
-        if name.hasPrefix("u_dayTexture") {
-            name.removeRange(Range(start: name.startIndex, end: name.endIndex.predecessor()))
-            let textureIndex = Int(name)
-            assert(textureIndex != nil && textureIndex! < dayTextures.count, "textureIndex < dayTextures.count")
-            return dayTextures[textureIndex!]
-        }
-        return nil
+        return dayTextures[uniform.textureUnitIndex]
     }
     
 }
