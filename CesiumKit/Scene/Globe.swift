@@ -81,7 +81,7 @@ class Globe {
     * @type {Boolean}
     * @default false
     */
-    var enableLighting = false
+    var enableLighting = true
     
     /**
     * True if an animated wave effect should be shown in areas of the globe
