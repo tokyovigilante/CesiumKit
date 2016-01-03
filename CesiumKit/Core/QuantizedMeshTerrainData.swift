@@ -232,7 +232,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          asynchronous mesh creations are already in progress and the operation should
  *          be retried later.
  */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ())
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
     {
   
         let mesh = QuantizedMeshTerrainGenerator.computeMesh(
@@ -276,6 +276,7 @@ class QuantizedMeshTerrainData: TerrainData {
             vertexStride: mesh.vertexStride,
             orientedBoundingBox: mesh.orientedBoundingBox)
         completionBlock(terrainMesh)
+        return true
     }
  /*
  var upsampleTaskProcessor = new TaskProcessor('upsampleQuantizedTerrainMesh');
@@ -295,7 +296,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          or undefined if too many asynchronous upsample operations are in progress and the request has been
  *          deferred.
  */
-    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()?) {
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
         /*
 //>>includeStart('debug', pragmas.debug);
  if (!defined(tilingScheme)) {
@@ -386,6 +387,8 @@ class QuantizedMeshTerrainData: TerrainData {
  createdByUpsampling : true
  });
  });*/
+        completionBlock(nil)
+        return false
  }
  /*
  var maxShort = 32767;

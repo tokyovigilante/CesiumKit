@@ -156,7 +156,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) {
+    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool {
         let ellipsoid = tilingScheme.ellipsoid
         let nativeRectangle = tilingScheme.tileXYToNativeRectangle(x: x, y: y, level: level)
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -218,6 +218,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
             occludeePointInScaledSpace: occludeePointInScaledSpace!,
             orientedBoundingBox: orientedBoundingBox)
         completionBlock(mesh)
+        return true
     }
 
     /**
@@ -235,7 +236,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()?) {
+    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
 
         let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
@@ -252,6 +253,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
             result = upsampleByInterpolating(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
         }
         completionBlock(result)
+        return true
     }
     
     private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
