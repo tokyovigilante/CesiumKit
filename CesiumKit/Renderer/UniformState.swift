@@ -278,18 +278,14 @@ class UniformState {
         return _viewRotation
     }
     
-    /*
     /**
     * @memberof UniformState.prototype
     * @type {Matrix3}
     */
-    viewRotation3D : {
-    get : function() {
-    var view3D = this.view3D;
-    return this._viewRotation3D;
+    var viewRotation3D: Matrix3 {
+        let _ = view3D
+        return _viewRotation3D
     }
-    },
-    */
     
     /**
     * @memberof UniformState.prototype
@@ -767,15 +763,13 @@ class UniformState {
             transformMatrix = Transforms.computeTemeToPseudoFixedMatrix(frameState.time)
         }
         
-        _sunPositionWC = Cartesian3(x: 0.5, y: 0.5, z: 0.5)//Simon1994PlanetaryPositions.sharedInstance.computeSunPositionInEarthInertialFrame(frameState.time)
-        /*Matrix3.multiplyByVector(transformMatrix, position, position);
+        _sunPositionWC = transformMatrix.multiplyByVector(Simon1994PlanetaryPositions.sharedInstance.computeSunPositionInEarthInertialFrame(frameState.time))
         
-        Cartesian3.normalize(position, uniformState._sunDirectionWC);
+        _sunDirectionWC = _sunPositionWC.normalize()
         
-        position = Matrix3.multiplyByVector(uniformState.viewRotation3D, position, uniformState._sunDirectionEC);
-        Cartesian3.normalize(position, position);
+        _sunDirectionEC = viewRotation3D.multiplyByVector(_sunPositionWC).normalize()
         
-        position = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(frameState.time, uniformState._moonDirectionEC);
+        /*position = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(frameState.time, uniformState._moonDirectionEC);
         Matrix3.multiplyByVector(transformMatrix, position, position);
         Matrix3.multiplyByVector(uniformState.viewRotation3D, position, position);
         Cartesian3.normalize(position, position);
