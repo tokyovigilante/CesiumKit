@@ -151,23 +151,17 @@ class UniformState {
     * @private
     */
     var viewportCartesian4: Cartesian4 {
-        get {
-            return _viewportCartesian4
-        }
+        return _viewportCartesian4
     }
     
     var viewportOrthographic: Matrix4 {
-        get {
-            cleanViewport()
-            return _viewportOrthographicMatrix
-        }
+        cleanViewport()
+        return _viewportOrthographicMatrix
     }
     
     var viewportTransformation: Matrix4 {
-        get {
-            cleanViewport()
-            return _viewportTransformation
-        }
+        cleanViewport()
+        return _viewportTransformation
     }
     
     /**
@@ -242,9 +236,7 @@ class UniformState {
     * @type {Matrix4}
     */
     var view: Matrix4 {
-        get {
-            return _view
-        }
+        return _view
     }
     
     /**
@@ -255,18 +247,16 @@ class UniformState {
     * @type {Matrix4}
     */
     var view3D: Matrix4 {
-        get {
-            if _view3DDirty {
-                if _mode == .Scene3D {
-                    _view3D = _view
-                } else {
-                    _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)
-                }
-                _viewRotation3D = _view3D.rotation()
-                _view3DDirty = false
+        if _view3DDirty {
+            if _mode == .Scene3D {
+                _view3D = _view
+            } else {
+                _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)
             }
-            return _view3D
+            _viewRotation3D = _view3D.rotation()
+            _view3DDirty = false
         }
+        return _view3D
     }
     
     /**
