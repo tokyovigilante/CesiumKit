@@ -267,7 +267,7 @@ class Simon1994PlanetaryPositions {
             let NRfunction = eccentricAnomaly - eccentricity * sin(eccentricAnomaly) - meanAnomaly
             let dNRfunction = 1 - eccentricity * cos(eccentricAnomaly)
             iterationValue = eccentricAnomaly - NRfunction / dNRfunction
-            ++count
+            count += 1
         }
         
         // STK Components uses a numerical method to find the eccentric anomaly in the case that Kepler's
@@ -402,16 +402,16 @@ class Simon1994PlanetaryPositions {
         var eccentricity: Double = 0.055545526 - 0.000000016 * t
         
         let inclinationConstant: Double = 5.15668983 * RadiansPerDegree
-        let inclinationSecPart: Double = -0.00008 * t + 0.02966 * t2 -
+        var inclinationSecPart: Double = -0.00008 * t + 0.02966 * t2 -
             0.000042 * t3 - 0.00000013 * t4
         let longitudeOfPerigeeConstant: Double = 83.35324312 * RadiansPerDegree
-        let longitudeOfPerigeeSecPart: Double = 14643420.2669 * t - 38.2702 * t2 -
+        var longitudeOfPerigeeSecPart: Double = 14643420.2669 * t - 38.2702 * t2 -
             0.045047 * t3 + 0.00021301 * t4
         let longitudeOfNodeConstant: Double = 125.04455501 * RadiansPerDegree
-        let longitudeOfNodeSecPart: Double = -6967919.3631 * t + 6.3602 * t2 +
+        var longitudeOfNodeSecPart: Double = -6967919.3631 * t + 6.3602 * t2 +
             0.007625 * t3 - 0.00003586 * t4
         let meanLongitudeConstant: Double = 218.31664563 * RadiansPerDegree
-        let meanLongitudeSecPart: Double = 1732559343.48470 * t - 6.3910 * t2 +
+        var meanLongitudeSecPart: Double = 1732559343.48470 * t - 6.3910 * t2 +
             0.006588 * t3 - 0.00003169 * t4
         
         // Delaunay arguments from section 3.5 b
@@ -439,53 +439,69 @@ class Simon1994PlanetaryPositions {
         semimajorAxis -= 235.6 * cos(l)
         semimajorAxis += 218.1 * cos(twoD - lprime)
         semimajorAxis += 181.0 * cos(twoD + l)
+        
         eccentricity += 0.014216 * cos(twoD - l) + 0.008551 * cos(twoD - twol)
-            //- 0.001383 * cos(l) + 0.001356 * cos(twoD + l)
-            //- 0.001147 * cos(fourD - threel) - 0.000914 * cos(fourD - twol)
-            //+ 0.000869 * cos(twoD - lprime - l) - 0.000627 * cos(twoD)
-            //- 0.000394 * cos(fourD - fourl) + 0.000282 * cos(twoD - lprime - twol)
-            //- 0.000279 * cos(D - l) - 0.000236 * cos(twol)
-            //+ 0.000231 * cos(fourD) + 0.000229 * cos(sixD - fourl)
-            //- 0.000201 * cos(twol - twoF)
-        /*inclinationSecPart += 486.26 * cos(twoD - twoF) - 40.13 * cos(twoD) +
-            37.51 * cos(twoF) + 25.73 * cos(twol - twoF) +
-            19.97 * cos(twoD - lprime - twoF)
-        longitudeOfPerigeeSecPart += -55609 * sin(twoD - l) - 34711 * sin(twoD - twol) -
-            9792 * sin(l) + 9385 * sin(fourD - threel) +
-            7505 * sin(fourD - twol) + 5318 * sin(twoD + l) +
-            3484 * sin(fourD - fourl) - 3417 * sin(twoD - lprime - l) -
-            2530 * sin(sixD - fourl) - 2376 * sin(twoD) -
-            2075 * sin(twoD - threel) - 1883 * sin(twol) -
-            1736 * sin(sixD - 5.0 * l) + 1626 * sin(lprime) -
-            1370 * sin(sixD - threel)
-        longitudeOfNodeSecPart += -5392 * sin(twoD - twoF) - 540 * sin(lprime) -
-            441 * sin(twoD) + 423 * sin(twoF) -
-            288 * sin(twol - twoF)
-        meanLongitudeSecPart += -3332.9 * sin(twoD) + 1197.4 * sin(twoD - l) -
-            662.5 * sin(lprime) + 396.3 * sin(l) -
-            218.0 * sin(twoD - lprime)
+        eccentricity -= 0.001383 * cos(l) + 0.001356 * cos(twoD + l)
+        eccentricity -= 0.001147 * cos(fourD - threel) - 0.000914 * cos(fourD - twol)
+        eccentricity += 0.000869 * cos(twoD - lprime - l) - 0.000627 * cos(twoD)
+        eccentricity -= 0.000394 * cos(fourD - fourl) + 0.000282 * cos(twoD - lprime - twol)
+        eccentricity -= 0.000279 * cos(D - l) - 0.000236 * cos(twol)
+        eccentricity += 0.000231 * cos(fourD) + 0.000229 * cos(sixD - fourl)
+        eccentricity -= 0.000201 * cos(twol - twoF)
+        
+        inclinationSecPart += 486.26 * cos(twoD - twoF) - 40.13 * cos(twoD)
+        inclinationSecPart += 37.51 * cos(twoF) + 25.73 * cos(twol - twoF)
+        inclinationSecPart += 19.97 * cos(twoD - lprime - twoF)
+        
+        longitudeOfPerigeeSecPart += -55609 * sin(twoD - l) - 34711 * sin(twoD - twol)
+        longitudeOfPerigeeSecPart -= 9792 * sin(l) + 9385 * sin(fourD - threel)
+        longitudeOfPerigeeSecPart += 7505 * sin(fourD - twol) + 5318 * sin(twoD + l)
+        longitudeOfPerigeeSecPart += 3484 * sin(fourD - fourl) - 3417 * sin(twoD - lprime - l)
+        longitudeOfPerigeeSecPart -= 2530 * sin(sixD - fourl) - 2376 * sin(twoD)
+        longitudeOfPerigeeSecPart -= 2075 * sin(twoD - threel) - 1883 * sin(twol)
+        longitudeOfPerigeeSecPart -= 1736 * sin(sixD - 5.0 * l) + 1626 * sin(lprime)
+        longitudeOfPerigeeSecPart -= 1370 * sin(sixD - threel)
+        
+        longitudeOfNodeSecPart += -5392 * sin(twoD - twoF)
+        longitudeOfNodeSecPart -= 540 * sin(lprime) - 441 * sin(twoD)
+        longitudeOfNodeSecPart += 423 * sin(twoF) - 288 * sin(twol - twoF)
+        
+        meanLongitudeSecPart += -3332.9 * sin(twoD) + 1197.4 * sin(twoD - l)
+        meanLongitudeSecPart -= 662.5 * sin(lprime) + 396.3 * sin(l)
+        meanLongitudeSecPart -= 218.0 * sin(twoD - lprime)
  
         // Add terms from Table 5
         let twoPsi: Double = 2.0 * psi
         let threePsi: Double = 3.0 * psi
-        inclinationSecPart += 46.997 * cos(psi) * t - 0.614 * cos(twoD - twoF + psi) * t +
-            0.614 * cos(twoD - twoF - psi) * t - 0.0297 * cos(twoPsi) * t2 -
-            0.0335 * cos(psi) * t2 + 0.0012 * cos(twoD - twoF + twoPsi) * t2 -
-            0.00016 * cos(psi) * t3 + 0.00004 * cos(threePsi) * t3 +
-            0.00004 * cos(twoPsi) * t3
-        let perigeeAndMean: Double = 2.116 * sin(psi) * t - 0.111 * sin(twoD - twoF - psi) * t -
-            0.0015 * sin(psi) * t2
+        
+        inclinationSecPart += 46.997 * cos(psi) * t
+        inclinationSecPart -= 0.614 * cos(twoD - twoF + psi) * t
+        inclinationSecPart += 0.614 * cos(twoD - twoF - psi) * t
+        inclinationSecPart -= 0.0297 * cos(twoPsi) * t2
+        inclinationSecPart -= 0.0335 * cos(psi) * t2
+        inclinationSecPart += 0.0012 * cos(twoD - twoF + twoPsi) * t2
+        inclinationSecPart -= 0.00016 * cos(psi) * t3
+        inclinationSecPart += 0.00004 * cos(threePsi) * t3
+        inclinationSecPart += 0.00004 * cos(twoPsi) * t3
+        
+        let perigeeAndMean: Double = 2.116 * sin(psi) * t
+            // - 0.111 * sin(twoD - twoF - psi) * t 
+            // - 0.0015 * sin(psi) * t2
         longitudeOfPerigeeSecPart += perigeeAndMean
         meanLongitudeSecPart += perigeeAndMean
-        longitudeOfNodeSecPart += -520.77 * sin(psi) * t + 13.66 * sin(twoD - twoF + psi) * t +
-            1.12 * sin(twoD - psi) * t - 1.06 * sin(twoF - psi) * t +
-            0.660 * sin(twoPsi) * t2 + 0.371 * sin(psi) * t2 -
-            0.035 * sin(twoD - twoF + twoPsi) * t2 - 0.015 * sin(twoD - twoF + psi) * t2 +
-            0.0014 * sin(psi) * t3 - 0.0011 * sin(threePsi) * t3 -
-            0.0009 * sin(twoPsi) * t3
+        
+        longitudeOfNodeSecPart += -520.77 * sin(psi) * t
+        longitudeOfNodeSecPart += 13.66 * sin(twoD - twoF + psi) * t
+        longitudeOfNodeSecPart += 1.12 * sin(twoD - psi) * t
+        longitudeOfNodeSecPart -= 1.06 * sin(twoF - psi) * t
+        longitudeOfNodeSecPart += 0.660 * sin(twoPsi) * t2 + 0.371 * sin(psi) * t2
+        longitudeOfNodeSecPart -= 0.035 * sin(twoD - twoF + twoPsi) * t2
+        longitudeOfNodeSecPart -= 0.015 * sin(twoD - twoF + psi) * t2
+        longitudeOfNodeSecPart += 0.0014 * sin(psi) * t3 - 0.0011 * sin(threePsi) * t3
+        longitudeOfNodeSecPart -= 0.0009 * sin(twoPsi) * t3
         
         // Add constants and convert units
-        semimajorAxis *= MetersPerKilometer*/
+        semimajorAxis *= MetersPerKilometer
         let inclination: Double = inclinationConstant + inclinationSecPart * RadiansPerArcSecond
         let longitudeOfPerigee: Double = longitudeOfPerigeeConstant + longitudeOfPerigeeSecPart * RadiansPerArcSecond
         let meanLongitude: Double = meanLongitudeConstant + meanLongitudeSecPart * RadiansPerArcSecond
