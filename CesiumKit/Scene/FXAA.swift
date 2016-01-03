@@ -128,7 +128,7 @@ class FXAAUniformMap: UniformMap {
         }
     ]
     
-    private var _floatUniforms: [String: FloatUniformFunc] = [
+    let floatUniforms: [String: FloatUniformFunc] = [
         
         "u_step": { (map: UniformMap) -> [Float] in
             return (map as! FXAAUniformMap).step
@@ -137,10 +137,6 @@ class FXAAUniformMap: UniformMap {
     
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
-    }
-    
-    func floatUniform(name: String) -> FloatUniformFunc? {
-        return _floatUniforms[name]
     }
     
     func textureForUniform(uniform: UniformSampler) -> Texture? {

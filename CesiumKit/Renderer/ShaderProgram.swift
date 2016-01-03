@@ -283,7 +283,7 @@ class ShaderProgram {
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
     }
     
-    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap: UniformMap, uniformState: UniformState) {
+    func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
 
         let offset = uniform.offset
         var uniformValue: [Float]!
@@ -293,9 +293,18 @@ class ShaderProgram {
                 uniformValue = automaticUniform.getValue(uniformState: uniformState)
             }
         case .Manual:
-            if let uniformFloatFunc = uniformMap.floatUniform(uniform.name) {
-                uniformValue = uniformFloatFunc(map: uniformMap)
-            }
+            if let floatUniform = uniform as? UniformFloat {
+                guard let index = floatUniform.mapIndex else {
+                    let index = map.indexForFloatUniform(uniform.name)
+                    floatUniform.mapIndex = index
+                    let uniformFloatFunc = map.floatUniform(index!)
+                    uniformValue = uniformFloatFunc(map: map)
+                    break
+                }
+                let uniformFloatFunc = map.floatUniform(index)
+                uniformValue = uniformFloatFunc(map: map)
+            } /* else { set other uniform types */
+            
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
             uniformValue = [0.0]

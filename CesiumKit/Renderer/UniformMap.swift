@@ -11,22 +11,20 @@ typealias FloatUniformFunc = (map: UniformMap) -> [Float]
 
 protocol UniformMap {
     
-    var index: DictionaryIndex<String, FloatUniformFunc>? { get }
-
+    var floatUniforms: [String: FloatUniformFunc] { get }
+    
     func uniform(name: String) -> UniformFunc?
     
     subscript(name: String) -> UniformFunc? { get }
     
-    func floatUniform(name: String) -> FloatUniformFunc?
+    func indexForFloatUniform(name: String) -> UniformIndex?
     
-    func floatUniform(index: DictionaryIndex<String, FloatUniformFunc>) -> FloatUniformFunc
-    
-    func indexForFloatUniform(name: String) -> DictionaryIndex<String, FloatUniformFunc>?
-    
-    func floatUniform(index: Int) -> FloatUniformFunc
+    func floatUniform(index: UniformIndex) -> FloatUniformFunc
     
     func textureForUniform (uniform: UniformSampler) -> Texture?
 }
+
+typealias UniformIndex = DictionaryIndex<String, FloatUniformFunc>
 
 extension UniformMap {
     
@@ -38,12 +36,12 @@ extension UniformMap {
         return uniform(name)
     }
     
-    func floatUniform(name: String) -> FloatUniformFunc? {
-        return nil
+    func indexForFloatUniform(name: String) -> UniformIndex? {
+        return floatUniforms.indexForKey(name)
     }
     
-    func indexForFloatUniform(name: String) -> DictionaryIndex<String, FloatUniformFunc>? {
-        return nil
+    func floatUniform(index: UniformIndex) -> FloatUniformFunc {
+        return floatUniforms[index].1
     }
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
@@ -52,5 +50,5 @@ extension UniformMap {
     
 }
 
-class NullUniformMap: UniformMap { var index: DictionaryIndex<String, FloatUniformFunc>? { return nil } }
+class NullUniformMap: UniformMap { let floatUniforms = [String : FloatUniformFunc]() }
 

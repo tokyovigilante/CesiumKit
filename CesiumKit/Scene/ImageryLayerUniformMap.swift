@@ -19,7 +19,7 @@ class ImageryLayerUniformMap: UniformMap {
         }
     ]
         
-    private var _floatUniforms: [String: FloatUniformFunc] = [
+    let floatUniforms: [String: FloatUniformFunc] = [
         
         "u_textureDimensions": { (map: UniformMap) -> [Float] in
             return (map as! ImageryLayerUniformMap).textureDimensions
@@ -29,11 +29,7 @@ class ImageryLayerUniformMap: UniformMap {
     func uniform(name: String) -> UniformFunc? {
         return _uniforms[name]
     }
-    
-    func floatUniform(name: String) -> FloatUniformFunc? {
-        return _floatUniforms[name]
-    }
-    
+        
     func textureForUniform(uniform: UniformSampler) -> Texture? {
         return texture
     }

@@ -317,7 +317,7 @@ class UniformFloat: Uniform {
     private var _values: [Float]
     private var _newValues: [Float]
     
-    var mapIndex: DictionaryIndex<String, FloatUniformFunc>? = nil
+    var mapIndex: UniformIndex? = nil
     
     func setFloatValues(newValues: [Float]) {
         /*assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")

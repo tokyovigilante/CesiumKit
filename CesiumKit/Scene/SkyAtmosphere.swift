@@ -168,7 +168,7 @@ private class SkyAtmosphereUniformMap: UniformMap {
     
     var fScaleOverScaleDepth = Float.NaN
 
-    private var _floatUniforms: [String: FloatUniformFunc] = [
+    let floatUniforms: [String: FloatUniformFunc] = [
         
         "fCameraHeight": { (map: UniformMap) -> [Float] in
             return [(map as! SkyAtmosphereUniformMap).fCameraHeight]
@@ -205,10 +205,6 @@ private class SkyAtmosphereUniformMap: UniformMap {
         }
         
     ]
-    
-    func floatUniform(name: String) -> FloatUniformFunc? {
-        return _floatUniforms[name]
-    }
 
 }
 

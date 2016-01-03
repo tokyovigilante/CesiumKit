@@ -132,7 +132,7 @@ class TileUniformMap: UniformMap {
         }*/
     ]
     
-    private var _floatUniforms: [String: FloatUniformFunc] = [
+    let floatUniforms: [String: FloatUniformFunc] = [
         
         "u_initialColor": { (map: UniformMap) -> [Float] in
             return (map as! TileUniformMap).initialColor
@@ -220,20 +220,6 @@ class TileUniformMap: UniformMap {
         dayTextureSaturation = [Float](count: maxTextureCount, repeatedValue: 0.0)
         dayTextureOneOverGamma = [Float](count: maxTextureCount, repeatedValue: 0.0)
     }
-    
-    func uniform(name: String) -> UniformFunc? {
-        return _uniforms[name]
-    }
-    
-    func indexForFloatUniform(name: string) -> DictionaryIndex<String, FloatUniformFunc>? {
-        return _floatUniforms.indexForKey(name)
-    }
-    
-    func floatUniform(index: Int) -> FloatUniformFunc {
-        let tuple = _floatUniforms[index].1
-        return tuple.1
-    }
-
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
         return dayTextures[uniform.textureUnitIndex]
