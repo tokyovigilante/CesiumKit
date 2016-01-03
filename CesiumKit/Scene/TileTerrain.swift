@@ -119,47 +119,54 @@ class TileTerrain {
         })
     }
     
-    
-
     func processUpsampleStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        if state == .Unloaded {
-            
-            
-            assert(upsampleDetails != nil, "TileTerrain cannot upsample unless provided upsampleDetails")
-            
-            var sourceData = upsampleDetails!.data
-            var sourceX = upsampleDetails!.x
-            var sourceY = upsampleDetails!.y
-            var sourceLevel = upsampleDetails!.level
-            /*
-            this.data = sourceData.upsample(terrainProvider.tilingScheme, sourceX, sourceY, sourceLevel, x, y, level);
-            if (!defined(this.data)) {
+        if state != .Unloaded {
+            return
+        }
+        
+        guard let upsampleDetails = upsampleDetails else {
+            assertionFailure("TileTerrain cannot upsample unless provided upsampleDetails")
+            return
+        }
+        
+        let sourceData = upsampleDetails.data
+        let sourceX = upsampleDetails.x
+        let sourceY = upsampleDetails.y
+        let sourceLevel = upsampleDetails.level
+        
+        if !sourceData.upsample(
+            tilingScheme: terrainProvider.tilingScheme,
+            thisX: sourceX,
+            thisY: sourceY,
+            thisLevel: sourceLevel,
+            descendantX: x,
+            descendantY: y,
+            descendantLevel: level,
+            completionBlock: { terrainData in
+                if terrainData == nil {
+                    self.state = .Failed
+                    return
+                }
+                self.data = terrainData!
+                self.state = .Received
+        }) {
             // The upsample request has been deferred - try again later.
-            return;
-            }
-            
-            this.state = TerrainState.RECEIVING;
-            
-            var that = this;
-            when(this.data, function(terrainData) {
-            that.data = terrainData;
-            that.state = TerrainState.RECEIVED;
-            }, function() {
-            that.state = TerrainState.FAILED;
-            });*/
+            return
+        } else {
+            state = .Receiving
         }
-        
-        /*if (this.state === TerrainState.RECEIVED) {
-        transform(this, context, terrainProvider, x, y, level);
-        }
-        
-        if (this.state === TerrainState.TRANSFORMED) {
-        createResources(this, context, terrainProvider, x, y, level);
-        }*/
+
+        if state == .Received {
+            transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+         }
+         
+         if state == .Transformed {
+            createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+         }
     }
 
     func transform(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        self.state = .Transforming
+        state = .Transforming
 
         guard let data = data else {
             self.state = .Failed

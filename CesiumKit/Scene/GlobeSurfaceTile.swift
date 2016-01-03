@@ -391,40 +391,36 @@ class GlobeSurfaceTile: QuadTreeTileData {
             }
         }
         
-        if !suspendUpsampling && upsampled != nil {
+        if !suspendUpsampling, let upsampled = upsampled {
             
-            upsampled!.processUpsampleStateMachine(frameState: frameState, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
-            /*
+            upsampled.processUpsampleStateMachine(frameState: frameState, terrainProvider: terrainProvider, x: tile.x, y: tile.y, level: tile.level)
+            
             // Publish the terrain data on the tile as soon as it is available.
             // We'll potentially need it to upsample child tiles.
             // It's safe to overwrite terrainData because we won't get here after
             // loaded terrain data has been received.
-            if (upsampled!.state.rawValue >= TerrainState.Received.rawValue) {
-                if (surfaceTile.terrainData != upsampled!.data) {
-                    surfaceTile.terrainData = upsampled!.data
+            if upsampled.state.rawValue >= TerrainState.Received.rawValue && surfaceTile.terrainData !== upsampled.data {
+                surfaceTile.terrainData = upsampled.data
                     
-                    // If the terrain provider has a water mask, "upsample" that as well
-                    // by computing texture translation and scale.
-                    if (terrainProvider.hasWaterMask) {
-                        // FIXME: Disabled
-                        //upsampleWaterMask(tile);
-                    }
-                    
-                    propagateNewUpsampledDataToChildren(tile)
+                // If the terrain provider has a water mask, "upsample" that as well
+                // by computing texture translation and scale.
+                if (terrainProvider.hasWaterMask) {
+                    // FIXME: Disabled
+                    //upsampleWaterMask(tile);
                 }
-            }
-            
-            if (upsampled.state === TerrainState.READY) {
-                upsampled.publishToTile(tile);
+                GlobeSurfaceTile.propagateNewUpsampledDataToChildren(tile)
                 
+            }
+            if upsampled.state == .Ready {
+                upsampled.publishToTile(tile)
                 // No further upsampling is necessary.  We need to continue loading, though.
-                surfaceTile.pickTerrain = surfaceTile.upsampledTerrain;
-                surfaceTile.upsampledTerrain = undefined;
-            } else if (upsampled.state === TerrainState.FAILED) {
+                surfaceTile.pickTerrain = surfaceTile.upsampledTerrain
+                surfaceTile.upsampledTerrain = nil
+            } else if upsampled.state == .Failed {
                 // Upsampling failed for some reason.  This is pretty much a catastrophic failure,
                 // but maybe we'll be saved by loading.
-                surfaceTile.upsampledTerrain = undefined;
-            }*/
+                surfaceTile.upsampledTerrain = nil
+            }
         }
     }
     
@@ -444,9 +440,9 @@ class GlobeSurfaceTile: QuadTreeTileData {
         }
         return (data: sourceTile!.data!.terrainData!, x: sourceTile!.x, y: sourceTile!.y, level: sourceTile!.level)
     }
-/*
-    function propagateNewUpsampledDataToChildren(tile) {
-        var surfaceTile = tile.data;
+
+    class func propagateNewUpsampledDataToChildren(tile: QuadtreeTile) {
+        let surfaceTile = tile.data!
 
         // Now that there's new data for this tile:
         //  - child tiles that were previously upsampled need to be re-upsampled based on the new data.
@@ -454,36 +450,31 @@ class GlobeSurfaceTile: QuadTreeTileData {
         // Generally this is only necessary when a child tile is upsampled, and then one
         // of its ancestors receives new (better) data and we want to re-upsample from the
         // new data.
-
-        if (defined(tile._children)) {
-            for (var childIndex = 0; childIndex < 4; ++childIndex) {
-                var childTile = tile._children[childIndex];
-                if (childTile.state !== QuadtreeTileLoadState.START) {
-                    var childSurfaceTile = childTile.data;
-                    if (defined(childSurfaceTile.terrainData) && !childSurfaceTile.terrainData.wasCreatedByUpsampling()) {
-                        // Data for the child tile has already been loaded.
-                        continue;
-                    }
-
-                    // Restart the upsampling process, no matter its current state.
-                    // We create a new instance rather than just restarting the existing one
-                    // because there could be an asynchronous operation pending on the existing one.
-                    if (defined(childSurfaceTile.upsampledTerrain)) {
-                        childSurfaceTile.upsampledTerrain.freeResources();
-                    }
-                    childSurfaceTile.upsampledTerrain = new TileTerrain({
-                        data : surfaceTile.terrainData,
-                        x : tile.x,
-                        y : tile.y,
-                        level : tile.level
-                    });
-
-                    childTile.state = QuadtreeTileLoadState.LOADING;
+        for childTile in tile.children {
+            if childTile.state != .Start {
+                let childSurfaceTile = childTile.data!
+                if childSurfaceTile.terrainData != nil && !childSurfaceTile.terrainData!.createdByUpsampling {
+                    // Data for the child tile has already been loaded.
+                    continue
                 }
+                // Restart the upsampling process, no matter its current state.
+                // We create a new instance rather than just restarting the existing one
+                // because there could be an asynchronous operation pending on the existing one.
+                if childSurfaceTile.upsampledTerrain != nil {
+                    childSurfaceTile.upsampledTerrain!.freeResources()
+                    childSurfaceTile.upsampledTerrain = nil
+                }
+                childSurfaceTile.upsampledTerrain = TileTerrain(upsampleDetails: (
+                    data: surfaceTile.terrainData!,
+                    x: tile.x,
+                    y: tile.y,
+                    level: tile.level)
+                )
+                childTile.state = .Loading
             }
         }
     }
-    */
+
     class func propagateNewLoadedDataToChildren(tile: QuadtreeTile) {
         let surfaceTile = tile.data!
         
