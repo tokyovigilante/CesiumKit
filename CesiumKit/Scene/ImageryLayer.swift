@@ -853,7 +853,7 @@ public class ImageryLayer {
             options: TextureOptions(
                 width: width,
                 height: height,
-                pixelFormat: context.view.colorPixelFormat,
+                pixelFormat: PixelFormat(rawValue: context.view.colorPixelFormat.rawValue)!,
                 premultiplyAlpha: texture.premultiplyAlpha,
                 usage: textureUsage
             )

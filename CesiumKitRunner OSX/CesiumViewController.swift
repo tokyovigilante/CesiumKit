@@ -27,8 +27,8 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         _metalView.delegate = self
         
         _metalView.device = MTLCreateSystemDefaultDevice()
-        _metalView.colorPixelFormat = .BGRA8Unorm
-        _metalView.depthStencilPixelFormat = .Depth32Float_Stencil8
+        _metalView.colorPixelFormat = PixelFormat.BGRA8Unorm.toMetal()
+        _metalView.depthStencilPixelFormat = PixelFormat.Depth32FloatStencil8.toMetal()
         _metalView.framebufferOnly = false
         _metalView.preferredFramesPerSecond = 60
         
@@ -44,19 +44,17 @@ class CesiumViewController: NSViewController, MTKViewDelegate {
         
         _globe = CesiumGlobe(view: _metalView, options: options)
         
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ
         
+        //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 90, north: 20))
         //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 100), heading: 0, pitch: Math.toRadians(90), roll: 0)
-
-        //Murrumbeena
-        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: 0.0, pitch: Math.toRadians(-90), range: 1000))
         
         // Everest
-        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
         
         //Wellington
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
