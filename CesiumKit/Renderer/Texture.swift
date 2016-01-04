@@ -9,13 +9,13 @@
 import CoreGraphics
 import Metal
 
-private let _colorSpace = CGColorSpaceCreateDeviceRGB()!//CGImageGetColorSpace(imageRef)
+private let _colorSpace = CGColorSpaceCreateDeviceRGB()!
 
 private var _defaultSampler: Sampler! = nil
 
 enum TextureSource {
     case Image(CGImageRef)
-    case ImageBuffer(Imagebuffer)
+    case Buffer(Imagebuffer)
     case CubeMap(CubeMapSources)
     
     var width: Int {
@@ -23,7 +23,7 @@ enum TextureSource {
             switch self {
             case .Image(let image):
                 return CGImageGetWidth(image)
-            case .ImageBuffer(let imagebuffer):
+            case .Buffer(let imagebuffer):
                 return imagebuffer.width
             case .CubeMap(let sources):
                 return CGImageGetWidth(sources.negativeX)
@@ -36,7 +36,7 @@ enum TextureSource {
             switch self {
             case .Image(let image):
                 return Int(CGImageGetHeight(image))
-            case .ImageBuffer(let imagebuffer):
+            case .Buffer(let imagebuffer):
                 return imagebuffer.height
             case .CubeMap(let sources):
                 return CGImageGetHeight(sources.negativeX)
@@ -55,7 +55,7 @@ struct TextureOptions {
     
     let cubeMap: Bool
     
-    let pixelFormat: MTLPixelFormat
+    let pixelFormat: PixelFormat
     
     let flipY: Bool
     
@@ -63,7 +63,9 @@ struct TextureOptions {
     
     let usage: MTLTextureUsage
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: MTLPixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown) {
+    let sampler: Sampler?
+    
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown, sampler: Sampler? = nil) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -74,6 +76,7 @@ struct TextureOptions {
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
         self.usage = usage
+        self.sampler = sampler
     }
 }
 
@@ -85,7 +88,7 @@ class Texture {
     
     let cubeMap: Bool
     
-    let pixelFormat: MTLPixelFormat
+    let pixelFormat: PixelFormat
     
     var textureFilterAnisotropic = true
     
@@ -126,7 +129,11 @@ class Texture {
         
         cubeMap = options.cubeMap
         pixelFormat = options.pixelFormat
-        premultiplyAlpha = options.premultiplyAlpha
+        
+        // Use premultiplied alpha for opaque textures should perform better on Chrome:
+        // http://media.tojicode.com/webglCamp4/#20*/
+        premultiplyAlpha = options.premultiplyAlpha || options.pixelFormat == .RGBA8Unorm || options.pixelFormat == .BGRA8Unorm || options.pixelFormat == .R8Unorm
+        
         usage = options.usage
         //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
         mipmapped = false
@@ -134,7 +141,7 @@ class Texture {
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        sampler = _defaultSampler
+        self.sampler = _defaultSampler ?? _defaultSampler
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
@@ -156,27 +163,25 @@ class Texture {
             assert(source == nil, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.")
             assert(context.depthTexture, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture")
         }
+        */
         
-        // Use premultiplied alpha for opaque textures should perform better on Chrome:
-        // http://media.tojicode.com/webglCamp4/#20*/
-        //var preMultiplyAlpha = options.premultiplyAlpha || self.pixelFormat == PixelFormat.RGB || self.pixelFormat == PixelFormat.Luminance
         let flipY = options.flipY
         
         // FIXME: mipmapping
         let textureDescriptor: MTLTextureDescriptor
         if cubeMap {
-            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat, size: width, mipmapped: false)
+            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat.toMetal(), size: width, mipmapped: false)
         } else {
-            textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat,
+            textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat.toMetal(),
                 width: width, height: height, mipmapped: false/*mipmapped*/)
         }
         textureDescriptor.usage = usage
         
-        if pixelFormat == .Depth32Float || pixelFormat == .Depth32Float_Stencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
+        if pixelFormat == .Depth32Float || pixelFormat == .Depth32FloatStencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
             textureDescriptor.storageMode = .Private
         }
         #if os(OSX)
-            if pixelFormat == .Depth24Unorm_Stencil8 {
+            if pixelFormat == .Depth32FloatStencil8 {
                 textureDescriptor.storageMode = .Private
             }
         #endif
@@ -184,12 +189,10 @@ class Texture {
         
          if let source = source {
             switch source {
-            case .ImageBuffer(let imagebuffer):
+            case .Buffer(let imagebuffer):
                 // Source: typed array
-                var pixelBuffer = imagebuffer.arrayBufferView
-            /* // FIXME - glTexImage2D
-                let region = MTLRegionMake2D(0, 0, width, height)
-                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: pixelBuffer, bytesPerRow: bytesPerRow)*/
+                let region = MTLRegionMake2D(0, 0, imagebuffer.width, imagebuffer.height)
+                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!))
             case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 let textureData = imageRef.renderToPixelArray(
@@ -227,65 +230,23 @@ class Texture {
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
     }
     
-    init (context: Context, metalTexture: MTLTexture) {
+    init (context: Context, metalTexture: MTLTexture, sampler: Sampler? = nil) {
         self.context = context
         self.metalTexture = metalTexture
         self.width = metalTexture.width
         self.height = metalTexture.height
         self.cubeMap = metalTexture.textureType == .TypeCube
-        self.pixelFormat = metalTexture.pixelFormat
+        self.pixelFormat = PixelFormat(rawValue: metalTexture.pixelFormat.rawValue) ?? .Invalid
         self.textureFilterAnisotropic = true
         self.usage = metalTexture.usage
         self.premultiplyAlpha = true
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        sampler = _defaultSampler
+        self.sampler = sampler ?? _defaultSampler
     }
     /*
-    defineProperties(Texture.prototype, {
-        pixelFormat : {
-    get : function() {
-    return this._pixelFormat;
-    }
-    },
-    pixelDatatype : {
-    get : function() {
-    return this._pixelDatatype;
-    }
-    },
-    dimensions : {
-    get : function() {
-    return this._dimensions;
-    }
-    },
-    preMultiplyAlpha : {
-    get : function() {
-    return this._preMultiplyAlpha;
-    }
-    },
-    flipY : {
-    get : function() {
-    return this._flipY;
-    }
-    },
-    width : {
-    get : function() {
-    return this._width;
-    }
-    },
-    height : {
-    get : function() {
-    return this._height;
-    }
-    },
-    _target : {
-    get : function() {
-    return this._textureTarget;
-    }
-    }
-    });
-    
+     
     /**
     * Copy new image data into this texture, from a source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
     * or an object with width, height, and arrayBufferView properties.
@@ -459,7 +420,4 @@ class Texture {
         glBindTexture(textureTarget, 0)*/
     }
 
-    deinit {
-        //glDeleteTextures(1, &textureName)
-    }
 }

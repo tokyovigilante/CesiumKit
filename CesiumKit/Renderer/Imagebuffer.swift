@@ -8,14 +8,14 @@
 
 /// RGBA image data
 class Imagebuffer {
+    let array: [UInt8]
     let width: Int
     let height: Int
-    let arrayBufferView: [UInt8]
     
-    init(width: Int, height: Int, arrayBufferView: [UInt8]) {
+    init(array: [UInt8], width: Int, height: Int) {
+        self.array = array
         self.width = width
         self.height = height
-        self.arrayBufferView = arrayBufferView
     }
     
 }

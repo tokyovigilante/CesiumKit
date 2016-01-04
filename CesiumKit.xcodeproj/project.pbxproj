@@ -146,7 +146,7 @@
 		9410138F19FB037D00FFAD81 /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		9410139019FB037D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		9410139119FB037D00FFAD81 /* Framebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F80A194DA8A400012DC4 /* Framebuffer.swift */; };
-		9410139419FB037D00FFAD81 /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
+		9410139419FB037D00FFAD81 /* Imagebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* Imagebuffer.swift */; };
 		9410139619FB037D00FFAD81 /* RenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F818194DB80500012DC4 /* RenderState.swift */; };
 		9410139719FB037D00FFAD81 /* Sampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540426199F478F00012DC4 /* Sampler.swift */; };
 		9410139919FB037D00FFAD81 /* ShaderProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F816194DB0ED00012DC4 /* ShaderProgram.swift */; };
@@ -229,7 +229,7 @@
 		9413B7E11A37B93D00FFAD81 /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		9413B7E21A37B93D00FFAD81 /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		9413B7E31A37B93D00FFAD81 /* Framebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F80A194DA8A400012DC4 /* Framebuffer.swift */; };
-		9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
+		9413B7E61A37B93D00FFAD81 /* Imagebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* Imagebuffer.swift */; };
 		9413B7E91A37B93D00FFAD81 /* RenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F818194DB80500012DC4 /* RenderState.swift */; };
 		9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94540426199F478F00012DC4 /* Sampler.swift */; };
 		9413B7EC1A37B93D00FFAD81 /* ShaderProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F816194DB0ED00012DC4 /* ShaderProgram.swift */; };
@@ -340,6 +340,8 @@
 		942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
 		942A70461BF9DB2E001A40C8 /* DepthPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A70451BF9DB2E001A40C8 /* DepthPlane.swift */; };
 		942A70471BF9DB2E001A40C8 /* DepthPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A70451BF9DB2E001A40C8 /* DepthPlane.swift */; };
+		942FC8051C393A810095A86F /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC8041C393A810095A86F /* PixelFormat.swift */; };
+		942FC8061C393A810095A86F /* PixelFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC8041C393A810095A86F /* PixelFormat.swift */; };
 		943416B21BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B31BC8D843001A40C8 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B11BC8D843001A40C8 /* Command.swift */; };
 		943416B91BC8D864001A40C8 /* ComputeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B81BC8D864001A40C8 /* ComputeCommand.swift */; };
@@ -441,7 +443,7 @@
 		947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947A241219C99DDB0040042F /* DepthTest.swift */; };
 		947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D02EB194DBC1E00012DC4 /* DrawCommand.swift */; };
 		947821461B5A2D7C0095A86F /* Framebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460F80A194DA8A400012DC4 /* Framebuffer.swift */; };
-		947821471B5A2D7C0095A86F /* ImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* ImageBuffer.swift */; };
+		947821471B5A2D7C0095A86F /* Imagebuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941E2162199EDC3600012DC4 /* Imagebuffer.swift */; };
 		947821481B5A2D7C0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
 		947821491B5A2D7C0095A86F /* PassState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415C94C1B547E7F001A40C8 /* PassState.swift */; };
 		9478214A1B5A2D7C0095A86F /* PipelineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B871B2857430095A86F /* PipelineCache.swift */; };
@@ -830,7 +832,7 @@
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941A28151BF40B54001A40C8 /* GroundPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroundPrimitive.swift; sourceTree = "<group>"; };
 		941A28231BF40BBB001A40C8 /* HeightReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightReference.swift; sourceTree = "<group>"; };
-		941E2162199EDC3600012DC4 /* ImageBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBuffer.swift; sourceTree = "<group>"; };
+		941E2162199EDC3600012DC4 /* Imagebuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imagebuffer.swift; sourceTree = "<group>"; };
 		941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTangentPlane.swift; sourceTree = "<group>"; };
 		941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerUniformMap.swift; sourceTree = "<group>"; };
 		941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderbuffer.swift; sourceTree = "<group>"; };
@@ -847,6 +849,7 @@
 		942CF4BE19CD90AA00012DC4 /* HeightmapTerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTerrainData.swift; sourceTree = "<group>"; };
 		942D02EB194DBC1E00012DC4 /* DrawCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawCommand.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		942D02EF194DBDDF00012DC4 /* VertexArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexArray.swift; sourceTree = "<group>"; };
+		942FC8041C393A810095A86F /* PixelFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelFormat.swift; sourceTree = "<group>"; };
 		94327176195468EA0011D8FC /* Transforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transforms.swift; sourceTree = "<group>"; };
 		943416B11BC8D843001A40C8 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Command.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		943416B81BC8D864001A40C8 /* ComputeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComputeCommand.swift; sourceTree = "<group>"; };
@@ -1432,6 +1435,7 @@
 				94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */,
 				94C6E5571B1475BF0095A86F /* Buffer.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
+				94B119921C13038A0095A86F /* ColorMask.swift */,
 				943416B11BC8D843001A40C8 /* Command.swift */,
 				943416B81BC8D864001A40C8 /* ComputeCommand.swift */,
 				943416BB1BC8D932001A40C8 /* ComputeEngine.swift */,
@@ -1442,15 +1446,15 @@
 				947A241219C99DDB0040042F /* DepthTest.swift */,
 				942D02EB194DBC1E00012DC4 /* DrawCommand.swift */,
 				9460F80A194DA8A400012DC4 /* Framebuffer.swift */,
-				941E2162199EDC3600012DC4 /* ImageBuffer.swift */,
+				941E2162199EDC3600012DC4 /* Imagebuffer.swift */,
 				94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */,
 				9415C94C1B547E7F001A40C8 /* PassState.swift */,
 				94889B871B2857430095A86F /* PipelineCache.swift */,
+				942FC8041C393A810095A86F /* PixelFormat.swift */,
 				941F557B1AA17FEC00FFAD81 /* Renderbuffer.swift */,
 				94AC671F1B539ED9001A40C8 /* RenderPass.swift */,
 				94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */,
 				9460F818194DB80500012DC4 /* RenderState.swift */,
-				94B119921C13038A0095A86F /* ColorMask.swift */,
 				94540426199F478F00012DC4 /* Sampler.swift */,
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
 				945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */,
@@ -2093,6 +2097,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				942FC8051C393A810095A86F /* PixelFormat.swift in Sources */,
 				9413B8061A37B94500FFAD81 /* ImageryProvider.swift in Sources */,
 				9413B7CE1A37B93100FFAD81 /* TerrainProvider.swift in Sources */,
 				9413B7A61A37B93100FFAD81 /* Cartographic.swift in Sources */,
@@ -2128,7 +2133,7 @@
 				9413B7C01A37B93100FFAD81 /* MergeSort.swift in Sources */,
 				945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
-				9413B7E61A37B93D00FFAD81 /* ImageBuffer.swift in Sources */,
+				9413B7E61A37B93D00FFAD81 /* Imagebuffer.swift in Sources */,
 				94EB4D9B1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */,
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
 				9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */,
@@ -2359,7 +2364,7 @@
 				9469077D1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
 				946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */,
 				947821461B5A2D7C0095A86F /* Framebuffer.swift in Sources */,
-				947821471B5A2D7C0095A86F /* ImageBuffer.swift in Sources */,
+				947821471B5A2D7C0095A86F /* Imagebuffer.swift in Sources */,
 				947821481B5A2D7C0095A86F /* IndexDatatype.swift in Sources */,
 				947821491B5A2D7C0095A86F /* PassState.swift in Sources */,
 				9478214A1B5A2D7C0095A86F /* PipelineCache.swift in Sources */,
@@ -2411,6 +2416,7 @@
 				9478216D1B5A2D7C0095A86F /* GridImageryProvider.swift in Sources */,
 				9478216E1B5A2D7C0095A86F /* HeadingPitchRange.swift in Sources */,
 				9478216F1B5A2D7C0095A86F /* Imagery.swift in Sources */,
+				942FC8061C393A810095A86F /* PixelFormat.swift in Sources */,
 				9403AC941C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				943416BD1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
 				94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
@@ -2476,7 +2482,7 @@
 			files = (
 				9410135E19FB032100FFAD81 /* Matrix3.swift in Sources */,
 				9413B83A1A37B94800FFAD81 /* QuadtreeTileProvider.swift in Sources */,
-				9410139419FB037D00FFAD81 /* ImageBuffer.swift in Sources */,
+				9410139419FB037D00FFAD81 /* Imagebuffer.swift in Sources */,
 				9410138119FB037500FFAD81 /* TilingScheme.swift in Sources */,
 				9410137A19FB037500FFAD81 /* Ray.swift in Sources */,
 				9413B82F1A37B94800FFAD81 /* ImageryProvider.swift in Sources */,

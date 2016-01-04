@@ -79,7 +79,7 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
         _depthStencilTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
-            pixelFormat : .Depth32Float_Stencil8)
+            pixelFormat : .Depth32FloatStencil8)
         )
         
         _globeDepthTexture = Texture(context: context, options: TextureOptions(

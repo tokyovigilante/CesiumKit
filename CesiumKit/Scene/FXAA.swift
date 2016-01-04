@@ -53,7 +53,7 @@ class FXAA {
                     options: TextureOptions(
                     width: width,
                     height: height,
-                    pixelFormat: .Depth32Float_Stencil8,
+                    pixelFormat: .Depth32FloatStencil8,
                     usage: .RenderTarget)
                 )
             } /*else {
