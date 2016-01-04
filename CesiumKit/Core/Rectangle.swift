@@ -84,7 +84,7 @@ public struct Rectangle: Packable {
         return Rectangle(west: Double(array[startingIndex]), south: Double(array[startingIndex+1]), east: Double(array[startingIndex+2]), north: Double(array[startingIndex+3]))
     }
     
-    init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
+    public init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = west
         self.south = south
         self.east = east
@@ -104,7 +104,7 @@ public struct Rectangle: Packable {
     * @example
     * var rectangle = Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0);
     */
-    init (fromDegreesWest west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
+    public init (fromDegreesWest west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = Math.toRadians(west)
         self.south = Math.toRadians(south)
         self.east = Math.toRadians(east)
