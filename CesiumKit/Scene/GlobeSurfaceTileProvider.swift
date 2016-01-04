@@ -160,8 +160,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         }
         _baseColor = Cartesian4()
         _firstPassInitialColor = Cartesian4()
-        baseColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        //baseColor = Cartesian4(fromRed: 0.0, green: 0.8434, blue: 0.2665, alpha: 1.0)
+        //baseColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        baseColor = Cartesian4(fromRed: 0.0, green: 0.8434, blue: 0.2665, alpha: 1.0)
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
@@ -626,7 +626,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         let viewMatrix = frameState.camera!.viewMatrix
         
         let waterMaskTexture = surfaceTile.waterMaskTexture
-        let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
+        let showReflectiveOcean = false//hasWaterMask && waterMaskTexture != nil
         let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
         

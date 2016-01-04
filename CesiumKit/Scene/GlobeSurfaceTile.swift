@@ -13,6 +13,9 @@
 * @alias GlobeSurfaceTile
 * @private
 */
+
+import Foundation
+
 class GlobeSurfaceTile: QuadTreeTileData {
    
     /**
@@ -368,7 +371,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
                     if let waterMask = surfaceTile.terrainData?.waterMask {
-                       createWaterMaskTextureIfNeeded(frameState.context)
+                       surfaceTile.createWaterMaskTextureIfNeeded(frameState.context)
                     }
                     
                     GlobeSurfaceTile.propagateNewLoadedDataToChildren(tile)
@@ -529,90 +532,74 @@ class GlobeSurfaceTile: QuadTreeTileData {
         return parent!.data!.terrainData!.isChildAvailable(parent!.x, thisY: parent!.y, childX: tile.x, childY: tile.y)
     }
     
-/*    function getContextWaterMaskData(context) {
-var data = context.cache.tile_waterMaskData;
+    func getContextWaterMaskData(context: Context) -> (allWaterTexture: Texture, sampler: Sampler) {
+        var data = context.cache["tile_waterMaskData"] as! (Texture, Sampler)?
+        
+        if data == nil {
+            let allWaterTexture = Texture(context: context, options: TextureOptions(
+                pixelFormat: PixelFormat.R8Unorm,
+                source: .Buffer(Imagebuffer(
+                    array: [255],
+                    width: 1,
+                    height: 1)
+                )
+            ))
+            let sampler = Sampler(
+                context: context,
+                wrapS: .ClampToEdge,
+                wrapT: .ClampToEdge,
+                minFilter: .Linear,
+                magFilter: .Linear
+             )
+            
+            data = (
+                allWaterTexture: allWaterTexture,
+                sampler: sampler
+            )
+            context.cache["tile_waterMaskData"] = data as Any
+        }
+        return data!
+    }
 
-if (!defined(data)) {
-var allWaterTexture = context.createTexture2D({
-pixelFormat : PixelFormat.LUMINANCE,
-pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-source : {
-arrayBufferView : new Uint8Array([255]),
-width : 1,
-height : 1
-}
-});
-allWaterTexture.referenceCount = 1;
-
-var sampler = context.createSampler({
-wrapS : TextureWrap.CLAMP_TO_EDGE,
-wrapT : TextureWrap.CLAMP_TO_EDGE,
-minificationFilter : TextureMinificationFilter.LINEAR,
-magnificationFilter : TextureMagnificationFilter.LINEAR
-});
-
-data = {
-allWaterTexture : allWaterTexture,
-sampler : sampler,
-destroy : function() {
-this.allWaterTexture.destroy();
-}
-};
-
-context.cache.tile_waterMaskData = data;
-}
-return data;
-}
-*/
     func createWaterMaskTextureIfNeeded(context: Context) {
-        var previousTexture = surfaceTile.waterMaskTexture;
-        if (defined(previousTexture)) {
-            --previousTexture.referenceCount;
-            if (previousTexture.referenceCount === 0) {
-                previousTexture.destroy();
-            }
-            surfaceTile.waterMaskTexture = undefined;
+        
+        guard let waterMask = terrainData?.waterMask else {
+            waterMaskTexture = nil
+            return
         }
         
-        var waterMask = surfaceTile.terrainData.waterMask;
-        if (!defined(waterMask)) {
-            return;
-        }
+        let waterMaskData = getContextWaterMaskData(context)
         
-        var waterMaskData = getContextWaterMaskData(context);
-        var texture;
+        let texture: Texture
+        let waterMaskLength = waterMask.count
         
-        var waterMaskLength = waterMask.length;
-        if (waterMaskLength === 1) {
+        if waterMaskLength == 1 {
             // Length 1 means the tile is entirely land or entirely water.
             // A value of 0 indicates entirely land, a value of 1 indicates entirely water.
-            if (waterMask[0] !== 0) {
-                texture = waterMaskData.allWaterTexture;
+            if waterMask.first != 0 {
+                texture = waterMaskData.allWaterTexture
             } else {
                 // Leave the texture undefined if the tile is entirely land.
-                return;
+                waterMaskTexture = nil
+                return
             }
         } else {
-            var textureSize = Math.sqrt(waterMaskLength);
-            texture = new Texture({
-                context : context,
-                pixelFormat : PixelFormat.LUMINANCE,
-                pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
-                source : {
-                    width : textureSize,
-                    height : textureSize,
-                    arrayBufferView : waterMask
-                },
-                sampler : waterMaskData.sampler
-            });
-            
-            texture.referenceCount = 0;
+            let textureSize = Int(sqrt(Double(waterMaskLength)))
+            texture = Texture(
+                context: context,
+                options: TextureOptions(
+                    source: TextureSource.Buffer(Imagebuffer(
+                        array: waterMask,
+                        width: textureSize,
+                        height: textureSize
+                    )),
+                    pixelFormat: PixelFormat.R8Unorm,
+                    sampler : waterMaskData.sampler
+                )
+            )
         }
-        
-        ++texture.referenceCount;
-        surfaceTile.waterMaskTexture = texture;
-        
-        Cartesian4.fromElements(0.0, 0.0, 1.0, 1.0, surfaceTile.waterMaskTranslationAndScale);
+        waterMaskTexture = texture
+        waterMaskTranslationAndScale = Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 1.0)
     }
     
     /*

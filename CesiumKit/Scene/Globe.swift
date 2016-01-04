@@ -350,28 +350,25 @@ class Globe {
         let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
         
         if (hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl) {
-                
-            /*              // url changed, load new normal map asynchronously
-            +            var oceanNormalMapUrl = this.oceanNormalMapUrl;
-            +            this._oceanNormalMapUrl = oceanNormalMapUrl;
-            +
-            +            if (defined(oceanNormalMapUrl)) {
-            +                var that = this;
-            +                when(loadImage(oceanNormalMapUrl), function(image) {
-            +                    if (oceanNormalMapUrl !== that.oceanNormalMapUrl) {
-            +                        // url changed while we were loading
-            +                        return;
-            +                    }
-            
-            +                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
-            +                    that._oceanNormalMap = context.createTexture2D({
-            +                        source : image
-            +                    });
-            +                });
+            // url changed, load new normal map asynchronously
+            _oceanNormalMapUrl = oceanNormalMapUrl
+            /*
+            if let oceanNormalMapUrl = oceanNormalMapUrl {
+                var that = this;
+                when(loadImage(oceanNormalMapUrl), function(image) {
+                    if (oceanNormalMapUrl !== that.oceanNormalMapUrl) {
+                        // url changed while we were loading
+                        return;
+                    }
+                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
+                    that._oceanNormalMap = context.createTexture2D({
+                        source : image
+                    });
+                    });
             } else {
-            +                this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
+                this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
             }
-            +        }*/
+            */
         }
         
         let mode = frameState.mode

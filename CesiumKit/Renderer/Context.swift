@@ -66,7 +66,7 @@ class Context {
     
     let pipelineCache: PipelineCache!
     
-    private var _clearColor: MTLClearColor = MTLClearColorMake(1.0, 0.0, 0.0, 1.0)
+    private var _clearColor: MTLClearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
     
     private var _clearDepth: Double = 0.0
     private var _clearStencil: UInt32 = 0
@@ -123,7 +123,7 @@ class Context {
     * @private
     * @type {Object}
     */
-    var cache = [String: AnyObject]()
+    var cache = [String: Any]()
     
     
     /**
