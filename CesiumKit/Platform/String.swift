@@ -8,6 +8,12 @@
 
 import Foundation
 
+enum ObjectSourceReferenceType {
+    case BundleResource
+    case NetworkURL
+    case FilePath
+}
+
 extension String {
     subscript (r: Range<Int>) -> String {
         get {
@@ -25,5 +31,41 @@ extension String {
     func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
         return self.rangeOfString(findStr, options: [], range: nil, locale: nil)?.startIndex
     }
+    
+}
 
+extension String {
+    var referenceType: ObjectSourceReferenceType {
+        if self.hasPrefix("/") {
+            return .FilePath
+        } else if self.hasPrefix("http") {
+            return .NetworkURL
+        }
+        return .BundleResource
+    }
+    
+    
+    func urlForSource () -> NSURL? {
+        switch self.referenceType {
+        case .BundleResource:
+            let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") ?? NSBundle.mainBundle()
+            #if os(OSX)
+                return bundle.URLForImageResource(self)
+            #elseif os(iOS)
+                return bundle.URLForResource((self as NSString).stringByDeletingPathExtension, withExtension: (self as NSString).pathExtension)
+            #endif
+        case .FilePath:
+            return NSURL(fileURLWithPath: self, isDirectory: false)
+        case .NetworkURL:
+            return NSURL(string: self)
+        }
+    }
+    
+    func loadImageForSource () -> CGImageRef? {
+        guard let sourceURL = urlForSource() else {
+            return nil
+        }
+        return CGImageRef.fromURL(sourceURL)
+    }
+    
 }

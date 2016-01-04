@@ -75,7 +75,6 @@ extension CGImageRef {
         CGContextDrawImage(contextRef, imageRect, self)
         return (pixelBuffer, bytesPerRow)
     }
-    
-}
 
+}
 

@@ -8,34 +8,42 @@
 
 import Foundation
 
+struct CubeMapSources {
+    let sources: [CGImageRef]
+}
+
+extension CubeMapSources {
+    
+    var positiveX: CGImageRef {
+        return sources[0]
+    }
+    
+    var negativeX: CGImageRef {
+        return sources[1]
+    }
+    
+    var positiveY: CGImageRef {
+        return sources[2]
+    }
+    
+    var negativeY: CGImageRef {
+        return sources[3]
+    }
+    
+    var positiveZ: CGImageRef {
+        return sources[4]
+    }
+    
+    var negativeZ: CGImageRef {
+        return sources[5]
+    }
+    
+}
+
 class CubeMap {
     
-    class func loadImagesForSources (sources: [String]) -> CubeMapSources
-    {
-        let sourceURLs = urlsForSources(sources)
-        let cgImageSources = sourceURLs.map({ CGImageRef.fromURL($0)! })
-
-        return CubeMapSources(sources: cgImageSources)
+    class func loadImagesForSources (sources: [String]) -> CubeMapSources {
+        return CubeMapSources(sources: sources.flatMap { $0.loadImageForSource() })
     }
     
-    private class func urlsForSources (sources: [String]) -> [NSURL] {
-        let type = sources[0].referenceType
-        
-        let sourceURLs: [NSURL]
-        let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") ?? NSBundle.mainBundle()
-
-        switch type {
-        case .BundleResource:
-            #if os(OSX)
-                sourceURLs = sources.map({ bundle.URLForImageResource($0)! })
-            #elseif os(iOS)
-                sourceURLs = sources.map({ bundle.URLForResource($0, withExtension: "jpg")! })
-            #endif
-        case .FilePath:
-            sourceURLs = sources.map({ NSURL(fileURLWithPath: $0, isDirectory: false) })
-        case .NetworkURL:
-            sourceURLs = sources.map({ NSURL(string: $0)! })
-        }
-        return sourceURLs
-    }
 }
