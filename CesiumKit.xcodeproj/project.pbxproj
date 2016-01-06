@@ -359,6 +359,8 @@
 		9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
 		9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
 		9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
+		9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
+		9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
 		945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
 		945B6A9B1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
@@ -880,6 +882,7 @@
 		9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsAPI.swift; sourceTree = "<group>"; };
 		9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverTileDiscardPolicy.swift; sourceTree = "<group>"; };
 		9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Platform/SwiftyJSON.swift; sourceTree = "<group>"; };
+		9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumKitController.swift; path = CesiumKitRunner/CesiumKitController.swift; sourceTree = "<group>"; };
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
 		945B6A991C2577730095A86F /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
 		945B6AA11C25781E0095A86F /* LeapSecond.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeapSecond.swift; sourceTree = "<group>"; };
@@ -1609,6 +1612,7 @@
 				945C3AB51B5296B40095A86F /* Alamofire.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
+				9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */,
 				94985A661A38444C00FFAD81 /* CesiumKitRunner iOS */,
 				940A5AEB1B6D54400095A86F /* CesiumKitRunner OSX */,
 				94DC79241918425300012DC4 /* Frameworks */,
@@ -2094,6 +2098,7 @@
 			files = (
 				940A5AEF1B6D54400095A86F /* CesiumViewController.swift in Sources */,
 				940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */,
+				9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2479,6 +2484,7 @@
 			files = (
 				94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */,
 				94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */,
+				9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

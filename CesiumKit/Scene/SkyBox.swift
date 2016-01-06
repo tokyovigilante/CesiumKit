@@ -156,7 +156,7 @@ class SkyBox {
     }
         
     class func getDefaultSkyBoxUrl (face: String) -> String {
-        return "tycho2t3_80_" + face
+        return "tycho2t3_80_" + face + ".jpg"
     }
 }
 
