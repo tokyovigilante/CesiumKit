@@ -759,8 +759,9 @@ class UniformState {
         
         _sunDirectionEC = viewRotation3D.multiplyByVector(_sunPositionWC).normalize()
         
-        /*position = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(frameState.time, uniformState._moonDirectionEC);
-        Matrix3.multiplyByVector(transformMatrix, position, position);
+        _moonDirectionEC = transformMatrix.multiplyByVector(Simon1994PlanetaryPositions.sharedInstance.computeMoonPositionInEarthInertialFrame(frameState.time)).normalize()
+        //_moonDirectionEC = position
+        /*Matrix3.multiplyByVector(transformMatrix, position, position);
         Matrix3.multiplyByVector(uniformState.viewRotation3D, position, position);
         Cartesian3.normalize(position, position);
         
