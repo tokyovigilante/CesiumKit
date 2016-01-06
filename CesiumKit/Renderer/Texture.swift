@@ -61,11 +61,11 @@ struct TextureOptions {
     
     let premultiplyAlpha: Bool
     
-    let usage: MTLTextureUsage
+    let usage: TextureUsage
     
     let sampler: Sampler?
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: MTLTextureUsage = .Unknown, sampler: Sampler? = nil) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, sampler: Sampler? = nil) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -94,7 +94,7 @@ class Texture {
     
     var premultiplyAlpha = true
     
-    let usage: MTLTextureUsage
+    let usage: TextureUsage
     
     var mipmapped: Bool = false
 
@@ -175,7 +175,7 @@ class Texture {
             textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat.toMetal(),
                 width: width, height: height, mipmapped: false/*mipmapped*/)
         }
-        textureDescriptor.usage = usage
+        textureDescriptor.usage = usage.toMetal()
         
         if pixelFormat == .Depth32Float || pixelFormat == .Depth32FloatStencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
             textureDescriptor.storageMode = .Private
@@ -238,7 +238,7 @@ class Texture {
         self.cubeMap = metalTexture.textureType == .TypeCube
         self.pixelFormat = PixelFormat(rawValue: metalTexture.pixelFormat.rawValue) ?? .Invalid
         self.textureFilterAnisotropic = true
-        self.usage = metalTexture.usage
+        self.usage = TextureUsage(rawValue: metalTexture.usage.rawValue)
         self.premultiplyAlpha = true
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)

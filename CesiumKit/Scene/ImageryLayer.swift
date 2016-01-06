@@ -846,7 +846,7 @@ public class ImageryLayer {
         
         let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject.indexBuffer)
         
-        let textureUsage: MTLTextureUsage = [.RenderTarget, .ShaderRead]
+        let textureUsage: TextureUsage = [.RenderTarget, .ShaderRead]
         
         let outputTexture = Texture(
             context: context,

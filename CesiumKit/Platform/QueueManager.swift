@@ -1,5 +1,5 @@
 //
-//  NetworkManager.swift
+//  QueueManager.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 1/01/2016.
