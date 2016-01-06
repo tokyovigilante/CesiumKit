@@ -162,7 +162,7 @@ public class Camera: DRU {
      * @type {Number}
      * @readonly
      */
-    var heading: Double? {
+    var heading: Double {
         if _mode != .Morphing {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
@@ -174,7 +174,7 @@ public class Camera: DRU {
             
             return heading;
         }
-        return nil
+        return Double.NaN
     }
     
     
@@ -185,7 +185,7 @@ public class Camera: DRU {
      * @type {Number}
      * @readonly
      */
-    var pitch: Double? {
+    var pitch: Double {
         if _mode != .Morphing {
             
             let oldTransform = _transform
@@ -199,7 +199,7 @@ public class Camera: DRU {
             return pitch
         }
         
-        return nil
+        return Double.NaN
     }
     
     
@@ -210,7 +210,7 @@ public class Camera: DRU {
      * @type {Number}
      * @readonly
      */
-    var roll: Double? {
+    var roll: Double {
         if _mode != .Morphing {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
@@ -223,7 +223,7 @@ public class Camera: DRU {
             return roll
         }
         
-        return nil
+        return Double.NaN
     }
     
     
@@ -739,9 +739,7 @@ public class Camera: DRU {
         return roll
     }
     
-    
-    
-    
+   
     //var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
     /**
     * @private
@@ -795,9 +793,9 @@ public class Camera: DRU {
     private func setView3D(
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
-        heading headingIn: Double? = nil,
-        pitch pitchIn: Double? = nil,
-        roll rollIn: Double? = nil)
+        heading: Double,
+        pitch: Double,
+        roll: Double)
     {
         let cartesian: Cartesian3
         
@@ -817,7 +815,7 @@ public class Camera: DRU {
         
         position = Cartesian3.zero
         
-        let rotQuat = Quaternion(fromHeading: heading! - M_PI_2, pitch: pitch!, roll: roll!)
+        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(fromQuaternion: rotQuat)
         
         direction = rotMat.column(0)
@@ -850,9 +848,9 @@ public class Camera: DRU {
     private func setViewCV(
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
-        heading headingIn: Double? = nil,
-        pitch pitchIn: Double? = nil,
-        roll rollIn: Double? = nil,
+        heading: Double,
+        pitch: Double,
+        roll: Double,
         ellipsoid: Ellipsoid,
         projection: MapProjection)
     {
@@ -871,7 +869,7 @@ public class Camera: DRU {
         }
         position = cartesian
         
-        let rotQuat = Quaternion(fromHeading: heading! - M_PI_2, pitch: pitch!, roll: roll!)
+        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(fromQuaternion: rotQuat)
         
         direction = rotMat.column(0)
@@ -885,9 +883,9 @@ public class Camera: DRU {
     private func setView2D(
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
-        heading headingIn: Double? = nil,
-        pitch pitchIn: Double? = nil,
-        roll rollIn: Double? = nil,
+        heading: Double,
+        pitch: Double,
+        roll: Double,
         ellipsoid: Ellipsoid,
         projection: MapProjection)
     {
@@ -920,7 +918,7 @@ public class Camera: DRU {
             }
         }
         
-        let rotQuat = Quaternion(fromHeading: heading! - M_PI_2, pitch: pitch, roll: roll)
+        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(fromQuaternion: rotQuat)
         
         direction = rotMat.column(0)
