@@ -613,7 +613,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         
         let waterMaskTexture = surfaceTile.waterMaskTexture
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
-        let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
+        let showOceanWaves = false//showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
         
         var rtc = surfaceTile.center
