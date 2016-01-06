@@ -201,10 +201,10 @@ class TileUniformMap: UniformMap {
         "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [Any] in
         return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
         },
-        
-        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).waterMaskTranslationAndScale]
-        }*/
+        */
+        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [Float] in
+        return (map as! TileUniformMap).waterMaskTranslationAndScale
+        }
     ]
     
     init(maxTextureCount: Int) {
@@ -222,6 +222,12 @@ class TileUniformMap: UniformMap {
     }
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
+        let dayTextureCount = dayTextures.count
+        if uniform.textureUnitIndex >= dayTextureCount {
+            return waterMask
+        } else if uniform.textureUnitIndex == dayTextureCount + 1 {
+            return oceanNormalMap
+        }
         return dayTextures[uniform.textureUnitIndex]
     }
     

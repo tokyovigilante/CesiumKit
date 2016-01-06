@@ -626,7 +626,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         let viewMatrix = frameState.camera!.viewMatrix
         
         let waterMaskTexture = surfaceTile.waterMaskTexture
-        let showReflectiveOcean = false//hasWaterMask && waterMaskTexture != nil
+        let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
         let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
         

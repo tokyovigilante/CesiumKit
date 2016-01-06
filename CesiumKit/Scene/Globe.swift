@@ -50,7 +50,9 @@ class Globe {
     * @type {String}
     * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
     */
-    var oceanNormalMapUrl: String = /*buildModuleUrl*/("Assets/Textures/waterNormalsSmall.jpg")
+    private var _oceanNormalMap: Texture? = nil
+
+    var oceanNormalMapUrl: String? = /*buildModuleUrl("Assets/Textures*/"waterNormalsSmall.jpg"
 
     private var _oceanNormalMapUrl: String? = nil
     private var _oceanNormalMapChanged = false
@@ -105,8 +107,6 @@ class Globe {
      *
      */
     var depthTestAgainstTerrain = false
-    
-    private var _oceanNormalMap: Texture? = nil
     
     private var _zoomedOutOceanSpecularIntensity: Float = 0.5
     
@@ -352,23 +352,33 @@ class Globe {
         if (hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl) {
             // url changed, load new normal map asynchronously
             _oceanNormalMapUrl = oceanNormalMapUrl
-            /*
+            
             if let oceanNormalMapUrl = oceanNormalMapUrl {
-                var that = this;
-                when(loadImage(oceanNormalMapUrl), function(image) {
-                    if (oceanNormalMapUrl !== that.oceanNormalMapUrl) {
-                        // url changed while we were loading
-                        return;
+                
+                dispatch_async(QueueManager.sharedInstance.processorQueue, {
+                    guard let oceanNormalMapImage = oceanNormalMapUrl.loadImageForSource() else {
+                        return
                     }
-                    that._oceanNormalMap = that._oceanNormalMap && that._oceanNormalMap.destroy();
-                    that._oceanNormalMap = context.createTexture2D({
-                        source : image
-                    });
-                    });
+                    if (oceanNormalMapUrl != self.oceanNormalMapUrl) {
+                        // url changed while we were loading
+                        return
+                    }
+                    let oceanNormalMap = Texture(
+                        context: context,
+                        options: TextureOptions(
+                            source: TextureSource.Image(oceanNormalMapImage),
+                            flipY: true,
+                            usage: .ShaderRead
+                        )
+                    )
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self._oceanNormalMap = oceanNormalMap
+                    })
+                })
             } else {
-                this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
+                _oceanNormalMap = nil
             }
-            */
+            
         }
         
         let mode = frameState.mode

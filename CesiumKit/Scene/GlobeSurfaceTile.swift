@@ -370,9 +370,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
                     
                     // If there's a water mask included in the terrain data, create a
                     // texture for it.
-                    if let waterMask = surfaceTile.terrainData?.waterMask {
-                       surfaceTile.createWaterMaskTextureIfNeeded(frameState.context)
-                    }
+                    surfaceTile.createWaterMaskTextureIfNeeded(frameState.context)
                     
                     GlobeSurfaceTile.propagateNewLoadedDataToChildren(tile)
                 }
@@ -585,11 +583,20 @@ class GlobeSurfaceTile: QuadTreeTileData {
             }
         } else {
             let textureSize = Int(sqrt(Double(waterMaskLength)))
+
+            // flip water mask for Metal
+            var flippedMask = [UInt8]()
+            for i in (textureSize-1).stride(through: 0, by: -1) {
+                let rowRange = (i * textureSize)..<(i * textureSize + textureSize)
+                let slice = waterMask[rowRange]
+                flippedMask.appendContentsOf(slice)
+            }
+            
             texture = Texture(
                 context: context,
                 options: TextureOptions(
                     source: TextureSource.Buffer(Imagebuffer(
-                        array: waterMask,
+                        array: flippedMask,
                         width: textureSize,
                         height: textureSize
                     )),
