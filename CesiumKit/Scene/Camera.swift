@@ -827,7 +827,7 @@ public class Camera: DRU {
         
         _setTransform(currentTransform)
     }
-    
+    /*
     public func setView3DPosition(position cartographic: Cartographic, rotation rotQuat: Quaternion) {
         
         let cartesian = _projection.ellipsoid.cartographicToCartesian(cartographic)
@@ -845,7 +845,7 @@ public class Camera: DRU {
         right = direction.cross(up)
         
         _setTransform(currentTransform)
-    }
+    }*/
     
     private func setViewCV(
         position cartesianIn: Cartesian3? = nil,

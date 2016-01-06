@@ -182,7 +182,7 @@ public struct Ellipsoid: Packable, Equatable {
     * var position = new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 5000);
     * var cartesianPosition = Cesium.Ellipsoid.WGS84.cartographicToCartesian(position);
     */
-    func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3 {
+    public func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3 {
         var n = geodeticSurfaceNormalCartographic(cartographic)
         var k = n.multiplyComponents(radiiSquared)
         
@@ -225,7 +225,7 @@ public struct Ellipsoid: Packable, Equatable {
     * var cartographicPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
     */
     
-    func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic? {
+    public func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic? {
         
         let p = scaleToGeodeticSurface(cartesian)
         if p == nil {
