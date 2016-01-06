@@ -160,8 +160,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         }
         _baseColor = Cartesian4()
         _firstPassInitialColor = Cartesian4()
-        //baseColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        baseColor = Cartesian4(fromRed: 0.0, green: 0.8434, blue: 0.2665, alpha: 1.0)
+        baseColor = Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.5, alpha: 1.0)
+        //baseColor = Cartesian4(fromRed: 0.0, green: 0.8434, blue: 0.2665, alpha: 1.0)
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
@@ -169,22 +169,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     }
     
     private func sortTileImageryByLayerIndex (a: TileImagery, b: TileImagery) -> Bool {
-        //let aImagery: Imagery
-        
         let aImagery = a.loadingImagery ?? a.readyImagery!
         let bImagery = b.loadingImagery ?? b.readyImagery!
-        /*if (a.loadingImagery == nil) {
-            aImagery = a.readyImagery!
-        } else {
-            aImagery = a.loadingImagery!
-        }
-        
-        let bImagery: Imagery
-        if (b.loadingImagery == nil) {
-            bImagery = b.readyImagery!
-        } else {
-            bImagery = b.loadingImagery!
-        }*/
         
         return aImagery.imageryLayer.layerIndex < bImagery.imageryLayer.layerIndex
     }

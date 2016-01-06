@@ -223,7 +223,7 @@ class TileUniformMap: UniformMap {
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
         let dayTextureCount = dayTextures.count
-        if uniform.textureUnitIndex >= dayTextureCount {
+        if uniform.textureUnitIndex == dayTextureCount {
             return waterMask
         } else if uniform.textureUnitIndex == dayTextureCount + 1 {
             return oceanNormalMap
