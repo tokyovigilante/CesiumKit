@@ -825,25 +825,24 @@ public class Camera: DRU {
         
         _setTransform(currentTransform)
     }
-    /*
-    public func setView3DPosition(position cartographic: Cartographic, rotation rotQuat: Quaternion) {
+    
+    public func setView3D (positionCart cartographic: Cartographic, rotation: Matrix3) {
         
         let cartesian = _projection.ellipsoid.cartographicToCartesian(cartographic)
+        
         let currentTransform = transform
         let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
         
         position = Cartesian3.zero
         
-        let rotMat = Matrix3(fromQuaternion: rotQuat)
-        
-        direction = rotMat.column(0)
-        up = rotMat.column(2)
+        direction = rotation.column(0)
+        up = rotation.column(2)
         
         right = direction.cross(up)
         
         _setTransform(currentTransform)
-    }*/
+    }
     
     private func setViewCV(
         position cartesianIn: Cartesian3? = nil,
@@ -980,7 +979,7 @@ public class Camera: DRU {
         let roll = rollIn ?? self.roll
         
         let projection = _projection
-        let ellipsoid = projection.ellipsoid
+        let ellipsoid = _projection.ellipsoid
         
         if _mode == .Scene3D {
             setView3D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll)
