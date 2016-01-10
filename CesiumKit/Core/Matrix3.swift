@@ -57,6 +57,11 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
             _grid[8] = column2Row2
     }
     
+    public init(grid: [Double]) {
+        assert(grid.count == 9, "invalid grid length")
+        _grid = grid
+    }
+    
     /**
     * Computes a 3x3 rotation matrix from the provided quaternion.
     *
@@ -149,7 +154,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Matrix3} [result] The object into which to store the result.
     */
-    static func unpack(array: [Float], startingIndex: Int) -> Matrix3 {
+    public static func unpack(array: [Float], startingIndex: Int = 0) -> Matrix3 {
         var result = Matrix3()
         
         for index in 0..<Matrix3.packedLength {
