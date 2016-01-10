@@ -146,7 +146,7 @@ public struct Quaternion {
     * @param {Quaternion} result The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if none was provided.
     */
-    init(fromHeading heading: Double, pitch: Double, roll: Double) {
+    public init(fromHeading heading: Double, pitch: Double, roll: Double) {
         let HPRQuaternion =
             Quaternion(fromAxis: Cartesian3.unitY, angle: -pitch) * // pitch
             Quaternion(fromAxis: Cartesian3.unitX, angle: roll) * // roll
