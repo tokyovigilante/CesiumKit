@@ -465,6 +465,13 @@ public class Camera: DRU {
         
         var newViewMatrix = Matrix4()
         
+        /*_viewMatrix = Matrix4(
+            right.x,right.y, right.z, 0.0,
+            up.x, up.y, up.z, 0.0,
+            -direction.x, -direction.y, -direction.z, 0.0,
+            -right.dot(position), -up.dot(position), direction.dot(position), 1.0
+            )
+            .multiply(_actualInvTransform)*/
         newViewMatrix[0] = right.x
         newViewMatrix[1] = up.x
         newViewMatrix[2] = -direction.x

@@ -91,7 +91,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _scene = scene
         _view = view
         super.init()
-        addRecognizers()
+        //addRecognizers()
     }
     
     func addRecognizers () {
@@ -99,13 +99,13 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _view.multipleTouchEnabled = true
         
         //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        _panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-        _panRecognizer.delegate = self
-        _view.addGestureRecognizer(_panRecognizer)
+        //_panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        //_panRecognizer.delegate = self
+        //_view.addGestureRecognizer(_panRecognizer)
         
-        _pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePinchGesture:")
-        _pinchRecognizer.delegate = self
-        _view.addGestureRecognizer(_pinchRecognizer)
+        //_pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePinchGesture:")
+        //_pinchRecognizer.delegate = self
+        //_view.addGestureRecognizer(_pinchRecognizer)
     }
     
     func handlePanGesture(recognizer: UIPanGestureRecognizer) {
