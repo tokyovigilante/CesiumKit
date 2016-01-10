@@ -152,7 +152,7 @@ enum UniformDataType: UInt {
         case .FloatVec2:
             return strideof(float2)
         case .FloatVec3:
-            return strideof(float3)
+            return strideof(float4)
         case .FloatVec4:
             return strideof(float4)
         case .IntVec1:
@@ -160,15 +160,15 @@ enum UniformDataType: UInt {
         case .IntVec2:
             return strideof(int2)
         case .IntVec3:
-            return strideof(int3)
+            return strideof(int4)
         case .IntVec4:
             return strideof(int4)
         case .FloatMatrix2:
-            return strideof(float2x2)
+            return strideof(float2)
         case .FloatMatrix3:
-            return strideof(float3x3)
+            return strideof(float4)
         case .FloatMatrix4:
-            return strideof(float4x4)
+            return strideof(float4)
         default:
             assertionFailure("invalid element")
             return 0
@@ -198,17 +198,13 @@ class Uniform {
     var name: String {
         return _desc.name
     }
-    /*
-    var location: Int {
-        return Int(_desc.location)
-    }*/
     
     var rawSize: Int {
         return Int(_desc.rawSize())
     }
     
     var alignedSize: Int {
-        return dataType.elementStride * Int(_desc.arraySize > 0 ? _desc.arraySize : 1)
+        return dataType.elementStride * Int(_desc.matSize > 0 ? _desc.matSize : 1) * Int(_desc.arraySize > 0 ? _desc.arraySize : 1)
     }
     
     var isSingle: Bool {

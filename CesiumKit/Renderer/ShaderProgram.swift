@@ -229,6 +229,7 @@ class ShaderProgram {
             offset += padding
             uniform.offset = offset
             offset += elementStrideForUniform(uniform)
+            //print("\(uniform.name): offset \(uniform.offset)(padding \(padding) stride: \(elementStrideForUniform(uniform)))")
         }
         offset = ((offset + 255) / 256) * 256 // fragment buffer offset must be a multiple of 256
         vertexUniformSize = offset
@@ -314,11 +315,10 @@ class ShaderProgram {
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
         if uniform.dataType == .FloatMatrix3 {
             var paddedMatrix3 = uniformValue
-            paddedMatrix3.append(0.0)
-            paddedMatrix3.insert(0.0, atIndex: 7)
             paddedMatrix3.insert(0.0, atIndex: 3)
-            paddedMatrix3.appendContentsOf([0.0, 0.0, 0.0, 0.0])
-            memcpy(buffer.data+offset, paddedMatrix3, uniform.dataType.elementStride)
+            paddedMatrix3.insert(0.0, atIndex: 7)
+            paddedMatrix3.append(0.0)
+            memcpy(buffer.data+offset, paddedMatrix3, uniform.alignedSize)
         } else {
             memcpy(buffer.data+offset, uniformValue, uniform.rawSize)
         }
