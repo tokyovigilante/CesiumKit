@@ -285,14 +285,16 @@ class ShaderProgram {
     }
     
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
-
         let offset = uniform.offset
-        var uniformValue: [Float]!
-        switch (uniform.type) {
+        let uniformValue: [Float]
+        switch uniform.type {
         case .Automatic:
-            if let automaticUniform = AutomaticUniforms[uniform.name] {
-                uniformValue = automaticUniform.getValue(uniformState: uniformState)
+            guard let automaticUniform = AutomaticUniforms[uniform.name] else {
+                assertionFailure("Automatic uniform not found")
+                uniformValue = [0.0]
+                return
             }
+            uniformValue = automaticUniform.getValue(uniformState: uniformState)
         case .Manual:
             if let floatUniform = uniform as? UniformFloat {
                 guard let index = floatUniform.mapIndex else {
@@ -304,8 +306,11 @@ class ShaderProgram {
                 }
                 let uniformFloatFunc = map.floatUniform(index)
                 uniformValue = uniformFloatFunc(map: map)
-            } /* else { set other uniform types */
-            
+            } else { /*set other uniform types */
+                assertionFailure("Unimplemented uniform type")
+                uniformValue = [0.0]
+                return
+            }
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
             uniformValue = [0.0]

@@ -222,14 +222,6 @@ class Uniform {
         self.dataType = dataType
     }
     
-    func setValues(newValues: [Any]) {
-        assertionFailure("Invalid base class")
-    }
-    
-    func set(buffer: Buffer) {
-        assertionFailure("Invalid base class")
-    }
-    
     static func create(desc desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
         
         switch desc.type {
@@ -310,36 +302,7 @@ class Uniform {
 
 class UniformFloat: Uniform {
     
-    private var _values: [Float]
-    private var _newValues: [Float]
-    
     var mapIndex: UniformIndex? = nil
-    
-    func setFloatValues(newValues: [Float]) {
-        /*assert(newValues.count >= _locations.count * _activeUniform.type.elementCount(), "wrong count")
-        memcpy(&_newValues, newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))*/
-        //_newValues = newValues
-    }
-    
-    override func set(buffer: Buffer) {
-        memcpy(buffer.data+Int(_desc.location), _values, Int(_desc.rawSize()))
-    }
-    
-    func isChanged () -> Bool {
-        /*    if (memcmp(&_values, &_newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))) != 0 {
-        memcpy(&_values, _newValues, _locations.count * _activeUniform.type.elementCount() * sizeof(Float))
-        return true
-        }*/
-        return false
-    }
-    
-    override init(desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
-        
-        _values = [Float](count: Int(desc.elementCount()), repeatedValue: 0.0)
-        _newValues = _values
-        
-        super.init(desc: desc, type: type, dataType: dataType)
-    }
     
 }
 
@@ -417,24 +380,7 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 class UniformSampler: Uniform {
     
     private (set) var textureUnitIndex: Int = 0
-    
-    private var _values: [Texture]!
-    
-    override func setValues(newValues: [Any]) {
-        _values = newValues.map({ $0 as! Texture })
-    }
-    
-    override func set(buffer: Buffer) {
         
-        //let textureUnitIndex = GLenum(GL_TEXTURE0) + GLenum(_textureUnitIndex)
-        
-        /*for (index, location) in enumerate(_locations) {
-        
-        glActiveTexture(textureUnitIndex + GLenum(index))
-        glBindTexture(_values[index].textureTarget, _values[index].textureName)
-        }*/
-    }
-    
     func setSampler (textureUnitIndex: Int) {
         self.textureUnitIndex = textureUnitIndex
     }
