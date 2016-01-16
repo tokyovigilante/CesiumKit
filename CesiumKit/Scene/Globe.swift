@@ -367,6 +367,7 @@ class Globe {
                         context: context,
                         options: TextureOptions(
                             source: TextureSource.Image(oceanNormalMapImage),
+                            pixelFormat: .RGBA8Unorm,
                             flipY: true,
                             usage: .ShaderRead
                         )
