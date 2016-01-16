@@ -24,8 +24,6 @@ protocol UniformMap {
     func textureForUniform (uniform: UniformSampler) -> Texture?
 }
 
-typealias UniformIndex = DictionaryIndex<String, FloatUniformFunc>
-
 extension UniformMap {
     
     func uniform(name: String) -> UniformFunc? {

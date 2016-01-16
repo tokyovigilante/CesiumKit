@@ -300,9 +300,15 @@ class Uniform {
     
 }
 
+typealias UniformIndex = DictionaryIndex<String, FloatUniformFunc>
+
+typealias AutomaticUniformIndex = DictionaryIndex<String, AutomaticUniform>
+
 class UniformFloat: Uniform {
     
     var mapIndex: UniformIndex? = nil
+    
+    var automaticIndex: AutomaticUniformIndex? = nil
     
 }
 

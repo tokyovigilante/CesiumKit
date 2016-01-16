@@ -283,24 +283,42 @@ class ShaderProgram {
         let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
     }
-    
+
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
         let offset = uniform.offset
         let uniformValue: [Float]
         switch uniform.type {
+            
         case .Automatic:
-            guard let automaticUniform = AutomaticUniforms[uniform.name] else {
-                assertionFailure("Automatic uniform not found")
+            guard let floatUniform = uniform as? UniformFloat else {
+                assertionFailure("Automatic uniform must be float")
                 uniformValue = [0.0]
                 return
             }
-            uniformValue = automaticUniform.getValue(uniformState: uniformState)
+            guard let index = floatUniform.automaticIndex else {
+                guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
+                    assertionFailure("automatic uniform not found for \(uniform.name)")
+                    uniformValue = [0.0]
+                    return
+                }
+                floatUniform.automaticIndex = index
+                let uniformFunc = AutomaticUniforms[index].1.getValue
+                uniformValue = uniformFunc(uniformState: uniformState)
+                break
+            }
+            let uniformFunc = AutomaticUniforms[index].1.getValue
+            uniformValue = uniformFunc(uniformState: uniformState)
+
         case .Manual:
             if let floatUniform = uniform as? UniformFloat {
                 guard let index = floatUniform.mapIndex else {
-                    let index = map.indexForFloatUniform(uniform.name)
+                    guard let index = map.indexForFloatUniform(uniform.name) else {
+                        assertionFailure("uniform not found for \(uniform.name)")
+                        uniformValue = [0.0]
+                        return
+                    }
                     floatUniform.mapIndex = index
-                    let uniformFloatFunc = map.floatUniform(index!)
+                    let uniformFloatFunc = map.floatUniform(index)
                     uniformValue = uniformFloatFunc(map: map)
                     break
                 }
@@ -311,6 +329,7 @@ class ShaderProgram {
                 uniformValue = [0.0]
                 return
             }
+            
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
             uniformValue = [0.0]

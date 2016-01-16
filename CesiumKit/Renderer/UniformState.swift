@@ -173,6 +173,10 @@ class UniformState {
             return _model
         }
         set (value) {
+            
+            if _model == value {
+                return
+            }
             _model = value
             
             _modelView3DDirty = true
