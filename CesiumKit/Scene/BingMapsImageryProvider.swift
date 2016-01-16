@@ -599,7 +599,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         var quadkey = ""
         
-        for ( var i = level; i >= 0; --i) {
+        for i in level.stride(through: 0, by: -1) {
             let bitmask = 1 << i
             var digit = 0
             

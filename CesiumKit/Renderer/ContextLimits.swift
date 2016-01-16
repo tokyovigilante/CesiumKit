@@ -321,8 +321,7 @@ class ContextLimits {
             highestSupportedFeatureSet = .iOS_GPUFamily1_v1
             
         #endif
-        for (var featureSet = maxKnownFeatureSet.rawValue; featureSet >= 0; --featureSet)
-        {
+        for featureSet in maxKnownFeatureSet.rawValue.stride(through: 0, by: -1) {
             let currentFeatureSet = MTLFeatureSet(rawValue: featureSet)!
             if device.supportsFeatureSet(currentFeatureSet)
             {

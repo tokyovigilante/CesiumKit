@@ -48,9 +48,9 @@ class TileTerrain {
             self.data = nil
             self.mesh = nil
             
-            var indexBuffer: Buffer? = nil
+            //var indexBuffer: Buffer? = nil
             if self.vertexArray != nil {
-                let indexBuffer = self.vertexArray!.indexBuffer
+                //let indexBuffer = self.vertexArray!.indexBuffer
                 self.vertexArray = nil
             }
         }

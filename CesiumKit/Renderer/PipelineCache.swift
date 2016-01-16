@@ -19,7 +19,7 @@ class PipelineCache {
     
     weak var device: MTLDevice!
     
-    private var _optimizer: GLSLOptimizer!
+    private var _optimizer: GLSLOptimizer
     
     private var _pipelines = [String: RenderPipeline]()
     

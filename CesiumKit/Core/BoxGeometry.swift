@@ -229,7 +229,7 @@ struct BoxGeometry {
         let max = _maximum
         let vertexFormat = _vertexFormat
         
-        var attributes = GeometryAttributes()
+        let attributes = GeometryAttributes()
         let indices: [Int]
         let positions: [Double]
         

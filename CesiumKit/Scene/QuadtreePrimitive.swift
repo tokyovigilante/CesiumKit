@@ -136,8 +136,8 @@ class QuadtreePrimitive {
         
         // Free and recreate the level zero tiles.
         for tile in _levelZeroTiles {
-            var customData = tile.customData
-            var customDataLength = customData.count
+            let customData = tile.customData
+            //let customDataLength = customData.count
             
             for data in customData {
                 //data.level = 0
