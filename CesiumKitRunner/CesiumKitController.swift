@@ -41,15 +41,19 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ
         
-        //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.01, latitude: 0.01, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
-        //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 100), heading: 0, pitch: Math.toRadians(90), roll: 0)
+        //Flat ocean view
+        //_globe.scene.camera.setView(positionCartographic: Cartographic(longitude: 0.0, latitude: 0.0, height: 100), heading: 0, pitch: Math.toRadians(-90), roll: 0)
+        //
         
         // Everest
         //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
         
-        //Wellington
-        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 174.777222, latitude: -41.288889, height: 50000), target: Cartesian3.zero(), up: Cartesian3.unitZ())
-        _globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
+        // Murrumbeena
+        _globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), heading: 0, pitch: 0, roll: 0)
+        
+        //Wellington,
+        _globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000), heading: 0, pitch: 0, roll: 0)
+        //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
         super.init()
     }
