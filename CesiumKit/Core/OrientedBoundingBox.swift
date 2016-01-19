@@ -163,7 +163,6 @@ struct OrientedBoundingBox: BoundingVolume {
         centerOffset = halfAxes.multiplyByVector(centerOffset)
         center = tangentPlane.origin.add(centerOffset)
         halfAxes = halfAxes.multiplyByScale(scale)
-        
         self.halfAxes = halfAxes
     }
     

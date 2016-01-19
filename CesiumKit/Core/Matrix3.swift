@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * A 3x3 matrix, indexable as a column-major order array.
@@ -32,34 +33,35 @@ import Foundation
 * @see Matrix2
 * @see Matrix4
 */
-// FIXME: Packable
-public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Packable {
-    
+
+public typealias Matrix3 = double3x3
+
+public extension Matrix3 {
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
     static let packedLength = 9
     
-    private var _grid: [Double] = [Double](count: packedLength, repeatedValue: 0.0)
-    
-    public init(_ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0,
-        _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0,
-        _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0) {
-            _grid[0] = column0Row0
-            _grid[1] = column0Row1
-            _grid[2] = column0Row2
-            _grid[3] = column1Row0
-            _grid[4] = column1Row1
-            _grid[5] = column1Row2
-            _grid[6] = column2Row0
-            _grid[7] = column2Row1
-            _grid[8] = column2Row2
+    public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double,
+        _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
+        _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double) {
+            
+            self.init(rows: [
+                double3(column0Row0, column1Row0, column2Row0),
+                double3(column0Row1, column1Row1, column2Row1),
+                double3(column0Row2, column1Row2, column2Row2),
+            ])
+
     }
     
     public init(grid: [Double]) {
         assert(grid.count == 9, "invalid grid length")
-        _grid = grid
+        self.init(rows: [
+            double3(grid[0], grid[3], grid[6]),
+            double3(grid[1], grid[4], grid[7]),
+            double3(grid[2], grid[5], grid[8]),
+            ])
     }
     
     /**
@@ -93,41 +95,11 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         let m21 = 2.0 * (yz + xw)
         let m22 = -x2 - y2 + z2 + w2
         
-        _grid[0] = m00
-        _grid[1] = m10
-        _grid[2] = m20
-        _grid[3] = m01
-        _grid[4] = m11
-        _grid[5] = m21
-        _grid[6] = m02
-        _grid[7] = m12
-        _grid[8] = m22
-    }
-    
-    subscript(index: Int) -> Double {
-        get {
-            assert(index < Matrix3.packedLength, "Index out of range")
-            return _grid[index]
-        }
-        set {
-            assert(index < Matrix3.packedLength, "Index out of range")
-            _grid[index] = newValue
-        }
-    }
-    
-    func indexIsValid(column column: Int, row: Int) -> Bool {
-        return row >= 0 && column >= 0 && (column * row) + row < Matrix3.packedLength
-    }
-    
-    subscript(column: Int, row: Int) -> Double {
-        get {
-            assert(indexIsValid(column: column, row: row), "Index out of range")
-            return _grid[(column * 3) + row]
-        }
-        set {
-            assert(indexIsValid(column: column, row: row), "Index out of range")
-            _grid[(column * 3) + row] = newValue
-        }
+        self.init(rows: [
+            double3(m00, m01, m02),
+            double3(m10, m11, m12),
+            double3(m20, m21, m22),
+            ])
     }
 
     /**
@@ -138,12 +110,13 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     func pack(inout array: [Float], startingIndex: Int = 0) {
-        for index in 0..<Matrix3.packedLength {
-            if array.count < startingIndex - Matrix3.packedLength {
-                array.append(Float(_grid[index]))
-            } else {
-                array[startingIndex + index] = Float(_grid[index])
-            }
+
+        let floatArray = self.toArray().map { Float($0) }
+        
+        if array.count < startingIndex - Matrix3.packedLength {
+            array.appendContentsOf(floatArray)
+        } else {
+            array.insertContentsOf(floatArray, at: startingIndex)
         }
     }
     
@@ -155,18 +128,22 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @param {Matrix3} [result] The object into which to store the result.
     */
     public static func unpack(array: [Float], startingIndex: Int = 0) -> Matrix3 {
-        var result = Matrix3()
-        
-        for index in 0..<Matrix3.packedLength {
-            result[index] = Double(array[index])
-        }
-        return result
+        return Matrix3(fromArray: array.map { Double($0) }, startingIndex: startingIndex)
     }
     
     init (fromMatrix4 matrix: Matrix4) {
-        for index in 0..<Matrix3.packedLength {
-            _grid[index] = matrix[index]
-        }
+        //let m4col0 = matrix[0]
+        //let m4col1 = matrix[1]
+        //let m4col2 = matrix[2]
+        let m4col0 = matrix.getColumn(0)
+        let m4col1 = matrix.getColumn(1)
+        let m4col2 = matrix.getColumn(2)
+        
+        self.init([
+            double3(m4col0.x, m4col0.y, m4col0.z),
+            double3(m4col0.w, m4col1.x, m4col1.y),
+            double3(m4col1.z, m4col1.w, m4col2.x)
+        ])
     }
     
     /**
@@ -191,8 +168,9 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
     */
     init (fromArray array: [Double], startingIndex: Int = 0) {
-        for index in 0..<Matrix3.packedLength {
-            _grid[index] = array[startingIndex + index]
+        self.init()
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Matrix3.packedLength * strideof(Double))
         }
     }
     /*
@@ -382,15 +360,11 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
-        _grid[0] = 1.0
-        _grid[1] = 0.0
-        _grid[2] = 0.0
-        _grid[3] = 0.0
-        _grid[4] = cosAngle
-        _grid[5] = sinAngle
-        _grid[6] = 0.0
-        _grid[7] = -sinAngle
-        _grid[8] = cosAngle
+        self.init(rows: [
+            double3(1.0, 0.0, 0.0),
+            double3(0.0, cosAngle, -sinAngle),
+            double3(0.0, sinAngle, cosAngle)
+            ])
     }
     
     /**
@@ -410,15 +384,11 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
-        _grid[0] = cosAngle
-        _grid[1] = 0.0
-        _grid[2] = -sinAngle
-        _grid[3] = 0.0
-        _grid[4] = 1.0
-        _grid[5] = 0.0
-        _grid[6] = sinAngle
-        _grid[7] = 0.0
-        _grid[8] = cosAngle
+        self.init(rows: [
+            double3(cosAngle, 0.0, sinAngle),
+            double3(0.0, 1.0, 0.0),
+            double3(-sinAngle, 0.0, cosAngle)
+        ])
     }
     
     /**
@@ -438,28 +408,29 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
         let cosAngle: Double = cos(angle)
         let sinAngle: Double = sin(angle)
         
-        _grid[0] = cosAngle
-        _grid[1] = sinAngle
-        _grid[2] = 0.0
-        _grid[3] = -sinAngle
-        _grid[4] = cosAngle
-        _grid[5] = 0.0
-        _grid[6] = 0.0
-        _grid[7] = 0.0
-        _grid[8] = 1.0
+        self.init(rows: [
+            double3(cosAngle, -sinAngle, 0.0),
+            double3(sinAngle, cosAngle, 0.0),
+            double3(0.0, 0.0, 1.0)
+        ])
     }
     
     /**
-    * Creates an Array from the provided Matrix3 instance.
-    * The array will be in column-major order.
-    *
-    * @param {Matrix3} matrix The matrix to use..
-    * @param {Number[]} [result] The Array onto which to store the result.
-    * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
-    */
-    func toArray() -> [Float] {
-        return _grid.map({ Float($0) })
+     * Creates an Array from the provided Matrix3 instance.
+     * The array will be in column-major order.
+     *
+     * @param {Matrix3} matrix The matrix to use..
+     * @param {Number[]} [result] The Array onto which to store the result.
+     * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
+     */
+    private func toArray() -> [Double] {
+        var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
+        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
+            memcpy(pointer.baseAddress, [self], Matrix3.packedLength * strideof(Double))
+        }
+        return grid
     }
+    
     /*
     /**
     * Computes the array index of the element at the provided row and column.
@@ -502,12 +473,9 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     */
     func column (index: Int) -> Cartesian3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
-        let startIndex = index * 3
-        
-        return Cartesian3(
-            x: _grid[startIndex],
-            y: _grid[startIndex + 1],
-            z: _grid[startIndex + 2])
+        //return self[index]
+        var result = self[index]
+        return Cartesian3(x: result.x, y: result.y, z: result.z)
     }
     
     /**
@@ -522,15 +490,10 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     */
     func setColumn (index: Int, cartesian: Cartesian3) -> Matrix3 {
     
-        if index < 0 || index > 2 {
-            assertionFailure("index must be 0, 1, or 2.")
-        }
-    
+        assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
         var result = self
-        let startIndex = index * 3
-        result[startIndex] = cartesian.x
-        result[startIndex + 1] = cartesian.y
-        result[startIndex + 2] = cartesian.z
+        //result[index] = cartesian
+        result[index] = double3(cartesian.x, cartesian.y, cartesian.z)
         return result
     }
     /*
@@ -649,24 +612,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @returns {Matrix3} The modified result parameter.
     */
     func multiply (other: Matrix3) -> Matrix3 {
-        /*let column0Row0: Double = _grid[0] * other[0] + _grid[3] * other[1] + _grid[6] * other[2]
-        let column0Row1: Double = _grid[1] * other[0] + _grid[4] * other[1] + _grid[7] * other[2]
-        let column0Row2: Double = _grid[2] * other[0] + _grid[5] * other[1] + _grid[8] * other[2]
-        
-        let column1Row0: Double = _grid[0] * other[3] + _grid[3] * other[4] + _grid[6] * other[5]
-        let column1Row1: Double = _grid[1] * other[3] + _grid[4] * other[4] + _grid[7] * other[5]
-        let column1Row2: Double = _grid[2] * other[3] + _grid[5] * other[4] + _grid[8] * other[5]
-        
-        let column2Row0: Double = _grid[0] * other[6] + _grid[3] * other[7] + _grid[6] * other[8]
-        let column2Row1: Double = _grid[1] * other[6] + _grid[4] * other[7] + _grid[7] * other[8]
-        let column2Row2: Double = _grid[2] * other[6] + _grid[5] * other[7] + _grid[8] * other[8]
-        
-        return Matrix3(
-        column0Row0, column0Row1, column0Row2,
-        column1Row0, column1Row1, column1Row2,
-        column2Row0, column2Row1, column2Row2
-        )*/
-        return Matrix3()
+        return self * other
     }
     /*
     /**
@@ -744,16 +690,9 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @returns {Cartesian3} The modified result parameter.
     */
     public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
-        
-        let vX = cartesian.x
-        let vY = cartesian.y
-        let vZ = cartesian.z
-        
-        let x = _grid[0] * vX + _grid[3] * vY + _grid[6] * vZ
-        let y = _grid[1] * vX + _grid[4] * vY + _grid[7] * vZ
-        let z = _grid[2] * vX + _grid[5] * vY + _grid[8] * vZ
-        
-        return Cartesian3(x: x, y: y, z: z)
+        //return self * cartesian
+        let result = self * double3(cartesian.x, cartesian.y, cartesian.z)
+        return Cartesian3(x: result.x, y: result.y, z: result.z)
     }
     /*
     /**
@@ -807,16 +746,18 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     func multiplyByScale (scale: Cartesian3) -> Matrix3 {
         
         var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
-        
-        grid[0] = _grid[0] * scale.x
-        grid[1] = _grid[1] * scale.x
-        grid[2] = _grid[2] * scale.x
-        grid[3] = _grid[3] * scale.y
-        grid[4] = _grid[4] * scale.y
-        grid[5] = _grid[5] * scale.y
-        grid[6] = _grid[6] * scale.z
-        grid[7] = _grid[7] * scale.z
-        grid[8] = _grid[8] * scale.z
+        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
+            memcpy(pointer.baseAddress, [self], Matrix3.packedLength * strideof(Double))
+        }
+        grid[0] = grid[0] * scale.x
+        grid[1] = grid[1] * scale.x
+        grid[2] = grid[2] * scale.x
+        grid[3] = grid[3] * scale.y
+        grid[4] = grid[4] * scale.y
+        grid[5] = grid[5] * scale.y
+        grid[6] = grid[6] * scale.z
+        grid[7] = grid[7] * scale.z
+        grid[8] = grid[8] * scale.z
         return Matrix3(fromArray: grid)
     }
     /*
@@ -856,12 +797,13 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @param {Matrix3} result The object onto which to store the result.
     * @returns {Matrix3} The modified result parameter.
     */
-    func transpose () -> Matrix3 {
-        return Matrix3(
+    /*var transpose -> Matrix3 {
+        return self.transpose
+        /*return Matrix3(
             _grid[0], _grid[1], _grid[2],
             _grid[3], _grid[4], _grid[5],
-            _grid[6], _grid[7], _grid[8])
-    }
+            _grid[6], _grid[7], _grid[8])*/
+    }*/
     /*
     function computeFrobeniusNorm(matrix) {
     var norm = 0.0;
@@ -1148,12 +1090,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
     */
     func equals(other: Matrix3) -> Bool {
-        for i in 0..<9 {
-            if _grid[i] != other[i] {
-                return false
-            }
-        }
-        return true
+        return memcmp([self], [other], Matrix3.packedLength * strideof(Double)) == 0
     }
     
     /**
@@ -1167,16 +1104,18 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
     func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
-        return self == other ||
-            (abs(_grid[0] - other[0]) <= epsilon &&
-                abs(_grid[1] - other[1]) <= epsilon &&
-                abs(_grid[2] - other[2]) <= epsilon &&
-                abs(_grid[3] - other[3]) <= epsilon &&
-                abs(_grid[4] - other[4]) <= epsilon &&
-                abs(_grid[5] - other[5]) <= epsilon &&
-                abs(_grid[6] - other[6]) <= epsilon &&
-                abs(_grid[7] - other[7]) <= epsilon &&
-                abs(_grid[8] - other[8]) <= epsilon)
+        if self == other {
+            return true
+        }
+        let selfArray = self.toArray()
+        let otherArray = other.toArray()
+        
+        for i in selfArray.indices {
+            if abs(selfArray[i] - otherArray[i]) > epsilon {
+                return false
+            }
+        }
+        return true
     }
 
     /**
@@ -1185,11 +1124,8 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @type {Matrix3}
     * @constant
     */
-    public static let identity = Matrix3(
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0
-    )
+    public static let identity = Matrix3(1.0)
+
     
     /**
     * An immutable Matrix3 instance initialized to the zero matrix.
@@ -1198,133 +1134,7 @@ public struct Matrix3: CustomDebugStringConvertible, CustomStringConvertible, Pa
     * @constant
     */
     public static let zero = Matrix3()
-    
-    /*
-    /**
-    * The index into Matrix3 for column 0, row 0.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN0ROW0 = 0;
-    
-    /**
-    * The index into Matrix3 for column 0, row 1.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN0ROW1 = 1;
-    
-    /**
-    * The index into Matrix3 for column 0, row 2.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN0ROW2 = 2;
-    
-    /**
-    * The index into Matrix3 for column 1, row 0.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN1ROW0 = 3;
-    
-    /**
-    * The index into Matrix3 for column 1, row 1.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN1ROW1 = 4;
-    
-    /**
-    * The index into Matrix3 for column 1, row 2.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN1ROW2 = 5;
-    
-    /**
-    * The index into Matrix3 for column 2, row 0.
-    *
-    * @type {Number}
-    * @constant
-    */
-    Matrix3.COLUMN2ROW0 = 6;
-    
-    /**
-    * The index into Matrix3 for column 2, row 1.
-    *
-    * @type {Matrix3}
-    * @constant
-    */
-    Matrix3.COLUMN2ROW1 = 7;
-    
-    /**
-    * The index into Matrix3 for column 2, row 2.
-    *
-    * @type {Matrix3}
-    * @constant
-    */
-    Matrix3.COLUMN2ROW2 = 8;
-    
-    /**
-    * Duplicates the provided Matrix3 instance.
-    *
-    * @param {Matrix3} [result] The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter or a new Matrix3 instance if one was not provided.
-    */
-    Matrix3.prototype.clone = function(result) {
-    return Matrix3.clone(this, result);
-    };
-    
-    /**
-    * Compares this matrix to the provided matrix componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
-    *
-    * @param {Matrix3} [right] The right hand side matrix.
-    * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
-    */
-    Matrix3.prototype.equals = function(right) {
-    return Matrix3.equals(this, right);
-    };
-    
-    /**
-    * Compares this matrix to the provided matrix componentwise and returns
-    * <code>true</code> if they are within the provided epsilon,
-    * <code>false</code> otherwise.
-    *
-    * @param {Matrix3} [right] The right hand side matrix.
-    * @param {Number} epsilon The epsilon to use for equality testing.
-    * @returns {Boolean} <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-    */
-    Matrix3.prototype.equalsEpsilon = function(right, epsilon) {
-    return Matrix3.equalsEpsilon(this, right, epsilon);
-    };
-    */
-    /**
-    * Creates a string representing this Matrix with each row being
-    * on a separate line and in the format '(column0, column1, column2)'.
-    *
-    * @returns {String} A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2)'.
-    */
-    public var description: String {
-        get {
-            return String(format: "(%.5f, %.5f, %.5f\n%.5f, %.5f, %.5f\n%.5f,%.5f, %.5f", _grid[0], _grid[3], _grid[6], _grid[1], _grid[4], _grid[7], _grid[2],_grid[5], _grid[8])
-        }
-    }
-    
-    public var debugDescription: String { get { return description } }
-    
-    
-}
 
-func * (lhs: Matrix3, rhs: Matrix3) -> Matrix3 {
-    return lhs.multiply(rhs)
 }
 
 func == (left: Matrix3, right: Matrix3) -> Bool {

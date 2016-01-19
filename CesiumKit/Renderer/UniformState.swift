@@ -973,14 +973,14 @@ class UniformState {
     func cleanNormal() {
         if (_normalDirty) {
             _normalDirty = false
-            _normal = inverseModelView.rotation().transpose()
+            _normal = inverseModelView.rotation().transpose
         }
     }
 
     func cleanNormal3D() {
         if _normal3DDirty {
             _normal3DDirty = false;
-            _normal3D = inverseModelView3D.rotation().transpose()
+            _normal3D = inverseModelView3D.rotation().transpose
         }
     }
     /*
