@@ -676,13 +676,6 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             0.0, 0.0, 0.0, column3Row3
         )
     }
-// FIXME: Move to matrix extension
-    func getElement (index: Int) -> Double {
-        assert(index >= 0 && index <= 15, "invalid element index")
-        let column = index / 4
-        let row = index % 4
-        return self[column, row]
-    }
 
 /*
 /**
