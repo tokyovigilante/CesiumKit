@@ -64,11 +64,18 @@ extension Matrix3: Packable {
      * var m2 = Cesium.Matrix3.fromArray(v2, 2);
      */
     init(fromArray array: [Double], startingIndex: Int = 0) {
-        self.init()
-        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
-            memcpy(&self, pointer.baseAddress, Matrix3.packedLength() * strideof(Double))
-        }
+        self.init(grid: array)
+    }
+    
+    func toArray() -> [Double] {
+        let col0 = self[0]
+        let col1 = self[1]
+        let col2 = self[2]
+        return [
+            col0.x, col0.y, col0.z,
+            col1.x, col1.y, col1.z,
+            col2.x, col2.y, col2.z
+            ]
     }
     
 }
@@ -707,21 +714,17 @@ public extension Matrix3 {
     * Cesium.Matrix3.multiplyByScale(m, scale, m);
     */
     func multiplyByScale (scale: Cartesian3) -> Matrix3 {
-        let packedLength = Matrix3.packedLength()
-        var grid = [Double](count: packedLength, repeatedValue: 0.0)
-        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
-            memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
-        }
-        grid[0] = grid[0] * scale.x
-        grid[1] = grid[1] * scale.x
-        grid[2] = grid[2] * scale.x
-        grid[3] = grid[3] * scale.y
-        grid[4] = grid[4] * scale.y
-        grid[5] = grid[5] * scale.y
-        grid[6] = grid[6] * scale.z
-        grid[7] = grid[7] * scale.z
-        grid[8] = grid[8] * scale.z
-        return Matrix3(fromArray: grid)
+        var grid = toArray()
+        grid[0] *= scale.x
+        grid[1] *= scale.x
+        grid[2] *= scale.x
+        grid[3] *= scale.y
+        grid[4] *= scale.y
+        grid[5] *= scale.y
+        grid[6] *= scale.z
+        grid[7] *= scale.z
+        grid[8] *= scale.z
+        return Matrix3(grid: grid)
     }
     /*
     /**

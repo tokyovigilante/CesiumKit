@@ -9,11 +9,14 @@
 import Foundation
 
 protocol MatrixType {
+
+    func equals(other: Self) -> Bool
+
     func equalsEpsilon<T where T: Packable, T: Equatable>(other: T, epsilon: Double) -> Bool
 }
 
 extension MatrixType {
-    
+
     /**
      * Compares this matrix to the provided matrix componentwise and returns
      * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -35,7 +38,7 @@ extension MatrixType {
      * @param {Number} epsilon The epsilon to use for equality testing.
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
-    func equalsEpsilon<T where T: Packable, T: Equatable>(other: T, epsilon: Double) -> Bool {
+    func equalsEpsilon<T where T: Packable>(other: T, epsilon: Double) -> Bool {
         /*if self == other {
             return true
         }*/
