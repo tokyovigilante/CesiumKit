@@ -473,9 +473,9 @@ public class Camera: DRU {
             )
             .multiply(_actualInvTransform)*/
         newViewMatrix[0,0] = right.x
-        newViewMatrix[1,0] = up.x
-        newViewMatrix[2,0] = -direction.x
-        newViewMatrix[3,0] = 0.0
+        newViewMatrix[0,1] = up.x
+        newViewMatrix[0,2] = -direction.x
+        newViewMatrix[0,3] = 0.0
         newViewMatrix[1,0] = right.y
         newViewMatrix[1,1] = up.y
         newViewMatrix[1,2] = -direction.y
