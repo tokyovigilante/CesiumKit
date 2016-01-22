@@ -142,9 +142,6 @@ public extension Matrix3 {
         let m4col0 = matrix[0]
         let m4col1 = matrix[1]
         let m4col2 = matrix[2]
-        /*let m4col0 = matrix.getColumn(0)
-        let m4col1 = matrix.getColumn(1)
-        let m4col2 = matrix.getColumn(2)*/
         
         self.init([
             double3(m4col0.x, m4col0.y, m4col0.z),
