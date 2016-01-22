@@ -64,10 +64,10 @@ extension Packable {
         
         let floatArray = self.toArray().map { Float($0) }
         
-        if array.count < startingIndex - Self.packedLength() {
+        if array.count < startingIndex + Self.packedLength() {
             array.appendContentsOf(floatArray)
         } else {
-            array.insertContentsOf(floatArray, at: startingIndex)
+            array.replaceRange(Range(start: startingIndex, end: startingIndex+floatArray.count), with: floatArray)
         }
     }
     
