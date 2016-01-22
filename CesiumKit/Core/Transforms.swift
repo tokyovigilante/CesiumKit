@@ -565,7 +565,7 @@ struct Transforms {
     static func pointToWindowCoordinates(modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var result = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix: modelViewProjectionMatrix, viewportTransformation: viewportTransformation, point: point)
-        result.y = 2.0 * viewportTransformation[5] - result.y
+        result.y = 2.0 * viewportTransformation.getElement(5) - result.y
         
         return result
     }

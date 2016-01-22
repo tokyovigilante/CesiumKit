@@ -20,9 +20,8 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-// FIXME: Pack
 
-public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
+public struct Cartesian2: CustomStringConvertible, Equatable {
     /**
     * The Y component.
     * @type {Number}
@@ -36,12 +35,6 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     * @default 0.0
     */
     public var y: Double = 0.0
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    static let packedLength: Int = 2
     
     public var description: String {
         get {
@@ -63,7 +56,7 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    init(fromCartesian3 cartesian3: Cartesian3) {
+    init (fromCartesian3 cartesian3: Cartesian3) {
         x = cartesian3.x
         y = cartesian3.y
     }
@@ -77,61 +70,11 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    init(fromCartesian4 cartesian4: Cartesian4) {
+    init (fromCartesian4 cartesian4: Cartesian4) {
         x = cartesian4.x
         y = cartesian4.y
     }
     
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Cartesian2} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
-        assert(array.count - startingIndex >= Cartesian2.packedLength, "Array to short to pack")
-        array[startingIndex] = Float(x)
-        array[startingIndex+1] = Float(y)
-    }
-    
-    
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.    
-    */
-    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian2 {
-        assert((startingIndex + Cartesian2.packedLength <= array.count), "Invalid starting index")
-        
-        return Cartesian2(x: Double(array[startingIndex]), y: Double(array[startingIndex+1]))
-    }
-    
-    /**
-    * Creates a Cartesian2 from two consecutive elements in an array.
-    * @function
-    *
-    * @param {Number[]} array The array whose two consecutive elements correspond to the x and y components, respectively.
-    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to the x component.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    *
-    * @example
-    * // Create a Cartesian2 with (1.0, 2.0)
-    * var v = [1.0, 2.0];
-    * var p = Cesium.Cartesian2.fromArray(v);
-    *
-    * // Create a Cartesian2 with (1.0, 2.0) using an offset into an array
-    * var v2 = [0.0, 0.0, 1.0, 2.0];
-    * var p2 = Cesium.Cartesian2.fromArray(v2, 2);
-    */
-    // FIXME: Pack
-    /*static func fromArray(array: [ComponentDatatype]) -> Packable {
-        return Cartesian2.unpack(array)
-    }*/
     
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
@@ -434,6 +377,25 @@ public struct Cartesian2: CustomStringConvertible, Packable, Equatable {
     */
     func toString() -> String {
         return "(x:\(x), y:\(y))"
+    }
+}
+
+extension Cartesian2: Packable {
+    
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    static func packedLength () -> Int {
+        return 2
+    }
+    
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init()
+        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Cartesian2.packedLength() * strideof(Double))
+        }
     }
 }
 

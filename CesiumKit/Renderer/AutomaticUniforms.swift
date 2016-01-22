@@ -1201,7 +1201,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .FloatVec3,
         getValue: { (uniformState: UniformState) in
-            var result = [Float](count: Cartesian3.packedLength, repeatedValue: 0.0)
+            var result = [Float](count: Cartesian3.packedLength(), repeatedValue: 0.0)
             uniformState.sunDirectionWC.pack(&result)
             return result
         }
@@ -1296,7 +1296,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype : .FloatVec3,
         getValue : { (uniformState: UniformState) in
-            var result = [Float](count: Cartesian3.packedLength, repeatedValue: 0.0)
+            var result = [Float](count: Cartesian3.packedLength(), repeatedValue: 0.0)
             uniformState.inverseView.translation().pack(&result)
             return result
         }

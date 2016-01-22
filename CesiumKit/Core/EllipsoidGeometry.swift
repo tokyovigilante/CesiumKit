@@ -38,7 +38,7 @@ let defaultRadii = Cartesian3(x: 1.0, y: 1.0, z: 1.0)
  * var geometry = Cesium.EllipsoidGeometry.createGeometry(ellipsoid);
  */
 
-struct EllipsoidGeometry: Packable {
+struct EllipsoidGeometry {
     
     let _radii: Cartesian3
     
@@ -47,12 +47,6 @@ struct EllipsoidGeometry: Packable {
     let _slicePartitions: Int
     
     let _vertexFormat: VertexFormat
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    static let packedLength = Cartesian3.packedLength + VertexFormat.packedLength + 2
     
     init (
         radii: Cartesian3 = defaultRadii,
@@ -104,38 +98,7 @@ struct EllipsoidGeometry: Packable {
     slicePartitions : undefined
     };*/
     
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {EllipsoidGeometry} [result] The object into which to store the result.
-    * @returns {EllipsoidGeometry} The modified result parameter or a new EllipsoidGeometry instance if one was not provided.
-    */
-    static func unpack (array: [Float], startingIndex: Int = 0) -> EllipsoidGeometry {
-        /*
-        var radii = Cartesian3.unpack(array, startingIndex, scratchRadii);
-        startingIndex += Cartesian3.packedLength;
-        
-        var vertexFormat = VertexFormat.unpack(array, startingIndex, scratchVertexFormat);
-        startingIndex += VertexFormat.packedLength;
-        
-        var stackPartitions = array[startingIndex++];
-        var slicePartitions = array[startingIndex];
-        
-        if (!defined(result)) {
-        scratchOptions.stackPartitions = stackPartitions;
-        scratchOptions.slicePartitions = slicePartitions;
-        return new EllipsoidGeometry(scratchOptions);
-        }
-        
-        result._radii = Cartesian3.clone(radii, result._radii);
-        result._vertexFormat = VertexFormat.clone(vertexFormat, result._vertexFormat);
-        result._stackPartitions = stackPartitions;
-        result._slicePartitions = slicePartitions;*/
-        
-        return EllipsoidGeometry()
-    }
+
     
     /**
     * Computes the geometric representation of an ellipsoid, including its vertices, indices, and a bounding sphere.
@@ -145,8 +108,7 @@ struct EllipsoidGeometry: Packable {
     */
     func createGeometry (context: Context) -> Geometry {
         
-        
-        let ellipsoid = Ellipsoid(cartesian3: _radii)
+        let ellipsoid = Ellipsoid(radii: _radii)
     
         // The extra slice and stack are for duplicating points at the x axis and poles.
         // We need the texture coordinates to interpolate from (2 * pi - delta) to 2 * pi instead of
@@ -322,6 +284,38 @@ struct EllipsoidGeometry: Packable {
             indices: indices,
             boundingSphere : BoundingSphere(ellipsoid: ellipsoid)
         )
+    }
+    
+}
+
+extension EllipsoidGeometry: Packable {
+    
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    static func packedLength () -> Int {
+        return Cartesian3.packedLength() + VertexFormat.packedLength() + 2
+    }
+
+    init(fromArray array: [Double], startingIndex: Int) {
+        assert(array.count == EllipsoidGeometry.packedLength(), "Invalid packed array length")
+
+        var index = startingIndex
+        _radii = Cartesian3(fromArray: array, startingIndex: index)
+        
+        index += Cartesian3.packedLength()
+        
+        _vertexFormat = VertexFormat(fromArray: array, startingIndex: index)
+        
+        index += VertexFormat.packedLength()
+        
+        let stackPartitions = array[index]
+        index += 1
+        let slicePartitions = array[index]
+        
+        _stackPartitions = stackPartitions == Double.NaN ? 64 : Int(stackPartitions)
+        _slicePartitions = slicePartitions == Double.NaN ? 64 : Int(slicePartitions)
     }
 
 }

@@ -23,53 +23,34 @@ import Foundation
 * @see Packable
 */
 // FIXME: Packable
-public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
+public struct Cartesian4: Equatable, CustomStringConvertible {
     /**
     * The X component.
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0 {
-        didSet {
-            _floatRepresentation[0] = Float(x)
-        }
-    }
+    var x: Double = 0.0
     
     /**
     * The Y component.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0 {
-        didSet {
-            _floatRepresentation[1] = Float(y)
-        }
-    }
+    var y: Double = 0.0
     
     /**
     * The Z component.
     * @type {Number}
     * @default 0.0
     */
-    var z: Double = 0.0 {
-        didSet {
-            _floatRepresentation[2] = Float(z)
-        }
-    }
+    var z: Double = 0.0
     
     /**
     * The W component.
     * @type {Number}
     * @default 0.0
     */
-    var w: Double = 0.0 {
-        didSet {
-            _floatRepresentation[3] = Float(w)
-        }
-    }
-    
-    private var _floatRepresentation: [Float]
-    private let _floatPackedSize: Int
+    var w: Double = 0.0
     
     public var description: String {
         return "(\(x), \(y), \(z), \(w))"
@@ -98,21 +79,12 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
             return w
         }
     }
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    static let packedLength: Int = 4
-    
-    
+
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
         self.x = x
         self.y = y
         self.z = z
         self.w = w
-        _floatRepresentation = [Float(x), Float(y), Float(z), Float(w)]
-        _floatPackedSize = _floatRepresentation.count * sizeof(Float)
     }
     
     /**
@@ -125,61 +97,6 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     */
     init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
         self.init(x: red, y: green, z: blue, w: alpha)
-    }
-    
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Cartesian4} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
-        assert(array.count - startingIndex >= Cartesian4.packedLength, "Array too short")
-        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
-        /*array[startingIndex] = Float(x)
-        array[startingIndex+1] = Float(y)
-        array[startingIndex+2] = Float(z)
-        array[startingIndex+3] = Float(w)*/
-    }
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Cartesian4} [result] The object into which to store the result.
-    */
-    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian4 {
-        assert(startingIndex + Cartesian4.packedLength <= array.count, "Invalid starting index")
-        
-        return Cartesian4(
-            x: Double(array[startingIndex]),
-            y: Double(array[startingIndex+1]),
-            z: Double(array[startingIndex+2]),
-            w: Double(array[startingIndex+3]))
-    }
-    
-    /**
-    * Creates a Cartesian4 from four consecutive elements in an array.
-    * @function
-    *
-    * @param {Number[]} array The array whose four consecutive elements correspond to the x, y, z, and w components, respectively.
-    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to the x component.
-    * @param {Cartesian4} [result] The object onto which to store the result.
-    * @returns {Cartesian4}  The modified result parameter or a new Cartesian4 instance if one was not provided.
-    *
-    * @example
-    * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0)
-    * var v = [1.0, 2.0, 3.0, 4.0];
-    * var p = Cesium.Cartesian4.fromArray(v);
-    *
-    * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0) using an offset into an array
-    * var v2 = [0.0, 0.0, 1.0, 2.0, 3.0, 4.0];
-    * var p2 = Cesium.Cartesian4.fromArray(v2, 2);
-    */
-    static func fromArray(array: [Float]) -> Cartesian4 {
-        return Cartesian4.unpack(array)
     }
     
     /**
@@ -409,7 +326,7 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     */
     func mostOrthogonalAxis() -> Cartesian4 {
         
-        var f = normalize().absolute()
+        let f = normalize().absolute()
         var result: Cartesian4
         
         if (f.x <= f.y) {
@@ -435,7 +352,7 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
         } else {
             result = Cartesian4.unitW()
         }
-        return result;
+        return result
     }
     
     func equalsArray (array: [Float], offset: Int) -> Bool {
@@ -512,7 +429,20 @@ public struct Cartesian4: Packable, Equatable, CustomStringConvertible {
     }
 }
 
-
+extension Cartesian4: Packable {
+    
+    static func packedLength () -> Int {
+        return 4
+    }
+    
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init()
+        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Cartesian4.packedLength() * strideof(Double))
+        }
+    }
+}
 
 /**
 * Compares the provided Cartesians componentwise and returns

@@ -44,12 +44,12 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     
     var color: Cartesian4 {
         get {
-            return Cartesian4.fromArray(_colorArray.map({ Float($0) }))
+            return Cartesian4.unpack(_colorArray.map { Float($0) })
         }
         set (newColor) {
-            var floatColorArray = [Float](count: 4, repeatedValue: 0.0)
-            newColor.pack(&floatColorArray)
-            _colorArray = floatColorArray.map({ CGFloat($0) })
+            _colorArray = newColor
+                .toArray()
+                .map { CGFloat($0) }
         }
     }
 

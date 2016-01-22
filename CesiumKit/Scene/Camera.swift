@@ -417,7 +417,7 @@ public class Camera: DRU {
         _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
         _mode = mode
         
-        transform2DInverse = transform2D.inverseTransformation()
+        transform2DInverse = transform2D.inverse
         
         frustum = PerspectiveFrustum()
         frustum.aspectRatio = Double(initialWidth) / Double(initialHeight)
@@ -444,7 +444,7 @@ public class Camera: DRU {
             _projection = fakeScene.mapProjection
             _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
             
-            transform2DInverse = transform2D.inverseTransformation()
+            transform2DInverse = transform2D.inverse
             
             frustum = PerspectiveFrustum()
             frustum.aspectRatio = Double(fakeScene.canvas.width) / Double(fakeScene.canvas.height)
@@ -472,25 +472,25 @@ public class Camera: DRU {
             -right.dot(position), -up.dot(position), direction.dot(position), 1.0
             )
             .multiply(_actualInvTransform)*/
-        newViewMatrix[0] = right.x
-        newViewMatrix[1] = up.x
-        newViewMatrix[2] = -direction.x
-        newViewMatrix[3] = 0.0
-        newViewMatrix[4] = right.y
-        newViewMatrix[5] = up.y
-        newViewMatrix[6] = -direction.y
-        newViewMatrix[7] = 0.0
-        newViewMatrix[8] = right.z
-        newViewMatrix[9] = up.z
-        newViewMatrix[10] = -direction.z
-        newViewMatrix[11] = 0.0
-        newViewMatrix[12] = -right.dot(position)
-        newViewMatrix[13] = -up.dot(position)
-        newViewMatrix[14] = direction.dot(position)
-        newViewMatrix[15] = 1.0
+        newViewMatrix[0,0] = right.x
+        newViewMatrix[1,0] = up.x
+        newViewMatrix[2,0] = -direction.x
+        newViewMatrix[3,0] = 0.0
+        newViewMatrix[1,0] = right.y
+        newViewMatrix[1,1] = up.y
+        newViewMatrix[1,2] = -direction.y
+        newViewMatrix[1,3] = 0.0
+        newViewMatrix[2,0] = right.z
+        newViewMatrix[2,1] = up.z
+        newViewMatrix[2,2] = -direction.z
+        newViewMatrix[2,3] = 0.0
+        newViewMatrix[3,0] = -right.dot(position)
+        newViewMatrix[3,1] = -up.dot(position)
+        newViewMatrix[3,2] = direction.dot(position)
+        newViewMatrix[3,3] = 1.0
         
         _viewMatrix = newViewMatrix.multiply(_actualInvTransform)
-        _invViewMatrix = _viewMatrix.inverseTransformation()
+        _invViewMatrix = _viewMatrix.inverse
     }
     /*
     var scratchCartographic = new Cartographic();
@@ -650,7 +650,7 @@ public class Camera: DRU {
         _transformChanged = false
         
         if transformChanged {
-            _invTransform = _transform.inverseTransformation()
+            _invTransform = _transform.inverse
             
             if _mode == .ColumbusView || _mode == .Scene2D {
                 if _transform.equals(Matrix4.identity) {
@@ -664,7 +664,7 @@ public class Camera: DRU {
             } else {
                 _actualTransform = _transform
             }
-            _actualInvTransform = _actualTransform.inverseTransformation()
+            _actualInvTransform = _actualTransform.inverse
             _modeChanged = false
         }
         

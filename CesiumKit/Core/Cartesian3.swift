@@ -21,7 +21,7 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-public struct Cartesian3: Packable, Equatable {
+public struct Cartesian3: Equatable {
     /**
     * The X component.
     * @type {Number}
@@ -42,12 +42,6 @@ public struct Cartesian3: Packable, Equatable {
     * @default 0.0
     */
     public var z: Double = 0.0
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    static let packedLength: Int = 3
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -94,64 +88,6 @@ public struct Cartesian3: Packable, Equatable {
         x = cartesian4.x
         y = cartesian4.y
         z = cartesian4.z
-    }
-    
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Cartesian3} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
-        assert(array.count - startingIndex >= Cartesian3.packedLength, "Array too short")
-        array[startingIndex] = Float(x)
-        array[startingIndex+1] = Float(y)
-        array[startingIndex+2] = Float(z)
-    }
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.    
-    */
-    static func unpack(array: [Float], startingIndex: Int = 0) -> Cartesian3 {
-        return Cartesian3(fromArray: array, startingIndex: startingIndex)
-    }
-    
-    
-    /**
-    * Creates a Cartesian3 from three consecutive elements in an array.
-    * @function
-    *
-    * @param {Number[]} array The array whose three consecutive elements correspond to the x, y, and z components, respectively.
-    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to the x component.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    *
-    * @example
-    * // Create a Cartesian3 with (1.0, 2.0, 3.0)
-    * var v = [1.0, 2.0, 3.0];
-    * var p = Cesium.Cartesian3.fromArray(v);
-    *
-    * // Create a Cartesian3 with (1.0, 2.0, 3.0) using an offset into an array
-    * var v2 = [0.0, 0.0, 1.0, 2.0, 3.0];
-    * var p2 = Cesium.Cartesian3.fromArray(v2, 2);
-    */
-    init(fromArray array: [Double], startingIndex: Int = 0) {
-        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
-        x = array[startingIndex]
-        y = array[startingIndex+1]
-        z = array[startingIndex+2]
-    }
-    
-    init(fromArray array: [Float], startingIndex: Int = 0) {
-        assert((startingIndex + Cartesian3.packedLength <= array.count), "Invalid starting index")
-        x = Double(array[startingIndex])
-        y = Double(array[startingIndex+1])
-        z = Double(array[startingIndex+2])
     }
     
     /**
@@ -628,6 +564,26 @@ public struct Cartesian3: Packable, Equatable {
     */
     func toString() -> String {
         return "(\(x)), (\(y)), (\(z))"
+    }
+}
+
+extension Cartesian3: Packable {
+    
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    static func packedLength() -> Int {
+        return 3
+    }
+    
+    
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init()
+        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Cartesian3.packedLength() * strideof(Double))
+        }
     }
 }
 

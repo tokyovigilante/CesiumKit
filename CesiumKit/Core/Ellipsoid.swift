@@ -33,7 +33,7 @@ import Foundation
 let EarthEquatorialRadius: Double = 6378137.0
 let EarthPolarRadius: Double = 6356752.3142451793
 
-public struct Ellipsoid: Packable, Equatable {
+public struct Ellipsoid: Equatable {
     let radii: Cartesian3
     let radiiSquared: Cartesian3
     let radiiToTheFourth: Cartesian3
@@ -43,12 +43,6 @@ public struct Ellipsoid: Packable, Equatable {
     let minimumRadius: Double
     let maximumRadius: Double
     let centerToleranceSquared: Double = Math.Epsilon1
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    let packedLength = Cartesian3.packedLength
     
     init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
         assert(x >= 0.0 && y >= 0.0 && z >= 0.0, "All radii components must be greater than or equal to zero.")
@@ -81,8 +75,8 @@ public struct Ellipsoid: Packable, Equatable {
     * @see Ellipsoid.WGS84
     * @see Ellipsoid.UNIT_SPHERE
     */
-    init (cartesian3 cartesian: Cartesian3 = Cartesian3.zero) {
-        self.init(x: cartesian.x, y: cartesian.y, z: cartesian.z)
+    init (radii: Cartesian3) {
+        self.init(x: radii.x, y: radii.y, z: radii.z)
     }
     
     /**
@@ -103,29 +97,6 @@ public struct Ellipsoid: Packable, Equatable {
     */
     static func unitSphere() -> Ellipsoid {
         return Ellipsoid(x: 1.0, y: 1.0, z: 1.0)
-    }
-    
-    /**
-    * Stores the provided instance into the provided array.
-    * @function
-    *
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack (inout array: [Float], startingIndex: Int = 0) {
-        radii.pack(&array, startingIndex: startingIndex)
-    }
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Ellipsoid} [result] The object into which to store the result.
-    * @returns {Ellipsoid} The modified result parameter or a new Ellipsoid instance if one was not provided.
-    */
-    static func unpack (array: [Float], startingIndex: Int = 0) -> Ellipsoid {
-        return Ellipsoid(cartesian3: Cartesian3.unpack(array, startingIndex: startingIndex))
     }
     
     /**
@@ -413,6 +384,38 @@ public struct Ellipsoid: Packable, Equatable {
         return radii.toString()
     }
     
+}
+
+extension Ellipsoid: Packable {
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    static func packedLength () -> Int {
+        return Cartesian3.packedLength()
+    }
+    
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        assert(array.count - startingIndex >= Ellipsoid.packedLength(), "Invalid packed array length")
+        var radii = Cartesian3()
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&radii, pointer.baseAddress,  Cartesian3.packedLength() * strideof(Double))
+        }
+        self.init(radii: radii)
+    }
+    
+    /**
+     * Stores the provided instance into the provided array.
+     * @function
+     *
+     * @param {Number[]} array The array to pack into.
+     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+     */
+    
+    func pack (inout array: [Float], startingIndex: Int = 0) {
+        radii.pack(&array, startingIndex: startingIndex)
+    }
+
 }
 
 /**

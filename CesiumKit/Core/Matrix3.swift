@@ -36,12 +36,48 @@ import simd
 
 public typealias Matrix3 = double3x3
 
+extension Matrix3: Packable {
+    
+    public static func packedLength() -> Int {
+        return 9
+    }
+    
+    /**
+     * Creates a Matrix3 from 9 consecutive elements in an array.
+     *
+     * @param {Number[]} array The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
+     * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to first column first row position in the matrix.
+     * @param {Matrix3} [result] The object onto which to store the result.
+     * @returns {Matrix3} The modified result parameter or a new Matrix3 instance if one was not provided.
+     *
+     * @example
+     * // Create the Matrix3:
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     *
+     * var v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * var m = Cesium.Matrix3.fromArray(v);
+     *
+     * // Create same Matrix3 with using an offset into an array
+     * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
+     */
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init()
+        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Matrix3.packedLength() * strideof(Double))
+        }
+    }
+    
+}
+
 public extension Matrix3 {
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    static let packedLength = 9
     
     public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
@@ -56,7 +92,7 @@ public extension Matrix3 {
     }
     
     public init(grid: [Double]) {
-        assert(grid.count == 9, "invalid grid length")
+        assert(grid.count == Matrix3.packedLength(), "invalid grid length")
         self.init(rows: [
             double3(grid[0], grid[3], grid[6]),
             double3(grid[1], grid[4], grid[7]),
@@ -101,43 +137,14 @@ public extension Matrix3 {
             double3(m20, m21, m22),
             ])
     }
-
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Matrix3} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
-
-        let floatArray = self.toArray().map { Float($0) }
-        
-        if array.count < startingIndex - Matrix3.packedLength {
-            array.appendContentsOf(floatArray)
-        } else {
-            array.insertContentsOf(floatArray, at: startingIndex)
-        }
-    }
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Matrix3} [result] The object into which to store the result.
-    */
-    public static func unpack(array: [Float], startingIndex: Int = 0) -> Matrix3 {
-        return Matrix3(fromArray: array.map { Double($0) }, startingIndex: startingIndex)
-    }
     
     init (fromMatrix4 matrix: Matrix4) {
-        //let m4col0 = matrix[0]
-        //let m4col1 = matrix[1]
-        //let m4col2 = matrix[2]
-        let m4col0 = matrix.getColumn(0)
+        let m4col0 = matrix[0]
+        let m4col1 = matrix[1]
+        let m4col2 = matrix[2]
+        /*let m4col0 = matrix.getColumn(0)
         let m4col1 = matrix.getColumn(1)
-        let m4col2 = matrix.getColumn(2)
+        let m4col2 = matrix.getColumn(2)*/
         
         self.init([
             double3(m4col0.x, m4col0.y, m4col0.z),
@@ -146,33 +153,6 @@ public extension Matrix3 {
         ])
     }
     
-    /**
-    * Creates a Matrix3 from 9 consecutive elements in an array.
-    *
-    * @param {Number[]} array The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-    * @param {Matrix3} [result] The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter or a new Matrix3 instance if one was not provided.
-    *
-    * @example
-    * // Create the Matrix3:
-    * // [1.0, 2.0, 3.0]
-    * // [1.0, 2.0, 3.0]
-    * // [1.0, 2.0, 3.0]
-    *
-    * var v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-    * var m = Cesium.Matrix3.fromArray(v);
-    *
-    * // Create same Matrix3 with using an offset into an array
-    * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-    * var m2 = Cesium.Matrix3.fromArray(v2, 2);
-    */
-    init (fromArray array: [Double], startingIndex: Int = 0) {
-        self.init()
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
-            memcpy(&self, pointer.baseAddress, Matrix3.packedLength * strideof(Double))
-        }
-    }
     /*
     /**
     * Creates a Matrix3 instance from a column-major order array.
@@ -415,21 +395,7 @@ public extension Matrix3 {
         ])
     }
     
-    /**
-     * Creates an Array from the provided Matrix3 instance.
-     * The array will be in column-major order.
-     *
-     * @param {Matrix3} matrix The matrix to use..
-     * @param {Number[]} [result] The Array onto which to store the result.
-     * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
-     */
-    private func toArray() -> [Double] {
-        var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
-        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
-            memcpy(pointer.baseAddress, [self], Matrix3.packedLength * strideof(Double))
-        }
-        return grid
-    }
+
     
     /*
     /**
@@ -744,10 +710,10 @@ public extension Matrix3 {
     * Cesium.Matrix3.multiplyByScale(m, scale, m);
     */
     func multiplyByScale (scale: Cartesian3) -> Matrix3 {
-        
-        var grid = [Double](count: Matrix3.packedLength, repeatedValue: 0.0)
+        let packedLength = Matrix3.packedLength()
+        var grid = [Double](count: packedLength, repeatedValue: 0.0)
         grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
-            memcpy(pointer.baseAddress, [self], Matrix3.packedLength * strideof(Double))
+            memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
         }
         grid[0] = grid[0] * scale.x
         grid[1] = grid[1] * scale.x
@@ -991,133 +957,8 @@ public extension Matrix3 {
     return result;
     };
     
-    /**
-    * Computes the determinant of the provided matrix.
-    *
-    * @param {Matrix3} matrix The matrix to use.
-    * @returns {Number} The value of the determinant of the matrix.
-    */
-    Matrix3.determinant = function(matrix) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    //>>includeEnd('debug');
+*/
     
-    var m11 = matrix[0];
-    var m21 = matrix[3];
-    var m31 = matrix[6];
-    var m12 = matrix[1];
-    var m22 = matrix[4];
-    var m32 = matrix[7];
-    var m13 = matrix[2];
-    var m23 = matrix[5];
-    var m33 = matrix[8];
-    
-    return m11 * (m22 * m33 - m23 * m32) + m12 * (m23 * m31 - m21 * m33) + m13 * (m21 * m32 - m22 * m31);
-    };
-    
-    /**
-    * Computes the inverse of the provided matrix.
-    *
-    * @param {Matrix3} matrix The matrix to invert.
-    * @param {Matrix3} result The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter.
-    *
-    * @exception {DeveloperError} matrix is not invertible.
-    */
-    Matrix3.inverse = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var m11 = matrix[0];
-    var m21 = matrix[1];
-    var m31 = matrix[2];
-    var m12 = matrix[3];
-    var m22 = matrix[4];
-    var m32 = matrix[5];
-    var m13 = matrix[6];
-    var m23 = matrix[7];
-    var m33 = matrix[8];
-    
-    var determinant = Matrix3.determinant(matrix);
-    
-    if (Math.abs(determinant) <= CesiumMath.EPSILON15) {
-    throw new DeveloperError('matrix is not invertible');
-    }
-    
-    result[0] = m22 * m33 - m23 * m32;
-    result[1] = m23 * m31 - m21 * m33;
-    result[2] = m21 * m32 - m22 * m31;
-    result[3] = m13 * m32 - m12 * m33;
-    result[4] = m11 * m33 - m13 * m31;
-    result[5] = m12 * m31 - m11 * m32;
-    result[6] = m12 * m23 - m13 * m22;
-    result[7] = m13 * m21 - m11 * m23;
-    result[8] = m11 * m22 - m12 * m21;
-    
-    var scale = 1.0 / determinant;
-    return Matrix3.multiplyByScalar(result, scale, result);
-    };
-    
-    /**
-    * @private
-    */
-    Matrix3.equalsArray = function(matrix, array, offset) {
-    return matrix[0] === array[offset] &&
-    matrix[1] === array[offset + 1] &&
-    matrix[2] === array[offset + 2] &&
-    matrix[3] === array[offset + 3] &&
-    matrix[4] === array[offset + 4] &&
-    matrix[5] === array[offset + 5] &&
-    matrix[6] === array[offset + 6] &&
-    matrix[7] === array[offset + 7] &&
-    matrix[8] === array[offset + 8];
-    };
-    */
-    /**
-    * Compares the provided matrices componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
-    *
-    * @param {Matrix3} [left] The first matrix.
-    * @param {Matrix3} [right] The second matrix.
-    * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
-    */
-    func equals(other: Matrix3) -> Bool {
-        return memcmp([self], [other], Matrix3.packedLength * strideof(Double)) == 0
-    }
-    
-    /**
-    * Compares the provided matrices componentwise and returns
-    * <code>true</code> if they are within the provided epsilon,
-    * <code>false</code> otherwise.
-    *
-    * @param {Matrix3} [left] The first matrix.
-    * @param {Matrix3} [right] The second matrix.
-    * @param {Number} epsilon The epsilon to use for equality testing.
-    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
-    */
-    func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
-        if self == other {
-            return true
-        }
-        let selfArray = self.toArray()
-        let otherArray = other.toArray()
-        
-        for i in selfArray.indices {
-            if abs(selfArray[i] - otherArray[i]) > epsilon {
-                return false
-            }
-        }
-        return true
-    }
-
     /**
     * An immutable Matrix3 instance initialized to the identity matrix.
     *
@@ -1137,6 +978,12 @@ public extension Matrix3 {
 
 }
 
-func == (left: Matrix3, right: Matrix3) -> Bool {
+extension Matrix3: MatrixType {}
+
+extension Matrix3: Equatable {}
+
+public func == (left: Matrix3, right: Matrix3) -> Bool {
     return left.equals(right)
 }
+
+

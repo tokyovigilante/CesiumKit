@@ -854,7 +854,7 @@ class UniformState {
         if _inverseProjectionDirty {
             _inverseProjectionDirty = false
             
-            _inverseProjection = _projection.inverse()
+            _inverseProjection = _projection.inverse
         }
     }
     /*
@@ -874,7 +874,7 @@ class UniformState {
     func cleanModelView() {
         if _modelViewDirty {
             _modelViewDirty = false
-            _modelView = _view.multiplyTransformation(_model)
+            _modelView = _view.multiply(_model)
         }
     }
     
@@ -882,21 +882,21 @@ class UniformState {
         if _modelView3DDirty {
             _modelView3DDirty = false
             
-            _modelView3D = view3D.multiplyTransformation(_model)
+            _modelView3D = view3D.multiply(_model)
         }
     }
     
     func cleanInverseModelView() {
         if _inverseModelViewDirty {
             _inverseModelViewDirty = false
-            _inverseModelView = modelView.inverse()
+            _inverseModelView = modelView.inverse
         }
     }
     
     func cleanInverseModelView3D() {
         if _inverseModelView3DDirty {
             _inverseModelView3DDirty = false
-            _inverseModelView3D = modelView3D.inverse()
+            _inverseModelView3D = modelView3D.inverse
         }
     }
     
@@ -910,7 +910,7 @@ class UniformState {
     func cleanInverseViewProjection() {
         if (_inverseViewProjectionDirty) {
             _inverseViewProjectionDirty = false
-            _inverseViewProjection = viewProjection.inverse()
+            _inverseViewProjection = viewProjection.inverse
         }
     }
     

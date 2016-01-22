@@ -51,111 +51,41 @@ import Accelerate
 * @see Packable
 */
 
-public struct Matrix4: Packable, Equatable, CustomStringConvertible {
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    static let packedLength = 16
-    
-    var _grid: [Double]
-    
-    private var _floatRepresentation: [Float]
+public typealias Matrix4 = double4x4
+
+public extension Matrix4 {
     
     var floatRepresentation: [Float] {
-        return _floatRepresentation
+        return toArray().map { Float($0) }
     }
     
-    private let _floatPackedSize: Int = packedLength * strideof(Float)
-
-    init(
-        _ column0Row0: Double = 0.0, _ column1Row0: Double = 0.0, _ column2Row0: Double = 0.0, _ column3Row0: Double = 0.0,
-        _ column0Row1: Double = 0.0, _ column1Row1: Double = 0.0, _ column2Row1: Double = 0.0, _ column3Row1: Double = 0.0,
-        _ column0Row2: Double = 0.0, _ column1Row2: Double = 0.0, _ column2Row2: Double = 0.0, _ column3Row2: Double = 0.0,
-        _ column0Row3: Double = 0.0, _ column1Row3: Double = 0.0, _ column2Row3: Double = 0.0, _ column3Row3: Double = 0.0) {
-            _grid = [
-                column0Row0,
-                column0Row1,
-                column0Row2,
-                column0Row3,
-                column1Row0,
-                column1Row1,
-                column1Row2,
-                column1Row3,
-                column2Row0,
-                column2Row1,
-                column2Row2,
-                column2Row3,
-                column3Row0,
-                column3Row1,
-                column3Row2,
-                column3Row3
-            ]
-            _floatRepresentation = _grid.map({ Float($0) })
-    }
-    
-    init(grid: [Double]) {
-        assert(grid.count == 16, "invalid grid length")
-        _grid = grid
-        _floatRepresentation = _grid.map({ Float($0) })
-    }
-    
-    subscript(index: Int) -> Double {
-        get {
-            assert(index < Matrix4.packedLength, "Index out of range")
-            return _grid[index]
-        }
-        set {
-            assert(index < Matrix4.packedLength, "Index out of range")
-            _grid[index] = newValue
-            _floatRepresentation[index] = Float(newValue)
-        }
-    }
-    
-    func indexIsValidForRow(row: Int, column: Int) -> Bool {
-        return row >= 0 && column >= 0 && (row * column) + column < Matrix4.packedLength
-    }
-    
-    subscript(column: Int, row: Int) -> Double {
-        get {
-            assert(indexIsValidForRow(row, column: column), "Index out of range")
-            return _grid[(column * 4) + row]
-        }
-        set {
-            assert(indexIsValidForRow(row, column: column), "Index out of range")
-            _grid[(column * 4) + row] = newValue
-            _floatRepresentation[(column * 4) + row] = Float(newValue)
-        }
-    }
-
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Matrix4} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
-        assert(array.count - startingIndex >= Matrix4.packedLength, "Array too short")
-        memcpy(&array[startingIndex], _floatRepresentation, _floatPackedSize)
-    }
-
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Matrix4} [result] The object into which to store the result.
-    */
-    static func unpack(array: [Float], startingIndex: Int) -> Matrix4 {
-        var result = [Double]()
+    public init(
+        _ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double, _ column3Row0: Double,
+        _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double, _ column3Row1: Double,
+        _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double, _ column3Row2: Double,
+        _ column0Row3: Double, _ column1Row3: Double, _ column2Row3: Double, _ column3Row3: Double)
+    {
         
-        for index in 0..<Matrix4.packedLength {
-            result[index] = Double(array[index])
-        }
-        return Matrix4(grid: result)
+        self.init(rows: [
+            double4(column0Row0, column1Row0, column2Row0, column3Row0),
+            double4(column0Row1, column1Row1, column2Row1, column3Row1),
+            double4(column0Row2, column1Row2, column2Row2, column3Row2),
+            double4(column0Row3, column1Row3, column2Row3, column3Row3)
+            ])
+        
     }
+    
+    
+    public init(grid: [Double]) {
+        assert(grid.count == Matrix4.packedLength(), "invalid grid length")
+        self.init(rows: [
+            double4(grid[0], grid[4], grid[8], grid[12]),
+            double4(grid[1], grid[5], grid[9], grid[13]),
+            double4(grid[2], grid[6], grid[10], grid[14]),
+            double4(grid[3], grid[7], grid[11], grid[15])
+        ])
+    }
+
 /*
 
 /**
@@ -208,27 +138,14 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
     * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
     */
-    init(rowMajorArray: [Double]) {
-        assert(rowMajorArray.count == 16, "Invalid source array")
-        _grid = [Double](count: 16, repeatedValue: 0.0)
-
-        _grid[0] = rowMajorArray[0]
-        _grid[1] = rowMajorArray[4]
-        _grid[2] = rowMajorArray[8]
-        _grid[3] = rowMajorArray[12]
-        _grid[4] = rowMajorArray[1]
-        _grid[5] = rowMajorArray[5]
-        _grid[6] = rowMajorArray[9]
-        _grid[7] = rowMajorArray[13]
-        _grid[8] = rowMajorArray[2]
-        _grid[9] = rowMajorArray[6]
-        _grid[10] = rowMajorArray[10]
-        _grid[11] = rowMajorArray[14]
-        _grid[12] = rowMajorArray[3]
-        _grid[13] = rowMajorArray[7]
-        _grid[14] = rowMajorArray[11]
-        _grid[15] = rowMajorArray[15]
-        _floatRepresentation = _grid.map({ Float($0) })
+    init(rowMajorArray grid: [Double]) {
+        assert(grid.count == 16, "Invalid source array")
+        self.init(rows: [
+            double4(grid[0], grid[1], grid[2], grid[3]),
+            double4(grid[4], grid[5], grid[6], grid[7]),
+            double4(grid[8], grid[9], grid[10], grid[11]),
+            double4(grid[12], grid[13], grid[14], grid[15])
+        ])
     }
 /*
 /**
@@ -696,6 +613,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @returns The modified result parameter.
     */
     static func computeInfinitePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+        //assertionFailure("not updated for metal NDC")
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
         let column2Row0 = (right + left) / (right - left)
@@ -733,7 +651,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * // Example 2.  Create viewport transformation using the context's viewport.
     * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
     */
-    static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
+    internal static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
         
         let x = viewport.x
         let y = viewport.y
@@ -758,28 +676,12 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
             0.0, 0.0, 0.0, column3Row3
         )
     }
-    
-    /**
-    * Computes an Array from the provided Matrix4 instance.
-    * The array will be in column-major order.
-    *
-    * @param {Matrix4} matrix The matrix to use..
-    * @param {Number[]} [result] The Array onto which to store the result.
-    * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
-    *
-    * @example
-    * //create an array from an instance of Matrix4
-    * // m = [10.0, 14.0, 18.0, 22.0]
-    * //     [11.0, 15.0, 19.0, 23.0]
-    * //     [12.0, 16.0, 20.0, 24.0]
-    * //     [13.0, 17.0, 21.0, 25.0]
-    * var a = Cesium.Matrix4.toArray(m);
-    *
-    * // m remains the same
-    * //creates a = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]
-    */
-    func toArray() -> [Float] {
-        return _grid.map({ Float($0) })
+// FIXME: Move to matrix extension
+    func getElement (index: Int) -> Double {
+        assert(index >= 0 && index <= 15, "invalid element index")
+        let column = index / 4
+        let row = index % 4
+        return self[column, row]
     }
 
 /*
@@ -839,55 +741,46 @@ Matrix4.getElementIndex = function(column, row) {
     *
     * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
     */
-    func getColumn ( index: Int) -> Cartesian4 {
-        if index < 0 || index > 3 {
-            fatalError("index must be 0, 1, 2, or 3.")
-        }
+    func getColumn (index: Int) -> Cartesian4 {
+        assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
+        //return self[index]
+        let column = self[index]
+        return Cartesian4(x: column.x, y: column.y, z: column.z, w: column.w)
         
-        let startIndex = index * 4;
-        let x = _grid[startIndex];
-        let y = _grid[startIndex + 1]
-        let z = _grid[startIndex + 2]
-        let w = _grid[startIndex + 3]
-        
-        return Cartesian4(x: x, y: y, z: z, w: w)
     }
 
-/**
-* Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
-*
-* @param {Matrix4} matrix The matrix to use.
-* @param {Number} index The zero-based index of the column to set.
-* @param {Cartesian4} cartesian The Cartesian whose values will be assigned to the specified column.
-* @returns {Matrix4} The modified result parameter.
-*
-* @exception {DeveloperError} index must be 0, 1, 2, or 3.
-*
-* @example
-* //creates a new Matrix4 instance with new column values from the Cartesian4 instance
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* var a = Cesium.Matrix4.setColumn(m, 2, new Cartesian4(99.0, 98.0, 97.0, 96.0));
-*
-* // m remains the same
-* // a = [10.0, 11.0, 99.0, 13.0]
-* //     [14.0, 15.0, 98.0, 17.0]
-* //     [18.0, 19.0, 97.0, 21.0]
-* //     [22.0, 23.0, 96.0, 25.0]
-*/
+    /**
+     * Computes a new matrix that replaces the specified column in the provided matrix with the provided Cartesian4 instance.
+     *
+     * @param {Matrix4} matrix The matrix to use.
+     * @param {Number} index The zero-based index of the column to set.
+     * @param {Cartesian4} cartesian The Cartesian whose values will be assigned to the specified column.
+     * @returns {Matrix4} The modified result parameter.
+     *
+     * @exception {DeveloperError} index must be 0, 1, 2, or 3.
+     *
+     * @example
+     * //creates a new Matrix4 instance with new column values from the Cartesian4 instance
+     * // m = [10.0, 11.0, 12.0, 13.0]
+     * //     [14.0, 15.0, 16.0, 17.0]
+     * //     [18.0, 19.0, 20.0, 21.0]
+     * //     [22.0, 23.0, 24.0, 25.0]
+     *
+     * var a = Cesium.Matrix4.setColumn(m, 2, new Cartesian4(99.0, 98.0, 97.0, 96.0));
+     *
+     * // m remains the same
+     * // a = [10.0, 11.0, 99.0, 13.0]
+     * //     [14.0, 15.0, 98.0, 17.0]
+     * //     [18.0, 19.0, 97.0, 21.0]
+     * //     [22.0, 23.0, 96.0, 25.0]
+     */
     func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        let startIndex = index * 4
-        var grid = _grid
-        grid[startIndex] = cartesian.x
-        grid[startIndex + 1] = cartesian.y
-        grid[startIndex + 2] = cartesian.z
-        grid[startIndex + 3] = cartesian.w
-        return Matrix4(grid: grid)
+        var result = self
+//        result[index] = cartesian
+        result[index] = double4(cartesian.x, cartesian.y, cartesian.z, cartesian.w)
+        return result
     }
 
     /**
@@ -900,11 +793,10 @@ Matrix4.getElementIndex = function(column, row) {
     * @returns {Matrix4} The modified result parameter.
     */
     func setTranslation (translation: Cartesian3) -> Matrix4 {
-        var grid = _grid
-        grid[12] = translation.x
-        grid[13] = translation.y
-        grid[14] = translation.z
-        return Matrix4(grid: grid)
+        var result = self
+        let column3 = double4(translation.x, translation.y, translation.z, self[3].w)
+        result[3] = column3
+        return result
     }
     
     
@@ -938,12 +830,13 @@ Matrix4.getElementIndex = function(column, row) {
     func row (index: Int) -> Cartesian4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        
+//        return double4(self[0, index], self[1, index], self[2 index], self[[3, index])
         return Cartesian4(
-            x: _grid[index],
-            y: _grid[index + 4],
-            z: _grid[index + 8],
-            w: _grid[index + 12])
+            x: self[0, index],
+            y: self[1, index],
+            z: self[2, index],
+            w: self[3, index]
+        )
     }
     
 /*
@@ -1046,138 +939,79 @@ Matrix4.getMaximumScale = function(matrix) {
     * @returns {Matrix4} The modified result parameter.
     */
     func multiply (other: Matrix4) -> Matrix4 {
+        return self * other
+    }
+    
+    /**
+     * Computes the product of two matrices assuming the matrices are
+     * affine transformation matrices, where the upper left 3x3 elements
+     * are a rotation matrix, and the upper three elements in the fourth
+     * column are the translation.  The bottom row is assumed to be [0, 0, 0, 1].
+     * The matrix is not verified to be in the proper form.
+     * This method is faster than computing the product for general 4x4
+     * matrices using {@link Matrix4.multiply}.
+     *
+     * @param {Matrix4} left The first matrix.
+     * @param {Matrix4} right The second matrix.
+     * @param {Matrix4} result The object onto which to store the result.
+     * @returns {Matrix4} The modified result parameter.
+     *
+     * @example
+     * var m1 = new Cesium.Matrix4(1.0, 6.0, 7.0, 0.0, 2.0, 5.0, 8.0, 0.0, 3.0, 4.0, 9.0, 0.0, 0.0, 0.0, 0.0, 1.0];
+     * var m2 = Cesium.Transforms.eastNorthUpToFixedFrame(new Cesium.Cartesian3(1.0, 1.0, 1.0));
+     * var m3 = Cesium.Matrix4.multiplyTransformation(m1, m2);
+     */
+    /*func multiplyTransformation (other: Matrix4) -> Matrix4 {
         
-        let left0: Double = _grid[0]
-        let left1: Double = _grid[1]
-        let left2: Double = _grid[2]
-        let left3: Double = _grid[3]
-        let left4: Double = _grid[4]
-        let left5: Double = _grid[5]
-        let left6: Double = _grid[6]
-        let left7: Double = _grid[7]
-        let left8: Double = _grid[8]
-        let left9: Double = _grid[9]
-        let left10: Double = _grid[10]
-        let left11: Double = _grid[11]
-        let left12: Double = _grid[12]
-        let left13: Double = _grid[13]
-        let left14: Double = _grid[14]
-        let left15: Double = _grid[15]
+        let this0 = _grid[0]
+        let this1 = _grid[1]
+        let this2 = _grid[2]
+        let this4 = _grid[4]
+        let this5 = _grid[5]
+        let this6 = _grid[6]
+        let this8 = _grid[8]
+        let this9 = _grid[9]
+        let this10 = _grid[10]
+        let this12 = _grid[12]
+        let this13 = _grid[13]
+        let this14 = _grid[14]
         
-        let right0: Double = other[0]
-        let right1: Double = other[1]
-        let right2: Double = other[2]
-        let right3: Double = other[3]
-        let right4: Double = other[4]
-        let right5: Double = other[5]
-        let right6: Double = other[6]
-        let right7: Double = other[7]
-        let right8: Double = other[8]
-        let right9: Double = other[9]
-        let right10: Double = other[10]
-        let right11: Double = other[11]
-        let right12: Double = other[12]
-        let right13: Double = other[13]
-        let right14: Double = other[14]
-        let right15: Double = other[15]
+        let other0 = other[0]
+        let other1 = other[1]
+        let other2 = other[2]
+        let other4 = other[4]
+        let other5 = other[5]
+        let other6 = other[6]
+        let other8 = other[8]
+        let other9 = other[9]
+        let other10 = other[10]
+        let other12 = other[12]
+        let other13 = other[13]
+        let other14 = other[14]
         
-        let column0Row0 = left0 * right0 + left4 * right1 + left8 * right2 + left12 * right3
-        let column0Row1 = left1 * right0 + left5 * right1 + left9 * right2 + left13 * right3
-        let column0Row2 = left2 * right0 + left6 * right1 + left10 * right2 + left14 * right3
-        let column0Row3 = left3 * right0 + left7 * right1 + left11 * right2 + left15 * right3
+        let column0Row0 = this0 * other0 + this4 * other1 + this8 * other2
+        let column0Row1 = this1 * other0 + this5 * other1 + this9 * other2
+        let column0Row2 = this2 * other0 + this6 * other1 + this10 * other2
         
-        let column1Row0 = left0 * right4 + left4 * right5 + left8 * right6 + left12 * right7
-        let column1Row1 = left1 * right4 + left5 * right5 + left9 * right6 + left13 * right7
-        let column1Row2 = left2 * right4 + left6 * right5 + left10 * right6 + left14 * right7
-        let column1Row3 = left3 * right4 + left7 * right5 + left11 * right6 + left15 * right7
+        let column1Row0 = this0 * other4 + this4 * other5 + this8 * other6
+        let column1Row1 = this1 * other4 + this5 * other5 + this9 * other6
+        let column1Row2 = this2 * other4 + this6 * other5 + this10 * other6
         
-        let column2Row0 = left0 * right8 + left4 * right9 + left8 * right10 + left12 * right11
-        let column2Row1 = left1 * right8 + left5 * right9 + left9 * right10 + left13 * right11
-        let column2Row2 = left2 * right8 + left6 * right9 + left10 * right10 + left14 * right11
-        let column2Row3 = left3 * right8 + left7 * right9 + left11 * right10 + left15 * right11
+        let column2Row0 = this0 * other8 + this4 * other9 + this8 * other10
+        let column2Row1 = this1 * other8 + this5 * other9 + this9 * other10
+        let column2Row2 = this2 * other8 + this6 * other9 + this10 * other10
         
-        let column3Row0 = left0 * right12 + left4 * right13 + left8 * right14 + left12 * right15
-        let column3Row1 = left1 * right12 + left5 * right13 + left9 * right14 + left13 * right15
-        let column3Row2 = left2 * right12 + left6 * right13 + left10 * right14 + left14 * right15
-        let column3Row3 = left3 * right12 + left7 * right13 + left11 * right14 + left15 * right15
+        let column3Row0 = this0 * other12 + this4 * other13 + this8 * other14 + this12
+        let column3Row1 = this1 * other12 + this5 * other13 + this9 * other14 + this13
+        let column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
         
         return Matrix4(
             column0Row0, column1Row0, column2Row0, column3Row0,
             column0Row1, column1Row1, column2Row1, column3Row1,
             column0Row2, column1Row2, column2Row2, column3Row2,
-            column0Row3, column1Row3, column2Row3, column3Row3)
-    }
-
-/**
-* Computes the product of two matrices assuming the matrices are
-* affine transformation matrices, where the upper left 3x3 elements
-* are a rotation matrix, and the upper three elements in the fourth
-* column are the translation.  The bottom row is assumed to be [0, 0, 0, 1].
-* The matrix is not verified to be in the proper form.
-* This method is faster than computing the product for general 4x4
-* matrices using {@link Matrix4.multiply}.
-*
-* @param {Matrix4} left The first matrix.
-* @param {Matrix4} right The second matrix.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*
-* @example
-* var m1 = new Cesium.Matrix4(1.0, 6.0, 7.0, 0.0, 2.0, 5.0, 8.0, 0.0, 3.0, 4.0, 9.0, 0.0, 0.0, 0.0, 0.0, 1.0];
-* var m2 = Cesium.Transforms.eastNorthUpToFixedFrame(new Cesium.Cartesian3(1.0, 1.0, 1.0));
-* var m3 = Cesium.Matrix4.multiplyTransformation(m1, m2);
-*/
-func multiplyTransformation (other: Matrix4) -> Matrix4 {
-    
-    let this0 = _grid[0]
-    let this1 = _grid[1]
-    let this2 = _grid[2]
-    let this4 = _grid[4]
-    let this5 = _grid[5]
-    let this6 = _grid[6]
-    let this8 = _grid[8]
-    let this9 = _grid[9]
-    let this10 = _grid[10]
-    let this12 = _grid[12]
-    let this13 = _grid[13]
-    let this14 = _grid[14]
-    
-    let other0 = other[0]
-    let other1 = other[1]
-    let other2 = other[2]
-    let other4 = other[4]
-    let other5 = other[5]
-    let other6 = other[6]
-    let other8 = other[8]
-    let other9 = other[9]
-    let other10 = other[10]
-    let other12 = other[12]
-    let other13 = other[13]
-    let other14 = other[14]
-    
-    let column0Row0 = this0 * other0 + this4 * other1 + this8 * other2
-    let column0Row1 = this1 * other0 + this5 * other1 + this9 * other2
-    let column0Row2 = this2 * other0 + this6 * other1 + this10 * other2
-    
-    let column1Row0 = this0 * other4 + this4 * other5 + this8 * other6
-    let column1Row1 = this1 * other4 + this5 * other5 + this9 * other6
-    let column1Row2 = this2 * other4 + this6 * other5 + this10 * other6
-    
-    let column2Row0 = this0 * other8 + this4 * other9 + this8 * other10
-    let column2Row1 = this1 * other8 + this5 * other9 + this9 * other10
-    let column2Row2 = this2 * other8 + this6 * other9 + this10 * other10
-    
-    let column3Row0 = this0 * other12 + this4 * other13 + this8 * other14 + this12
-    let column3Row1 = this1 * other12 + this5 * other13 + this9 * other14 + this13
-    let column3Row2 = this2 * other12 + this6 * other13 + this10 * other14 + this14
-    
-    return Matrix4(
-        column0Row0, column1Row0, column2Row0, column3Row0,
-        column0Row1, column1Row1, column2Row1, column3Row1,
-        column0Row2, column1Row2, column2Row2, column3Row2,
-        0.0, 0.0, 0.0, 1.0
-    )
-}
+            0.0, 0.0, 0.0, 1.0
+        )
+    }*/
 /*
 /**
 * Multiplies a transformation matrix (with a bottom row of <code>[0.0, 0.0, 0.0, 1.0]</code>)
@@ -1410,26 +1244,18 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
 };
     */
 
-/**
-* Computes the product of a matrix and a column vector.
-*
-* @param {Matrix4} matrix The matrix.
-* @param {Cartesian4} cartesian The vector.
-* @param {Cartesian4} result The object onto which to store the result.
-* @returns {Cartesian4} The modified result parameter.
-*/
+     /**
+     * Computes the product of a matrix and a column vector.
+     *
+     * @param {Matrix4} matrix The matrix.
+     * @param {Cartesian4} cartesian The vector.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
     func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
-
-        let vX: Double = cartesian.x
-        let vY: Double = cartesian.y
-        let vZ: Double = cartesian.z
-        let vW: Double = cartesian.w
-        
-        let x: Double = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12] * vW
-        let y: Double = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13] * vW
-        let z: Double = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ + _grid[14] * vW
-        let w: Double = _grid[3] * vX + _grid[7] * vY + _grid[11] * vZ + _grid[15] * vW
-        return Cartesian4(x: x, y: y, z: z, w: w)
+        //return self * cartesian
+        let vector = self * double4(x: cartesian.x, y: cartesian.y, z: cartesian.z, w: cartesian.w)
+        return Cartesian4(x: vector.x, y: vector.y, z: vector.z, w: vector.w)
     }
 
     /**
@@ -1449,65 +1275,54 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     * //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
     */
     func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
-        
-        let vX = cartesian.x
-        let vY = cartesian.y
-        let vZ = cartesian.z
-        
-        let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ
-        let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ
-        let z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ
-        
-        return Cartesian3(x: x, y: y, z: z)
+        let vector = self * double4(cartesian.x, cartesian.y, cartesian.z, 0.0)
+        //return double3(vector.x, vector.y, vector.z)
+        return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
+
     }
 
-/**
-* Computes the product of a matrix and a {@link Cartesian3}. This is equivalent to calling {@link Matrix4.multiplyByVector}
-* with a {@link Cartesian4} with a <code>w</code> component of 1, but returns a {@link Cartesian3} instead of a {@link Cartesian4}.
-*
-* @param {Matrix4} matrix The matrix.
-* @param {Cartesian3} cartesian The point.
-* @param {Cartesian3} result The object onto which to store the result.
-* @returns {Cartesian3} The modified result parameter.
-*
-* @example
-* var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
-* Cesium.Matrix4.multiplyByPoint(matrix, p, result);
-*/
+    /**
+     * Computes the product of a matrix and a {@link Cartesian3}. This is equivalent to calling {@link Matrix4.multiplyByVector}
+     * with a {@link Cartesian4} with a <code>w</code> component of 1, but returns a {@link Cartesian3} instead of a {@link Cartesian4}.
+     *
+     * @param {Matrix4} matrix The matrix.
+     * @param {Cartesian3} cartesian The point.
+     * @param {Cartesian3} result The object onto which to store the result.
+     * @returns {Cartesian3} The modified result parameter.
+     *
+     * @example
+     * var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
+     * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
+     */
     func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
-        let vX = cartesian.x
-        let vY = cartesian.y
-        let vZ = cartesian.z
-        
-        let x = _grid[0] * vX + _grid[4] * vY + _grid[8] * vZ + _grid[12]
-        let y = _grid[1] * vX + _grid[5] * vY + _grid[9] * vZ + _grid[13]
-        let z = _grid[2] * vX + _grid[6] * vY + _grid[10] * vZ + _grid[14]
-        return Cartesian3(x: x, y: y, z: z)
+        let vector = self * double4(cartesian.x, cartesian.y, cartesian.z, 1.0)
+        //return double3(vector.x, vector.y, vector.z)
+        return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
     }
     /*
-/**
-* Computes the product of a matrix and a scalar.
-*
-* @param {Matrix4} matrix The matrix.
-* @param {Number} scalar The number to multiply by.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*
-* @example
-* //create a Matrix4 instance which is a scaled version of the supplied Matrix4
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* var a = Cesium.Matrix4.multiplyByScalar(m, -2);
-*
-* // m remains the same
-* // a = [-20.0, -22.0, -24.0, -26.0]
-* //     [-28.0, -30.0, -32.0, -34.0]
-* //     [-36.0, -38.0, -40.0, -42.0]
-* //     [-44.0, -46.0, -48.0, -50.0]
-*/
+    /**
+    * Computes the product of a matrix and a scalar.
+    *
+    * @param {Matrix4} matrix The matrix.
+    * @param {Number} scalar The number to multiply by.
+    * @param {Matrix4} result The object onto which to store the result.
+    * @returns {Matrix4} The modified result parameter.
+    *
+    * @example
+    * //create a Matrix4 instance which is a scaled version of the supplied Matrix4
+    * // m = [10.0, 11.0, 12.0, 13.0]
+    * //     [14.0, 15.0, 16.0, 17.0]
+    * //     [18.0, 19.0, 20.0, 21.0]
+    * //     [22.0, 23.0, 24.0, 25.0]
+    *
+    * var a = Cesium.Matrix4.multiplyByScalar(m, -2);
+    *
+    * // m remains the same
+    * // a = [-20.0, -22.0, -24.0, -26.0]
+    * //     [-28.0, -30.0, -32.0, -34.0]
+    * //     [-36.0, -38.0, -40.0, -42.0]
+    * //     [-44.0, -46.0, -48.0, -50.0]
+    */
 Matrix4.multiplyByScalar = function(matrix, scalar, result) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(matrix)) {
@@ -1687,45 +1502,6 @@ Matrix4.abs = function(matrix, result) {
 };
 */
 
-    /**
-    * Compares the provided matrices componentwise and returns
-    * <code>true</code> if they are within the provided epsilon,
-    * <code>false</code> otherwise.
-    *
-    * @param {Matrix4} [left] The first matrix.
-    * @param {Matrix4} [right] The second matrix.
-    * @param {Number} epsilon The epsilon to use for equality testing.
-    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
-    *
-    * @example
-    * //compares two Matrix4 instances
-    *
-    * // a = [10.5, 14.5, 18.5, 22.5]
-    * //     [11.5, 15.5, 19.5, 23.5]
-    * //     [12.5, 16.5, 20.5, 24.5]
-    * //     [13.5, 17.5, 21.5, 25.5]
-    *
-    * // b = [10.0, 14.0, 18.0, 22.0]
-    * //     [11.0, 15.0, 19.0, 23.0]
-    * //     [12.0, 16.0, 20.0, 24.0]
-    * //     [13.0, 17.0, 21.0, 25.0]
-    *
-    * if(Cesium.Matrix4.equalsEpsilon(a,b,0.1)){
-    *      console.log("Difference between both the matrices is less than 0.1");
-    * } else {
-    *      console.log("Difference between both the matrices is not less than 0.1");
-    * }
-    *
-    * //Prints "Difference between both the matrices is not less than 0.1" on the console
-    */
-    func equalsEpsilon (other: Matrix4, epsilon: Double) -> Bool {
-        for i in 0..<16 {
-            if abs(_grid[i] - other[i]) >= epsilon {
-                return false
-            }
-        }
-        return true
-    }
     
     /**
     * Gets the translation portion of the provided matrix, assuming the matrix is a affine transformation matrix.
@@ -1735,7 +1511,9 @@ Matrix4.abs = function(matrix, result) {
     * @returns {Cartesian3} The modified result parameter.
     */
     func translation () -> Cartesian3 {
-        return Cartesian3(x: _grid[12], y: _grid[13], z: _grid[14])
+        let column3 = self[3]
+        //return double3(column3.x, column3.y, column3.z)
+        return Cartesian3(x: column3.x, y: column3.y, z: column3.z)
     }
 
     /**
@@ -1761,170 +1539,14 @@ Matrix4.abs = function(matrix, result) {
     * //     [12.0, 16.0, 20.0]
     */
     func rotation() -> Matrix3 {
+        let column0 = self[0]
+        let column1 = self[1]
+        let column2 = self[2]
         
         return Matrix3(
-            _grid[0], _grid[4], _grid[8],
-            _grid[1], _grid[5], _grid[9],
-            _grid[2], _grid[6], _grid[10])
-    }
-
-    private let scratchMatrix3Zero = Matrix3()
-    private let scratchExpectedBottomRow = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
-
-    /**
-    * Computes the inverse of the provided matrix using Cramers Rule.
-    * If the determinant is zero, the matrix can not be inverted, and an exception is thrown.
-    * If the matrix is an affine transformation matrix, it is more efficient
-    * to invert it with {@link Matrix4.inverseTransformation}.
-    *
-    * @param {Matrix4} matrix The matrix to invert.
-    * @param {Matrix4} result The object onto which to store the result.
-    * @returns {Matrix4} The modified result parameter.
-    *
-    * @exception {RuntimeError} matrix is not invertible because its determinate is zero.
-    */
-    func inverse () -> Matrix4 {
-        // Special case for a zero scale matrix that can occur, for example,
-        // when a model's node has a [0, 0, 0] scale.
-        if self.rotation().equalsEpsilon(scratchMatrix3Zero, epsilon: Math.Epsilon7) &&
-            self.row(3) == scratchExpectedBottomRow {
-                return Matrix4(
-                    0.0, 0.0, 0.0, -_grid[12],
-                    0.0, 0.0, 0.0, -_grid[13],
-                    0.0, 0.0, 0.0, -_grid[14],
-                    0.0, 0.0, 0.0, 1.0
-                )
-        }
-        
-        //
-        // Ported from:
-        //   ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
-        //
-        let src0: Double = self[0]
-        let src1: Double = self[4]
-        let src2: Double = self[8]
-        let src3: Double = self[12]
-        let src4: Double = self[1]
-        let src5: Double = self[5]
-        let src6: Double = self[9]
-        let src7: Double = self[13]
-        let src8: Double = self[2]
-        let src9: Double = self[6]
-        let src10: Double = self[10]
-        let src11: Double = self[14]
-        let src12: Double = self[3]
-        let src13: Double = self[7]
-        let src14: Double = self[11]
-        let src15: Double = self[15]
-        
-        // calculate pairs for first 8 elements (cofactors)
-        var tmp0: Double = src10 * src15
-        var tmp1: Double = src11 * src14
-        var tmp2: Double = src9 * src15
-        var tmp3: Double = src11 * src13
-        var tmp4: Double = src9 * src14
-        var tmp5: Double = src10 * src13
-        var tmp6: Double = src8 * src15
-        var tmp7: Double = src11 * src12
-        var tmp8: Double = src8 * src14
-        var tmp9: Double = src10 * src12
-        var tmp10: Double = src8 * src13
-        var tmp11: Double = src9 * src12
-        
-        // calculate first 8 elements (cofactors)
-        let dst0: Double = (tmp0 * src5 + tmp3 * src6 + tmp4 * src7) - (tmp1 * src5 + tmp2 * src6 + tmp5 * src7)
-        let dst1: Double = (tmp1 * src4 + tmp6 * src6 + tmp9 * src7) - (tmp0 * src4 + tmp7 * src6 + tmp8 * src7)
-        let dst2: Double = (tmp2 * src4 + tmp7 * src5 + tmp10 * src7) - (tmp3 * src4 + tmp6 * src5 + tmp11 * src7)
-        let dst3: Double = (tmp5 * src4 + tmp8 * src5 + tmp11 * src6) - (tmp4 * src4 + tmp9 * src5 + tmp10 * src6)
-        let dst4: Double = (tmp1 * src1 + tmp2 * src2 + tmp5 * src3) - (tmp0 * src1 + tmp3 * src2 + tmp4 * src3)
-        let dst5: Double = (tmp0 * src0 + tmp7 * src2 + tmp8 * src3) - (tmp1 * src0 + tmp6 * src2 + tmp9 * src3)
-        let dst6: Double = (tmp3 * src0 + tmp6 * src1 + tmp11 * src3) - (tmp2 * src0 + tmp7 * src1 + tmp10 * src3)
-        let dst7: Double = (tmp4 * src0 + tmp9 * src1 + tmp10 * src2) - (tmp5 * src0 + tmp8 * src1 + tmp11 * src2)
-        
-        // calculate pairs for second 8 elements (cofactors)
-        tmp0 = src2 * src7
-        tmp1 = src3 * src6
-        tmp2 = src1 * src7
-        tmp3 = src3 * src5
-        tmp4 = src1 * src6
-        tmp5 = src2 * src5
-        tmp6 = src0 * src7
-        tmp7 = src3 * src4
-        tmp8 = src0 * src6
-        tmp9 = src2 * src4
-        tmp10 = src0 * src5
-        tmp11 = src1 * src4
-        
-        // calculate second 8 elements (cofactors)
-        let dst8 = (tmp0 * src13 + tmp3 * src14 + tmp4 * src15) - (tmp1 * src13 + tmp2 * src14 + tmp5 * src15)
-        let dst9 = (tmp1 * src12 + tmp6 * src14 + tmp9 * src15) - (tmp0 * src12 + tmp7 * src14 + tmp8 * src15)
-        let dst10 = (tmp2 * src12 + tmp7 * src13 + tmp10 * src15) - (tmp3 * src12 + tmp6 * src13 + tmp11 * src15)
-        let dst11 = (tmp5 * src12 + tmp8 * src13 + tmp11 * src14) - (tmp4 * src12 + tmp9 * src13 + tmp10 * src14)
-        let dst12 = (tmp2 * src10 + tmp5 * src11 + tmp1 * src9) - (tmp4 * src11 + tmp0 * src9 + tmp3 * src10)
-        let dst13 = (tmp8 * src11 + tmp0 * src8 + tmp7 * src10) - (tmp6 * src10 + tmp9 * src11 + tmp1 * src8)
-        let dst14 = (tmp6 * src9 + tmp11 * src11 + tmp3 * src8) - (tmp10 * src11 + tmp2 * src8 + tmp7 * src9)
-        let dst15 = (tmp10 * src10 + tmp4 * src8 + tmp9 * src9) - (tmp8 * src9 + tmp11 * src10 + tmp5 * src8)
-        
-        // calculate determinant
-        var det = src0 * dst0 + src1 * dst1 + src2 * dst2 + src3 * dst3;
-        
-        assert(abs(det) > Math.Epsilon20, "throw new RuntimeError('matrix is not invertible because its determinate is zero")
-        
-        // calculate matrix inverse
-        det = 1.0 / det
-        return Matrix4(
-            dst0 * det, dst4 * det, dst8 * det, dst12 * det,
-            dst1 * det, dst5 * det, dst9 * det, dst13 * det,
-            dst2 * det, dst6 * det, dst10 * det, dst14 * det,
-            dst3 * det, dst7 * det, dst11 * det, dst15 * det)
-    }
-
-/**
-* Computes the inverse of the provided matrix assuming it is
-* an affine transformation matrix, where the upper left 3x3 elements
-* are a rotation matrix, and the upper three elements in the fourth
-* column are the translation.  The bottom row is assumed to be [0, 0, 0, 1].
-* The matrix is not verified to be in the proper form.
-* This method is faster than computing the inverse for a general 4x4
-* matrix using {@link Matrix4.inverse}.
-*
-* @param {Matrix4} matrix The matrix to invert.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*/
-    
-    func inverseTransformation () -> Matrix4 {
-        
-        //This function is an optimized version of the below 4 lines.
-        //var rT = Matrix3.transpose(Matrix4.getRotation(matrix));
-        //var rTN = Matrix3.negate(rT);
-        //var rTT = Matrix3.multiplyByVector(rTN, Matrix4.getTranslation(matrix));
-        //return Matrix4.fromRotationTranslation(rT, rTT, result);
-        
-        
-        let matrix0: Double = _grid[0]
-        let matrix1: Double = _grid[1]
-        let matrix2: Double = _grid[2]
-        let matrix4: Double = _grid[4]
-        let matrix5: Double = _grid[5]
-        let matrix6: Double = _grid[6]
-        let matrix8: Double = _grid[8]
-        let matrix9: Double = _grid[9]
-        let matrix10: Double = _grid[10]
-        
-        let vX: Double = _grid[12]
-        let vY: Double = _grid[13]
-        let vZ: Double = _grid[14]
-        
-        let x = -matrix0 * vX - matrix1 * vY - matrix2 * vZ
-        let y = -matrix4 * vX - matrix5 * vY - matrix6 * vZ
-        let z = -matrix8 * vX - matrix9 * vY - matrix10 * vZ
-        
-        return Matrix4(
-            matrix0, matrix1, matrix2, x,
-            matrix4, matrix5, matrix6, y,
-            matrix8, matrix9, matrix10, z,
-            0.0, 0.0, 0.0, 1.0)
+            column0.x, column1.x, column2.x,
+            column0.y, column1.y, column2.y,
+            column0.z, column1.z, column2.z)
     }
     
     /**
@@ -1933,130 +1555,39 @@ Matrix4.abs = function(matrix, result) {
     * @type {Matrix4}
     * @constant
     */
-    static let identity = Matrix4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    )
+    static let identity = Matrix4(1.0)
     
-    
-    static let zero = Matrix4(
-        0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0
-    )
+    static let zero = Matrix4()
 
-/*
-/**
-* Duplicates the provided Matrix4 instance.
-*
-* @param {Matrix4} [result] The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter or a new Matrix4 instance if one was not provided.
-*/
-Matrix4.prototype.clone = function(result) {
-    return Matrix4.clone(this, result);
-};
-*/
     /**
     * @private
     */
     func equalsArray (array: [Float], offset: Int) -> Bool {
-        return Float(_grid[0]) == array[offset] &&
-            Float(_grid[1]) == array[offset + 1] &&
-            Float(_grid[2]) == array[offset + 2] &&
-            Float(_grid[3]) == array[offset + 3] &&
-            Float(_grid[4]) == array[offset + 4] &&
-            Float(_grid[5]) == array[offset + 5] &&
-            Float(_grid[6]) == array[offset + 6] &&
-            Float(_grid[7]) == array[offset + 7] &&
-            Float(_grid[8]) == array[offset + 8] &&
-            Float(_grid[9]) == array[offset + 9] &&
-            Float(_grid[10]) == array[offset + 10] &&
-            Float(_grid[11]) == array[offset + 11] &&
-            Float(_grid[12]) == array[offset + 12] &&
-            Float(_grid[13]) == array[offset + 13] &&
-            Float(_grid[14]) == array[offset + 14] &&
-            Float(_grid[15]) == array[offset + 15]
+        let other = Matrix4.unpack(array, startingIndex: offset)
+        return self == other
     }
     
-    /**
-    * Compares this matrix to the provided matrix componentwise and returns
-* <code>true</code> if they are equal, <code>false</code> otherwise.
-*
-* @param {Matrix4} [right] The right hand side matrix.
-* @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
-*/
-    func equals(other: Matrix4) -> Bool {
-        // Given that most matrices will be transformation matrices, the elements
-        // are tested in order such that the test is likely to fail as early
-        // as possible.  I _think_ this is just as friendly to the L1 cache
-        // as testing in index order.  It is certainty faster in practice.
-        // Translation
-        // Translation
-        return
-            // Translation
-            _grid[12] == other[12] &&
-            _grid[13] == other[13] &&
-            _grid[14] == other[14] &&
-            
-            // Rotation/scale
-            _grid[0] == other[0] &&
-            _grid[1] == other[1] &&
-            _grid[2] == other[2] &&
-            _grid[4] == other[4] &&
-            _grid[5] == other[5] &&
-            _grid[6] == other[6] &&
-            _grid[8] == other[8] &&
-            _grid[9] == other[9] &&
-            _grid[10] == other[10] &&
-            
-            // Bottom row
-            _grid[3] == other[3] &&
-            _grid[7] == other[7] &&
-            _grid[11] == other[11] &&
-            _grid[15] == other[15]
-        /*for i in 0..<16 {
-            if _grid[i] != other[i] {
-                return false
-            }
-        }
-        return true*/
-    }
-/*
-/**
-* Compares this matrix to the provided matrix componentwise and returns
-* <code>true</code> if they are within the provided epsilon,
-* <code>false</code> otherwise.
-*
-* @param {Matrix4} [right] The right hand side matrix.
-* @param {Number} epsilon The epsilon to use for equality testing.
-* @returns {Boolean} <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-*/
-Matrix4.prototype.equalsEpsilon = function(right, epsilon) {
-    return Matrix4.equalsEpsilon(this, right, epsilon);
-};
+}
 
-/**
-* Computes a string representing this Matrix with each row being
-* on a separate line and in the format '(column0, column1, column2, column3)'.
-*
-* @returns {String} A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2, column3)'.
-*/
-Matrix4.prototype.toString = function() {
-    return '(' + this[0] + ', ' + this[4] + ', ' + this[8] + ', ' + this[12] +')\n' +
-    '(' + this[1] + ', ' + this[5] + ', ' + this[9] + ', ' + this[13] +')\n' +
-    '(' + this[2] + ', ' + this[6] + ', ' + this[10] + ', ' + this[14] +')\n' +
-    '(' + this[3] + ', ' + this[7] + ', ' + this[11] + ', ' + this[15] +')';
-};*/
-    public var description: String {
-        get {
-            return _grid.description
+extension Matrix4: MatrixType {}
+
+extension Matrix4: Packable {
+    
+    static func packedLength () -> Int {
+        return 16
+    }
+    
+    init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init()
+        assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
+        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Matrix4.packedLength() * strideof(Double))
         }
     }
     
 }
+
+extension Matrix4: Equatable {}
 
 /**
 * Compares the provided matrices componentwise and returns

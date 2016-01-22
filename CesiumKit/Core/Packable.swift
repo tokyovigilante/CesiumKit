@@ -18,11 +18,12 @@ import Foundation
 * @see PackableForInterpolation
 */
 protocol Packable {
+    
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
-    //static let packedLength: Int
+    static func packedLength () -> Int
     
     /**
     * Stores the provided instance into the provided array.
@@ -31,7 +32,9 @@ protocol Packable {
     * @param {Object} value The value to pack.
     * @param {Number[]} array The array to pack into.
     */
-    func pack(inout array: [Float], startingIndex: Int)
+    func pack (inout array: [Float], startingIndex: Int)
+    
+    func toArray () -> [Double]
    
     /**
     * Retrieves an instance from a packed array.
@@ -42,6 +45,64 @@ protocol Packable {
     * @param {Object} [result] The object into which to store the result.
     */
     static func unpack(array: [Float], startingIndex: Int) -> Self
+    
+    init (fromArray array: [Double], startingIndex: Int)
+    
+    func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool
+}
+
+extension Packable {
+    
+    /**
+     * Stores the provided instance into the provided array.
+     *
+     * @param {Matrix3} value The value to pack.
+     * @param {Number[]} array The array to pack into.
+     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+     */
+    func pack(inout array: [Float], startingIndex: Int = 0) {
+        
+        let floatArray = self.toArray().map { Float($0) }
+        
+        if array.count < startingIndex - Self.packedLength() {
+            array.appendContentsOf(floatArray)
+        } else {
+            array.insertContentsOf(floatArray, at: startingIndex)
+        }
+    }
+    
+    /**
+     * Creates an Array from the provided Matrix3 instance.
+     * The array will be in column-major order.
+     *
+     * @param {Matrix3} matrix The matrix to use..
+     * @param {Number[]} [result] The Array onto which to store the result.
+     * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
+     */
+    func toArray() -> [Double] {
+        let packedLength = Self.packedLength()
+        var grid = [Double](count: packedLength, repeatedValue: 0.0)
+        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
+            memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
+        }
+        return grid
+    }
+    
+    /**
+     * Retrieves an instance from a packed array.
+     *
+     * @param {Number[]} array The packed array.
+     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+     * @param {Matrix3} [result] The object into which to store the result.
+     */
+    static func unpack(array: [Float], startingIndex: Int = 0) -> Self {
+        return Self(fromArray: array.map { Double($0) }, startingIndex: startingIndex)
+    }
+    
+    func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool {
+        return array.count - startingIndex >= Self.packedLength()
+    }
+    
 }
 
 

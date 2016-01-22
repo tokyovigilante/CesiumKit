@@ -1190,7 +1190,7 @@ public class ScreenSpaceCameraController {
                 } else {
                     magnitude = mousePos!.magnitude
                     let radii = Cartesian3(x: magnitude, y: magnitude, z: magnitude)
-                    ellipsoid = Ellipsoid(cartesian3: radii)
+                    ellipsoid = Ellipsoid(radii: radii)
                     pan3D(startPosition, movement: movement, ellipsoid: ellipsoid)
                     _rotateStartPosition = mousePos!
                 }
