@@ -9,13 +9,44 @@
 import Foundation
 
 protocol MatrixType {
+    
+    func +(lhs: Self, rhs: Self) -> Self
+    func -(lhs: Self, rhs: Self) -> Self
+    func *(lhs: Self, rhs: Self) -> Self
 
+    // Negate
+    prefix func -(matrix: Self) -> Self
+        
     func equals(other: Self) -> Bool
 
-    func equalsEpsilon<T where T: Packable, T: Equatable>(other: T, epsilon: Double) -> Bool
+    func equalsEpsilon(other: Self, epsilon: Double) -> Bool
+    
+    func multiply (other: Self) -> Self
+    
 }
 
+protocol ArithmeticType {}
+
+extension Matrix2 : ArithmeticType {}
+extension Matrix3 : ArithmeticType {}
+extension Matrix4 : ArithmeticType {}
+
 extension MatrixType {
+    
+    /**
+     * Computes the product of two matrices.
+     *
+     * @param {MatrixType} self The first matrix.
+     * @param {MatrixType} other The second matrix.
+     * @returns {MatrixType} The modified result parameter.
+     */
+    func multiply(other: Self) -> Self {
+        return self * other
+    }
+    
+    func negate() -> Self {
+        return -self
+    }
 
     /**
      * Compares this matrix to the provided matrix componentwise and returns
@@ -38,12 +69,12 @@ extension MatrixType {
      * @param {Number} epsilon The epsilon to use for equality testing.
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
-    func equalsEpsilon<T where T: Packable>(other: T, epsilon: Double) -> Bool {
-        /*if self == other {
+    func equalsEpsilon(other: Self, epsilon: Double) -> Bool {
+        if self.equals(other) {
             return true
-        }*/
+        }
         let selfArray = (self as! Packable).toArray()
-        let otherArray = other.toArray()
+        let otherArray = (other as! Packable).toArray()
         
         for i in selfArray.indices {
             if abs(selfArray[i] - otherArray[i]) > epsilon {

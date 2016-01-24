@@ -36,55 +36,7 @@ import simd
 
 public typealias Matrix3 = double3x3
 
-extension Matrix3: Packable {
-    
-    public static func packedLength() -> Int {
-        return 9
-    }
-    
-    /**
-     * Creates a Matrix3 from 9 consecutive elements in an array.
-     *
-     * @param {Number[]} array The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-     * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-     * @param {Matrix3} [result] The object onto which to store the result.
-     * @returns {Matrix3} The modified result parameter or a new Matrix3 instance if one was not provided.
-     *
-     * @example
-     * // Create the Matrix3:
-     * // [1.0, 2.0, 3.0]
-     * // [1.0, 2.0, 3.0]
-     * // [1.0, 2.0, 3.0]
-     *
-     * var v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-     * var m = Cesium.Matrix3.fromArray(v);
-     *
-     * // Create same Matrix3 with using an offset into an array
-     * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
-     */
-    init(fromArray array: [Double], startingIndex: Int = 0) {
-        self.init(grid: array)
-    }
-    
-    func toArray() -> [Double] {
-        let col0 = self[0]
-        let col1 = self[1]
-        let col2 = self[2]
-        return [
-            col0.x, col0.y, col0.z,
-            col1.x, col1.y, col1.z,
-            col2.x, col2.y, col2.z
-            ]
-    }
-    
-}
-
 public extension Matrix3 {
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
     
     public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
@@ -96,15 +48,6 @@ public extension Matrix3 {
                 double3(column0Row2, column1Row2, column2Row2),
             ])
 
-    }
-    
-    public init(grid: [Double]) {
-        assert(grid.count == Matrix3.packedLength(), "invalid grid length")
-        self.init(rows: [
-            double3(grid[0], grid[3], grid[6]),
-            double3(grid[1], grid[4], grid[7]),
-            double3(grid[2], grid[5], grid[8]),
-            ])
     }
     
     /**
@@ -573,17 +516,7 @@ public extension Matrix3 {
     return Cartesian3.maximumComponent(scratchScale);
     };
     */
-    /**
-    * Computes the product of two matrices.
-    *
-    * @param {Matrix3} left The first matrix.
-    * @param {Matrix3} right The second matrix.
-    * @param {Matrix3} result The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter.
-    */
-    func multiply (other: Matrix3) -> Matrix3 {
-        return self * other
-    }
+
     /*
     /**
     * Computes the sum of two matrices.
@@ -724,52 +657,9 @@ public extension Matrix3 {
         grid[6] *= scale.z
         grid[7] *= scale.z
         grid[8] *= scale.z
-        return Matrix3(grid: grid)
+        //return Matrix3()
+        return Matrix3(fromArray: grid)
     }
-    /*
-    /**
-    * Creates a negated copy of the provided matrix.
-    *
-    * @param {Matrix3} matrix The matrix to negate.
-    * @param {Matrix3} result The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter.
-    */
-    Matrix3.negate = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = -matrix[0];
-    result[1] = -matrix[1];
-    result[2] = -matrix[2];
-    result[3] = -matrix[3];
-    result[4] = -matrix[4];
-    result[5] = -matrix[5];
-    result[6] = -matrix[6];
-    result[7] = -matrix[7];
-    result[8] = -matrix[8];
-    return result;
-    };
-    */
-    /**
-    * Computes the transpose of the provided matrix.
-    *
-    * @param {Matrix3} matrix The matrix to transpose.
-    * @param {Matrix3} result The object onto which to store the result.
-    * @returns {Matrix3} The modified result parameter.
-    */
-    /*var transpose -> Matrix3 {
-        return self.transpose
-        /*return Matrix3(
-            _grid[0], _grid[1], _grid[2],
-            _grid[3], _grid[4], _grid[5],
-            _grid[6], _grid[7], _grid[8])*/
-    }*/
     /*
     function computeFrobeniusNorm(matrix) {
     var norm = 0.0;
@@ -979,6 +869,33 @@ public extension Matrix3 {
 }
 
 extension Matrix3: MatrixType {}
+
+extension Matrix3: Packable {
+    
+    public static func packedLength() -> Int {
+        return 9
+    }
+    
+    public init(fromArray array: [Double], startingIndex: Int = 0) {
+        self.init(rows: [
+            double3(array[startingIndex+0], array[startingIndex+3], array[startingIndex+6]),
+            double3(array[startingIndex+1], array[startingIndex+4], array[startingIndex+7]),
+            double3(array[startingIndex+2], array[startingIndex+5], array[startingIndex+8]),
+            ])
+    }
+    
+    func toArray() -> [Double] {
+        let col0 = self[0]
+        let col1 = self[1]
+        let col2 = self[2]
+        return [
+            col0.x, col0.y, col0.z,
+            col1.x, col1.y, col1.z,
+            col2.x, col2.y, col2.z
+        ]
+    }
+    
+}
 
 extension Matrix3: Equatable {}
 

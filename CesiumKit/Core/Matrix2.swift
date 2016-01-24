@@ -6,186 +6,42 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-struct Matrix2 {
-    /*
-    /*global define*/
-    define([
-    './Cartesian2',
-    './defaultValue',
-    './defined',
-    './DeveloperError',
-    './freezeObject'
-    ], function(
-    Cartesian2,
-    defaultValue,
-    defined,
-    DeveloperError,
-    freezeObject) {
-    "use strict";
+import Foundation
+import simd
+
+/**
+ * A 2x2 matrix, indexable as a column-major order array.
+ * Constructor parameters are in row-major order for code readability.
+ * @alias Matrix2
+ * @constructor
+ *
+ * @param {Number} [column0Row0=0.0] The value for column 0, row 0.
+ * @param {Number} [column1Row0=0.0] The value for column 1, row 0.
+ * @param {Number} [column0Row1=0.0] The value for column 0, row 1.
+ * @param {Number} [column1Row1=0.0] The value for column 1, row 1.
+ *
+ * @see Matrix2.fromColumnMajorArray
+ * @see Matrix2.fromRowMajorArray
+ * @see Matrix2.fromScale
+ * @see Matrix2.fromUniformScale
+ * @see Matrix3
+ * @see Matrix4
+ */
+public typealias Matrix2 = double2x2
+
+public extension Matrix2 {
     
-    /**
-    * A 2x2 matrix, indexable as a column-major order array.
-    * Constructor parameters are in row-major order for code readability.
-    * @alias Matrix2
-    * @constructor
-    *
-    * @param {Number} [column0Row0=0.0] The value for column 0, row 0.
-    * @param {Number} [column1Row0=0.0] The value for column 1, row 0.
-    * @param {Number} [column0Row1=0.0] The value for column 0, row 1.
-    * @param {Number} [column1Row1=0.0] The value for column 1, row 1.
-    *
-    * @see Matrix2.fromColumnMajorArray
-    * @see Matrix2.fromRowMajorArray
-    * @see Matrix2.fromScale
-    * @see Matrix2.fromUniformScale
-    * @see Matrix3
-    * @see Matrix4
-    */
-    var Matrix2 = function(column0Row0, column1Row0, column0Row1, column1Row1) {
-    this[0] = defaultValue(column0Row0, 0.0);
-    this[1] = defaultValue(column0Row1, 0.0);
-    this[2] = defaultValue(column1Row0, 0.0);
-    this[3] = defaultValue(column1Row1, 0.0);
-    };
-    
-    /**
-    * The number of elements used to pack the object into an array.
-    * @type {Number}
-    */
-    Matrix2.packedLength = 4;
-    
-    /**
-    * Stores the provided instance into the provided array.
-    *
-    * @param {Matrix2} value The value to pack.
-    * @param {Number[]} array The array to pack into.
-    * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
-    */
-    Matrix2.pack = function(value, array, startingIndex) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(value)) {
-    throw new DeveloperError('value is required');
+    public init(
+        _ column0Row0: Double, _ column1Row0: Double,
+        _ column0Row1: Double, _ column1Row1: Double) {
+        
+        self.init(rows: [
+            double2(column0Row0, column1Row0),
+            double2(column0Row1, column1Row1)
+            ])
     }
-    
-    if (!defined(array)) {
-    throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    array[startingIndex++] = value[0];
-    array[startingIndex++] = value[1];
-    array[startingIndex++] = value[2];
-    array[startingIndex++] = value[3];
-    };
-    
-    /**
-    * Retrieves an instance from a packed array.
-    *
-    * @param {Number[]} array The packed array.
-    * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-    * @param {Matrix2} [result] The object into which to store the result.
-    * @returns {Matrix2} The modified result parameter or a new Matrix2 instance if one was not provided.
-    */
-    Matrix2.unpack = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-    throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-    result = new Matrix2();
-    }
-    
-    result[0] = array[startingIndex++];
-    result[1] = array[startingIndex++];
-    result[2] = array[startingIndex++];
-    result[3] = array[startingIndex++];
-    return result;
-    };
-    
-    /**
-    * Duplicates a Matrix2 instance.
-    *
-    * @param {Matrix2} matrix The matrix to duplicate.
-    * @param {Matrix2} [result] The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter or a new Matrix2 instance if one was not provided. (Returns undefined if matrix is undefined)
-    */
-    Matrix2.clone = function(values, result) {
-    if (!defined(values)) {
-    return undefined;
-    }
-    if (!defined(result)) {
-    return new Matrix2(values[0], values[2],
-    values[1], values[3]);
-    }
-    result[0] = values[0];
-    result[1] = values[1];
-    result[2] = values[2];
-    result[3] = values[3];
-    return result;
-    };
-    
-    /**
-    * Creates a Matrix2 from 4 consecutive elements in an array.
-    *
-    * @param {Number[]} array The array whose 4 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-    * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-    * @param {Matrix2} [result] The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter or a new Matrix2 instance if one was not provided.
-    *
-    * @example
-    * // Create the Matrix2:
-    * // [1.0, 2.0]
-    * // [1.0, 2.0]
-    *
-    * var v = [1.0, 1.0, 2.0, 2.0];
-    * var m = Cesium.Matrix2.fromArray(v);
-    *
-    * // Create same Matrix2 with using an offset into an array
-    * var v2 = [0.0, 0.0, 1.0, 1.0, 2.0, 2.0];
-    * var m2 = Cesium.Matrix2.fromArray(v2, 2);
-    */
-    Matrix2.fromArray = function(array, startingIndex, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(array)) {
-    throw new DeveloperError('array is required');
-    }
-    //>>includeEnd('debug');
-    
-    startingIndex = defaultValue(startingIndex, 0);
-    
-    if (!defined(result)) {
-    result = new Matrix2();
-    }
-    
-    result[0] = array[startingIndex];
-    result[1] = array[startingIndex + 1];
-    result[2] = array[startingIndex + 2];
-    result[3] = array[startingIndex + 3];
-    return result;
-    };
-    
-    /**
-    * Creates a Matrix2 instance from a column-major order array.
-    *
-    * @param {Number[]} values The column-major order array.
-    * @param {Matrix2} [result] The object in which the result will be stored, if undefined a new instance will be created.
-    * @returns {Matrix2} The modified result parameter, or a new Matrix2 instance if one was not provided.
-    */
-    Matrix2.fromColumnMajorArray = function(values, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(values)) {
-    throw new DeveloperError('values parameter is required');
-    }
-    //>>includeEnd('debug');
-    
-    return Matrix2.clone(values, result);
-    };
+/*
+
     
     /**
     * Creates a Matrix2 instance from a row-major order array.
@@ -313,61 +169,7 @@ struct Matrix2 {
     result[3] = cosAngle;
     return result;
     };
-    
-    /**
-    * Creates an Array from the provided Matrix2 instance.
-    * The array will be in column-major order.
-    *
-    * @param {Matrix2} matrix The matrix to use..
-    * @param {Number[]} [result] The Array onto which to store the result.
-    * @returns {Number[]} The modified Array parameter or a new Array instance if one was not provided.
-    */
-    Matrix2.toArray = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    return [matrix[0], matrix[1], matrix[2], matrix[3]];
-    }
-    result[0] = matrix[0];
-    result[1] = matrix[1];
-    result[2] = matrix[2];
-    result[3] = matrix[3];
-    return result;
-    };
-    
-    /**
-    * Computes the array index of the element at the provided row and column.
-    *
-    * @param {Number} row The zero-based index of the row.
-    * @param {Number} column The zero-based index of the column.
-    * @returns {Number} The index of the element at the provided row and column.
-    *
-    * @exception {DeveloperError} row must be 0 or 1.
-    * @exception {DeveloperError} column must be 0 or 1.
-    *
-    * @example
-    * var myMatrix = new Cesium.Matrix2();
-    * var column1Row0Index = Cesium.Matrix2.getElementIndex(1, 0);
-    * var column1Row0 = myMatrix[column1Row0Index]
-    * myMatrix[column1Row0Index] = 10.0;
-    */
-    Matrix2.getElementIndex = function(column, row) {
-    //>>includeStart('debug', pragmas.debug);
-    if (typeof row !== 'number' || row < 0 || row > 1) {
-    throw new DeveloperError('row must be 0 or 1.');
-    }
-    if (typeof column !== 'number' || column < 0 || column > 1) {
-    throw new DeveloperError('column must be 0 or 1.');
-    }
-    //>>includeEnd('debug');
-    
-    return column * 2 + row;
-    };
-    
+     
     /**
     * Retrieves a copy of the matrix column at the provided index as a Cartesian2 instance.
     *
@@ -535,153 +337,7 @@ struct Matrix2 {
     Matrix2.getScale(matrix, scratchScale);
     return Cartesian2.maximumComponent(scratchScale);
     };
-    
-    /**
-    * Computes the product of two matrices.
-    *
-    * @param {Matrix2} left The first matrix.
-    * @param {Matrix2} right The second matrix.
-    * @param {Matrix2} result The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter.
-    */
-    Matrix2.multiply = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-    throw new DeveloperError('left is required');
-    }
-    if (!defined(right)) {
-    throw new DeveloperError('right is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    var column0Row0 = left[0] * right[0] + left[2] * right[1];
-    var column1Row0 = left[0] * right[2] + left[2] * right[3];
-    var column0Row1 = left[1] * right[0] + left[3] * right[1];
-    var column1Row1 = left[1] * right[2] + left[3] * right[3];
-    
-    result[0] = column0Row0;
-    result[1] = column0Row1;
-    result[2] = column1Row0;
-    result[3] = column1Row1;
-    return result;
-    };
-    
-    /**
-    * Computes the sum of two matrices.
-    *
-    * @param {Matrix2} left The first matrix.
-    * @param {Matrix2} right The second matrix.
-    * @param {Matrix2} result The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter.
-    */
-    Matrix2.add = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-    throw new DeveloperError('left is required');
-    }
-    if (!defined(right)) {
-    throw new DeveloperError('right is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = left[0] + right[0];
-    result[1] = left[1] + right[1];
-    result[2] = left[2] + right[2];
-    result[3] = left[3] + right[3];
-    return result;
-    };
-    
-    /**
-    * Computes the difference of two matrices.
-    *
-    * @param {Matrix2} left The first matrix.
-    * @param {Matrix2} right The second matrix.
-    * @param {Matrix2} result The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter.
-    */
-    Matrix2.subtract = function(left, right, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(left)) {
-    throw new DeveloperError('left is required');
-    }
-    if (!defined(right)) {
-    throw new DeveloperError('right is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = left[0] - right[0];
-    result[1] = left[1] - right[1];
-    result[2] = left[2] - right[2];
-    result[3] = left[3] - right[3];
-    return result;
-    };
-    
-    /**
-    * Computes the product of a matrix and a column vector.
-    *
-    * @param {Matrix2} matrix The matrix.
-    * @param {Cartesian2} cartesian The column.
-    * @param {Cartesian2} result The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter.
-    */
-    Matrix2.multiplyByVector = function(matrix, cartesian, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(cartesian)) {
-    throw new DeveloperError('cartesian is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    var x = matrix[0] * cartesian.x + matrix[2] * cartesian.y;
-    var y = matrix[1] * cartesian.x + matrix[3] * cartesian.y;
-    
-    result.x = x;
-    result.y = y;
-    return result;
-    };
-    
-    /**
-    * Computes the product of a matrix and a scalar.
-    *
-    * @param {Matrix2} matrix The matrix.
-    * @param {Number} scalar The number to multiply by.
-    * @param {Matrix2} result The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter.
-    */
-    Matrix2.multiplyByScalar = function(matrix, scalar, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (typeof scalar !== 'number') {
-    throw new DeveloperError('scalar is required and must be a number');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = matrix[0] * scalar;
-    result[1] = matrix[1] * scalar;
-    result[2] = matrix[2] * scalar;
-    result[3] = matrix[3] * scalar;
-    return result;
-    };
-    
+     
     /**
     * Computes the product of a matrix times a (non-uniform) scale, as if the scale were a scale matrix.
     *
@@ -716,31 +372,7 @@ struct Matrix2 {
     result[3] = matrix[3] * scale.y;
     return result;
     };
-    
-    /**
-    * Creates a negated copy of the provided matrix.
-    *
-    * @param {Matrix2} matrix The matrix to negate.
-    * @param {Matrix2} result The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter.
-    */
-    Matrix2.negate = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-    throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-    throw new DeveloperError('result is required');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = -matrix[0];
-    result[1] = -matrix[1];
-    result[2] = -matrix[2];
-    result[3] = -matrix[3];
-    return result;
-    };
-    
+        
     /**
     * Computes the transpose of the provided matrix.
     *
@@ -866,66 +498,8 @@ struct Matrix2 {
     */
     Matrix2.ZERO = freezeObject(new Matrix2(0.0, 0.0,
     0.0, 0.0));
-    
-    /**
-    * The index into Matrix2 for column 0, row 0.
-    *
-    * @type {Number}
-    * @constant
-    *
-    * @example
-    * var matrix = new Cesium.Matrix2();
-    * matrix[Cesium.Matrix2.COLUMN0ROW0] = 5.0; // set column 0, row 0 to 5.0
-    */
-    Matrix2.COLUMN0ROW0 = 0;
-    
-    /**
-    * The index into Matrix2 for column 0, row 1.
-    *
-    * @type {Number}
-    * @constant
-    *
-    * @example
-    * var matrix = new Cesium.Matrix2();
-    * matrix[Cesium.Matrix2.COLUMN0ROW1] = 5.0; // set column 0, row 1 to 5.0
-    */
-    Matrix2.COLUMN0ROW1 = 1;
-    
-    /**
-    * The index into Matrix2 for column 1, row 0.
-    *
-    * @type {Number}
-    * @constant
-    *
-    * @example
-    * var matrix = new Cesium.Matrix2();
-    * matrix[Cesium.Matrix2.COLUMN1ROW0] = 5.0; // set column 1, row 0 to 5.0
-    */
-    Matrix2.COLUMN1ROW0 = 2;
-    
-    /**
-    * The index into Matrix2 for column 1, row 1.
-    *
-    * @type {Number}
-    * @constant
-    *
-    * @example
-    * var matrix = new Cesium.Matrix2();
-    * matrix[Cesium.Matrix2.COLUMN1ROW1] = 5.0; // set column 1, row 1 to 5.0
-    */
-    Matrix2.COLUMN1ROW1 = 3;
-    
-    /**
-    * Duplicates the provided Matrix2 instance.
-    *
-    * @param {Matrix2} [result] The object onto which to store the result.
-    * @returns {Matrix2} The modified result parameter or a new Matrix2 instance if one was not provided.
-    */
-    Matrix2.prototype.clone = function(result) {
-    return Matrix2.clone(this, result);
-    };
-    
-    /**
+
+        /**
     * Compares this matrix to the provided matrix componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
     *
@@ -966,3 +540,58 @@ struct Matrix2 {
 
 */
 }
+
+extension Matrix2: MatrixType {}
+
+extension Matrix2: Packable {
+    
+    public static func packedLength() -> Int {
+        return 4
+    }
+    
+    /**
+     * Creates a Matrix3 from 9 consecutive elements in an array.
+     *
+     * @param {Number[]} array The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
+     * @param {Number} [startingIndex=0] The offset into the array of the first element, which corresponds to first column first row position in the matrix.
+     * @param {Matrix3} [result] The object onto which to store the result.
+     * @returns {Matrix3} The modified result parameter or a new Matrix3 instance if one was not provided.
+     *
+     * @example
+     * // Create the Matrix3:
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     *
+     * var v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * var m = Cesium.Matrix3.fromArray(v);
+     *
+     * // Create same Matrix3 with using an offset into an array
+     * var v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * var m2 = Cesium.Matrix3.fromArray(v2, 2);
+     */
+    init (fromArray array: [Double], startingIndex: Int = 0) {
+        self.init(rows: [
+            double2(array[startingIndex+0], array[startingIndex+2]),
+            double2(array[startingIndex+1], array[startingIndex+3])
+            ])
+    }
+    
+    func toArray() -> [Double] {
+        let col0 = self[0]
+        let col1 = self[1]
+        return [
+            col0.x, col0.y,
+            col1.x, col1.y
+        ]
+    }
+    
+}
+
+extension Matrix2: Equatable {}
+
+public func == (left: Matrix2, right: Matrix2) -> Bool {
+    return left.equals(right)
+}
+
+

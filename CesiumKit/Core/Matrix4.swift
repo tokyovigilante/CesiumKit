@@ -74,8 +74,7 @@ public extension Matrix4 {
             ])
         
     }
-    
-    
+
     public init(grid: [Double]) {
         assert(grid.count == Matrix4.packedLength(), "invalid grid length")
         self.init(rows: [
@@ -924,18 +923,6 @@ Matrix4.getMaximumScale = function(matrix) {
 };
 */
     /**
-    * Computes the product of two matrices.
-    *
-    * @param {Matrix4} left The first matrix.
-    * @param {Matrix4} right The second matrix.
-    * @param {Matrix4} result The object onto which to store the result.
-    * @returns {Matrix4} The modified result parameter.
-    */
-    func multiply (other: Matrix4) -> Matrix4 {
-        return self * other
-    }
-    
-    /**
      * Computes the product of two matrices assuming the matrices are
      * affine transformation matrices, where the upper left 3x3 elements
      * are a rotation matrix, and the upper three elements in the fourth
@@ -1348,116 +1335,7 @@ Matrix4.multiplyByScalar = function(matrix, scalar, result) {
     return result;
 };
 
-/**
-* Computes a negated copy of the provided matrix.
-*
-* @param {Matrix4} matrix The matrix to negate.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*
-* @example
-* //create a new Matrix4 instance which is a negation of a Matrix4
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* var a = Cesium.Matrix4.negate(m);
-*
-* // m remains the same
-* // a = [-10.0, -11.0, -12.0, -13.0]
-* //     [-14.0, -15.0, -16.0, -17.0]
-* //     [-18.0, -19.0, -20.0, -21.0]
-* //     [-22.0, -23.0, -24.0, -25.0]
-*/
-Matrix4.negate = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    result[0] = -matrix[0];
-    result[1] = -matrix[1];
-    result[2] = -matrix[2];
-    result[3] = -matrix[3];
-    result[4] = -matrix[4];
-    result[5] = -matrix[5];
-    result[6] = -matrix[6];
-    result[7] = -matrix[7];
-    result[8] = -matrix[8];
-    result[9] = -matrix[9];
-    result[10] = -matrix[10];
-    result[11] = -matrix[11];
-    result[12] = -matrix[12];
-    result[13] = -matrix[13];
-    result[14] = -matrix[14];
-    result[15] = -matrix[15];
-    return result;
-};
-
-/**
-* Computes the transpose of the provided matrix.
-*
-* @param {Matrix4} matrix The matrix to transpose.
-* @param {Matrix4} result The object onto which to store the result.
-* @returns {Matrix4} The modified result parameter.
-*
-* @example
-* //returns transpose of a Matrix4
-* // m = [10.0, 11.0, 12.0, 13.0]
-* //     [14.0, 15.0, 16.0, 17.0]
-* //     [18.0, 19.0, 20.0, 21.0]
-* //     [22.0, 23.0, 24.0, 25.0]
-*
-* var a = Cesium.Matrix4.negate(m);
-*
-* // m remains the same
-* // a = [10.0, 14.0, 18.0, 22.0]
-* //     [11.0, 15.0, 19.0, 23.0]
-* //     [12.0, 16.0, 20.0, 24.0]
-* //     [13.0, 17.0, 21.0, 25.0]
-*/
-Matrix4.transpose = function(matrix, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(matrix)) {
-        throw new DeveloperError('matrix is required');
-    }
-    if (!defined(result)) {
-        throw new DeveloperError('result is required,');
-    }
-    //>>includeEnd('debug');
-    
-    var matrix1 = matrix[1];
-    var matrix2 = matrix[2];
-    var matrix3 = matrix[3];
-    var matrix6 = matrix[6];
-    var matrix7 = matrix[7];
-    var matrix11 = matrix[11];
-    
-    result[0] = matrix[0];
-    result[1] = matrix[4];
-    result[2] = matrix[8];
-    result[3] = matrix[12];
-    result[4] = matrix1;
-    result[5] = matrix[5];
-    result[6] = matrix[9];
-    result[7] = matrix[13];
-    result[8] = matrix2;
-    result[9] = matrix6;
-    result[10] = matrix[10];
-    result[11] = matrix[14];
-    result[12] = matrix3;
-    result[13] = matrix7;
-    result[14] = matrix11;
-    result[15] = matrix[15];
-    return result;
-};
-
-/**
+     /**
 * Computes a matrix, which contains the absolute (unsigned) values of the provided matrix's elements.
 *
 * @param {Matrix4} matrix The matrix with signed elements.
