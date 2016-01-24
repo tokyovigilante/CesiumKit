@@ -104,15 +104,15 @@ return Cartesian3.normalize(result, result);
 };
 */
     /**
-    * Packs an oct encoded vector into a single floating-point number.
-    *
-    * @param {Cartesian2} encoded The oct encoded vector.
-    * @returns {Number} The oct encoded vector packed into a single float.
-    *
-    * @exception {DeveloperError} encoded is required.
-    */
+     * Packs an oct encoded vector into a single floating-point number.
+     *
+     * @param {Cartesian2} encoded The oct encoded vector.
+     * @returns {Number} The oct encoded vector packed into a single float.
+     *
+     * @exception {DeveloperError} encoded is required.
+     */
     class func octPackFloat (encoded: Cartesian2) -> Float32 {
-    return Float(256.0 * encoded.x + encoded.y)
+        return Float(256.0 * encoded.x + encoded.y)
     }
 /*
 var scratchEncodeCart2 = new Cartesian2();

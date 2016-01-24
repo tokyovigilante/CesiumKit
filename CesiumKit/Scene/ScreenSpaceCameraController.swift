@@ -342,7 +342,7 @@ public class ScreenSpaceCameraController {
                     movementState.startPosition = movementState.endPosition
                     movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyByScalar(d))
                     
-                    movementState.motion = Cartesian2.zero()
+                    movementState.motion = Cartesian2.zero
                 }
                 
                 // If value from the decreasing exponential function is close to zero,

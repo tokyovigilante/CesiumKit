@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * A 2D Cartesian point.
@@ -21,31 +22,9 @@ import Foundation
 * @see Packable
 */
 
-public struct Cartesian2: CustomStringConvertible, Equatable {
-    /**
-    * The Y component.
-    * @type {Number}
-    * @default 0.0
-    */
-    public var x: Double = 0.0
-    
-    /**
-    * The X component.
-    * @type {Number}
-    * @default 0.0
-    */
-    public var y: Double = 0.0
-    
-    public var description: String {
-        get {
-            return self.toString()
-        }
-    }
-    
-    public init(x: Double = 0.0, y: Double = 0.0) {
-        self.x = x
-        self.y = y
-    }
+public typealias Cartesian2 = double2
+
+public extension Cartesian2 {
     
     /**
     * Creates a Cartesian2 instance from an existing Cartesian3.  This simply takes the
@@ -57,8 +36,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     init (fromCartesian3 cartesian3: Cartesian3) {
-        x = cartesian3.x
-        y = cartesian3.y
+        self.init(cartesian3.x, cartesian3.y)
     }
     
     /**
@@ -71,8 +49,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     init (fromCartesian4 cartesian4: Cartesian4) {
-        x = cartesian4.x
-        y = cartesian4.y
+        self.init(cartesian4.x, cartesian4.y)
     }
     
     
@@ -83,7 +60,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Number} The value of the maximum component.
     */
     func maximumComponent() -> Double {
-        return max(x, y)
+        return reduce_max(self)
     }
     
     /**
@@ -93,7 +70,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Number} The value of the minimum component.
     */
     func minimumComponent() -> Double {
-        return min(x, y)
+        return reduce_min(self)
     }
     
     /**
@@ -105,7 +82,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(x: min(x, other.x), y: min(y, other.y))
+        return min(self, other)
     }
     
     /**
@@ -117,7 +94,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(x: max(x, other.x), y: max(y, other.y))
+        return max(self, other)
     }
     /**
     * Computes the provided Cartesian's squared magnitude.
@@ -126,7 +103,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Number} The squared magnitude.
     */
     func magnitudeSquared() -> Double {
-        return x * x + y * y;
+        return x * x + y * y
     }
     
     /**
@@ -136,7 +113,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Number} The magnitude.
     */
     func magnitude() -> Double {
-        return sqrt(magnitudeSquared());
+        return sqrt(magnitudeSquared())
     }
     
     
@@ -152,7 +129,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(2.0, 0.0));
     */
     public func distance(other: Cartesian2) -> Double {
-        return subtract(other).magnitude()
+        return simd.distance(self, other)
     }
     
     /**
@@ -168,7 +145,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(3.0, 0.0));
     */
     func distanceSquared (other: Cartesian2) -> Double {
-        return self.subtract(other).magnitudeSquared()
+        return distance_squared(self, other)
     }
 
     /**
@@ -179,8 +156,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func normalize() -> Cartesian2 {
-        let magnitude = self.magnitude();
-        return Cartesian2(x: x / magnitude, y: y / magnitude)
+        return simd.normalize(self)
     }
     
     /**
@@ -191,8 +167,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian2) -> Double {
-        
-        return x * other.x + y * other.y;
+        return simd.dot(self, other)
     }
     
     /**
@@ -204,7 +179,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func multiplyComponents(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(x: x * other.x, y: y * other.y);
+        return self * other
     }
     
     /**
@@ -216,7 +191,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func add(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(x: x + other.x, y: y + other.y);
+        return self + other
     }
     
     /**
@@ -228,7 +203,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func subtract(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(x: x - other.x, y: y - other.y);
+        return self - other
     }
     
     /**
@@ -240,7 +215,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func multiplyByScalar(scalar: Double) -> Cartesian2 {
-        return  Cartesian2(x: x * scalar, y: y * scalar);
+        return self * scalar
     }
     
     /**
@@ -252,7 +227,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func divideByScalar(scalar: Double) -> Cartesian2 {
-        return  Cartesian2(x: x / scalar, y: y / scalar);
+        return self * (1/scalar)
     }
     
     /**
@@ -263,7 +238,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func negate() -> Cartesian2 {
-        return Cartesian2(x: -x, y: -y)
+        return -self
     }
     
     /**
@@ -274,7 +249,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func absolute() -> Cartesian2 {
-        return Cartesian2(x: abs(x), y: abs(y))
+        return abs(self)
     }
     
     /**
@@ -287,7 +262,7 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func lerp(end: Cartesian2, t: Double) -> Cartesian2 {
-        return multiplyByScalar(1.0 - t).add(end.multiplyByScalar(t));
+        return mix(self, end, t: t)
     }
     
     /**
@@ -310,15 +285,15 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     */
     func mostOrthogonalAxis() -> Cartesian2 {
         
-        let f = normalize().absolute();
+        let f = normalize().absolute()
         var result: Cartesian2
         
         if (f.x <= f.y) {
-            result = Cartesian2.unitX()
+            result = Cartesian2.unitX
         } else {
-            result = Cartesian2.unitY()
+            result = Cartesian2.unitY
         }
-        return result;
+        return result
     }
     
     func equalsArray (array: [Float], offset: Int) -> Bool {
@@ -348,36 +323,24 @@ public struct Cartesian2: CustomStringConvertible, Equatable {
     * @type {Cartesian2}
     * @constant
     */
-    static func zero() -> Cartesian2 {
-        return Cartesian2(x: 0.0, y: 0.0)
-    }
+    static let zero = Cartesian2()
+    
     /**
     * An immutable Cartesian2 instance initialized to (1.0, 0.0).
     *
     * @type {Cartesian2}
     * @constant
     */
-    static func unitX() -> Cartesian2 {
-        return Cartesian2(x: 1.0, y: 0.0)
-    }
+    static let unitX = Cartesian2(x: 1.0, y: 0.0)
+    
     /**
     * An immutable Cartesian2 instance initialized to (0.0, 1.0).
     *
     * @type {Cartesian2}
     * @constant
     */
-    static func unitY() -> Cartesian2 {
-        return Cartesian2(x: 1.0, y: 0.0)
-    }
-    
-    /**
-    * Creates a string representing this Cartesian in the format '(x, y)'.
-    *
-    * @returns {String} A string representing the provided Cartesian in the format '(x, y)'.
-    */
-    func toString() -> String {
-        return "(x:\(x), y:\(y))"
-    }
+    static let unitY = Cartesian2(x: 1.0, y: 0.0)
+
 }
 
 extension Cartesian2: Packable {
