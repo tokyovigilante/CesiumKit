@@ -240,8 +240,9 @@ class EllipsoidGeodesic {
         let dr0 = a0 * sigma
         let dr1 = a1 * sin(2.0 * sigma) * u2Over4 / 2.0
         let dr2 = a2 * sin(4.0 * sigma) * u4Over16 / 16.0
-        let dr3 = a3 * sin(6.0 * sigma) * u6Over64 / 48.0 - sin(8.0 * sigma) * 5.0 * u8Over256 / 512
-        let distanceRatio = dr0 - dr1 - dr2 - dr3
+        let dr3 = a3 * sin(6.0 * sigma) * u6Over64 / 48.0
+        let dr4 = sin(8.0 * sigma) * 5.0 * u8Over256 / 512
+        let distanceRatio = dr0 - dr1 - dr2 - dr3 - dr4
         
         _constants.a = a
         _constants.b = b
