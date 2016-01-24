@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * A 3D Cartesian point.
@@ -21,27 +22,10 @@ import Foundation
 * @see Cartesian4
 * @see Packable
 */
-public struct Cartesian3: Equatable {
-    /**
-    * The X component.
-    * @type {Number}
-    * @default 0.0
-    */
-    public var x: Double = 0.0
-    
-    /**
-    * The Y component.
-    * @type {Number}
-    * @default 0.0
-    */
-    public var y: Double = 0.0
-    
-    /**
-    * The Z component.
-    * @type {Number}
-    * @default 0.0
-    */
-    public var z: Double = 0.0
+
+public typealias Cartesian3 = double3
+
+public extension Cartesian3 {
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -50,29 +34,16 @@ public struct Cartesian3: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
-    init(fromSpherical spherical: Spherical) {
+    internal init(fromSpherical spherical: Spherical) {
         let clock = spherical.clock
         let cone = spherical.cone
         let magnitude = spherical.magnitude
-        let radial = magnitude * sin(cone);
-        x = radial * cos(clock);
-        y = radial * sin(clock);
-        z = magnitude * cos(cone);
-    }
-    
-    /**
-    * Creates a Cartesian3 instance from x, y and z coordinates.
-    *
-    * @param {Number} x The x coordinate.
-    * @param {Number} y The y coordinate.
-    * @param {Number} z The z coordinate.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    public init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
-        self.x = x
-        self.y = y
-        self.z = z
+        let radial = magnitude * sin(cone)
+        self.init(
+            x: radial * cos(clock),
+            y: radial * sin(clock),
+            z: magnitude * cos(cone)
+        )
     }
     
     /**
@@ -85,9 +56,7 @@ public struct Cartesian3: Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     init(fromCartesian4 cartesian4: Cartesian4) {
-        x = cartesian4.x
-        y = cartesian4.y
-        z = cartesian4.z
+        self.init(x: cartesian4.x, y: cartesian4.y, z: cartesian4.z)
     }
     
     /**
@@ -166,7 +135,7 @@ public struct Cartesian3: Equatable {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(2.0, 0.0, 0.0));
     */
     func distance(other: Cartesian3) -> Double {
-        return subtract(other).magnitude
+        return simd.distance(self, other)
     }
     
     /**
@@ -182,7 +151,7 @@ public struct Cartesian3: Equatable {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(3.0, 0.0, 0.0));
     */
     func distanceSquared(other: Cartesian3) -> Double {
-        return self.subtract(other).magnitudeSquared
+        return distance_squared(self, other)
     }
 
     /** Computes the normalized form of the supplied Cartesian.
@@ -193,7 +162,7 @@ public struct Cartesian3: Equatable {
     */
     
     func normalize() -> Cartesian3 {
-        return Cartesian3(x: x / magnitude, y: y / magnitude, z: z / magnitude)
+        return simd.normalize(self)
     }
     
     /**
@@ -204,80 +173,9 @@ public struct Cartesian3: Equatable {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian3) -> Double {
-        return x * other.x + y * other.y + z * other.z
+        return simd.dot(self, other)
     }
-    
-    /**
-    * Computes the componentwise product of two Cartesians.
-    *
-    * @param {Cartesian3} left The first Cartesian.
-    * @param {Cartesian3} right The second Cartesian.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func multiplyComponents(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x * other.x, y: y * other.y, z: z * other.z)
-    }
-    
-    /**
-    * Computes the componentwise sum of two Cartesians.
-    *
-    * @param {Cartesian3} left The first Cartesian.
-    * @param {Cartesian3} right The second Cartesian.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func add(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x + other.x, y: y + other.y, z: z + other.z)
-    }
-    
-    /**
-    * Computes the componentwise difference of two Cartesians.
-    *
-    * @param {Cartesian3} left The first Cartesian.
-    * @param {Cartesian3} right The second Cartesian.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func subtract(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: x - other.x, y: y - other.y, z: z - other.z);
-    }
-    
-    /**
-    * Multiplies the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian3} cartesian The Cartesian to be scaled.
-    * @param {Number} scalar The scalar to multiply with.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func multiplyByScalar(scalar: Double) -> Cartesian3 {
-        return Cartesian3(x: x * scalar, y: y * scalar, z: z * scalar);
-    }
-    
-    /**
-    * Divides the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian3} cartesian The Cartesian to be divided.
-    * @param {Number} scalar The scalar to divide by.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func divideByScalar(scalar: Double) -> Cartesian3 {
-        return  Cartesian3(x: x / scalar, y: y / scalar, z: z / scalar);
-    }
-    
-    
-    /**
-    * Negates the provided Cartesian.
-    *
-    * @param {Cartesian3} cartesian The Cartesian to be negated.
-    * @param {Cartesian3} [result] The object onto which to store the result.
-    * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
-    */
-    func negate() -> Cartesian3 {
-        return Cartesian3(x: -x, y: -y, z: -z)
-    }
+            
     
     /**
     * Computes the absolute value of the provided Cartesian.
@@ -287,7 +185,7 @@ public struct Cartesian3: Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func absolute() -> Cartesian3 {
-        return Cartesian3(x: abs(x), y: abs(y), z: abs(z))
+        return abs(self)
     }
     
     /**
@@ -300,7 +198,7 @@ public struct Cartesian3: Equatable {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func lerp(end: Cartesian3, t: Double) -> Cartesian3 {
-        return self.multiplyByScalar(1.0 - t).add(end.multiplyByScalar(t));
+        return mix(self, end, t: t)
     }
     
     /**
@@ -379,19 +277,7 @@ public struct Cartesian3: Equatable {
     * @returns {Cartesian3} The cross product.
     */
     func cross(other: Cartesian3) -> Cartesian3 {
-        
-        let leftX = self.x
-        let leftY = self.y
-        let leftZ = self.z
-        let rightX = other.x
-        let rightY = other.y
-        let rightZ = other.z
-        
-        let x = leftY * rightZ - leftZ * rightY
-        let y = leftZ * rightX - leftX * rightZ
-        let z = leftX * rightY - leftY * rightX
-        
-        return Cartesian3(x: x, y: y, z: z)
+        return simd.cross(self, other)
     }
     
     /**
@@ -531,7 +417,7 @@ public struct Cartesian3: Equatable {
     * @constant
     */
     
-    public static let zero: Cartesian3 = Cartesian3(x: 0.0, y: 0.0, z: 0.0)
+    public static let zero = Cartesian3()
     
     /**
     * An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
@@ -539,7 +425,7 @@ public struct Cartesian3: Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static let unitX: Cartesian3 = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
+    public static let unitX = Cartesian3(x: 1.0, y: 0.0, z: 0.0)
     
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
@@ -547,7 +433,7 @@ public struct Cartesian3: Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static let unitY: Cartesian3 = Cartesian3(x: 0.0, y: 1.0, z: 0.0)
+    public static let unitY = Cartesian3(x: 0.0, y: 1.0, z: 0.0)
     
     /**
     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
@@ -555,17 +441,11 @@ public struct Cartesian3: Equatable {
     * @type {Cartesian3}
     * @constant
     */
-    public static let unitZ: Cartesian3 = Cartesian3(x: 0.0, y: 0.0, z: 1.0)
-    
-    /**
-    * Creates a string representing this Cartesian in the format '(x, y, z)'.
-    *
-    * @returns {String} A string representing this Cartesian in the format '(x, y, z)'.
-    */
-    func toString() -> String {
-        return "(\(x)), (\(y)), (\(z))"
-    }
+    public static let unitZ = Cartesian3(x: 0.0, y: 0.0, z: 1.0)
 }
+
+extension Cartesian3: CartesianType {}
+
 
 extension Cartesian3: Packable {
     
@@ -586,6 +466,8 @@ extension Cartesian3: Packable {
         }
     }
 }
+
+extension Cartesian3: Equatable {}
 
 /**
 * Compares the provided Cartesians componentwise and returns

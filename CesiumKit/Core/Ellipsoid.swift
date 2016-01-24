@@ -381,7 +381,7 @@ public struct Ellipsoid: Equatable {
     * @returns {String} A string representing this ellipsoid in the format '(radii.x, radii.y, radii.z)'.
     */
     func toString() -> String {
-        return radii.toString()
+        return radii.debugDescription
     }
     
 }

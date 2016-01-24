@@ -235,7 +235,8 @@ class HeightmapTessellator {
                     let kX = radiiSquaredX * nX
                     let kY = radiiSquaredY * nY
                     
-                    let gamma = sqrt((kX * nX) + (kY * nY) + (kZ * nZ))
+                    let gammaSquare = kX * nX + kY * nY + kZ * nZ
+                    let gamma = sqrt(gammaSquare)
                     let oneOverGamma = 1.0 / gamma
                     
                     let rSurfaceX = kX * oneOverGamma
