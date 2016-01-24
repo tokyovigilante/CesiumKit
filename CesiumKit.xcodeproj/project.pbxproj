@@ -569,6 +569,8 @@
 		94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */; };
 		94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
+		94D3BFEE1C546BBD0095A86F /* CartesianType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D3BFED1C546BBD0095A86F /* CartesianType.swift */; };
+		94D3BFEF1C546BBD0095A86F /* CartesianType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D3BFED1C546BBD0095A86F /* CartesianType.swift */; };
 		94D5AC1A19FB7F3700FFAD81 /* EllipsoidTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */; };
 		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
 		94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D653191C26ACAE001A40C8 /* OrbitType.swift */; };
@@ -991,6 +993,7 @@
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
 		94CD3FAE199B6F8A00012DC4 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomaticUniforms.swift; sourceTree = "<group>"; };
+		94D3BFED1C546BBD0095A86F /* CartesianType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartesianType.swift; sourceTree = "<group>"; };
 		94D45B2819BDC26300FFE1CB /* Matrix3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix3.swift; sourceTree = "<group>"; };
 		94D45B2A19BDC7DD00FFE1CB /* EncodedCartesian3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodedCartesian3.swift; sourceTree = "<group>"; };
 		94D5AC1919FB7F3600FFAD81 /* EllipsoidTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EllipsoidTests.swift; path = Core/EllipsoidTests.swift; sourceTree = "<group>"; };
@@ -1398,6 +1401,7 @@
 				9444499D1948326C009D1703 /* MapProjection.swift */,
 				948D55E8194982AB005A4DD6 /* Math.swift */,
 				94D94FCD1C4F7AD00095A86F /* MatrixType.swift */,
+				94D3BFED1C546BBD0095A86F /* CartesianType.swift */,
 				94DD011D1AADAF2500FFAD81 /* Matrix2.swift */,
 				94D45B2819BDC26300FFE1CB /* Matrix3.swift */,
 				94C57E1319722AB90046791A /* Matrix4.swift */,
@@ -2180,6 +2184,7 @@
 				94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */,
 				9413B7D41A37B93100FFAD81 /* WebMercatorProjection.swift in Sources */,
 				9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */,
+				94D3BFEE1C546BBD0095A86F /* CartesianType.swift in Sources */,
 				9413B7A31A37B93100FFAD81 /* Cartesian2.swift in Sources */,
 				9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */,
 				94EDE9F31C51D0BF0095A86F /* MatrixType.swift in Sources */,
@@ -2455,6 +2460,7 @@
 				94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
 				9478217F1B5A2D7C0095A86F /* QuadtreeTileProvider.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
+				94D3BFEF1C546BBD0095A86F /* CartesianType.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,
 				947821821B5A2D7C0095A86F /* SceneTransitioner.swift in Sources */,
 				947821831B5A2D7C0095A86F /* ScreenSpaceCameraController.swift in Sources */,
