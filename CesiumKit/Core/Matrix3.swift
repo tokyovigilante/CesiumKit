@@ -386,9 +386,7 @@ public extension Matrix3 {
     */
     func column (index: Int) -> Cartesian3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
-        //return self[index]
-        var result = self[index]
-        return Cartesian3(x: result.x, y: result.y, z: result.z)
+        return self[index]
     }
     
     /**
@@ -405,9 +403,8 @@ public extension Matrix3 {
     
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
         var result = self
-        //result[index] = cartesian
-        result[index] = double3(cartesian.x, cartesian.y, cartesian.z)
-        return result
+        result[index] = cartesian
+        return(result)
     }
     /*
     /**

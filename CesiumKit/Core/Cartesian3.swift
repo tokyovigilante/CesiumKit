@@ -465,6 +465,10 @@ extension Cartesian3: Packable {
             memcpy(&self, pointer.baseAddress, Cartesian3.packedLength() * strideof(Double))
         }
     }
+    
+    func toArray() -> [Double] {
+        return [self.x, self.y, self.z]
+    }
 }
 
 extension Cartesian3: Equatable {}

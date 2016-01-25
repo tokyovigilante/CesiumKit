@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * A 4D Cartesian point.
@@ -22,70 +23,15 @@ import Foundation
 * @see Cartesian3
 * @see Packable
 */
-// FIXME: Packable
-public struct Cartesian4: Equatable, CustomStringConvertible {
-    /**
-    * The X component.
-    * @type {Number}
-    * @default 0.0
-    */
-    var x: Double = 0.0
-    
-    /**
-    * The Y component.
-    * @type {Number}
-    * @default 0.0
-    */
-    var y: Double = 0.0
-    
-    /**
-    * The Z component.
-    * @type {Number}
-    * @default 0.0
-    */
-    var z: Double = 0.0
-    
-    /**
-    * The W component.
-    * @type {Number}
-    * @default 0.0
-    */
-    var w: Double = 0.0
-    
-    public var description: String {
-        return "(\(x), \(y), \(z), \(w))"
-    }
-    
-    var red: Double {
-        get {
-            return x
-        }
-    }
-    
-    var green: Double {
-        get {
-            return y
-        }
-    }
-    
-    var blue: Double {
-        get {
-            return z
-        }
-    }
-    
-    var alpha: Double {
-        get {
-            return w
-        }
-    }
 
-    init(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
-    }
+public typealias Cartesian4 = double4
+
+public extension Cartesian4 {
+
+    var red: Double { return x }
+    var green: Double { return y }
+    var blue: Double { return z }
+    var alpha: Double { return w }
     
     /**
     * Creates a Cartesian4 instance from a {@link Color}. <code>red</code>, <code>green</code>, <code>blue</code>,
@@ -96,7 +42,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
     init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
-        self.init(x: red, y: green, z: blue, w: alpha)
+        self.init(red, green, blue, alpha)
     }
     
     /**
@@ -128,7 +74,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(x: min(x, other.x), y: min(y, other.y), z: min(y, other.y), w: min(w, other.w))
+        return min(self, other)
     }
     
     /**
@@ -140,7 +86,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(x: max(x, other.x), y: max(y, other.y), z: max(y, other.y), w: max(w, other.w))
+        return max(self, other)
     }
     
     /**
@@ -178,7 +124,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * new Cesium.Cartesian4(2.0, 0.0, 0.0, 0.0));
     */
     func distance(other: Cartesian4) -> Double {
-        return subtract(other).magnitude()
+        return simd.distance(self, other)
     }
     
     /**
@@ -196,7 +142,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     *   new Cesium.Cartesian4(3.0, 0.0, 0.0, 0.0));
     */
     func distanceSquared (other: Cartesian4) -> Double {
-        return self.subtract(other).magnitudeSquared()
+        return distance_squared(self, other)
     }
     
     /**
@@ -207,8 +153,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} The modified result parameter.
     */
     func normalize() -> Cartesian4 {
-        let magnitude = self.magnitude();
-        return Cartesian4(x: x / magnitude, y: y / magnitude, z: z / magnitude, w: w / magnitude)
+        return simd.normalize(self)
     }
     
     /**
@@ -219,78 +164,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian4) -> Double {
-        return x * other.x + y * other.y + z * other.z + w * other.w
-    }
-    
-    /**
-    * Computes the componentwise product of two Cartesians.
-    *
-    * @param {Cartesian4} left The first Cartesian.
-    * @param {Cartesian4} right The second Cartesian.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func multiplyComponents(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(x: x * other.x, y: y * other.y, z: z * other.z, w: w * other.w)
-    }
-    
-    /**
-    * Computes the componentwise sum of two Cartesians.
-    *
-    * @param {Cartesian4} left The first Cartesian.
-    * @param {Cartesian4} right The second Cartesian.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func add(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(x: x + other.x, y: y + other.y, z: z + other.z, w: w + other.w)
-    }
-    
-    /**
-    * Computes the componentwise difference of two Cartesians.
-    *
-    * @param {Cartesian4} left The first Cartesian.
-    * @param {Cartesian4} right The second Cartesian.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func subtract(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(x: x - other.x, y: y - other.y, z: z - other.z, w: w - other.w)
-    }
-    
-    /**
-    * Multiplies the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian4} cartesian The Cartesian to be scaled.
-    * @param {Number} scalar The scalar to multiply with.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func multiplyByScalar(scalar: Double) -> Cartesian4 {
-        return  Cartesian4(x: x * scalar, y: y * scalar, z: z * scalar, w: w * scalar)
-    }
-    
-    /**
-    * Divides the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian4} cartesian The Cartesian to be divided.
-    * @param {Number} scalar The scalar to divide by.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func divideByScalar(scalar: Double) -> Cartesian4 {
-        return  Cartesian4(x: x / scalar, y: y / scalar, z: z / scalar, w: w / scalar)
-    }
-    
-    /**
-    * Negates the provided Cartesian.
-    *
-    * @param {Cartesian4} cartesian The Cartesian to be negated.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
-    func negate() -> Cartesian4 {
-        return Cartesian4(x: -x, y: -y, z: -z, w: -w)
+        return simd.dot(self, other)
     }
     
     /**
@@ -301,7 +175,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} The modified result parameter.
     */
     func absolute() -> Cartesian4 {
-        return Cartesian4(x: abs(x), y: abs(y), z: abs(z), w: abs(w))
+        return abs(self)
     }
     
     /**
@@ -314,7 +188,7 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @returns {Cartesian4} The modified result parameter.
     */
     func lerp(end: Cartesian4, t: Double) -> Cartesian4 {
-        return multiplyByScalar(1.0 - t).add(end.multiplyByScalar(t));
+        return mix(self, end, t: t)
     }
     
     /**
@@ -332,25 +206,25 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
         if (f.x <= f.y) {
             if (f.x <= f.z) {
                 if (f.x <= f.w) {
-                    result = Cartesian4.unitX()
+                    result = Cartesian4.unitX
                 } else {
-                    result = Cartesian4.unitW()
+                    result = Cartesian4.unitW
                 }
             } else if (f.z <= f.w) {
-                result = Cartesian4.unitZ()
+                result = Cartesian4.unitZ
             } else {
-                result = Cartesian4.unitW()
+                result = Cartesian4.unitW
             }
         } else if (f.y <= f.z) {
             if (f.y <= f.w) {
-                result = Cartesian4.unitY()
+                result = Cartesian4.unitY
             } else {
-                result = Cartesian4.unitW()
+                result = Cartesian4.unitW
             }
         } else if (f.z <= f.w) {
-            result = Cartesian4.unitZ()
+            result = Cartesian4.unitZ
         } else {
-            result = Cartesian4.unitW()
+            result = Cartesian4.unitW
         }
         return result
     }
@@ -387,36 +261,31 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @type {Cartesian4}
     * @constant
     */
-    static func zero() -> Cartesian4 {
-        return Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
-    }
+    static let zero = Cartesian4()
+    
     /**
     * An immutable Cartesian4 instance initialized to (1.0, 0.0, 0.0, 0.0).
     *
     * @type {Cartesian4}
     * @constant
     */
-    static func unitX() -> Cartesian4 {
-        return Cartesian4(x: 1.0, y: 0.0, z: 0.0, w: 0.0)
-    }
+    static let unitX = Cartesian4(x: 1.0, y: 0.0, z: 0.0, w: 0.0)
+
     /**
     * An immutable Cartesian4 instance initialized to (0.0, 1.0, 0.0, 0.0).
     *
     * @type {Cartesian4}
     * @constant
     */
-    static func unitY() -> Cartesian4 {
-        return Cartesian4(x: 0.0, y: 1.0, z: 0.0, w: 0.0)
-    }
+    static let unitY = Cartesian4(x: 0.0, y: 1.0, z: 0.0, w: 0.0)
+    
     /**
     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 1.0, 0.0).
     *
     * @type {Cartesian4}
     * @constant
     */
-    static func unitZ() -> Cartesian4 {
-        return Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 0.0)
-    }
+    static let unitZ = Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 0.0)
     
     /**
     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 0.0, 1.0).
@@ -424,10 +293,10 @@ public struct Cartesian4: Equatable, CustomStringConvertible {
     * @type {Cartesian4}
     * @constant
     */
-    static func unitW() -> Cartesian4 {
-        return Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
-    }
+    static let unitW = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
 }
+
+extension Cartesian4: CartesianType {}
 
 extension Cartesian4: Packable {
     

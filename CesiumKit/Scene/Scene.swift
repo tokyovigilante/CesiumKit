@@ -193,7 +193,7 @@ public class Scene {
     private let _fxaa = FXAA()
     
     
-    var _clearColorCommand = ClearCommand(color: Cartesian4.zero(), stencil: 0/*, owner: self*/)
+    var _clearColorCommand = ClearCommand(color: Cartesian4.zero, stencil: 0/*, owner: self*/)
     
     var _depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
     
@@ -318,7 +318,7 @@ public class Scene {
     *
     * @see Scene#skyBox
     */
-    var backgroundColor = Cartesian4.zero()
+    var backgroundColor = Cartesian4.zero
     
     /**
     * The current mode of the scene.

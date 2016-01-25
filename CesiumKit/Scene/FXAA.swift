@@ -37,7 +37,6 @@ class FXAA {
         let textureChanged = _texture == nil || _texture!.width != width || _texture!.height != height
         if textureChanged {
             _depthTexture = nil
-            //this._depthRenderbuffer = this._depthRenderbuffer && this._depthRenderbuffer.destroy();
             
             _texture = Texture(
                 context: context,
@@ -56,14 +55,7 @@ class FXAA {
                     pixelFormat: .Depth32FloatStencil8,
                     usage: .RenderTarget)
                 )
-            } /*else {
-                this._depthRenderbuffer = new Renderbuffer({
-                    context : context,
-                    width : width,
-                    height : height,
-                    format : RenderbufferFormat.DEPTH_COMPONENT16
-                });
-            }*/
+            }
         }
         
         if _fbo == nil || textureChanged {

@@ -62,13 +62,30 @@ extension Packable {
      */
     func pack(inout array: [Float], startingIndex: Int = 0) {
         
-        let floatArray = self.toArray().map { Float($0) }
+        let doubleArray = self.toArray()
         
+        //let floatArray = self.toArray().map { Float($0) }
+        //let fs = strideof(Float)
+        //let arrayLength = array.count
+        assert(array.count >= startingIndex + Self.packedLength(), "short array")
+
+        //var grid = [Double](count: packedLength, repeatedValue: 0.0)
+        /*array.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Float>) in
+            memcpy(pointer.baseAddress+startingIndex*fs, floatArray, floatArray.count*fs)
+        }*/
+        /*
         if array.count < startingIndex + Self.packedLength() {
-            array.appendContentsOf(floatArray)
-        } else {
-            array.replaceRange(Range(start: startingIndex, end: startingIndex+floatArray.count), with: floatArray)
-        }
+            for i in doubleArray.indices {
+                array.append(Float(array[i]))
+            }
+            //array.appendContentsOf(floatArray)
+        } else {*/
+            for i in doubleArray.indices {
+
+                array[startingIndex+i] = Float(doubleArray[i])
+            }
+            //array.replaceRange(Range(start: startingIndex, end: startingIndex+floatArray.count), with: floatArray)
+        /*}*/
     }
     
     /**
@@ -82,9 +99,10 @@ extension Packable {
     func toArray() -> [Double] {
         let packedLength = Self.packedLength()
         var grid = [Double](count: packedLength, repeatedValue: 0.0)
-        grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
+        memcpy(&grid, [self], packedLength * strideof(Double))
+        /*grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
             memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
-        }
+        }*/
         return grid
     }
     

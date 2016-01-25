@@ -27,7 +27,7 @@ protocol CartesianType {
     func multiplyComponents(other: Self) -> Self
     
     func multiplyByScalar(scalar: Double) -> Self
-    func divideByScalar(scalar: Double) -> Cartesian3
+    func divideByScalar(scalar: Double) -> Self
     
     func add(other: Self) -> Self
     func subtract(other: Self) -> Self
