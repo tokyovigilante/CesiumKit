@@ -276,7 +276,7 @@ extension Cartesian2: CartesianType {}
 extension Cartesian2: UniformSourceType {
     
     var simdType: SIMDType {
-        return float2(Float(x), Float(y))
+        return vector_float(self)
     }
 }
 
