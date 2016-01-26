@@ -9,12 +9,6 @@
 import Foundation
 import simd
 
-/*protocol CartArithmeticType {}
-
-extension Cartesian2: CartArithmeticType {}
-extension Cartesian3: CartArithmeticType {}
-extension Cartesian4: CartArithmeticType {}*/
-
 protocol CartesianType {
     func +(lhs: Self, rhs: Self) -> Self
     func -(lhs: Self, rhs: Self) -> Self
