@@ -29,14 +29,14 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         let options = CesiumOptions(
             clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
-            terrain: true,
+            terrain: false,//true,
             skyBox: true,
             scene3DOnly: false
         )
 
         _globe = CesiumGlobe(view: _view, options: options)
         
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
         _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ

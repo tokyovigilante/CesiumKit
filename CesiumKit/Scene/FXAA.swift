@@ -115,14 +115,14 @@ class FXAAUniformMap: UniformMap {
     
     private var _uniforms: [String: UniformFunc] = [
         
-        "u_texture": { (map: UniformMap) -> [Any] in
+        "u_texture": { (map: UniformMap) -> [SIMDType] in
             return [(map as! FXAAUniformMap).texture!]
         }
     ]
     
-    let floatUniforms: [String: FloatUniformFunc] = [
+    let floatUniforms: [String: UniformFunc] = [
         
-        "u_step": { (map: UniformMap) -> [Float] in
+        "u_step": { (map: UniformMap) -> [SIMDType] in
             return (map as! FXAAUniformMap).step
         }
     ]

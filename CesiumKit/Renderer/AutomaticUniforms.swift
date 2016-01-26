@@ -8,14 +8,13 @@
 
 
 import GLSLOptimizer
-/*
 
-var viewerPositionWCScratch = new Cartesian3();
-*/
+typealias AutomaticUniformFunc = (uniformState: UniformState) -> [SIMDType]
+
 struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
-    let getValue: (uniformState: UniformState) -> [Float]
+    let getValue: AutomaticUniformFunc
     
     func declaration (name: String) -> String {
         var declaration = "uniform \(datatype.declarationString) \(name)"
@@ -57,7 +56,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewport": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec4,
-        getValue: { (uniformState: UniformState) -> [Float] in
+        getValue: { (uniformState: UniformState) -> [SIMDType] in
             var result = [Float](count: 4, repeatedValue: 0.0)
             uniformState.viewportCartesian4.pack(&result)
             return result
@@ -94,7 +93,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportOrthographic":  AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
+        getValue: { (uniformState: UniformState) -> [SIMDType] in
             var result = [Float](count: 16, repeatedValue: 0.0)
             uniformState.viewportOrthographic.pack(&result)
             return result
@@ -139,7 +138,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportTransformation": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
+        getValue: { (uniformState: UniformState) -> [SIMDType] in
             var result = [Float](count: 16, repeatedValue: 0.0)
             uniformState.viewportOrthographic.pack(&result)
             return result
@@ -248,10 +247,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_view": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.view.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> [SIMDType] in
+            return [(uniformState.view as UniformSourceType).floatRepresentation]
         }
     ),
     /*

@@ -286,67 +286,49 @@ class ShaderProgram {
 
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
         let offset = uniform.offset
-        let uniformValue: [Float]
+        let uniformValue: [SIMDType]
         switch uniform.type {
             
         case .Automatic:
-            guard let floatUniform = uniform as? UniformFloat else {
-                assertionFailure("Automatic uniform must be float")
-                uniformValue = [0.0]
-                return
-            }
-            guard let index = floatUniform.automaticIndex else {
+            guard let index = uniform.automaticIndex else {
                 guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
                     assertionFailure("automatic uniform not found for \(uniform.name)")
-                    uniformValue = [0.0]
+                    uniformValue = [Float(0)]
                     return
                 }
-                floatUniform.automaticIndex = index
+                uniform.automaticIndex = index
                 let uniformFunc = AutomaticUniforms[index].1.getValue
                 uniformValue = uniformFunc(uniformState: uniformState)
                 break
             }
             let uniformFunc = AutomaticUniforms[index].1.getValue
             uniformValue = uniformFunc(uniformState: uniformState)
-
+            
         case .Manual:
-            if let floatUniform = uniform as? UniformFloat {
-                guard let index = floatUniform.mapIndex else {
-                    guard let index = map.indexForFloatUniform(uniform.name) else {
-                        assertionFailure("uniform not found for \(uniform.name)")
-                        uniformValue = [0.0]
-                        return
-                    }
-                    floatUniform.mapIndex = index
-                    let uniformFloatFunc = map.floatUniform(index)
-                    uniformValue = uniformFloatFunc(map: map)
-                    break
+            guard let index = uniform.mapIndex else {
+                guard let index = map.indexForUniform(uniform.name) else {
+                    assertionFailure("uniform not found for \(uniform.name)")
+                    uniformValue = [Float(0)]
+                    return
                 }
-                let uniformFloatFunc = map.floatUniform(index)
-                uniformValue = uniformFloatFunc(map: map)
-            } else { /*set other uniform types */
-                assertionFailure("Unimplemented uniform type")
-                uniformValue = [0.0]
-                return
+                uniform.mapIndex = index
+                let uniformFunc = map.uniform(index)
+                uniformValue = uniformFunc(map: map)
+                break
             }
+            let uniformFunc = map.uniform(index)
+            uniformValue = uniformFunc(map: map)
+            
             
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
-            uniformValue = [0.0]
+            uniformValue = [Float(0)]
             return
         }
-        //print("\(uniform.name): \(uniformValue)")
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
-        if uniform.dataType == .FloatMatrix3 {
-            var paddedMatrix3 = uniformValue
-            paddedMatrix3.insert(0.0, atIndex: 3)
-            paddedMatrix3.insert(0.0, atIndex: 7)
-            paddedMatrix3.append(0.0)
-            memcpy(buffer.data+offset, paddedMatrix3, uniform.alignedSize)
-        } else {
-            memcpy(buffer.data+offset, uniformValue, uniform.rawSize)
-        }
+        memcpy(buffer.data+offset, uniformValue, uniform.alignedSize)
     }
+
 
     /**
     * Creates a GLSL shader source string by sending the input through three stages:

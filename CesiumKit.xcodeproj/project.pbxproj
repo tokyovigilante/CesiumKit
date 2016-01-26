@@ -362,6 +362,8 @@
 		9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
+		945A49CF1C56515D0095A86F /* SIMDType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945A49CE1C56515D0095A86F /* SIMDType.swift */; };
+		945A49D01C56515D0095A86F /* SIMDType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945A49CE1C56515D0095A86F /* SIMDType.swift */; };
 		945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
 		945B6A9B1C2577730095A86F /* JulianDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6A991C2577730095A86F /* JulianDate.swift */; };
 		945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B6AA11C25781E0095A86F /* LeapSecond.swift */; };
@@ -888,6 +890,7 @@
 		9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Platform/SwiftyJSON.swift; sourceTree = "<group>"; };
 		9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumKitController.swift; path = CesiumKitRunner/CesiumKitController.swift; sourceTree = "<group>"; };
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
+		945A49CE1C56515D0095A86F /* SIMDType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SIMDType.swift; sourceTree = "<group>"; };
 		945B6A991C2577730095A86F /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
 		945B6AA11C25781E0095A86F /* LeapSecond.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeapSecond.swift; sourceTree = "<group>"; };
 		945BF6461AA9C00000FFAD81 /* GeometryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryType.swift; sourceTree = "<group>"; };
@@ -1587,6 +1590,7 @@
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
+				945A49CE1C56515D0095A86F /* SIMDType.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2151,6 +2155,7 @@
 				945B6AA21C25781E0095A86F /* LeapSecond.swift in Sources */,
 				9413B7DD1A37B93D00FFAD81 /* Context.swift in Sources */,
 				9413B7E61A37B93D00FFAD81 /* Imagebuffer.swift in Sources */,
+				945A49CF1C56515D0095A86F /* SIMDType.swift in Sources */,
 				94EB4D9B1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */,
 				9413B8471A37B94C00FFAD81 /* Shaders.swift in Sources */,
 				9413B7F21A37B93D00FFAD81 /* Uniform.swift in Sources */,
@@ -2461,6 +2466,7 @@
 				9478217F1B5A2D7C0095A86F /* QuadtreeTileProvider.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
 				94D3BFEF1C546BBD0095A86F /* CartesianType.swift in Sources */,
+				945A49D01C56515D0095A86F /* SIMDType.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,
 				947821821B5A2D7C0095A86F /* SceneTransitioner.swift in Sources */,
 				947821831B5A2D7C0095A86F /* ScreenSpaceCameraController.swift in Sources */,

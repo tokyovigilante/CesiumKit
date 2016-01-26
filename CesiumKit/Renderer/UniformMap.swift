@@ -6,40 +6,27 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-typealias UniformFunc = (map: UniformMap) -> [Any]
-typealias FloatUniformFunc = (map: UniformMap) -> [Float]
+typealias UniformFunc = (map: UniformMap) -> [SIMDType]
 
 protocol UniformMap {
     
-    var floatUniforms: [String: FloatUniformFunc] { get }
+    var uniforms: [String: UniformFunc] { get } 
     
-    func uniform(name: String) -> UniformFunc?
+    func indexForUniform(name: String) -> UniformIndex?
     
-    subscript(name: String) -> UniformFunc? { get }
-    
-    func indexForFloatUniform(name: String) -> UniformIndex?
-    
-    func floatUniform(index: UniformIndex) -> FloatUniformFunc
+    func uniform(index: UniformIndex) -> UniformFunc
     
     func textureForUniform (uniform: UniformSampler) -> Texture?
 }
 
 extension UniformMap {
     
-    func uniform(name: String) -> UniformFunc? {
-        return nil
+    func indexForUniform(name: String) -> UniformIndex? {
+        return uniforms.indexForKey(name)
     }
     
-    subscript(name: String) -> UniformFunc? {
-        return uniform(name)
-    }
-    
-    func indexForFloatUniform(name: String) -> UniformIndex? {
-        return floatUniforms.indexForKey(name)
-    }
-    
-    func floatUniform(index: UniformIndex) -> FloatUniformFunc {
-        return floatUniforms[index].1
+    func uniform(index: UniformIndex) -> UniformFunc {
+        return uniforms[index].1
     }
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
@@ -48,5 +35,5 @@ extension UniformMap {
     
 }
 
-class NullUniformMap: UniformMap { let floatUniforms = [String : FloatUniformFunc]() }
+class NullUniformMap: UniformMap { let uniforms = [String : UniformFunc]() }
 

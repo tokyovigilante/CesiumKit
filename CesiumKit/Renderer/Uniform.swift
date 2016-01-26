@@ -215,6 +215,10 @@ class Uniform {
         return self._desc.type
     }
     
+    var mapIndex: UniformIndex? = nil
+    
+    var automaticIndex: AutomaticUniformIndex? = nil
+    
     init (desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
         _desc = desc
         self.type = type
@@ -227,7 +231,7 @@ class Uniform {
         switch desc.type {
         case .Float:
             let dataType = inferDataTypeFromGLSLDescription(desc)
-            return UniformFloat(desc: desc, type: type, dataType: dataType)
+            return Uniform(desc: desc, type: type, dataType: dataType)
             /*case Int // kGlslTypeInt,
             return UniformFloat(variableDescription: variableDescription)
             case Bool // kGlslTypeBool,
@@ -240,7 +244,7 @@ class Uniform {
             return UniformSampler(desc: desc, type: type, dataType: .SamplerCube)
         default:
             assertionFailure("Unimplemented")
-            return UniformFloat(desc: desc, type: type, dataType: .FloatVec1)
+            return Uniform(desc: desc, type: type, dataType: .FloatVec1)
         }
     }
     
@@ -300,17 +304,22 @@ class Uniform {
     
 }
 
-typealias UniformIndex = DictionaryIndex<String, FloatUniformFunc>
+protocol UniformSourceType {
+    
+    var floatRepresentation: SIMDType { get }
+}
+
+extension Double: UniformSourceType {
+    
+    var floatRepresentation: SIMDType {
+        return Float(self)
+    }
+}
+
+typealias UniformIndex = DictionaryIndex<String, UniformFunc>
 
 typealias AutomaticUniformIndex = DictionaryIndex<String, AutomaticUniform>
 
-class UniformFloat: Uniform {
-    
-    var mapIndex: UniformIndex? = nil
-    
-    var automaticIndex: AutomaticUniformIndex? = nil
-    
-}
 
 /*
 case gl.INT:

@@ -21,15 +21,10 @@ protocol MatrixType {
 
     func equalsEpsilon(other: Self, epsilon: Double) -> Bool
     
-    func multiply (other: Self) -> Self
-    
+    func multiply (other: Self) -> Self    
 }
 
 protocol ArithmeticType {}
-
-extension Matrix2 : ArithmeticType {}
-extension Matrix3 : ArithmeticType {}
-extension Matrix4 : ArithmeticType {}
 
 extension MatrixType {
     

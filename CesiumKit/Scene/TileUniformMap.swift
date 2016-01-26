@@ -45,166 +45,87 @@ class TileUniformMap: UniformMap {
     
     var waterMaskTranslationAndScale = [Float](count: 4, repeatedValue: 0.0)// Cartesian4()
     
-    private var _uniforms: [String: UniformFunc] = [
+    let uniforms: [String: UniformFunc] = [
         
-       /* "u_initialColor": { (map: UniformMap) -> [Float] in
-            return [(map as! TileUniformMap).initialColor]
-        },
-        
-        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity]
-        },*/
-        
-        "u_oceanNormalMap": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).oceanNormalMap]
-        },
-        /*
-        "u_lightingFadeDistance": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).lightingFadeDistance]
-        },
-        
-        "u_center3D": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).center3D]
-        },
-        
-        "u_tileRectangle": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).tileRectangle]
-        },
-        
-        "u_modifiedModelView": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).modifiedModelView]
-        },
-        */
-        "u_dayTextures": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextures.map({ $0 as Any })
-        },
-        /*
-        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureTranslationAndScale.map({ $0 as Any })
-        },
-        
-        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureTexCoordsRectangle.map({ $0 as Any })
-        },
-        
-        "u_dayTextureAlpha": { (map: UniformMap) -> [Any]  in
-            return (map as! TileUniformMap).dayTextureAlpha
-        },
-        
-        "u_dayTextureBrightness": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureBrightness
-        },
-        
-        "u_dayTextureContrast": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureContrast
-        },
-        
-        "u_dayTextureHue": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureHue
-        },
-        
-        "u_dayTextureSaturation": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureSaturation
-        },
-        
-        "u_dayTextureOneOverGamma": { (map: UniformMap) -> [Any] in
-            return (map as! TileUniformMap).dayTextureOneOverGamma
-        },
-        
-        "u_dayIntensity": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).dayIntensity]
-        },
-        
-        "u_southAndNorthLatitude": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).southAndNorthLatitude]
-        },
-        
-        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
-        },
-        
-        "u_waterMask": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).waterMask!]
-        },
-        
-        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [Any] in
-            return [(map as! TileUniformMap).waterMaskTranslationAndScale]
-        }*/
-    ]
-    
-    let floatUniforms: [String: FloatUniformFunc] = [
-        
-        "u_initialColor": { (map: UniformMap) -> [Float] in
+        "u_initialColor": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).initialColor
         },
         
-        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap) -> [Float] in
+        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap) -> [SIMDType] in
             return [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity]
         },
         
-        "u_lightingFadeDistance": { (map: UniformMap) -> [Float] in
+        "u_lightingFadeDistance": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).lightingFadeDistance
         },
         
-        "u_center3D": { (map: UniformMap) -> [Float] in
+        "u_center3D": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).center3D
         },
         
-        "u_tileRectangle": { (map: UniformMap) -> [Float] in
+        "u_tileRectangle": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).tileRectangle
         },
         
-        "u_modifiedModelView": { (map: UniformMap) -> [Float] in
+        "u_modifiedModelView": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).modifiedModelView
         },
+        "u_dayTextures": { (map: UniformMap) -> [Any] in
+            return (map as! TileUniformMap).dayTextures.map({ $0 as Any })
+        },
         
-        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [Float] in
+        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).dayTextureTranslationAndScale
         },
         
-        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [Float] in
+        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [SIMDType] in
             return (map as! TileUniformMap).dayTextureTexCoordsRectangle
         },
         
-        /*"u_dayTextureAlpha": { (map: UniformMap) -> [Any]  in
-        return (map as! TileUniformMap).dayTextureAlpha
+        "u_dayTextureAlpha": { (map: UniformMap) -> [SIMDType]  in
+            return (map as! TileUniformMap).dayTextureAlpha
         },
         
-        "u_dayTextureBrightness": { (map: UniformMap) -> [Any] in
-        return (map as! TileUniformMap).dayTextureBrightness
+        "u_dayTextureBrightness": { (map: UniformMap) -> [SIMDType] in
+            return (map as! TileUniformMap).dayTextureBrightness
         },
         
-        "u_dayTextureContrast": { (map: UniformMap) -> [Any] in
-        return (map as! TileUniformMap).dayTextureContrast
+        "u_dayTextureContrast": { (map: UniformMap) -> [SIMDType] in
+            return (map as! TileUniformMap).dayTextureContrast
         },
         
-        "u_dayTextureHue": { (map: UniformMap) -> [Any] in
-        return (map as! TileUniformMap).dayTextureHue
+        "u_dayTextureHue": { (map: UniformMap) -> [SIMDType] in
+            return (map as! TileUniformMap).dayTextureHue
         },
         
-        "u_dayTextureSaturation": { (map: UniformMap) -> [Any] in
-        return (map as! TileUniformMap).dayTextureSaturation
+        "u_dayTextureSaturation": { (map: UniformMap) -> [SIMDType] in
+            return (map as! TileUniformMap).dayTextureSaturation
         },
         
-        "u_dayTextureOneOverGamma": { (map: UniformMap) -> [Any] in
-        return (map as! TileUniformMap).dayTextureOneOverGamma
+        "u_dayTextureOneOverGamma": { (map: UniformMap) -> [SIMDType] in
+            return (map as! TileUniformMap).dayTextureOneOverGamma
         },
         
-        "u_dayIntensity": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).dayIntensity]
+        "u_dayIntensity": { (map: UniformMap) -> [SIMDType] in
+            return [(map as! TileUniformMap).dayIntensity]
         },
         
-        "u_southAndNorthLatitude": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).southAndNorthLatitude]
+        "u_southAndNorthLatitude": { (map: UniformMap) -> [SIMDType] in
+            return [(map as! TileUniformMap).southAndNorthLatitude]
         },
         
-        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [Any] in
-        return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
+        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [SIMDType] in
+            return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
         },
-        */
-        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [Float] in
-        return (map as! TileUniformMap).waterMaskTranslationAndScale
+        
+        "u_waterMask": { (map: UniformMap) -> [SIMDType] in
+            return [(map as! TileUniformMap).waterMask!]
+        },
+        
+        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [SIMDType] in
+            return [(map as! TileUniformMap).waterMaskTranslationAndScale]
         }
+    
     ]
     
     init(maxTextureCount: Int) {
