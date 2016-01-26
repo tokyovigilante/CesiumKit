@@ -9,7 +9,7 @@
 
 import GLSLOptimizer
 
-typealias AutomaticUniformFunc = (uniformState: UniformState) -> UniformSourceType
+typealias AutomaticUniformFunc = (uniformState: UniformState) -> [UInt8]
 
 struct AutomaticUniform {
     let size: Int
@@ -56,8 +56,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewport": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec4,
-        getValue: { (uniformState: UniformState) -> UniformSourceType in
-            return uniformState.viewportCartesian4
+        getValue: { (uniformState: UniformState) -> [UInt8] in
+            return uniformState.viewportCartesian4.simdType
         }
     ),
     

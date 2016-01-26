@@ -286,53 +286,50 @@ class ShaderProgram {
 
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
         let offset = uniform.offset
-        let uniformValue: [SIMDType]
+        let uniformValue: [UInt8]
         switch uniform.type {
             
         case .Automatic:
             guard let index = uniform.automaticIndex else {
                 guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
                     assertionFailure("automatic uniform not found for \(uniform.name)")
-                    uniformValue = [Float(0)]
+                    uniformValue = []
                     return
                 }
                 uniform.automaticIndex = index
                 let uniformFunc = AutomaticUniforms[index].1.getValue
-                uniformValue = [uniformFunc(uniformState: uniformState).simdType]
+                uniformValue = uniformFunc(uniformState: uniformState)
                 break
             }
             let uniformFunc = AutomaticUniforms[index].1.getValue
-            uniformValue = [uniformFunc(uniformState: uniformState).simdType]
+            uniformValue = uniformFunc(uniformState: uniformState)
             
         case .Manual:
             guard let index = uniform.mapIndex else {
                 guard let index = map.indexForUniform(uniform.name) else {
                     assertionFailure("uniform not found for \(uniform.name)")
-                    uniformValue = [Float(0) as SIMDType]
+                    uniformValue = []
                     return
                 }
                 uniform.mapIndex = index
                 let uniformFunc = map.uniform(index)
-                uniformValue = uniformFunc(map: map).map { $0.simdType }
+                uniformValue = uniformFunc(map: map)
                 break
             }
             let uniformFunc = map.uniform(index)
-            uniformValue = uniformFunc(map: map).map { $0.simdType }
+            uniformValue = uniformFunc(map: map)
             
             
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
-            uniformValue = [Float(0)]
+            uniformValue = []
             return
         }
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
-        print(uniformValue)
-        print(uniformValue.count)
-        print(uniform.alignedSize)
-        uniformValue.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<SIMDType>) in
-            memcpy(buffer.data+offset, pointer.baseAddress, uniform.alignedSize * uniformValue.count)
-        }
-
+        let uniformSizeInBytes = uniform.alignedSize * uniformValue.count
+        
+        //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
+        memcpy(buffer.data+offset, uniformValue, uniformSizeInBytes)
     }
 
 
