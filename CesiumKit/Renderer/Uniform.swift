@@ -306,12 +306,19 @@ class Uniform {
 
 protocol UniformSourceType {
     
-    var floatRepresentation: SIMDType { get }
+    var simdType: SIMDType { get }
+}
+
+extension Float: UniformSourceType {
+    
+    var simdType: SIMDType {
+        return self
+    }
 }
 
 extension Double: UniformSourceType {
     
-    var floatRepresentation: SIMDType {
+    var simdType: SIMDType {
         return Float(self)
     }
 }

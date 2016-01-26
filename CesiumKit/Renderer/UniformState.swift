@@ -257,7 +257,7 @@ class UniformState {
             } else {
                 _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)
             }
-            _viewRotation3D = _view3D.rotation()
+            _viewRotation3D = _view3D.rotation
             _view3DDirty = false
         }
         return _view3D
@@ -716,7 +716,7 @@ class UniformState {
     */
     func setView(matrix: Matrix4) {
         _view = matrix
-        _viewRotation = _view.rotation()
+        _viewRotation = _view.rotation
         
         _view3DDirty = true
         _inverseView3DDirty = true
@@ -737,7 +737,7 @@ class UniformState {
     
     func setInverseView(matrix: Matrix4) {
         _inverseView = matrix
-        _inverseViewRotation = matrix.rotation()
+        _inverseViewRotation = matrix.rotation
     }
     
     func setCamera(camera: Camera) {
@@ -973,14 +973,14 @@ class UniformState {
     func cleanNormal() {
         if (_normalDirty) {
             _normalDirty = false
-            _normal = inverseModelView.rotation().transpose
+            _normal = inverseModelView.rotation.transpose
         }
     }
 
     func cleanNormal3D() {
         if _normal3DDirty {
             _normal3DDirty = false;
-            _normal3D = inverseModelView3D.rotation().transpose
+            _normal3D = inverseModelView3D.rotation.transpose
         }
     }
     /*

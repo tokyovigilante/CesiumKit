@@ -53,7 +53,7 @@ protocol QuadtreeTileProvider {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance: Float { get set }
+    var lightingFadeOutDistance: Double { get set }
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -62,7 +62,7 @@ protocol QuadtreeTileProvider {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance: Float { get set }
+    var lightingFadeInDistance: Double { get set }
     
     var hasWaterMask: Bool { get set }
     

@@ -815,7 +815,7 @@ public class ImageryLayer {
         
         let uniformMap = ImageryLayerUniformMap()
         
-        uniformMap.textureDimensions = [Float(width), Float(height)]
+        uniformMap.textureDimensions = Cartesian2(x: Double(width), y: Double(height))
         uniformMap.texture = texture
         
         var sinLatitude = sin(rectangle.south)

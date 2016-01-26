@@ -87,7 +87,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @type {Number}
     * @default 6500000.0
     */
-    var lightingFadeOutDistance: Float = 6500000
+    var lightingFadeOutDistance: Double = 6500000
     
     /**
     * The distance where lighting resumes. This only takes effect
@@ -96,7 +96,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     * @type {Number}
     * @default 9000000.0
     */
-    var lightingFadeInDistance: Float = 9000000
+    var lightingFadeInDistance: Double = 9000000
     
     var hasWaterMask = false
     
@@ -731,19 +731,19 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                     getDebugBoundingSphere(surfaceTile.boundingSphere3D, Color.RED).update(context, frameState, commandList);
                 }
             }*/
-            initialColor.pack(&uniformMap.initialColor)
+            uniformMap.initialColor = initialColor
             uniformMap.oceanNormalMap = oceanNormalMap
-            uniformMap.lightingFadeDistance = [lightingFadeOutDistance, lightingFadeInDistance]
+            uniformMap.lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
 
             uniformMap.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
             
-            surfaceTile.center.pack(&uniformMap.center3D)
+            uniformMap.center3D = surfaceTile.center
             
-            tileRectangle.pack(&uniformMap.tileRectangle)
+            uniformMap.tileRectangle = tileRectangle
             
-            uniformMap.southAndNorthLatitude = [Float(southLatitude), Float(northLatitude)]
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight = [Float(southMercatorYLow), Float(southMercatorYHigh), Float(oneOverMercatorHeight)]
-            modifiedModelView.pack(&uniformMap.modifiedModelView)
+            uniformMap.southAndNorthLatitude = Cartesian2(x: southLatitude, y: northLatitude)
+            uniformMap.southMercatorYLowAndHighAndOneOverHeight = Cartesian3(x: southMercatorYLow, y: southMercatorYHigh, z: oneOverMercatorHeight)
+            uniformMap.modifiedModelView = modifiedModelView
             var applyBrightness = false
             var applyContrast = false
             var applyHue = false
@@ -752,7 +752,15 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             var applyAlpha = false
             
             uniformMap.dayTextures.removeAll()
-            
+            uniformMap.dayTextureTranslationAndScale.removeAll()
+            uniformMap.dayTextureTexCoordsRectangle.removeAll()
+            uniformMap.dayTextureAlpha.removeAll()
+            uniformMap.dayTextureBrightness.removeAll()
+            uniformMap.dayTextureContrast.removeAll()
+            uniformMap.dayTextureHue.removeAll()
+            uniformMap.dayTextureSaturation.removeAll()
+            uniformMap.dayTextureOneOverGamma.removeAll()
+
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
 
                 let tileImagery = tileImageryCollection[imageryIndex]
@@ -770,25 +778,25 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 }
                 
                 uniformMap.dayTextures.append(imagery!.texture!)
-                tileImagery.textureTranslationAndScale!.pack(&uniformMap.dayTextureTranslationAndScale, startingIndex: numberOfDayTextures * 4)
-                tileImagery.textureCoordinateRectangle!.pack(&uniformMap.dayTextureTexCoordsRectangle, startingIndex: numberOfDayTextures * 4)
+                uniformMap.dayTextureTranslationAndScale.append(tileImagery.textureTranslationAndScale!)
+                uniformMap.dayTextureTexCoordsRectangle.append(tileImagery.textureCoordinateRectangle!)
                 
-                uniformMap.dayTextureAlpha[numberOfDayTextures] = Float(imageryLayer.alpha())
+                uniformMap.dayTextureAlpha.append(imageryLayer.alpha())
                 applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] != 1.0
                 
-                uniformMap.dayTextureBrightness[numberOfDayTextures] = Float(imageryLayer.brightness())
+                uniformMap.dayTextureBrightness.append(imageryLayer.brightness())
                 applyBrightness = applyBrightness || (uniformMap.dayTextureBrightness[numberOfDayTextures] != imageryLayer.defaultBrightness)
                 
-                uniformMap.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast()
+                uniformMap.dayTextureContrast.append(imageryLayer.contrast())
                 applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] != imageryLayer.defaultContrast
                 
-                uniformMap.dayTextureHue[numberOfDayTextures] = imageryLayer.hue()
+                uniformMap.dayTextureHue.append(imageryLayer.hue())
                 applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] != imageryLayer.defaultHue
                 
-                uniformMap.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation()
+                uniformMap.dayTextureSaturation.append(imageryLayer.saturation())
                 applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] != imageryLayer.defaultSaturation
                 
-                uniformMap.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma()
+                uniformMap.dayTextureOneOverGamma.append(1.0 / imageryLayer.gamma())
                 applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.defaultGamma
                 
                 // FIXME: Credits
@@ -809,7 +817,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 uniformMap.dayTextures.removeRange(Range(numberOfDayTextures..<uniformMap.dayTextures.count))
             }
             uniformMap.waterMask = waterMaskTexture
-            surfaceTile.waterMaskTranslationAndScale.pack(&uniformMap.waterMaskTranslationAndScale)
+            uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale
             
             command.pipeline = surfaceShaderSet.getRenderPipeline(
                 context: context,

@@ -170,36 +170,36 @@ private class SkyAtmosphereUniformMap: UniformMap {
 
     let uniforms: [String: UniformFunc] = [
         
-        "fCameraHeight": { (map: UniformMap) -> [SIMDType] in
+        "fCameraHeight": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fCameraHeight]
         },
         
-        "fCameraHeight2": { (map: UniformMap) -> [SIMDType] in
+        "fCameraHeight2": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fCameraHeight2]
         },
         
-        "fOuterRadius": { (map: UniformMap) -> [SIMDType] in
+        "fOuterRadius": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fOuterRadius]
         },
         
-        "fOuterRadius2": { (map: UniformMap) -> [SIMDType] in
+        "fOuterRadius2": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fOuterRadius2]
         },
         
-        "fInnerRadius": { (map: UniformMap) -> [SIMDType] in
+        "fInnerRadius": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fInnerRadius]
         },
         
-        "fScale": { (map: UniformMap) -> [SIMDType] in
+        "fScale": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fScale]
         },
         
-        "fScaleDepth": { (map: UniformMap) -> [SIMDType] in
+        "fScaleDepth": { (map: UniformMap) -> [UniformSourceType] in
             return [(map as! SkyAtmosphereUniformMap).fScaleDepth]
         },
         
         
-        "fScaleOverScaleDepth": { (map: UniformMap) -> [SIMDType] in
+        "fScaleOverScaleDepth": { (map: UniformMap) -> [UniformSourceType] in
             let saMap = map as! SkyAtmosphereUniformMap
             return [(map as! SkyAtmosphereUniformMap).fScaleOverScaleDepth]
         }

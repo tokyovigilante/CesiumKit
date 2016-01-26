@@ -78,10 +78,9 @@ class FXAA {
         }
         
         if textureChanged {
-            let step = Cartesian2(x: 1.0 / Double(_texture!.width), y: 1.0 / Double(_texture!.height))
             let uniformMap = FXAAUniformMap()
             uniformMap.texture = _texture
-            step.pack(&uniformMap.step)
+            uniformMap.step = Cartesian2(x: 1.0 / Double(_texture!.width), y: 1.0 / Double(_texture!.height))
             _command!.uniformMap = uniformMap
         }
     }
@@ -109,27 +108,16 @@ class FXAA {
 
 class FXAAUniformMap: UniformMap {
     
-    var step = [Float](count: 2, repeatedValue: 0.0)
+    var step = Cartesian2()
     
     var texture : Texture?
     
-    private var _uniforms: [String: UniformFunc] = [
-        
-        "u_texture": { (map: UniformMap) -> [SIMDType] in
-            return [(map as! FXAAUniformMap).texture!]
+    let uniforms: [String: UniformFunc] = [
+
+        "u_step": { (map: UniformMap) -> [UniformSourceType] in
+            return [(map as! FXAAUniformMap).step]
         }
     ]
-    
-    let floatUniforms: [String: UniformFunc] = [
-        
-        "u_step": { (map: UniformMap) -> [SIMDType] in
-            return (map as! FXAAUniformMap).step
-        }
-    ]
-    
-    func uniform(name: String) -> UniformFunc? {
-        return _uniforms[name]
-    }
     
     func textureForUniform(uniform: UniformSampler) -> Texture? {
         return texture

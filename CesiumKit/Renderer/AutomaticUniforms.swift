@@ -9,7 +9,7 @@
 
 import GLSLOptimizer
 
-typealias AutomaticUniformFunc = (uniformState: UniformState) -> [SIMDType]
+typealias AutomaticUniformFunc = (uniformState: UniformState) -> UniformSourceType
 
 struct AutomaticUniform {
     let size: Int
@@ -56,10 +56,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewport": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec4,
-        getValue: { (uniformState: UniformState) -> [SIMDType] in
-            var result = [Float](count: 4, repeatedValue: 0.0)
-            uniformState.viewportCartesian4.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.viewportCartesian4
         }
     ),
     
@@ -93,10 +91,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportOrthographic":  AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [SIMDType] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.viewportOrthographic.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            uniformState.viewportOrthographic
         }
     ),
     
@@ -138,10 +134,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportTransformation": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [SIMDType] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.viewportOrthographic.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.viewportTransformation
         }
     ),
     /*
@@ -247,8 +241,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_view": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [SIMDType] in
-            return [(uniformState.view as UniformSourceType).floatRepresentation]
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.view
         }
     ),
     /*
@@ -302,10 +296,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewRotation": AutomaticUniform(
         size: 1,
         datatype: .FloatMatrix3,
-        getValue: { (uniformState: UniformState) in
-            var result = [Float](count: 9, repeatedValue: 0.0)
-            uniformState.viewRotation.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.viewRotation
         }
     ),
     /*
@@ -469,10 +461,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_projection": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.projection.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.projection
         }
     ),
     
@@ -497,10 +487,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_inverseProjection": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.inverseProjection.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.inverseProjection
         }
     ),
     /*
@@ -573,12 +561,9 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelView.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.modelView
         }
-        
     ),
     
     /**
@@ -610,12 +595,9 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelView3D": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelView3D.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.modelView3D
         }
-        
     ),
     /*
     /**
@@ -672,10 +654,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_inverseModelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.inverseModelView.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.inverseModelView
         }
     ),
     /*
@@ -796,10 +776,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_modelViewProjection": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 16, repeatedValue: 0.0)
-            uniformState.modelViewProjection.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.modelViewProjection
         }
     ),
     /*
@@ -922,10 +900,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_normal": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix3,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 9, repeatedValue: 0.0)
-            uniformState.normal.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.normal
         }
     ),
     
@@ -956,10 +932,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_normal3D": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix3,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 9, repeatedValue: 0.0)
-            uniformState.normal3D.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.normal3D
         }
     ),
     
@@ -1060,10 +1034,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_entireFrustum": AutomaticUniform(
         size: 1,
         datatype: .FloatVec2,
-        getValue: { (uniformState: UniformState) in
-            var result = [Float](count: 2, repeatedValue: 0.0)
-            uniformState.entireFrustum.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.entireFrustum
         }
     ),
     /*
@@ -1172,10 +1144,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_sunDirectionEC": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec3,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 3, repeatedValue: 0.0)
-            uniformState.sunDirectionEC.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.sunDirectionEC
         }
     ),
     
@@ -1197,10 +1167,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_sunDirectionWC": AutomaticUniform(
         size: 1,
         datatype: .FloatVec3,
-        getValue: { (uniformState: UniformState) in
-            var result = [Float](count: Cartesian3.packedLength(), repeatedValue: 0.0)
-            uniformState.sunDirectionWC.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.sunDirectionWC
         }
     ),
     
@@ -1224,10 +1192,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_moonDirectionEC": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatVec3,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            var result = [Float](count: 3, repeatedValue: 0.0)
-            uniformState.moonDirectionEC.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.moonDirectionEC
         }
     ),
     /*
@@ -1292,10 +1258,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewerPositionWC":  AutomaticUniform(
         size : 1,
         datatype : .FloatVec3,
-        getValue : { (uniformState: UniformState) in
-            var result = [Float](count: Cartesian3.packedLength(), repeatedValue: 0.0)
-            uniformState.inverseView.translation().pack(&result)
-            return result
+        getValue : { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.inverseView.translation
         }
     ),
     
@@ -1313,8 +1277,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_frameNumber": AutomaticUniform(
         size: 1,
         datatype : UniformDataType.FloatVec1,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            return [Float(uniformState.frameState.frameNumber)]
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return Float(uniformState.frameState.frameNumber)
         }
     ),
     
@@ -1335,8 +1299,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_morphTime": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec1,
-        getValue: { (uniformState: UniformState) -> [Float] in
-            return [Float(uniformState.frameState.morphTime)]
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return uniformState.frameState.morphTime
         }
     ),
     
@@ -1393,10 +1357,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_temeToPseudoFixed": AutomaticUniform(
         size : 1,
         datatype : .FloatMatrix3,
-        getValue: { (uniformState: UniformState) in
-            var result = [Float](count: 9, repeatedValue: 0.0)
-            uniformState.temeToPseudoFixedMatrix.pack(&result)
-            return result
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            uniformState.temeToPseudoFixedMatrix
         }
     ),
     /*
@@ -1419,19 +1381,19 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     };*/
 
 
-        /**
-         * An automatic GLSL uniform scalar used to mix a color with the fog color based on the distance to the camera.
-         *
-         * @alias czm_fogDensity
-         * @glslUniform
-         *
-         * @see czm_fog
-         */
+    /**
+     * An automatic GLSL uniform scalar used to mix a color with the fog color based on the distance to the camera.
+     *
+     * @alias czm_fogDensity
+     * @glslUniform
+     *
+     * @see czm_fog
+     */
     "czm_fogDensity": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatVec1,
-        getValue: { (uniformState: UniformState) in
-        return [Float(0.0)]//Float(uniformState.fogDensity)
+        getValue: { (uniformState: UniformState) -> UniformSourceType in
+            return 0.0//Float(uniformState.fogDensity)
         }
     )
 

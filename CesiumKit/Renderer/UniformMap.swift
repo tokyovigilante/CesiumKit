@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-typealias UniformFunc = (map: UniformMap) -> [SIMDType]
+typealias UniformFunc = (map: UniformMap) -> [UniformSourceType]
 
 protocol UniformMap {
     

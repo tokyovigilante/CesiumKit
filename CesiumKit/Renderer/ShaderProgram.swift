@@ -298,11 +298,11 @@ class ShaderProgram {
                 }
                 uniform.automaticIndex = index
                 let uniformFunc = AutomaticUniforms[index].1.getValue
-                uniformValue = uniformFunc(uniformState: uniformState)
+                uniformValue = [uniformFunc(uniformState: uniformState).simdType]
                 break
             }
             let uniformFunc = AutomaticUniforms[index].1.getValue
-            uniformValue = uniformFunc(uniformState: uniformState)
+            uniformValue = [uniformFunc(uniformState: uniformState).simdType]
             
         case .Manual:
             guard let index = uniform.mapIndex else {
@@ -313,11 +313,11 @@ class ShaderProgram {
                 }
                 uniform.mapIndex = index
                 let uniformFunc = map.uniform(index)
-                uniformValue = uniformFunc(map: map)
+                uniformValue = uniformFunc(map: map).map { $0.simdType }
                 break
             }
             let uniformFunc = map.uniform(index)
-            uniformValue = uniformFunc(map: map)
+            uniformValue = uniformFunc(map: map).map { $0.simdType }
             
             
         case .Sampler:
@@ -326,7 +326,10 @@ class ShaderProgram {
             return
         }
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
-        memcpy(buffer.data+offset, uniformValue, uniform.alignedSize)
+        print(uniformValue)
+        print(uniformValue.count)
+        print(uniform.alignedSize)
+        memcpy(buffer.data+offset, uniformValue, uniform.alignedSize * uniformValue.count)
     }
 
 

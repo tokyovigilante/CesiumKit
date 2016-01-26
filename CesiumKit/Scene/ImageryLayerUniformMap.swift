@@ -8,18 +8,14 @@
 
 class ImageryLayerUniformMap: UniformMap {
     
-    var textureDimensions = [Float](count: 2, repeatedValue: 0.0)
+    var textureDimensions = Cartesian2()
     
     var texture : Texture?
     
     let uniforms: [String: UniformFunc] = [
         
-        "u_texture": { (map: UniformMap) -> [SIMDType] in
-            return [(map as! ImageryLayerUniformMap).texture!]
-        },
-        
-        "u_textureDimensions": { (map: UniformMap) -> [SIMDType] in
-            return (map as! ImageryLayerUniformMap).textureDimensions
+        "u_textureDimensions": { (map: UniformMap) -> [UniformSourceType] in
+            return [(map as! ImageryLayerUniformMap).textureDimensions]
         }
     ]
     

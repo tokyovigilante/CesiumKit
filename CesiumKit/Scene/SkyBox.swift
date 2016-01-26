@@ -164,7 +164,7 @@ private class SkyBoxUniformMap: UniformMap {
     
     var cubemap : Texture?
     
-    let floatUniforms: [String : FloatUniformFunc] = [:]
+    let uniforms: [String : UniformFunc] = [:]
     
     func textureForUniform(uniform: UniformSampler) -> Texture? {
         return cubemap
