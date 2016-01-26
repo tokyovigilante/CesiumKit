@@ -874,9 +874,9 @@ extension Matrix3: UniformSourceType {
         let col1 = self[1]
         let col2 = self[2]
         return float3x3([
-            float3(Float(col0.x), Float(col0.y), Float(col0.z)),
-            float3(Float(col1.x), Float(col1.y), Float(col1.z)),
-            float3(Float(col2.x), Float(col2.y), Float(col2.z))
+            vector_float(col0),
+            vector_float(col1),
+            vector_float(col2)
             ])
     }
 }

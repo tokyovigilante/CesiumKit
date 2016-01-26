@@ -1449,10 +1449,10 @@ extension Matrix4: UniformSourceType {
         let col2 = self[2]
         let col3 = self[3]
         return float4x4([
-            float4(Float(col0.x), Float(col0.y), Float(col0.z), Float(col0.w)),
-            float4(Float(col1.x), Float(col1.y), Float(col1.z), Float(col1.w)),
-            float4(Float(col2.x), Float(col2.y), Float(col2.z), Float(col2.w)),
-            float4(Float(col3.x), Float(col3.y), Float(col3.z), Float(col3.w))
+            vector_float(col0),
+            vector_float(col1),
+            vector_float(col2),
+            vector_float(col3)
             ])
     }
 }
