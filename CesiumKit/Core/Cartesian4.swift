@@ -298,6 +298,13 @@ public extension Cartesian4 {
 
 extension Cartesian4: CartesianType {}
 
+extension Cartesian4: UniformSourceType {
+    
+    var simdType: SIMDType {
+        return float4(Float(x), Float(y), Float(z), Float(w))
+    }
+}
+
 extension Cartesian4: Packable {
     
     static func packedLength () -> Int {

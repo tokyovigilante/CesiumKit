@@ -446,6 +446,12 @@ public extension Cartesian3 {
 
 extension Cartesian3: CartesianType {}
 
+extension Cartesian3: UniformSourceType {
+    
+    var simdType: SIMDType {
+        return float3(Float(x), Float(y), Float(z))
+    }
+}
 
 extension Cartesian3: Packable {
     

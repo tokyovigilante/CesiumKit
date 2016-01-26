@@ -171,77 +171,6 @@ public extension Cartesian2 {
     }
     
     /**
-    * Computes the componentwise product of two Cartesians.
-    *
-    * @param {Cartesian2} left The first Cartesian.
-    * @param {Cartesian2} right The second Cartesian.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func multiplyComponents(other: Cartesian2) -> Cartesian2 {
-        return self * other
-    }
-    
-    /**
-    * Computes the componentwise sum of two Cartesians.
-    *
-    * @param {Cartesian2} left The first Cartesian.
-    * @param {Cartesian2} right The second Cartesian.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func add(other: Cartesian2) -> Cartesian2 {
-        return self + other
-    }
-    
-    /**
-    * Computes the componentwise difference of two Cartesians.
-    *
-    * @param {Cartesian2} left The first Cartesian.
-    * @param {Cartesian2} right The second Cartesian.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func subtract(other: Cartesian2) -> Cartesian2 {
-        return self - other
-    }
-    
-    /**
-    * Multiplies the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian2} cartesian The Cartesian to be scaled.
-    * @param {Number} scalar The scalar to multiply with.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func multiplyByScalar(scalar: Double) -> Cartesian2 {
-        return self * scalar
-    }
-    
-    /**
-    * Divides the provided Cartesian componentwise by the provided scalar.
-    *
-    * @param {Cartesian2} cartesian The Cartesian to be divided.
-    * @param {Number} scalar The scalar to divide by.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func divideByScalar(scalar: Double) -> Cartesian2 {
-        return self * (1/scalar)
-    }
-    
-    /**
-    * Negates the provided Cartesian.
-    *
-    * @param {Cartesian2} cartesian The Cartesian to be negated.
-    * @param {Cartesian2} [result] The object onto which to store the result.
-    * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
-    */
-    func negate() -> Cartesian2 {
-        return -self
-    }
-    
-    /**
     * Computes the absolute value of the provided Cartesian.
     *
     * @param {Cartesian2} cartesian The Cartesian whose absolute value is to be computed.
@@ -340,7 +269,15 @@ public extension Cartesian2 {
     * @constant
     */
     static let unitY = Cartesian2(x: 1.0, y: 0.0)
+}
 
+extension Cartesian2: CartesianType {}
+
+extension Cartesian2: UniformSourceType {
+    
+    var simdType: SIMDType {
+        return float2(Float(x), Float(y))
+    }
 }
 
 extension Cartesian2: Packable {
