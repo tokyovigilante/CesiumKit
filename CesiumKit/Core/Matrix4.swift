@@ -1381,9 +1381,8 @@ Matrix4.abs = function(matrix, result) {
     * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter.
     */
-    func translation () -> Cartesian3 {
+    var translation: Cartesian3 {
         let column3 = self[3]
-        //return double3(column3.x, column3.y, column3.z)
         return Cartesian3(x: column3.x, y: column3.y, z: column3.z)
     }
 
@@ -1409,7 +1408,7 @@ Matrix4.abs = function(matrix, result) {
     * //     [11.0, 15.0, 19.0]
     * //     [12.0, 16.0, 20.0]
     */
-    func rotation() -> Matrix3 {
+    var rotation: Matrix3 {
         let column0 = self[0]
         let column1 = self[1]
         let column2 = self[2]
@@ -1441,6 +1440,22 @@ Matrix4.abs = function(matrix, result) {
 }
 
 extension Matrix4: MatrixType {}
+
+extension Matrix4: UniformSourceType {
+    
+    var simdType: SIMDType {
+        let col0 = self[0]
+        let col1 = self[1]
+        let col2 = self[2]
+        let col3 = self[3]
+        return float4x4([
+            float4(Float(col0.x), Float(col0.y), Float(col0.z), Float(col0.w)),
+            float4(Float(col1.x), Float(col1.y), Float(col1.z), Float(col1.w)),
+            float4(Float(col2.x), Float(col2.y), Float(col2.z), Float(col2.w)),
+            float4(Float(col3.x), Float(col3.y), Float(col3.z), Float(col3.w))
+            ])
+    }
+}
 
 extension Matrix4: Packable {
     

@@ -545,7 +545,7 @@ extension Matrix2: MatrixType {}
 
 extension Matrix2: UniformSourceType {
  
-    var floatRepresentation: SIMDType {
+    var simdType: SIMDType {
         let col0 = self[0]
         let col1 = self[1]
         return float2x2([float2(Float(col0.x), Float(col0.y)), float2(Float(col1.x), Float(col1.y))])
