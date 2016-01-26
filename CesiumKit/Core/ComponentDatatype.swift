@@ -114,9 +114,10 @@ enum ComponentDatatype {
     
     func toVertexType (attributeCount: Int) -> VertexType {
         var metalIndex: UInt = 0
+        let attributeCount: UInt = UInt(attributeCount)
         switch (self) {
         case .Byte:
-            metalIndex = VertexType.Char2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+            metalIndex = VertexType.Char2.rawValue + attributeCount > 2 ? UInt(attributeCount-2) : 0
         case .UnsignedByte:
             metalIndex = VertexType.UChar2.rawValue  + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
         case .Short:

@@ -308,7 +308,7 @@ class ShaderProgram {
             guard let index = uniform.mapIndex else {
                 guard let index = map.indexForUniform(uniform.name) else {
                     assertionFailure("uniform not found for \(uniform.name)")
-                    uniformValue = [Float(0)]
+                    uniformValue = [Float(0) as SIMDType]
                     return
                 }
                 uniform.mapIndex = index
@@ -329,7 +329,10 @@ class ShaderProgram {
         print(uniformValue)
         print(uniformValue.count)
         print(uniform.alignedSize)
-        memcpy(buffer.data+offset, uniformValue, uniform.alignedSize * uniformValue.count)
+        uniformValue.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<SIMDType>) in
+            memcpy(buffer.data+offset, pointer.baseAddress, uniform.alignedSize * uniformValue.count)
+        }
+
     }
 
 

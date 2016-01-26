@@ -155,23 +155,34 @@ class GlobeSurfaceShaderSet {
             var computeDayColor = "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n{    \nvec4 color = initialColor;\n"
             
             for i in 0..<numberOfDayTextures {
-                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTexture\(i),\n" +
-                    "textureCoordinates,\n" +
-                    "u_dayTextureTexCoordsRectangle[\(i)],\n" +
-                    "u_dayTextureTranslationAndScale[\(i)],\n" +
-                    (applyAlpha ? "u_dayTextureAlpha[\(i)]" : "1.0") + ",\n" +
-                    (applyBrightness ? "u_dayTextureBrightness[\(i)]" : "0.0") + ",\n" +
-                    (applyContrast ? "u_dayTextureContrast[\(i)]" : "0.0") + ",\n" +
-                    (applyHue ? "u_dayTextureHue[\(i)]" : "0.0") + ",\n" +
-                    (applySaturation ? "u_dayTextureSaturation[\(i)]" : "0.0") + ",\n" +
-                    (applyGamma ? "u_dayTextureOneOverGamma[\(i)]" : "0.0") + "\n" +
-                ");\n"
+                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTexture\(i),\n"
+                computeDayColor += "textureCoordinates,\n"
+                computeDayColor += "u_dayTextureTexCoordsRectangle[\(i)],\n"
+                computeDayColor += "u_dayTextureTranslationAndScale[\(i)],\n"
+                computeDayColor += (applyAlpha ? "u_dayTextureAlpha[\(i)]" : "1.0") + ",\n"
+                computeDayColor += (applyBrightness ? "u_dayTextureBrightness[\(i)]" : "0.0") + ",\n"
+                computeDayColor += (applyContrast ? "u_dayTextureContrast[\(i)]" : "0.0") + ",\n"
+                computeDayColor += (applyHue ? "u_dayTextureHue[\(i)]" : "0.0") + ",\n"
+                computeDayColor += (applySaturation ? "u_dayTextureSaturation[\(i)]" : "0.0") + ",\n"
+                computeDayColor += (applyGamma ? "u_dayTextureOneOverGamma[\(i)]" : "0.0") + "\n"
+                computeDayColor += ");\n"
+/*                computeDayColor += "color = sampleAndBlend(\ncolor,\nu_dayTexture\(i),\n" +
+ "textureCoordinates,\n" +
+ "u_dayTextureTexCoordsRectangle[\(i)],\n" +
+ "u_dayTextureTranslationAndScale[\(i)],\n" +
+ (applyAlpha ? "u_dayTextureAlpha[\(i)]" : "1.0") + ",\n" +
+ (applyBrightness ? "u_dayTextureBrightness[\(i)]" : "0.0") + ",\n" +
+ (applyContrast ? "u_dayTextureContrast[\(i)]" : "0.0") + ",\n" +
+ (applyHue ? "u_dayTextureHue[\(i)]" : "0.0") + ",\n" +
+ (applySaturation ? "u_dayTextureSaturation[\(i)]" : "0.0") + ",\n" +
+ (applyGamma ? "u_dayTextureOneOverGamma[\(i)]" : "0.0") + "\n" +
+ ");\n"*/
             }
-            
+ 
             computeDayColor += "return color;\n}"
-            
+ 
             fs.sources.append(computeDayColor)
-            
+ 
             vs.sources.append(getPositionMode(sceneMode))
             vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
             

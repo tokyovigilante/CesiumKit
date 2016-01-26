@@ -18,4 +18,5 @@ extension float4: SIMDType {}
 extension float2x2: SIMDType {}
 extension float3x3: SIMDType {}
 extension float4x4: SIMDType {}
+extension matrix_float4x4: SIMDType {}
 extension Texture: SIMDType {}
