@@ -165,7 +165,6 @@ struct EllipsoidGeometry {
             positions.append(0.0)
             positions.append(-_radii.z)
         }
-        //print("\(positions[131697]) \(positions[131698]) \(positions[131697])")
         let attributes = GeometryAttributes()
         
         if _vertexFormat.position {
