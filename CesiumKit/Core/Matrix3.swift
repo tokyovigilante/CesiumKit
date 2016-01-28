@@ -33,21 +33,26 @@ import simd
 * @see Matrix2
 * @see Matrix4
 */
-
-public typealias Matrix3 = double3x3
-
-public extension Matrix3 {
+public struct Matrix3 {
+    
+    private (set) internal var simdType: double3x3
+    
+    private var _floatRepresentation: float3x3
     
     public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
         _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double) {
             
-            self.init(rows: [
+            simdType = double3x3([
                 double3(column0Row0, column1Row0, column2Row0),
                 double3(column0Row1, column1Row1, column2Row1),
                 double3(column0Row2, column1Row2, column2Row2),
             ])
-
+            _floatRepresentation = float3x3([
+                vector_float(simdType[0]),
+                vector_float(simdType[1]),
+                vector_float(simdType[2])
+            ])
     }
     
     /**
@@ -81,11 +86,11 @@ public extension Matrix3 {
         let m21 = 2.0 * (yz + xw)
         let m22 = -x2 - y2 + z2 + w2
         
-        self.init(rows: [
-            double3(m00, m01, m02),
-            double3(m10, m11, m12),
-            double3(m20, m21, m22),
-            ])
+        self.init(
+            m00, m01, m02,
+            m10, m11, m12,
+            m20, m21, m22
+        )
     }
     
     init (fromMatrix4 matrix: Matrix4) {
@@ -93,11 +98,41 @@ public extension Matrix3 {
         let m4col1 = matrix[1]
         let m4col2 = matrix[2]
         
-        self.init([
-            double3(m4col0.x, m4col0.y, m4col0.z),
-            double3(m4col0.w, m4col1.x, m4col1.y),
-            double3(m4col1.z, m4col1.w, m4col2.x)
+        self.init(
+            m4col0.x, m4col0.y, m4col0.z,
+            m4col0.w, m4col1.x, m4col1.y,
+            m4col1.z, m4col1.w, m4col2.x
+        )
+    }
+    
+    public init (fromSIMD simd: double3x3) {
+        simdType = simd
+        _floatRepresentation = float3x3([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2])
         ])
+    }
+    
+    public init (_ scalar: Double = 0.0) {
+        simdType = double3x3(scalar)
+        _floatRepresentation = float3x3(Float(scalar))
+    }
+    
+    public init (diagonal: double3) {
+        simdType = double3x3(diagonal: diagonal)
+        _floatRepresentation = float3x3(diagonal: vector_float(diagonal))
+    }
+    
+    public subscript (column: Int) -> Cartesian3 {
+        assert(column >= 0 && column <= 3, "column index out of range")
+        return Cartesian3(fromSIMD: simdType[column])
+    }
+    /// Access to individual elements.
+    public subscript (column: Int, row: Int) -> Double {
+        assert(column >= 0 && column <= 3, "column index out of range")
+        assert(row >= 0 && row <= 3, "row index out of range")
+        return simdType[column][row]
     }
     
     /*
@@ -287,11 +322,11 @@ public extension Matrix3 {
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
-        self.init(rows: [
-            double3(1.0, 0.0, 0.0),
-            double3(0.0, cosAngle, -sinAngle),
-            double3(0.0, sinAngle, cosAngle)
-            ])
+        self.init(
+            1.0, 0.0, 0.0,
+            0.0, cosAngle, -sinAngle,
+            0.0, sinAngle, cosAngle
+        )
     }
     
     /**
@@ -311,11 +346,11 @@ public extension Matrix3 {
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
-        self.init(rows: [
-            double3(cosAngle, 0.0, sinAngle),
-            double3(0.0, 1.0, 0.0),
-            double3(-sinAngle, 0.0, cosAngle)
-        ])
+        self.init(
+            cosAngle, 0.0, sinAngle,
+            0.0, 1.0, 0.0,
+            -sinAngle, 0.0, cosAngle
+        )
     }
     
     /**
@@ -335,11 +370,11 @@ public extension Matrix3 {
         let cosAngle: Double = cos(angle)
         let sinAngle: Double = sin(angle)
         
-        self.init(rows: [
-            double3(cosAngle, -sinAngle, 0.0),
-            double3(sinAngle, cosAngle, 0.0),
-            double3(0.0, 0.0, 1.0)
-        ])
+        self.init(
+            cosAngle, -sinAngle, 0.0,
+            sinAngle, cosAngle, 0.0,
+            0.0, 0.0, 1.0
+        )
     }
     
 
@@ -386,7 +421,7 @@ public extension Matrix3 {
     */
     func column (index: Int) -> Cartesian3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
-        return self[index]
+        return Cartesian3(fromSIMD: simdType[index])
     }
     
     /**
@@ -402,9 +437,9 @@ public extension Matrix3 {
     func setColumn (index: Int, cartesian: Cartesian3) -> Matrix3 {
     
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
-        var result = self
-        result[index] = cartesian
-        return(result)
+        var result = simdType
+        result[index] = cartesian.simdType
+        return Matrix3(fromSIMD: result)
     }
     /*
     /**
@@ -590,9 +625,7 @@ public extension Matrix3 {
     * @returns {Cartesian3} The modified result parameter.
     */
     public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
-        //return self * cartesian
-        let result = self * double3(cartesian.x, cartesian.y, cartesian.z)
-        return Cartesian3(x: result.x, y: result.y, z: result.z)
+        return Cartesian3(fromSIMD: simdType * cartesian.simdType)
     }
     /*
     /**
@@ -657,6 +690,53 @@ public extension Matrix3 {
         //return Matrix3()
         return Matrix3(fromArray: grid)
     }
+    
+    /**
+     * Computes the product of two matrices.
+     *
+     * @param {MatrixType} self The first matrix.
+     * @param {MatrixType} other The second matrix.
+     * @returns {MatrixType} The modified result parameter.
+     */
+    func multiply(other: Matrix3) -> Matrix3 {
+        return Matrix3(fromSIMD: simdType * other.simdType)
+    }
+    
+    func negate() -> Matrix3 {
+        return Matrix3(fromSIMD: -simdType)
+    }
+    
+    func transpose () -> Matrix3 {
+        return Matrix3(fromSIMD: simdType.transpose)
+    }
+    
+    func equals(other: Matrix3) -> Bool {
+        return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
+    }
+    
+    /**
+     * Compares the provided matrices componentwise and returns
+     * <code>true</code> if they are within the provided epsilon,
+     * <code>false</code> otherwise.
+     *
+     * @param {MatrixType} [left] The first matrix.
+     * @param {MatrixType} [right] The second matrix.
+     * @param {Number} epsilon The epsilon to use for equality testing.
+     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+     */
+    func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
+        return matrix_almost_equal_elements(simdType.cmatrix, other.simdType.cmatrix, epsilon)
+
+    }
+    
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are equal, <code>false</code> otherwise.
+     *
+     * @param {MatrixType} [right] The right hand side matrix.
+     * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
+     */
+
     /*
     function computeFrobeniusNorm(matrix) {
     var norm = 0.0;
@@ -865,22 +945,6 @@ public extension Matrix3 {
 
 }
 
-extension Matrix3: MatrixType {}
-
-extension Matrix3: UniformSourceType {
-    
-    var simdType: SIMDType {
-        let col0 = self[0]
-        let col1 = self[1]
-        let col2 = self[2]
-        return float3x3([
-            vector_float(col0),
-            vector_float(col1),
-            vector_float(col2)
-            ])
-    }
-}
-
 extension Matrix3: Packable {
     
     public static func packedLength() -> Int {
@@ -888,17 +952,17 @@ extension Matrix3: Packable {
     }
     
     public init(fromArray array: [Double], startingIndex: Int = 0) {
-        self.init(rows: [
-            double3(array[startingIndex+0], array[startingIndex+3], array[startingIndex+6]),
-            double3(array[startingIndex+1], array[startingIndex+4], array[startingIndex+7]),
-            double3(array[startingIndex+2], array[startingIndex+5], array[startingIndex+8]),
-            ])
+        self.init(
+            array[startingIndex+0], array[startingIndex+3], array[startingIndex+6],
+            array[startingIndex+1], array[startingIndex+4], array[startingIndex+7],
+            array[startingIndex+2], array[startingIndex+5], array[startingIndex+8]
+        )
     }
     
     func toArray() -> [Double] {
-        let col0 = self[0]
-        let col1 = self[1]
-        let col2 = self[2]
+        let col0 = simdType[0]
+        let col1 = simdType[1]
+        let col2 = simdType[2]
         return [
             col0.x, col0.y, col0.z,
             col1.x, col1.y, col1.z,

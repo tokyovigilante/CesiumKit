@@ -306,20 +306,23 @@ class Uniform {
 
 protocol UniformSourceType {
     
-    var simdType: SIMDType { get }
+    var byteArray: [UInt8] { get }
 }
 
 extension Float: UniformSourceType {
-    
-    var simdType: SIMDType {
-        return self
+    var byteArray: [UInt8] {
+        var array = [UInt8](count: sizeof(Float), repeatedValue: 0)
+        memcpy(&array, [self], sizeof(Float))
+        return array
     }
 }
 
 extension Double: UniformSourceType {
     
-    var simdType: SIMDType {
-        return Float(self)
+    var byteArray: [UInt8] {
+        var array = [UInt8](count: sizeof(Float), repeatedValue: 0)
+        memcpy(&array, [Float(self)], sizeof(Float))
+        return array
     }
 }
 

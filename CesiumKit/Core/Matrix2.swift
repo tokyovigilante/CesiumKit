@@ -27,18 +27,32 @@ import simd
  * @see Matrix3
  * @see Matrix4
  */
-public typealias Matrix2 = double2x2
-
-public extension Matrix2 {
+public struct Matrix2 {
+    
+    private (set) internal var simdType: double2x2
+    
+    private var _floatRepresentation: float2x2
     
     public init(
         _ column0Row0: Double, _ column1Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double) {
         
-        self.init(rows: [
+        simdType = double2x2([
             double2(column0Row0, column1Row0),
             double2(column0Row1, column1Row1)
-            ])
+        ])
+        _floatRepresentation = float2x2([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+        ])
+    }
+    
+    public init (fromSIMD simd: double2x2) {
+        simdType = simd
+        _floatRepresentation = float2x2([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+        ])
     }
 /*
 
@@ -426,24 +440,48 @@ public extension Matrix2 {
     
     return result;
     };
+    */
+    /**
+    * Computes the product of two matrices.
+    *
+    * @param {MatrixType} self The first matrix.
+    * @param {MatrixType} other The second matrix.
+    * @returns {MatrixType} The modified result parameter.
+    */
+    func multiply(other: Matrix2) -> Matrix2 {
+        return Matrix2(fromSIMD: simdType * other.simdType)
+    }
+    
+    func negate() -> Matrix2 {
+        return Matrix2(fromSIMD: -simdType)
+    }
+    
+    /**
+    * Compares this matrix to the provided matrix componentwise and returns
+    * <code>true</code> if they are equal, <code>false</code> otherwise.
+    *
+    * @param {MatrixType} [right] The right hand side matrix.
+    * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
+    */
+    func equals(other: Matrix2) -> Bool {
+        return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
+        //return matrix_equal(simdType, other.simdType)
+    }
     
     /**
     * Compares the provided matrices componentwise and returns
-    * <code>true</code> if they are equal, <code>false</code> otherwise.
+    * <code>true</code> if they are within the provided epsilon,
+    * <code>false</code> otherwise.
     *
-    * @param {Matrix2} [left] The first matrix.
-    * @param {Matrix2} [right] The second matrix.
-    * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
+    * @param {MatrixType} [left] The first matrix.
+    * @param {MatrixType} [right] The second matrix.
+    * @param {Number} epsilon The epsilon to use for equality testing.
+    * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    Matrix2.equals = function(left, right) {
-    return (left === right) ||
-    (defined(left) &&
-    defined(right) &&
-    left[0] === right[0] &&
-    left[1] === right[1] &&
-    left[2] === right[2] &&
-    left[3] === right[3]);
-    };
+    func equalsEpsilon(other: Matrix2, epsilon: Double) -> Bool {
+        return matrix_almost_equal_elements(simdType.cmatrix, other.simdType.cmatrix, epsilon)
+    }
+/*
     
     /**
     * @private
@@ -541,17 +579,6 @@ public extension Matrix2 {
 */
 }
 
-extension Matrix2: MatrixType {}
-
-extension Matrix2: UniformSourceType {
- 
-    var simdType: SIMDType {
-        let col0 = self[0]
-        let col1 = self[1]
-        return float2x2([vector_float(col0), vector_float(col1)])
-    }
-}
-
 extension Matrix2: Packable {
     
     public static func packedLength() -> Int {
@@ -580,15 +607,15 @@ extension Matrix2: Packable {
      * var m2 = Cesium.Matrix3.fromArray(v2, 2);
      */
     init (fromArray array: [Double], startingIndex: Int = 0) {
-        self.init(rows: [
-            double2(array[startingIndex+0], array[startingIndex+2]),
-            double2(array[startingIndex+1], array[startingIndex+3])
-            ])
+        self.init(
+            array[startingIndex+0], array[startingIndex+2],
+            array[startingIndex+1], array[startingIndex+3]
+        )
     }
     
     func toArray() -> [Double] {
-        let col0 = self[0]
-        let col1 = self[1]
+        let col0 = simdType[0]
+        let col1 = simdType[1]
         return [
             col0.x, col0.y,
             col1.x, col1.y

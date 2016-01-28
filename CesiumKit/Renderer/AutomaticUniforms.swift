@@ -57,7 +57,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: UniformDataType.FloatVec4,
         getValue: { (uniformState: UniformState) -> [UInt8] in
-            return uniformState.viewportCartesian4.simdType
+            return uniformState.viewportCartesian4
         }
     ),
     
@@ -91,8 +91,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     "czm_viewportOrthographic":  AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
-        getValue: { (uniformState: UniformState) -> UniformSourceType in
-            uniformState.viewportOrthographic
+        getValue: { (uniformState: UniformState) -> [UInt8] in
+            uniformState.viewportOrthographic.byteArray
         }
     ),
     

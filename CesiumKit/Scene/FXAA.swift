@@ -114,8 +114,8 @@ class FXAAUniformMap: UniformMap {
     
     let uniforms: [String: UniformFunc] = [
 
-        "u_step": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! FXAAUniformMap).step]
+        "u_step": { (map: UniformMap) -> [UInt8] in
+            return (map as! FXAAUniformMap).step.byteArray
         }
     ]
     

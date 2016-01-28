@@ -274,10 +274,13 @@ public extension Cartesian2 {
 extension Cartesian2: CartesianType {}
 
 extension Cartesian2: UniformSourceType {
-    
-    var simdType: SIMDType {
-        return vector_float(self)
+
+    var byteArray: [UInt8] {
+        var array = [UInt8](count: sizeof(Float) * 2, repeatedValue: 0)
+        memcpy(&array, [vector_float(self)], sizeof(Float) * 2)
+        return array
     }
+
 }
 
 extension Cartesian2: Packable {

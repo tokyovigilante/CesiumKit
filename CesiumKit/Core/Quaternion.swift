@@ -88,9 +88,9 @@ public struct Quaternion {
     */
     init(fromRotationMatrix matrix: Matrix3) {
         
-        let m00 = matrix[0, 0]
-        let m11 = matrix[1, 1]
-        let m22 = matrix[2, 2]
+        let m00 = matrix[0,0]
+        let m11 = matrix[1,1]
+        let m22 = matrix[2,2]
         
         let trace = m00 + m11 + m22
         

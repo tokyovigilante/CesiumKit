@@ -23,9 +23,56 @@ import simd
 * @see Packable
 */
 
-public typealias Cartesian3 = double3
+public struct Cartesian3 {
 
-public extension Cartesian3 {
+    private (set) internal var simdType: double3
+    
+    private var _floatRepresentation: float3
+    
+    var x: Double {
+        get {
+            return simdType.x
+        }
+        set (new) {
+            simdType.x = new
+            _floatRepresentation.x = Float(new)
+        }
+    }
+    
+    var y: Double {
+        get {
+            return simdType.y
+        }
+        set (new) {
+            simdType.y = new
+            _floatRepresentation.y = Float(new)
+        }
+    }
+    
+    var z: Double {
+        get {
+            return simdType.z
+        }
+        set (new) {
+            simdType.z = new
+            _floatRepresentation.z = Float(new)
+        }
+    }
+    
+    init (x: Double, y: Double, z: Double) {
+        simdType = double3(x, y, z)
+        _floatRepresentation = vector_float(simdType)
+    }
+
+    init(_ scalar: Double = 0.0) {
+        simdType = double3(scalar)
+        _floatRepresentation = float3(Float(scalar))
+    }
+    
+    init(fromSIMD simd: double3) {
+        simdType = simd
+        _floatRepresentation = vector_float(simdType)
+    }
     
     /**
     * Converts the provided Spherical into Cartesian3 coordinates.
@@ -66,7 +113,7 @@ public extension Cartesian3 {
     * @returns {Number} The value of the maximum component.
     */
     func maximumComponent() -> Double {
-        return max(x, y, z)
+        return vector_reduce_max(simdType)
     }
     
     /**
@@ -76,7 +123,7 @@ public extension Cartesian3 {
     * @returns {Number} The value of the minimum component.
     */
     func minimumComponent() -> Double {
-        return min(x, y, z)
+        return vector_reduce_min(simdType)
     }
     
     /**
@@ -88,7 +135,7 @@ public extension Cartesian3 {
     * @returns {Cartesian3} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: min(x, other.x), y: min(y, other.y), z: min(z, other.z))
+        return Cartesian3(fromSIMD: vector_min(simdType, other.simdType))
     }
     
     /**
@@ -100,7 +147,7 @@ public extension Cartesian3 {
     * @returns {Cartesian3} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(x: max(x, other.x), y: max(x, other.x), z: max(x, other.x))
+        return Cartesian3(fromSIMD: vector_max(simdType, other.simdType))
     }
     
     /**
@@ -110,7 +157,7 @@ public extension Cartesian3 {
     * @returns {Number} The squared magnitude.
     */
     var magnitudeSquared: Double {
-        return x * x + y * y + z * z
+        return length_squared(simdType)
     }
     
     /**
@@ -120,7 +167,7 @@ public extension Cartesian3 {
     * @returns {Number} The magnitude.
     */
     var magnitude: Double {
-        return sqrt(magnitudeSquared)
+        return length(simdType)
     }
     
     /**
@@ -135,7 +182,7 @@ public extension Cartesian3 {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(2.0, 0.0, 0.0));
     */
     func distance(other: Cartesian3) -> Double {
-        return simd.distance(self, other)
+        return simd.distance(simdType, other.simdType)
     }
     
     /**
@@ -151,7 +198,7 @@ public extension Cartesian3 {
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(3.0, 0.0, 0.0));
     */
     func distanceSquared(other: Cartesian3) -> Double {
-        return distance_squared(self, other)
+        return distance_squared(simdType, other.simdType)
     }
 
     /** Computes the normalized form of the supplied Cartesian.
@@ -162,7 +209,7 @@ public extension Cartesian3 {
     */
     
     func normalize() -> Cartesian3 {
-        return simd.normalize(self)
+        return Cartesian3(fromSIMD: simd.normalize(simdType))
     }
     
     /**
@@ -173,10 +220,72 @@ public extension Cartesian3 {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian3) -> Double {
-        return simd.dot(self, other)
+        return simd.dot(simdType, other.simdType)
     }
-            
     
+    func multiplyComponents(other: Cartesian3) -> Cartesian3 {
+        return Cartesian3(fromSIMD: simdType * other.simdType)
+    }
+    
+    /**
+     * Computes the componentwise sum of two Cartesians.
+     *
+     * @param {Cartesian4} left The first Cartesian.
+     * @param {Cartesian4} right The second Cartesian.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func add(other: Cartesian3) -> Cartesian3 {
+        return Cartesian3(fromSIMD: simdType + other.simdType)
+    }
+    
+    /**
+     * Computes the componentwise difference of two Cartesians.
+     *
+     * @param {Cartesian4} left The first Cartesian.
+     * @param {Cartesian4} right The second Cartesian.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func subtract(other: Cartesian3) -> Cartesian3 {
+        return Cartesian3(fromSIMD: simdType - other.simdType)
+    }
+    
+    /**
+     * Multiplies the provided Cartesian componentwise by the provided scalar.
+     *
+     * @param {Cartesian4} cartesian The Cartesian to be scaled.
+     * @param {Number} scalar The scalar to multiply with.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func multiplyByScalar (scalar: Double) -> Cartesian3 {
+        return Cartesian3(fromSIMD: simdType * scalar)
+    }
+    
+    /**
+     * Divides the provided Cartesian componentwise by the provided scalar.
+     *
+     * @param {Cartesian4} cartesian The Cartesian to be divided.
+     * @param {Number} scalar The scalar to divide by.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func divideByScalar (scalar: Double) -> Cartesian3 {
+        return Cartesian3(fromSIMD: simdType * (1/scalar))
+    }
+    
+    /**
+     * Negates the provided Cartesian.
+     *
+     * @param {Cartesian3} cartesian The Cartesian to be negated.
+     * @param {Cartesian3} result The object onto which to store the result.
+     * @returns {Cartesian3} The modified result parameter.
+     */
+    func negate () -> Cartesian3 {
+        return Cartesian3(fromSIMD: -simdType)
+    }
+
     /**
     * Computes the absolute value of the provided Cartesian.
     *
@@ -185,7 +294,7 @@ public extension Cartesian3 {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func absolute() -> Cartesian3 {
-        return abs(self)
+        return Cartesian3(fromSIMD: vector_abs(simdType))
     }
     
     /**
@@ -198,7 +307,7 @@ public extension Cartesian3 {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func lerp(end: Cartesian3, t: Double) -> Cartesian3 {
-        return mix(self, end, t: t)
+        return Cartesian3(fromSIMD: mix(simdType, end.simdType, t: t))
     }
     
     /**
@@ -277,7 +386,7 @@ public extension Cartesian3 {
     * @returns {Cartesian3} The cross product.
     */
     func cross(other: Cartesian3) -> Cartesian3 {
-        return simd.cross(self, other)
+        return simd.cross(simdType, other.simdType)
     }
     
     /**
@@ -442,15 +551,6 @@ public extension Cartesian3 {
     * @constant
     */
     public static let unitZ = Cartesian3(x: 0.0, y: 0.0, z: 1.0)
-}
-
-extension Cartesian3: CartesianType {}
-
-extension Cartesian3: UniformSourceType {
-    
-    var simdType: SIMDType {
-        return vector_float(self)
-    }
 }
 
 extension Cartesian3: Packable {

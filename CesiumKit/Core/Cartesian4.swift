@@ -23,15 +23,66 @@ import simd
 * @see Cartesian3
 * @see Packable
 */
-
-public typealias Cartesian4 = double4
-
-public extension Cartesian4 {
+public struct Cartesian4 {
+    
+    private (set) internal var simdType: double4
+    
+    private var _floatRepresentation: float4
+    
+    var x: Double {
+        get {
+            return simdType.x
+        }
+        set (new) {
+        simdType.x = new
+        _floatRepresentation.x = Float(new)
+        }
+    }
+    
+    var y: Double {
+        get {
+            return simdType.y
+        }
+        set (new) {
+            simdType.y = new
+            _floatRepresentation.y = Float(new)
+        }
+    }
+    
+    var z: Double {
+        get {
+            return simdType.z
+        }
+        set (new) {
+            simdType.z = new
+            _floatRepresentation.z = Float(new)
+        }
+    }
+    
+    var w: Double {
+        get {
+            return simdType.w
+        }
+        set (new) {
+            simdType.w = new
+            _floatRepresentation.w = Float(new)
+        }
+    }
 
     var red: Double { return x }
     var green: Double { return y }
     var blue: Double { return z }
     var alpha: Double { return w }
+    
+    init (x: Double, y: Double, z: Double, w: Double) {
+        simdType = double4(x, y, z, w)
+        _floatRepresentation = vector_float(simdType)
+    }
+    
+    init(_ scalar: Double = 0.0) {
+        simdType = double4(scalar)
+        _floatRepresentation = float4(Float(scalar))
+    }
     
     /**
     * Creates a Cartesian4 instance from a {@link Color}. <code>red</code>, <code>green</code>, <code>blue</code>,
@@ -42,7 +93,12 @@ public extension Cartesian4 {
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
     init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
-        self.init(red, green, blue, alpha)
+        self.init(x: red, y: green, z: blue, w: alpha)
+    }
+    
+    init (fromSIMD simd: double4) {
+        simdType = simd
+        _floatRepresentation = vector_float(simd)
     }
     
     /**
@@ -52,7 +108,7 @@ public extension Cartesian4 {
     * @returns {Number} The value of the maximum component.
     */
     func maximumComponent() -> Double {
-        return max(x, y, z, w)
+        return vector_reduce_max(simdType)
     }
     
     /**
@@ -62,7 +118,7 @@ public extension Cartesian4 {
     * @returns {Number} The value of the minimum component.
     */
     func minimumComponent() -> Double {
-        return min(x, y, z, w)
+        return vector_reduce_min(simdType)
     }
     
     /**
@@ -74,7 +130,7 @@ public extension Cartesian4 {
     * @returns {Cartesian4} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian4) -> Cartesian4 {
-        return min(self, other)
+        return Cartesian4(fromSIMD: vector_min(simdType, other.simdType))
     }
     
     /**
@@ -86,7 +142,7 @@ public extension Cartesian4 {
     * @returns {Cartesian4} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian4) -> Cartesian4 {
-        return max(self, other)
+        return Cartesian4(fromSIMD: vector_max(simdType, other.simdType))
     }
     
     /**
@@ -96,7 +152,7 @@ public extension Cartesian4 {
     * @returns {Number} The squared magnitude.
     */
     func magnitudeSquared() -> Double {
-        return x * x + y * y + z * z + w * w
+        return length_squared(simdType)//x * x + y * y + z * z + w * w
     }
     
     /**
@@ -106,9 +162,8 @@ public extension Cartesian4 {
     * @returns {Number} The magnitude.
     */
     func magnitude() -> Double {
-        return sqrt(magnitudeSquared())
+        return length(simdType)
     }
-    
     
     /**
     * Computes the 4-space distance between two points.
@@ -124,7 +179,7 @@ public extension Cartesian4 {
     * new Cesium.Cartesian4(2.0, 0.0, 0.0, 0.0));
     */
     func distance(other: Cartesian4) -> Double {
-        return simd.distance(self, other)
+        return simd.distance(simdType, other.simdType)
     }
     
     /**
@@ -142,7 +197,7 @@ public extension Cartesian4 {
     *   new Cesium.Cartesian4(3.0, 0.0, 0.0, 0.0));
     */
     func distanceSquared (other: Cartesian4) -> Double {
-        return distance_squared(self, other)
+        return distance_squared(simdType, other.simdType)
     }
     
     /**
@@ -153,7 +208,7 @@ public extension Cartesian4 {
     * @returns {Cartesian4} The modified result parameter.
     */
     func normalize() -> Cartesian4 {
-        return simd.normalize(self)
+        return Cartesian4(fromSIMD: simd.normalize(simdType))
     }
     
     /**
@@ -164,18 +219,89 @@ public extension Cartesian4 {
     * @returns {Number} The dot product.
     */
     func dot(other: Cartesian4) -> Double {
-        return simd.dot(self, other)
+        return simd.dot(simdType, other.simdType)
     }
     
     /**
-    * Computes the absolute value of the provided Cartesian.
-    *
-    * @param {Cartesian4} cartesian The Cartesian whose absolute value is to be computed.
-    * @param {Cartesian4} result The object onto which to store the result.
-    * @returns {Cartesian4} The modified result parameter.
-    */
+     * Computes the componentwise product of two Cartesians.
+     *
+     * @param {Cartesian4} left The first Cartesian.
+     * @param {Cartesian4} right The second Cartesian.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func multiplyComponents(other: Cartesian4) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType * other.simdType)
+    }
+
+    /**
+     * Computes the componentwise sum of two Cartesians.
+     *
+     * @param {Cartesian4} left The first Cartesian.
+     * @param {Cartesian4} right The second Cartesian.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func add(other: Cartesian4) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType + other.simdType)
+    }
+    
+    /**
+     * Computes the componentwise difference of two Cartesians.
+     *
+     * @param {Cartesian4} left The first Cartesian.
+     * @param {Cartesian4} right The second Cartesian.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func subtract(other: Cartesian4) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType - other.simdType)
+    }
+
+    /**
+     * Multiplies the provided Cartesian componentwise by the provided scalar.
+     *
+     * @param {Cartesian4} cartesian The Cartesian to be scaled.
+     * @param {Number} scalar The scalar to multiply with.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func multiplyByScalar (scalar: Double) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType * scalar)
+    }
+    
+    /**
+     * Divides the provided Cartesian componentwise by the provided scalar.
+     *
+     * @param {Cartesian4} cartesian The Cartesian to be divided.
+     * @param {Number} scalar The scalar to divide by.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func divideByScalar (scalar: Double) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType * (1/scalar))
+    }
+    
+    /**
+     * Negates the provided Cartesian.
+     *
+     * @param {Cartesian4} cartesian The Cartesian to be negated.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
+    func negate () -> Cartesian4 {
+        return Cartesian4(fromSIMD: -simdType)
+    }
+    
+    /**
+     * Computes the absolute value of the provided Cartesian.
+     *
+     * @param {Cartesian4} cartesian The Cartesian whose absolute value is to be computed.
+     * @param {Cartesian4} result The object onto which to store the result.
+     * @returns {Cartesian4} The modified result parameter.
+     */
     func absolute() -> Cartesian4 {
-        return abs(self)
+        return Cartesian4(fromSIMD: vector_abs(simdType))
     }
     
     /**
@@ -188,7 +314,7 @@ public extension Cartesian4 {
     * @returns {Cartesian4} The modified result parameter.
     */
     func lerp(end: Cartesian4, t: Double) -> Cartesian4 {
-        return mix(self, end, t: t)
+        return Cartesian4(fromSIMD: mix(simdType, end.simdType, t: t))
     }
     
     /**
@@ -294,15 +420,6 @@ public extension Cartesian4 {
     * @constant
     */
     static let unitW = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 1.0)
-}
-
-extension Cartesian4: CartesianType {}
-
-extension Cartesian4: UniformSourceType {
-    
-    var simdType: SIMDType {
-        return vector_float(self)
-    }
 }
 
 extension Cartesian4: Packable {

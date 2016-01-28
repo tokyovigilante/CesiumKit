@@ -8,7 +8,6 @@
 
 import Foundation
 import simd
-import Accelerate
 
 /**
 * A 4x4 matrix, indexable as a column-major order array.
@@ -50,14 +49,11 @@ import Accelerate
 * @see Matrix3
 * @see Packable
 */
-
-public typealias Matrix4 = double4x4
-
-public extension Matrix4 {
+public struct Matrix4 {
     
-    var floatRepresentation: [Float] {
-        return toArray().map { Float($0) }
-    }
+    private (set) internal var simdType: double4x4
+    
+    private var _floatRepresentation: float4x4
     
     public init(
         _ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double, _ column3Row0: Double,
@@ -66,23 +62,48 @@ public extension Matrix4 {
         _ column0Row3: Double, _ column1Row3: Double, _ column2Row3: Double, _ column3Row3: Double)
     {
         
-        self.init(rows: [
+    simdType = double4x4(rows: [
             double4(column0Row0, column1Row0, column2Row0, column3Row0),
             double4(column0Row1, column1Row1, column2Row1, column3Row1),
             double4(column0Row2, column1Row2, column2Row2, column3Row2),
             double4(column0Row3, column1Row3, column2Row3, column3Row3)
             ])
-        
+        _floatRepresentation = float4x4([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2]),
+            vector_float(simdType[3])
+            ])
     }
 
     public init(grid: [Double]) {
-        assert(grid.count == Matrix4.packedLength(), "invalid grid length")
-        self.init(rows: [
-            double4(grid[0], grid[4], grid[8], grid[12]),
-            double4(grid[1], grid[5], grid[9], grid[13]),
-            double4(grid[2], grid[6], grid[10], grid[14]),
-            double4(grid[3], grid[7], grid[11], grid[15])
-        ])
+        assert(grid.count >= Matrix4.packedLength(), "invalid grid length")
+        self.init(
+            grid[0], grid[1], grid[2], grid[3],
+            grid[4], grid[5], grid[6], grid[7],
+            grid[8], grid[9], grid[10], grid[11],
+            grid[12], grid[13], grid[14], grid[15]
+        )
+    }
+    
+    public init (fromSIMD simd: double4x4) {
+        simdType = simd
+        _floatRepresentation = float4x4([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2]),
+            vector_float(simdType[3])
+            ])
+    }
+    
+    public init (_ scalar: Double = 0.0) {
+        simdType = double4x4(scalar)
+        _floatRepresentation = float4x4(Float(scalar))
+    }
+    
+    public init (diagonal: double4) {
+        simdType = double4x4(diagonal: diagonal)
+        _floatRepresentation = float4x4(diagonal: vector_float(diagonal))
     }
 
 /*
@@ -126,8 +147,14 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     }
     //>>includeEnd('debug');
     
-    return Matrix4.clone(values, result);
-};
+     assert(grid.count == 16, "Invalid source array")
+     self.init(rows: [
+     double4(grid[0], grid[1], grid[2], grid[3]),
+     double4(grid[4], grid[5], grid[6], grid[7]),
+     double4(grid[8], grid[9], grid[10], grid[11]),
+     double4(grid[12], grid[13], grid[14], grid[15])
+     ])
+     }};
 */
     /**
     * Computes a Matrix4 instance from a row-major order array.
@@ -138,14 +165,8 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
     */
     init(rowMajorArray grid: [Double]) {
-        assert(grid.count == 16, "Invalid source array")
-        self.init(rows: [
-            double4(grid[0], grid[1], grid[2], grid[3]),
-            double4(grid[4], grid[5], grid[6], grid[7]),
-            double4(grid[8], grid[9], grid[10], grid[11]),
-            double4(grid[12], grid[13], grid[14], grid[15])
-        ])
-    }
+        self.init(grid: grid)
+   }
 /*
 /**
 * Computes a Matrix4 instance from a Matrix3 representing the rotation
@@ -477,7 +498,15 @@ Matrix4.fromCamera = function(camera, result) {
     return result;
     
 };
-
+     */
+    public subscript (column: Int) -> Cartesian4 {
+        return Cartesian4(fromSIMD: simdType[column])
+    }
+    /// Access to individual elements.
+    public subscript (column: Int, row: Int) -> Double {
+        return simdType[column][row]
+    }
+    /*
 /**
 * Computes a Matrix4 instance representing a perspective transformation matrix.
 *
@@ -735,9 +764,7 @@ Matrix4.getElementIndex = function(column, row) {
     */
     func getColumn (index: Int) -> Cartesian4 {
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        //return self[index]
-        let column = self[index]
-        return Cartesian4(x: column.x, y: column.y, z: column.z, w: column.w)
+        return Cartesian4(fromSIMD: simdType[index])
         
     }
 
@@ -769,10 +796,9 @@ Matrix4.getElementIndex = function(column, row) {
     func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        var result = self
-//        result[index] = cartesian
+        var result = simdType
         result[index] = double4(cartesian.x, cartesian.y, cartesian.z, cartesian.w)
-        return result
+        return Matrix4(fromSIMD: result)
     }
 
     /**
@@ -785,12 +811,10 @@ Matrix4.getElementIndex = function(column, row) {
     * @returns {Matrix4} The modified result parameter.
     */
     func setTranslation (translation: Cartesian3) -> Matrix4 {
-        var result = self
-        let column3 = double4(translation.x, translation.y, translation.z, self[3].w)
-        result[3] = column3
-        return result
+        var result = simdType
+        result[3] = double4(translation.x, translation.y, translation.z, simdType[3].w)
+        return Matrix4(fromSIMD: result)
     }
-    
     
     /**
     * Retrieves a copy of the matrix row at the provided index as a Cartesian4 instance.
@@ -820,15 +844,57 @@ Matrix4.getElementIndex = function(column, row) {
     * // a.x = 18.0; a.y = 19.0; a.z = 20.0; a.w = 21.0;
     */
     func row (index: Int) -> Cartesian4 {
-        
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-//        return double4(self[0, index], self[1, index], self[2 index], self[[3, index])
         return Cartesian4(
             x: self[0, index],
             y: self[1, index],
             z: self[2, index],
             w: self[3, index]
         )
+    }
+    
+    /**
+     * Computes the product of two matrices.
+     *
+     * @param {MatrixType} self The first matrix.
+     * @param {MatrixType} other The second matrix.
+     * @returns {MatrixType} The modified result parameter.
+     */
+    func multiply(other: Matrix4) -> Matrix4 {
+        return Matrix4(fromSIMD: simdType * other.simdType)
+    }
+    
+    func negate() -> Matrix4 {
+        return Matrix4(fromSIMD: -simdType)
+    }
+    
+    func transpose () -> Matrix4 {
+        return Matrix4(fromSIMD: simdType.transpose)
+    }
+    
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are equal, <code>false</code> otherwise.
+     *
+     * @param {MatrixType} [right] The right hand side matrix.
+     * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
+     */
+    func equals(other: Matrix4) -> Bool {
+        return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
+    }
+    
+    /**
+     * Compares the provided matrices componentwise and returns
+     * <code>true</code> if they are within the provided epsilon,
+     * <code>false</code> otherwise.
+     *
+     * @param {MatrixType} [left] The first matrix.
+     * @param {MatrixType} [right] The second matrix.
+     * @param {Number} epsilon The epsilon to use for equality testing.
+     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
+     */
+    func equalsEpsilon(other: Matrix4, epsilon: Double) -> Bool {
+        return matrix_almost_equal_elements(self.simdType.cmatrix, other.simdType.cmatrix, epsilon)
     }
     
 /*
@@ -1233,9 +1299,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
      * @returns {Cartesian4} The modified result parameter.
      */
     func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
-        //return self * cartesian
-        let vector = self * double4(x: cartesian.x, y: cartesian.y, z: cartesian.z, w: cartesian.w)
-        return Cartesian4(x: vector.x, y: vector.y, z: vector.z, w: vector.w)
+        return Cartesian4(fromSIMD: self.simdType * cartesian.simdType)
     }
 
     /**
@@ -1255,10 +1319,8 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     * //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
     */
     func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
-        let vector = self * double4(cartesian.x, cartesian.y, cartesian.z, 0.0)
-        //return double3(vector.x, vector.y, vector.z)
+        let vector = simdType * double4(cartesian.x, cartesian.y, cartesian.z, 0.0)
         return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
-
     }
 
     /**
@@ -1275,8 +1337,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
      * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
      */
     func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
-        let vector = self * double4(cartesian.x, cartesian.y, cartesian.z, 1.0)
-        //return double3(vector.x, vector.y, vector.z)
+        let vector = simdType * double4(cartesian.x, cartesian.y, cartesian.z, 1.0)
         return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
     }
     /*
@@ -1382,7 +1443,7 @@ Matrix4.abs = function(matrix, result) {
     * @returns {Cartesian3} The modified result parameter.
     */
     var translation: Cartesian3 {
-        let column3 = self[3]
+        let column3 = simdType[3]
         return Cartesian3(x: column3.x, y: column3.y, z: column3.z)
     }
 
@@ -1409,14 +1470,18 @@ Matrix4.abs = function(matrix, result) {
     * //     [12.0, 16.0, 20.0]
     */
     var rotation: Matrix3 {
-        let column0 = self[0]
-        let column1 = self[1]
-        let column2 = self[2]
+        let column0 = simdType[0]
+        let column1 = simdType[1]
+        let column2 = simdType[2]
         
         return Matrix3(
             column0.x, column1.x, column2.x,
             column0.y, column1.y, column2.y,
             column0.z, column1.z, column2.z)
+    }
+    
+    var inverse: Matrix4 {
+        return Matrix4(fromSIMD: simdType.inverse)
     }
     
     /**
@@ -1437,24 +1502,6 @@ Matrix4.abs = function(matrix, result) {
         return self == other
     }
     
-}
-
-extension Matrix4: MatrixType {}
-
-extension Matrix4: UniformSourceType {
-    
-    var simdType: SIMDType {
-        let col0 = self[0]
-        let col1 = self[1]
-        let col2 = self[2]
-        let col3 = self[3]
-        return float4x4([
-            vector_float(col0),
-            vector_float(col1),
-            vector_float(col2),
-            vector_float(col3)
-            ])
-    }
 }
 
 extension Matrix4: Packable {
