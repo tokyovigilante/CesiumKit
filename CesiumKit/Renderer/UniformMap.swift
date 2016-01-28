@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-typealias UniformFunc = (map: UniformMap) -> [UInt8]
-
 protocol UniformMap {
     
     var uniforms: [String: UniformFunc] { get } 

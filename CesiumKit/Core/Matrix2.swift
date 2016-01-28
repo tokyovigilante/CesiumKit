@@ -31,7 +31,7 @@ public struct Matrix2 {
     
     private (set) internal var simdType: double2x2
     
-    private var _floatRepresentation: float2x2
+    private (set) var floatRepresentation: float2x2
     
     public init(
         _ column0Row0: Double, _ column1Row0: Double,
@@ -41,7 +41,7 @@ public struct Matrix2 {
             double2(column0Row0, column1Row0),
             double2(column0Row1, column1Row1)
         ])
-        _floatRepresentation = float2x2([
+        floatRepresentation = float2x2([
             vector_float(simdType[0]),
             vector_float(simdType[1]),
         ])
@@ -49,7 +49,7 @@ public struct Matrix2 {
     
     public init (fromSIMD simd: double2x2) {
         simdType = simd
-        _floatRepresentation = float2x2([
+        floatRepresentation = float2x2([
             vector_float(simdType[0]),
             vector_float(simdType[1]),
         ])

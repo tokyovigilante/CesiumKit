@@ -27,7 +27,7 @@ public struct Cartesian3 {
 
     private (set) internal var simdType: double3
     
-    private var _floatRepresentation: float3
+    private (set) var floatRepresentation: float3
     
     var x: Double {
         get {
@@ -35,7 +35,7 @@ public struct Cartesian3 {
         }
         set (new) {
             simdType.x = new
-            _floatRepresentation.x = Float(new)
+            floatRepresentation.x = Float(new)
         }
     }
     
@@ -45,7 +45,7 @@ public struct Cartesian3 {
         }
         set (new) {
             simdType.y = new
-            _floatRepresentation.y = Float(new)
+            floatRepresentation.y = Float(new)
         }
     }
     
@@ -55,23 +55,23 @@ public struct Cartesian3 {
         }
         set (new) {
             simdType.z = new
-            _floatRepresentation.z = Float(new)
+            floatRepresentation.z = Float(new)
         }
     }
     
     init (x: Double, y: Double, z: Double) {
         simdType = double3(x, y, z)
-        _floatRepresentation = vector_float(simdType)
+        floatRepresentation = vector_float(simdType)
     }
 
     init(_ scalar: Double = 0.0) {
         simdType = double3(scalar)
-        _floatRepresentation = float3(Float(scalar))
+        floatRepresentation = float3(Float(scalar))
     }
     
     init(fromSIMD simd: double3) {
         simdType = simd
-        _floatRepresentation = vector_float(simdType)
+        floatRepresentation = vector_float(simdType)
     }
     
     /**
@@ -386,7 +386,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} The cross product.
     */
     func cross(other: Cartesian3) -> Cartesian3 {
-        return simd.cross(simdType, other.simdType)
+        return Cartesian3(fromSIMD: simd.cross(simdType, other.simdType))
     }
     
     /**

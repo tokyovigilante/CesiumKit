@@ -286,7 +286,14 @@ class ShaderProgram {
 
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
         let offset = uniform.offset
-        let uniformValue: [UInt8]
+        
+        let uniformFunc: () -> ()
+        // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
+        /*let uniformSizeInBytes = uniform.alignedSize * uniformValue.count
+        
+        //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
+        memcpy(buffer.data+offset, uniformValue, uniformSizeInBytes)
+        
         switch uniform.type {
             
         case .Automatic:
@@ -297,8 +304,9 @@ class ShaderProgram {
                     return
                 }
                 uniform.automaticIndex = index
-                let uniformFunc = AutomaticUniforms[index].1.getValue
-                uniformValue = uniformFunc(uniformState: uniformState)
+                uniformFunc = AutomaticUniforms[index].1.writeToBuffer
+                uniformFunc()
+                uniformValue = uniformFunc(uniformState: uniformState, )
                 break
             }
             let uniformFunc = AutomaticUniforms[index].1.getValue
@@ -324,12 +332,7 @@ class ShaderProgram {
             assertionFailure("Sampler not valid for setUniform")
             uniformValue = []
             return
-        }
-        // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
-        let uniformSizeInBytes = uniform.alignedSize * uniformValue.count
-        
-        //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
-        memcpy(buffer.data+offset, uniformValue, uniformSizeInBytes)
+        }*/
     }
 
 

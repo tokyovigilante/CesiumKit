@@ -27,7 +27,7 @@ public struct Cartesian4 {
     
     private (set) internal var simdType: double4
     
-    private var _floatRepresentation: float4
+    private (set) var floatRepresentation: float4
     
     var x: Double {
         get {
@@ -35,7 +35,7 @@ public struct Cartesian4 {
         }
         set (new) {
         simdType.x = new
-        _floatRepresentation.x = Float(new)
+        floatRepresentation.x = Float(new)
         }
     }
     
@@ -45,7 +45,7 @@ public struct Cartesian4 {
         }
         set (new) {
             simdType.y = new
-            _floatRepresentation.y = Float(new)
+            floatRepresentation.y = Float(new)
         }
     }
     
@@ -55,7 +55,7 @@ public struct Cartesian4 {
         }
         set (new) {
             simdType.z = new
-            _floatRepresentation.z = Float(new)
+            floatRepresentation.z = Float(new)
         }
     }
     
@@ -65,7 +65,7 @@ public struct Cartesian4 {
         }
         set (new) {
             simdType.w = new
-            _floatRepresentation.w = Float(new)
+            floatRepresentation.w = Float(new)
         }
     }
 
@@ -76,12 +76,12 @@ public struct Cartesian4 {
     
     init (x: Double, y: Double, z: Double, w: Double) {
         simdType = double4(x, y, z, w)
-        _floatRepresentation = vector_float(simdType)
+        floatRepresentation = vector_float(simdType)
     }
     
     init(_ scalar: Double = 0.0) {
         simdType = double4(scalar)
-        _floatRepresentation = float4(Float(scalar))
+        floatRepresentation = float4(Float(scalar))
     }
     
     /**
@@ -98,7 +98,7 @@ public struct Cartesian4 {
     
     init (fromSIMD simd: double4) {
         simdType = simd
-        _floatRepresentation = vector_float(simd)
+        floatRepresentation = vector_float(simd)
     }
     
     /**

@@ -177,6 +177,28 @@ enum UniformDataType: UInt {
     
 }
 
+typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>, count: Int) -> ()
+
+typealias AutomaticUniformFunc = (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) -> ()
+
+struct AutomaticUniform {
+    let size: Int
+    let datatype: UniformDataType
+    let writeToBuffer: AutomaticUniformFunc
+    
+    func declaration (name: String) -> String {
+        var declaration = "uniform \(datatype.declarationString) \(name)"
+        
+        if size == 1 {
+            declaration += ";"
+        } else {
+            declaration += "[\(size)];"
+        }
+        
+        return declaration
+    }
+}
+
 enum UniformType {
     case Manual, // u_
     Automatic, // czm_
@@ -302,28 +324,6 @@ class Uniform {
         
     }
     
-}
-
-protocol UniformSourceType {
-    
-    var byteArray: [UInt8] { get }
-}
-
-extension Float: UniformSourceType {
-    var byteArray: [UInt8] {
-        var array = [UInt8](count: sizeof(Float), repeatedValue: 0)
-        memcpy(&array, [self], sizeof(Float))
-        return array
-    }
-}
-
-extension Double: UniformSourceType {
-    
-    var byteArray: [UInt8] {
-        var array = [UInt8](count: sizeof(Float), repeatedValue: 0)
-        memcpy(&array, [Float(self)], sizeof(Float))
-        return array
-    }
 }
 
 typealias UniformIndex = DictionaryIndex<String, UniformFunc>

@@ -472,7 +472,13 @@ public class Camera: DRU {
             -right.dot(position), -up.dot(position), direction.dot(position), 1.0
             )
             .multiply(_actualInvTransform)*/
-        newViewMatrix[0,0] = right.x
+        newViewMatrix = Matrix4(
+            right.x, up.x, -direction.x, 0.0,
+            right.y, up.y, -direction.y, 0.0,
+            right.z, up.z, -direction.z, 0.0,
+            -right.dot(position), -up.dot(position), direction.dot(position), 1.0
+        )
+        /*newViewMatrix[0,0] = right.x
         newViewMatrix[0,1] = up.x
         newViewMatrix[0,2] = -direction.x
         newViewMatrix[0,3] = 0.0
@@ -487,7 +493,7 @@ public class Camera: DRU {
         newViewMatrix[3,0] = -right.dot(position)
         newViewMatrix[3,1] = -up.dot(position)
         newViewMatrix[3,2] = direction.dot(position)
-        newViewMatrix[3,3] = 1.0
+        newViewMatrix[3,3] = 1.0*/
         
         _viewMatrix = newViewMatrix.multiply(_actualInvTransform)
         _invViewMatrix = _viewMatrix.inverse
