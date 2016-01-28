@@ -170,38 +170,36 @@ private class SkyAtmosphereUniformMap: UniformMap {
 
     let uniforms: [String: UniformFunc] = [
         
-        "fCameraHeight": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fCameraHeight]
+        "fCameraHeight": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fCameraHeight], sizeof(Float))
         },
         
-        "fCameraHeight2": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fCameraHeight2]
+        "fCameraHeight2": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fCameraHeight2], sizeof(Float))
         },
         
-        "fOuterRadius": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fOuterRadius]
+        "fOuterRadius": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fOuterRadius], sizeof(Float))
         },
         
-        "fOuterRadius2": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fOuterRadius2]
+        "fOuterRadius2": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fOuterRadius2], sizeof(Float))
         },
         
-        "fInnerRadius": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fInnerRadius]
+        "fInnerRadius": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fInnerRadius], sizeof(Float))
         },
         
-        "fScale": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fScale]
+        "fScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScale], sizeof(Float))
         },
         
-        "fScaleDepth": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! SkyAtmosphereUniformMap).fScaleDepth]
+        "fScaleDepth": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScaleDepth], sizeof(Float))
         },
         
-        
-        "fScaleOverScaleDepth": { (map: UniformMap) -> [UniformSourceType] in
-            let saMap = map as! SkyAtmosphereUniformMap
-            return [(map as! SkyAtmosphereUniformMap).fScaleOverScaleDepth]
+        "fScaleOverScaleDepth": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScaleOverScaleDepth], sizeof(Float))
         }
         
     ]

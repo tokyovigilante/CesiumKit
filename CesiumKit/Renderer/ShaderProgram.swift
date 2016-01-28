@@ -285,14 +285,12 @@ class ShaderProgram {
     }
 
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
-        let offset = uniform.offset
         
-        let uniformFunc: () -> ()
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
-        /*let uniformSizeInBytes = uniform.alignedSize * uniformValue.count
         
         //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
-        memcpy(buffer.data+offset, uniformValue, uniformSizeInBytes)
+        
+        let metalBufferPointer = buffer.data + uniform.offset
         
         switch uniform.type {
             
@@ -300,39 +298,34 @@ class ShaderProgram {
             guard let index = uniform.automaticIndex else {
                 guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
                     assertionFailure("automatic uniform not found for \(uniform.name)")
-                    uniformValue = []
                     return
                 }
                 uniform.automaticIndex = index
-                uniformFunc = AutomaticUniforms[index].1.writeToBuffer
-                uniformFunc()
-                uniformValue = uniformFunc(uniformState: uniformState, )
+                let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
+                uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
                 break
             }
-            let uniformFunc = AutomaticUniforms[index].1.getValue
-            uniformValue = uniformFunc(uniformState: uniformState)
+            let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
+            uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
             
         case .Manual:
             guard let index = uniform.mapIndex else {
                 guard let index = map.indexForUniform(uniform.name) else {
                     assertionFailure("uniform not found for \(uniform.name)")
-                    uniformValue = []
                     return
                 }
                 uniform.mapIndex = index
                 let uniformFunc = map.uniform(index)
-                uniformValue = uniformFunc(map: map)
+                uniformFunc(map: map, buffer: metalBufferPointer)
                 break
             }
             let uniformFunc = map.uniform(index)
-            uniformValue = uniformFunc(map: map)
-            
+            uniformFunc(map: map, buffer: metalBufferPointer)
             
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")
-            uniformValue = []
             return
-        }*/
+        }
     }
 
 

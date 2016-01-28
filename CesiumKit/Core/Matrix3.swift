@@ -953,7 +953,7 @@ extension Matrix3: Packable {
     
     public init(fromArray array: [Double], startingIndex: Int = 0) {
         self.init(
-            array[startingIndex+0], array[startingIndex+3], array[startingIndex+6],
+            array[startingIndex], array[startingIndex+3], array[startingIndex+6],
             array[startingIndex+1], array[startingIndex+4], array[startingIndex+7],
             array[startingIndex+2], array[startingIndex+5], array[startingIndex+8]
         )

@@ -114,8 +114,8 @@ class FXAAUniformMap: UniformMap {
     
     let uniforms: [String: UniformFunc] = [
 
-        "u_step": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>, count: Int) in
-            let simd = (map as! FXAAUniformMap).step.simdType
+        "u_step": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! FXAAUniformMap).step.floatRepresentation
             memcpy(buffer, [simd], strideofValue(simd))
         }
     ]

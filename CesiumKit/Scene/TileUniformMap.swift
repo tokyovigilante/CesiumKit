@@ -1,10 +1,13 @@
-//
+    //
 //  TileUniformMap.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 30/09/14.
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
+
+import Foundation
+import simd
 
 class TileUniformMap: UniformMap {
     
@@ -43,80 +46,96 @@ class TileUniformMap: UniformMap {
     
     var waterMask: Texture? = nil
     
-    var waterMaskTranslationAndScale = Cartesian4(0)
+    var waterMaskTranslationAndScale = Cartesian4()
     
     let uniforms: [String: UniformFunc] = [
         
-        "u_initialColor": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).initialColor]
+        "u_initialColor": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).initialColor.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
         },
         
-        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity]
+        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity], sizeof(Float))
         },
         
-        "u_lightingFadeDistance": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).lightingFadeDistance]
+        "u_lightingFadeDistance": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).lightingFadeDistance.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
         },
         
-        "u_center3D": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).center3D]
+        "u_center3D": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).center3D.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
         },
         
-        "u_tileRectangle": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).tileRectangle]
+        "u_tileRectangle": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).tileRectangle.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
         },
         
-        "u_modifiedModelView": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).modifiedModelView]
+        "u_modifiedModelView": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).modifiedModelView.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
         },
 
-        "u_dayTextureTranslationAndScale": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureTranslationAndScale.map { $0 }
+        "u_dayTextureTranslationAndScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).dayTextureTranslationAndScale.map { $0.floatRepresentation }
+            memcpy(buffer, simd, simd.sizeInBytes)
         },
         
-        "u_dayTextureTexCoordsRectangle": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureTexCoordsRectangle.map { $0 }
+        "u_dayTextureTexCoordsRectangle": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).dayTextureTexCoordsRectangle.map { $0.floatRepresentation }
+            memcpy(buffer, simd, simd.sizeInBytes)
         },
         
-        "u_dayTextureAlpha": { (map: UniformMap) -> [UniformSourceType]  in
-            return (map as! TileUniformMap).dayTextureAlpha.map { $0 }
+        "u_dayTextureAlpha": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureAlpha = (map as! TileUniformMap).dayTextureAlpha
+            memcpy(buffer, dayTextureAlpha, dayTextureAlpha.sizeInBytes)
         },
         
-        "u_dayTextureBrightness": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureBrightness.map { $0 }
+        "u_dayTextureBrightness": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureBrightness = (map as! TileUniformMap).dayTextureBrightness
+            memcpy(buffer, dayTextureBrightness, dayTextureBrightness.sizeInBytes)
         },
         
-        "u_dayTextureContrast": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureContrast.map { $0 }
+        "u_dayTextureContrast": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureContrast = (map as! TileUniformMap).dayTextureContrast
+            memcpy(buffer, dayTextureContrast, dayTextureContrast.sizeInBytes)
         },
         
-        "u_dayTextureHue": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureHue.map { $0 }
+        "u_dayTextureHue": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureHue = (map as! TileUniformMap).dayTextureHue
+            memcpy(buffer, dayTextureHue, dayTextureHue.sizeInBytes)
         },
         
-        "u_dayTextureSaturation": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureSaturation.map { $0 }
+        "u_dayTextureSaturation": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureSaturation = (map as! TileUniformMap).dayTextureSaturation
+            memcpy(buffer, dayTextureSaturation, dayTextureSaturation.sizeInBytes)
         },
         
-        "u_dayTextureOneOverGamma": { (map: UniformMap) -> [UniformSourceType] in
-            return (map as! TileUniformMap).dayTextureOneOverGamma.map { $0 }
+        "u_dayTextureOneOverGamma": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let dayTextureOneOverGamma = (map as! TileUniformMap).dayTextureOneOverGamma
+            memcpy(buffer, dayTextureOneOverGamma, dayTextureOneOverGamma.sizeInBytes)
         },
         
-        "u_dayIntensity": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).dayIntensity]
+        "u_dayIntensity": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            memcpy(buffer, [(map as! TileUniformMap).dayIntensity], sizeof(Float))
         },
         
-        "u_southAndNorthLatitude": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).southAndNorthLatitude]
+        "u_southAndNorthLatitude": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).southAndNorthLatitude.floatRepresentation
+            memcpy(buffer, [simd], sizeof(float2))
         },
         
-        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight]
+        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight.floatRepresentation
+            memcpy(buffer, [simd], sizeof(float3))
         },
 
-        "u_waterMaskTranslationAndScale": { (map: UniformMap) -> [UniformSourceType] in
-            return [(map as! TileUniformMap).waterMaskTranslationAndScale]
+        "u_waterMaskTranslationAndScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! TileUniformMap).waterMaskTranslationAndScale.floatRepresentation
+            memcpy(buffer, [simd], sizeof(float4))
         }
     
     ]

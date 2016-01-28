@@ -177,7 +177,7 @@ enum UniformDataType: UInt {
     
 }
 
-typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>, count: Int) -> ()
+typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
 
 typealias AutomaticUniformFunc = (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) -> ()
 
