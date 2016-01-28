@@ -424,7 +424,7 @@ struct Transforms {
         guard let fixedToIcrfMtx: Matrix3 = Transforms.computeFixedToIcrfMatrix(date) else {
             return nil
         }
-        return fixedToIcrfMtx.transpose()
+        return fixedToIcrfMtx.transpose
     }
     /*
     var xysScratch = new Iau2006XysSample(0.0, 0.0, 0.0);
