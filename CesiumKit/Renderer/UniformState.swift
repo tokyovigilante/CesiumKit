@@ -881,7 +881,6 @@ class UniformState {
     func cleanModelView3D() {
         if _modelView3DDirty {
             _modelView3DDirty = false
-            
             _modelView3D = view3D.multiply(_model)
         }
     }
