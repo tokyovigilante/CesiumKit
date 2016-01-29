@@ -407,7 +407,7 @@ extension Cartesian2: Packable {
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 public func == (left: Cartesian2, right: Cartesian2) -> Bool {
-    return (left.x == right.x) && (left.y == right.y)
+    return memcmp([left.simdType], [right.simdType], sizeof(double2)) == 0
 }
 
 

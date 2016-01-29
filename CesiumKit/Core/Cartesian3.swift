@@ -588,6 +588,6 @@ extension Cartesian3: Equatable {}
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 public func == (left: Cartesian3, right: Cartesian3) -> Bool {
-    return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
+    return memcmp([left.simdType], [right.simdType], sizeof(double3)) == 0
 }
 
