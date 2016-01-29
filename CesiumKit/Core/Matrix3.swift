@@ -43,7 +43,7 @@ public struct Matrix3 {
         _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
         _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double) {
             
-            simdType = double3x3([
+        simdType = double3x3(rows: [
                 double3(column0Row0, column1Row0, column2Row0),
                 double3(column0Row1, column1Row1, column2Row1),
                 double3(column0Row2, column1Row2, column2Row2),
