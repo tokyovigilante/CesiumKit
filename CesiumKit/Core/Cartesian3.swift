@@ -8,6 +8,7 @@
 
 import Foundation
 import simd
+import GLKit
 
 /**
 * A 3D Cartesian point.
@@ -588,6 +589,6 @@ extension Cartesian3: Equatable {}
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 public func == (left: Cartesian3, right: Cartesian3) -> Bool {
-    return memcmp([left.simdType], [right.simdType], sizeof(double3)) == 0
+    return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
 }
 

@@ -446,7 +446,7 @@ extension Cartesian4: Packable {
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 public func == (left: Cartesian4, right: Cartesian4) -> Bool {
-    return memcmp([left.simdType], [right.simdType], sizeof(double4)) == 0
+    return (left.x == right.x) && (left.y == right.y) && (left.z == right.z) && (left.w == right.w)
 }
 
 
