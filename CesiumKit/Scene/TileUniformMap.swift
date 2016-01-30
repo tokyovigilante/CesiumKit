@@ -65,7 +65,7 @@ class TileUniformMap: UniformMap {
         },
         
         "u_center3D": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).center3D.floatRepresentation
+            let simd = vector_float((map as! TileUniformMap).center3D.simdType)
             memcpy(buffer, [simd], sizeof(float3))
         },
         
@@ -129,7 +129,7 @@ class TileUniformMap: UniformMap {
         },
         
         "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight.floatRepresentation
+            let simd = vector_float((map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight.simdType)
             memcpy(buffer, [simd], sizeof(float3))
         },
 

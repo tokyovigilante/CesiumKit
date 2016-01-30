@@ -75,9 +75,7 @@ class TileTerrain {
             assertionFailure("mesh not created")
             return
         }
-        print(mesh.center)
         surfaceTile.center = mesh.center
-        print(surfaceTile.center)
         surfaceTile.minimumHeight = mesh.minimumHeight
         surfaceTile.maximumHeight = mesh.maximumHeight
         surfaceTile.boundingSphere3D = mesh.boundingSphere3D

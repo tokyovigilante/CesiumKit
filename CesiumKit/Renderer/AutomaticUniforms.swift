@@ -8,6 +8,7 @@
 
 
 import GLSLOptimizer
+import simd
 
 /**
  * @private
@@ -1140,7 +1141,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: UniformDataType.FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.sunDirectionEC.floatRepresentation
+            let simd = vector_float(uniformState.sunDirectionEC.simdType)
             memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
         }
     ),
@@ -1164,7 +1165,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.sunDirectionWC.floatRepresentation
+            let simd = vector_float(uniformState.sunDirectionWC.simdType)
             memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
         }
     ),
@@ -1190,7 +1191,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype: UniformDataType.FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.moonDirectionEC.floatRepresentation
+            let simd = vector_float(uniformState.moonDirectionEC.simdType)
             memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
         }
     ),
@@ -1257,7 +1258,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype : .FloatVec3,
         writeToBuffer : { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.inverseView.translation.floatRepresentation
+            let simd = vector_float(uniformState.inverseView.translation.simdType)
             memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
         }
     ),

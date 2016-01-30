@@ -388,7 +388,6 @@ class CesiumTerrainProvider: TerrainProvider {
                 z: data.getFloat64(pos + 16)),
             radius: data.getFloat64(pos + cartesian3Length)
         )
-        print(boundingSphere)
         pos += boundingSphereLength
         
         let horizonOcclusionPoint = Cartesian3(
@@ -516,9 +515,7 @@ class CesiumTerrainProvider: TerrainProvider {
         } else {
             orientedBoundingBox = nil
         }
-        print(boundingSphere)
-        print(boundingSphere.center)
-        let terrainData = QuantizedMeshTerrainData(
+       let terrainData = QuantizedMeshTerrainData(
             center: center,
             minimumHeight: minimumHeight,
             maximumHeight: maximumHeight,
