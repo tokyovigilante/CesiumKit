@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import simd
 
 /**
  * A {@link TerrainProvider} that access terrain data in a Cesium terrain format.
@@ -387,6 +388,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 z: data.getFloat64(pos + 16)),
             radius: data.getFloat64(pos + cartesian3Length)
         )
+        print(boundingSphere)
         pos += boundingSphereLength
         
         let horizonOcclusionPoint = Cartesian3(
@@ -514,12 +516,14 @@ class CesiumTerrainProvider: TerrainProvider {
         } else {
             orientedBoundingBox = nil
         }
-        
+        print(boundingSphere)
+        print(boundingSphere.center)
         let terrainData = QuantizedMeshTerrainData(
             center: center,
             minimumHeight: minimumHeight,
             maximumHeight: maximumHeight,
             boundingSphere: boundingSphere,
+            boundingSphereCenter: boundingSphere.center,
             orientedBoundingBox: orientedBoundingBox,
             horizonOcclusionPoint: horizonOcclusionPoint,
             quantizedVertices: encodedVertexBuffer,

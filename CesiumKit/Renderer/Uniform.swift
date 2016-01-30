@@ -7,6 +7,7 @@
 //
 
 import GLSLOptimizer
+import Accelerate
 import simd
 
 enum UniformDataType: UInt {

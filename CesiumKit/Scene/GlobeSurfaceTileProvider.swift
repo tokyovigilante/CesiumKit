@@ -713,7 +713,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             var command: DrawCommand
             var uniformMap: TileUniformMap
             
-            /*if (_drawCommands.count <= _usedDrawCommands) {*/
+            if (_drawCommands.count <= _usedDrawCommands) {
                 command = DrawCommand()
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
@@ -723,10 +723,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 
                 _drawCommands.append(command)
                 _uniformMaps.append(uniformMap)
-            /*} else {
+            } else {
                 command = _drawCommands[_usedDrawCommands]
                 uniformMap = _uniformMaps[_usedDrawCommands]
-            }*/
+            }
             
             
             _usedDrawCommands += 1

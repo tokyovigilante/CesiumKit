@@ -61,22 +61,22 @@ class TileUniformMap: UniformMap {
         
         "u_lightingFadeDistance": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! TileUniformMap).lightingFadeDistance.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
+            memcpy(buffer, [simd], sizeof(float2))
         },
         
         "u_center3D": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! TileUniformMap).center3D.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
+            memcpy(buffer, [simd], sizeof(float3))
         },
         
         "u_tileRectangle": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! TileUniformMap).tileRectangle.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
+            memcpy(buffer, [simd], sizeof(float4x4))
         },
         
         "u_modifiedModelView": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! TileUniformMap).modifiedModelView.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
+            memcpy(buffer, [simd], sizeof(float4x4))
         },
 
         "u_dayTextureTranslationAndScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in

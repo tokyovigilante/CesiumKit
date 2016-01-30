@@ -926,7 +926,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype: UniformDataType.FloatMatrix3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.normal3D.floatRepresentation
+            let simd = uniformState.normal3D.floatRepresentation.cmatrix
             memcpy(buffer, [simd], strideofValue(simd))
         }
     ),

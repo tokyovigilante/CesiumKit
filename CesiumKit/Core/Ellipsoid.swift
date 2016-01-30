@@ -278,7 +278,7 @@ public struct Ellipsoid: Equatable {
         gradient.x = intersection.x * oneOverRadiiSquaredX * 2.0
         gradient.y = intersection.y * oneOverRadiiSquaredY * 2.0
         gradient.z = intersection.z * oneOverRadiiSquaredZ * 2.0
-        
+
         // Compute the initial guess at the normal vector multiplier, lambda.
         var lambda = (1.0 - ratio) * cartesian.magnitude / (0.5 * gradient.magnitude)
         var correction = 0.0

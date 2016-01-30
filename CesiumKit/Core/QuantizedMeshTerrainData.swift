@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
  * Terrain data for a single tile where the terrain data is represented as a quantized mesh.  A quantized
@@ -142,6 +143,7 @@ class QuantizedMeshTerrainData: TerrainData {
         minimumHeight: Double,
         maximumHeight: Double,
         boundingSphere: BoundingSphere,
+        boundingSphereCenter: Cartesian3,
         orientedBoundingBox: OrientedBoundingBox?,
         horizonOcclusionPoint: Cartesian3,
         quantizedVertices: [UInt16],
@@ -159,6 +161,8 @@ class QuantizedMeshTerrainData: TerrainData {
         waterMask: [UInt8]?,
         createdByUpsampling: Bool = false)
     {
+        print(boundingSphere)
+        print(boundingSphereCenter)
         _quantizedVertices = quantizedVertices
         _encodedNormals = encodedNormals
         _indices = indices
@@ -234,7 +238,7 @@ class QuantizedMeshTerrainData: TerrainData {
  */
     func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
     {
-  
+        print(_boundingSphere.center.floatRepresentation.debugDescription)
         let mesh = QuantizedMeshTerrainGenerator.computeMesh(
             minimumHeight: _minimumHeight,
             maximumHeight: _maximumHeight,
