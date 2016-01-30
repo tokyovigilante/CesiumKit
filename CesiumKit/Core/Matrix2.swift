@@ -37,7 +37,7 @@ public struct Matrix2 {
         _ column0Row0: Double, _ column1Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double) {
         
-        simdType = double2x2(rows: t[
+        simdType = double2x2(rows: [
             double2(column0Row0, column1Row0),
             double2(column0Row1, column1Row1)
         ])

@@ -27,7 +27,7 @@ public struct Cartesian3 {
 
     private (set) internal var simdType: double3
     
-    private (set) var floatRepresentation: float3
+    private (set) internal var floatRepresentation: float3
     
     var x: Double {
         get {

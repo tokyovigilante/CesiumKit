@@ -233,7 +233,14 @@ class Simon1994PlanetaryPositions {
         assert(denom > Math.Epsilon10, "elements cannot be converted to cartesian")
         
         let radius = semilatus / denom
-        return perifocalToEquatorial.multiplyByVector(Cartesian3(x: radius * costheta, y: radius * sintheta, z: 0.0))
+        var result = Cartesian3(x: radius * costheta, y: radius * sintheta, z: 0.0)
+        print(result.simdType)
+        print(result.floatRepresentation)
+        //return perifocalToEquatorial.multiplyByVector(result)
+        result = perifocalToEquatorial.multiplyByVector(result)
+        print(result.simdType)
+        print(result.floatRepresentation)
+        return(result)
     }
     
     // Calculates the true anomaly given the mean anomaly and the eccentricity.
