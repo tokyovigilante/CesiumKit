@@ -145,6 +145,8 @@ class QuadtreeTile: Equatable {
     */
     var data: GlobeSurfaceTile? = nil
     
+    internal var _cachedCommands = [Command]()
+    
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
         
         assert(x >= 0 && y >= 0, "x and y must be greater than or equal to zero")

@@ -605,6 +605,16 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     
     */
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
+        
+        if false /*invalidateCache*/ {
+            tile._cachedCommands.removeAll()
+        }
+        
+        if !tile._cachedCommands.isEmpty {
+            frameState.commandList.appendContentsOf(tile._cachedCommands)
+            return
+        }
+        
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
@@ -703,7 +713,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             var command: DrawCommand
             var uniformMap: TileUniformMap
             
-            if (_drawCommands.count <= _usedDrawCommands) {
+            /*if (_drawCommands.count <= _usedDrawCommands) {*/
                 command = DrawCommand()
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
@@ -713,10 +723,10 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
                 
                 _drawCommands.append(command)
                 _uniformMaps.append(uniformMap)
-            } else {
+            /*} else {
                 command = _drawCommands[_usedDrawCommands]
                 uniformMap = _uniformMaps[_usedDrawCommands]
-            }
+            }*/
             
             
             _usedDrawCommands += 1
@@ -847,16 +857,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             command.uniformMap = uniformMap
             command.pass = .Globe
             
-            if _debug.wireframe {
-                // FIXME: Wireframe
-                assert(false, "not implemented")
-                /*createWireframeVertexArrayIfNecessary(context, tileProvider, tile);
-                if (defined(surfaceTile.wireframeVertexArray)) {
-                    command.vertexArray = surfaceTile.wireframeVertexArray;
-                    command.primitiveType = PrimitiveType.LINES;
-                }*/
-                
-            }
+            command.renderState!.wireFrame = _debug.wireframe
             
             var boundingSphere: BoundingSphere
 
@@ -882,6 +883,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             command.boundingVolume = boundingSphere
             command.orientedBoundingBox = surfaceTile.orientedBoundingBox
             frameState.commandList.append(command)
+            tile._cachedCommands.append(command)
             
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor
