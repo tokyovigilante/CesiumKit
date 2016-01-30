@@ -234,13 +234,7 @@ class Simon1994PlanetaryPositions {
         
         let radius = semilatus / denom
         var result = Cartesian3(x: radius * costheta, y: radius * sintheta, z: 0.0)
-        print(result.simdType)
-        print(result.floatRepresentation)
-        //return perifocalToEquatorial.multiplyByVector(result)
-        result = perifocalToEquatorial.multiplyByVector(result)
-        print(result.simdType)
-        print(result.floatRepresentation)
-        return(result)
+        return perifocalToEquatorial.multiplyByVector(result)
     }
     
     // Calculates the true anomaly given the mean anomaly and the eccentricity.
