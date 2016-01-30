@@ -19,6 +19,8 @@
 		94026EBF1C5CDAE1001A40C8 /* LabelCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */; };
 		94026EC11C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */; };
 		94026EC21C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */; };
+		94026ECF1C5CE554001A40C8 /* Primitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026ECE1C5CE554001A40C8 /* Primitive.swift */; };
+		94026ED01C5CE554001A40C8 /* Primitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026ECE1C5CE554001A40C8 /* Primitive.swift */; };
 		9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
@@ -771,6 +773,7 @@
 		94026EB51C5CDACB001A40C8 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabelCollection.swift; sourceTree = "<group>"; };
 		94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureAtlas.swift; sourceTree = "<group>"; };
+		94026ECE1C5CE554001A40C8 /* Primitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Primitive.swift; sourceTree = "<group>"; };
 		9403AC8A1C19A449001A40C8 /* TimeStandard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeStandard.swift; sourceTree = "<group>"; };
 		9403AC921C19A610001A40C8 /* TimeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeConstants.swift; sourceTree = "<group>"; };
 		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
@@ -1527,6 +1530,7 @@
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
 				94540434199F62C900012DC4 /* ImageryState.swift */,
 				94026EB51C5CDACB001A40C8 /* Label.swift */,
+				94026ECE1C5CE554001A40C8 /* Primitive.swift */,
 				94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */,
 				9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */,
 				942A703A1BF9D8C8001A40C8 /* OIT.swift */,
@@ -2225,6 +2229,7 @@
 				9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */,
 				9413B7D71A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */,
 				9413B8141A37B94500FFAD81 /* SceneTransitioner.swift in Sources */,
+				94026ECF1C5CE554001A40C8 /* Primitive.swift in Sources */,
 				9413B7A01A37B92900FFAD81 /* String.swift in Sources */,
 				9413B7D21A37B93100FFAD81 /* VertexFormat.swift in Sources */,
 				9413B7A11A37B93100FFAD81 /* BoundingRectangle.swift in Sources */,
@@ -2398,6 +2403,7 @@
 				947821471B5A2D7C0095A86F /* Imagebuffer.swift in Sources */,
 				947821481B5A2D7C0095A86F /* IndexDatatype.swift in Sources */,
 				947821491B5A2D7C0095A86F /* PassState.swift in Sources */,
+				94026ED01C5CE554001A40C8 /* Primitive.swift in Sources */,
 				9478214A1B5A2D7C0095A86F /* PipelineCache.swift in Sources */,
 				9478214B1B5A2D7C0095A86F /* Renderbuffer.swift in Sources */,
 				94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,

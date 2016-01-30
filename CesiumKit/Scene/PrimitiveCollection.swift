@@ -6,49 +6,41 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-class PrimitiveCollection {
-    /*
-/*global define*/
-define([
-'../Core/createGuid',
-'../Core/defaultValue',
-'../Core/defined',
-'../Core/defineProperties',
-'../Core/destroyObject',
-'../Core/DeveloperError'
-], function(
-createGuid,
-defaultValue,
-defined,
-defineProperties,
-destroyObject,
-DeveloperError) {
-"use strict";
+import Foundation
 
 /**
-* A collection of primitives.  This is most often used with {@link Scene#primitives},
-* but <code>PrimitiveCollection</code> is also a primitive itself so collections can
-* be added to collections forming a hierarchy.
-*
-* @alias PrimitiveCollection
-* @constructor
-*
-* @param {Object} [options] Object with the following properties:
-* @param {Boolean} [options.show=true] Determines if the primitives in the collection will be shown.
-* @param {Boolean} [options.destroyPrimitives=true] Determines if primitives in the collection are destroyed when they are removed.
-*
-* @example
-* var billboards = new Cesium.BillboardCollection();
-* var labels = new Cesium.LabelCollection();
-*
-* var collection = new Cesium.PrimitiveCollection();
-* collection.add(billboards);
-*
-* scene.primitives.add(collection);  // Add collection
-* scene.primitives.add(labels);      // Add regular primitive
-*/
-var PrimitiveCollection = function(options) {
-options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+ * A collection of primitives.  This is most often used with {@link Scene#primitives},
+ * but <code>PrimitiveCollection</code> is also a primitive itself so collections can
+ * be added to collections forming a hierarchy.
+ *
+ * @alias PrimitiveCollection
+ * @constructor
+ *
+ * @param {Object} [options] Object with the following properties:
+ * @param {Boolean} [options.show=true] Determines if the primitives in the collection will be shown.
+ * @param {Boolean} [options.destroyPrimitives=true] Determines if primitives in the collection are destroyed when they are removed.
+ *
+ * @example
+ * var billboards = new Cesium.BillboardCollection();
+ * var labels = new Cesium.LabelCollection();
+ *
+ * var collection = new Cesium.PrimitiveCollection();
+ * collection.add(billboards);
+ *
+ * scene.primitives.add(collection);  // Add collection
+ * scene.primitives.add(labels);      // Add regular primitive
+ */
+
+public class PrimitiveCollection: Primitive {
+    
+    let guid: String
+    
+    private var _primitives = [Primitive]()
+    
+    override init () {
+        guid = NSUUID().UUIDString
+    }
+    /*
 
 this._primitives = [];
 this._guid = createGuid();
@@ -103,7 +95,7 @@ return this._primitives.length;
 }
 }
 });
-
+*/
 /**
 * Adds a primitive to the collection.
 *
@@ -115,24 +107,19 @@ return this._primitives.length;
 * @example
 * var billboards = scene.primitives.add(new Cesium.BillboardCollection());
 */
-PrimitiveCollection.prototype.add = function(primitive) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(primitive)) {
-throw new DeveloperError('primitive is required.');
-}
-//>>includeEnd('debug');
-
-var external = (primitive._external = primitive._external || {});
-var composites = (external._composites = external._composites || {});
-composites[this._guid] = {
-collection : this
-};
-
-this._primitives.push(primitive);
-
-return primitive;
-};
-
+    public func add (primitive: Primitive) -> Primitive {
+        /*
+         var external = (primitive._external = primitive._external || {});
+         var composites = (external._composites = external._composites || {});
+         composites[this._guid] = {
+         collection : this
+         };
+         */
+        _primitives.append(primitive)
+        
+        return primitive
+    }
+/*
 /**
 * Removes a primitive from the collection.
 *

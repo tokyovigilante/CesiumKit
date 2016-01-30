@@ -103,7 +103,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {PrimitiveCollection}
     */
-    let primitives = PrimitiveCollection()
+    public let primitives = PrimitiveCollection()
 
     /**
      * Gets the collection of ground primitives.
