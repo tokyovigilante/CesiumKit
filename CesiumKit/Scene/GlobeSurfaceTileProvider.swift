@@ -606,7 +606,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     */
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         
-        if false /*invalidateCache*/ {
+        if true /*invalidateCache*/ {
             tile._cachedCommands.removeAll()
         }
         
