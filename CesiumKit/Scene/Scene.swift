@@ -619,10 +619,10 @@ public class Scene {
             if name.hasPrefix("NVIDIA") {
                 print("FXAA disabled - NVIDIA GPU")
                 fxaa = false
-            } else if  name.hasPrefix("Apple") {
+            }/* else if  name.hasPrefix("Apple") {
                 print("FXAA disabled - Mobile")
                 fxaa = false
-            }
+            }*/
         }
         
         _computeEngine = ComputeEngine(context: context)

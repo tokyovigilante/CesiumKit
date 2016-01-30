@@ -13,6 +13,12 @@
 		940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9402401C1C1D98140095A86F /* SkyAtmosphere.swift */; };
 		940240261C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940240251C1DA0230095A86F /* EllipsoidGeometry.swift */; };
 		940240271C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940240251C1DA0230095A86F /* EllipsoidGeometry.swift */; };
+		94026EB61C5CDACB001A40C8 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EB51C5CDACB001A40C8 /* Label.swift */; };
+		94026EB71C5CDACB001A40C8 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EB51C5CDACB001A40C8 /* Label.swift */; };
+		94026EBE1C5CDAE1001A40C8 /* LabelCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */; };
+		94026EBF1C5CDAE1001A40C8 /* LabelCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */; };
+		94026EC11C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */; };
+		94026EC21C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */; };
 		9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC8A1C19A449001A40C8 /* TimeStandard.swift */; };
 		9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403AC921C19A610001A40C8 /* TimeConstants.swift */; };
@@ -762,6 +768,9 @@
 /* Begin PBXFileReference section */
 		9402401C1C1D98140095A86F /* SkyAtmosphere.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyAtmosphere.swift; sourceTree = "<group>"; };
 		940240251C1DA0230095A86F /* EllipsoidGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidGeometry.swift; sourceTree = "<group>"; };
+		94026EB51C5CDACB001A40C8 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
+		94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabelCollection.swift; sourceTree = "<group>"; };
+		94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureAtlas.swift; sourceTree = "<group>"; };
 		9403AC8A1C19A449001A40C8 /* TimeStandard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeStandard.swift; sourceTree = "<group>"; };
 		9403AC921C19A610001A40C8 /* TimeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeConstants.swift; sourceTree = "<group>"; };
 		9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glsl_optimizer_lib.xcodeproj; path = "CesiumKit/Platform/Dependencies/glsl-optimizer/projects/xcode5/glsl_optimizer_lib.xcodeproj"; sourceTree = "<group>"; };
@@ -1517,6 +1526,8 @@
 				941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */,
 				94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */,
 				94540434199F62C900012DC4 /* ImageryState.swift */,
+				94026EB51C5CDACB001A40C8 /* Label.swift */,
+				94026EBD1C5CDAE1001A40C8 /* LabelCollection.swift */,
 				9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */,
 				942A703A1BF9D8C8001A40C8 /* OIT.swift */,
 				94BA59F019A695DD0049322D /* OrthographicFrustum.swift */,
@@ -1538,6 +1549,7 @@
 				9402401C1C1D98140095A86F /* SkyAtmosphere.swift */,
 				942CEED2199E063E00012DC4 /* SkyBox.swift */,
 				94540430199F5D0900012DC4 /* TerrainState.swift */,
+				94026EC01C5CDAEC001A40C8 /* TextureAtlas.swift */,
 				94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */,
 				9409DC9B19A95F0200F9842B /* TileDiscardPolicy.swift */,
 				94540432199F5F3F00012DC4 /* TileImagery.swift */,
@@ -2166,6 +2178,7 @@
 				9413B7F91A37B94500FFAD81 /* Camera.swift in Sources */,
 				941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				94FCEDC51C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
+				94026EBE1C5CDAE1001A40C8 /* LabelCollection.swift in Sources */,
 				949C04341C1AD96A001A40C8 /* ClockStep.swift in Sources */,
 				94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */,
 				943416BC1BC8D932001A40C8 /* ComputeEngine.swift in Sources */,
@@ -2224,6 +2237,7 @@
 				941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */,
 				9413B7F11A37B93D00FFAD81 /* WindingOrder.swift in Sources */,
 				9413B7BA1A37B93100FFAD81 /* Interval.swift in Sources */,
+				94026EC11C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */,
 				9413B7AE1A37B93100FFAD81 /* Event.swift in Sources */,
 				9413B7FC1A37B94500FFAD81 /* Frustum.swift in Sources */,
 				9413B7D01A37B93100FFAD81 /* TilingScheme.swift in Sources */,
@@ -2268,6 +2282,7 @@
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
+				94026EB61C5CDACB001A40C8 /* Label.swift in Sources */,
 				9413B7A71A37B93100FFAD81 /* Clock.swift in Sources */,
 				9413B7DE1A37B93D00FFAD81 /* CubeMap.swift in Sources */,
 				9413B7AC1A37B93100FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
@@ -2344,6 +2359,7 @@
 				947821291B5A2D7B0095A86F /* Occluder.swift in Sources */,
 				9403AC8C1C19A449001A40C8 /* TimeStandard.swift in Sources */,
 				943416B31BC8D843001A40C8 /* Command.swift in Sources */,
+				94026EBF1C5CDAE1001A40C8 /* LabelCollection.swift in Sources */,
 				9478212A1B5A2D7B0095A86F /* Packable.swift in Sources */,
 				9478212B1B5A2D7B0095A86F /* MapProjection.swift in Sources */,
 				945B6AA31C25781E0095A86F /* LeapSecond.swift in Sources */,
@@ -2408,6 +2424,7 @@
 				94EB4DA41C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */,
 				949090741BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9478215C1B5A2D7C0095A86F /* BingMapsImageryProvider.swift in Sources */,
+				94026EB71C5CDACB001A40C8 /* Label.swift in Sources */,
 				9478215D1B5A2D7C0095A86F /* BingMapsStyle.swift in Sources */,
 				9478215E1B5A2D7C0095A86F /* BlendEquation.swift in Sources */,
 				9478215F1B5A2D7C0095A86F /* BlendFunction.swift in Sources */,
@@ -2473,6 +2490,7 @@
 				943416BA1BC8D864001A40C8 /* ComputeCommand.swift in Sources */,
 				9478218B1B5A2D7C0095A86F /* TileUniformMap.swift in Sources */,
 				9478218D1B5A2D7C0095A86F /* Shaders.swift in Sources */,
+				94026EC21C5CDAEC001A40C8 /* TextureAtlas.swift in Sources */,
 				941A28181BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
