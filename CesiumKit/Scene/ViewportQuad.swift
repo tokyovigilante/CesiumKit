@@ -21,16 +21,8 @@ import Foundation
 * var viewportQuad = new Cesium.ViewportQuad(new Cesium.BoundingRectangle(0, 0, 80, 40));
 * viewportQuad.material.uniforms.color = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
 */
-class ViewportQuad {
-    /*
-    /**
-     * Determines if the viewport quad primitive will be shown.
-     *
-     * @type {Boolean}
-     * @default true
-     */
-    var show = true
-    
+public class ViewportQuad: Primitive {
+        
     /**
      * The BoundingRectangle defining the quad's position within the viewport.
      *
@@ -67,7 +59,8 @@ class ViewportQuad {
     
     private var _rs: RenderState? = nil
     
-    init (rectangle: BoundingRectangle = BoundingRectangle(), material: Material = Material(fromType: .ColorType(1.0, 1.0, 1.0, 1.0))) {
+    public init (rectangle: BoundingRectangle = BoundingRectangle(), material: Material = Material(fromType: .Color(ColorFabricDescription(color: Color(1.0, 1.0, 1.0, 1.0)))))
+    {
         self.rectangle = rectangle
         self.material = material
     }
@@ -136,7 +129,7 @@ class ViewportQuad {
     */
     ViewportQuad.prototype.isDestroyed = function() {
     return false;*/
-    }*/
+    }
     
 }
 

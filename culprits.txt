@@ -1,0 +1,938 @@
+8178.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/OrientedBoundingBox.swift:282:10	func intersectPlane(plane: Plane) -> Intersect
+6379.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:392:10	func computeSimonMoon(date: JulianDate) -> Cartesian3
+2255.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:248:18	private func meanAnomalyToEccentricAnomaly(meanAnomaly: Double, eccentricity: Double) -> Double
+2178.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeometry.swift:109:10	func createGeometry(context: Context) -> Geometry
+1813.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:343:10	func computeSimonEarthMoonBarycenter(date: JulianDate) -> Cartesian3
+407.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:218:12	public init(view: MTKView, options: CesiumOptions)
+317.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:359:10	func createQuantizedMeshTerrainData(data: NSData, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (data: TerrainData) -> ())
+207.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Uniform.swift:206:26	get {}
+168.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:707:10	func reprojectToGeographic(command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle)
+146.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:207:18	private func setConstants()
+128.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:222:10	func magnitudeToPoint(scaledSpaceDirectionToPoint: Cartesian3, resultMagnitude: Double) -> Cartesian3?
+116.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/ScreenSpaceEventHandler.swift:547:10	func fireTouchMoveEvents()
+107.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Texture.swift:118:5	init(context: Context, options: TextureOptions)
+105.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceShaderSet.swift:73:10	func getRenderPipeline(context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> RenderPipeline
+99.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:400:10	func screenSpaceError(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double
+97.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderState.swift:198:5	init(device: MTLDevice, windingOrder: WindingOrder = default, cullFace: CullFace = default, polygonOffset: PolygonOffset = default, lineWidth: Double = default, scissorTest: ScissorTest = default, depthRange: DepthRange = default, depthTest: DepthTest = default, depthMask: Bool = default, stencilMask: Int = default, blending: BlendingState = default, stencilTest: RenderState.StencilTest = default, sampleCoverage: RenderState.SampleCoverage = default, viewport: BoundingRectangle? = default, wireFrame: Bool = default)
+92.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:166:5	init(url: String, ellipsoid: Ellipsoid = default, tilingScheme: TilingScheme = default, requestVertexNormals: Bool = default, requestWaterMask: Bool = default, credit: Credit = default)
+91.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:338:12	public init(options: Options = default)
+82.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CullingVolume.swift:36:10	func visibility(boundingVolume: BoundingVolume) -> Intersect
+79.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:420:18	private func interpolateHeight2(sourceHeights sourceHeights: [UInt16], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double
+75.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:358:10	func equalsArray(array: [Float], offset: Int) -> Bool
+72.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainData.swift:140:5	init(center: Cartesian3, minimumHeight: Double, maximumHeight: Double, boundingSphere: BoundingSphere, orientedBoundingBox: OrientedBoundingBox?, horizonOcclusionPoint: Cartesian3, quantizedVertices: [UInt16], encodedNormals: [UInt8]?, indices: [Int], westIndices: [Int], southIndices: [Int], eastIndices: [Int], northIndices: [Int], westSkirtHeight: Double, southSkirtHeight: Double, eastSkirtHeight: Double, northSkirtHeight: Double, childTileMask: Int = default, waterMask: [UInt8]?, createdByUpsampling: Bool = default)
+72.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:614:5	init(view: MTKView, globe: Globe, useOIT: Bool = default, scene3DOnly: Bool = default, projection: MapProjection = default)
+69.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:227:10	func createTileImagerySkeletons(tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = default) -> Bool
+67.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:465:10	func getViewportQuadVertexArray() -> VertexArray
+65.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:104:10	func requestTileGeometry(terrainProvider: TerrainProvider, x: Int, y: Int, level: Int)
+64.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:107:112	(closure)
+64.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:378:10	func toString() -> String
+63.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:387:31	(closure)
+62.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Globe.swift:317:10	func update(context context: Context, inout frameState: FrameState)
+61.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:269:10	func equalsArray(array: [Float], offset: Int) -> Bool
+61.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/VertexDescriptor.swift:25:5	init(attributes: [VertexAttributes])
+59.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:544:17	static func isPowerOfTwo(n: Int) -> Bool
+58.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Credit.swift:42:5	init(text: String? = default, imageUrl: String? = default, link: String? = default)
+58.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:277:10	func selectTilesForRendering(context context: Context, frameState: FrameState)
+57.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainGenerator.swift:24:16	class func computeMesh(minimumHeight minimumHeight: Double, maximumHeight: Double, quantizedVertices: [UInt16], octEncodedNormals: [UInt8]?, indices: [Int], westIndices: [Int], southIndices: [Int], eastIndices: [Int], northIndices: [Int], westSkirtHeight: Double, southSkirtHeight: Double, eastSkirtHeight: Double, northSkirtHeight: Double, rectangle: Rectangle, relativeToCenter: Cartesian3, ellipsoid: Ellipsoid, exaggeration: Double) -> (boundingSphere: BoundingSphere?, center: Cartesian3, indices: [Int], maximumHeight: Double, minimumHeight: Double, occludeePointInScaledSpace: Cartesian3?, orientedBoundingBox: OrientedBoundingBox?, vertexStride: Int, vertices: [Float32])
+56.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileCoordinateImageryProvider.swift:266:17	public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void))
+55.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:414:10	func screenSpaceError2D(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double
+55.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:186:31	(closure)
+54.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:111:10	func combineShader(isFragmentShader: Bool) -> String
+53.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:410:10	func handleZoom(startPosition: Cartesian2, movement: MouseMovement, zoomFactor: Double, distanceMeasure: Double, unitPositionDotDirection: Double? = default)
+51.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:791:10	func createPotentiallyVisibleSet()
+51.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:620:10	func updateMembers()
+49.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/IndexDatatype.swift:45:17	static func createIntegerIndexArrayFromData(data: NSData, numberOfVertices: Int, byteOffset: Int, length: Int) -> [Int]
+48.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:122:10	func eligibleForUnloading() -> Bool
+45.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BlendingState.swift:109:29	get {}
+44.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Clock.swift:117:12	public init(startTime: JulianDate? = default, currentTime: JulianDate? = default, stopTime: JulianDate? = default, clockRange: ClockRange = default, clockStep: ClockStep = default, multiplier: Double = default, canAnimate: Bool = default, shouldAnimate: Bool = default, isUTC: Bool)
+44.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/CubeMap.swift:45:16	class func loadImagesForSources(sources: [String]) -> CubeMapSources
+43.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPipeline.swift:23:5	init(device: MTLDevice, shaderProgram: ShaderProgram, descriptor: MTLRenderPipelineDescriptor)
+43.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:324:10	func equalsArray(array: [Float], offset: Int) -> Bool
+43.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:308:10	func maintainInertia(type type: CameraEventType, modifier: KeyboardEventModifier? = default, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String)
+43.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/String.swift:19:9	get {}
+43.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:91:10	func getKey(type: CameraEventType, modifier: KeyboardEventModifier? = default) -> String
+43.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:457:10	func requestImagery(imagery: Imagery)
+42.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartographic.swift:120:10	func toString() -> String
+42.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:274:10	func computeOccludeePoint(occluderBoundingSphere: BoundingSphere, occludeePosition: Cartesian3, positions: [Cartesian3]) -> Cartesian3?
+42.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:199:10	func createResources(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int)
+42.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:475:10	func resize(size: Cartesian2)
+42.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:461:83	(closure)
+42.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:302:10	func interpolateUsingSurfaceDistance(distance: Double) -> Cartographic
+41.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:206:48	(closure)
+41.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:463:58	(closure)
+41.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Globe.swift:358:76	(closure)
+41.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/AutomaticUniforms.swift:20:10	func declaration(name: String) -> String
+39.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PipelineCache.swift:78:10	func getRenderPipeline(vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = default) -> RenderPipeline
+39.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/ScreenSpaceEventHandler.swift:98:10	func getInputEventKey(type: ScreenSpaceEventType, modifier: KeyboardEventModifier? = default) -> String
+39.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:229:16	class func processStateMachine(tile: QuadtreeTile, inout frameState: FrameState, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection)
+38.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:359:10	func configureCameraFrustum()
+37.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:426:17	static func fromRadiansArrayHeights(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3]
+37.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoxGeometry.swift:227:10	func createGeometry(context: Context) -> Geometry
+37.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:259:18	private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData
+36.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:54:5	init(fromPoints points: [Cartesian3])
+36.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:91:5	init(fromMatrix4 matrix: Matrix4)
+36.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/OrientedBoundingBox.swift:185:5	init(fromRectangle rectangle: Rectangle, minimumHeight: Double = default, maximumHeight: Double = default, ellipsoid: Ellipsoid = default)
+34.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/VertexFormat.swift:230:5	init(fromArray array: [Double], startingIndex: Int)
+34.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/TerrainProvider.swift:211:17	static func getRegularGridIndices(width width: Int, height: Int) -> [Int]
+33.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:381:17	static func fromRadiansArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3]
+32.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1259:10	func pan3D(startPosition: Cartesian2, movement: MouseMovement, ellipsoid: Ellipsoid)
+31.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:113:5	init()
+29.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:129:18	private func vincentyInverseFormula(major major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double)
+29.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/Array.swift:11:13	public func deleteDuplicates<S : RangeReplaceableCollectionType where S.Generator.Element : Equatable>(seq: S) -> S
+28.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Sampler.swift:14:5	init(context: Context, wrapS: TextureWrap = default, wrapT: TextureWrap = default, minFilter: TextureMinMagFilter = default, magFilter: TextureMinMagFilter = default, mipMagFilter: TextureMipFilter = default, maximumAnisotropy: Int = default)
+28.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Uniform.swift:198:22	get {}
+28.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainGenerator.swift:121:16	class func addSkirt(inout vertexBuffer: [Float32], inout indexBuffer: [Int], edgeVertices: [Int], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool)
+28.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PipelineCache.swift:28:5	init(device: MTLDevice)
+27.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Packable.swift:63:10	func pack(inout array: [Float], startingIndex: Int = default)
+27.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:879:12	public init(fromArray array: [Double], startingIndex: Int = default)
+26.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKitRunner/CesiumKitController.swift:19:5	@objc init(view: MTKView)
+26.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1709:10	func adjustHeightForTerrain()
+26.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainData.swift:187:23	(closure)
+26.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryPipeline.swift:210:17	static func createAttributeLocations(geometry: Geometry) -> [String : Int]
+25.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/FXAA.swift:33:10	func update(context: Context)
+24.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SkyBox.swift:87:10	func update(context: Context, frameState: FrameState) -> DrawCommand?
+24.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:390:16	class func createShaderSource(defines defines: [String], sources: [String], pickColorQualifier: String? = default) -> String
+24.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:289:17	static func fromVertices(positions: [Float], center: Cartesian3 = default, stride: Int = default) -> BoundingSphere
+24.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Globe.swift:200:10	func pick(ray: Ray, scene: Scene) -> Cartesian3?
+23.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainData.swift:192:23	(closure)
+23.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Uniform.swift:247:17	final class func inferDataTypeFromGLSLDescription(desc: GLSLShaderVariableDescription) -> UniformDataType
+23.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:103:10	func listenToPinch(modifier: KeyboardEventModifier? = default)
+23.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:329:18	private func upsampleByInterpolating(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData
+22.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:73:10	@objc func groupsForMatch(match: NSTextCheckingResult!) -> [String]!
+22.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/ImageExtensions.swift:46:10	func renderToPixelArray(colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int)
+22.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:83:5	init(sources: [String] = default, defines: [String] = default, pickColorQualifier: String? = default, includeBuiltIns: Bool = default)
+22.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix2.swift:573:5	init(fromArray array: [Double], startingIndex: Int = default)
+21.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:428:16	class func getUpsampleTileDetails(tile: QuadtreeTile) -> (data: TerrainData, x: Int, y: Int, level: Int)?
+21.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/VertexArray.swift:211:16	class func interleaveAttributes(context: Context, attributes: GeometryAttributes) -> (buffer: Buffer, offsetsInBytes: [Int], vertexSizeInBytes: Int)?
+21.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSDate+TAI.swift:18:16	@objc dynamic class func taiOffsetForDate(date: NSDate? = default) -> NSTimeInterval
+21.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1303:9	@objc dynamic get {}
+21.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1663:17	public func lookAtTransform(transform: Matrix4, offsetCartesian: Cartesian3? = default, offsetHPR: HeadingPitchRange? = default)
+19.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKitRunner OSX/CesiumViewController.swift:18:19	@objc override func viewDidLoad()
+19.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:336:18	private func getRequestHeader(extensionsList: [String]?) -> [String : String]
+19.4ms	<invalid loc>	get {}
+19.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SkyAtmosphere.swift:70:10	func update(context: Context, frameState: FrameState) -> DrawCommand?
+19.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:287:10	func setUniform(uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState)
+19.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:358:10	func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?)
+18.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:169:18	private func findUniforms()
+18.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransforms.swift:69:17	static func wgs84ToWindowCoordinates(scene: Scene, position: Cartesian3) -> Cartesian2?
+17.4ms	<invalid loc>	init?(rawValue: UInt)
+17.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransforms.swift:140:25	private static func computeActualWgs84Position(frameState: FrameState, position: Cartesian3) -> Cartesian3?
+17.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSDate+TAI.swift:61:10	func computeJulianDateComponents() -> (dayNumber: Int, secondsOfDay: Double)
+17.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/PerspectiveFrustum.swift:90:10	func update()
+17.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:240:10	func listenMouseMove(modifier: KeyboardEventModifier? = default)
+17.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix2.swift:34:12	public init(_ column0Row0: Double, _ column1Row0: Double, _ column0Row1: Double, _ column1Row1: Double)
+16.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:58:38	get {}
+16.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:126:10	func computeHorizonCullingPoint(directionToPoint: Cartesian3, positions: [Cartesian3]) -> Cartesian3?
+16.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/MatrixType.swift:58:10	func equals(other: Self) -> Bool
+16.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:118:17	final class func rayTriangle(ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = default) -> Cartesian3?
+16.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/MatrixType.swift:72:10	func equalsEpsilon(other: Self, epsilon: Double) -> Bool
+16.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:49:5	init(maximumColorAttachments: Int, colorTextures: [Texture]? = default, depthTexture: Texture? = default, stencilTexture: Texture? = default)
+16.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/Array.swift:45:10	func binarySearch(itemToFind: Element, comparator: BinarySearchComparator) -> Int
+15.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:91:17	static func fromCartographicArray(cartographics: [Cartographic]) -> Rectangle
+15.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:277:18	private func sortDependencies(inout dependencyNodes: [DependencyNode])
+15.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/DepthPlane.swift:23:18	private func computeDepthQuad(ellipsoid: Ellipsoid, frameState: FrameState) -> [Float]
+15.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:245:10	func scaleToGeodeticSurface(cartesian: Cartesian3) -> Cartesian3?
+15.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingRectangle.swift:182:10	func intersect(other: BoundingRectangle) -> Intersect
+14.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileCoordinateImageryProvider.swift:46:9	get {}
+14.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:482:9	set {}
+14.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ComputeEngine.swift:28:18	private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) -> RenderPipeline?
+13.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:741:10	func updateFrustums(near near: Double, far: Double, farToNearRatio: Double, numFrustums: Int)
+13.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicTilingScheme.swift:166:10	func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)?
+13.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:715:10	func getChildMaskForTile(level: Int, x: Int, y: Int) -> Int
+13.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:411:14	func zigZagDecode(value: UInt16) -> Int16
+13.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:181:10	func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3]
+13.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/String.swift:48:10	func urlForSource() -> NSURL?
+13.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidTerrainProvider.swift:71:14	required init(tilingScheme: TilingScheme = default, ellipsoid: Ellipsoid = default)
+13.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileImagery.swift:55:10	func processStateMachine(tile: QuadtreeTile, inout frameState: FrameState) -> Bool
+13.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:93:9	@objc set(newValue) {}
+12.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1735:10	func rectangleCameraPosition3D(rectangle: Rectangle, ellipsoid: Ellipsoid, positionOnly: Bool = default) -> Cartesian3
+12.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:207:18	private func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String
+12.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:401:18	private func horizonToPlaneNormalDotProduct(occluderBS occluderBS: BoundingSphere, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, anyRotationVector: Cartesian3, position: Cartesian3) -> Double?
+12.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/ScreenSpaceEventHandler.swift:470:10	func fireTouchEvents()
+12.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:23:5	@objc init(target: NSString, pattern: String, options: NSRegularExpressionOptions = default)
+12.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidTangentPlane.swift:218:10	func projectPointsToNearestOnPlane(cartesians: [Cartesian3]) -> [Cartesian2]
+12.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:388:10	func getStartMousePosition(type: CameraEventType, modifier: KeyboardEventModifier? = default) -> Cartesian2
+12.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:34:39	get {}
+12.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:239:10	func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool
+12.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:458:9	set {}
+12.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:41:10	func getUInt8Array(pos: Int, elementCount: Int) -> [UInt8]
+12.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:313:10	func computeTileVisibility(tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility
+12.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:224:18	private func setUniformBufferOffsets()
+11.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:192:10	func listenMouseButtonDownUp(type: CameraEventType, modifier: KeyboardEventModifier? = default)
+11.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ComputeEngine.swift:60:10	func execute(computeCommand: ComputeCommand)
+11.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/JulianDate.swift:38:12	public init(julianDayNumber: Double = default, secondsOfDay: Double = default, timeStandard: TimeStandard = default)
+11.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:184:18	private func updateCustomData(frameNumber: Int, added: [CustomData]? = default, removed: [CustomData]? = default)
+11.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1134:10	func spin3D(startPosition: Cartesian2, movement: MouseMovement)
+11.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:161:10	func pick(ray: Ray, mode: SceneMode, projection: MapProjection, cullBackFaces: Bool) -> Cartesian3?
+11.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:78:12	public init(grid: [Double])
+11.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:245:18	private func generateDependencies(currentNode: DependencyNode, inout dependencyNodes: [DependencyNode])
+11.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:45:5	init(imageryLayer: ImageryLayer, level: Int, x: Int, y: Int, rectangle: Rectangle? = default)
+9.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:122:10	func processUpsampleStateMachine(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int)
+9.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:90:9	get {}
+9.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:229:10	func beginFrame() -> Bool
+9.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:547:18	private func setHeight(inout heights heights: [Double], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double)
+9.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:219:10	func endUpdate(inout frameState frameState: FrameState)
+9.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:356:16	class func processTerrainStateMachine(tile: QuadtreeTile, frameState: FrameState, terrainProvider: TerrainProvider)
+9.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:445:9	get {}
+9.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/ComponentDatatype.swift:115:10	func toVertexType(attributeCount: Int) -> VertexType
+9.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartographic.swift:108:10	func equalsEpsilon(other: Cartographic, epsilon: Double) -> Bool
+9.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:338:10	func subsample(ellipsoid: Ellipsoid = default, surfaceHeight: Double = default) -> [Cartesian3]
+9.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:41:12	public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double, _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double, _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double)
+9.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:396:10	func computeDistanceToTile(tile: QuadtreeTile, frameState: FrameState) -> Double
+9.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:167:10	func equalsEpsilon(other: Rectangle, epsilon: Double) -> Bool
+9.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/JulianDate.swift:65:10	func convertUtcToTai() -> JulianDate
+9.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKitRunner/CesiumKitController.swift:69:10	@objc func drawInMTKView(view: MTKView)
+9.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/FrustumCommands.swift:32:10	func removeAll()
+9.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:140:5	init(rowMajorArray grid: [Double])
+9.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:168:10	func transform(frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int)
+9.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:129:77	(closure)
+9.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:159:10	func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = default, completionBlock: (TerrainMesh?) -> ()) -> Bool
+8.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:155:10	func computeHorizonCullingPointFromVertices(directionToPoint: Cartesian3, vertices: [Float], stride: Int, center: Cartesian3 = default) -> Cartesian3?
+8.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Clock.swift:189:10	func tick() -> JulianDate
+8.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/QueueManager.swift:23:10	func networkQueue(rateLimit rateLimit: Bool = default) -> dispatch_queue_t
+8.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidTangentPlane.swift:193:10	func projectPointToNearestOnPlane(cartesian: Cartesian3) -> Cartesian2
+8.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:265:10	func intersection(other: Rectangle) -> Rectangle?
+8.6ms	<invalid loc>	get {}
+8.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/TerrainData.swift:121:10	func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
+8.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:59:12	public init(fromQuaternion quaternion: Quaternion)
+8.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:580:10	func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture)
+8.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:517:17	public func loadImage(url: String, completionBlock: (CGImageRef? -> Void))
+8.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:529:18	private func getHeight(heights heights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, index: Int) -> Double
+8.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Texture.swift:68:5	init(source: TextureSource? = default, width: Int? = default, height: Int? = default, cubeMap: Bool = default, pixelFormat: PixelFormat = default, flipY: Bool = default, premultiplyAlpha: Bool = default, usage: TextureUsage = default, sampler: Sampler? = default)
+8.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorProjection.swift:58:17	static func mercatorAngleToGeodeticLatitude(mercatorAngle: Double) -> Double
+8.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:468:17	static func equalsEpsilon(left: Double, _ right: Double, relativeEpsilon: Double, absoluteEpsilon: Double? = default) -> Bool
+8.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:521:36	(closure)
+7.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Transforms.swift:39:17	static func eastNorthUpToFixedFrame(origin: Cartesian3, ellipsoid: Ellipsoid = default) -> Matrix4
+7.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorTilingScheme.swift:63:5	init(ellipsoid: Ellipsoid = default, numberOfLevelZeroTilesX: Int = default, numberOfLevelZeroTilesY: Int = default, rectangleSouthwestInMeters: Cartesian3? = default, rectangleNortheastInMeters: Cartesian3? = default)
+7.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:201:10	func getVisibility(occludeeBS: BoundingSphere) -> Visibility
+7.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:41:9	get {}
+7.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1418:10	func rotateVertical(angle: Double)
+7.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:271:77	(closure)
+7.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/VertexArray.swift:19:30	get {}
+7.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:107:5	init(tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Double = default, tileCacheSize: Int = default)
+7.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:632:10	func generateMipmaps(inout frameState frameState: FrameState, imagery: Imagery)
+7.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:355:18	private func anyRotationVector(occluderPosition occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double) -> Cartesian3
+7.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingRectangle.swift:202:6	func ==(left: BoundingRectangle, right: BoundingRectangle) -> Bool
+7.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:26:17	final class func rayPlane(ray: Ray, plane: Plane) -> Cartesian3?
+7.3ms	<invalid loc>	get {}
+7.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileReplacementQueue.swift:92:10	func markTileRendered(item: QuadtreeTile)
+7.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:636:50	(closure)
+7.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceShaderSet.swift:195:10	func getPickRenderPipeline(context context: Context, sceneMode: SceneMode, useWebMercatorProjection: Bool) -> RenderPipeline
+7.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:144:10	func isBoundingSphereVisible(occludee: BoundingSphere) -> Bool
+7.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileReplacementQueue.swift:60:10	func remove(item: QuadtreeTile)
+7.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/PerspectiveOffCenterFrustum.swift:94:10	func update()
+7.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:709:10	func getOccluder() -> Occluder?
+7.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:109:12	public init(_ jsonArray: [JSON])
+7.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:81:10	func updateCameraPosition()
+6.9ms	<invalid loc>	init?(rawValue: UInt)
+6.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:41:12	public init(clock: Clock = default, imageryProvider: ImageryProvider? = default, terrain: Bool = default, skyBox: Bool = default, sceneMode: SceneMode = default, scene3DOnly: Bool = default, mapProjection: MapProjection = default, targetFrameRate: Int = default, showRenderLoopErrors: Bool = default, resolutionScale: Double = default)
+6.8ms	<invalid loc>	init?(rawValue: Int)
+6.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicTilingScheme.swift:140:10	func tileXYToRectangle(x x: Int, y: Int, level: Int) -> Rectangle
+6.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:403:17	static func fromDegreesArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3]
+6.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformBufferProvider.swift:22:5	init(device: MTLDevice, capacity: Int, bufferSize: Int)
+6.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:221:17	final class func raySphere(ray: Ray, sphere: BoundingSphere) -> Interval?
+6.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:452:18	private func interpolateHeightWithStride(sourceHeights sourceHeights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double
+6.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:352:10	func configureCanvasSize(size: Cartesian2)
+6.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:533:10	func getContextWaterMaskData(context: Context) -> (allWaterTexture: Texture, sampler: Sampler)
+6.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:184:10	func validate()
+6.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:226:49	(closure)
+6.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerCollection.swift:79:10	func add(layer: ImageryLayer, index: Int? = default)
+6.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:364:10	func showTileThisFrame(tile: QuadtreeTile, inout frameState: FrameState)
+6.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:51:10	func getUInt16Array(pos: Int, elementCount: Int, littleEndian: Bool = default) -> [UInt16]
+6.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:455:13	public func ==(left: Cartesian4, right: Cartesian4) -> Bool
+6.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileReplacementQueue.swift:42:10	func trimTiles(maximumTiles: Int)
+6.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:651:10	func buildImageUrl(x x: Int, y: Int, level: Int) -> String
+6.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:131:10	func invalidateAllTiles()
+6.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ContextLimits.swift:312:5	init(device: MTLDevice)
+6.2ms	<invalid loc>	get {}
+6.2ms	<invalid loc>	get {}
+6.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPipeline.swift:45:10	func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
+6.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:522:9	set {}
+6.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:697:10	func cameraEqual(camera0: Camera, camera1: Camera, epsilon: Double) -> Bool
+6.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:175:9	set(value) {}
+6.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/OrbitType.swift:21:17	static func fromEccentricity(eccentricity: Double, tolerance: Double) -> OrbitType
+6.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:114:10	func isPointVisible(occludee: Cartesian3) -> Bool
+6.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:548:10	func reprojectTexture(inout frameState frameState: FrameState, imagery: Imagery)
+6.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:259:10	func setUniforms(command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
+6.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ray.swift:32:5	init(origin: Cartesian3 = default, direction: Cartesian3 = default)
+6.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:284:17	final class func rayEllipsoid(ray: Ray, ellipsoid: Ellipsoid) -> Interval?
+5.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileUniformMap.swift:224:10	func textureForUniform(uniform: UniformSampler) -> Texture?
+5.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:920:9	get {}
+5.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorTilingScheme.swift:190:10	func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)?
+5.7ms	<invalid loc>	get {}
+5.7ms	<invalid loc>	get {}
+5.7ms	<invalid loc>	get {}
+5.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Queue.swift:31:10	func dequeue() -> T?
+5.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:79:18	private func updateRenderPassDescriptor()
+5.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttributes.swift:163:49	get {}
+5.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:169:16	class func createLevelZeroTiles(tilingScheme: TilingScheme) -> [QuadtreeTile]
+5.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:305:16	class func prepareNewTile(tile: QuadtreeTile, terrainProvider: TerrainProvider, imageryLayerCollection: ImageryLayerCollection)
+5.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:186:18	private func removeComments(source: String) -> String
+5.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:469:9	get {}
+5.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:36:9	get {}
+5.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:72:10	func publishToTile(tile: QuadtreeTile)
+5.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorTilingScheme.swift:140:10	func tileXYToNativeRectangle(x x: Int, y: Int, level: Int) -> Rectangle
+5.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:68:5	init(occluderBoundingSphere: BoundingSphere, cameraPosition: Cartesian3)
+5.3ms	<invalid loc>	get {}
+5.3ms	<invalid loc>	get {}
+5.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Texture.swift:233:5	init(context: Context, metalTexture: MTLTexture, sampler: Sampler? = default)
+5.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ColorMask.swift:18:10	func description() -> String
+5.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:811:10	func update(context: Context, frameState: FrameState)
+5.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:1022:10	func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: MapProjection) -> Matrix4
+5.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:199:5	init(fromRectangleWithHeights2D rectangle: Rectangle?, projection: MapProjection = default, minimumHeight: Double = default, maximumHeight: Double = default)
+5.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:486:17	public func render(size: CGSize)
+5.1ms	<invalid loc>	get {}
+5.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:158:18	private func findVertexAttributes()
+5.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorProjection.swift:69:17	static func geodeticLatitudeToMercatorAngle(latitude: Double) -> Double
+5.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainData.swift:203:10	func sortIndicesIfNecessary(indices: [Int], sortFunction: (a: Int, b: Int) -> Bool, vertexCount: Int) -> [Int]
+5.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1210:13	public func ==(lhs: JSON, rhs: JSON) -> Bool
+5.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttribute.swift:132:26	get {}
+5.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoxGeometry.swift:70:5	init(fromDimensions dimensions: Cartesian3, vertexFormat: VertexFormat = default)
+4.9ms	<invalid loc>	init?(rawValue: UInt)
+4.9ms	<invalid loc>	get {}
+4.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:184:10	func beginUpdate(inout frameState frameState: FrameState)
+4.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeDepth.swift:156:10	func executeCopyColor(context: Context, passState: PassState)
+4.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/OrientedBoundingBox.swift:153:5	init(fromTangentPlaneExtents tangentPlane: EllipsoidTangentPlane, minimumX: Double, maximumX: Double, minimumY: Double, maximumY: Double, minimumZ: Double, maximumZ: Double)
+4.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeometry.swift:301:5	init(fromArray array: [Double], startingIndex: Int)
+4.7ms	<invalid loc>	get {}
+4.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1214:10	func rotate3D(startPosition: Cartesian2, movement: MouseMovement, constrainedAxis: Cartesian3? = default, rotateOnlyVertical: Bool = default, rotateOnlyHorizontal: Bool = default)
+4.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:973:17	public func setView(position cartesianIn: Cartesian3? = default, positionCartographic cartographicIn: Cartographic? = default, heading headingIn: Double? = default, pitch pitchIn: Double? = default, roll rollIn: Double? = default)
+4.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:431:17	static func zeroToTwoPi(x: Double) -> Double
+4.6ms	<invalid loc>	init?(rawValue: UInt)
+4.6ms	<invalid loc>	init?(rawValue: UInt)
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:760:10	func insertIntoBin(command: DrawCommand, distance: Interval)
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:1096:10	func getDebugGlobeDepth(index: Int) -> GlobeDepth
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:455:10	func processTileLoadQueue(inout frameState frameState: FrameState)
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:889:18	private func setView2D(position cartesianIn: Cartesian3? = default, positionCartographic cartographicIn: Cartographic? = default, heading: Double, pitch: Double, roll: Double, ellipsoid: Ellipsoid, projection: MapProjection)
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:800:18	private func setView3D(position cartesianIn: Cartesian3? = default, positionCartographic cartographicIn: Cartographic? = default, heading: Double, pitch: Double, roll: Double)
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1570:10	func getMagnitude() -> Double
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/Array.swift:19:26	get {}
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:199:17	public func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic?
+4.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:503:13	public func ==(left: Cartesian3, right: Cartesian3) -> Bool
+4.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:258:10	func updateForPick(context context: Context, frameState: FrameState, inout commandList: [Command])
+4.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:189:17	static func sign(value: Double) -> Int
+4.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:398:5	init(fromArray array: [Double], startingIndex: Int = default)
+4.3ms	<invalid loc>	get {}
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:181:162	(closure)
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:2059:10	func pickEllipsoid(windowPosition: Cartesian2, ellipsoid: Ellipsoid = default) -> Cartesian3?
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:598:10	func tileXYToQuadKey(x x: Int, y: Int, level: Int) -> String
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderState.swift:507:10	func applyViewport(encoder: MTLRenderCommandEncoder, passState: PassState)
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:278:10	func clear(clearCommand: ClearCommand, passState: PassState? = default)
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:61:10	func getUInt32Array(pos: Int, elementCount: Int, littleEndian: Bool = default) -> [UInt32]
+4.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/AttributeCompression.swift:114:16	class func octPackFloat(encoded: Cartesian2) -> Float32
+4.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SkyAtmosphere.swift:56:5	init(ellipsoid: Ellipsoid = default)
+4.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1346:10	func zoom3D(startPosition: Cartesian2, movement: MouseMovement)
+4.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:2073:10	func getPickRayPerspective(windowPosition: Cartesian2) -> Ray
+4.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:521:17	static func incrementWrap(n: Int, maximumValue: Int, minimumValue: Int) -> Int
+4.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:410:13	public func ==(left: Cartesian2, right: Cartesian2) -> Bool
+4.1ms	<invalid loc>	init?(rawValue: Int)
+4.1ms	<invalid loc>	get {}
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerCollection.swift:468:10	func update()
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:494:10	func createTexture(frameState frameState: FrameState, imagery: Imagery)
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:92:10	func processStateMachine(inout frameState frameState: FrameState)
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:85:39	get {}
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:585:17	static func computePerspectiveOffCenter(left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4
+4.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:101:10	func isScaledSpacePointVisible(occludeeScaledSpacePosition: Cartesian3) -> Bool
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SkyBox.swift:67:5	init(sources: CubeMapSources)
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1098:10	func strafe(startPosition: Cartesian2, movement: MouseMovement)
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:122:9	get {}
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:464:10	func updateViewMatrix()
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/TextureUsage.swift:24:10	func toMetal() -> MTLTextureUsage
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttributes.swift:145:5	init(position: GeometryAttribute? = default, normal: GeometryAttribute? = default, st: GeometryAttribute? = default, binormal: GeometryAttribute? = default, tangent: GeometryAttribute? = default, color: GeometryAttribute? = default)
+4.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidTangentPlane.swift:73:5	init(origin: Cartesian3, ellipsoid: Ellipsoid = default)
+3.9ms	<invalid loc>	get {}
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:754:10	func update(mode: SceneMode)
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:165:25	get {}
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:785:10	func updateFrustum(frustum: Frustum)
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformMap.swift:41:10	func floatUniform(index: UniformIndex) -> FloatUniformFunc
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:135:18	private func compileMetalProgram(device: MTLDevice)
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:13:10	@objc dynamic func getFloat32(pos: Int, littleEndian: Bool = default) -> Float
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:309:10	func contains(cartographic: Cartographic) -> Bool
+3.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttribute.swift:77:9	final didSet {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	<invalid loc>	get {}
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:1773:10	func update()
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:516:16	class func isDataAvailable(tile: QuadtreeTile, terrainProvider: TerrainProvider) -> Bool
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:479:16	class func propagateNewLoadedDataToChildren(tile: QuadtreeTile)
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Buffer.swift:53:10	func copyFromArray(array: UnsafePointer<Void>, length arrayLength: Int, offset: Int = default)
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Queue.swift:24:10	func enqueue(item: T)
+3.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:553:17	static func computeOrthographicOffCenter(left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	<invalid loc>	get {}
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:498:50	(closure)
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:883:10	func addPickCommandsForTile(drawCommand: DrawCommand, context: Context, frameState: FrameState, inout commandList: [Command])
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:691:9	get {}
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:614:17	static func computeInfinitePerspectiveOffCenter(left left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttributes.swift:193:10	func generate() -> Generator
+3.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:386:17	public func showErrorPanel(title: String, message: String, error: String)
+3.6ms	<invalid loc>	init?(rawValue: Int)
+3.6ms	<invalid loc>	get {}
+3.6ms	<invalid loc>	get {}
+3.6ms	<invalid loc>	get {}
+3.6ms	<invalid loc>	get {}
+3.6ms	<invalid loc>	get {}
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:289:10	func decay(time: Double, coefficient: Double) -> Double
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:51:14	materializeForSet {}
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:222:18	private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:196:18	private func setUniformBufferAlignment()
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:340:10	func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?)
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:833:9	get {}
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:226:71	get {}
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/TerrainProvider.swift:171:46	get {}
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Packable.swift:98:17	static func unpack(array: [Float], startingIndex: Int = default) -> Self
+3.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:171:25	private final class func solveQuadratic(a a: Double, b: Double, c: Double) -> Interval?
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	<invalid loc>	get {}
+3.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerCollection.swift:65:9	get {}
+3.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:167:10	func computeDefaultLevelZeroMaximumGeometricError() -> Double
+3.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSDate+TAI.swift:95:16	@objc dynamic class func fromUTCISO8601String(isoDate: String) -> NSDate?
+3.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/ImageExtensions.swift:33:16	class func fromURL(url: NSURL) -> CGImageRef?
+3.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:110:18	private func computeProperties(start start: Cartographic, end: Cartographic)
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	<invalid loc>	get {}
+3.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransforms.swift:180:25	private static func clipToGLWindowCoordinates(scene: Scene, position: Cartesian4) -> Cartesian2
+3.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:40:16	@objc class func failure(message: String)
+3.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Quaternion.swift:494:10	func multiply(other: Quaternion) -> Quaternion
+3.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttributes.swift:195:29	(closure)
+3.3ms	<invalid loc>	init?(rawValue: UInt)
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	<invalid loc>	get {}
+3.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:653:26	internal static func computeViewportTransformation(viewport: BoundingRectangle = default, nearDepthRange: Double = default, farDepthRange: Double = default) -> Matrix4
+3.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Math.swift:264:17	static func lerp(p p: Double, q: Double, time: Double) -> Double
+3.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/JulianDate.swift:135:19	mutating func setComponents(wholeDays wholeDays: Int, secondsOfDay: Double)
+3.2ms	<invalid loc>	init?(rawValue: Int)
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	<invalid loc>	get {}
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:189:63	(closure)
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileCoordinateImageryProvider.swift:49:9	set(newColor) {}
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:344:31	get {}
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:445:16	class func propagateNewUpsampledDataToChildren(tile: QuadtreeTile)
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ColorMask.swift:22:10	func toMetal() -> MTLColorWriteMask
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:871:9	get {}
+3.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:68:12	public init(data: NSData, options opt: NSJSONReadingOptions = default, error: NSErrorPointer = default)
+3.1ms	<invalid loc>	init?(rawValue: UInt)
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	<invalid loc>	get {}
+3.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/PerspectiveOffCenterFrustum.swift:217:10	func pixelSize(drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
+3.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:116:78	(closure)
+3.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:414:5	init(projection: MapProjection, mode: SceneMode, initialWidth: Double, initialHeight: Double)
+3.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/VertexDescriptor.swift:46:18	private func addAttribute(attribute: VertexAttributes)
+3.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingRectangle.swift:154:10	func expand(point: Cartesian2) -> BoundingRectangle
+3.0ms	<invalid loc>	init?(rawValue: Int)
+3.0ms	<invalid loc>	init?(rawValue: Int)
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	<invalid loc>	get {}
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:223:10	func update(context context: Context, inout frameState: FrameState)
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsAPI.swift:10:16	class func getKey(key: String?) -> String
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/QuantizedMeshTerrainData.swift:235:10	func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = default, completionBlock: (TerrainMesh?) -> ()) -> Bool
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/JulianDate.swift:632:10	func compare(other: JulianDate) -> Int
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:133:10	func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeometry.swift:51:5	init(radii: Cartesian3 = default, stackPartitions: Int = default, slicePartitions: Int = default, vertexFormat: VertexFormat = default)
+3.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:393:5	init(fromArray array: [Double], startingIndex: Int = default)
+2.9ms	<invalid loc>	get {}
+2.9ms	<invalid loc>	get {}
+2.9ms	<invalid loc>	get {}
+2.9ms	<invalid loc>	get {}
+2.9ms	<invalid loc>	get {}
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:658:10	func pickGlobe(mousePosition: Cartesian2) -> Cartesian3?
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:876:10	func levelWithMaximumTexelSpacing(texelSpacing texelSpacing: Double, latitudeClosestToEquator: Double) -> Int
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Buffer.swift:32:5	init(device: MTLDevice, array: UnsafePointer<Void> = default, componentDatatype: ComponentDatatype, sizeInBytes: Int)
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:732:45	get {}
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:131:10	@objc func substituteMatches(options: NSMatchingOptions = default, substitution: (NSTextCheckingResult, UnsafeMutablePointer<ObjCBool>) -> String) -> String
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:34:10	@objc dynamic func getUInt32(pos: Int, littleEndian: Bool = default) -> UInt32
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:387:10	func column(index: Int) -> Cartesian3
+2.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:360:17	static func fromDegreesArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3]
+2.8ms	<invalid loc>	get {}
+2.8ms	<invalid loc>	get {}
+2.8ms	<invalid loc>	get {}
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:148:10	func getPosition(mode mode: SceneMode? = default, projection: MapProjection, vertices: [Float], stride: Int, index: Int) -> Cartesian3
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Texture.swift:35:9	get {}
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:212:18	private func paddingRequredForUniform(uniform: Uniform, lastOffset: Int) -> Int
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/TerrainProvider.swift:204:17	static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:192:10	func computeTdbMinusTtSpice(daysSinceJ2000InTerrestrialTime: Double) -> Double
+2.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:335:10	func scaleToGeocentricSurface(cartesian: Cartesian3) -> Cartesian3
+2.7ms	<invalid loc>	get {}
+2.7ms	<invalid loc>	get {}
+2.7ms	<invalid loc>	get {}
+2.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:660:10	func getImageryFromCache(level level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = default) -> Imagery
+2.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:218:71	(closure)
+2.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderSource.swift:38:14	private func ==(left: DependencyNode, right: DependencyNode) -> Bool
+2.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:192:10	func computeHorizonCullingPointFromRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid) -> Cartesian3?
+2.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:164:9	get {}
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:148:5	init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?)
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/DepthPlane.swift:156:10	func execute(context: Context, renderPass: RenderPass)
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:452:36	(closure)
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:157:9	set {}
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:122:17	@objc public func dictionary(options: NSMatchingOptions = default) -> Dictionary<String, String>
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:46:5	init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3? = default)
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:204:10	func computeMagnitude(ellipsoid: Ellipsoid, position: Cartesian3, scaledSpaceDirectionToPoint: Cartesian3) -> Double
+2.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CartesianType.swift:37:10	func multiplyComponents(other: Self) -> Self
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:1105:10	func getPickDepth(index: Int) -> PickDepth
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:145:14	required init(terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet)
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:854:18	private func setViewCV(position cartesianIn: Cartesian3? = default, positionCartographic cartographicIn: Cartographic? = default, heading: Double, pitch: Double, roll: Double, ellipsoid: Ellipsoid, projection: MapProjection)
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:753:10	func setSunAndMoonDirections(frameState: FrameState)
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:63:10	func updateFromDrawable(context: Context, drawable: CAMetalDrawable, depthStencil: MTLTexture?)
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:386:5	init(_ json: JSON)
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1230:13	public func <=(lhs: JSON, rhs: JSON) -> Bool
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Occluder.swift:336:10	func computeOccludeePointFromRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = default) -> Cartesian3?
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:736:10	func getColumn(index: Int) -> Cartesian4
+2.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:37:14	internal init(fromSpherical spherical: Spherical)
+2.4ms	<invalid loc>	init?(rawValue: Int)
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	<invalid loc>	get {}
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransitioner.swift:11:14	materializeForSet {}
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:330:9	final didSet {}
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:519:10	func createViewportQuadCommand(fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = default, depthStencil: Bool = default) -> DrawCommand
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1250:13	public func >=(lhs: JSON, rhs: JSON) -> Bool
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:288:10	func interpolateUsingFraction(fraction: Double) -> Cartographic
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:376:10	func equalsEpsilon(other: Cartesian4, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool
+2.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingRectangle.swift:132:10	func union(other: BoundingRectangle) -> BoundingRectangle
+2.3ms	<invalid loc>	init?(rawValue: Int)
+2.3ms	<invalid loc>	get {}
+2.3ms	<invalid loc>	get {}
+2.3ms	<invalid loc>	get {}
+2.3ms	<invalid loc>	get {}
+2.3ms	<invalid loc>	get {}
+2.3ms	<invalid loc>	get {}
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:145:30	(closure)
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileImagery.swift:38:5	@objc deinit 
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:689:10	func maxComponent(a a: Cartesian3, b: Cartesian3) -> Double
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTile.swift:190:10	func freeResources()
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformBufferProvider.swift:32:10	func nextBuffer() -> Buffer
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:395:26	public mutating func next() -> Element?
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:322:13	public func ==(lhs: JSONIndex, rhs: JSONIndex) -> Bool
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:313:18	private func perifocalToCartesianMatrix(argumentOfPeriapsis: Double, inclination: Double, rightAscension: Double) -> Matrix3
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:281:18	private func eccentricAnomalyToTrueAnomaly(eccentricAnomaly: Double, eccentricity: Double) -> Double
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Queue.swift:39:9	get {}
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Quaternion.swift:68:12	public init(fromAxis axis: Cartesian3, angle: Double)
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Packable.swift:82:10	func toArray() -> [Double]
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:327:10	func mostOrthogonalAxis() -> Cartesian4
+2.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:152:10	func magnitudeSquared() -> Double
+2.2ms	<invalid loc>	init?(rawValue: String)
+2.2ms	<invalid loc>	init?(rawValue: Int)
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	<invalid loc>	get {}
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:160:10	func forEachLoadedTile(tileFunction: QuadtreeTile -> ())
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Texture.swift:101:14	materializeForSet {}
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:120:12	public init(_ jsonDictionary: [String : JSON])
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:110:17	@objc public func ranges(options: NSMatchingOptions = default) -> [NSRange]
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:53:30	get {}
+2.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:591:137	(closure)
+2.1ms	<invalid loc>	init?(rawValue: Int)
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	<invalid loc>	get {}
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:843:10	func cleanViewport()
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:253:25	get {}
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PipelineCache.swift:142:10	func releasePipeline(pipeline: RenderPipeline)
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:491:9	get {}
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/VertexFormat.swift:219:10	func toArray() -> [Double]
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Queue.swift:64:10	func contains(item: T) -> Bool
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:569:6	func ==(lhs: HeightmapTerrainData, rhs: HeightmapTerrainData) -> Bool
+2.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CartesianType.swift:61:10	func add(other: Self) -> Self
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	<invalid loc>	get {}
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:44:10	func freeResources(context: Context? = default)
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:234:22	materializeForSet {}
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerCollection.swift:195:44	get {}
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeDepth.swift:25:5	init()
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:727:10	func getHeading(direction direction: Cartesian3, up: Cartesian3) -> Double
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPass.swift:24:14	materializeForSet {}
+2.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:287:10	func equalsEpsilon(other: Cartesian3, relativeEpsilon: Double, absoluteEpsilon: Double? = default) -> Bool
+1.9ms	<invalid loc>	get {}
+1.9ms	<invalid loc>	get {}
+1.9ms	<invalid loc>	get {}
+1.9ms	<invalid loc>	get {}
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:19:17	materializeForSet {}
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPass.swift:24:14	materializeForSet {}
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:598:12	public init(dictionaryLiteral elements: (String, AnyObject)...)
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:114:17	@objc public func matches(options: NSMatchingOptions = default) -> [String]
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/String.swift:31:10	func indexOf(findStr: String, startIndex: String.Index? = default) -> Index?
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:247:10	func mostOrthogonalAxis() -> Cartesian3
+1.9ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:622:10	func union(other: BoundingSphere) -> BoundingSphere
+1.8ms	<invalid loc>	init?(rawValue: UInt)
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	<invalid loc>	get {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileTerrain.swift:47:32	(closure)
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:235:22	materializeForSet {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeSurfaceTileProvider.swift:171:18	private func sortTileImageryByLayerIndex(a: TileImagery, b: TileImagery) -> Bool
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:437:5	init(fakeScene: (canvas: (width: Int, height: Int), width: Int, height: Int, mapProjection: MapProjection))
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1616:10	func offsetFromHeadingPitchRange(heading: Double, pitch: Double, range: Double) -> Cartesian3
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPass.swift:24:14	materializeForSet {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:147:9	get {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:57:17	@objc public func doesMatch(options: NSMatchingOptions = default) -> Bool
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:118:17	@objc public func allGroups(options: NSMatchingOptions = default) -> [[String]]
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSDate+TAI.swift:131:48	get {}
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/JulianDate.swift:730:10	func computeTaiMinusUtc() -> Int
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:100:5	init(buffer: [UInt16], width: Int, height: Int, childTileMask: Int = default, structure: HeightmapStructure = default, waterMask: [UInt8]? = default, createdByUpsampling: Bool = default)
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidTerrainProvider.swift:117:10	func levelMaximumGeometricError(level: Int) -> Double
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:438:5	init(fromArray array: [Double], startingIndex: Int = default)
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:339:17	static func fromRadians(longitude longitude: Double, latitude: Double, height: Double = default, ellipsoid: Ellipsoid = default) -> Cartesian3
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:276:10	func absolute() -> Cartesian2
+1.8ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/CesiumKit.swift:188:9	materializeForSet {}
+1.7ms	<invalid loc>	init?(rawValue: UInt8)
+1.7ms	<invalid loc>	get {}
+1.7ms	<invalid loc>	get {}
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransitioner.swift:11:14	materializeForSet {}
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:1457:10	func render(time: JulianDate = default)
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:231:10	func freeResources()
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:564:10	func createRenderCommandsForSelectedTiles(inout frameState frameState: FrameState)
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/FXAA.swift:25:5	init()
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:741:10	func getRoll(direction direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Uniform.swift:148:28	get {}
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:49:16	@objc final func substring(range: NSRange) -> String
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/ImageExtensions.swift:16:13	@objc dynamic get {}
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:197:18	private func taiToTdb(date: JulianDate) -> JulianDate
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Quaternion.swift:149:12	public init(fromHeading heading: Double, pitch: Double, roll: Double)
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:1451:5	init(fromArray array: [Double], startingIndex: Int = default)
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/HeightmapTerrainData.swift:518:18	private func triangleInterpolateHeight(dX dX: Double, dY: Double, southwestHeight: Double, southeastHeight: Double, northwestHeight: Double, northeastHeight: Double) -> Double
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:271:18	private func computeDeltaLambda(f f: Double, sineAlpha: Double, cosineSquaredAlpha: Double, sigma: Double, sineSigma: Double, cosineSigma: Double, cosineTwiceSigmaMidpoint: Double) -> Double
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian4.swift:303:10	func absolute() -> Cartesian4
+1.7ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:484:5	init(fromArray array: [Double], startingIndex: Int = default)
+1.6ms	<invalid loc>	get {}
+1.6ms	<invalid loc>	get {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:67:9	get {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:107:9	get {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:678:18	private func getImageryCacheKey(level level: Int, x: Int, y: Int) -> String
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:51:14	materializeForSet {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1534:17	public func zoomIn(amount: Double? = default)
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1148:10	func move(direction: Cartesian3, amount: Double)
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ShaderProgram.swift:79:32	get {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSDate+TAI.swift:55:17	@objc convenience dynamic init(julianDayNumber: Int, secondsOfDay: Double)
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Plane.swift:72:5	init(fromPoint point: Cartesian3, normal: Cartesian3)
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Packable.swift:102:10	func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:769:10	func setColumn(index: Int, cartesian: Cartesian4) -> Matrix4
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:286:5	init(fromRotationX angle: Double)
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidalOccluder.swift:37:5	final didSet {}
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:339:10	func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = default) -> Bool
+1.6ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:128:10	func magnitudeSquared() -> Double
+1.5ms	<invalid loc>	get {}
+1.5ms	<invalid loc>	get {}
+1.5ms	<invalid loc>	get {}
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/TileUniformMap.swift:210:5	init(maxTextureCount: Int)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:234:22	materializeForSet {}
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:428:10	func queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(tile: QuadtreeTile) -> Bool
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeOccluders.swift:28:5	init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3 = default)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:233:69	(closure)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:123:76	(closure)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPass.swift:24:14	materializeForSet {}
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ComputeCommand.swift:107:5	init(vertexArray: VertexArray? = default, fragmentShaderSource: ShaderSource? = default, renderPipeline: RenderPipeline? = default, uniformMap: UniformMap? = default, outputTexture: Texture? = default, preExecute: ((ComputeCommand) -> ())? = default, postExecute: ((Texture) -> ())? = default, persists: Bool = default, owner: AnyObject? = default)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ClearCommand.swift:105:17	static func all() -> ClearCommand
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:625:12	public init?(rawValue: AnyObject)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Simon1994PlanetaryPositions.swift:240:18	private func meanAnomalyToTrueAnomaly(meanAnomaly: Double, eccentricity: Double) -> Double
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:405:5	init(fromArray array: [Double], startingIndex: Int = default)
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:822:10	func row(index: Int) -> Cartesian4
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:404:10	func setColumn(index: Int, cartesian: Cartesian3) -> Matrix3
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttribute.swift:139:30	get {}
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CartesianType.swift:73:10	func subtract(other: Self) -> Self
+1.5ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian3.swift:112:34	get {}
+1.4ms	<invalid loc>	get {}
+1.4ms	<invalid loc>	get {}
+1.4ms	<invalid loc>	get {}
+1.4ms	<invalid loc>	get {}
+1.4ms	<invalid loc>	get {}
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:32:9	materializeForSet {}
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:723:10	func updateFrameState(frameNumber: Int, time: JulianDate)
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:433:10	func calculateTextureTranslationAndScale(tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:78:10	func releaseReference() -> Int
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:359:10	func getLastMovement(type: CameraEventType, modifier: KeyboardEventModifier? = default) -> MouseMovement?
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:51:14	materializeForSet {}
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:2132:10	func getPickRay(windowPosition: Cartesian2) -> Ray
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:188:23	get {}
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:87:16	public init(url: String = default, key: String? = default, tileProtocol: String = default, mapStyle: BingMapsStyle = default, culture: String = default, tileDiscardPolicy: TileDiscardPolicy? = default, ellipsoid: Ellipsoid = default)
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:264:17	public func underestimateCount() -> Int
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:135:101	(closure)
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/String.swift:38:50	get {}
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/TerrainMesh.swift:103:5	init(center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = default, orientedBoundingBox: OrientedBoundingBox?)
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Rectangle.swift:244:10	func center() -> Cartographic
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttribute.swift:155:5	init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = default, values: Buffer? = default)
+1.4ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicProjection.swift:49:17	public func project(cartographic: Cartographic) -> Cartesian3
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	<invalid loc>	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:234:22	materializeForSet {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:83:17	materializeForSet {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreePrimitive.swift:204:10	func updateHeight(cartographic: Cartographic, callback: () -> ()) -> (() -> ())
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:19:17	materializeForSet {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/GlobeDepth.swift:72:10	func createTextures(context: Context, width: Int, height: Int)
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:213:22	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:2005:10	func pickEllipsoid3D(windowPosition: Cartesian2, ellipsoid: Ellipsoid = default) -> Cartesian3?
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PassState.swift:23:14	materializeForSet {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:637:17	public func rawData(options opt: NSJSONWritingOptions = default) throws -> NSData
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1342:6	func >(lhs: NSNumber, rhs: NSNumber) -> Bool
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeometryAttributes.swift:36:9	get {}
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:121:10	func geodeticSurfaceNormalCartographic(cartographic: Cartographic) -> Cartesian3
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:798:10	func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval
+1.3ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingRectangle.swift:109:5	init(fromRectangle rectangle: Rectangle, projection: MapProjection = default)
+1.2ms	<invalid loc>	init?(rawValue: UInt)
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	<invalid loc>	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SkyBox.swift:158:16	class func getDefaultSkyBoxUrl(face: String) -> String
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/PerspectiveFrustum.swift:203:10	func clone(target: Frustum?) -> Frustum
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Globe.swift:128:5	init(ellipsoid: Ellipsoid = default, terrain: Bool)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:425:10	func reset()
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:63:17	materializeForSet {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:1995:17	public func viewRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = default)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:24:39	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ContextLimits.swift:25:47	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:519:9	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:61:17	@objc public func range(options: NSMatchingOptions = default) -> NSRange
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorProjection.swift:91:10	func project(cartographic: Cartographic) -> Cartesian3
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/WebMercatorProjection.swift:46:5	init(ellipsoid: Ellipsoid = default)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:62:12	public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double, _ column3Row0: Double, _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double, _ column3Row1: Double, _ column0Row2: Double, _ column1Row2: Double, _ column2Row2: Double, _ column3Row2: Double, _ column0Row3: Double, _ column1Row3: Double, _ column2Row3: Double, _ column3Row3: Double)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:595:17	public func multiplyByVector(cartesian: Cartesian3) -> Cartesian3
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:334:5	init(fromRotationZ angle: Double)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix3.swift:310:5	init(fromRotationY angle: Double)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/IntersectionTests.swift:195:25	private final class func _raySphere(ray: Ray, sphere: BoundingSphere) -> Interval?
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicProjection.swift:31:12	public init(ellipsoid: Ellipsoid = default)
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/ComponentDatatype.swift:96:26	get {}
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Cartesian2.swift:311:10	func mostOrthogonalAxis() -> Cartesian2
+1.2ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/BoundingSphere.swift:688:10	func intersectPlane(plane: Plane) -> Intersect
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	<invalid loc>	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransitioner.swift:11:14	materializeForSet {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:200:14	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Scene.swift:139:21	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerUniformMap.swift:29:10	func uniform(name: String) -> UniformFunc?
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayerCollection.swift:46:9	materializeForSet {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ImageryLayer.swift:170:22	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPipeline.swift:17:25	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Framebuffer.swift:45:34	get {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/DrawCommand.swift:95:9	materializeForSet {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/DrawCommand.swift:186:5	init(boundingVolume: BoundingVolume? = default, orientedBoundingBox: OrientedBoundingBox? = default, cull: Bool = default, modelMatrix: Matrix4? = default, primitiveType: MTLPrimitiveType = default, vertexArray: VertexArray? = default, count: Int? = default, offset: Int = default, uniformMap: UniformMap? = default, framebuffer: Framebuffer? = default, renderState: RenderState? = default, renderPipeline: RenderPipeline? = default, pass: Pass = default, executeInClosestFrustum: Bool = default, owner: AnyObject? = default, debugShowBoundingVolume: Bool = default, debugOverlappingFrustums: Int = default)
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:72:17	materializeForSet {}
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/AutomaticUniforms.swift:60:19	(closure)
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/NSData+ArrayView.swift:20:10	@objc dynamic func getFloat64(pos: Int, littleEndian: Bool = default) -> Double
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Plane.swift:102:10	func getPointDistance(point: Cartesian3) -> Double
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/MatrixType.swift:43:10	func multiply(other: Self) -> Self
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:787:10	func setTranslation(translation: Cartesian3) -> Matrix4
+1.1ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicTilingScheme.swift:54:5	init(ellipsoid: Ellipsoid = default, rectangle: Rectangle = default, numberOfLevelZeroTilesX: Int = default, numberOfLevelZeroTilesY: Int = default)
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	<invalid loc>	get {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:98:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:71:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:235:22	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:235:22	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/ScreenSpaceCameraController.swift:107:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/SceneTransitioner.swift:11:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:43:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/QuadtreeTile.swift:248:6	func ==(lhs: QuadtreeTile, rhs: QuadtreeTile) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Imagery.swift:31:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/CameraEventAggregator.swift:52:9	set {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:51:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/Camera.swift:140:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Scene/BingMapsImageryProvider.swift:170:9	get {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:62:17	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/UniformState.swift:120:17	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/RenderPass.swift:30:5	init(context: Context, buffer: MTLCommandBuffer, passState: PassState, defaultFramebuffer: Framebuffer)
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PipelineCache.swift:20:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PipelineCache.swift:20:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PassState.swift:23:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/PassState.swift:23:14	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/Context.swift:20:17	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Renderer/ComputeCommand.swift:84:9	materializeForSet {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:86:24	public static func parse(string: String) -> JSON
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:497:9	set {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:204:39	get {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1366:6	func >=(lhs: NSNumber, rhs: NSNumber) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1354:6	func <=(lhs: NSNumber, rhs: NSNumber) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1330:6	func <(lhs: NSNumber, rhs: NSNumber) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftyJSON.swift:1282:13	public func <(lhs: JSON, rhs: JSON) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Platform/SwiftRegex.swift:69:17	@objc public func groups(options: NSMatchingOptions = default) -> [String]!
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Queue.swift:48:9	get {}
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Matrix4.swift:1235:10	func multiplyByVector(cartesian: Cartesian4) -> Cartesian4
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Interval.swift:32:6	func ==(lhs: Interval, rhs: Interval) -> Bool
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/GeographicTilingScheme.swift:98:10	func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/EllipsoidGeodesic.swift:90:5	init(start: Cartographic? = default, end: Cartographic? = default, ellipsoid: Ellipsoid = default)
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:232:10	func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic]
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/Ellipsoid.swift:156:17	public func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3
+1.0ms	/Users/ryan/Projects/Develop/CesiumKit/CesiumKit/Core/CesiumTerrainProvider.swift:117:32	get {}

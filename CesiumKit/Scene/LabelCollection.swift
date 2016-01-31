@@ -299,7 +299,7 @@ import Foundation
  *   text : 'Another label'
  * });
  */
-public class LabelCollection {
+public class LabelCollection: Primitive {
     
     /**
      * The 4x4 transformation matrix that transforms each label in this collection from model to world coordinates.
@@ -346,7 +346,7 @@ public class LabelCollection {
      */
     var debugShowBoundingVolume: Bool
     
-    private var _textureAtlas: TextureAtlas? = nil
+    private var _textureAtlas: FontAtlas? = nil
     
     private var _labels = [Label]()
     
@@ -375,7 +375,11 @@ public class LabelCollection {
      this._resolutionScale = undefined;
  */
  
-    public init (modelMatrix: Matrix4 = Matrix4.identity, debugShowBoundingVolume: Bool = false, scene: Scene) {
+    public init (
+        modelMatrix: Matrix4 = Matrix4.identity,
+        debugShowBoundingVolume: Bool = false,
+        scene: Scene
+    ) {
         self.modelMatrix = modelMatrix
         self.debugShowBoundingVolume = debugShowBoundingVolume
         self.scene = scene
@@ -424,14 +428,40 @@ public class LabelCollection {
      *   font : '24px Helvetica',
      * });
      */
-     public func add () -> Label {
-     let label = Label(options, self)
-     
+    public func add (
+        show: Bool = true,
+        position: Cartesian3 = Cartesian3.zero,
+        text: String = "",
+        font: String = "HelveticaNeue",
+        fillColor: Color = Color.White,
+        outlineColor: Color = Color.Black,
+        style: LabelStyle = .Fill,
+        pixelOffset: Cartesian2 = Cartesian2.zero,
+        eyeOffset: Cartesian3 = Cartesian3.zero,
+        horizontalOrigin: HorizontalOrigin = .Left,
+        verticalOrigin : VerticalOrigin = .Bottom,
+        scale: Double = 1.0) -> Label
+    {
+        let label = Label(
+            show: show,
+            position: position,
+            text: text,
+            font: font,
+            fillColor: fillColor,
+            outlineColor: outlineColor,
+            style: style,
+            pixelOffset: pixelOffset,
+            eyeOffset: eyeOffset,
+            horizontalOrigin: horizontalOrigin,
+            verticalOrigin: verticalOrigin,
+            scale: scale,
+            collection: self
+        )
      _labels.append(label)
      _labelsToUpdate.append(label)
      
      return label
-     };
+     }
      
      /**
      * Removes a label from the collection.  Once removed, a label is no longer usable.
@@ -456,16 +486,16 @@ public class LabelCollection {
      * labels.remove(l);  // Returns true
      */
     func remove (label: Label) -> Bool {
-     /*if (defined(label) && label._labelCollection === this) {
-     var index = this._labels.indexOf(label);
-     if (index !== -1) {
-     this._labels.splice(index, 1);
-     destroyLabel(this, label);
-     return true;
-     }
-     }
-     return false;*/
-     }
+        /*if (defined(label) && label._labelCollection === this) {
+         var index = this._labels.indexOf(label);
+         if (index !== -1) {
+         this._labels.splice(index, 1);
+         destroyLabel(this, label);
+         return true;
+         }
+         }*/
+        return false
+    }
      /*
      /**
      * Removes all labels from the collection.
@@ -541,64 +571,64 @@ public class LabelCollection {
      
      return this._labels[index];
      };
-     
+     */
      /**
      * @private
      */
-     LabelCollection.prototype.update = function(frameState) {
-     var billboardCollection = this._billboardCollection;
-     
-     billboardCollection.modelMatrix = this.modelMatrix;
-     billboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
-     
-     var context = frameState.context;
-     
-     if (!defined(this._textureAtlas)) {
-     this._textureAtlas = new TextureAtlas({
-     context : context
-     });
-     billboardCollection.textureAtlas = this._textureAtlas;
-     }
-     
-     var uniformState = context.uniformState;
-     var resolutionScale = uniformState.resolutionScale;
-     var resolutionChanged = this._resolutionScale !== resolutionScale;
-     this._resolutionScale = resolutionScale;
-     
-     var labelsToUpdate;
-     if (resolutionChanged) {
-     labelsToUpdate = this._labels;
-     } else {
-     labelsToUpdate = this._labelsToUpdate;
-     }
-     
-     var len = labelsToUpdate.length;
-     for (var i = 0; i < len; ++i) {
-     var label = labelsToUpdate[i];
-     if (label.isDestroyed()) {
-     continue;
-     }
-     
-     var preUpdateGlyphCount = label._glyphs.length;
-     
-     if (label._rebindAllGlyphs) {
-     rebindAllGlyphs(this, label);
-     label._rebindAllGlyphs = false;
-     }
-     
-     if (resolutionChanged || label._repositionAllGlyphs) {
-     repositionAllGlyphs(label, resolutionScale);
-     label._repositionAllGlyphs = false;
-     }
-     
-     var glyphCountDifference = label._glyphs.length - preUpdateGlyphCount;
-     this._totalGlyphCount += glyphCountDifference;
-     }
-     
-     this._labelsToUpdate.length = 0;
-     billboardCollection.update(frameState);
-     };
-     
+    func update (frameState: FrameState) {
+        /*var billboardCollection = this._billboardCollection;
+        
+        billboardCollection.modelMatrix = this.modelMatrix;
+        billboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
+        
+        var context = frameState.context;
+        
+        if (!defined(this._textureAtlas)) {
+            this._textureAtlas = new TextureAtlas({
+                context : context
+            });
+            billboardCollection.textureAtlas = this._textureAtlas;
+        }
+        
+        var uniformState = context.uniformState;
+        var resolutionScale = uniformState.resolutionScale;
+        var resolutionChanged = this._resolutionScale !== resolutionScale;
+        this._resolutionScale = resolutionScale;
+        
+        var labelsToUpdate;
+        if (resolutionChanged) {
+            labelsToUpdate = this._labels;
+        } else {
+            labelsToUpdate = this._labelsToUpdate;
+        }
+        
+        var len = labelsToUpdate.length;
+        for (var i = 0; i < len; ++i) {
+            var label = labelsToUpdate[i];
+            if (label.isDestroyed()) {
+                continue;
+            }
+            
+            var preUpdateGlyphCount = label._glyphs.length;
+            
+            if (label._rebindAllGlyphs) {
+                rebindAllGlyphs(this, label);
+                label._rebindAllGlyphs = false;
+            }
+            
+            if (resolutionChanged || label._repositionAllGlyphs) {
+                repositionAllGlyphs(label, resolutionScale);
+                label._repositionAllGlyphs = false;
+            }
+            
+            var glyphCountDifference = label._glyphs.length - preUpdateGlyphCount;
+            this._totalGlyphCount += glyphCountDifference;
+        }
+        
+        this._labelsToUpdate.length = 0;
+        billboardCollection.update(frameState);*/
+    }
+     /*
      /**
      * Returns true if this object was destroyed; otherwise, false.
      * <br /><br />

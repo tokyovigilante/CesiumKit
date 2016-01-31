@@ -1,5 +1,5 @@
 //
-//  TextureAtlas.swift
+//  FontAtlas.swift
 //  CesiumKit
 //
 //  Created by Ryan Walklin on 30/01/2016.
@@ -56,7 +56,7 @@ let MBETextureDataKey = "textureData"
 let MBETextureWidthKey = "textureWidth"
 let MBEGlyphDescriptorsKey = "glyphDescriptors"
 
-class TextureAtlas {
+class FontAtlas {
 
     let parentFont: CTFont
     
@@ -171,8 +171,26 @@ class TextureAtlas {
     func estimatedLineWidthForFont (font: CTFont) -> CGFloat {
         return 0.0
 
-    /*CGFloat estimatedStrokeWidth = [@"!" sizeWithAttributes:@{ NSFontAttributeName : font }].width;
-    return ceilf(estimatedStrokeWidth);*/
+    /*
+         CGFloat estimatedStrokeWidth = [@"!" sizeWithAttributes:@{ NSFontAttributeName : font }].width;
+    return ceilf(estimatedStrokeWidth);
+ let exemplarString = "{ǺOJMQYZa@jmqyw"
+ 
+ let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+ CFAttributedStringReplaceString(exemplarString, CFRangeMake(0, 0), tileString)
+ 
+ let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
+ CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
+ 
+ CGContextSetFillColorWithColor(contextRef, drawColor)
+ CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorFromContextAttributeName, kCFBooleanTrue)
+ 
+ let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+ var fitRange = CFRangeMake(0, 0)
+ let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, borderRect.size, &fitRange)
+
+ */
+ 
     }
     /*
     - (BOOL)font:(UIFont *)font atSize:(CGFloat)size isLikelyToFitInAtlasRect:(CGRect)rect

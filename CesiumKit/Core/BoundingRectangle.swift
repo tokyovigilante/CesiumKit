@@ -20,38 +20,38 @@ import Foundation
 *
 * @see BoundingSphere
 */
-struct BoundingRectangle: Equatable {
+public struct BoundingRectangle: Equatable {
     /**
     * The x coordinate of the rectangle.
     * @type {Number}
     * @default 0.0
     */
-    var x: Double = 0.0
+    public var x: Double = 0.0
     
     /**
     * The y coordinate of the rectangle.
     * @type {Number}
     * @default 0.0
     */
-    var y: Double = 0.0
+    public var y: Double = 0.0
     
     /**
     * The width of the rectangle.
     * @type {Number}
     * @default 0.0
     */
-    var width: Double = 0.0
+    public var width: Double = 0.0
     
     /**
     * The height of the rectangle.
     * @type {Number}
     * @default 0.0
     */
-    var height: Double = 0.0
+    public var height: Double = 0.0
     
     var projection: MapProjection = GeographicProjection()
     
-    init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: MapProjection = GeographicProjection()) {
+    public init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: MapProjection = GeographicProjection()) {
         self.x = x
         self.y = y
         self.width = width
@@ -199,7 +199,7 @@ struct BoundingRectangle: Equatable {
 * @param {BoundingRectangle} [right] The second BoundingRectangle.
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
-func ==(left: BoundingRectangle, right: BoundingRectangle) -> Bool {
+public func ==(left: BoundingRectangle, right: BoundingRectangle) -> Bool {
     return (left.x == right.x &&
         left.y == right.y &&
         left.width == right.width &&

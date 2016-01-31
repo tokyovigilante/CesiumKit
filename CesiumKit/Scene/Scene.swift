@@ -112,7 +112,7 @@ public class Scene {
      * @type {PrimitiveCollection}
      * @readonly
      */
-    let groundPrimitives = PrimitiveCollection()
+    public let groundPrimitives = PrimitiveCollection()
     
     //var pickFramebuffer: Framebuffer? = nil
     
@@ -1415,11 +1415,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     func updatePrimitives() {
     
         if globe != nil {
-            globe.update(context: context, frameState: &frameState)
+            globe.update(&frameState)
         }
-    /*
-    _groundPrimitives.update(context, frameState, _commandList);
-    _primitives.update(context, frameState, _commandList);*/
+    
+    groundPrimitives.update(&frameState)
+    primitives.update(&frameState)
     }
 
 /*

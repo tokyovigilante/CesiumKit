@@ -314,7 +314,7 @@ class Globe {
 /**
 * @private
 */
-    func update(context context: Context, inout frameState: FrameState) {
+    func update(inout frameState: FrameState) {
         if !show {
             return
         }
@@ -339,6 +339,8 @@ class Globe {
                 )
             )
         }
+        
+        let context = frameState.context
         
         let width = context.width
         let height = context.height

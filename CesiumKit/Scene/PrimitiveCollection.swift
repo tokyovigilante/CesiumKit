@@ -332,65 +332,18 @@ throw new DeveloperError('index is required.');
 
 return this._primitives[index];
 };
-
+*/
 /**
 * @private
 */
-PrimitiveCollection.prototype.update = function(context, frameState, commandList) {
-if (!this.show) {
-return;
-}
-
-var primitives = this._primitives;
-// Using primitives.length in the loop is a temporary workaround
-// to allow quadtree updates to add and remove primitives in
-// update().  This will be changed to manage added and removed lists.
-for (var i = 0; i < primitives.length; ++i) {
-primitives[i].update(context, frameState, commandList);
-}
-};
-
-/**
-* Returns true if this object was destroyed; otherwise, false.
-* <br /><br />
-* If this object was destroyed, it should not be used; calling any function other than
-* <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
-*
-* @returns {Boolean} True if this object was destroyed; otherwise, false.
-*
-* @see PrimitiveCollection#destroy
-*/
-PrimitiveCollection.prototype.isDestroyed = function() {
-return false;
-};
-
-/**
-* Destroys the WebGL resources held by each primitive in this collection.  Explicitly destroying this
-* collection allows for deterministic release of WebGL resources, instead of relying on the garbage
-* collector to destroy this collection.
-* <br /><br />
-* Since destroying a collection destroys all the contained primitives, only destroy a collection
-* when you are sure no other code is still using any of the contained primitives.
-* <br /><br />
-* Once this collection is destroyed, it should not be used; calling any function other than
-* <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
-* assign the return value (<code>undefined</code>) to the object as done in the example.
-*
-* @returns {undefined}
-*
-* @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
-*
-* @see PrimitiveCollection#isDestroyed
-*
-* @example
-* primitives = primitives && primitives.destroy();
-*/
-PrimitiveCollection.prototype.destroy = function() {
-this.removeAll();
-return destroyObject(this);
-};
-
-return PrimitiveCollection;
-});
-*/
+    override func update (inout frameState: FrameState) {
+        if !show {
+            return
+        }
+        
+        for primitive in _primitives {
+            primitive.update(&frameState)
+            
+        }
+    }
 }

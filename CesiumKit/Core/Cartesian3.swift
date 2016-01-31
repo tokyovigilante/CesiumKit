@@ -30,7 +30,7 @@ public struct Cartesian3 {
     
     private (set) var floatRepresentation = [Float](count: 3, repeatedValue: 0.0)
     
-    var x: Double {
+    public var x: Double {
         get {
             return simdType.x
         }
@@ -40,7 +40,7 @@ public struct Cartesian3 {
         }
     }
     
-    var y: Double {
+    public var y: Double {
         get {
             return simdType.y
         }
@@ -50,7 +50,7 @@ public struct Cartesian3 {
         }
     }
     
-    var z: Double {
+    public var z: Double {
         get {
             return simdType.z
         }
@@ -60,7 +60,7 @@ public struct Cartesian3 {
         }
     }
     
-    init (x: Double, y: Double, z: Double) {
+    public init (x: Double, y: Double, z: Double) {
         simdType = double3(x, y, z)
         floatRepresentation = [Float(x), Float(y), Float(z)]//vector_float(simdType)
     }

@@ -241,7 +241,7 @@ public class Primitive {
      */
      this.modelMatrix = Matrix4.clone(defaultValue(options.modelMatrix, Matrix4.IDENTITY));
      this._modelMatrix = new Matrix4();
-     
+     */
      /**
      * Determines if the primitive will be shown.  This affects all geometry
      * instances in the primitive.
@@ -250,8 +250,8 @@ public class Primitive {
      *
      * @default true
      */
-     this.show = defaultValue(options.show, true);
-     
+    var show: Bool = true
+     /*
      this._vertexCacheOptimize = defaultValue(options.vertexCacheOptimize, false);
      this._interleave = defaultValue(options.interleave, false);
      this._releaseGeometryInstances = defaultValue(options.releaseGeometryInstances, true);
@@ -1325,7 +1325,7 @@ public class Primitive {
      }
      }
      }
-     
+     */
      /**
      * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
      * get the draw commands needed to render this primitive.
@@ -1338,8 +1338,8 @@ public class Primitive {
      * @exception {DeveloperError} Appearance and material have a uniform with the same name.
      * @exception {DeveloperError} Primitive.modelMatrix is only supported in 3D mode.
      */
-     Primitive.prototype.update = function(frameState) {
-     if (((!defined(this.geometryInstances)) && (this._va.length === 0)) ||
+    func update (inout frameState: FrameState) {
+     /*if (((!defined(this.geometryInstances)) && (this._va.length === 0)) ||
      (defined(this.geometryInstances) && isArray(this.geometryInstances) && this.geometryInstances.length === 0) ||
      (!defined(this.appearance)) ||
      (frameState.mode !== SceneMode.SCENE3D && frameState.scene3DOnly) ||
@@ -1422,9 +1422,9 @@ public class Primitive {
      updatePerInstanceAttributes(this);
      
      var updateAndQueueCommandsFunc = defaultValue(this._updateAndQueueCommandsFunction, updateAndQueueCommands);
-     updateAndQueueCommandsFunc(this, frameState, this._colorCommands, this._pickCommands, this.modelMatrix, this.cull, this.debugShowBoundingVolume, twoPasses);
-     };
-     
+     updateAndQueueCommandsFunc(this, frameState, this._colorCommands, this._pickCommands, this.modelMatrix, this.cull, this.debugShowBoundingVolume, twoPasses);*/
+     }
+     /*
      function createGetFunction(name, perInstanceAttributes) {
      var attribute = perInstanceAttributes[name];
      return function() {
