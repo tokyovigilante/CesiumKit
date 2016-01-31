@@ -65,7 +65,7 @@ public struct Cartesian3 {
         floatRepresentation = [Float(x), Float(y), Float(z)]//vector_float(simdType)
     }
 
-    init(_ scalar: Double = 0.0) {
+    public init(_ scalar: Double = 0.0) {
         simdType = double3(scalar)
         floatRepresentation = [Float(x), Float(y), Float(z)]//float3(Float(scalar))
     }
@@ -209,7 +209,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     
-    func normalize() -> Cartesian3 {
+    public func normalize() -> Cartesian3 {
         return Cartesian3(fromSIMD: simd.normalize(simdType))
     }
     
@@ -220,11 +220,11 @@ public struct Cartesian3 {
     * @param {Cartesian3} right The second Cartesian.
     * @returns {Number} The dot product.
     */
-    func dot(other: Cartesian3) -> Double {
+    public func dot(other: Cartesian3) -> Double {
         return simd.dot(simdType, other.simdType)
     }
     
-    func multiplyComponents(other: Cartesian3) -> Cartesian3 {
+    public func multiplyComponents(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(fromSIMD: simdType * other.simdType)
     }
     
@@ -260,7 +260,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func multiplyByScalar (scalar: Double) -> Cartesian3 {
+    public func multiplyByScalar (scalar: Double) -> Cartesian3 {
         return Cartesian3(fromSIMD: simdType * scalar)
     }
     
@@ -272,7 +272,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func divideByScalar (scalar: Double) -> Cartesian3 {
+    public func divideByScalar (scalar: Double) -> Cartesian3 {
         return Cartesian3(fromSIMD: simdType * (1/scalar))
     }
     
@@ -386,7 +386,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The cross product.
     */
-    func cross(other: Cartesian3) -> Cartesian3 {
+    public func cross(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(fromSIMD: simd.cross(simdType, other.simdType))
     }
     

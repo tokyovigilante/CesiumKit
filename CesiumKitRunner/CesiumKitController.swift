@@ -54,20 +54,17 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000), heading: 0, pitch: 0, roll: 0)
         //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
-        let labels = LabelCollection(scene: _globe.scene)
-        _globe.scene.primitives.add(labels)
-        labels.add(
-            position: Cartesian3(x: 4.0, y: 5.0, z: 6.0),
-            text: "A label"
-        )
+
         
         let viewportQuad = ViewportQuad(rectangle: BoundingRectangle(x: 20, y: 20, width: 200, height: 200))
         _globe.scene.primitives.add(viewportQuad)
-        _globe.scene.primitives.add(labels)
+        
+        let labels = LabelCollection(scene: _globe.scene)
         labels.add(
             position: Cartesian3(x: 4.0, y: 5.0, z: 6.0),
             text: "A label"
         )
+        _globe.scene.primitives.add(labels)
         
         super.init()
     }

@@ -698,19 +698,19 @@ public struct Matrix3 {
      * @param {MatrixType} other The second matrix.
      * @returns {MatrixType} The modified result parameter.
      */
-    func multiply(other: Matrix3) -> Matrix3 {
+    public func multiply(other: Matrix3) -> Matrix3 {
         return Matrix3(fromSIMD: simdType * other.simdType)
     }
     
-    var negate: Matrix3 {
+    public var negate: Matrix3 {
         return Matrix3(fromSIMD: -simdType)
     }
     
-    var transpose: Matrix3 {
+    public var transpose: Matrix3 {
         return Matrix3(fromSIMD: simdType.transpose)
     }
     
-    func equals(other: Matrix3) -> Bool {
+    public func equals(other: Matrix3) -> Bool {
         return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
     }
     

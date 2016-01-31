@@ -18,13 +18,18 @@ class RenderPipeline {
         return state.label ?? ""
     }
     
+    var blendingState: BlendingState? = nil
+    
     var count: Int = 0
+    
+    private var _descriptor: MTLRenderPipelineDescriptor
     
     init (device: MTLDevice, shaderProgram: ShaderProgram, descriptor: MTLRenderPipelineDescriptor) {
         
         self.shaderProgram = shaderProgram
+        _descriptor = descriptor
         do {
-            let state = try device.newRenderPipelineStateWithDescriptor(descriptor)
+            let state = try device.newRenderPipelineStateWithDescriptor(_descriptor)
             self.state = state
         } catch let error as NSError  {
             state = nil

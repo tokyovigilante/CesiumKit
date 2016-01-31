@@ -55,9 +55,9 @@ public class ViewportQuad: Primitive {
     
     private var _material: Material? = nil
     
-    private var _overlayCommand: DrawCommand? = nil
+    private var _overlayCommand: DrawCommand! = nil
     
-    private var _rs: RenderState? = nil
+    private var _rs: RenderState! = nil
     
     public init (rectangle: BoundingRectangle = BoundingRectangle(), material: Material = Material(fromType: .Color(ColorFabricDescription(color: Color(1.0, 1.0, 1.0, 1.0)))))
     {
@@ -76,59 +76,47 @@ public class ViewportQuad: Primitive {
     * @exception {DeveloperError} this.material must be defined.
     * @exception {DeveloperError} this.rectangle must be defined.
     */
-    func update (frameState: FrameState) {
+    override func update (inout frameState: FrameState) {
         if !show {
             return
         }
+        if _rs == nil || _rs.viewport == rectangle {
+            _rs = RenderState(
+                device: frameState.context.device,
+                viewport : rectangle
+            )
+        }
         
-    var rs = _rs
-    /*if rs == nil || !BoundingRectangle.equals(rs.viewport, this.rectangle)) {
-    this._rs = RenderState.fromCache({
-    blending : BlendingState.ALPHA_BLEND,
-    viewport : this.rectangle
-    });
-    }
-    
-    var pass = frameState.passes;
-    if (pass.render) {
-    if (this._material !== this.material || !defined(this._overlayCommand)) {
-    // Recompile shader when material changes
-    this._material = this.material;
-    
-    if (defined(this._overlayCommand)) {
-    this._overlayCommand.shaderProgram.destroy();
-    }
-    
-    var fs = new ShaderSource({
-    sources : [this._material.shaderSource, ViewportQuadFS]
-    });
-    this._overlayCommand = context.createViewportQuadCommand(fs, {
-    renderState : this._rs,
-    uniformMap : this._material._uniforms,
-    owner : this
-    });
-    this._overlayCommand.pass = Pass.OVERLAY;
-    }
-    
-    this._material.update(context);
-    
-    this._overlayCommand.uniformMap = this._material._uniforms;
-    commandList.push(this._overlayCommand);
-    }
-    };
-    
-    /**
-    * Returns true if this object was destroyed; otherwise, false.
-    * <br /><br />
-    * If this object was destroyed, it should not be used; calling any function other than
-    * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
-    *
-    * @returns {Boolean} True if this object was destroyed; otherwise, false.
-    *
-    * @see ViewportQuad#destroy
-    */
-    ViewportQuad.prototype.isDestroyed = function() {
-    return false;*/
+        if !frameState.passes.render {
+            return
+        }
+        
+        if _material !== material || _overlayCommand == nil {
+            // Recompile shader when material changes
+            /*this._material = this.material;
+            
+            if (defined(this._overlayCommand)) {
+                this._overlayCommand.shaderProgram.destroy();
+            }
+            
+            var fs = new ShaderSource({
+                sources : [this._material.shaderSource, ViewportQuadFS]
+            });
+            this._overlayCommand = context.createViewportQuadCommand(fs, {
+                renderState : this._rs,
+                uniformMap : this._material._uniforms,
+             //blendingState = AlphaBlend()
+                owner : this
+            });
+            this._overlayCommand.pass = Pass.OVERLAY;*/
+        }
+        /*
+        _material.update(context)
+        
+        this._overlayCommand.uniformMap = this._material._uniforms;*/
+        return
+        //frameState.commandList.append(_overlayCommand)
+        
     }
     
 }

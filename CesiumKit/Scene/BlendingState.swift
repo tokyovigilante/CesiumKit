@@ -17,7 +17,7 @@
 * @namespace
 * @alias BlendingState
 */
-struct BlendingState: CustomStringConvertible {
+struct BlendingState: Equatable, CustomStringConvertible {
     let enabled: Bool
     let equationRgb: BlendEquation
     let equationAlpha: BlendEquation
@@ -108,8 +108,10 @@ struct BlendingState: CustomStringConvertible {
     
     var description: String {
         return "r\(equationRgb.rawValue):a\(equationAlpha.rawValue):sr\(functionSourceRgb.rawValue):sa\(functionSourceAlpha.rawValue):dr\(functionDestinationRgb.rawValue):da\(functionDestinationAlpha.rawValue):c\(color?.simdType.debugDescription)"
-        
-        
-    }
 
+    }
+}
+
+func == (lhs: BlendingState, rhs: BlendingState) -> Bool {
+    return lhs.description == rhs.description
 }

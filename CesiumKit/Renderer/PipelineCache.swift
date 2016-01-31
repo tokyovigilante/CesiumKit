@@ -117,16 +117,18 @@ class PipelineCache {
             color.alphaBlendOperation = blendingState.equationAlpha.toMetal()
             color.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
             color.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
-
         }
+        
         
         pipelineDescriptor.vertexDescriptor = descriptor?.metalDescriptor
         
         pipelineDescriptor.label = keyword
         
         let pipeline = RenderPipeline(device: device, shaderProgram: shader, descriptor: pipelineDescriptor)
+        pipeline.blendingState = blendingState
+        
         _pipelines[keyword] = pipeline
-        pipeline.count++
+        pipeline.count += 1
         return pipeline
     }
     
