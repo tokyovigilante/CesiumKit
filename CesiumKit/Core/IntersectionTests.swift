@@ -53,8 +53,8 @@ class IntersectionTests {
         let p = direction.cross(edge1)
         let det = edge0.dot(p)
         
-        var tvec: Cartesian3
-        var q: Cartesian3
+        let tvec: Cartesian3
+        let q: Cartesian3
         
         var u, v, t: Double
         

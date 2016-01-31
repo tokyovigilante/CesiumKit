@@ -531,7 +531,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
     }
     
     func getContextWaterMaskData(context: Context) -> (allWaterTexture: Texture, sampler: Sampler) {
-        var data = context.cache["tile_waterMaskData"] as! (Texture, Sampler)?
+        var data = context.cache["tile_waterMaskData"]// as! (Texture, Sampler)?
         
         if data == nil {
             let allWaterTexture = Texture(context: context, options: TextureOptions(
@@ -556,7 +556,8 @@ class GlobeSurfaceTile: QuadTreeTileData {
             )
             context.cache["tile_waterMaskData"] = data as Any
         }
-        return data!
+        return data! as! (Texture, Sampler)
+        // as
     }
 
     func createWaterMaskTextureIfNeeded(context: Context) {
