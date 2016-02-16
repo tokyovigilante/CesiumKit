@@ -157,7 +157,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} cartesian The Cartesian instance whose squared magnitude is to be computed.
     * @returns {Number} The squared magnitude.
     */
-    var magnitudeSquared: Double {
+    public var magnitudeSquared: Double {
         return length_squared(simdType)
     }
     
@@ -167,7 +167,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} cartesian The Cartesian instance whose magnitude is to be computed.
     * @returns {Number} The magnitude.
     */
-    var magnitude: Double {
+    public var magnitude: Double {
         return length(simdType)
     }
     
@@ -236,7 +236,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func add(other: Cartesian3) -> Cartesian3 {
+    public func add(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(fromSIMD: simdType + other.simdType)
     }
     
@@ -248,7 +248,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func subtract(other: Cartesian3) -> Cartesian3 {
+    public func subtract(other: Cartesian3) -> Cartesian3 {
         return Cartesian3(fromSIMD: simdType - other.simdType)
     }
     

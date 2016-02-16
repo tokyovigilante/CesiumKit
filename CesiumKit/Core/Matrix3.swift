@@ -152,7 +152,7 @@ public struct Matrix3 {
     
     return Matrix3.clone(values, result);
     };
-    
+    */
     /**
     * Creates a Matrix3 instance from a row-major order array.
     * The resulting matrix will be in column-major order.
@@ -161,30 +161,17 @@ public struct Matrix3 {
     * @param {Matrix3} [result] The object in which the result will be stored, if undefined a new instance will be created.
     * @returns The modified result parameter, or a new Matrix3 instance if one was not provided.
     */
-    Matrix3.fromRowMajorArray = function(values, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(values)) {
-    throw new DeveloperError('values is required.');
-    }
-    //>>includeEnd('debug');
     
-    if (!defined(result)) {
-    return new Matrix3(values[0], values[1], values[2],
-    values[3], values[4], values[5],
-    values[6], values[7], values[8]);
+    public init(rows: [Cartesian3]) {
+        assert(rows.count == 3, "invalid row array")
+        simdType = double3x3(rows: [rows[0].simdType, rows[1].simdType, rows[2].simdType])
+        floatRepresentation = float3x3([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2])
+        ])
     }
-    result[0] = values[0];
-    result[1] = values[3];
-    result[2] = values[6];
-    result[3] = values[1];
-    result[4] = values[4];
-    result[5] = values[7];
-    result[6] = values[2];
-    result[7] = values[5];
-    result[8] = values[8];
-    return result;
-    };
-    
+    /*
     /**
     * Computes a Matrix3 instance representing a non-uniform scale.
     *

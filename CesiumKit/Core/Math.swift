@@ -344,7 +344,7 @@ public struct Math {
     * @constant
     * @default Math.PI / 180.0
     */
-    static let RadiansPerDegree = M_PI / 180.0
+    public static let RadiansPerDegree = M_PI / 180.0
     
     /**
     * The number of degrees in a radian.
@@ -353,7 +353,7 @@ public struct Math {
     * @constant
     * @default 180.0 / Math.PI
     */
-    static let DegreesPerRadian = 180.0 / M_PI
+    public static let DegreesPerRadian = 180.0 / M_PI
     
     /**
     * The number of radians in an arc second.
