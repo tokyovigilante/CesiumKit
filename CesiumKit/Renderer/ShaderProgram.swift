@@ -128,7 +128,7 @@ class ShaderProgram {
         _metalVertexShaderSource = _vertexShader.output()
         
         _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
-        assert(_fragmentShader.status(), _fragmentShader .log())
+        assert(_fragmentShader.status(), _fragmentShader.log())
         _metalFragmentShaderSource = _fragmentShader.output()
     }
     

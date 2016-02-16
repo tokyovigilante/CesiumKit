@@ -8,17 +8,46 @@
 
 import Foundation
 
-public struct ColorFabricDescription {
-    var color: Color
+public protocol MaterialDescription {
+    var fabric: FabricDescription { get }
+    var components: [String: String] { get }
+    var translucent: (Material) -> Bool { get }
 }
 
-public struct ImageFabricDescription {
-    var path: String
+public struct ColorMaterialDescription: MaterialDescription {
+    
+    public var fabric: FabricDescription
+    
+    public let components = [
+        "diffuse": "color.rgb",
+        "alpha": "color.a"
+    ]
+    
+    public let translucent = { (material: Material) in
+        return false//(material.fabric as ColorFabricDescription).color.alpha < 1.0
+    }
 }
 
-public enum FabricType {
+public protocol FabricDescription: UniformMap {}
+
+public struct ColorFabricDescription: FabricDescription {
     
-    case Color(ColorFabricDescription)
+    var color: Color = Color(1.0, 1.0, 1.0, 1.0)
     
-    case Image(ImageFabricDescription)
+    public var uniforms: [String: UniformFunc] = [
+        "color": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            
+        }
+    ]
+}
+
+public struct ImageFabricDescription: FabricDescription {
+    public var uniforms: [String: UniformFunc]
+}
+
+public enum MaterialType {
+    
+    case Color(ColorMaterialDescription)
+    
+    //case Image(ImageMaterialDescription)
 }
