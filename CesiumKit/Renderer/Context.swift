@@ -516,7 +516,7 @@ class Context {
         return vertexArray
     }
     
-    func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true) -> DrawCommand {
+    func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true, blendingState: BlendingState? = nil) -> DrawCommand {
         
         let vertexArray = getViewportQuadVertexArray()
         return DrawCommand(
@@ -529,7 +529,8 @@ class Context {
                 vertexShaderSource: ShaderSource(sources: [Shaders["ViewportQuadVS"]!]),
                 fragmentShaderSource: fss,
                 vertexDescriptor: VertexDescriptor(attributes: vertexArray.attributes),
-                depthStencil: depthStencil
+                depthStencil: depthStencil,
+                blendingState: blendingState
             ),
             owner: self
         )
