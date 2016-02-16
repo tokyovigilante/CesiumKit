@@ -178,7 +178,7 @@ enum UniformDataType: UInt {
     
 }
 
-typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
+public typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
 
 typealias AutomaticUniformFunc = (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) -> ()
 
@@ -206,7 +206,7 @@ enum UniformType {
     Sampler
 }
 
-class Uniform {
+public class Uniform {
     
     private let _desc: GLSLShaderVariableDescription
     
@@ -327,7 +327,7 @@ class Uniform {
     
 }
 
-typealias UniformIndex = DictionaryIndex<String, UniformFunc>
+public typealias UniformIndex = DictionaryIndex<String, UniformFunc>
 
 typealias AutomaticUniformIndex = DictionaryIndex<String, AutomaticUniform>
 
@@ -403,7 +403,7 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 }*/
 
 
-class UniformSampler: Uniform {
+public class UniformSampler: Uniform {
     
     private (set) var textureUnitIndex: Int = 0
         

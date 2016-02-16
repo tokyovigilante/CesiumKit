@@ -53,14 +53,13 @@ public class ViewportQuad: Primitive {
      */
     var material: Material
     
-    private var _material: Material? = nil
+    private var _material: Material! = nil
     
     private var _overlayCommand: DrawCommand! = nil
     
     private var _rs: RenderState! = nil
     
-    public init (rectangle: BoundingRectangle = BoundingRectangle(), material: Material = Material(fromType: .Color(ColorFabricDescription(color: Color(1.0, 1.0, 1.0, 1.0)))))
-    {
+    public init (rectangle: BoundingRectangle, material: Material = Material(fromType: MaterialType.Color(ColorMaterialDescription(fabric: ColorFabricDescription())))) {
         self.rectangle = rectangle
         self.material = material
     }
@@ -80,9 +79,11 @@ public class ViewportQuad: Primitive {
         if !show {
             return
         }
+        let context = frameState.context
+
         if _rs == nil || _rs.viewport == rectangle {
             _rs = RenderState(
-                device: frameState.context.device,
+                device: context.device,
                 viewport : rectangle
             )
         }
@@ -93,29 +94,31 @@ public class ViewportQuad: Primitive {
         
         if _material !== material || _overlayCommand == nil {
             // Recompile shader when material changes
-            /*this._material = this.material;
+            _material = material
             
-            if (defined(this._overlayCommand)) {
-                this._overlayCommand.shaderProgram.destroy();
-            }
+            let fs = ShaderSource(
+                sources: [_material.shaderSource, Shaders["ViewportQuadFS"]].flatMap { $0 }
+            )
+            _overlayCommand = context.createViewportQuadCommand(
+                fragmentShaderSource: fs,
+                overrides: ViewportQuadOverrides(
+                    renderState: _rs,
+                    uniformMap: _material.uniformMap,
+                    framebuffer: nil,
+                    owner: self
+                ),
+                depthStencil: false,
+                blendingState: BlendingState.AlphaBlend()
+            )
             
-            var fs = new ShaderSource({
-                sources : [this._material.shaderSource, ViewportQuadFS]
-            });
-            this._overlayCommand = context.createViewportQuadCommand(fs, {
-                renderState : this._rs,
-                uniformMap : this._material._uniforms,
-             //blendingState = AlphaBlend()
-                owner : this
-            });
-            this._overlayCommand.pass = Pass.OVERLAY;*/
+            _overlayCommand.pass = .Overlay
         }
-        /*
+        
         _material.update(context)
         
-        this._overlayCommand.uniformMap = this._material._uniforms;*/
-        return
-        //frameState.commandList.append(_overlayCommand)
+        //overlayCommand.uniformMap = this._material._uniforms
+        
+        frameState.commandList.append(_overlayCommand)
         
     }
     

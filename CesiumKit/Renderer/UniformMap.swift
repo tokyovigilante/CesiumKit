@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-protocol UniformMap {
+public protocol UniformMap {
     
     var uniforms: [String: UniformFunc] { get } 
     
@@ -19,15 +19,15 @@ protocol UniformMap {
 
 extension UniformMap {
     
-    func indexForUniform(name: String) -> UniformIndex? {
+    public func indexForUniform(name: String) -> UniformIndex? {
         return uniforms.indexForKey(name)
     }
     
-    func uniform(index: UniformIndex) -> UniformFunc {
+    public func uniform(index: UniformIndex) -> UniformFunc {
         return uniforms[index].1
     }
     
-    func textureForUniform (uniform: UniformSampler) -> Texture? {
+    public func textureForUniform (uniform: UniformSampler) -> Texture? {
         return nil
     }
     

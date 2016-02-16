@@ -80,7 +80,7 @@ struct TextureOptions {
     }
 }
 
-class Texture {
+public class Texture {
     
     let width: Int
     
