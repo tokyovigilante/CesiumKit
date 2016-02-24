@@ -195,7 +195,9 @@ public class Scene {
     
     var _clearColorCommand = ClearCommand(color: Cartesian4.zero, stencil: 0/*, owner: self*/)
     
-    var _depthClearCommand = ClearCommand(depth: 1.0/*, owner: self*/)
+    let _clearDepthCommand = ClearCommand(depth: 1.0/*, owner: self*/)
+    
+    let _clearNullCommand = ClearCommand()
     
     lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self, projection: self.mapProjection) }()
     
@@ -557,12 +559,22 @@ public class Scene {
     }
 
     /**
-    * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
+    * The maximum aliased line width, in pixels, supported by this Metal implementation.  It will be at least one.
     * @memberof Scene.prototype
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
+    public var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
+    
+    /**
+     * The maximum length in pixels of a texture, supported by this Metal implementation.  It will be at least 16.
+     * @memberof Scene.prototype
+     *
+     * @type {Number}
+     * @readonly
+     *
+     */
+    public var maximumTextureSize: Int { return context.limits.maximumTextureSize }
     
     /**
      * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
@@ -572,7 +584,7 @@ public class Scene {
      * @readonly
      *
      */
-    var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
+    public var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
     
     /**
      * Returns true if the pickPosition function is supported.
@@ -1274,7 +1286,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             executeTranslucentCommands = executeTranslucentCommandsSorted
         }
         
-        let clearDepth = _depthClearCommand
+        let clearDepth = _clearDepthCommand
 
         // Execute commands in each frustum in back to front order
         for (index, frustumCommands) in _frustumCommandsList.enumerate() {
@@ -1404,12 +1416,13 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
     }
 
-    func executeOverlayCommands() {
-        /*
-        context.createCommandEncoder(passState: nil)
+    func executeOverlayCommands(passState: PassState) {
+        _clearNullCommand.execute(context, passState: passState)
+        let overlayRenderPass = context.createRenderPass(passState)
         for command in _overlayCommandList {
-        command.execute(context: context, passState: passState, renderState: nil, shaderProgram: nil)*/
-        //}
+            command.execute(context, renderPass: overlayRenderPass)
+        }
+        overlayRenderPass.complete()
     }
 
     func updatePrimitives() {
@@ -1498,7 +1511,7 @@ function callAfterRenderFunctions(frameState) {
         
         executeComputeCommands()
         executeCommands(passState, clearColor: backgroundColor)
-        executeOverlayCommands()
+        executeOverlayCommands(passState)
         
         /*frameState.creditDisplay.endFrame();
         

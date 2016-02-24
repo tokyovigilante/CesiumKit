@@ -10,7 +10,7 @@ import GLSLOptimizer
 import Accelerate
 import simd
 
-enum UniformDataType: UInt {
+public enum UniformDataType: UInt {
     
     case FloatVec1 = 5126, // GLenum(GL_FLOAT)
     FloatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)

@@ -8,7 +8,7 @@
 
 public protocol UniformMap {
     
-    var uniforms: [String: UniformFunc] { get } 
+    var uniforms: [String: UniformFunc] { get }
     
     func indexForUniform(name: String) -> UniformIndex?
     

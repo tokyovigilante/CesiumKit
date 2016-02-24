@@ -74,7 +74,7 @@ public struct Cartesian4 {
     var blue: Double { return z }
     var alpha: Double { return w }
     
-    init (x: Double, y: Double, z: Double, w: Double) {
+    public init (x: Double, y: Double, z: Double, w: Double) {
         simdType = double4(x, y, z, w)
         floatRepresentation = vector_float(simdType)
     }
@@ -92,7 +92,7 @@ public struct Cartesian4 {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
+    public init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
         self.init(x: red, y: green, z: blue, w: alpha)
     }
     

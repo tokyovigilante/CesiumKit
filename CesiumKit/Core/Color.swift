@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
  * A color, specified using red, green, blue, and alpha values,
@@ -21,55 +22,9 @@ import Foundation
  *
  * @see Packable
  */
-public struct Color {
-    
-        /**
-         * The red component.
-         * @type {Number}
-         * @default 1.0
-         */
-    public var red: Double
-        /**
-         * The green component.
-         * @type {Number}
-         * @default 1.0
-         */
-    public var green: Double
-        /**
-         * The blue component.
-         * @type {Number}
-         * @default 1.0
-         */
-    public var blue: Double
-        /**
-         * The alpha component.
-         * @type {Number}
-         * @default 1.0
-         */
-    public var alpha: Double
+public typealias Color = Cartesian4
 
-    public init (_ red: Double = 1.0, _ green: Double = 1.0, _ blue: Double = 1.0, _ alpha: Double = 1.0) {
-        self.red = red
-        self.green = green
-        self.blue = blue
-        self.alpha = alpha
-    }
-    
-    /**
-     * Creates a Color instance from a {@link Cartesian4}. <code>x</code>, <code>y</code>, <code>z</code>,
-     * and <code>w</code> map to <code>red</code>, <code>green</code>, <code>blue</code>, and <code>alpha</code>, respectively.
-     *
-     * @param {Cartesian4} cartesian The source cartesian.
-     * @param {Color} [result] The object onto which to store the result.
-     * @returns {Color} The modified result parameter or a new Color instance if one was not provided.
-     */
-    init(fromCartesian4 cartesian: Cartesian4) {
-        self.red = cartesian.x
-        self.green = cartesian.y
-        self.blue = cartesian.z
-        self.alpha = cartesian.w
-    }
-
+public extension Color {
     
     /*
  
@@ -103,11 +58,8 @@ public struct Color {
      * @param {Color} [result] The object onto which to store the result.
      * @returns {Color} The modified result parameter or a new Color instance if one was not provided.
      */
-    init(fromBytesRed red: Int = 255, green: Int = 255, blue: Int = 255, alpha: Int = 255) {
-        self.red = Color.byteToDouble(red);
-        self.green = Color.byteToDouble(green)
-        self.blue = Color.byteToDouble(blue)
-        self.alpha = Color.byteToDouble(alpha)
+    init(fromBytesRed red: Int, green: Int, blue: Int, alpha: Int) {
+        self.init(fromRed: Color.ByteToDouble(red), green: Color.ByteToDouble(green), blue: Color.ByteToDouble(blue), alpha: Color.ByteToDouble(alpha))
     }
     /*
      /**
@@ -450,7 +402,7 @@ public struct Color {
      * @param {Number} number The number to be converted.
      * @returns {Number} The converted number.
      */
-    static func byteToDouble (number: Int) -> Double {
+    static func ByteToDouble (number: Int) -> Double {
         return Double(number) / 255.0
     }
      
@@ -764,7 +716,7 @@ public struct Color {
      * @constant
      * @type {Color}
      */
-     static let Black = Color(0.0, 0.0, 0.0, 0.0)
+    static let Black = Color(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
      /*
      /**
      * An immutable Color instance initialized to CSS color #FFEBCD
@@ -1978,7 +1930,7 @@ public struct Color {
      * @constant
      * @type {Color}
      */
-     static let White = Color(1.0, 1.0, 1.0, 1.0)
+     static let White = Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
      /*
      /**
      * An immutable Color instance initialized to CSS color #F5F5F5
