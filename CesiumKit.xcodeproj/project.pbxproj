@@ -338,6 +338,8 @@
 		941A28181BF40B54001A40C8 /* GroundPrimitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28151BF40B54001A40C8 /* GroundPrimitive.swift */; };
 		941A28241BF40BBB001A40C8 /* HeightReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28231BF40BBB001A40C8 /* HeightReference.swift */; };
 		941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941A28231BF40BBB001A40C8 /* HeightReference.swift */; };
+		941CE3781C7BA9380095A86F /* GlyphDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */; };
+		941CE3791C7BA9380095A86F /* GlyphDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */; };
 		941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941EE9A81BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */; };
@@ -861,6 +863,7 @@
 		9417EC441942C31B00586516 /* Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interval.swift; sourceTree = "<group>"; };
 		941A28151BF40B54001A40C8 /* GroundPrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroundPrimitive.swift; sourceTree = "<group>"; };
 		941A28231BF40BBB001A40C8 /* HeightReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightReference.swift; sourceTree = "<group>"; };
+		941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlyphDescriptor.swift; path = Platform/GlyphDescriptor.swift; sourceTree = "<group>"; };
 		941E2162199EDC3600012DC4 /* Imagebuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imagebuffer.swift; sourceTree = "<group>"; };
 		941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTangentPlane.swift; sourceTree = "<group>"; };
 		941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerUniformMap.swift; sourceTree = "<group>"; };
@@ -1619,6 +1622,7 @@
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
+				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2257,6 +2261,7 @@
 				9413B7B21A37B93100FFAD81 /* GeometryAttribute.swift in Sources */,
 				9413B7D31A37B93100FFAD81 /* Visibility.swift in Sources */,
 				9413B7A21A37B93100FFAD81 /* BoundingSphere.swift in Sources */,
+				941CE3781C7BA9380095A86F /* GlyphDescriptor.swift in Sources */,
 				949E09F11BE452B40095A86F /* ImageryLayerFeatureInfo.swift in Sources */,
 				94145CCF1C008BC60095A86F /* PickDepth.swift in Sources */,
 				941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */,
@@ -2370,6 +2375,7 @@
 				947821191B5A2D7B0095A86F /* GeometryAttributes.swift in Sources */,
 				941EE9A81BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */,
 				9478211A1B5A2D7B0095A86F /* GeometryPipeline.swift in Sources */,
+				941CE3791C7BA9380095A86F /* GlyphDescriptor.swift in Sources */,
 				9478211B1B5A2D7B0095A86F /* GeometryType.swift in Sources */,
 				9478211C1B5A2D7B0095A86F /* HeightmapTerrainData.swift in Sources */,
 				9478211D1B5A2D7B0095A86F /* HeightmapTessellator.swift in Sources */,
