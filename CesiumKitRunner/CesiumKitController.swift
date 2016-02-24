@@ -16,6 +16,13 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     
     private let _view: MTKView
     
+    private let _viewportOverlay: ViewportQuad
+    
+    private let _fontName = "CarbonPlus"
+    private let _fontSize: CGFloat = 36
+    
+    private var _fontAtlas: FontAtlas
+    
     init (view: MTKView) {
         
         _view = view
@@ -29,14 +36,14 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         let options = CesiumOptions(
             clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
-            terrain: true,
+            terrain: false,
             skyBox: true,
             scene3DOnly: false
         )
 
         _globe = CesiumGlobe(view: _view, options: options)
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ
         
@@ -54,10 +61,35 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000), heading: 0, pitch: 0, roll: 0)
         //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
-
+        var fontAtlas: FontAtlas? = nil
+        /*#if !MBE_FORCE_REGENERATE_FONT_ATLAS
+         _fontAtlas = [NSKeyedUnarchiver unarchiveObjectWithFile:fontURL.path];
+         #endif*/
+        // Cache miss: if we don't have a serialized version of the font atlas, build it now
         
-        let viewportQuad = ViewportQuad(rectangle: BoundingRectangle(x: 20, y: 20, width: 200, height: 200))
-        _globe.scene.primitives.add(viewportQuad)
+        if fontAtlas == nil {
+            _fontAtlas = FontAtlas(font: _fontName, pointSize: _fontSize, textureSize: 1024)
+            //[NSKeyedArchiver archiveRootObject:_fontAtlas toFile:fontURL.path];
+        } else {
+            _fontAtlas = fontAtlas!
+        }
+        
+        /*
+         MTLTextureDescriptor *textureDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm
+         width:MBEFontAtlasSize
+         height:MBEFontAtlasSize
+         mipmapped:NO];
+         MTLRegion region = MTLRegionMake2D(0, 0, MBEFontAtlasSize, MBEFontAtlasSize);
+         _fontTexture = [_device newTextureWithDescriptor:textureDesc];
+         [_fontTexture setLabel:@"Font Atlas"];
+         [_fontTexture replaceRegion:region mipmapLevel:0 withBytes:_fontAtlas.textureData.bytes bytesPerRow:MBEFontAtlasSize];*/
+
+        let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
+        _viewportOverlay = ViewportQuad(
+            rectangle: BoundingRectangle(x: 20, y: 20, width: 200, height: 200),
+            material: Material(fromType: ColorMaterialType(fabric: viewportFabric))
+        )
+        _globe.scene.primitives.add(_viewportOverlay)
         
         let labels = LabelCollection(scene: _globe.scene)
         labels.add(
@@ -93,6 +125,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func mtkView(view: MTKView, drawableSizeWillChange size: CGSize) {
+        _viewportOverlay.rectangle = BoundingRectangle(x: 20, y: 20, width: Double(size.width)/2-40, height: Double(size.height)/2-40)
         /*let scale = self.v!.backingScaleFactor
          let layerSize = view.bounds.size
          
