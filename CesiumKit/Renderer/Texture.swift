@@ -14,7 +14,7 @@ private let _colorSpace = CGColorSpaceCreateDeviceRGB()!
 private var _defaultSampler: Sampler! = nil
 
 enum TextureSource {
-    case Image(CGImageRef)
+    case Image(CGImage)
     case Buffer(Imagebuffer)
     case CubeMap(CubeMapSources)
     

@@ -460,7 +460,7 @@ public class ImageryLayer {
         
         dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: true), {
             
-            let completionBlock: (CGImageRef? -> Void) = { (image) in
+            let completionBlock: (CGImage? -> Void) = { (image) in
                 
                 if let image = image {
                     dispatch_async(dispatch_get_main_queue(), {

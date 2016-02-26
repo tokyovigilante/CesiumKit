@@ -28,7 +28,7 @@ class Imagery {
     
     var rectangle: Rectangle? = nil
     
-    var image: CGImageRef? = nil
+    var image: CGImage? = nil
     
     var imageUrl: String? = nil
     

@@ -496,7 +496,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
+    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImage? -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         let url = buildImageUrl(x: x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
@@ -514,7 +514,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (url: String, completionBlock: (CGImageRef? -> Void)) {
+    public func loadImage (url: String, completionBlock: (CGImage? -> Void)) {
         request(.GET, url)
             .response(
                 queue: QueueManager.sharedInstance.networkQueue(rateLimit: true),
@@ -526,7 +526,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                     #if os(iOS)
                         let image = UIImage(data: data!)?.CGImage
                     #elseif os(OSX)
-                        let image = NSImage(data: data!)?.CGImage
+                        let image = NSImage(data: data!)?.cgImage
                     #endif
                     dispatch_async(dispatch_get_main_queue(), {
                         completionBlock(image)

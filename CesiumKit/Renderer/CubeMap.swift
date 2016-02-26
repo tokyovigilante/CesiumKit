@@ -9,32 +9,32 @@
 import Foundation
 
 struct CubeMapSources {
-    let sources: [CGImageRef]
+    let sources: [CGImage]
 }
 
 extension CubeMapSources {
     
-    var positiveX: CGImageRef {
+    var positiveX: CGImage {
         return sources[0]
     }
     
-    var negativeX: CGImageRef {
+    var negativeX: CGImage {
         return sources[1]
     }
     
-    var positiveY: CGImageRef {
+    var positiveY: CGImage {
         return sources[2]
     }
     
-    var negativeY: CGImageRef {
+    var negativeY: CGImage {
         return sources[3]
     }
     
-    var positiveZ: CGImageRef {
+    var positiveZ: CGImage {
         return sources[4]
     }
     
-    var negativeZ: CGImageRef {
+    var negativeZ: CGImage {
         return sources[5]
     }
     

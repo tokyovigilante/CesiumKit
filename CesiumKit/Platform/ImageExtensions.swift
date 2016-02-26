@@ -12,7 +12,7 @@ import Foundation
     import AppKit.NSImage
     
     extension NSImage {
-        var CGImage: CGImageRef? {
+        var cgImage: CGImage? {
             get {
                 guard let imageData = self.TIFFRepresentation else {
                     return nil
@@ -29,12 +29,12 @@ import Foundation
     import UIKit.UIImage
 #endif
 
-extension CGImageRef {
-    class func fromURL (url: NSURL) -> CGImageRef? {
+extension CGImage {
+    class func fromURL (url: NSURL) -> CGImage? {
         if let imageData = NSData(contentsOfURL: url) {
         #if os(OSX)
             let nsImage = NSImage(data: imageData)
-            return nsImage?.CGImage
+            return nsImage?.cgImage
         #elseif os(iOS)
             let uiImage = UIImage(data: imageData)
             return uiImage?.CGImage

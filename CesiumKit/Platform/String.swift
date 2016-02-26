@@ -61,11 +61,11 @@ extension String {
         }
     }
     
-    func loadImageForSource () -> CGImageRef? {
+    func loadImageForSource () -> CGImage? {
         guard let sourceURL = urlForSource() else {
             return nil
         }
-        return CGImageRef.fromURL(sourceURL)
+        return CGImage.fromURL(sourceURL)
     }
     
 }
