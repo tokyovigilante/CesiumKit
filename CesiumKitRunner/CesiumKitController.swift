@@ -18,7 +18,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     
     private let _viewportOverlay: ViewportQuad
     
-    private let _fontName = "CarbonPlus"
+    private let _fontName = "HelveticaNeue"
     private let _fontSize: CGFloat = 36
     
     private var _fontAtlas: FontAtlas
@@ -68,7 +68,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         // Cache miss: if we don't have a serialized version of the font atlas, build it now
         
         if fontAtlas == nil {
-            _fontAtlas = FontAtlas(font: _fontName, pointSize: _fontSize, textureSize: 1024)
+            _fontAtlas = FontAtlas(font: _fontName, pointSize: _fontSize, textureSize: 2048)
             //[NSKeyedArchiver archiveRootObject:_fontAtlas toFile:fontURL.path];
         } else {
             _fontAtlas = fontAtlas!

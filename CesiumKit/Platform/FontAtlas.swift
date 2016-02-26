@@ -14,7 +14,7 @@ import AppKit
 // This is the size at which the font atlas will be generated, ideally a large power of two. Even though
 // we later downscale the distance field, it's better to render it at as high a resolution as possible in
 // order to capture all of the fine details.
-let MBEFontAtlasSize = 1024
+let MBEFontAtlasSize = 4096
 
 let MBEGlyphIndexKey = "glyphIndex"
 let MBELeftTexCoordKey = "leftTexCoord"
@@ -38,7 +38,7 @@ public class FontAtlas {
     
     let textureSize: Int
     
-    private var _glyphDescriptors = [GlyphDescriptor]()
+    internal var glyphDescriptors = [GlyphDescriptor]()
     
     private var _textureData = [UInt8]()
     
@@ -215,7 +215,7 @@ public class FontAtlas {
         // Set fill color so that glyphs are solid white
         CGContextSetRGBFillColor(context, 1, 1, 1, 1)
         
-        _glyphDescriptors.removeAll()
+        glyphDescriptors.removeAll()
         
         let fontAscent = CTFontGetAscent(_parentFont)
         let fontDescent = CTFontGetDescent(_parentFont)
@@ -265,7 +265,7 @@ public class FontAtlas {
                 topLeftTexCoord: CGPointMake(texCoordLeft, texCoordTop),
                 bottomRightTexCoord: CGPointMake(texCoordRight, texCoordBottom)
             )
-            _glyphDescriptors.append(descriptor)
+            glyphDescriptors.append(descriptor)
             
             origin.x += CGRectGetWidth(boundingRect) + glyphMargin
         }
@@ -414,18 +414,18 @@ public class FontAtlas {
     private func createQuantizedDistanceField(distanceField inData: [Float], width: Int, height: Int, normalizationFactor: Float) -> [UInt8] {
         
         /*return inData.map {
-            let clampDist = fmax(-normalizationFactor, fmin($0, normalizationFactor))
-            let scaledDist = clampDist / normalizationFactor
-            return UInt8((scaledDist + 1) / 2) * UInt8.max
-        }*/
+         let clampDist = fmax(-normalizationFactor, fmin($0, normalizationFactor))
+         let scaledDist = clampDist / normalizationFactor
+         return UInt8((scaledDist + 1) / 2) * UInt8.max
+         }*/
         var outData = [UInt8](count: width * height, repeatedValue: 0)
         for y in 0..<height {
             for x in 0..<width {
                 let dist = inData[y * width + x]
-                let clampDist = fmax(-normalizationFactor, fmin(dist, normalizationFactor))
-                let scaledDist = clampDist / normalizationFactor
-                let value = UInt8((scaledDist + 1) / 2) * UInt8.max
-                outData[y * width + x] = value
+                let clampDist = max(-normalizationFactor, min(dist, normalizationFactor))
+                let scaledDist = Float(clampDist) / normalizationFactor
+                let value = ((scaledDist + 1) / 2) * Float(UInt8.max)
+                outData[y * width + x] = UInt8(UInt16(value))
             }
         }
         return outData
@@ -460,7 +460,7 @@ public class FontAtlas {
         
         // Quantize the downsampled distance field into an 8-bit grayscale array suitable for use as a texture
         _textureData = createQuantizedDistanceField(
-            distanceField: distanceField,//scaledField,
+            distanceField: scaledField,
             width: textureSize,
             height: textureSize,
             normalizationFactor: spread
