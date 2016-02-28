@@ -14,6 +14,10 @@ import AppKit
 // This is the size at which the font atlas will be generated, ideally a large power of two. Even though
 // we later downscale the distance field, it's better to render it at as high a resolution as possible in
 // order to capture all of the fine details.
+
+// Cache
+private var _cache = [String: FontAtlas]()
+
 let MBEFontAtlasSize = 4096
 
 let MBEGlyphIndexKey = "glyphIndex"
@@ -30,27 +34,27 @@ let MBEGlyphDescriptorsKey = "glyphDescriptors"
 
 public class FontAtlas {
 
-    private var _parentFont: CTFont
+    private (set) var parentFont: CTFont
     
     private var _fontPointSize: Int
 
     private (set) var spread: Float = 0.0
     
-    let textureSize: Int
+    private let _textureSize: Int
     
     internal var glyphDescriptors = [GlyphDescriptor]()
     
-    private var _textureData = [UInt8]()
+    private (set) var textureData = [UInt8]()
     
-    var MBE_GENERATE_DEBUG_ATLAS_IMAGE = true
+    private var MBE_GENERATE_DEBUG_ATLAS_IMAGE = true
 
     /// Create a signed-distance field based font atlas with the specified dimensions.
     /// The supplied font will be resized to fit all available glyphs in the texture.
-    public init (font: String, pointSize: CGFloat, textureSize: Int) {
-        _parentFont = CTFontCreateWithName(font, pointSize, nil)
+    private init (font: String, pointSize: Float, textureSize: Int = MBEFontAtlasSize) {
+        parentFont = CTFontCreateWithName(font, CGFloat(pointSize), nil)
         _fontPointSize = Int(ceilf(Float(pointSize)))
-        self.textureSize = textureSize
-        spread = estimatedLineWidthForFont(_parentFont) * 0.5
+        _textureSize = textureSize
+        spread = estimatedLineWidthForFont(parentFont) * 0.5
         createTextureData()
     }
 /*
@@ -116,7 +120,7 @@ public class FontAtlas {
             return YES;
         }*/
     
-    func estimatedGlyphSizeForFont (font: CTFont) -> CGSize {
+    private func estimatedGlyphSizeForFont (font: CTFont) -> CGSize {
     
         let exemplarString = "{ǺOJMQYZa@jmqyw"
         
@@ -135,7 +139,7 @@ public class FontAtlas {
         return CGSizeMake(averageGlyphWidth, maxGlyphHeight)
     }
     
-    func estimatedLineWidthForFont (font: CTFont) -> Float {
+    private func estimatedLineWidthForFont (font: CTFont) -> Float {
         
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), "!")
@@ -152,7 +156,7 @@ public class FontAtlas {
     private func isLikelyToFitInAtlasRect (rect: CGRect, forFont font: CTFont, atSize size: Int) -> Bool {
         
         let textureArea = Float(rect.size.width * rect.size.height)
-        let trialFont = CTFontCreateCopyWithAttributes(_parentFont, CGFloat(size), nil, nil)
+        let trialFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(size), nil, nil)
         let fontGlyphCount = CTFontGetGlyphCount(trialFont)
         let glyphMargin = estimatedLineWidthForFont(trialFont)
         let averageGlyphSize = estimatedGlyphSizeForFont(trialFont)
@@ -206,19 +210,19 @@ public class FontAtlas {
         CGContextFillRect(context, CGRectMake(0, 0, fWidth, fHeight))
         
         _fontPointSize = pointSizeThatFits(forFont: font, inAtlasRect: CGRectMake(0, 0, fWidth, fHeight))
-        _parentFont = CTFontCreateCopyWithAttributes(_parentFont, CGFloat(_fontPointSize), nil, nil)
+        parentFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(_fontPointSize), nil, nil)
 
-        let fontGlyphCount = CTFontGetGlyphCount(_parentFont)
+        let fontGlyphCount = CTFontGetGlyphCount(parentFont)
         
-        let glyphMargin = CGFloat(estimatedLineWidthForFont(_parentFont))
+        let glyphMargin = CGFloat(estimatedLineWidthForFont(parentFont))
         
         // Set fill color so that glyphs are solid white
         CGContextSetRGBFillColor(context, 1, 1, 1, 1)
         
         glyphDescriptors.removeAll()
         
-        let fontAscent = CTFontGetAscent(_parentFont)
-        let fontDescent = CTFontGetDescent(_parentFont)
+        let fontAscent = CTFontGetAscent(parentFont)
+        let fontDescent = CTFontGetDescent(parentFont)
         
         var origin = CGPointMake(0, fontAscent)
         var maxYCoordForLine: CGFloat = -1
@@ -226,7 +230,7 @@ public class FontAtlas {
         for glyph in 0..<UInt16(fontGlyphCount) {
             
             var boundingRect = CGRect()
-            CTFontGetBoundingRectsForGlyphs(_parentFont, CTFontOrientation.Horizontal, [glyph], &boundingRect, 1)
+            CTFontGetBoundingRectsForGlyphs(parentFont, CTFontOrientation.Horizontal, [glyph], &boundingRect, 1)
             
             if (origin.x + CGRectGetMaxX(boundingRect) + glyphMargin > fWidth) {
                 origin.x = 0
@@ -243,7 +247,7 @@ public class FontAtlas {
             
             var glyphTransform = CGAffineTransformMake(1, 0, 0, -1, glyphOriginX, glyphOriginY)
             
-            let path = CTFontCreatePathForGlyph(_parentFont, glyph, &glyphTransform)
+            let path = CTFontCreatePathForGlyph(parentFont, glyph, &glyphTransform)
             CGContextAddPath(context, path)
             CGContextFillPath(context)
             
@@ -346,7 +350,7 @@ public class FontAtlas {
                 }
             }
         }
-        /*
+        
         // Backward dead-reckoning pass
         for y in (height-2).stride(through: 1, by: 1) {
             for x in (width-2).stride(through: 1, by: 1) {
@@ -372,7 +376,7 @@ public class FontAtlas {
                 }
             }
         }
-        */
+        
         // Interior distance negation pass; distances outside the figure are considered negative
         for y in 0..<height {
             for x in 0..<width {
@@ -431,15 +435,15 @@ public class FontAtlas {
         return outData
     }
     
-    func createTextureData () {
-        assert(MBEFontAtlasSize >= textureSize, "Requested font atlas texture size (\(MBEFontAtlasSize)) must be smaller than intermediate texture size (\(textureSize))")
+    private func createTextureData () {
+        assert(MBEFontAtlasSize >= _textureSize, "Requested font atlas texture size (\(MBEFontAtlasSize)) must be smaller than intermediate texture size (\(_textureSize))")
     
-        assert(MBEFontAtlasSize % self.textureSize == 0, "Requested font atlas texture size (\(MBEFontAtlasSize)) does not evenly divide intermediate texture size (\(textureSize))")
+        assert(MBEFontAtlasSize % _textureSize == 0, "Requested font atlas texture size (\(MBEFontAtlasSize)) does not evenly divide intermediate texture size (\(_textureSize))")
         
         // Generate an atlas image for the font, resizing if necessary to fit in the specified size.
-        let atlasData = createAtlasForFont(_parentFont, width: MBEFontAtlasSize, height: MBEFontAtlasSize)
+        let atlasData = createAtlasForFont(parentFont, width: MBEFontAtlasSize, height: MBEFontAtlasSize)
         
-        let scaleFactor = MBEFontAtlasSize / self.textureSize
+        let scaleFactor = MBEFontAtlasSize / _textureSize
         
         // Create the signed-distance field representation of the font atlas from the rasterized glyph image.
         let distanceField = createSignedDistanceField(
@@ -456,13 +460,13 @@ public class FontAtlas {
             scaleFactor: scaleFactor
         )
         
-        let spread = estimatedLineWidthForFont(_parentFont) * 0.5
+        let spread = estimatedLineWidthForFont(parentFont) * 0.5
         
         // Quantize the downsampled distance field into an 8-bit grayscale array suitable for use as a texture
-        _textureData = createQuantizedDistanceField(
+        textureData = createQuantizedDistanceField(
             distanceField: scaledField,
-            width: textureSize,
-            height: textureSize,
+            width: _textureSize,
+            height: _textureSize,
             normalizationFactor: spread
         )
         
@@ -471,17 +475,17 @@ public class FontAtlas {
         let alphaInfo = CGImageAlphaInfo.None
         let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
         
-        let bufferLength = textureSize * textureSize * 4
-        let provider = CGDataProviderCreateWithData(nil, _textureData, bufferLength, nil)
+        let bufferLength = _textureSize * _textureSize * 4
+        let provider = CGDataProviderCreateWithData(nil, textureData, bufferLength, nil)
         let bitsPerComponent = 8
         let bitsPerPixel = 8
         let renderingIntent =  CGColorRenderingIntent.RenderingIntentDefault
         
-        let iref = CGImageCreate(textureSize,
-                                 textureSize,
+        let iref = CGImageCreate(_textureSize,
+                                 _textureSize,
                                  bitsPerComponent,
                                  bitsPerPixel,
-                                 textureSize,
+                                 _textureSize,
                                  colorSpace,
                                  bitmapInfo,
                                  provider,   // data provider
@@ -489,9 +493,17 @@ public class FontAtlas {
             true,        // should interpolate
             renderingIntent)
         
-        let image = NSImage(CGImage: iref!, size:NSMakeSize(CGFloat(textureSize), CGFloat(textureSize)))
+        let image = NSImage(CGImage: iref!, size:NSMakeSize(CGFloat(_textureSize), CGFloat(_textureSize)))
         print(image)
     }
     
+    public class func fromCache(fontName font: String, pointSize: Float) -> FontAtlas {
+        if let atlas = _cache["\(font)\(pointSize)"] {
+            return atlas
+        }
+        let atlas = FontAtlas(font: font, pointSize: pointSize)
+        _cache["\(font)\(pointSize)"] = atlas
+        return atlas
+    }
 }
  
