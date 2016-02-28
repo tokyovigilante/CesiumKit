@@ -132,6 +132,61 @@ class PipelineCache {
         return pipeline
     }
     
+    func getRenderPipeline (compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+        
+        let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
+        
+        if let pipeline = _pipelines[keyword] {
+            //pipeline.count++
+            print("cached")
+            return pipeline
+        }
+        
+        guard let shader = ShaderProgram(
+            device: device,
+            compiledMetalVertexName: vertex,
+            compiledMetalFragmentName: fragment,
+            keyword: keyword
+            ) else { return nil }
+        /*
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        let color = pipelineDescriptor.colorAttachments[0]
+        
+        pipelineDescriptor.vertexFunction = shader.metalVertexFunction
+        pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
+        
+        color.pixelFormat = context.view.colorPixelFormat
+        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.All
+        color.writeMask = colorWriteMask
+        
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        
+        if let blendingState = blendingState {
+            color.blendingEnabled = true
+            color.rgbBlendOperation = blendingState.equationRgb.toMetal()
+            color.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
+            color.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
+            
+            color.alphaBlendOperation = blendingState.equationAlpha.toMetal()
+            color.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
+            color.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
+        }
+        
+        
+        pipelineDescriptor.vertexDescriptor = descriptor?.metalDescriptor
+        
+        pipelineDescriptor.label = keyword
+        
+        let pipeline = RenderPipeline(device: device, shaderProgram: shader, descriptor: pipelineDescriptor)
+        pipeline.blendingState = blendingState
+        
+        _pipelines[keyword] = pipeline
+        pipeline.count += 1
+        return pipeline*/
+        return nil
+    }
+    
     /**
     * Decrements a shader's reference count. The shader's deinit function
     * will automatically release the GL resources the program uses once 

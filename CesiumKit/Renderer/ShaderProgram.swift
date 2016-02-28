@@ -11,16 +11,6 @@ import Metal
 import GLSLOptimizer
 import simd
 
-/*struct VertexAttributeInfo {
-    
-    var name: String = ""
-    
-    var type: GLenum = 0
-    
-    var index: GLenum = 0
-        
-}*/
-
 class ShaderProgram {
     
     var _logShaderCompilation: Bool = false
@@ -33,9 +23,9 @@ class ShaderProgram {
     * @type {ShaderSource}
     * @readonly
     */
-    let vertexShaderSource: ShaderSource
+    let vertexShaderSource: ShaderSource!
     
-    private let _vertexShaderText: String
+    private let _vertexShaderText: String!
     
     private var _vertexShader: GLSLShader!
     
@@ -55,9 +45,9 @@ class ShaderProgram {
     * @type {ShaderSource}
     * @readonly
     */
-    let fragmentShaderSource: ShaderSource
+    let fragmentShaderSource: ShaderSource!
     
-    private let _fragmentShaderText: String
+    private let _fragmentShaderText: String!
     
     private var _fragmentShader: GLSLShader!
 
@@ -90,6 +80,15 @@ class ShaderProgram {
     
     var maximumTextureUnitIndex: Int = 0
     
+    let nativeMetalUniforms: Bool
+    
+    static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
+        let vst = vss.createCombinedVertexShader()
+        let fst = fss.createCombinedFragmentShader()
+        let keyword = vst + fst
+        return (vst, fst, keyword)
+    }
+    
     init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, combinedShaders: (vst: String, fst: String, keyword: String)) {
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
@@ -97,14 +96,33 @@ class ShaderProgram {
         _vertexShaderText = combinedShaders.vst
         _fragmentShaderText = combinedShaders.fst
         keyword = combinedShaders.keyword
+        nativeMetalUniforms = false
         initialize(device, optimizer: optimizer)
     }
-    
-    static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
-        let vst = vss.createCombinedVertexShader()
-        let fst = fss.createCombinedFragmentShader()
-        let keyword = vst + fst
-        return (vst, fst, keyword)
+
+    init? (device: MTLDevice,compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, keyword: String) {
+
+        guard let defaultLibrary = device.newDefaultLibrary() else {
+            assertionFailure("Could not get default library")
+            return nil
+        }
+        guard let metalVertexFunction = defaultLibrary.newFunctionWithName(vertex) else {
+            assertionFailure("No vertex function found for \(vertex)")
+            return nil
+        }
+        self.metalVertexFunction = metalVertexFunction
+        guard let metalFragmentFunction = defaultLibrary.newFunctionWithName(fragment) else {
+            assertionFailure("No fragment function found for \(fragment)")
+            return nil
+        }
+        self.metalFragmentFunction = metalFragmentFunction
+        
+        vertexShaderSource = nil
+        _vertexShaderText = nil
+        fragmentShaderSource = nil
+        _fragmentShaderText = nil
+        nativeMetalUniforms = true
+        self.keyword = keyword
     }
     
     private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
@@ -257,6 +275,8 @@ class ShaderProgram {
     private let nullUniformMap = NullUniformMap()
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+        
+        assert(nativeMetalUniforms == false, "cannot set uniforms for non-GLSL shaders")
         
         let buffer = command.uniformBufferProvider.nextBuffer()
         let map = command.uniformMap ?? nullUniformMap
