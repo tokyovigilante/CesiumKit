@@ -47,9 +47,10 @@ extension CGImage {
         //Extract info for your image
         let width = CGImageGetWidth(self)
         let height = CGImageGetHeight(self)
-        let bytesPerPixel: Int = 4
+        let bppRaw = CGImageGetBitsPerPixel(self)
+        let bytesPerPixel = bppRaw == 24 ? 4 : bppRaw / 8
         let bytesPerRow = bytesPerPixel * width
-        let bitsPerComponent = 8
+        let bitsPerComponent = CGImageGetBitsPerComponent(self)
         
         
         let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None

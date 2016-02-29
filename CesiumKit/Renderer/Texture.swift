@@ -141,7 +141,7 @@ public class Texture {
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        self.sampler = _defaultSampler ?? _defaultSampler
+        self.sampler = options.sampler ?? _defaultSampler
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
@@ -190,9 +190,9 @@ public class Texture {
          if let source = source {
             switch source {
             case .Buffer(let imagebuffer):
-                // Source: typed array
+                // Source: UInt8 array
                 let region = MTLRegionMake2D(0, 0, imagebuffer.width, imagebuffer.height)
-                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!))
+                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
             case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 let textureData = imageRef.renderToPixelArray(

@@ -16,7 +16,7 @@ import QuartzCore.CAMetalLayer
 */
 
 class Context {
-    
+        
     private var _debug: (
     renderCountThisFrame: Int,
     renderCount: Int
