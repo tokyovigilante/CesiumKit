@@ -586,11 +586,11 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
         
         let a = 2.0 / (right - left)
         let b = 2.0 / (top - bottom)
-        let c = 1.0 / (near - far)
+        let c = 1.0 / (far - near)
         
         let tx = (right + left) / (left - right)
         let ty = (top + bottom) / (bottom - top)
-        let tz = near / (near - far)
+        let tz = near / (far - near)
         
         return Matrix4(
             a, 0.0, 0.0, tx,
