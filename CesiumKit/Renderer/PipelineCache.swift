@@ -132,7 +132,7 @@ class PipelineCache {
         return pipeline
     }
     
-    func getRenderPipeline (compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+    func getRenderPipeline (compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
@@ -146,9 +146,10 @@ class PipelineCache {
             device: device,
             compiledMetalVertexName: vertex,
             compiledMetalFragmentName: fragment,
+            uniformStructSize: uniformStructSize,
             keyword: keyword
             ) else { return nil }
-        /*
+        
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         let color = pipelineDescriptor.colorAttachments[0]
         
@@ -183,8 +184,7 @@ class PipelineCache {
         
         _pipelines[keyword] = pipeline
         pipeline.count += 1
-        return pipeline*/
-        return nil
+        return pipeline
     }
     
     /**

@@ -7,11 +7,18 @@
 //
 
 import Foundation
+import simd
 
 /**
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code in Moore (2012).
  */
+
+private struct TextUniforms {
+    var modelMatrix: float4x4 = Matrix4.identity.floatRepresentation
+    var viewProjectionMatrix: float4x4 = Matrix4.identity.floatRepresentation
+    var foregroundColor: float4 = Color().floatRepresentation
+}
 
 class TextRenderer {
     
@@ -33,44 +40,77 @@ class TextRenderer {
     
     private let _rectangle: BoundingRectangle
     
-    init (string: String, fontName: String, color: Color, pointSize: Float, rectangle: BoundingRectangle) {
+    private var _rs: RenderState! = nil
+    
+    private var _uniforms = TextUniforms()
+    
+    init (context: Context, string: String, fontName: String, color: Color, pointSize: Float, rectangle: BoundingRectangle) {
         
         _string = string
         _pointSize = pointSize
         _rectangle = rectangle
         
-        _fontAtlas = FontAtlas.fromCache(fontName: fontName, pointSize: pointSize)
+        _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
         
-        let map = TextRendererUniformMap()
-        map.color = color
-
-        _command.uniformMap = map
+        _uniforms.foregroundColor = color.floatRepresentation
+        
+        _command.uniformMap = nil
         _command.owner = self
     }
     
-    func update (context: Context, frameState: FrameState) -> DrawCommand? {
+    func update (frameState: FrameState) -> DrawCommand? {
        
         if !show {
             return nil
         }
+        let context = frameState.context
         
+        if _rs == nil || _rs.viewport != _rectangle {
+            _rs = RenderState(
+                device: context.device,
+                viewport : _rectangle
+            )
+            _command.renderState = _rs
+        }
+
         if _command.vertexArray == nil {
             let meshRect = CGRectMake(CGFloat(_rectangle.x), CGFloat(_rectangle.y), CGFloat(_rectangle.width), CGFloat(_rectangle.height))
             _command.vertexArray = buildMesh(context, string: _string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
             
-            _command.renderState = RenderState(
-                device: context.device,
-                cullFace: .Front
-            )
+            _command.renderState = _rs
             
              _command.pipeline = RenderPipeline.withCompiledShader(
                 context,
                 compiledMetalVertexName: "text_vertex_shade",
                 compiledMetalFragmentName: "text_fragment_shade",
+                uniformStructSize: strideof(TextUniforms),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: false
+                depthStencil: context.depthTexture
             )
+            
+            _command.metalUniformUpdateBlock = { (buffer: Buffer) in
+                /*CGSize drawableSize = self.layer.drawableSize;
+                
+                MBEUniforms uniforms;
+                
+                vector_float3 translation = { self.textTranslation.x, self.textTranslation.y, 0 };
+                vector_float3 scale = { self.textScale, self.textScale, 1 };
+                matrix_float4x4 modelMatrix = matrix_multiply(matrix_translation(translation), matrix_scale(scale));
+                uniforms.modelMatrix = modelMatrix;
+                 
+                */
+                //matrix_float4x4 projectionMatrix = matrix_orthographic_projection(0, drawableSize.width, 0, drawableSize.height);
+                self._uniforms.viewProjectionMatrix = frameState.context.uniformState.viewportOrthographic.floatRepresentation
+                
+                
+                /*uniforms.foregroundColor = MBETextColor;*/
+                
+                memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
+
+                return [self._fontAtlas.texture]
+            }
         }
+        //frameState.commandList.append(_command)
         return _command
     }
     
@@ -87,12 +127,13 @@ class TextRenderer {
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         let frame = CTFramesetterCreateFrame(framesetter, stringRange, rectPath, nil)
         
-        let frameGlyphCount: CFIndex = (CTFrameGetLines(frame) as! [CTLine]).reduce(0, combine: { $0 + CTLineGetGlyphCount($1) })
-        //let lines = CTFrameGetLines(frame) as! [CTLine]
+        //let frameGlyphCount: CFIndex = (CTFrameGetLines(frame) as! [CTLine]).reduce(0, combine: { $0 + CTLineGetGlyphCount($1) })
+        var frameGlyphCount: CFIndex = 0
+        let lines = (CTFrameGetLines(frame) as NSArray) as! [CTLine]
         
-        /*for line in lines {
-         frameGlyphCount += CTLineGetGlyphCount(lineObject)
-         }*/
+        for line in lines {
+         frameGlyphCount += CTLineGetGlyphCount(line)
+         }
         
         let vertexCount = frameGlyphCount * 4
 
@@ -172,75 +213,55 @@ class TextRenderer {
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
     }
     
-}
+    
+    func enumerateGlyphsInFrame (frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
+        
+        let entire = CFRangeMake(0, 0)
+        
+        let framePath = CTFrameGetPath(frame)
+        let frameBoundingRect = CGPathGetPathBoundingBox(framePath)
+        
+        let lines = (CTFrameGetLines(frame) as NSArray) as! [CTLine]
+        
+        var lineOriginBuffer = [CGPoint](count: lines.count, repeatedValue: CGPoint())
+        CTFrameGetLineOrigins(frame, entire, &lineOriginBuffer)
+        
+        var glyphIndexInFrame: CFIndex = 0
+        
+        //UIGraphicsBeginImageContext(CGSizeMake(1, 1))
+        //CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        for (lineIndex, line) in lines.enumerate() {
+            let lineOrigin = lineOriginBuffer[lineIndex]
+            
+            let runs = (CTLineGetGlyphRuns(line) as NSArray) as! [CTRun]
+            
+            for run in runs {
+                
+                let glyphCount = CTRunGetGlyphCount(run)
+                
+                var glyphBuffer = [CGGlyph](count: glyphCount, repeatedValue: 0)
+                CTRunGetGlyphs(run, entire, &glyphBuffer);
+                
+                var positionBuffer = [CGPoint](count: glyphCount, repeatedValue: CGPoint())
+                CTRunGetPositions(run, entire, &positionBuffer);
+                
+                for glyphIndex in 0..<glyphCount {
+                    
+                    let glyph = glyphBuffer[glyphIndex]
+                    let glyphOrigin = positionBuffer[glyphIndex]
+                    var glyphRect = CTRunGetImageBounds(run, nil, CFRangeMake(glyphIndex, 1))
+                    let boundsTransX = frameBoundingRect.origin.x + lineOrigin.x
+                    let boundsTransY = CGRectGetHeight(frameBoundingRect) + frameBoundingRect.origin.y - lineOrigin.y + glyphOrigin.y
+                    let pathTransform = CGAffineTransformMake(1, 0, 0, -1, boundsTransX, boundsTransY)
+                    glyphRect = CGRectApplyAffineTransform(glyphRect, pathTransform)
+                    block(glyph: glyph, glyphIndex: glyphIndexInFrame, glyphBounds: glyphRect)
+                    
+                    glyphIndexInFrame += 1
 
-private class TextRendererUniformMap: UniformMap {
-    
-    private var color = Color()
-    
-    let uniforms: [String: UniformFunc] = [
-                                              
-        "u_color": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! TextRendererUniformMap).color.simdType], sizeof(Float))
+                }
+            }
         }
-    ]
+    }
     
-}
-
-
-func enumerateGlyphsInFrame (frame: CTFrame, usingBlock: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
-    /*if (!block)
-    return;
-    
-    CFRange entire = CFRangeMake(0, 0);
-    
-    CGPathRef framePath = CTFrameGetPath(frame);
-    CGRect frameBoundingRect = CGPathGetPathBoundingBox(framePath);
-    
-    NSArray *lines = (__bridge id)CTFrameGetLines(frame);
-    
-    CGPoint *lineOriginBuffer = malloc(lines.count * sizeof(CGPoint));
-    CTFrameGetLineOrigins(frame, entire, lineOriginBuffer);
-    
-    __block CFIndex glyphIndexInFrame = 0;
-    
-    UIGraphicsBeginImageContext(CGSizeMake(1, 1));
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    [lines enumerateObjectsUsingBlock:^(id lineObject, NSUInteger lineIndex, BOOL *stop) {
-        CTLineRef line = (__bridge CTLineRef)lineObject;
-        CGPoint lineOrigin = lineOriginBuffer[lineIndex];
-        
-        NSArray *runs = (__bridge id)CTLineGetGlyphRuns(line);
-        [runs enumerateObjectsUsingBlock:^(id runObject, NSUInteger rangeIndex, BOOL *stop) {
-        CTRunRef run = (__bridge CTRunRef)runObject;
-        
-        size_t glyphCount = CTRunGetGlyphCount(run);
-        
-        CGGlyph *glyphBuffer = malloc(glyphCount * sizeof(CGGlyph));
-        CTRunGetGlyphs(run, entire, glyphBuffer);
-        
-        CGPoint *positionBuffer = malloc(glyphCount * sizeof(CGPoint));
-        CTRunGetPositions(run, entire, positionBuffer);
-        
-        for (size_t glyphIndex = 0; glyphIndex < glyphCount; ++glyphIndex)
-        {
-        CGGlyph glyph = glyphBuffer[glyphIndex];
-        CGPoint glyphOrigin = positionBuffer[glyphIndex];
-        CGRect glyphRect = CTRunGetImageBounds(run, context, CFRangeMake(glyphIndex, 1));
-        CGFloat boundsTransX = frameBoundingRect.origin.x + lineOrigin.x;
-        CGFloat boundsTransY = CGRectGetHeight(frameBoundingRect) + frameBoundingRect.origin.y - lineOrigin.y + glyphOrigin.y;
-        CGAffineTransform pathTransform = CGAffineTransformMake(1, 0, 0, -1, boundsTransX, boundsTransY);
-        glyphRect = CGRectApplyAffineTransform(glyphRect, pathTransform);
-        block(glyph, glyphIndexInFrame, glyphRect);
-        
-        ++glyphIndexInFrame;
-        }
-        
-        free(positionBuffer);
-        free(glyphBuffer);
-        }];
-        }];
-    
-    UIGraphicsEndImageContext();*/
 }

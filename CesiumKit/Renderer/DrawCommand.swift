@@ -105,6 +105,8 @@ class DrawCommand: Command {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))? = nil
+    
     /**
     * The framebuffer to draw to.
     *

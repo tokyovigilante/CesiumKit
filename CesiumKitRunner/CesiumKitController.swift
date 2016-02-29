@@ -21,7 +21,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     private let _fontName = "HelveticaNeue"
     private let _fontSize: Float = 36
     
-    private var _fontAtlas: FontAtlas
+    //private var _fontAtlas: FontAtlas
     
     init (view: MTKView) {
         
@@ -61,7 +61,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000), heading: 0, pitch: 0, roll: 0)
         //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
-        var fontAtlas: FontAtlas? = nil
+        /*var fontAtlas: FontAtlas? = nil
         /*#if !MBE_FORCE_REGENERATE_FONT_ATLAS
          _fontAtlas = [NSKeyedUnarchiver unarchiveObjectWithFile:fontURL.path];
          #endif*/
@@ -74,7 +74,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             _fontAtlas = fontAtlas!
         }
         
-        /*
+        
          MTLTextureDescriptor *textureDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm
          width:MBEFontAtlasSize
          height:MBEFontAtlasSize
