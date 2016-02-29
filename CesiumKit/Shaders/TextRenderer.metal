@@ -11,13 +11,13 @@ using namespace metal;
 
 struct Vertex
 {
-    packed_float4 position;
-    packed_float2 texCoords;
+    float4 position [[ attribute(0) ]];
+    float2 texCoords [[ attribute(1) ]];
 };
 
 struct TransformedVertex
 {
-    float4 position [[position]];
+    float4 position [[ position ]];
     float2 texCoords;
 };
 
@@ -28,13 +28,11 @@ struct Uniforms
     float4 foregroundColor;
 };
 
-vertex TransformedVertex text_vertex_shade(constant Vertex *vertices [[buffer(0)]],
-                                      constant Uniforms &uniforms [[buffer(1)]],
-                                      uint vid [[vertex_id]])
+vertex TransformedVertex text_vertex_shade(Vertex inVert [[stage_in]], constant Uniforms &uniforms [[buffer(0)]])
 {
     TransformedVertex outVert;
-    outVert.position = uniforms.viewProjectionMatrix * uniforms.modelMatrix * float4(vertices[vid].position);
-    outVert.texCoords = vertices[vid].texCoords;
+    outVert.position = uniforms.viewProjectionMatrix * uniforms.modelMatrix * float4(inVert.position);
+    outVert.texCoords = inVert.texCoords;
     return outVert;
 }
 
