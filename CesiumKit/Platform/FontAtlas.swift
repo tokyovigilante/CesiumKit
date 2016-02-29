@@ -9,6 +9,8 @@
 import Foundation
 import CoreGraphics
 import CoreText
+
+// FIXME: Debug
 import AppKit
 
 // This is the size at which the font atlas will be generated, ideally a large power of two. Even though
@@ -32,7 +34,7 @@ let MBETextureDataKey = "textureData"
 let MBETextureWidthKey = "textureWidth"
 let MBEGlyphDescriptorsKey = "glyphDescriptors"
 
-public class FontAtlas {
+class FontAtlas {
 
     private (set) var parentFont: CTFont
     
@@ -44,18 +46,21 @@ public class FontAtlas {
     
     internal var glyphDescriptors = [GlyphDescriptor]()
     
-    private (set) var textureData = [UInt8]()
+    private var _textureData = [UInt8]()
+    
+    private (set) var texture: Texture! = nil
     
     private var MBE_GENERATE_DEBUG_ATLAS_IMAGE = true
 
     /// Create a signed-distance field based font atlas with the specified dimensions.
     /// The supplied font will be resized to fit all available glyphs in the texture.
-    private init (font: String, pointSize: Float, textureSize: Int = MBEFontAtlasSize) {
+    private init (context: Context, font: String, pointSize: Float, textureSize: Int = MBEFontAtlasSize) {
         parentFont = CTFontCreateWithName(font, CGFloat(pointSize), nil)
         _fontPointSize = Int(ceilf(Float(pointSize)))
         _textureSize = textureSize
         spread = estimatedLineWidthForFont(parentFont) * 0.5
         createTextureData()
+        createTexture(context)
     }
 /*
     - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -463,7 +468,7 @@ public class FontAtlas {
         let spread = estimatedLineWidthForFont(parentFont) * 0.5
         
         // Quantize the downsampled distance field into an 8-bit grayscale array suitable for use as a texture
-        textureData = createQuantizedDistanceField(
+        _textureData = createQuantizedDistanceField(
             distanceField: scaledField,
             width: _textureSize,
             height: _textureSize,
@@ -476,7 +481,7 @@ public class FontAtlas {
         let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
         
         let bufferLength = _textureSize * _textureSize * 4
-        let provider = CGDataProviderCreateWithData(nil, textureData, bufferLength, nil)
+        let provider = CGDataProviderCreateWithData(nil, _textureData, bufferLength, nil)
         let bitsPerComponent = 8
         let bitsPerPixel = 8
         let renderingIntent =  CGColorRenderingIntent.RenderingIntentDefault
@@ -497,11 +502,27 @@ public class FontAtlas {
         print(image)
     }
     
-    public class func fromCache(fontName font: String, pointSize: Float) -> FontAtlas {
+    func createTexture (context: Context) {
+        let imageBuffer = Imagebuffer(
+            array: _textureData,
+            width: _textureSize,
+            height: _textureSize,
+            bytesPerPixel: 1)
+        let source: TextureSource = .Buffer(imageBuffer)
+        let sampler = Sampler(context: context, wrapS: .ClampToZero, wrapT: .ClampToZero)
+        let options = TextureOptions(
+            source: source,
+            pixelFormat: .R8Unorm,
+            usage: TextureUsage.ShaderRead,
+            sampler: sampler)
+        texture = Texture(context: context, options: options)
+    }
+    
+    class func fromCache(context: Context, fontName font: String, pointSize: Float) -> FontAtlas {
         if let atlas = _cache["\(font)\(pointSize)"] {
             return atlas
         }
-        let atlas = FontAtlas(font: font, pointSize: pointSize)
+        let atlas = FontAtlas(context: context, font: font, pointSize: pointSize)
         _cache["\(font)\(pointSize)"] = atlas
         return atlas
     }
