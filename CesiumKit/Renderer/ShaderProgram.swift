@@ -11,6 +11,8 @@ import Metal
 import GLSLOptimizer
 import simd
 
+private var _shaderLibrary: MTLLibrary! = nil
+
 class ShaderProgram {
     
     var _logShaderCompilation: Bool = false
@@ -100,22 +102,43 @@ class ShaderProgram {
         initialize(device, optimizer: optimizer)
     }
 
-    init? (device: MTLDevice,compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, keyword: String) {
+    init? (device: MTLDevice,compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
 
-        guard let defaultLibrary = device.newDefaultLibrary() else {
+        /*guard let defaultLibrary = device.newDefaultLibrary() else {
             assertionFailure("Could not get default library")
             return nil
+        }*/
+        if _shaderLibrary == nil {
+            guard let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") else {
+                print("Could not find CesiumKit bundle in executable")
+                return nil
+            }
+            guard let libraryURL = bundle.URLForResource("TextRenderer", withExtension: "metallib") else {
+                print("Could not find compiled shader library from bundle")
+                return nil
+            }
+            do {
+                _shaderLibrary = try device.newLibraryWithFile(libraryURL.absoluteString)
+            } catch let error as NSError {
+                print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
+                return nil
+            }
         }
-        guard let metalVertexFunction = defaultLibrary.newFunctionWithName(vertex) else {
-            assertionFailure("No vertex function found for \(vertex)")
+        let funcs = _shaderLibrary.functionNames
+        print(funcs)
+        guard let metalVertexFunction = _shaderLibrary.newFunctionWithName(vertex) else {
+            print("No vertex function found for \(vertex)")
             return nil
         }
         self.metalVertexFunction = metalVertexFunction
-        guard let metalFragmentFunction = defaultLibrary.newFunctionWithName(fragment) else {
-            assertionFailure("No fragment function found for \(fragment)")
+        guard let metalFragmentFunction = _shaderLibrary.newFunctionWithName(fragment) else {
+            print("No fragment function found for \(fragment)")
             return nil
         }
         self.metalFragmentFunction = metalFragmentFunction
+        
+        vertexUniformSize = uniformStructSize
+        fragmentUniformSize = 0
         
         vertexShaderSource = nil
         _vertexShaderText = nil
@@ -276,9 +299,13 @@ class ShaderProgram {
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
-        assert(nativeMetalUniforms == false, "cannot set uniforms for non-GLSL shaders")
-        
         let buffer = command.uniformBufferProvider.nextBuffer()
+
+        if  nativeMetalUniforms {
+            let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
+            return (buffer: buffer, fragmentOffset: 0, texturesValid: true, textures: textures)
+        }
+        
         let map = command.uniformMap ?? nullUniformMap
         for uniform in _vertexUniforms {
             setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
