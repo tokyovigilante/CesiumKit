@@ -253,7 +253,7 @@ class TextRenderer {
                     var glyphRect = CTRunGetImageBounds(run, nil, CFRangeMake(glyphIndex, 1))
                     let boundsTransX = frameBoundingRect.origin.x + lineOrigin.x
                     let boundsTransY = CGRectGetHeight(frameBoundingRect) + frameBoundingRect.origin.y - lineOrigin.y + glyphOrigin.y
-                    let pathTransform = CGAffineTransformMake(1, 0, 0, -1, boundsTransX, boundsTransY)
+                    let pathTransform = CGAffineTransformMake(1, 0, 0, 1, boundsTransX, boundsTransY)
                     glyphRect = CGRectApplyAffineTransform(glyphRect, pathTransform)
                     block(glyph: glyph, glyphIndex: glyphIndexInFrame, glyphBounds: glyphRect)
                     

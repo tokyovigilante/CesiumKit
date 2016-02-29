@@ -385,8 +385,13 @@ public class BingMapsImageryProvider: ImageryProvider {
         //var metadataError;
         
         let metadataSuccess = { (data: NSData) -> () in
-            let metadata = JSON(data: data)
-            let resource = metadata["resourceSets"][0]["resources"][0]
+            do {
+                let metadata = try JSON.decode(data, strict: true)
+            } catch {
+                print("Bing metadata decode failed - invalid JSON")
+                return
+            }
+            /*let resource = metadata["resourceSets"][0]["resources"][0]
             self._tileWidth = resource["imageWidth"].intValue
             self._tileHeight = resource["imageHeight"].intValue
             self._maximumLevel = resource["zoomMax"].intValue - 1
@@ -649,7 +654,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     */
     func buildImageUrl(x x: Int, y: Int, level: Int) -> String {
-        var imageUrl = _imageUrlTemplate! // _ready already checked
+        assertionFailure()
+        return ""
+/*        var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
@@ -664,7 +671,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         imageUrl = proxy.getURL(imageUrl);
         }
         */
-        return imageUrl
+        return imageUrl*/
     }
     /*
     var intersectionScratch = new Rectangle();

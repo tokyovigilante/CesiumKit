@@ -186,8 +186,13 @@ class CesiumTerrainProvider: TerrainProvider {
         
         let metadataSuccess = { (data: NSData) in
             
-            let metadata = JSON(data: data)
-            
+            do {
+                let metadata = try JSON.decode(data, strict: true)
+            } catch {
+                print("invalid JSON from terrain provider")
+                return
+            }
+            /*
             var message: String? = nil
 
             if metadata["format"].string == nil {
@@ -268,7 +273,7 @@ class CesiumTerrainProvider: TerrainProvider {
             dispatch_async(dispatch_get_main_queue(), {
                 self.ready = true
             })
-            //that._readyPromise.resolve(true);
+            //that._readyPromise.resolve(true);*/
         }
      
         let metadataFailure = { (data: NSData) in
@@ -726,11 +731,11 @@ class CesiumTerrainProvider: TerrainProvider {
         let levelAvailable = _availableTiles.array![childLevel]
         
         var mask = 0
-        
+        assertionFailure()/*
         mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y) ? 1 : 0
         mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y) ? 2 : 0
         mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y + 1) ? 4 : 0
-        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0
+        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0*/
         
         return mask
     }
@@ -739,11 +744,12 @@ class CesiumTerrainProvider: TerrainProvider {
         guard let levelAvailable = levelAvailable else {
             return false
         }
+        assertionFailure()/*
         for range in levelAvailable {
             if x >= range["startX"].intValue && x <= range["endX"].intValue && y >= range["startY"].intValue && y <= range["endY"].intValue {
                 return true
             }
-        }
+        }*/
         return false
     }
     /*

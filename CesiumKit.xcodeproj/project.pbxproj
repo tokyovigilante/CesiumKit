@@ -382,7 +382,6 @@
 		9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
 		9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
 		9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
-		9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
 		9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
@@ -409,7 +408,6 @@
 		947821031B5A2D7B0095A86F /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		947821041B5A2D7B0095A86F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		947821051B5A2D7B0095A86F /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
-		947821061B5A2D7B0095A86F /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
 		947821071B5A2D7B0095A86F /* BoundingRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC4354194816B8007117F2 /* BoundingRectangle.swift */; };
 		947821081B5A2D7B0095A86F /* BoundingSphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948D03D81944802300DC0E52 /* BoundingSphere.swift */; };
 		947821091B5A2D7B0095A86F /* Cartesian2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BC43561948189A007117F2 /* Cartesian2.swift */; };
@@ -553,7 +551,6 @@
 		94889B881B2857430095A86F /* PipelineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B871B2857430095A86F /* PipelineCache.swift */; };
 		94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94889B891B286E990095A86F /* UniformBufferProvider.swift */; };
 		948BA2B01A99F19A00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
-		948BA2B11A99F1B900FFAD81 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */; };
 		948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		948BA2B31A99F1EB00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
 		948BA2B51A99F20C00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
@@ -615,6 +612,28 @@
 		94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
 		94EFB0381C84D10F0095A86F /* TextRenderer.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 94EFB0371C84D10F0095A86F /* TextRenderer.metallib */; };
 		94EFB0391C84D10F0095A86F /* TextRenderer.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 94EFB0371C84D10F0095A86F /* TextRenderer.metallib */; };
+		94EFB04B1C84D7CD0095A86F /* Accessors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0401C84D7CD0095A86F /* Accessors.swift */; };
+		94EFB04C1C84D7CD0095A86F /* Accessors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0401C84D7CD0095A86F /* Accessors.swift */; };
+		94EFB04D1C84D7CD0095A86F /* DecimalNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0411C84D7CD0095A86F /* DecimalNumber.swift */; };
+		94EFB04E1C84D7CD0095A86F /* DecimalNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0411C84D7CD0095A86F /* DecimalNumber.swift */; };
+		94EFB04F1C84D7CD0095A86F /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0421C84D7CD0095A86F /* Decoder.swift */; };
+		94EFB0501C84D7CD0095A86F /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0421C84D7CD0095A86F /* Decoder.swift */; };
+		94EFB0511C84D7CD0095A86F /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0431C84D7CD0095A86F /* Encoder.swift */; };
+		94EFB0521C84D7CD0095A86F /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0431C84D7CD0095A86F /* Encoder.swift */; };
+		94EFB0551C84D7CD0095A86F /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0451C84D7CD0095A86F /* JSON.swift */; };
+		94EFB0561C84D7CD0095A86F /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0451C84D7CD0095A86F /* JSON.swift */; };
+		94EFB0571C84D7CD0095A86F /* JSONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0461C84D7CD0095A86F /* JSONError.swift */; };
+		94EFB0581C84D7CD0095A86F /* JSONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0461C84D7CD0095A86F /* JSONError.swift */; };
+		94EFB0591C84D7CD0095A86F /* JSONObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0471C84D7CD0095A86F /* JSONObject.swift */; };
+		94EFB05A1C84D7CD0095A86F /* JSONObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0471C84D7CD0095A86F /* JSONObject.swift */; };
+		94EFB05B1C84D7CD0095A86F /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0481C84D7CD0095A86F /* ObjectiveC.swift */; };
+		94EFB05C1C84D7CD0095A86F /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0481C84D7CD0095A86F /* ObjectiveC.swift */; };
+		94EFB05D1C84D7CD0095A86F /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0491C84D7CD0095A86F /* Parser.swift */; };
+		94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0491C84D7CD0095A86F /* Parser.swift */; };
+		94EFB05F1C84D7CD0095A86F /* PMJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 94EFB04A1C84D7CD0095A86F /* PMJSON.h */; };
+		94EFB0601C84D7CD0095A86F /* PMJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 94EFB04A1C84D7CD0095A86F /* PMJSON.h */; };
+		94EFB0621C84DBEC0095A86F /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */; };
+		94EFB0631C84DBEC0095A86F /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
 		94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
@@ -921,7 +940,6 @@
 		9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsStyle.swift; sourceTree = "<group>"; };
 		9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsAPI.swift; sourceTree = "<group>"; };
 		9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverTileDiscardPolicy.swift; sourceTree = "<group>"; };
-		9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Platform/SwiftyJSON.swift; sourceTree = "<group>"; };
 		9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumKitController.swift; path = CesiumKitRunner/CesiumKitController.swift; sourceTree = "<group>"; };
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
 		945B6A991C2577730095A86F /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
@@ -1065,6 +1083,17 @@
 		94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSData+ArrayView.swift"; path = "Platform/NSData+ArrayView.swift"; sourceTree = "<group>"; };
 		94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
 		94EFB0371C84D10F0095A86F /* TextRenderer.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = TextRenderer.metallib; sourceTree = "<group>"; };
+		94EFB0401C84D7CD0095A86F /* Accessors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accessors.swift; sourceTree = "<group>"; };
+		94EFB0411C84D7CD0095A86F /* DecimalNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecimalNumber.swift; sourceTree = "<group>"; };
+		94EFB0421C84D7CD0095A86F /* Decoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoder.swift; sourceTree = "<group>"; };
+		94EFB0431C84D7CD0095A86F /* Encoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Encoder.swift; sourceTree = "<group>"; };
+		94EFB0451C84D7CD0095A86F /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
+		94EFB0461C84D7CD0095A86F /* JSONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONError.swift; sourceTree = "<group>"; };
+		94EFB0471C84D7CD0095A86F /* JSONObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONObject.swift; sourceTree = "<group>"; };
+		94EFB0481C84D7CD0095A86F /* ObjectiveC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
+		94EFB0491C84D7CD0095A86F /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		94EFB04A1C84D7CD0095A86F /* PMJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMJSON.h; sourceTree = "<group>"; };
+		94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONEncodable.swift; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OrientedBoundingBox.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
@@ -1625,6 +1654,7 @@
 		94697D9E1A25C72000FFAD81 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				94EFB03F1C84D7CD0095A86F /* PMJSON */,
 				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
@@ -1634,7 +1664,7 @@
 				94ACB2CE1C364900001A40C8 /* QueueManager.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
-				9455EB841A7CFF3200FFAD81 /* SwiftyJSON.swift */,
+				94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -1752,6 +1782,24 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		94EFB03F1C84D7CD0095A86F /* PMJSON */ = {
+			isa = PBXGroup;
+			children = (
+				94EFB0401C84D7CD0095A86F /* Accessors.swift */,
+				94EFB0411C84D7CD0095A86F /* DecimalNumber.swift */,
+				94EFB0421C84D7CD0095A86F /* Decoder.swift */,
+				94EFB0431C84D7CD0095A86F /* Encoder.swift */,
+				94EFB0451C84D7CD0095A86F /* JSON.swift */,
+				94EFB0461C84D7CD0095A86F /* JSONError.swift */,
+				94EFB0471C84D7CD0095A86F /* JSONObject.swift */,
+				94EFB0481C84D7CD0095A86F /* ObjectiveC.swift */,
+				94EFB0491C84D7CD0095A86F /* Parser.swift */,
+				94EFB04A1C84D7CD0095A86F /* PMJSON.h */,
+			);
+			name = PMJSON;
+			path = Platform/Dependencies/PMJSON/Sources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1760,6 +1808,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				944C5BE91AB70D8700FFAD81 /* CesiumKit.h in Headers */,
+				94EFB05F1C84D7CD0095A86F /* PMJSON.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1767,6 +1816,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94EFB0601C84D7CD0095A86F /* PMJSON.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2164,6 +2214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94EFB0571C84D7CD0095A86F /* JSONError.swift in Sources */,
 				942FC8051C393A810095A86F /* PixelFormat.swift in Sources */,
 				9413B8061A37B94500FFAD81 /* ImageryProvider.swift in Sources */,
 				9413B7CE1A37B93100FFAD81 /* TerrainProvider.swift in Sources */,
@@ -2181,11 +2232,13 @@
 				9413B80A1A37B94500FFAD81 /* PerspectiveFrustum.swift in Sources */,
 				9413B7B11A37B93100FFAD81 /* Geometry.swift in Sources */,
 				9413B7C11A37B93100FFAD81 /* Occluder.swift in Sources */,
+				94EFB0511C84D7CD0095A86F /* Encoder.swift in Sources */,
 				94E5D5A71AC7EAA30095A86F /* IntersectionTests.swift in Sources */,
 				94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */,
 				9413B7B51A37B93100FFAD81 /* HeightmapTerrainData.swift in Sources */,
 				9413B7FF1A37B94500FFAD81 /* GlobeSurfaceShaderSet.swift in Sources */,
 				9469077C1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
+				94EFB05B1C84D7CD0095A86F /* ObjectiveC.swift in Sources */,
 				940240261C1DA0230095A86F /* EllipsoidGeometry.swift in Sources */,
 				9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */,
 				9413B7F51A37B94500FFAD81 /* BingMapsImageryProvider.swift in Sources */,
@@ -2253,15 +2306,16 @@
 				9413B8191A37B94500FFAD81 /* TileDiscardPolicy.swift in Sources */,
 				947E32351BC0D85E001A40C8 /* Plane.swift in Sources */,
 				947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
+				94EFB05D1C84D7CD0095A86F /* Parser.swift in Sources */,
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
 				9498959D1C7DDF340095A86F /* FontAtlas.swift in Sources */,
 				9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */,
 				9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */,
 				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
-				9455EB851A7CFF3200FFAD81 /* SwiftyJSON.swift in Sources */,
 				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
 				9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
+				94EFB0621C84DBEC0095A86F /* JSONEncodable.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
 				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
@@ -2286,6 +2340,7 @@
 				9413B7AE1A37B93100FFAD81 /* Event.swift in Sources */,
 				9413B7FC1A37B94500FFAD81 /* Frustum.swift in Sources */,
 				9413B7D01A37B93100FFAD81 /* TilingScheme.swift in Sources */,
+				94EFB0591C84D7CD0095A86F /* JSONObject.swift in Sources */,
 				942F56BA1C5D6D3A0095A86F /* VerticalOrigin.swift in Sources */,
 				94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */,
 				9413B80E1A37B94500FFAD81 /* QuadtreePrimitive.swift in Sources */,
@@ -2308,6 +2363,7 @@
 				945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */,
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
+				94EFB04B1C84D7CD0095A86F /* Accessors.swift in Sources */,
 				941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 				942A70461BF9DB2E001A40C8 /* DepthPlane.swift in Sources */,
 				9413B8031A37B94500FFAD81 /* Imagery.swift in Sources */,
@@ -2327,9 +2383,11 @@
 				94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */,
 				94889B881B2857430095A86F /* PipelineCache.swift in Sources */,
 				9413B7AB1A37B93100FFAD81 /* EllipsoidalOccluder.swift in Sources */,
+				94EFB04F1C84D7CD0095A86F /* Decoder.swift in Sources */,
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
+				94EFB04D1C84D7CD0095A86F /* DecimalNumber.swift in Sources */,
 				942F56B41C5D6CA90095A86F /* HorizontalOrigin.swift in Sources */,
 				94026EB61C5CDACB001A40C8 /* Label.swift in Sources */,
 				9413B7A71A37B93100FFAD81 /* Clock.swift in Sources */,
@@ -2343,6 +2401,7 @@
 				9413B8011A37B94500FFAD81 /* GlobeSurfaceTileProvider.swift in Sources */,
 				942F56C01C5D856E0095A86F /* MaterialType.swift in Sources */,
 				9413B7EC1A37B93D00FFAD81 /* ShaderProgram.swift in Sources */,
+				94EFB0551C84D7CD0095A86F /* JSON.swift in Sources */,
 				9413B8181A37B94500FFAD81 /* TerrainState.swift in Sources */,
 				9413B80D1A37B94500FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */,
@@ -2366,7 +2425,6 @@
 				947821041B5A2D7B0095A86F /* String.swift in Sources */,
 				947821051B5A2D7B0095A86F /* SwiftRegex.swift in Sources */,
 				9430A9531C8100BC0095A86F /* TextRenderer.metal in Sources */,
-				947821061B5A2D7B0095A86F /* SwiftyJSON.swift in Sources */,
 				945B6A9B1C2577730095A86F /* JulianDate.swift in Sources */,
 				947821071B5A2D7B0095A86F /* BoundingRectangle.swift in Sources */,
 				947821081B5A2D7B0095A86F /* BoundingSphere.swift in Sources */,
@@ -2400,6 +2458,7 @@
 				9478211F1B5A2D7B0095A86F /* Intersectable.swift in Sources */,
 				947821201B5A2D7B0095A86F /* IntersectionTests.swift in Sources */,
 				947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
+				94EFB0501C84D7CD0095A86F /* Decoder.swift in Sources */,
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
 				94E9B5DC1C0170E7001A40C8 /* SceneTransforms.swift in Sources */,
@@ -2427,6 +2486,7 @@
 				947E32361BC0D85E001A40C8 /* Plane.swift in Sources */,
 				947821321B5A2D7B0095A86F /* Spherical.swift in Sources */,
 				949C04321C1AD917001A40C8 /* ClockRange.swift in Sources */,
+				94EFB0561C84D7CD0095A86F /* JSON.swift in Sources */,
 				947821331B5A2D7B0095A86F /* TerrainData.swift in Sources */,
 				947821341B5A2D7B0095A86F /* TerrainMesh.swift in Sources */,
 				947821351B5A2D7B0095A86F /* TerrainProvider.swift in Sources */,
@@ -2465,6 +2525,7 @@
 				947821501B5A2D7C0095A86F /* ShaderProgram.swift in Sources */,
 				947821511B5A2D7C0095A86F /* ShaderSource.swift in Sources */,
 				9430A94B1C80665A0095A86F /* TextRenderer.swift in Sources */,
+				94EFB0631C84DBEC0095A86F /* JSONEncodable.swift in Sources */,
 				949E09F61BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */,
 				947821521B5A2D7C0095A86F /* Texture.swift in Sources */,
 				942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */,
@@ -2496,6 +2557,7 @@
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
 				942F56BE1C5D831B0095A86F /* Material.swift in Sources */,
 				94ACB2D61C364B7F001A40C8 /* QueueManager.swift in Sources */,
+				94EFB04E1C84D7CD0095A86F /* DecimalNumber.swift in Sources */,
 				9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,
@@ -2514,12 +2576,14 @@
 				942F56C11C5D856E0095A86F /* MaterialType.swift in Sources */,
 				942F56BB1C5D6D3A0095A86F /* VerticalOrigin.swift in Sources */,
 				94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
+				94EFB0521C84D7CD0095A86F /* Encoder.swift in Sources */,
 				947821701B5A2D7C0095A86F /* ImageryLayer.swift in Sources */,
 				947821711B5A2D7C0095A86F /* ImageryLayerCollection.swift in Sources */,
 				947821721B5A2D7C0095A86F /* ImageryLayerUniformMap.swift in Sources */,
 				947821731B5A2D7C0095A86F /* ImageryProvider.swift in Sources */,
 				947821741B5A2D7C0095A86F /* ImageryState.swift in Sources */,
 				947821751B5A2D7C0095A86F /* NeverTileDiscardPolicy.swift in Sources */,
+				94EFB0581C84D7CD0095A86F /* JSONError.swift in Sources */,
 				947821761B5A2D7C0095A86F /* OrthographicFrustum.swift in Sources */,
 				947821771B5A2D7C0095A86F /* Pass.swift in Sources */,
 				94145CD01C008BC60095A86F /* PickDepth.swift in Sources */,
@@ -2531,6 +2595,7 @@
 				9478217D1B5A2D7C0095A86F /* QuadtreeTile.swift in Sources */,
 				9478217E1B5A2D7C0095A86F /* QuadtreeTileLoadState.swift in Sources */,
 				94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
+				94EFB04C1C84D7CD0095A86F /* Accessors.swift in Sources */,
 				9478217F1B5A2D7C0095A86F /* QuadtreeTileProvider.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,
@@ -2544,14 +2609,17 @@
 				947821861B5A2D7C0095A86F /* TileCoordinateImageryProvider.swift in Sources */,
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
+				94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
 				940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */,
 				947821891B5A2D7C0095A86F /* TileReplacementQueue.swift in Sources */,
+				94EFB05A1C84D7CD0095A86F /* JSONObject.swift in Sources */,
 				9478218A1B5A2D7C0095A86F /* TileTerrain.swift in Sources */,
 				943416BA1BC8D864001A40C8 /* ComputeCommand.swift in Sources */,
 				9478218B1B5A2D7C0095A86F /* TileUniformMap.swift in Sources */,
 				9478218D1B5A2D7C0095A86F /* Shaders.swift in Sources */,
 				941A28181BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
+				94EFB05C1C84D7CD0095A86F /* ObjectiveC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2635,7 +2703,6 @@
 				9410138E19FB037D00FFAD81 /* CullFace.swift in Sources */,
 				9413B8201A37B94800FFAD81 /* BlendEquation.swift in Sources */,
 				9413113A19F3A09800FFAD81 /* Rectangle.swift in Sources */,
-				948BA2B11A99F1B900FFAD81 /* SwiftyJSON.swift in Sources */,
 				9413B82D1A37B94800FFAD81 /* ImageryLayer.swift in Sources */,
 				9413B7F41A37B93D00FFAD81 /* Uniform.swift in Sources */,
 				948BA2B21A99F1BD00FFAD81 /* SwiftRegex.swift in Sources */,

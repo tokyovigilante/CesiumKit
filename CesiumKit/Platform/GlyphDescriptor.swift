@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 
-struct GlyphDescriptor {
+struct GlyphDescriptor: JSONEncodable {
     
     var glyphIndex: CGGlyph
     
@@ -17,6 +17,26 @@ struct GlyphDescriptor {
     
     var bottomRightTexCoord: CGPoint
     
+    init (glyphIndex: CGGlyph, topLeftTexCoord: CGPoint, bottomRightTexCoord: CGPoint) {
+        self.glyphIndex = glyphIndex
+        self.topLeftTexCoord = topLeftTexCoord
+        self.bottomRightTexCoord = bottomRightTexCoord
+    }
+    
+    init (json: JSONObject) throws {
+        self.glyphIndex = try UInt16(json.getInt("glyphIndex"))
+        self.topLeftTexCoord = try CGPoint(json: json.getObject("topLeftTexCoord"))
+        self.bottomRightTexCoord = try CGPoint(json: json.getObject("bottomRightTexCoord"))
+    }
+    
+    func toJSON() -> JSONObject {
+        let object = JSONObject([
+            "glyphIndex": JSON(integerLiteral: Int64(glyphIndex)),
+            "topLeftTexCoord": JSON.Object(topLeftTexCoord.toJSON()),
+            "bottomRightTexCoord": JSON.Object(bottomRightTexCoord.toJSON())
+        ])
+        return object
+    }
     /*- (instancetype)initWithCoder:(NSCoder *)aDecoder
      {
      if ((self = [super init]))
@@ -39,5 +59,20 @@ struct GlyphDescriptor {
      [aCoder encodeFloat:self.bottomRightTexCoord.x forKey:MBERightTexCoordKey];
      [aCoder encodeFloat:self.bottomRightTexCoord.y forKey:MBEBottomTexCoordKey];
      }*/
+}
+
+extension CGPoint: JSONEncodable {
     
+    init (json: JSONObject) throws {
+        self.x = try CGFloat(json.getDouble("x"))
+        self.y = try CGFloat(json.getDouble("y"))
+    }
+    
+    func toJSON() -> JSONObject {
+        let object = JSONObject([
+            "x": JSON(floatLiteral: Double(x)),
+            "y": JSON(floatLiteral: Double(y))
+            ])
+        return object
+    }
 }

@@ -113,12 +113,12 @@ class ShaderProgram {
                 print("Could not find CesiumKit bundle in executable")
                 return nil
             }
-            guard let libraryURL = bundle.URLForResource("TextRenderer", withExtension: "metallib") else {
+            guard let libraryPath = bundle.URLForResource("TextRenderer", withExtension: "metallib")?.path else {
                 print("Could not find compiled shader library from bundle")
                 return nil
             }
             do {
-                _shaderLibrary = try device.newLibraryWithFile(libraryURL.absoluteString)
+                _shaderLibrary = try device.newLibraryWithFile(libraryPath)
             } catch let error as NSError {
                 print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
                 return nil
