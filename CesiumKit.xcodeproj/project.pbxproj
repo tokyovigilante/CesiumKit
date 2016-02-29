@@ -613,6 +613,8 @@
 		94EB4DA31C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */; };
 		94EB4DA41C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */; };
 		94EF696E1B1AABDE0095A86F /* IndexDatatype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */; };
+		94EFB0381C84D10F0095A86F /* TextRenderer.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 94EFB0371C84D10F0095A86F /* TextRenderer.metallib */; };
+		94EFB0391C84D10F0095A86F /* TextRenderer.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 94EFB0371C84D10F0095A86F /* TextRenderer.metallib */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
 		94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
@@ -1062,6 +1064,7 @@
 		94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshTerrainData.swift; sourceTree = "<group>"; };
 		94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSData+ArrayView.swift"; path = "Platform/NSData+ArrayView.swift"; sourceTree = "<group>"; };
 		94EF696D1B1AABDE0095A86F /* IndexDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexDatatype.swift; sourceTree = "<group>"; };
+		94EFB0371C84D10F0095A86F /* TextRenderer.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = TextRenderer.metallib; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OrientedBoundingBox.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
@@ -1598,6 +1601,7 @@
 		943999451930418C00012DC4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				94EFB0371C84D10F0095A86F /* TextRenderer.metallib */,
 				94E049E919DC0BB000FFAD81 /* Shaders.swift */,
 				9430A9511C8100BC0095A86F /* TextRenderer.metal */,
 			);
@@ -2046,6 +2050,7 @@
 				940659431C1D8AA00095A86F /* 2.jpg in Resources */,
 				940659441C1D8AA00095A86F /* 3.jpg in Resources */,
 				940659451C1D8AA00095A86F /* tilemapresource.xml in Resources */,
+				94EFB0381C84D10F0095A86F /* TextRenderer.metallib in Resources */,
 				940659461C1D8AA00095A86F /* tycho2t3_80_mx.jpg in Resources */,
 				940659471C1D8AA00095A86F /* tycho2t3_80_my.jpg in Resources */,
 				940659481C1D8AA00095A86F /* tycho2t3_80_mz.jpg in Resources */,
@@ -2083,6 +2088,7 @@
 				940962041C15A53C0095A86F /* 1.jpg in Resources */,
 				9409621E1C15A53C0095A86F /* 2.jpg in Resources */,
 				940961E81C15A53C0095A86F /* 0.jpg in Resources */,
+				94EFB0391C84D10F0095A86F /* TextRenderer.metallib in Resources */,
 				940962481C15A53C0095A86F /* tycho2t3_80_pz.jpg in Resources */,
 				940962221C15A53C0095A86F /* 0.jpg in Resources */,
 				940962181C15A53C0095A86F /* 3.jpg in Resources */,
