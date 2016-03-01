@@ -10,7 +10,7 @@ import Foundation
 
 protocol JSONEncodable {
     
-    init (json: JSONObject) throws
+    init (fromJSON json: JSON) throws
     
-    func toJSON () -> JSONObject
+    func toJSON () -> JSON
 }
