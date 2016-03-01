@@ -38,7 +38,8 @@ extension NSData {
         return littleEndian ? result : result.bigEndian
     }
     
-    func getUInt8Array(pos: Int, elementCount: Int) -> [UInt8] {
+    func getUInt8Array(pos: Int = 0, elementCount: Int? = nil) -> [UInt8] {
+        let elementCount = elementCount ?? self.length / strideof(UInt8)
         let arrayByteLength = elementCount * strideof(UInt8)
         assert(self.length >= pos + arrayByteLength, "pos out of bounds")
         var result = [UInt8](count: elementCount, repeatedValue: 0)
@@ -48,7 +49,8 @@ extension NSData {
         return result
     }
     
-    func getUInt16Array(pos: Int, elementCount: Int, littleEndian: Bool = true) -> [UInt16] {
+    func getUInt16Array(pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt16] {
+        let elementCount = elementCount ?? self.length / strideof(UInt16)
         let arrayByteLength = elementCount * strideof(UInt16)
         assert(self.length >= pos + arrayByteLength, "pos out of bounds")
         var result = [UInt16](count: elementCount, repeatedValue: 0)
@@ -58,7 +60,8 @@ extension NSData {
         return littleEndian ? result : result.map({ $0.bigEndian })
     }
     
-    func getUInt32Array(pos: Int, elementCount: Int, littleEndian: Bool = true) -> [UInt32] {
+    func getUInt32Array(pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt32] {
+        let elementCount = elementCount ?? self.length / strideof(UInt32)
         let arrayByteLength = elementCount * strideof(UInt32)
         assert(self.length >= pos + arrayByteLength, "pos out of bounds")
         var result = [UInt32](count: elementCount, repeatedValue: 0)
