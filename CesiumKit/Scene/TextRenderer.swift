@@ -36,7 +36,7 @@ class TextRenderer {
     
     private let _string: String
     
-    private let _pointSize: Float
+    private let _pointSize: Int
     
     private let _rectangle: BoundingRectangle
     
@@ -44,7 +44,7 @@ class TextRenderer {
     
     private var _uniforms = TextUniforms()
     
-    init (context: Context, string: String, fontName: String, color: Color, pointSize: Float, rectangle: BoundingRectangle) {
+    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle) {
         
         _string = string
         _pointSize = pointSize
@@ -114,7 +114,7 @@ class TextRenderer {
         return _command
     }
     
-    private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Float) -> VertexArray
+    private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
     {
         
         let attrString = NSMutableAttributedString(string: string)
