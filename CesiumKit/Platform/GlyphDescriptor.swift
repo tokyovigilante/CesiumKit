@@ -9,6 +9,10 @@
 import Foundation
 import CoreGraphics
 
+private let GlyphIndexKey = "glyphIndex"
+private let TopLeftTexCoordKey = "topLeftTexCoord"
+private let BottomRightTexCoordKey = "bottomRightTexCoord"
+
 struct GlyphDescriptor: JSONEncodable {
     
     var glyphIndex: CGGlyph
@@ -23,56 +27,35 @@ struct GlyphDescriptor: JSONEncodable {
         self.bottomRightTexCoord = bottomRightTexCoord
     }
     
-    init (json: JSONObject) throws {
-        self.glyphIndex = try UInt16(json.getInt("glyphIndex"))
-        self.topLeftTexCoord = try CGPoint(json: json.getObject("topLeftTexCoord"))
-        self.bottomRightTexCoord = try CGPoint(json: json.getObject("bottomRightTexCoord"))
+    init (fromJSON json: JSON) throws {
+        self.glyphIndex = try UInt16(json.getInt(GlyphIndexKey))
+        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(TopLeftTexCoordKey)))
+        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(BottomRightTexCoordKey)))
     }
     
-    func toJSON() -> JSONObject {
-        let object = JSONObject([
-            "glyphIndex": JSON(integerLiteral: Int64(glyphIndex)),
-            "topLeftTexCoord": JSON.Object(topLeftTexCoord.toJSON()),
-            "bottomRightTexCoord": JSON.Object(bottomRightTexCoord.toJSON())
-        ])
-        return object
+    func toJSON() -> JSON {
+        let json = JSON.Object(JSONObject([
+            GlyphIndexKey: JSON(integerLiteral: Int64(glyphIndex)),
+            TopLeftTexCoordKey: topLeftTexCoord.toJSON(),
+            BottomRightTexCoordKey: bottomRightTexCoord.toJSON()
+        ]))
+        return json
     }
-    /*- (instancetype)initWithCoder:(NSCoder *)aDecoder
-     {
-     if ((self = [super init]))
-     {
-     _glyphIndex = [aDecoder decodeIntForKey:MBEGlyphIndexKey];
-     _topLeftTexCoord.x = [aDecoder decodeFloatForKey:MBELeftTexCoordKey];
-     _topLeftTexCoord.y = [aDecoder decodeFloatForKey:MBETopTexCoordKey];
-     _bottomRightTexCoord.x = [aDecoder decodeFloatForKey:MBERightTexCoordKey];
-     _bottomRightTexCoord.y = [aDecoder decodeFloatForKey:MBEBottomTexCoordKey];
-     }
-     
-     return self;
-     }
-     
-     - (void)encodeWithCoder:(NSCoder *)aCoder
-     {
-     [aCoder encodeInt:self.glyphIndex forKey:MBEGlyphIndexKey];
-     [aCoder encodeFloat:self.topLeftTexCoord.x forKey:MBELeftTexCoordKey];
-     [aCoder encodeFloat:self.topLeftTexCoord.y forKey:MBETopTexCoordKey];
-     [aCoder encodeFloat:self.bottomRightTexCoord.x forKey:MBERightTexCoordKey];
-     [aCoder encodeFloat:self.bottomRightTexCoord.y forKey:MBEBottomTexCoordKey];
-     }*/
+    
 }
 
 extension CGPoint: JSONEncodable {
     
-    init (json: JSONObject) throws {
+    init (fromJSON json: JSON) throws {
         self.x = try CGFloat(json.getDouble("x"))
         self.y = try CGFloat(json.getDouble("y"))
     }
     
-    func toJSON() -> JSONObject {
-        let object = JSONObject([
+    func toJSON() -> JSON {
+        let json = JSON.Object(JSONObject([
             "x": JSON(floatLiteral: Double(x)),
             "y": JSON(floatLiteral: Double(y))
-            ])
-        return object
+            ]))
+        return json
     }
 }
