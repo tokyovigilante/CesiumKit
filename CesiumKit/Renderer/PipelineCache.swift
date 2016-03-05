@@ -132,7 +132,7 @@ class PipelineCache {
         return pipeline
     }
     
-    func getRenderPipeline (compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+    func getRenderPipeline (shaderSourceName shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
@@ -144,6 +144,7 @@ class PipelineCache {
         
         guard let shader = ShaderProgram(
             device: device,
+            shaderSourceName: shaderSourceName,
             compiledMetalVertexName: vertex,
             compiledMetalFragmentName: fragment,
             uniformStructSize: uniformStructSize,

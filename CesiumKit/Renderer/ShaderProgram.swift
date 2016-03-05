@@ -11,8 +11,6 @@ import Metal
 import GLSLOptimizer
 import simd
 
-private var _shaderLibrary: MTLLibrary! = nil
-
 class ShaderProgram {
     
     var _logShaderCompilation: Bool = false
@@ -102,36 +100,32 @@ class ShaderProgram {
         initialize(device, optimizer: optimizer)
     }
 
-    init? (device: MTLDevice,compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
+    init? (device: MTLDevice, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
 
-        /*guard let defaultLibrary = device.newDefaultLibrary() else {
-            assertionFailure("Could not get default library")
+        guard let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") else {
+            print("Could not find CesiumKit bundle in executable")
             return nil
-        }*/
-        if _shaderLibrary == nil {
-            guard let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") else {
-                print("Could not find CesiumKit bundle in executable")
-                return nil
-            }
-            guard let libraryPath = bundle.URLForResource("TextRenderer", withExtension: "metallib")?.path else {
-                print("Could not find compiled shader library from bundle")
-                return nil
-            }
-            do {
-                _shaderLibrary = try device.newLibraryWithFile(libraryPath)
-            } catch let error as NSError {
-                print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
-                return nil
-            }
         }
-        let funcs = _shaderLibrary.functionNames
+        guard let libraryPath = bundle.URLForResource("default", withExtension: "metallib")?.path else {
+            print("Could not find shader source from bundle")
+            return nil
+        }
+        let shaderLibrary: MTLLibrary
+        do {
+            shaderLibrary = try device.newLibraryWithFile(libraryPath)
+        } catch let error as NSError {
+            print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
+            return nil
+        }
+        
+        let funcs = shaderLibrary.functionNames
         print(funcs)
-        guard let metalVertexFunction = _shaderLibrary.newFunctionWithName(vertex) else {
+        guard let metalVertexFunction = shaderLibrary.newFunctionWithName(vertex) else {
             print("No vertex function found for \(vertex)")
             return nil
         }
         self.metalVertexFunction = metalVertexFunction
-        guard let metalFragmentFunction = _shaderLibrary.newFunctionWithName(fragment) else {
+        guard let metalFragmentFunction = shaderLibrary.newFunctionWithName(fragment) else {
             print("No fragment function found for \(fragment)")
             return nil
         }

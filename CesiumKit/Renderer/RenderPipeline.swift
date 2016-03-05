@@ -47,8 +47,8 @@ class RenderPipeline {
         return context.pipelineCache.replaceRenderPipeline(pipeline, vertexShaderSource: vss, fragmentShaderSource: fss, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil, blendingState: blendingState)
     }
     
-    static func withCompiledShader(context: Context,  compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor vd: VertexDescriptor?, colorMask: ColorMask? = nil, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
-        return context.pipelineCache.getRenderPipeline(compiledMetalVertexName: vertex, compiledMetalFragmentName: fragment, uniformStructSize: uniformStructSize, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil, blendingState: blendingState)
+    static func withCompiledShader(context: Context, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor vd: VertexDescriptor?, colorMask: ColorMask? = nil, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+        return context.pipelineCache.getRenderPipeline(shaderSourceName: shaderSourceName, compiledMetalVertexName: vertex, compiledMetalFragmentName: fragment, uniformStructSize: uniformStructSize, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil, blendingState: blendingState)
     }
     
     func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
