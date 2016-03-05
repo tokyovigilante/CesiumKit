@@ -137,7 +137,7 @@ class PipelineCache {
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
         if let pipeline = _pipelines[keyword] {
-            //pipeline.count++
+            pipeline.count += 1
             print("cached")
             return pipeline
         }
