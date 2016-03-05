@@ -41,7 +41,7 @@ extension NSData {
     func getUInt8Array(pos: Int = 0, elementCount: Int? = nil) -> [UInt8] {
         let elementCount = elementCount ?? self.length / strideof(UInt8)
         let arrayByteLength = elementCount * strideof(UInt8)
-        assert(self.length >= pos + arrayByteLength, "pos out of bounds")
+        assert(self.length >= pos + arrayByteLength, "requested array out of bounds")
         var result = [UInt8](count: elementCount, repeatedValue: 0)
         result.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<UInt8>) in
             memcpy(pointer.baseAddress, self.bytes + pos, arrayByteLength)
@@ -52,7 +52,7 @@ extension NSData {
     func getUInt16Array(pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt16] {
         let elementCount = elementCount ?? self.length / strideof(UInt16)
         let arrayByteLength = elementCount * strideof(UInt16)
-        assert(self.length >= pos + arrayByteLength, "pos out of bounds")
+        assert(self.length >= pos + arrayByteLength, "requested array out of bounds")
         var result = [UInt16](count: elementCount, repeatedValue: 0)
         result.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<UInt16>) in
             memcpy(pointer.baseAddress, self.bytes + pos, arrayByteLength)
@@ -63,7 +63,7 @@ extension NSData {
     func getUInt32Array(pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt32] {
         let elementCount = elementCount ?? self.length / strideof(UInt32)
         let arrayByteLength = elementCount * strideof(UInt32)
-        assert(self.length >= pos + arrayByteLength, "pos out of bounds")
+        assert(self.length >= pos + arrayByteLength, "requested array out of bounds")
         var result = [UInt32](count: elementCount, repeatedValue: 0)
         result.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<UInt32>) in
             memcpy(pointer.baseAddress, self.bytes + pos, arrayByteLength)
@@ -71,4 +71,10 @@ extension NSData {
         return littleEndian ? result : result.map({ $0.bigEndian })
     }
 
+    class func fromUInt8Array (array: [UInt8]) -> NSData {
+        let arrayCount = array.count
+        let result = NSMutableData(capacity: arrayCount)!
+        result.replaceBytesInRange(NSMakeRange(0, arrayCount), withBytes: array)
+        return NSData(data: result)
+    }
 }

@@ -22,25 +22,40 @@ private var _cache = [String: FontAtlas]()
 
 let MBEFontAtlasSize = 4096
 
-let MBEGlyphIndexKey = "glyphIndex"
-let MBELeftTexCoordKey = "leftTexCoord"
-let MBERightTexCoordKey = "rightTexCoord"
-let MBETopTexCoordKey = "topTexCoord"
-let MBEBottomTexCoordKey = "bottomTexCoord"
-let MBEFontNameKey = "fontName"
-let MBEFontSizeKey = "fontSize"
-let MBEFontSpreadKey = "spread"
-let MBETextureDataKey = "textureData"
-let MBETextureWidthKey = "textureWidth"
-let MBEGlyphDescriptorsKey = "glyphDescriptors"
+private let FontNameKey = "fontName"
+private let PointSizeKey = "pointSize"
+private let FontSpreadKey = "spread"
+private let GlyphDescriptorsKey = "glyphDescriptors"
+private let TextureDataPathKey = "textureDataPath"
+private let TextureSizeKey = "textureSize"
 
-class FontAtlas {
+/// Errors thrown by FontAtlas functions.
+enum FontAtlasError: ErrorType, CustomStringConvertible {
+    /// Thrown when the provided JSON is invalid.
+    /// - Parameter json: The provided JSON.
+    /// - Parameter message: Optional error message.
+    case InvalidJSONError(json: JSON, message: String?)
+
+    /// Thrown when texture data cannot be loaded from file.
+    /// Parameter path: The texture data path.
+    /// - Parameter message: Optional error message.
+    case InvalidTextureDataError(path: String, message: String?)
+    
+    var description: String {
+        switch self {
+            case let .InvalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json))"
+            case let .InvalidTextureDataError(path, message): return "Invalid texture data - \(message): path \(path)"
+        }
+    }
+}
+
+final class FontAtlas: JSONEncodable {
 
     private (set) var parentFont: CTFont
     
     private var _fontPointSize: Int
 
-    private (set) var spread: Float = 0.0
+    private var _spread: Double = 0.0
     
     private let _textureSize: Int
     
@@ -54,61 +69,52 @@ class FontAtlas {
 
     /// Create a signed-distance field based font atlas with the specified dimensions.
     /// The supplied font will be resized to fit all available glyphs in the texture.
-    private init (context: Context, font: String, pointSize: Float, textureSize: Int = MBEFontAtlasSize) {
-        parentFont = CTFontCreateWithName(font, CGFloat(pointSize), nil)
+    private init (context: Context, fontName: String, pointSize: Int, textureSize: Int = MBEFontAtlasSize) {
+        parentFont = CTFontCreateWithName(fontName, CGFloat(pointSize), nil)
         _fontPointSize = Int(ceilf(Float(pointSize)))
         _textureSize = textureSize
-        spread = estimatedLineWidthForFont(parentFont) * 0.5
+        _spread = estimatedLineWidthForFont(parentFont) * 0.5
         createTextureData()
         createTexture(context)
     }
-/*
-    - (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    if ((self = [super init]))
-    {
-        NSString *fontName = [aDecoder decodeObjectForKey:MBEFontNameKey];
-        CGFloat fontSize = [aDecoder decodeFloatForKey:MBEFontSizeKey];
-        CGFloat spread = [aDecoder decodeFloatForKey:MBEFontSpreadKey];
-        
-        if (fontName.length == 0 || fontSize <= 0)
-        {
-            NSLog(@"Encountered invalid persisted font (invalid font name or size). Aborting...");
-            return nil;
-        }
-        
-        _parentFont = [UIFont fontWithName:fontName size:fontSize];
-        _fontPointSize = fontSize;
-        _spread = spread;
-        _glyphDescriptors = [aDecoder decodeObjectForKey:MBEGlyphDescriptorsKey];
-        
-        if (_glyphDescriptors == nil)
-        {
-            NSLog(@"Encountered invalid persisted font (no glyph metrics). Aborting...");
-            return nil;
-        }
-        
-        size_t width = [aDecoder decodeIntForKey:MBETextureWidthKey];
-        size_t height = [aDecoder decodeIntForKey:MBETextureHeightKey];
-        
-        if (width != height)
-        {
-            NSLog(@"Encountered invalid persisted font (non-square textures aren't supported). Aborting...");
-            return nil;
-        }
-        
-        _textureSize = width;
-        
-        _textureData = [aDecoder decodeObjectForKey:MBETextureDataKey];
-        
-        if (_textureData == nil)
-        {
-            NSLog(@"Encountered invalid persisted font (texture data is empty). Aborting...");
-        }
+    
+    internal convenience init (fromJSON json: JSON, context: Context) throws {
+        try self.init(fromJSON: json)
+        createTexture(context)
     }
     
-    return self;
-    }*
+    internal init(fromJSON json: JSON) throws {
+        let fontName = try json.getString(FontNameKey)
+        _fontPointSize = try json.getInt(PointSizeKey)
+        _spread = try json.getDouble(FontSpreadKey)
+        
+        if _fontPointSize <= 0 || fontName == "" {
+            throw FontAtlasError.InvalidJSONError(json: json, message: "Invalid persisted font (invalid font name or size)")
+        }
+        parentFont = CTFontCreateWithName(fontName, CGFloat(_fontPointSize), nil)
+        
+        glyphDescriptors = try json
+            .getArray(GlyphDescriptorsKey)
+            .map { try GlyphDescriptor(fromJSON: $0) }
+            .sort { $0.glyphIndex < $1.glyphIndex }
+        
+        if glyphDescriptors.count <= 0 {
+            throw FontAtlasError.InvalidJSONError(json: json, message: "Encountered invalid persisted font (no glyph metrics).")
+        }
+        
+        _textureSize = try json.getInt(TextureSizeKey)
+        let textureDataPath = try json.getString(TextureDataPathKey)
+        
+        guard let textureData = NSData(contentsOfFile: textureDataPath) else {
+            throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "No texture data at path.")
+        }
+        if textureData.length <= 0 {
+            throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "Texture data too short.")
+        }
+        _textureData = textureData.getUInt8Array()
+    }
+/*
+
     - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [aCoder encodeObject:self.parentFont.fontName forKey:MBEFontNameKey];
@@ -124,6 +130,18 @@ class FontAtlas {
         {
             return YES;
         }*/
+    
+    internal func toJSON() -> JSON {
+        let json = JSON.Object(JSONObject(
+            [
+                FontNameKey: JSON(stringLiteral: (CTFontCopyPostScriptName(parentFont) as NSString) as String),
+                PointSizeKey: JSON(integerLiteral: Int64(_fontPointSize)),
+                FontSpreadKey: JSON(floatLiteral: _spread),
+                GlyphDescriptorsKey: JSON.Array(ContiguousArray<JSON>(glyphDescriptors.map { $0.toJSON() })),
+                TextureSizeKey: JSON(integerLiteral: Int64(_textureSize))
+            ]))
+        return json
+    }
     
     private func estimatedGlyphSizeForFont (font: CTFont) -> CGSize {
     
@@ -144,7 +162,7 @@ class FontAtlas {
         return CGSizeMake(averageGlyphWidth, maxGlyphHeight)
     }
     
-    private func estimatedLineWidthForFont (font: CTFont) -> Float {
+    private func estimatedLineWidthForFont (font: CTFont) -> Double {
         
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), "!")
@@ -155,17 +173,17 @@ class FontAtlas {
         var fitRange = CFRangeMake(0, 0)
         let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSizeMake(CGFloat.max, CGFloat.max), &fitRange)
 
-        return ceilf(Float(textSize.width))
+        return ceil(Double(textSize.width))
     }
     
     private func isLikelyToFitInAtlasRect (rect: CGRect, forFont font: CTFont, atSize size: Int) -> Bool {
         
-        let textureArea = Float(rect.size.width * rect.size.height)
+        let textureArea = Double(rect.size.width * rect.size.height)
         let trialFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(size), nil, nil)
         let fontGlyphCount = CTFontGetGlyphCount(trialFont)
         let glyphMargin = estimatedLineWidthForFont(trialFont)
         let averageGlyphSize = estimatedGlyphSizeForFont(trialFont)
-        let estimatedGlyphTotalArea = (Float(averageGlyphSize.width) + glyphMargin) * (Float(averageGlyphSize.height) + glyphMargin) * Float(fontGlyphCount)
+        let estimatedGlyphTotalArea = (Double(averageGlyphSize.width) + glyphMargin) * (Double(averageGlyphSize.height) + glyphMargin) * Double(fontGlyphCount)
         return estimatedGlyphTotalArea < textureArea
     }
     
@@ -420,7 +438,7 @@ class FontAtlas {
         return outData
     }
     
-    private func createQuantizedDistanceField(distanceField inData: [Float], width: Int, height: Int, normalizationFactor: Float) -> [UInt8] {
+    private func createQuantizedDistanceField(distanceField inData: [Float], width: Int, height: Int, normalizationFactor: Double) -> [UInt8] {
         
         /*return inData.map {
          let clampDist = fmax(-normalizationFactor, fmin($0, normalizationFactor))
@@ -431,9 +449,9 @@ class FontAtlas {
         for y in 0..<height {
             for x in 0..<width {
                 let dist = inData[y * width + x]
-                let clampDist = max(-normalizationFactor, min(dist, normalizationFactor))
-                let scaledDist = Float(clampDist) / normalizationFactor
-                let value = ((scaledDist + 1) / 2) * Float(UInt8.max)
+                let clampDist = max(-normalizationFactor, min(Double(dist), normalizationFactor))
+                let scaledDist = Double(clampDist) / normalizationFactor
+                let value = ((scaledDist + 1) / 2) * Double(UInt8.max)
                 outData[y * width + x] = UInt8(UInt16(value))
             }
         }
@@ -518,12 +536,55 @@ class FontAtlas {
         texture = Texture(context: context, options: options)
     }
     
-    class func fromCache(context: Context, fontName font: String, pointSize: Float) -> FontAtlas {
-        if let atlas = _cache["\(font)\(pointSize)"] {
+    class func fromCache(context: Context, fontName: String, pointSize: Int) -> FontAtlas {
+        let cacheName = "\(fontName)"
+        
+        if let atlas = _cache[cacheName] {
             return atlas
         }
-        let atlas = FontAtlas(context: context, font: font, pointSize: pointSize)
-        _cache["\(font)\(pointSize)"] = atlas
+        
+        // try to decode from JSON
+        let atlasFolder = LocalStorage.sharedInstance.getDocumentFolder() + "/FontAtlases"
+        
+        let jsonPath = atlasFolder + "/\(cacheName).json"
+        if let atlasJSONData = NSData(contentsOfFile: jsonPath) {
+            do {
+                let atlasJSON = try JSON.decode(atlasJSONData)
+                return try FontAtlas(fromJSON: atlasJSON, context: context)
+            } catch let error as NSError {
+                print("cannot create font atlas from cache: \(error.localizedDescription)")
+            }
+        }
+        // build from scratch
+        let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
+
+        // add to cache 
+        _cache[cacheName] = atlas
+
+        // encode and save
+        do {
+            try NSFileManager.defaultManager().createDirectoryAtPath(atlasFolder, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            print("cannot create directory at path: \(atlasFolder): \(error.localizedDescription)")
+        }
+
+        var atlasJSON = atlas.toJSON().object!
+        
+        let textureDataPath = atlasFolder + "/\(cacheName).textureData"
+        atlasJSON[TextureDataPathKey] = JSON(stringLiteral: textureDataPath)
+        
+        do {
+            try JSON
+                .encodeAsString(JSON.Object(atlasJSON))
+                .writeToFile(jsonPath, atomically: true, encoding: NSUTF8StringEncoding)
+            if NSData
+                .fromUInt8Array(atlas._textureData)
+                .writeToFile(textureDataPath, atomically: true) == false {
+                throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "Cannot write texture data to file")
+            }
+        } catch let error as NSError {
+            print("cannot write json to cache: \(error.localizedDescription)")
+        }
         return atlas
     }
 }

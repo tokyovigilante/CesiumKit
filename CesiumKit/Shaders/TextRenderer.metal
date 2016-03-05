@@ -36,10 +36,7 @@ vertex TransformedVertex text_vertex_shade(Vertex inVert [[stage_in]], constant 
     return outVert;
 }
 
-fragment half4 text_fragment_shade(TransformedVertex vert [[stage_in]],
-                              constant Uniforms &uniforms [[buffer(0)]],
-                              sampler samplr [[sampler(0)]],
-                              texture2d<float, access::sample> texture [[texture(0)]])
+fragment half4 text_fragment_shade(TransformedVertex vert [[stage_in]], constant Uniforms &uniforms [[buffer(0)]], sampler samplr [[sampler(0)]], texture2d<float, access::sample> texture [[texture(0)]])
 {
     float4 color = uniforms.foregroundColor;
     // Outline of glyph is the isocontour with value 50%

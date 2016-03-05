@@ -28,6 +28,7 @@ class Sampler {
 enum TextureWrap: UInt {
 
     case ClampToEdge
+    case MirrorClampToEdge
     case Repeat
     case MirrorRepeat
     case ClampToZero

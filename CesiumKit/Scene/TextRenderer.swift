@@ -79,13 +79,26 @@ class TextRenderer {
             
             _command.renderState = _rs
             
-             _command.pipeline = RenderPipeline.withCompiledShader(
+            let blendingState = BlendingState(
+                enabled: true,
+                equationRgb: .Add,
+                equationAlpha: .Add,
+                functionSourceRgb: .SourceAlpha,
+                functionSourceAlpha: .SourceAlpha,
+                functionDestinationRgb: .OneMinusSourceAlpha,
+                functionDestinationAlpha: .OneMinusSourceAlpha,
+                color: nil
+            )
+            
+            _command.pipeline = RenderPipeline.withCompiledShader(
                 context,
+                shaderSourceName: "TextRenderer",
                 compiledMetalVertexName: "text_vertex_shade",
                 compiledMetalFragmentName: "text_fragment_shade",
                 uniformStructSize: strideof(TextUniforms),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture
+                depthStencil: context.depthTexture,
+                blendingState: blendingState
             )
             
             _command.metalUniformUpdateBlock = { (buffer: Buffer) in
@@ -132,8 +145,8 @@ class TextRenderer {
         let lines = (CTFrameGetLines(frame) as NSArray) as! [CTLine]
         
         for line in lines {
-         frameGlyphCount += CTLineGetGlyphCount(line)
-         }
+            frameGlyphCount += CTLineGetGlyphCount(line)
+        }
         
         let vertexCount = frameGlyphCount * 4
 
@@ -152,9 +165,9 @@ class TextRenderer {
             let maxY = Float(CGRectGetMaxY(glyphBounds))
             let minS = Float(glyphInfo.topLeftTexCoord.x)
             let maxS = Float(glyphInfo.bottomRightTexCoord.x)
-            let minT = Float(glyphInfo.topLeftTexCoord.y)
-            let maxT = Float(glyphInfo.bottomRightTexCoord.y)
-            vertices.appendContentsOf([ minX, maxY, 0, 1, minS, maxT ])
+            let minT = Float(glyphInfo.bottomRightTexCoord.y)
+            let maxT = Float(glyphInfo.topLeftTexCoord.y)
+            vertices.appendContentsOf([ minX, maxY, 0, 1, minS, maxT])
             vertices.appendContentsOf([ minX, minY, 0, 1, minS, minT])
             vertices.appendContentsOf([ maxX, minY, 0, 1, maxS, minT])
             vertices.appendContentsOf([ maxX, maxY, 0, 1, maxS, maxT])
@@ -251,14 +264,16 @@ class TextRenderer {
                     let glyph = glyphBuffer[glyphIndex]
                     let glyphOrigin = positionBuffer[glyphIndex]
                     var glyphRect = CTRunGetImageBounds(run, nil, CFRangeMake(glyphIndex, 1))
+                    
                     let boundsTransX = frameBoundingRect.origin.x + lineOrigin.x
-                    let boundsTransY = CGRectGetHeight(frameBoundingRect) + frameBoundingRect.origin.y - lineOrigin.y + glyphOrigin.y
+                    let boundsTransY = frameBoundingRect.origin.y + lineOrigin.y + glyphOrigin.y
                     let pathTransform = CGAffineTransformMake(1, 0, 0, 1, boundsTransX, boundsTransY)
+                    
                     glyphRect = CGRectApplyAffineTransform(glyphRect, pathTransform)
+                    
                     block(glyph: glyph, glyphIndex: glyphIndexInFrame, glyphBounds: glyphRect)
                     
                     glyphIndexInFrame += 1
-
                 }
             }
         }
