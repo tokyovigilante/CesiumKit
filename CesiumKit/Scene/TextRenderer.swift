@@ -133,20 +133,37 @@ class TextRenderer {
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
         
-        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
-        CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
+        //let features = CTFontCopyFeatures(font) as NSArray?
+        //let settings = CTFontCopyFeatureSettings(font) as NSArray?
+        //print(features)
+        //print(settings)
+        /*let descriptor = CTFontCopyFontDescriptor(fontAtlas.parentFont)
         
+        let monspacedFontDict = ([kNumberSpacingType: kMonospacedNumbersSelector] as NSDictionary) as CFDictionary
+        let monspacedTextDict = ([kTextSpacingType: kMonospacedTextSelector] as NSDictionary) as CFDictionary
+
+        let featureArray = [monspacedFontDict, monspacedTextDict] as NSArray
+        
+        let attributeDict = ([(kCTFontFeatureSettingsAttribute as NSString): featureArray] as NSDictionary) as CFDictionary
+        
+        let newDescriptor = CTFontDescriptorCreateWithAttributes(attributeDict)
+
+        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, newDescriptor)*/
+        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
+
+        
+        let features = CTFontCopyFeatures(font) as NSArray?
+        let settings = CTFontCopyFeatureSettings(font) as NSArray?
+        print(features)
+        print(settings)
+        
+        CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
+
         let rectPath = CGPathCreateWithRect(rect, nil)
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         let frame = CTFramesetterCreateFrame(framesetter, stringRange, rectPath, nil)
         
-        //let frameGlyphCount: CFIndex = (CTFrameGetLines(frame) as! [CTLine]).reduce(0, combine: { $0 + CTLineGetGlyphCount($1) })
-        var frameGlyphCount: CFIndex = 0
-        let lines = (CTFrameGetLines(frame) as NSArray) as! [CTLine]
-        
-        for line in lines {
-            frameGlyphCount += CTLineGetGlyphCount(line)
-        }
+        let frameGlyphCount: CFIndex = ((CTFrameGetLines(frame) as NSArray) as! [CTLine]).reduce(0, combine: { $0 + CTLineGetGlyphCount($1) })
         
         let vertexCount = frameGlyphCount * 4
 
@@ -182,7 +199,6 @@ class TextRenderer {
         
         let vertexBuffer = Buffer(device: context.device, array: &vertices, componentDatatype: .Float32, sizeInBytes: vertices.sizeInBytes)
         vertexBuffer.metalBuffer.label =  "Text Mesh Vertices"
-        // FIXME geometry with > 64k indices
         
         let indexBuffer: Buffer
         if indices.count < Math.SixtyFourKilobytes {
@@ -222,7 +238,6 @@ class TextRenderer {
                 size: 8,
                 normalize: false)
         ]
-
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
     }
     
@@ -240,9 +255,6 @@ class TextRenderer {
         CTFrameGetLineOrigins(frame, entire, &lineOriginBuffer)
         
         var glyphIndexInFrame: CFIndex = 0
-        
-        //UIGraphicsBeginImageContext(CGSizeMake(1, 1))
-        //CGContextRef context = UIGraphicsGetCurrentContext();
         
         for (lineIndex, line) in lines.enumerate() {
             let lineOrigin = lineOriginBuffer[lineIndex]
