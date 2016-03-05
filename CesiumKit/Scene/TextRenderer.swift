@@ -9,17 +9,16 @@
 import Foundation
 import simd
 
-/**
- * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
- * a FontAtlas. Based on Objective-C code in Moore (2012).
- */
-
 private struct TextUniforms {
     var modelMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var viewProjectionMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
+/**
+ * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
+ * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
+ */
 class TextRenderer {
     
     /**
