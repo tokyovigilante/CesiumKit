@@ -37,7 +37,7 @@ class TextRenderer {
     
     private let _pointSize: Int
     
-    private let _rectangle: BoundingRectangle
+    var rectangle: BoundingRectangle
     
     private var _rs: RenderState! = nil
     
@@ -47,7 +47,7 @@ class TextRenderer {
         
         _string = string
         _pointSize = pointSize
-        _rectangle = rectangle
+        self.rectangle = rectangle
         
         _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
         
@@ -64,16 +64,16 @@ class TextRenderer {
         }
         let context = frameState.context
         
-        if _rs == nil || _rs.viewport != _rectangle {
+        if _rs == nil || _rs.viewport != rectangle {
             _rs = RenderState(
-                device: context.device,
-                viewport : _rectangle
+                device: context.device
+                //viewport : rectangle
             )
             _command.renderState = _rs
         }
 
         if _command.vertexArray == nil {
-            let meshRect = CGRectMake(CGFloat(_rectangle.x), CGFloat(_rectangle.y), CGFloat(_rectangle.width), CGFloat(_rectangle.height))
+            let meshRect = CGRectMake(CGFloat(rectangle.x), CGFloat(rectangle.y), CGFloat(rectangle.width), CGFloat(rectangle.height))
             _command.vertexArray = buildMesh(context, string: _string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
             
             _command.renderState = _rs
