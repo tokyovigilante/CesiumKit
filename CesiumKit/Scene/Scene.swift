@@ -77,6 +77,8 @@ public class Scene {
     
     let context: Context
     
+    private var text: TextRenderer! = nil
+    
     private let _computeEngine: ComputeEngine
     
     /*
@@ -1424,6 +1426,27 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
         overlayRenderPass.complete()
     }
+    
+    func executeTestTextCommand(passState: PassState) {
+        if text == nil {
+            text = TextRenderer(
+                context: context,
+                string: "CesiumKit",
+                fontName: "HelveticaNeue",
+                color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+                pointSize: 32,
+                rectangle: BoundingRectangle(x: 40, y: 40, width: 300, height: 50)
+            )
+        }
+        text.rectangle = BoundingRectangle(x: 40, y: 40, width: 300, height: 50)
+        if let command = text.update(frameState) {
+            let textRenderPass = context.createRenderPass(passState)
+            command.execute(context, renderPass: textRenderPass)
+            textRenderPass.complete()
+        }
+
+    }
+
 
     func updatePrimitives() {
     
@@ -1512,6 +1535,7 @@ function callAfterRenderFunctions(frameState) {
         executeComputeCommands()
         executeCommands(passState, clearColor: backgroundColor)
         executeOverlayCommands(passState)
+        executeTestTextCommand(passState)
         
         /*frameState.creditDisplay.endFrame();
         
