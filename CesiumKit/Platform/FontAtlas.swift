@@ -10,8 +10,6 @@ import Foundation
 import CoreGraphics
 import CoreText
 
-// FIXME: Debug
-import AppKit
 
 // This is the size at which the font atlas will be generated, ideally a large power of two. Even though
 // we later downscale the distance field, it's better to render it at as high a resolution as possible in
@@ -297,7 +295,7 @@ final class FontAtlas: JSONEncodable {
             origin.x += CGRectGetWidth(boundingRect) + glyphMargin
         }
         
-        if MBE_GENERATE_DEBUG_ATLAS_IMAGE {
+        /*if MBE_GENERATE_DEBUG_ATLAS_IMAGE {
             guard let contextImage = CGBitmapContextCreateImage(context) else {
                 assertionFailure("Could not create debug font atlas image")
                 return [UInt8]()
@@ -306,7 +304,7 @@ final class FontAtlas: JSONEncodable {
             let fontImage = NSImage(CGImage: contextImage, size: NSSize(width: fWidth, height: fHeight))
             print(fontImage)
             //UIImage *fontImage = [UIImage imageWithCGImage:contextImage];
-        }
+        }*/
         return imageData
     }
     
@@ -492,32 +490,6 @@ final class FontAtlas: JSONEncodable {
             height: _textureSize,
             normalizationFactor: spread
         )
-        
-        let colorSpace = CGColorSpaceCreateDeviceGray()
-        
-        let alphaInfo = CGImageAlphaInfo.None
-        let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-        
-        let bufferLength = _textureSize * _textureSize * 4
-        let provider = CGDataProviderCreateWithData(nil, _textureData, bufferLength, nil)
-        let bitsPerComponent = 8
-        let bitsPerPixel = 8
-        let renderingIntent =  CGColorRenderingIntent.RenderingIntentDefault
-        
-        let iref = CGImageCreate(_textureSize,
-                                 _textureSize,
-                                 bitsPerComponent,
-                                 bitsPerPixel,
-                                 _textureSize,
-                                 colorSpace,
-                                 bitmapInfo,
-                                 provider,   // data provider
-            nil,       // decode
-            true,        // should interpolate
-            renderingIntent)
-        
-        let image = NSImage(CGImage: iref!, size:NSMakeSize(CGFloat(_textureSize), CGFloat(_textureSize)))
-        print(image)
     }
     
     func createTexture (context: Context) {
