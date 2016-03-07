@@ -44,38 +44,49 @@ extension CGImage {
     }
     
     func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int) {
-        //Extract info for your image
+
         let width = CGImageGetWidth(self)
         let height = CGImageGetHeight(self)
-        let bppRaw = CGImageGetBitsPerPixel(self)
-        let bytesPerPixel = bppRaw == 24 ? 4 : bppRaw / 8
-        let bytesPerRow = bytesPerPixel * width
         let bitsPerComponent = CGImageGetBitsPerComponent(self)
+        let numberOfComponents = 4
+
+        let bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8
         
+        if bytesPerPixel == 1 {
+            let bitmapInfoSource = CGImageGetBitmapInfo(self)
+            let bitmapAlphaInfo = CGImageGetAlphaInfo(self)
+            print(bitmapInfoSource)
+            print(bitmapAlphaInfo)
+            print("hold on")
+        }
         
-        let alphaInfo = premultiplyAlpha ? CGImageAlphaInfo.PremultipliedLast : CGImageAlphaInfo.None
+        let bytesPerRow = bytesPerPixel * width
         
-        var rawBitmapInfo = CGBitmapInfo.ByteOrder32Big.rawValue
+        let alphaInfo: CGImageAlphaInfo
+        if bytesPerPixel == 1 {
+            // no alpha info in single byte pixel array
+            alphaInfo = .None
+        } else if premultiplyAlpha {
+            alphaInfo = .PremultipliedLast
+        } else {
+            alphaInfo = .Last
+        }
         
-        rawBitmapInfo &= ~CGBitmapInfo.AlphaInfoMask.rawValue
-        rawBitmapInfo |= CGBitmapInfo(rawValue: alphaInfo.rawValue).rawValue
-        
-        let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-        
-        
-        // Allocate a textureData with the above properties:
+        let bitmapInfo: CGBitmapInfo = [.ByteOrderDefault, CGBitmapInfo(rawValue: alphaInfo.rawValue)]
+
         let pixelBuffer = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
         
-        let contextRef = CGBitmapContextCreate(UnsafeMutablePointer<Void>(pixelBuffer), width, height, bitsPerComponent, bytesPerRow, cs, bitmapInfo.rawValue)
-        assert(contextRef != nil, "contextRef == nil")
+        let bitmapContext = CGBitmapContextCreate(UnsafeMutablePointer<Void>(pixelBuffer), width, height, bitsPerComponent, bytesPerRow, cs, bitmapInfo.rawValue)
+        assert(bitmapContext != nil, "bitmapContext == nil")
+        
         let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
+        
         if flipY {
             let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-            CGContextConcatCTM(contextRef, flipVertical)
+            CGContextConcatCTM(bitmapContext, flipVertical)
         }
-        CGContextDrawImage(contextRef, imageRect, self)
+        CGContextDrawImage(bitmapContext, imageRect, self)
         return (pixelBuffer, bytesPerRow)
     }
-
 }
 

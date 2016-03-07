@@ -599,7 +599,8 @@ class GlobeSurfaceTile: QuadTreeTileData {
                     source: TextureSource.Buffer(Imagebuffer(
                         array: flippedMask,
                         width: textureSize,
-                        height: textureSize
+                        height: textureSize,
+                        bytesPerPixel: 1
                     )),
                     pixelFormat: PixelFormat.R8Unorm,
                     sampler : waterMaskData.sampler

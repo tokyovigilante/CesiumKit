@@ -224,8 +224,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             _renderState = RenderState(
                 device: context.device,
                 cullFace: .Back,
-                depthTest: RenderState.DepthTest(enabled: true, function: .Less),
-                           wireFrame: false
+                depthTest: RenderState.DepthTest(enabled: true, function: .Less)
             )
         }
         

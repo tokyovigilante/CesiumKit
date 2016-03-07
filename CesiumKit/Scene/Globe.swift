@@ -131,7 +131,7 @@ class Globe {
             terrainProvider = CesiumTerrainProvider(
                 url: "https://assets.agi.com/stk-terrain/world",
                 requestVertexNormals: true,
-                requestWaterMask: false
+                requestWaterMask: true
             )
         } else {
             terrainProvider = EllipsoidTerrainProvider(
@@ -349,7 +349,7 @@ class Globe {
             return
         }
         
-        let hasWaterMask = showWaterEffect && terrainProvider.ready && _surface.tileProvider.terrainProvider.hasWaterMask
+        let hasWaterMask = showWaterEffect && terrainProvider.ready && terrainProvider.hasWaterMask
         
         if (hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl) {
             // url changed, load new normal map asynchronously
