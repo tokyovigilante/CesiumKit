@@ -16,7 +16,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     
     private let _view: MTKView
     
-    private let _viewportOverlay: ViewportQuad
+    //private let _viewportOverlay: ViewportQuad
     
     private let _fontName = "HelveticaNeue"
     private let _fontSize: Float = 36
@@ -36,15 +36,15 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         let options = CesiumOptions(
             clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
-            terrain: true,
-            lighting: true,
-            skyBox: true,
+            terrain: false,
+            lighting: false,
+            skyBox: false,
             scene3DOnly: true
         )
 
         _globe = CesiumGlobe(view: _view, options: options)
-        _globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
-        //_globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
+        //_globe.scene.imageryLayers.addImageryProvider(BingMapsImageryProvider())
+        _globe.scene.imageryLayers.addImageryProvider(TileCoordinateImageryProvider())
         
         _globe.scene.camera.constrainedAxis = Cartesian3.unitZ
         
@@ -85,7 +85,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
          [_fontTexture setLabel:@"Font Atlas"];
          [_fontTexture replaceRegion:region mipmapLevel:0 withBytes:_fontAtlas.textureData.bytes bytesPerRow:MBEFontAtlasSize];*/
 
-        let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
+        /*let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
         _viewportOverlay = ViewportQuad(
             rectangle: BoundingRectangle(x: 20, y: 20, width: 200, height: 200),
             material: Material(fromType: ColorMaterialType(fabric: viewportFabric))
@@ -97,7 +97,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             position: Cartesian3(x: 4.0, y: 5.0, z: 6.0),
             text: "A label"
         )
-        _globe.scene.primitives.add(labels)
+        _globe.scene.primitives.add(labels)*/
         
         super.init()
     }
@@ -126,7 +126,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func mtkView(view: MTKView, drawableSizeWillChange size: CGSize) {
-        _viewportOverlay.rectangle = BoundingRectangle(x: 20, y: 20, width: Double(size.width)/2-40, height: Double(size.height)/2-40)
+        //_viewportOverlay.rectangle = BoundingRectangle(x: 20, y: 20, width: Double(size.width)/2-40, height: Double(size.height)/2-40)
         /*let scale = self.v!.backingScaleFactor
          let layerSize = view.bounds.size
          
