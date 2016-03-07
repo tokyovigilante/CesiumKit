@@ -106,7 +106,7 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _tileUrlTemplates = [String]()
     
-    private var _availableTiles: JSON!
+    private var _availableTiles: [JSON]? = nil
     
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
@@ -188,92 +188,89 @@ class CesiumTerrainProvider: TerrainProvider {
             
             do {
                 let metadata = try JSON.decode(data, strict: true)
+                
+                var message: String? = nil
+                
+                guard let tiles = try metadata.getArrayOrNil("tiles") else {
+                    message = "The layer.json file does not specify any tile URL templates."
+                    //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                    return
+                }
+
+                guard let format = try metadata.getStringOrNil("format") else {
+                    message = "The tile format is not specified in the layer.json file."
+                    //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                    return
+                }
+                
+                if format == "heightmap-1.0" {
+                    self._heightmapStructure = HeightmapStructure(
+                        heightScale: 1.0 / 5.0,
+                        heightOffset: -1000.0,
+                        elementsPerHeight: 1,
+                        stride: 1,
+                        elementMultiplier: 256.0,
+                        isBigEndian: false
+                    )
+                    self._hasWaterMask = true
+                    self._requestWaterMask = true
+                } else if !format.hasPrefix("quantized-mesh-1.") {
+                    message = "The tile format '" + format + "' is invalid or not supported."
+                    //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
+                    return
+                }
+                let version = try metadata.getString("version")
+                
+                let baseURL: NSURLComponents = NSURLComponents(string: self.url)!
+                self._tileUrlTemplates = tiles.map {
+                    var templateString = $0.string!
+                    let template = NSURLComponents(string: templateString)
+                    if template?.host != nil && baseURL.host == nil {
+                        baseURL.host = template!.host
+                        baseURL.user = template!.user
+                        baseURL.password = template!.password
+                        baseURL.scheme = template!.scheme
+                    }
+                    if let string = template?.string {
+                        templateString = string
+                    }
+                    let url = baseURL.URL!
+                    
+                    let path = templateString.replace("{version}", version)
+                    return url.absoluteString + "/" + path
+                }
+                
+                self._availableTiles = try metadata.getArray("available").map { $0 }
+                
+                if let attribution = try metadata.getStringOrNil("attribution") {
+                    self.credit = Credit(text: attribution)
+                }
+                
+                // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
+                // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
+                // deprecated, as the extensionLength for this extension was incorrectly using big endian.
+                // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
+                // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
+                // over 'vertexnormals' if both extensions are supported by the server.
+                if let extensions = try metadata.getArrayOrNil("extensions") {
+                    if extensions.contains("octvertexnormals") {
+                        self._hasVertexNormals = true
+                    } else if extensions.contains("vertexnormals") {
+                        self._hasVertexNormals = true
+                        self._littleEndianExtensionSize = false
+                    }
+                    if extensions.contains("watermask") {
+                        self._hasWaterMask = true
+                    }
+                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.ready = true
+                })
+                //that._readyPromise.resolve(true);*/
             } catch {
                 print("invalid JSON from terrain provider")
                 return
             }
-            /*
-            var message: String? = nil
-
-            if metadata["format"].string == nil {
-                message = "The tile format is not specified in the layer.json file."
-                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return
-            }
-            let tiles = metadata["tiles"].array
-            if tiles == nil || tiles!.isEmpty {
-                message = "The layer.json file does not specify any tile URL templates."
-                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return
-            }
-            guard let format = metadata["format"].string else {
-                message = "The layer.json file does not specify a tile format."
-                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return
-            }
-            if format == "heightmap-1.0" {
-                self._heightmapStructure = HeightmapStructure(
-                    heightScale: 1.0 / 5.0,
-                    heightOffset: -1000.0,
-                    elementsPerHeight: 1,
-                    stride: 1,
-                    elementMultiplier: 256.0,
-                    isBigEndian: false
-            )
-                self._hasWaterMask = true
-                self._requestWaterMask = true
-            } else if !format.hasPrefix("quantized-mesh-1.") {
-                message = "The tile format '" + format + "' is invalid or not supported."
-                //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                return
-            }
-            let version = metadata["version"].string!
-            let baseURL: NSURLComponents = NSURLComponents(string: self.url)!
-            self._tileUrlTemplates = tiles!.map({
-                var templateString = $0.string!
-                let template = NSURLComponents(string: templateString)
-                if template?.host != nil && baseURL.host == nil {
-                    baseURL.host = template!.host
-                    baseURL.user = template!.user
-                    baseURL.password = template!.password
-                    baseURL.scheme = template!.scheme
-                }
-                if let string = template?.string {
-                    templateString = string
-                }
-                let url = baseURL.URL!
-                
-                let path = templateString.replace("{version}", version)
-                return url.absoluteString + "/" + path
-            })
-            
-            self._availableTiles = metadata["available"]
-            
-            if let attribution = metadata["attribution"].string {
-                self.credit = Credit(text: attribution)
-            }
-            
-            // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
-            // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
-            // deprecated, as the extensionLength for this extension was incorrectly using big endian.
-            // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
-            // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
-            // over 'vertexnormals' if both extensions are supported by the server.
-            if let extensions = metadata["extensions"].array?.map({ $0.string! }) {
-                if extensions.contains("octvertexnormals") {
-                    self._hasVertexNormals = true
-                } else if extensions.contains("vertexnormals") {
-                    self._hasVertexNormals = true
-                    self._littleEndianExtensionSize = false
-                }
-                if extensions.contains("watermask") {
-                    self._hasWaterMask = true
-                }
-            }
-            dispatch_async(dispatch_get_main_queue(), {
-                self.ready = true
-            })
-            //that._readyPromise.resolve(true);*/
         }
      
         let metadataFailure = { (data: NSData) in
@@ -719,37 +716,49 @@ class CesiumTerrainProvider: TerrainProvider {
     }
     
     func getChildMaskForTile(level: Int, x: Int, y: Int) -> Int {
-        if _availableTiles?.array == nil || _availableTiles.array!.count == 0 {
+        guard let availableTiles = _availableTiles else {
+            return 15
+        }
+        
+        if availableTiles.count == 0 {
             return 15
         }
         
         let childLevel = level + 1
-        if childLevel >= _availableTiles.array?.count {
+        if childLevel >= availableTiles.count {
             return 0
         }
-    
-        let levelAvailable = _availableTiles.array![childLevel]
+
+        guard let levelAvailable = availableTiles[childLevel].array else {
+            return 0
+        }
         
         var mask = 0
-        assertionFailure()/*
-        mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y) ? 1 : 0
-        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y) ? 2 : 0
-        mask |= isTileInRange(levelAvailable.array, x: 2 * x, y: 2 * y + 1) ? 4 : 0
-        mask |= isTileInRange(levelAvailable.array, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0*/
+        mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y) ? 1 : 0
+        mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y) ? 2 : 0
+        mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y + 1) ? 4 : 0
+        mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0
         
         return mask
     }
     
-    func isTileInRange(levelAvailable: [JSON]?, x: Int, y: Int) -> Bool {
-        guard let levelAvailable = levelAvailable else {
-            return false
-        }
-        assertionFailure()/*
+    func isTileInRange(levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
         for range in levelAvailable {
-            if x >= range["startX"].intValue && x <= range["endX"].intValue && y >= range["startY"].intValue && y <= range["endY"].intValue {
-                return true
+            do {
+                let startX = try range.getInt("startX")
+                let endX = try range.getInt("endX")
+                let startY = try range.getInt("startY")
+                let endY = try range.getInt("endY")
+                
+                if x >= startX && x <= endX && y >= startY && y <= endY {
+                    return true
+                }
+                
+            } catch {
+                return false
             }
-        }*/
+
+        }
         return false
     }
     /*

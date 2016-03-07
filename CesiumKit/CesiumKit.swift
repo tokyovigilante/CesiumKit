@@ -27,6 +27,7 @@ public struct CesiumOptions {
     public var clock: Clock
     public var imageryProvider: ImageryProvider?
     public var terrain: Bool
+    public var lighting: Bool
     public var skyBox: Bool
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
@@ -41,22 +42,25 @@ public struct CesiumOptions {
     public init(
         clock: Clock = Clock(isUTC: false),
         imageryProvider: ImageryProvider? = nil,
-        terrain: Bool = true,
+        terrain: Bool = false,
+        lighting: Bool = false,
         skyBox: Bool = true,
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
         mapProjection: MapProjection = GeographicProjection(),
         targetFrameRate: Int = 60,
         showRenderLoopErrors: Bool = true,
-        resolutionScale: Double = 0.5) {
-            self.clock = clock
-            self.imageryProvider = imageryProvider
-            self.terrain = terrain
-            self.skyBox = skyBox
-            self.sceneMode = sceneMode
-            self.scene3DOnly = scene3DOnly
-            self.mapProjection = mapProjection
-            self.showRenderLoopErrors = showRenderLoopErrors
+        resolutionScale: Double = 0.5)
+    {
+        self.clock = clock
+        self.imageryProvider = imageryProvider
+        self.terrain = terrain
+        self.lighting = lighting
+        self.skyBox = skyBox
+        self.sceneMode = sceneMode
+        self.scene3DOnly = scene3DOnly
+        self.mapProjection = mapProjection
+        self.showRenderLoopErrors = showRenderLoopErrors
     }
 }
 
@@ -230,7 +234,7 @@ public class CesiumGlobe {
         clock = options.clock
         _lastFrameTime = nil
         
-        globe = Globe(ellipsoid: ellipsoid, terrain: options.terrain)
+        globe = Globe(ellipsoid: ellipsoid, terrain: options.terrain, lighting: options.lighting)
         scene = Scene(
             view: view,
             globe: self.globe,

@@ -39,12 +39,11 @@ extension NSData {
     }
     
     func getUInt8Array(pos: Int = 0, elementCount: Int? = nil) -> [UInt8] {
-        let elementCount = elementCount ?? self.length / strideof(UInt8)
-        let arrayByteLength = elementCount * strideof(UInt8)
-        assert(self.length >= pos + arrayByteLength, "requested array out of bounds")
+        let elementCount = elementCount ?? self.length
+        assert(self.length >= pos + elementCount, "requested array out of bounds")
         var result = [UInt8](count: elementCount, repeatedValue: 0)
         result.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<UInt8>) in
-            memcpy(pointer.baseAddress, self.bytes + pos, arrayByteLength)
+            memcpy(pointer.baseAddress, self.bytes + pos, elementCount)
         })
         return result
     }

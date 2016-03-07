@@ -118,8 +118,6 @@ class ShaderProgram {
             return nil
         }
         
-        let funcs = shaderLibrary.functionNames
-        print(funcs)
         guard let metalVertexFunction = shaderLibrary.newFunctionWithName(vertex) else {
             print("No vertex function found for \(vertex)")
             return nil

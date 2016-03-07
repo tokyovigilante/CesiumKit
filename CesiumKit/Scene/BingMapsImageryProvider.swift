@@ -139,11 +139,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     public let defaultSaturation: Float = 1.0
     
     /**
-    * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
-    *
-    * @type {Number}
-    * @default undefined
-    */
+     * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
+     * By default, this is set to 1.3 for the "aerial" and "aerial with labels" map styles and 1.0 for
+     * all others.  Changing this value after creating an {@link ImageryLayer} for this provider will have
+     * no effect.  Instead, set the layer's {@link ImageryLayer#gamma} property.
+     *
+     * @type {Number}
+     * @default 1.0
+     */
     public let defaultGamma: Float
     
     public let queue: dispatch_queue_t? = nil
@@ -333,20 +336,10 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     private var _imageUrlTemplate: String? = nil
     
-    private var _imageUrlSubdomains: JSON? = nil
+    private var _imageUrlSubdomains: JSONArray? = nil
     
     public init(options: Options = Options()) {
-        
-        
-        /**
-        * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
-        * By default, this is set to 1.3 for the "aerial" and "aerial with labels" map styles and 1.0 for
-        * all others.  Changing this value after creating an {@link ImageryLayer} for this provider will have
-        * no effect.  Instead, set the layer's {@link ImageryLayer#gamma} property.
-        *
-        * @type {Number}
-        * @default 1.0
-        */
+
         if options.mapStyle == .Aerial || options.mapStyle == .AerialWithLabels {
             defaultGamma = 1.3
         } else {
@@ -385,61 +378,65 @@ public class BingMapsImageryProvider: ImageryProvider {
         //var metadataError;
         
         let metadataSuccess = { (data: NSData) -> () in
+            
             do {
                 let metadata = try JSON.decode(data, strict: true)
+                
+                let resource = try metadata.getArray("resourceSets")[0].getArray("resources")[0]
+                self._tileWidth = try resource.getInt("imageWidth")
+                self._tileHeight = try resource.getInt("imageHeight")
+                self._maximumLevel = try resource.getInt("zoomMax") - 1
+                self._imageUrlSubdomains = try resource.getArray("imageUrlSubdomains")
+                
+                 let imageUrlTemplate = try resource
+                    .getString("imageUrl")
+                    .replace("{culture}", self.culture)
+                 
+                 // Force HTTPS
+                 self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
+                 
+                 
+                 // Install the default tile discard policy if none has been supplied.
+                 //FIXME: Tile discard policy
+                 /*if (!defined(that._tileDiscardPolicy)) {
+                 that._tileDiscardPolicy = new DiscardMissingTileImagePolicy({
+                 missingImageUrl : buildImageUrl(that, 0, 0, that._maximumLevel),
+                 pixelsToCheck : [new Cartesian2(0, 0), new Cartesian2(120, 140), new Cartesian2(130, 160), new Cartesian2(200, 50), new Cartesian2(200, 200)],
+                 disableCheckIfAllPixelsAreTransparent : true
+                 });
+                 }*/
+                 // FIXME: attribution
+                 /*
+                 var attributionList = that._attributionList = resource.imageryProviders;
+                 if (!attributionList) {
+                 attributionList = that._attributionList = [];
+                 }
+                 
+                 for (var attributionIndex = 0, attributionLength = attributionList.length; attributionIndex < attributionLength; ++attributionIndex) {
+                 var attribution = attributionList[attributionIndex];
+                 
+                 attribution.credit = new Credit(attribution.attribution);
+                 
+                 var coverageAreas = attribution.coverageAreas;
+                 
+                 for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; areaIndex < areaLength; ++areaIndex) {
+                 var area = coverageAreas[areaIndex];
+                 var bbox = area.bbox;
+                 area.bbox = new Rectangle(
+                 CesiumMath.toRadians(bbox[1]),
+                 CesiumMath.toRadians(bbox[0]),
+                 CesiumMath.toRadians(bbox[3]),
+                 CesiumMath.toRadians(bbox[2]));
+                 }
+                 }*/
+                dispatch_async(dispatch_get_main_queue(), {
+                    self._ready = true
+                })
+                 //TileProviderError.handleSuccess(metadataError);*/
             } catch {
                 print("Bing metadata decode failed - invalid JSON")
                 return
             }
-            /*let resource = metadata["resourceSets"][0]["resources"][0]
-            self._tileWidth = resource["imageWidth"].intValue
-            self._tileHeight = resource["imageHeight"].intValue
-            self._maximumLevel = resource["zoomMax"].intValue - 1
-            self._imageUrlSubdomains = resource["imageUrlSubdomains"]
-            
-            let imageUrlTemplate = resource["imageUrl"].stringValue.replace("{culture}", self.culture)
-            
-            // Force HTTPS
-            self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
-            
-            
-            // Install the default tile discard policy if none has been supplied.
-            //FIXME: Tile discard policy
-            /*if (!defined(that._tileDiscardPolicy)) {
-            that._tileDiscardPolicy = new DiscardMissingTileImagePolicy({
-            missingImageUrl : buildImageUrl(that, 0, 0, that._maximumLevel),
-            pixelsToCheck : [new Cartesian2(0, 0), new Cartesian2(120, 140), new Cartesian2(130, 160), new Cartesian2(200, 50), new Cartesian2(200, 200)],
-            disableCheckIfAllPixelsAreTransparent : true
-            });
-            }*/
-            // FIXME: attribution
-            /*
-            var attributionList = that._attributionList = resource.imageryProviders;
-            if (!attributionList) {
-            attributionList = that._attributionList = [];
-            }
-            
-            for (var attributionIndex = 0, attributionLength = attributionList.length; attributionIndex < attributionLength; ++attributionIndex) {
-            var attribution = attributionList[attributionIndex];
-            
-            attribution.credit = new Credit(attribution.attribution);
-            
-            var coverageAreas = attribution.coverageAreas;
-            
-            for (var areaIndex = 0, areaLength = attribution.coverageAreas.length; areaIndex < areaLength; ++areaIndex) {
-            var area = coverageAreas[areaIndex];
-            var bbox = area.bbox;
-            area.bbox = new Rectangle(
-            CesiumMath.toRadians(bbox[1]),
-            CesiumMath.toRadians(bbox[0]),
-            CesiumMath.toRadians(bbox[3]),
-            CesiumMath.toRadians(bbox[2]));
-            }
-            }*/
-            dispatch_async(dispatch_get_main_queue(), {
-                self._ready = true
-            })
-            //TileProviderError.handleSuccess(metadataError);*/
         }
         
         let metadataFailure = { (error: String) -> () in
@@ -654,16 +651,13 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     */
     func buildImageUrl(x x: Int, y: Int, level: Int) -> String {
-        assertionFailure()
-        return ""
-/*        var imageUrl = _imageUrlTemplate! // _ready already checked
+        var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
-        let subdomains = _imageUrlSubdomains!.arrayValue
-        let subdomainIndex = (x + y + level) % subdomains.count
-        imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].stringValue)
+        let subdomainIndex = (x + y + level) % _imageUrlSubdomains!.count
+        imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].string!)
         
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;
@@ -671,7 +665,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         imageUrl = proxy.getURL(imageUrl);
         }
         */
-        return imageUrl*/
+        return imageUrl
     }
     /*
     var intersectionScratch = new Rectangle();

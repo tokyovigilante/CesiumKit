@@ -83,7 +83,7 @@ class Globe {
     * @type {Boolean}
     * @default false
     */
-    var enableLighting = true
+    var enableLighting = false
     
     /**
     * True if an animated wave effect should be shown in areas of the globe
@@ -125,20 +125,20 @@ class Globe {
         }
     }
     
-    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool) {
+    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool, lighting: Bool) {
         
         if terrain {
             terrainProvider = CesiumTerrainProvider(
                 url: "https://assets.agi.com/stk-terrain/world",
                 requestVertexNormals: true,
-                requestWaterMask: true
+                requestWaterMask: false
             )
         } else {
             terrainProvider = EllipsoidTerrainProvider(
                 ellipsoid : ellipsoid
             )
         }
-        
+        self.enableLighting = lighting
         self.ellipsoid = ellipsoid
         
         imageryLayers = ImageryLayerCollection()

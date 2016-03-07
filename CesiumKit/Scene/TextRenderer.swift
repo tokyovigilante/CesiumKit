@@ -101,20 +101,7 @@ class TextRenderer {
             )
             
             _command.metalUniformUpdateBlock = { (buffer: Buffer) in
-                /*CGSize drawableSize = self.layer.drawableSize;
-                
-                MBEUniforms uniforms;
-                
-                vector_float3 translation = { self.textTranslation.x, self.textTranslation.y, 0 };
-                vector_float3 scale = { self.textScale, self.textScale, 1 };
-                matrix_float4x4 modelMatrix = matrix_multiply(matrix_translation(translation), matrix_scale(scale));
-                uniforms.modelMatrix = modelMatrix;
-                 
-                */
-                //matrix_float4x4 projectionMatrix = matrix_orthographic_projection(0, drawableSize.width, 0, drawableSize.height);
                 self._uniforms.viewProjectionMatrix = frameState.context.uniformState.viewportOrthographic.floatRepresentation
-                
-                
                 /*uniforms.foregroundColor = MBETextColor;*/
                 
                 memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
@@ -150,12 +137,12 @@ class TextRenderer {
         let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, newDescriptor)*/
         let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
 
-        
+        /*
         let features = CTFontCopyFeatures(font) as NSArray?
         let settings = CTFontCopyFeatureSettings(font) as NSArray?
-        print(features)
+        //print(features)
         print(settings)
-        
+        */
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
 
         let rectPath = CGPathCreateWithRect(rect, nil)
