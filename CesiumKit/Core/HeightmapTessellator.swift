@@ -109,7 +109,7 @@ class HeightmapTessellator {
         relativeToCenter: Cartesian3 = Cartesian3.zero(),
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         structure: HeightmapTessellator.Structure = HeightmapTessellator.Structure()
-        ) () -> (maximumHeight: Double, minimumHeight: Double) {
+        ) -> (maximumHeight: Double, minimumHeight: Double) {
         
             // This function tends to be a performance hotspot for terrain rendering,
             // so it employs a lot of inlining and unrolling as an optimization.

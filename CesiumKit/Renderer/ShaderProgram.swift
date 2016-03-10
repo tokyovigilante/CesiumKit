@@ -239,7 +239,7 @@ class ShaderProgram {
             var uniformName = activeUniform.name
             if uniformName.hasSuffix(suffix) {
                 let suffixRange = Range(
-                    start: advance(uniformName.endIndex, -3),
+                    start: uniformName.endIndex.advancedBy(-3),
                     end: uniformName.endIndex)
                 uniformName.removeRange(suffixRange)
             }

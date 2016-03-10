@@ -216,7 +216,7 @@ class HeightmapTerrainData: TerrainData {
             isGeographic: tilingScheme is GeographicTilingScheme,
             relativeToCenter: center,
             ellipsoid: ellipsoid,
-            structure: _structure)()
+            structure: _structure)
         let boundingSphere3D = BoundingSphere.fromVertices(vertices, center: center, stride: numberOfAttributes)
         
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)

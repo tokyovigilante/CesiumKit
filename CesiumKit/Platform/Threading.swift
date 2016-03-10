@@ -292,7 +292,7 @@ func ~=(lhs: qos_class_t, rhs: qos_class_t) -> Bool {
 }
 
 // Make qos_class_t equatable
-extension qos_class_t: Equatable {}
+extension qos_class_t {}
 public func ==(lhs: qos_class_t, rhs: qos_class_t) -> Bool {
     return lhs.rawValue == rhs.rawValue
 }
