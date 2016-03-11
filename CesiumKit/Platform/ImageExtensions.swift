@@ -52,14 +52,6 @@ extension CGImage {
 
         let bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8
         
-        if bytesPerPixel == 1 {
-            let bitmapInfoSource = CGImageGetBitmapInfo(self)
-            let bitmapAlphaInfo = CGImageGetAlphaInfo(self)
-            print(bitmapInfoSource)
-            print(bitmapAlphaInfo)
-            print("hold on")
-        }
-        
         let bytesPerRow = bytesPerPixel * width
         
         let alphaInfo: CGImageAlphaInfo

@@ -1307,32 +1307,38 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             context.uniformState.updateFrustum(frustum)
             clearDepth.execute(context, passState: passState)
         
-            let globeRenderPass = context.createRenderPass(passState)
             let globeCommandList = frustumCommands.commands[Pass.Globe.rawValue]
             
-            for command in globeCommandList {
-                executeCommand(command, renderPass: globeRenderPass)
+            if !globeCommandList.isEmpty {
+                let globeRenderPass = context.createRenderPass(passState)
+                
+                for command in globeCommandList {
+                    executeCommand(command, renderPass: globeRenderPass)
+                }
+                
+                if globeDepth != nil && useGlobeDepthFramebuffer && (copyGlobeDepth || debugShowGlobeDepth) {
+                    globeDepth!.update(context)
+                    globeDepth!.executeCopyDepth(context, passState: passState)
+                }
+                
+                if debugShowGlobeDepth && globeDepth != nil && useGlobeDepthFramebuffer {
+                    passState.framebuffer = fb
+                }
+                
+                globeRenderPass.complete()
             }
             
-            if globeDepth != nil && useGlobeDepthFramebuffer && (copyGlobeDepth || debugShowGlobeDepth) {
-                globeDepth!.update(context)
-                globeDepth!.executeCopyDepth(context, passState: passState)
-            }
-            
-            if debugShowGlobeDepth && globeDepth != nil && useGlobeDepthFramebuffer {
-                passState.framebuffer = fb
-            }
-            
-            globeRenderPass.complete()
-            
-            let groundRenderPass = context.createRenderPass(passState)
             let groundCommandList = frustumCommands.commands[Pass.Ground.rawValue]
-            for command in groundCommandList {
-                executeCommand(command, renderPass: groundRenderPass)
-            }
-            groundRenderPass.complete()
-
             
+            if !groundCommandList.isEmpty {
+                let groundRenderPass = context.createRenderPass(passState)
+                
+                for command in groundCommandList {
+                    executeCommand(command, renderPass: groundRenderPass)
+                }
+                groundRenderPass.complete()
+            }
+
             if clearGlobeDepth {
                 let groundDepthRenderPass = context.createRenderPass(passState)
                 
@@ -1349,13 +1355,15 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             let endPass = Pass.Translucent.rawValue
             
             for pass in startPass..<endPass {
-                let renderPass = context.createRenderPass(passState)
                 let commands = frustumCommands.commands[pass]
-                
-                for command in commands {
-                    executeCommand(command, renderPass: renderPass)
+                if commands.isEmpty {
+                    let renderPass = context.createRenderPass(passState)
+                    
+                    for command in commands {
+                        executeCommand(command, renderPass: renderPass)
+                    }
+                    renderPass.complete()
                 }
-                renderPass.complete()
             }
             
             if index != 0 {
@@ -1415,18 +1423,20 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         for command in _computeCommandList { 
             command.execute(_computeEngine)
         }
-
     }
 
     func executeOverlayCommands(passState: PassState) {
-        _clearNullCommand.execute(context, passState: passState)
-        let overlayRenderPass = context.createRenderPass(passState)
-        for command in _overlayCommandList {
-            command.execute(context, renderPass: overlayRenderPass)
+        if !_overlayCommandList.isEmpty {
+            
+            _clearNullCommand.execute(context, passState: passState)
+            let overlayRenderPass = context.createRenderPass(passState)
+            for command in _overlayCommandList {
+                command.execute(context, renderPass: overlayRenderPass)
+            }
+            overlayRenderPass.complete()
         }
-        overlayRenderPass.complete()
     }
-    
+
     public var framerate: String = ""
     
     func executeTestTextCommand(passState: PassState) {
@@ -1443,6 +1453,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         text.rectangle = BoundingRectangle(x: 40, y: 40, width: 600, height: 50)
         text.string = "CesiumKit: \(context.width)x\(context.height)@\(framerate)"
         if let command = text.update(frameState) {
+            _clearNullCommand.execute(context, passState: passState)
             let textRenderPass = context.createRenderPass(passState)
             command.execute(context, renderPass: textRenderPass)
             textRenderPass.complete()

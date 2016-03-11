@@ -16,7 +16,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     
     private let _view: MTKView
     
-    private let _viewportOverlay: ViewportQuad
+    //private let _viewportOverlay: ViewportQuad
     
     private let _fontName = "HelveticaNeue"
     private let _fontSize: Float = 36
@@ -64,12 +64,12 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000), heading: 0, pitch: 0, roll: 0)
         //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
-        let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
+        /*let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
         _viewportOverlay = ViewportQuad(
             rectangle: BoundingRectangle(x: 20, y: 20, width: 400, height: 400),
             material: Material(fromType: ColorMaterialType(fabric: viewportFabric))
         )
-        _globe.scene.primitives.add(_viewportOverlay)
+        _globe.scene.primitives.add(_viewportOverlay)*/
         
         /*let labels = LabelCollection(scene: _globe.scene)
         labels.add(
@@ -94,6 +94,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         updateFramerate()
         
         #if os(iOS)
+            view.contentScaleFactor = 1.0
             let scaleFactor = view.contentScaleFactor
         #elseif os(OSX)
             let scaleFactor = view.layer?.contentsScale ?? 1.0
