@@ -33,7 +33,9 @@ class TextRenderer {
     
     private let _fontAtlas: FontAtlas
     
-    private let _string: String
+    var string: String
+
+    private var _string: String = " "
     
     private let _pointSize: Int
     
@@ -43,15 +45,67 @@ class TextRenderer {
     
     private var _uniforms = TextUniforms()
     
+    private let _attributes = [
+        // attribute vec4 position;
+        VertexAttributes(
+            buffer: nil,
+            bufferIndex: 1,
+            index: 0,
+            format: .Float4,
+            offset: 0,
+            size: 16,
+            normalize: false),
+        // attribute vec2 textureCoordinates;
+        VertexAttributes(
+            buffer: nil,
+            bufferIndex: 1,
+            index: 1,
+            format: .Float2,
+            offset: 16,
+            size: 8,
+            normalize: false)
+    ]
+    
     init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle) {
         
-        _string = string
+        self.string = string
         _pointSize = pointSize
         self.rectangle = rectangle
         
         _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
         
         _uniforms.foregroundColor = color.floatRepresentation
+        
+        let blendingState = BlendingState(
+            enabled: true,
+            equationRgb: .Add,
+            equationAlpha: .Add,
+            functionSourceRgb: .SourceAlpha,
+            functionSourceAlpha: .SourceAlpha,
+            functionDestinationRgb: .OneMinusSourceAlpha,
+            functionDestinationAlpha: .OneMinusSourceAlpha,
+            color: nil
+        )
+        
+        _command.pipeline = RenderPipeline.withCompiledShader(
+            context,
+            shaderSourceName: "TextRenderer",
+            compiledMetalVertexName: "text_vertex_shade",
+            compiledMetalFragmentName: "text_fragment_shade",
+            uniformStructSize: strideof(TextUniforms),
+            vertexDescriptor: VertexDescriptor(attributes: _attributes),
+            depthStencil: context.depthTexture,
+            blendingState: blendingState
+        )
+        
+        _command.metalUniformUpdateBlock = { (buffer: Buffer) in
+            self._uniforms.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
+            /*uniforms.foregroundColor = MBETextColor;*/
+            
+            memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
+            
+            return [self._fontAtlas.texture]
+        }
         
         _command.uniformMap = nil
         _command.owner = self
@@ -72,43 +126,14 @@ class TextRenderer {
             _command.renderState = _rs
         }
 
-        if _command.vertexArray == nil {
+        if _command.vertexArray == nil || string != _string {
             let meshRect = CGRectMake(CGFloat(rectangle.x), CGFloat(rectangle.y), CGFloat(rectangle.width), CGFloat(rectangle.height))
             _command.vertexArray = buildMesh(context, string: _string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
-            
-            _command.renderState = _rs
-            
-            let blendingState = BlendingState(
-                enabled: true,
-                equationRgb: .Add,
-                equationAlpha: .Add,
-                functionSourceRgb: .SourceAlpha,
-                functionSourceAlpha: .SourceAlpha,
-                functionDestinationRgb: .OneMinusSourceAlpha,
-                functionDestinationAlpha: .OneMinusSourceAlpha,
-                color: nil
-            )
-            
-            _command.pipeline = RenderPipeline.withCompiledShader(
-                context,
-                shaderSourceName: "TextRenderer",
-                compiledMetalVertexName: "text_vertex_shade",
-                compiledMetalFragmentName: "text_fragment_shade",
-                uniformStructSize: strideof(TextUniforms),
-                vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture,
-                blendingState: blendingState
-            )
-            
-            _command.metalUniformUpdateBlock = { (buffer: Buffer) in
-                self._uniforms.viewProjectionMatrix = frameState.context.uniformState.viewportOrthographic.floatRepresentation
-                /*uniforms.foregroundColor = MBETextColor;*/
-                
-                memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
-
-                return [self._fontAtlas.texture]
-            }
+            _string = string
         }
+        
+        //_command.renderState = _rs
+                
         //frameState.commandList.append(_command)
         return _command
     }
@@ -204,26 +229,9 @@ class TextRenderer {
         }
         indexBuffer.metalBuffer.label = "Text Mesh Indices"
         
-        let attributes = [
-            // attribute vec4 position;
-            VertexAttributes(
-                buffer: vertexBuffer,
-                bufferIndex: 1,
-                index: 0,
-                format: .Float4,
-                offset: 0,
-                size: 16,
-                normalize: false),
-            // attribute vec2 textureCoordinates;
-            VertexAttributes(
-                buffer: nil,
-                bufferIndex: 1,
-                index: 1,
-                format: .Float2,
-                offset: 16,
-                size: 8,
-                normalize: false)
-        ]
+        var attributes = _attributes
+        attributes[0].buffer = vertexBuffer
+
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
     }
     

@@ -1427,6 +1427,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         overlayRenderPass.complete()
     }
     
+    public var framerate: String = ""
+    
     func executeTestTextCommand(passState: PassState) {
         if text == nil {
             text = TextRenderer(
@@ -1438,7 +1440,8 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 rectangle: BoundingRectangle(x: 40, y: 40, width: 300, height: 50)
             )
         }
-        text.rectangle = BoundingRectangle(x: 40, y: 40, width: 300, height: 50)
+        text.rectangle = BoundingRectangle(x: 40, y: 40, width: 600, height: 50)
+        text.string = "CesiumKit: \(context.width)x\(context.height)@\(framerate)"
         if let command = text.update(frameState) {
             let textRenderPass = context.createRenderPass(passState)
             command.execute(context, renderPass: textRenderPass)
