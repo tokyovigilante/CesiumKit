@@ -1,13 +1,13 @@
 CesiumKit
 =========
-[![Language](http://img.shields.io/badge/language-swift-brightgreen.svg?style=flat)](https://developer.apple.com/swift)[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
-iOS/Swift port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
+iOS/OS X port of the [Cesium](http://cesiumjs.org) WebGL virtual globe project.
 
 Status
 ------
-Renderer and core are largely complete. Textured globe support is functional. The only implemented image providers are the Bing Maps provider and the TileCoordinate provider for debugging, however these can be layered.
-Current efforts are focused on implementing camera controls, touch-based inputs, and will then be looking at terrain support.
+OS X and iOS Metal renderers are largely complete, with support for FXAA, terrain, lighting, water effects and text rendering.
+The only currently-implemented image providers are the Bing Maps provider (with Web Mercator reprojection) and the TileCoordinate provider for debugging, however these can be layered.
+Current efforts are focused on implementing camera controls and touch-based inputs.
 I'm eventually hoping for near complete globe support with CZML interoperability with cesium.js.
 Community contributions and feedback are welcome.
 
@@ -15,10 +15,9 @@ Community contributions and feedback are welcome.
 
 Testing
 -------
-Requires Swift 1.2/Xcode 6.3 beta and an iOS 8 device with a minimum A7 processor, will not run in earlier versions.
+Requires Swift 2.0/Xcode 7.2 beta and an iOS 9 device with a minimum A7 processor, or OS X 10.11 with a compatible GPU.
 
-Build and run CesiumKitRunner. Due to the (in-progress) Metal renderer, the framework won't work in the Simulator. Performance on device is at or near 60fps at Retina resolutions (iPad Air 2)
-
+Run the getDependencies.sh script to pull down PMJSON, glsl-optimizer and Alamofire from Github. Then build and run either the iOS or OS X test runner target.
 At the moment the only external API are global object creation and render calls and minimal camera control. I'm hoping to keep things simple for implementation, but am looking into touch-based controls as a high priority now.
 
 Licence
@@ -31,9 +30,11 @@ Credits
 
 CesiumKit is based on the [Cesium WebGL Virtual Globe and Map Engine](http://cesiumjs.org) by AGI.
 GLSL->Metal shader real-time translation performed by the [glsl-optimizer library](https://github.com/aras-p/glsl-optimizer) by Brian Paul, Aras Pranckevičius and Unity Technologies.
+JSON parsing performed using the [PMJSON library](https://github.com/postmates/PMJSON) by Postmates.
+Networking support from [Alamofire](https://github.com/Alamofire/Alamofire).
 
 Feedback
 --------
 [ryan@testtoast.com](mailto:ryan@testtoast.com)
 
-
+![](https://github.com/tokyovigilante/CesiumKit/blob/master/Everest.jpg)
