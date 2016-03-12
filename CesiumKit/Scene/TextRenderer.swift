@@ -118,10 +118,9 @@ class TextRenderer {
         }
         let context = frameState.context
         
-        if _rs == nil || _rs.viewport != rectangle {
+        if _rs == nil {
             _rs = RenderState(
                 device: context.device
-                //viewport : rectangle
             )
             _command.renderState = _rs
         }
@@ -132,8 +131,6 @@ class TextRenderer {
             _string = string
         }
         
-        //_command.renderState = _rs
-                
         //frameState.commandList.append(_command)
         return _command
     }

@@ -1099,6 +1099,7 @@ public class Material {
          material.shaderSource = uniformDeclaration + material.shaderSource;
          }
          */
+        
         let uniformDeclaration = "uniform " + uniformType.declarationString + " " + uniformId + ";\n"
         shaderSource = uniformDeclaration + shaderSource
         

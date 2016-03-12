@@ -1440,7 +1440,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     public var framerate: String = ""
     
     func executeTestTextCommand(passState: PassState) {
-        return
         if text == nil {
             text = TextRenderer(
                 context: context,

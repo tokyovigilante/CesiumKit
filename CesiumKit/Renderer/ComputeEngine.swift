@@ -20,11 +20,7 @@ class ComputeEngine {
     init (context: Context) {
         self.context = context
     }
-    
-    /*private func createRenderPassDescriptor () -> MTLRenderPassDescriptor {
-        return MTLRenderPassDescriptor()
-    }*/
-    
+
     private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) -> RenderPipeline? {
         
         let attributes = [
