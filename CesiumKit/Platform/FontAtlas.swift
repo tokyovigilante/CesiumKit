@@ -101,34 +101,18 @@ final class FontAtlas: JSONEncodable {
         }
         
         _textureSize = try json.getInt(TextureSizeKey)
-        let textureDataPath = try json.getString(TextureDataPathKey)
-        
-        guard let textureData = NSData(contentsOfFile: textureDataPath) else {
-            throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "No texture data at path.")
-        }
+               
+        let textureDataURL = LocalStorage.sharedInstance.getAppSupportURL().URLByAppendingPathComponent("FontAtlases")
+            .URLByAppendingPathComponent(fontName)
+            .URLByAppendingPathExtension("textureData")
+
+        let textureData = try NSData(contentsOfURL: textureDataURL, options: [.DataReadingMappedIfSafe])
         if textureData.length <= 0 {
-            throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "Texture data too short.")
+            throw FontAtlasError.InvalidTextureDataError(path: textureDataURL.absoluteString, message: "Texture data too short.")
         }
         _textureData = textureData.getUInt8Array()
     }
-/*
 
-    - (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [aCoder encodeObject:self.parentFont.fontName forKey:MBEFontNameKey];
-    [aCoder encodeFloat:self.fontPointSize forKey:MBEFontSizeKey];
-    [aCoder encodeFloat:self.spread forKey:MBEFontSpreadKey];
-    [aCoder encodeObject:self.textureData forKey:MBETextureDataKey];
-    [aCoder encodeInt64:self.textureSize forKey:MBETextureWidthKey];
-    [aCoder encodeInt64:self.textureSize forKey:MBETextureHeightKey];
-    [aCoder encodeObject:self.glyphDescriptors forKey:MBEGlyphDescriptorsKey];
-    }
-    
-    + (BOOL)supportsSecureCoding
-        {
-            return YES;
-        }*/
-    
     internal func toJSON() -> JSON {
         let json = JSON.Object(JSONObject(
             [
@@ -509,53 +493,55 @@ final class FontAtlas: JSONEncodable {
     }
     
     class func fromCache(context: Context, fontName: String, pointSize: Int) -> FontAtlas {
-        let cacheName = "\(fontName)"
         
-        if let atlas = _cache[cacheName] {
+        if let atlas = _cache[fontName] {
             return atlas
         }
         
         // try to decode from JSON
-        let atlasFolder = LocalStorage.sharedInstance.getDocumentFolder() + "/FontAtlases"
+        let atlasFolderURL = LocalStorage.sharedInstance.getAppSupportURL().URLByAppendingPathComponent("FontAtlases")
         
-        let jsonPath = atlasFolder + "/\(cacheName).json"
-        if let atlasJSONData = NSData(contentsOfFile: jsonPath) {
+        let jsonURL = atlasFolderURL
+            .URLByAppendingPathComponent(fontName)
+            .URLByAppendingPathExtension("json")
+        if let atlasJSONData = NSData(contentsOfURL: jsonURL) {
             do {
                 let atlasJSON = try JSON.decode(atlasJSONData)
-                return try FontAtlas(fromJSON: atlasJSON, context: context)
+                let atlas = try FontAtlas(fromJSON: atlasJSON, context: context)
+                _cache[fontName] = atlas
+                return atlas
             } catch let error as NSError {
-                print("cannot create font atlas from cache: \(error.localizedDescription)")
+                print("cannot create font atlas from cache: \(error.description)")
             }
         }
         // build from scratch
         let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
 
         // add to cache 
-        _cache[cacheName] = atlas
+        _cache[fontName] = atlas
 
         // encode and save
         do {
-            try NSFileManager.defaultManager().createDirectoryAtPath(atlasFolder, withIntermediateDirectories: true, attributes: nil)
+            try NSFileManager.defaultManager().createDirectoryAtURL(atlasFolderURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
-            print("cannot create directory at path: \(atlasFolder): \(error.localizedDescription)")
+            print("cannot create directory at URL: \(atlasFolderURL): \(error.localizedDescription)")
         }
 
-        var atlasJSON = atlas.toJSON().object!
+        let atlasJSON = atlas.toJSON().object!
         
-        let textureDataPath = atlasFolder + "/\(cacheName).textureData"
-        atlasJSON[TextureDataPathKey] = JSON(stringLiteral: textureDataPath)
+        let textureDataURL = atlasFolderURL
+            .URLByAppendingPathComponent(fontName)
+            .URLByAppendingPathExtension("textureData")
         
         do {
             try JSON
                 .encodeAsString(JSON.Object(atlasJSON))
-                .writeToFile(jsonPath, atomically: true, encoding: NSUTF8StringEncoding)
-            if NSData
+                .writeToURL(jsonURL, atomically: true, encoding: NSUTF8StringEncoding)
+            try NSData
                 .fromUInt8Array(atlas._textureData)
-                .writeToFile(textureDataPath, atomically: true) == false {
-                throw FontAtlasError.InvalidTextureDataError(path: textureDataPath, message: "Cannot write texture data to file")
-            }
+                .writeToURL(textureDataURL, options: [])
         } catch let error as NSError {
-            print("cannot write json to cache: \(error.localizedDescription)")
+            print("Atlas cache write failed: \(error.localizedDescription)")
         }
         return atlas
     }

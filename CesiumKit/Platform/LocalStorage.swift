@@ -14,8 +14,12 @@ class LocalStorage {
     // Singleton
     static let sharedInstance = LocalStorage()
     
-    func getDocumentFolder () -> String {
-        return NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] + "/" + getExecutableName()
+    func getAppSupportURL () -> NSURL {
+        #if os(OSX)
+            return NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0].URLByAppendingPathComponent(getExecutableName())
+        #elseif os(iOS)
+            return NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
+        #endif
     }
     
     func getExecutableName () -> String {
