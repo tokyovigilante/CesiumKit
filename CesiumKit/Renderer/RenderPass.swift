@@ -37,11 +37,7 @@ class RenderPass {
     func applyRenderState(renderState: RenderState) {
         renderState.apply(commandEncoder, passState: passState)
     }
-    
-    func addDrawCommand (command: DrawCommand) {
-        
-    }
-    
+
     func complete () {
         commandEncoder.endEncoding()
     }

@@ -294,8 +294,6 @@ public class CesiumGlobe {
         if self.sceneMode == SceneMode.ColumbusView {
             self.scene.morphToColumbusView(0)
         }
-        print(view.drawableSize)
-        print(view.bounds.size)
         configureCanvasSize(Cartesian2(x: Double(view.drawableSize.width), y: Double(view.drawableSize.height)))
         configureCameraFrustum()
 
