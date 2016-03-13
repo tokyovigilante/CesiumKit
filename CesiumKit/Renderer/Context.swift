@@ -175,7 +175,7 @@ class Context {
         
         _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
         
-        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_SERIAL)
+        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_CONCURRENT)
         textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
         
         //antialias = true
@@ -245,7 +245,7 @@ class Context {
         _commandBuffer = _commandQueue.commandBuffer()
         
         // call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
-        _commandBuffer.addCompletedHandler { (buffer) in
+        _commandBuffer.addCompletedHandler { buffer in
             // GPU has completed rendering the frame and is done using the contents of any buffers previously encoded on the CPU for that frame.
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
             dispatch_semaphore_signal(self._inflight_semaphore)
@@ -267,7 +267,10 @@ class Context {
         pass.applyRenderState(renderState)
     }
     
-    func createBlitCommandEncoder () -> MTLBlitCommandEncoder {
+    func createBlitCommandEncoder (completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder {
+        if let completionHandler = completionHandler {
+            _commandBuffer.addCompletedHandler(completionHandler)
+        }
         return _commandBuffer.blitCommandEncoder()
     }
     
@@ -522,7 +525,6 @@ class Context {
         return DrawCommand(
             vertexArray: vertexArray,
             uniformMap: overrides?.uniformMap,
-            framebuffer: overrides?.framebuffer,
             renderState: overrides?.renderState,
             renderPipeline: RenderPipeline.fromCache(
                 context: self,

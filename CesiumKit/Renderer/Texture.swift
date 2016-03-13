@@ -13,6 +13,9 @@ private let _colorSpace = CGColorSpaceCreateDeviceRGB()!
 
 private var _defaultSampler: Sampler! = nil
 
+private var _mipmapSampler: Sampler! = nil
+
+
 enum TextureSource {
     case Image(CGImage)
     case Buffer(Imagebuffer)
@@ -63,9 +66,11 @@ struct TextureOptions {
     
     let usage: TextureUsage
     
+    let mipmapped: Bool
+    
     let sampler: Sampler?
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, sampler: Sampler? = nil) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, mipmapped: Bool = false, sampler: Sampler? = nil) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -76,6 +81,7 @@ struct TextureOptions {
         self.flipY = flipY
         self.premultiplyAlpha = premultiplyAlpha
         self.usage = usage
+        self.mipmapped = mipmapped
         self.sampler = sampler
     }
 }
@@ -96,7 +102,7 @@ public class Texture {
     
     let usage: TextureUsage
     
-    var mipmapped: Bool = false
+    let mipmapped: Bool
 
     weak var context: Context?
     
@@ -135,13 +141,21 @@ public class Texture {
         premultiplyAlpha = options.premultiplyAlpha || options.pixelFormat == .RGBA8Unorm || options.pixelFormat == .BGRA8Unorm || options.pixelFormat == .R8Unorm
         
         usage = options.usage
-        //var mipmapped = Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height)
-        mipmapped = false
-        
+
+        mipmapped = options.mipmapped
+       
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        self.sampler = options.sampler ?? _defaultSampler
+        
+        if _mipmapSampler == nil {
+            _mipmapSampler = Sampler(context: context, mipMagFilter: .Linear)
+        }
+        
+        let sampler = (mipmapped ? _mipmapSampler : _defaultSampler)
+        self.sampler = options.sampler ?? sampler
+        
+        assert(mipmapped == false || Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height), "Cannot use mipmapping for NPOT textures")
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
@@ -167,13 +181,12 @@ public class Texture {
         
         let flipY = options.flipY
         
-        // FIXME: mipmapping
         let textureDescriptor: MTLTextureDescriptor
         if cubeMap {
-            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat.toMetal(), size: width, mipmapped: false)
+            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
         } else {
             textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat.toMetal(),
-                width: width, height: height, mipmapped: false/*mipmapped*/)
+                width: width, height: height, mipmapped: mipmapped)
         }
         textureDescriptor.usage = usage.toMetal()
         
@@ -239,11 +252,19 @@ public class Texture {
         self.pixelFormat = PixelFormat(rawValue: metalTexture.pixelFormat.rawValue) ?? .Invalid
         self.textureFilterAnisotropic = true
         self.usage = TextureUsage(rawValue: metalTexture.usage.rawValue)
+        self.mipmapped = metalTexture.mipmapLevelCount > 1
         self.premultiplyAlpha = true
+        
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        self.sampler = sampler ?? _defaultSampler
+        
+        if _mipmapSampler == nil {
+            _mipmapSampler = Sampler(context: context, mipMagFilter: .Linear)
+        }
+        
+        let defaultSampler: Sampler = mipmapped ? _mipmapSampler : _defaultSampler
+        self.sampler = sampler ?? defaultSampler
     }
     /*
      
@@ -406,18 +427,11 @@ public class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    func generateMipmaps () {
-
-        
-        //assert(!pixelFormat.isDepthFormat(), "Cannot call generateMipmap when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.")
-        
+    func generateMipmaps (context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
         assert(mipmapped, "mipmapping must be enabled during texture creation")
-        
-        /*glHint(GLenum(GL_GENERATE_MIPMAP_HINT), hint.toGL())
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        glBindTexture(textureTarget, textureName)
-        glGenerateMipmap(textureTarget)
-        glBindTexture(textureTarget, 0)*/
+        let blitEncoder = context.createBlitCommandEncoder(completionBlock)
+        blitEncoder.generateMipmapsForTexture(metalTexture)
+        blitEncoder.endEncoding()
     }
 
 }

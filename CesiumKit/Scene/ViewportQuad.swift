@@ -107,7 +107,6 @@ public class ViewportQuad: Primitive {
                 overrides: ViewportQuadOverrides(
                     renderState: _rs,
                     uniformMap: _material.uniformMap,
-                    framebuffer: nil,
                     owner: self
                 ),
                 depthStencil: context.depthTexture,
@@ -132,8 +131,6 @@ struct ViewportQuadOverrides {
     var renderState: RenderState? = nil
     
     var uniformMap: UniformMap? = nil
-
-    var framebuffer: Framebuffer? = nil
     
     var owner: AnyObject? = nil
 }

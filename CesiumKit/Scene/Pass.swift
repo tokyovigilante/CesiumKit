@@ -15,12 +15,13 @@ enum Pass: Int {
     // Commands are executed in order by pass up to the translucent pass.
     // Translucent geometry needs special handling (sorting/OIT). Overlays
     // are also special (they're executed last, they're not sorted by frustum).
-    case Compute = 0
-    case Globe,
+    case Compute = 0,
+    OffscreenQuad,
+    Globe,
     Ground,
     Opaque,
     Translucent,
     Overlay
     
-    static let count = 6
+    static let count = 7
 }
