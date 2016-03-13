@@ -143,31 +143,10 @@ class TextRenderer {
     
     private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
     {
-        
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
         
-        //let features = CTFontCopyFeatures(font) as NSArray?
-        //let settings = CTFontCopyFeatureSettings(font) as NSArray?
-        //print(features)
-        //print(settings)
-        /*let descriptor = CTFontCopyFontDescriptor(fontAtlas.parentFont)
-        
-        let monspacedFontDict = ([kNumberSpacingType: kMonospacedNumbersSelector] as NSDictionary) as CFDictionary
-        let monspacedTextDict = ([kTextSpacingType: kMonospacedTextSelector] as NSDictionary) as CFDictionary
-
-        let featureArray = [monspacedFontDict, monspacedTextDict] as NSArray
-        
-        let attributeDict = ([(kCTFontFeatureSettingsAttribute as NSString): featureArray] as NSDictionary) as CFDictionary
-        
-        let newDescriptor = CTFontDescriptorCreateWithAttributes(attributeDict)
-
-        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, newDescriptor)*/
         let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
-
-        
-        let features = CTFontCopyFeatures(font) as NSArray?
-        let settings = CTFontCopyFeatureSettings(font) as NSArray?
         
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
         

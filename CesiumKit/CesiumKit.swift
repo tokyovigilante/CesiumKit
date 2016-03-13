@@ -141,8 +141,6 @@ public class CesiumGlobe {
 
     var globe: Globe
     
-    //let skyBox: SkyBox
-    
     // FIXME: ImageryProvider
     var imageryProvider: ImageryProvider? = nil
     
@@ -218,6 +216,15 @@ public class CesiumGlobe {
     * @type {Clock}
     */
     public let clock: Clock
+    
+    var showFramerate: Bool {
+        get {
+            return scene.framerateDisplay.show
+        }
+        set {
+            scene.framerateDisplay.show = newValue
+        }
+    }
 
     public init (view: MTKView, options: CesiumOptions) {
 
@@ -487,23 +494,37 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     */
     public func render(size: CGSize) {
         
-        /*if _lastFrameTime != nil {
-            let delta = NSDate().timeIntervalSinceDate(_lastFrameTime!)
-            let frameTime = 1/delta
-            let performanceString = String(format: "%.02f fps (%2f ms)", frameTime, delta * 1000)
-            println(performanceString)
-        }*/
-
-
         resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
         scene.initializeFrame()
         let currentTime = clock.tick()
         if _canRender {
+            updateFramerate()
             scene.render(currentTime)
-            //_lastFrameTime = NSDate()
         }
-        /*else {
-            _lastFrameTime = nil
-        }*/
+    }
+    
+    private var _lastRenderTime: UInt64 = 0
+    private var _lastUpdateTime: UInt64 = 0
+    private var _avgFPS = 0.0
+    
+    func updateFramerate () {
+        let currentTime = mach_absolute_time()
+        
+        var info = mach_timebase_info_data_t()
+        if mach_timebase_info(&info) != KERN_SUCCESS {
+            print("mach_timebase_info failed\n")
+            return
+        }
+        let timebase = (Double(info.numer) / Double(info.denom)) / Double(NSEC_PER_SEC)
+        let elapsed = Double(currentTime - _lastRenderTime) * timebase
+        let updateElapsed = Double(currentTime - _lastUpdateTime) * timebase
+        _lastRenderTime = currentTime
+        
+        let fps = 1.0 / elapsed
+        _avgFPS = 0.9 * _avgFPS + 0.1 * fps
+        if updateElapsed > 0.1 {
+            scene.framerate = String(format: "%.0f fps (%.1f ms)", _avgFPS, 1000/_avgFPS)
+            _lastUpdateTime = currentTime
+        }
     }
 }

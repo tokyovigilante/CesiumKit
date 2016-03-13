@@ -77,8 +77,6 @@ public class Scene {
     
     let context: Context
     
-    private var text: TextRenderer! = nil
-    
     private let _computeEngine: ComputeEngine
     
     /*
@@ -455,11 +453,10 @@ public class Scene {
     * Displays frames per second and time between frames.
     * </p>
     *
-    * @type Boolean
+    * @type TextRenderer
     *
-    * @default false
     */
-    var debugShowFramesPerSecond = false
+    private (set) var framerateDisplay: TextRenderer
     
     /**
     * Gets whether or not the scene is optimized for 3D only viewing.
@@ -626,7 +623,7 @@ public class Scene {
     * @readonly
     */
     let id: String
-
+    
     init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
         context = Context(view: view)
@@ -690,6 +687,15 @@ public class Scene {
         }
         _globeDepth = globeDepth
         _oit = oit
+        
+        framerateDisplay = TextRenderer(
+            context: context,
+            string: "CesiumKit",
+            fontName: "HelveticaNeue",
+            color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+            pointSize: 40,
+            rectangle: BoundingRectangle(x: 40, y: 40, width: 500, height: 60)
+        )
         
         camera.scene = self
         let near = camera.frustum.near
@@ -1452,23 +1458,12 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
     }
 
-    public var framerate: String = ""
+    var framerate: String = ""
     
-    func executeTestTextCommand(passState: PassState) {
-        if text == nil {
-            text = TextRenderer(
-                context: context,
-                string: "CesiumKit",
-                fontName: "HelveticaNeue",
-                color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
-                pointSize: 30,
-                rectangle: BoundingRectangle(x: 40, y: 40, width: 2800, height: 1000)
-            )
-        }
-        text.rectangle = BoundingRectangle(x: 40, y: 40, width: 2800, height: 1000)
+    func updateFramerate (passState: PassState) {
         
-        text.string = "CesiumKit: \(context.width)x\(context.height)@\(framerate)"
-        if let command = text.update(frameState) {
+        framerateDisplay.string = "\(framerate)"
+        if let command = framerateDisplay.update(frameState) {
             _clearNullCommand.execute(context, passState: passState)
             let textRenderPass = context.createRenderPass(passState)
             command.execute(context, renderPass: textRenderPass)
@@ -1572,7 +1567,8 @@ function callAfterRenderFunctions(frameState) {
         executeOffscreenCommands()
         executeCommands(passState, clearColor: backgroundColor)
         executeOverlayCommands(passState)
-        executeTestTextCommand(passState)
+        
+        updateFramerate(passState)
         
         /*frameState.creditDisplay.endFrame();
         
