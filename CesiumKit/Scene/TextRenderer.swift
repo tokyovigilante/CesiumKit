@@ -68,7 +68,7 @@ class TextRenderer {
             normalize: false)
     ]
     
-    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle) {
+    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle, offscreenTarget: Bool = false) {
         
         self.string = string
         _pointSize = pointSize
@@ -96,7 +96,7 @@ class TextRenderer {
             compiledMetalFragmentName: "text_fragment_shade",
             uniformStructSize: strideof(TextUniforms),
             vertexDescriptor: VertexDescriptor(attributes: _attributes),
-            depthStencil: context.depthTexture,
+            depthStencil: offscreenTarget ? false : context.depthTexture,
             blendingState: blendingState
         )
         

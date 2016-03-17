@@ -299,13 +299,17 @@ class ShaderProgram {
         }
         
         let map = command.uniformMap ?? nullUniformMap
+        
         for uniform in _vertexUniforms {
             setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
         }
-
+        
         for uniform in _fragmentUniforms {
             setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
         }
+    
+        command.uniformBufferProvider.signalWriteComplete()
+
         var textures = [Texture]()
         
         var texturesValid = true
@@ -321,6 +325,7 @@ class ShaderProgram {
         #endif
         let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
         return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
+
     }
 
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {

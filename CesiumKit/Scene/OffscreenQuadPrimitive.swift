@@ -52,7 +52,7 @@ public class OffscreenQuadPrimitive: Primitive {
     }
     
     public func addString (string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle) -> Int {
-        let text = TextRenderer(context: _context, string: string, fontName: fontName, color: color, pointSize: pointSize, rectangle: rectangle)
+        let text = TextRenderer(context: _context, string: string, fontName: fontName, color: color, pointSize: pointSize, rectangle: rectangle, offscreenTarget: true)
         _text.append(text)
         return _text.count-1
     }
