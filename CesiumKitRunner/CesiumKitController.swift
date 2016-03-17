@@ -21,10 +21,6 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     private let _fontName = "HelveticaNeue"
     private let _fontSize: Float = 36
     
-    private var _lastRenderTime: UInt64 = 0
-    private var _lastUpdateTime: UInt64 = 0
-    private var _avgFPS = 0.0
-
     init (view: MTKView) {
         
         _view = view
@@ -78,6 +74,16 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         )
         _globe.scene.primitives.add(labels)*/
         
+        let window = _globe.scene.addOffscreenQuad(width: 400, height: 400)
+        
+        let blue = Color(fromRed: 40/255, green: 144/255, blue: 252/255, alpha: 1.0)
+        let viewportFabric = ColorFabricDescription(color: Color(fromRed: 40/255, green: 144/255, blue: 252/255, alpha: 1.0))
+        let material = Material(fromType: ColorMaterialType(fabric: viewportFabric))
+
+        window.addRectangle(x: 50, y: 50, width: 50, height: 50, material: material)
+        
+        window.addString("Test", fontName: "HelveticaNeue", color: blue, pointSize: 20, rectangle: BoundingRectangle(x: 110, y: 50, width: 600, height: 50))
+        
         super.init()
     }
     
@@ -90,9 +96,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func drawInMTKView(view: MTKView) {
-        
-        updateFramerate()
-        
+                
         #if os(iOS)
             view.contentScaleFactor = 1.0
             let scaleFactor = view.contentScaleFactor
@@ -116,26 +120,5 @@ class CesiumKitController: NSObject, MTKViewDelegate {
          _metalView.metalLayer.contentsScale = scale
          _metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
          _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
-    }
-    
-    func updateFramerate () {
-        let currentTime = mach_absolute_time()
-        
-        var info = mach_timebase_info_data_t()
-        if mach_timebase_info(&info) != KERN_SUCCESS {
-            print("mach_timebase_info failed\n")
-            return
-        }
-        let timebase = (Double(info.numer) / Double(info.denom)) / Double(NSEC_PER_SEC)
-        let elapsed = Double(currentTime - _lastRenderTime) * timebase
-        let updateElapsed = Double(currentTime - _lastUpdateTime) * timebase
-        _lastRenderTime = currentTime
-        
-        let fps = 1.0 / elapsed
-        _avgFPS = 0.9 * _avgFPS + 0.1 * fps
-        if updateElapsed > 0.1 {
-            _globe.scene.framerate = String(format: "%.1f fps", _avgFPS)
-            _lastUpdateTime = currentTime
-        }
     }
 }
