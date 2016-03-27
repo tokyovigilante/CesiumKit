@@ -133,7 +133,8 @@ class DepthPlane {
                             device: context.device,
                             array: depthQuad,
                             componentDatatype: .Float32,
-                            sizeInBytes: depthQuad.sizeInBytes
+                            sizeInBytes: depthQuad.sizeInBytes,
+                            label: "DepthPlaneGeometry"
                         )
                     )
                     
