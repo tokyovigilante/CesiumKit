@@ -820,7 +820,7 @@ class UniformState {
         setInverseView(camera.inverseViewMatrix)
         setCamera(camera)
         
-        if frameState.mode == SceneMode.Scene2D {
+        if self.frameState.mode == SceneMode.Scene2D {
             _frustum2DWidth = camera.frustum.right - camera.frustum.left
             _eyeHeight2D.x = _frustum2DWidth * 0.5
             _eyeHeight2D.y = _eyeHeight2D.x * _eyeHeight2D.x
@@ -831,13 +831,13 @@ class UniformState {
         }
         
         //FIXME: setSunAndMoonDirections
-        setSunAndMoonDirections(frameState)
+        setSunAndMoonDirections(self.frameState)
         
         _entireFrustum.x = camera.frustum.near
         _entireFrustum.y = camera.frustum.far
         updateFrustum(camera.frustum)
         
-        _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time!)
+        _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(self.frameState.time!)
     }
     
     func cleanViewport() {

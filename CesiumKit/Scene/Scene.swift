@@ -666,10 +666,6 @@ public class Scene {
             initialWidth: Double(view.drawableSize.width),
             initialHeight: Double(view.drawableSize.height)
         )
-
-        #if os(iOS)
-        touchEventHandler = TouchEventHandler(scene: self, view: view)
-        #endif
         
         let globeDepth: GlobeDepth?
         
@@ -696,6 +692,10 @@ public class Scene {
             pointSize: 40,
             rectangle: BoundingRectangle(x: 40, y: 40, width: 500, height: 60)
         )
+                
+        #if os(iOS)
+            touchEventHandler = TouchEventHandler(scene: self, view: view)
+        #endif
         
         camera.scene = self
         let near = camera.frustum.near

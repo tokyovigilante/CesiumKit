@@ -123,7 +123,7 @@ public class Clock {
         multiplier: Double = 1.0,
         canAnimate: Bool = true,
         shouldAnimate: Bool = true,
-        isUTC: Bool) {
+        isUTC: Bool = false) {
             var startTime: JulianDate? = startTime
             let startTimeUndefined = startTime == nil
             
