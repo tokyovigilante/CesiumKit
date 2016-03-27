@@ -810,9 +810,10 @@ class UniformState {
     */
     func update(context: Context, frameState: FrameState) {
         
-        _mode = frameState.mode
-        _mapProjection = frameState.mapProjection
-        
+        self.frameState = frameState
+        _mode = self.frameState.mode
+        _mapProjection = self.frameState.mapProjection
+
         let camera = frameState.camera!
         
         setView(camera.viewMatrix)
@@ -836,7 +837,6 @@ class UniformState {
         _entireFrustum.y = camera.frustum.far
         updateFrustum(camera.frustum)
         
-        self.frameState = frameState
         _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(frameState.time!)
     }
     
