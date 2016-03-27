@@ -291,10 +291,11 @@ class ShaderProgram {
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
-        let buffer = command.uniformBufferProvider.nextBuffer()
+        let buffer = command.uniformBufferProvider.advanceBuffer()
 
         if  nativeMetalUniforms {
             let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
+            command.uniformBufferProvider.signalWriteComplete()
             return (buffer: buffer, fragmentOffset: 0, texturesValid: true, textures: textures)
         }
         
