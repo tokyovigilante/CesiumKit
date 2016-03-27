@@ -27,7 +27,7 @@ class ComputeEngine {
             // attribute vec4 position;
             VertexAttributes(
                 buffer: nil,
-                bufferIndex: 1,
+                bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 0,
                 format: .Float4,
                 offset: 0,
@@ -36,7 +36,7 @@ class ComputeEngine {
             // attribute vec2 textureCoordinates;
             VertexAttributes(
                 buffer: nil,
-                bufferIndex: 1,
+                bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 1,
                 format: .Float2,
                 offset: 16,

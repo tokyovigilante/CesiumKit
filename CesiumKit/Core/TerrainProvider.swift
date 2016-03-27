@@ -183,7 +183,7 @@ extension TerrainProvider {
             //position3DAndHeight
             VertexAttributes(
                 buffer: nil,
-                bufferIndex: 1,
+                bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 0,
                 format: .Float4,
                 offset: 0,
@@ -192,7 +192,7 @@ extension TerrainProvider {
             // texCoordAndEncodedNormals
             VertexAttributes(
                 buffer: nil,
-                bufferIndex: 1,
+                bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 1,
                 format: hasVertexNormals ? .Float3 : .Float2,
                 offset: position3DAndHeightLength * datatype.elementSize,

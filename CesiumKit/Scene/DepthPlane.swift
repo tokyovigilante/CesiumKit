@@ -89,7 +89,7 @@ class DepthPlane {
             // position
             _attributes = [VertexAttributes(
                 buffer: nil,
-                bufferIndex: 1,
+                bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 0,
                 format: .Float3,
                 offset: 0,

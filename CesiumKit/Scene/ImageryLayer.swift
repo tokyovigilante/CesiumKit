@@ -767,7 +767,7 @@ public class ImageryLayer {
                 //position
                 VertexAttributes(
                     buffer: vertexBuffer,
-                    bufferIndex: 1,
+                    bufferIndex: VertexDescriptorFirstBufferOffset,
                     index: 0,
                     format: .Float2,
                     offset: 0,
@@ -777,7 +777,7 @@ public class ImageryLayer {
                 // webMercatorT
                 VertexAttributes(
                     buffer: nil,
-                    bufferIndex: 2,
+                    bufferIndex: VertexDescriptorFirstBufferOffset+1,
                     index: 1,
                     format: .Float,
                     offset: 0,

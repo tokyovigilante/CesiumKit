@@ -118,7 +118,7 @@ class VertexArray {
                         // Common case: per-vertex attributes
                         vertexAttributes.append(VertexAttributes(
                             buffer: vaCount == 0 ? vertexBuffer : nil,
-                            bufferIndex: 1,
+                            bufferIndex: VertexDescriptorFirstBufferOffset,
                             index: vaCount,
                             format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
                             offset: offsetsInBytes[vaCount],
@@ -166,7 +166,7 @@ class VertexArray {
                 
                 vertexAttributes.append(VertexAttributes(
                     buffer: vertexBuffer,
-                    bufferIndex: vaCount+1, // uniform buffer is [0]
+                    bufferIndex: VertexDescriptorFirstBufferOffset + vaCount, // uniform buffer is [0]
                     index: 0,
                     format: geometryAttribute.componentDatatype.toVertexType(geometryAttribute.componentsPerAttribute),
                     offset: 0,

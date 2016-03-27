@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
+let VertexDescriptorFirstBufferOffset = 1
+
 struct VertexAttributes {
     var buffer: Buffer?
     let bufferIndex: Int

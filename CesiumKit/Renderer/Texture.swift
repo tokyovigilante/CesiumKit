@@ -431,7 +431,7 @@ public class Texture {
         assert(mipmapped, "mipmapping must be enabled during texture creation")
         let blitEncoder = context.createBlitCommandEncoder(completionBlock)
         blitEncoder.generateMipmapsForTexture(metalTexture)
-        blitEncoder.endEncoding()
+        context.completeBlitPass(blitEncoder)
     }
 
 }

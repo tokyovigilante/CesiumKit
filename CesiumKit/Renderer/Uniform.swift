@@ -201,8 +201,9 @@ struct AutomaticUniform {
 }
 
 enum UniformType {
-    case Manual, // u_
-    Automatic, // czm_
+    case Automatic, // czm_a
+    Frustum, // czm_f
+    Manual, // u_
     Sampler
 }
 

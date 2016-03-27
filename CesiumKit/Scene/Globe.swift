@@ -145,36 +145,6 @@ class Globe {
         
     }
     
-    /*func updateVertexDescriptor () -> VertexDescriptor {
-        let datatype = ComponentDatatype.Float32
-        let numTexCoordComponents: Int
-        if terrainProvider.hasVertexNormals {
-            numTexCoordComponents = 3
-        } else {
-            numTexCoordComponents = 2
-        }
-        
-        let position3DAndHeightLength = 4
-        
-        let attributes = [
-            //position3DAndHeight
-            VertexAttributes(
-                bufferIndex: 1,
-                format: .Float4,
-                offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize),
-            // texCoordAndEncodedNormals
-            VertexAttributes(
-                bufferIndex: 1,
-                format: terrainProvider.hasVertexNormals ? .Float3 : .Float2,
-                offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize)
-        ]
-        
-        return VertexDescriptor(attributes: attributes)
-    }*/
-
-    
     func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
         func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
             let aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)

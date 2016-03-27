@@ -199,6 +199,17 @@ class ShaderProgram {
         }
     }
     
+    private func uniformType (desc: GLSLShaderVariableDescription) -> UniformType {
+        if desc.name.hasPrefix("czm_a_") {
+            return .Automatic
+        }
+        if desc.name.hasPrefix("czm_f_") {
+            return .Frustum
+        }
+        return .Manual
+    }
+
+    
     private func findUniforms() {
         _vertexUniforms = [Uniform]()
         let vertexUniformCount = _vertexShader.uniformCount()
@@ -353,6 +364,8 @@ class ShaderProgram {
             let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
             uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
             
+        case .Frustum:
+            return
         case .Manual:
             guard let index = uniform.mapIndex else {
                 guard let index = map.indexForUniform(uniform.name) else {
