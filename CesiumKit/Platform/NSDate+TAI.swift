@@ -8,6 +8,14 @@
 
 import Foundation
 
+private let _gregorianGMTCalendar: NSCalendar = {
+    let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    calendar.timeZone = NSTimeZone(forSecondsFromGMT: 0)
+    return calendar
+}()
+
+
+
 extension NSDate {
     
     /**
@@ -62,8 +70,7 @@ extension NSDate {
         // Algorithm from page 604 of the Explanatory Supplement to the
         // Astronomical Almanac (Seidelmann 1992).
         
-        let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        calendar.timeZone = NSTimeZone(forSecondsFromGMT: 0)
+        let calendar = _gregorianGMTCalendar
         let dateComponents = calendar.components([.Year, .Month, .Day, .Hour, .Minute, .Second, .Nanosecond], fromDate: self)
         
         let a = ((dateComponents.month - 14) / 12) | 0
