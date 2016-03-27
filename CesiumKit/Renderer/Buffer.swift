@@ -45,8 +45,9 @@ class Buffer {
                 metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeShared)
             #endif
         }
-        
-        metalBuffer.label = label
+        if let label = label {
+            metalBuffer.label = label
+        }
         
         self.componentDatatype = componentDatatype
         self.length = sizeInBytes
