@@ -55,7 +55,7 @@ public struct Cartesian3 {
         }
         set (new) {
             simdType.z = new
-            floatRepresentation[1] = Float(new)
+            floatRepresentation[2] = Float(new)
         }
     }
     
@@ -567,9 +567,12 @@ extension Cartesian3: Packable {
     init(fromArray array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+        self.x = array[startingIndex]
+        self.y = array[startingIndex+1]
+        self.z = array[startingIndex+2]
+        /*array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
             memcpy(&self, pointer.baseAddress, Cartesian3.packedLength() * strideof(Double))
-        }
+        }*/
     }
     
     func toArray() -> [Double] {

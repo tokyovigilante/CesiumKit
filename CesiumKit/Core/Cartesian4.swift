@@ -431,9 +431,13 @@ extension Cartesian4: Packable {
     init(fromArray array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+        self.x = array[startingIndex]
+        self.y = array[startingIndex+1]
+        self.z = array[startingIndex+2]
+        self.w = array[startingIndex+3]
+        /*array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
             memcpy(&self, pointer.baseAddress, Cartesian4.packedLength() * strideof(Double))
-        }
+        }*/
     }
 }
 

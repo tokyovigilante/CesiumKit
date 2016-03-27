@@ -392,9 +392,11 @@ extension Cartesian2: Packable {
     init(fromArray array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
-            memcpy(&self, pointer.baseAddress, Cartesian2.packedLength() * strideof(Double))
-        }
+        self.x = array[startingIndex]
+        self.y = array[startingIndex+1]
+        /*array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+            memcpy(&self, pointer.baseAddress, Cartesian2.packedLength() * sizeof(Double))
+        }*/
     }
 }
 
