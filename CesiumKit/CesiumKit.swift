@@ -494,11 +494,11 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     */
     public func render(size: CGSize) {
         
+        updateFramerate()
         resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
         scene.initializeFrame()
         let currentTime = clock.tick()
         if _canRender {
-            updateFramerate()
             scene.render(currentTime)
         }
     }
