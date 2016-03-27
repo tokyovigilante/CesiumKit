@@ -48,9 +48,7 @@ public struct CesiumOptions {
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
         mapProjection: MapProjection = GeographicProjection(),
-        targetFrameRate: Int = 60,
-        showRenderLoopErrors: Bool = true,
-        resolutionScale: Double = 0.5)
+        showRenderLoopErrors: Bool = true)
     {
         self.clock = clock
         self.imageryProvider = imageryProvider
