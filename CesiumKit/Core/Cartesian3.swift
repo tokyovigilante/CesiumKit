@@ -8,7 +8,6 @@
 
 import Foundation
 import simd
-import GLKit
 
 /**
 * A 3D Cartesian point.

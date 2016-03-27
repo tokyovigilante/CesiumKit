@@ -141,7 +141,6 @@ class SkyBox {
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
-
             )
             
             _command.renderState = RenderState(

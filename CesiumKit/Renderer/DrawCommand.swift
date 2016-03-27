@@ -108,14 +108,6 @@ class DrawCommand: Command {
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))? = nil
     
     /**
-    * The framebuffer to draw to.
-    *
-    * @type {Framebuffer}
-    * @default undefined
-    */
-    var framebuffer: Framebuffer? = nil
-    
-    /**
      * The render state.
      *
      * @type {RenderState}
@@ -195,7 +187,6 @@ class DrawCommand: Command {
         count: Int? = nil,
         offset: Int = 0,
         uniformMap: UniformMap? = nil,
-        framebuffer: Framebuffer? = nil,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
         pass: Pass = .Globe,

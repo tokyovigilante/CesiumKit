@@ -9,6 +9,7 @@
 import Foundation
 import CoreGraphics
 import CoreText
+import Metal
 
 
 // This is the size at which the font atlas will be generated, ideally a large power of two. Even though
@@ -61,7 +62,18 @@ final class FontAtlas: JSONEncodable {
     
     private var _textureData = [UInt8]()
     
-    private (set) var texture: Texture! = nil
+    private (set) var ready = false
+    
+    private var _waitingForMipmaps = false
+    
+    var texture: Texture? {
+        if !ready {
+            return nil
+        }
+        return _texture
+    }
+    
+    private var _texture: Texture! = nil
     
     private var MBE_GENERATE_DEBUG_ATLAS_IMAGE = true
 
@@ -72,13 +84,19 @@ final class FontAtlas: JSONEncodable {
         _fontPointSize = Int(ceilf(Float(pointSize)))
         _textureSize = textureSize
         _spread = estimatedLineWidthForFont(parentFont) * 0.5
-        createTextureData()
-        createTexture(context)
+        
+        dispatch_async(context.processorQueue, {
+            self.createTextureData()
+            self.createTexture(context)
+        })
     }
     
     internal convenience init (fromJSON json: JSON, context: Context) throws {
         try self.init(fromJSON: json)
-        createTexture(context)
+        
+        dispatch_async(context.processorQueue, {
+            self.createTexture(context)
+        })
     }
     
     internal init(fromJSON json: JSON) throws {
@@ -483,15 +501,17 @@ final class FontAtlas: JSONEncodable {
             height: _textureSize,
             bytesPerPixel: 1)
         let source: TextureSource = .Buffer(imageBuffer)
-        let sampler = Sampler(context: context, wrapS: .ClampToZero, wrapT: .ClampToZero)
+        let sampler = Sampler(context: context, wrapS: .ClampToZero, wrapT: .ClampToZero, mipMagFilter: .Linear)
         let options = TextureOptions(
             source: source,
             pixelFormat: .R8Unorm,
             usage: TextureUsage.ShaderRead,
+            mipmapped: true,
             sampler: sampler)
-        texture = Texture(context: context, options: options)
+        _texture = Texture(context: context, options: options)
+        _waitingForMipmaps = true
     }
-    
+        
     class func fromCache(context: Context, fontName: String, pointSize: Int) -> FontAtlas {
         
         if let atlas = _cache[fontName] {
@@ -544,6 +564,15 @@ final class FontAtlas: JSONEncodable {
             print("Atlas cache write failed: \(error.localizedDescription)")
         }
         return atlas
+    }
+    
+    class func generateMipmapsIfRequired (context: Context) {
+        for atlas in _cache.values {
+            if atlas._waitingForMipmaps {
+                atlas._waitingForMipmaps = false
+                atlas._texture.generateMipmaps(context, completionBlock: { buffer in atlas.ready = true })
+            }
+        }
     }
 }
  

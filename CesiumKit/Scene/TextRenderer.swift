@@ -34,12 +34,14 @@ class TextRenderer {
     private let _fontAtlas: FontAtlas
     
     var string: String
-
+    
     private var _string: String = " "
     
-    private let _pointSize: Int
-    
     var rectangle: BoundingRectangle
+    
+    private var _rectangle = BoundingRectangle(x: Double.infinity, y: Double.infinity, width: Double.infinity, height: Double.infinity)
+    
+    private let _pointSize: Int
     
     private var _rs: RenderState! = nil
     
@@ -98,13 +100,13 @@ class TextRenderer {
             blendingState: blendingState
         )
         
-        _command.metalUniformUpdateBlock = { (buffer: Buffer) in
+        _command.metalUniformUpdateBlock = { buffer in
             self._uniforms.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
             /*uniforms.foregroundColor = MBETextColor;*/
             
             memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
             
-            return [self._fontAtlas.texture]
+            return [self._fontAtlas.texture].flatMap( { $0 })
         }
         
         _command.uniformMap = nil
@@ -113,21 +115,25 @@ class TextRenderer {
     
     func update (frameState: FrameState) -> DrawCommand? {
        
-        if !show {
+        if !show || !_fontAtlas.ready {
             return nil
         }
         let context = frameState.context
         
-        if _rs == nil {
+        if _rs == nil || _rectangle != rectangle {
             _rs = RenderState(
-                device: context.device
+                device: context.device,
+                viewport: rectangle
             )
+            _rectangle = rectangle
             _command.renderState = _rs
+            _command.vertexArray = nil
         }
 
         if _command.vertexArray == nil || string != _string {
-            let meshRect = CGRectMake(CGFloat(rectangle.x), CGFloat(rectangle.y), CGFloat(rectangle.width), CGFloat(rectangle.height))
-            _command.vertexArray = buildMesh(context, string: _string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
+            let meshRect = CGRect(x: CGFloat(rectangle.x), y: CGFloat(rectangle.y), width: CGFloat(rectangle.width), height: CGFloat(rectangle.height))
+            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
+            
             _string = string
         }
         
@@ -137,36 +143,13 @@ class TextRenderer {
     
     private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
     {
-        
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
         
-        //let features = CTFontCopyFeatures(font) as NSArray?
-        //let settings = CTFontCopyFeatureSettings(font) as NSArray?
-        //print(features)
-        //print(settings)
-        /*let descriptor = CTFontCopyFontDescriptor(fontAtlas.parentFont)
-        
-        let monspacedFontDict = ([kNumberSpacingType: kMonospacedNumbersSelector] as NSDictionary) as CFDictionary
-        let monspacedTextDict = ([kTextSpacingType: kMonospacedTextSelector] as NSDictionary) as CFDictionary
-
-        let featureArray = [monspacedFontDict, monspacedTextDict] as NSArray
-        
-        let attributeDict = ([(kCTFontFeatureSettingsAttribute as NSString): featureArray] as NSDictionary) as CFDictionary
-        
-        let newDescriptor = CTFontDescriptorCreateWithAttributes(attributeDict)
-
-        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, newDescriptor)*/
         let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
-
-        /*
-        let features = CTFontCopyFeatures(font) as NSArray?
-        let settings = CTFontCopyFeatureSettings(font) as NSArray?
-        //print(features)
-        print(settings)
-        */
+        
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
-
+        
         let rectPath = CGPathCreateWithRect(rect, nil)
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         let frame = CTFramesetterCreateFrame(framesetter, stringRange, rectPath, nil)

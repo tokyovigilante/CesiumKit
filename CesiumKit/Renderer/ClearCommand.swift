@@ -25,7 +25,7 @@ struct ClearCommand {
     *
     * @default undefined
     */
-    var color: Cartesian4?
+    var color: Color?
     
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
