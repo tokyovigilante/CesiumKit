@@ -31,9 +31,6 @@ class FrustumCommands {
     
     func removeAll() {
         commands = (0..<Pass.count).map { _ in [DrawCommand]() }
-        /*for i in 0..<Pass.count {
-            commands[Pass(rawValue: i)!] = [DrawCommand]()
-        }*/
     }
     
 }

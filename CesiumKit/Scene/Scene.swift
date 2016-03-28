@@ -893,8 +893,7 @@ public class Scene {
         if near != Double.infinity &&
             (numFrustums != numberOfFrustums ||
                 (_frustumCommandsList.count != 0 &&
-                    (near < (_frustumCommandsList.first! as FrustumCommands).near
-                        || far > (_frustumCommandsList.last! as FrustumCommands).far)
+                    (near < (_frustumCommandsList.first! as FrustumCommands).near || far > (_frustumCommandsList.last! as FrustumCommands).far)
                 )
             ) {
                 updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
