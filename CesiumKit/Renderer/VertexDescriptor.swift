@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-let VertexDescriptorFirstBufferOffset = 1
+let VertexDescriptorFirstBufferOffset = 3 // auto = 0, frustum = 1, manual = 2
 
 struct VertexAttributes {
     var buffer: Buffer?

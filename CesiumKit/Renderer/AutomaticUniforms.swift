@@ -21,20 +21,20 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * and <code>height</code> properties in an <code>vec4</code>'s <code>x</code>, <code>y</code>, <code>z</code>,
      * and <code>w</code> components, respectively.
      *
-     * @alias czm_viewport
+     * @alias czm_f_viewport
      * @glslUniform
      *
      * @see Context#getViewport
      *
      * @example
      * // GLSL declaration
-     * uniform vec4 czm_viewport;
+     * uniform vec4 czm_f_viewport;
      *
      * // Scale the window coordinate components to [0, 1] by dividing
      * // by the viewport's width and height.
-     * vec2 v = gl_FragCoord.xy / czm_viewport.zw;
+     * vec2 v = gl_FragCoord.xy / czm_f_viewport.zw;
      */
-    "czm_viewport": AutomaticUniform(
+    "czm_f_viewport": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -51,26 +51,26 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * This transform is useful when a vertex shader inputs or manipulates window coordinates
      * as done by {@link BillboardCollection}.
      * <br /><br />
-     * Do not confuse {@link czm_viewportTransformation} with <code>czm_viewportOrthographic</code>.
+     * Do not confuse {@link czm_f_viewportTransformation} with <code>czm_f_viewportOrthographic</code>.
      * The former transforms from normalized device coordinates to window coordinates; the later transforms
      * from window coordinates to clip coordinates, and is often used to assign to <code>gl_Position</code>.
      *
-     * @alias czm_viewportOrthographic
+     * @alias czm_f_viewportOrthographic
      * @glslUniform
      *
      * @see UniformState#viewportOrthographic
-     * @see czm_viewport
-     * @see czm_viewportTransformation
+     * @see czm_f_viewport
+     * @see czm_f_viewportTransformation
      * @see BillboardCollection
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_viewportOrthographic;
+     * uniform mat4 czm_f_viewportOrthographic;
      *
      * // Example
-     * gl_Position = czm_viewportOrthographic * vec4(windowPosition, 0.0, 1.0);
+     * gl_Position = czm_f_viewportOrthographic * vec4(windowPosition, 0.0, 1.0);
      */
-    "czm_viewportOrthographic":  AutomaticUniform(
+    "czm_f_viewportOrthographic":  AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -90,31 +90,31 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * this matrix will not be used directly; instead, {@link czm_modelToWindowCoordinates}
      * will be used to transform directly from model to window coordinates.
      * <br /><br />
-     * Do not confuse <code>czm_viewportTransformation</code> with {@link czm_viewportOrthographic}.
+     * Do not confuse <code>czm_f_viewportTransformation</code> with {@link czm_f_viewportOrthographic}.
      * The former transforms from normalized device coordinates to window coordinates; the later transforms
      * from window coordinates to clip coordinates, and is often used to assign to <code>gl_Position</code>.
      *
-     * @alias czm_viewportTransformation
+     * @alias czm_f_viewportTransformation
      * @glslUniform
      *
      * @see UniformState#viewportTransformation
-     * @see czm_viewport
-     * @see czm_viewportOrthographic
+     * @see czm_f_viewport
+     * @see czm_f_viewportOrthographic
      * @see czm_modelToWindowCoordinates
      * @see BillboardCollection
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_viewportTransformation;
+     * uniform mat4 czm_f_viewportTransformation;
      *
-     * // Use czm_viewportTransformation as part of the
+     * // Use czm_f_viewportTransformation as part of the
      * // transform from model to window coordinates.
-     * vec4 q = czm_modelViewProjection * positionMC;               // model to clip coordinates
+     * vec4 q = czm_f_modelViewProjection * positionMC;               // model to clip coordinates
      * q.xyz /= q.w;                                                // clip to normalized device coordinates (ndc)
-     * q.xyz = (czm_viewportTransformation * vec4(q.xyz, 1.0)).xyz; // ndc to window coordinates
+     * q.xyz = (czm_f_viewportTransformation * vec4(q.xyz, 1.0)).xyz; // ndc to window coordinates
      */
     
-    "czm_viewportTransformation": AutomaticUniform(
+    "czm_f_viewportTransformation": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -137,7 +137,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * uniform sampler2D czm_globeDepthTexture;
      *
      * // Get the depth at the current fragment
-     * vec2 coords = gl_FragCoord.xy / czm_viewport.zw;
+     * vec2 coords = gl_FragCoord.xy / czm_f_viewport.zw;
      * float depth = czm_unpackDepth(texture2D(czm_globeDepthTexture, coords));
      */
      czm_globeDepthTexture : new AutomaticUniform({
@@ -157,8 +157,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @see UniformState#model
      * @see czm_inverseModel
-     * @see czm_modelView
-     * @see czm_modelViewProjection
+     * @see czm_f_modelView
+     * @see czm_f_modelViewProjection
      *
      * @example
      * // GLSL declaration
@@ -184,7 +184,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @see UniformState#inverseModel
      * @see czm_model
-     * @see czm_inverseModelView
+     * @see czm_f_inverseModelView
      *
      * @example
      * // GLSL declaration
@@ -205,24 +205,24 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 4x4 view transformation matrix that
      * transforms world coordinates to eye coordinates.
      *
-     * @alias czm_view
+     * @alias czm_f_view
      * @glslUniform
      *
      * @see UniformState#view
-     * @see czm_viewRotation
-     * @see czm_modelView
+     * @see czm_a_viewRotation
+     * @see czm_f_modelView
      * @see czm_viewProjection
-     * @see czm_modelViewProjection
+     * @see czm_f_modelViewProjection
      * @see czm_inverseView
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_view;
+     * uniform mat4 czm_f_view;
      *
      * // Example
-     * vec4 eyePosition = czm_view * worldPosition;
+     * vec4 eyePosition = czm_f_view * worldPosition;
      */
-    "czm_view": AutomaticUniform(
+    "czm_f_view": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -234,7 +234,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      /**
      * An automatic GLSL uniform representing a 4x4 view transformation matrix that
      * transforms 3D world coordinates to eye coordinates.  In 3D mode, this is identical to
-     * {@link czm_view}, but in 2D and Columbus View it represents the view matrix
+     * {@link czm_f_view}, but in 2D and Columbus View it represents the view matrix
      * as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
      * 2D and Columbus View in the same way that 3D is lit.
      *
@@ -242,7 +242,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#view3D
-     * @see czm_view
+     * @see czm_f_view
      *
      * @example
      * // GLSL declaration
@@ -263,22 +263,22 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 3x3 view rotation matrix that
      * transforms vectors in world coordinates to eye coordinates.
      *
-     * @alias czm_viewRotation
+     * @alias czm_a_viewRotation
      * @glslUniform
      *
      * @see UniformState#viewRotation
-     * @see czm_view
+     * @see czm_f_view
      * @see czm_inverseView
      * @see czm_inverseViewRotation
      *
      * @example
      * // GLSL declaration
-     * uniform mat3 czm_viewRotation;
+     * uniform mat3 czm_a_viewRotation;
      *
      * // Example
-     * vec3 eyeVector = czm_viewRotation * worldVector;
+     * vec3 eyeVector = czm_a_viewRotation * worldVector;
      */
-    "czm_viewRotation": AutomaticUniform(
+    "czm_a_viewRotation": AutomaticUniform(
         size: 1,
         datatype: .FloatMatrix3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -290,7 +290,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      /**
      * An automatic GLSL uniform representing a 3x3 view rotation matrix that
      * transforms vectors in 3D world coordinates to eye coordinates.  In 3D mode, this is identical to
-     * {@link czm_viewRotation}, but in 2D and Columbus View it represents the view matrix
+     * {@link czm_a_viewRotation}, but in 2D and Columbus View it represents the view matrix
      * as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
      * 2D and Columbus View in the same way that 3D is lit.
      *
@@ -298,7 +298,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#viewRotation3D
-     * @see czm_viewRotation
+     * @see czm_a_viewRotation
      *
      * @example
      * // GLSL declaration
@@ -323,7 +323,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#inverseView
-     * @see czm_view
+     * @see czm_f_view
      * @see czm_inverseNormal
      *
      * @example
@@ -377,8 +377,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#inverseView
-     * @see czm_view
-     * @see czm_viewRotation
+     * @see czm_f_view
+     * @see czm_a_viewRotation
      * @see czm_inverseViewRotation
      *
      * @example
@@ -429,22 +429,22 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * transforms eye coordinates to clip coordinates.  Clip coordinates is the
      * coordinate system for a vertex shader's <code>gl_Position</code> output.
      *
-     * @alias czm_projection
+     * @alias czm_f_projection
      * @glslUniform
      *
      * @see UniformState#projection
      * @see czm_viewProjection
-     * @see czm_modelViewProjection
+     * @see czm_f_modelViewProjection
      * @see czm_infiniteProjection
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_projection;
+     * uniform mat4 czm_f_projection;
      *
      * // Example
-     * gl_Position = czm_projection * eyePosition;
+     * gl_Position = czm_f_projection * eyePosition;
      */
-    "czm_projection": AutomaticUniform(
+    "czm_f_projection": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -458,20 +458,20 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * transforms from clip coordinates to eye coordinates. Clip coordinates is the
      * coordinate system for a vertex shader's <code>gl_Position</code> output.
      *
-     * @alias czm_inverseProjection
+     * @alias czm_f_inverseProjection
      * @glslUniform
      *
      * @see UniformState#inverseProjection
-     * @see czm_projection
+     * @see czm_f_projection
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_inverseProjection;
+     * uniform mat4 czm_f_inverseProjection;
      *
      * // Example
-     * vec4 eyePosition = czm_inverseProjection * clipPosition;
+     * vec4 eyePosition = czm_f_inverseProjection * clipPosition;
      */
-    "czm_inverseProjection": AutomaticUniform(
+    "czm_f_inverseProjection": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -502,7 +502,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#infiniteProjection
-     * @see czm_projection
+     * @see czm_f_projection
      * @see czm_modelViewInfiniteProjection
      *
      * @example
@@ -524,29 +524,29 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
      * transforms model coordinates to eye coordinates.
      * <br /><br />
-     * Positions should be transformed to eye coordinates using <code>czm_modelView</code> and
-     * normals should be transformed using {@link czm_normal}.
+     * Positions should be transformed to eye coordinates using <code>czm_f_modelView</code> and
+     * normals should be transformed using {@link czm_f_normal}.
      *
-     * @alias czm_modelView
+     * @alias czm_f_modelView
      * @glslUniform
      *
      * @see UniformState#modelView
      * @see czm_model
-     * @see czm_view
-     * @see czm_modelViewProjection
-     * @see czm_normal
+     * @see czm_f_view
+     * @see czm_f_modelViewProjection
+     * @see czm_f_normal
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_modelView;
+     * uniform mat4 czm_f_modelView;
      *
      * // Example
-     * vec4 eyePosition = czm_modelView * modelPosition;
+     * vec4 eyePosition = czm_f_modelView * modelPosition;
      *
      * // The above is equivalent to, but more efficient than:
-     * vec4 eyePosition = czm_view * czm_model * modelPosition;
+     * vec4 eyePosition = czm_f_view * czm_model * modelPosition;
      */
-    "czm_modelView" : AutomaticUniform(
+    "czm_f_modelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -558,30 +558,30 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     /**
      * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
      * transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
-     * {@link czm_modelView}, but in 2D and Columbus View it represents the model-view matrix
+     * {@link czm_f_modelView}, but in 2D and Columbus View it represents the model-view matrix
      * as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
      * 2D and Columbus View in the same way that 3D is lit.
      * <br /><br />
-     * Positions should be transformed to eye coordinates using <code>czm_modelView3D</code> and
-     * normals should be transformed using {@link czm_normal3D}.
+     * Positions should be transformed to eye coordinates using <code>czm_f_modelView3D</code> and
+     * normals should be transformed using {@link czm_f_normal3D}.
      *
-     * @alias czm_modelView3D
+     * @alias czm_f_modelView3D
      * @glslUniform
      *
      * @see UniformState#modelView3D
-     * @see czm_modelView
+     * @see czm_f_modelView
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_modelView3D;
+     * uniform mat4 czm_f_modelView3D;
      *
      * // Example
-     * vec4 eyePosition = czm_modelView3D * modelPosition;
+     * vec4 eyePosition = czm_f_modelView3D * modelPosition;
      *
      * // The above is equivalent to, but more efficient than:
      * vec4 eyePosition = czm_view3D * czm_model * modelPosition;
      */
-    "czm_modelView3D": AutomaticUniform(
+    "czm_f_modelView3D": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -609,7 +609,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * void main()
      * {
      *   vec4 p = czm_translateRelativeToEye(positionHigh, positionLow);
-     *   gl_Position = czm_projection * (czm_modelViewRelativeToEye * p);
+     *   gl_Position = czm_f_projection * (czm_modelViewRelativeToEye * p);
      * }
      *
      * @see czm_modelViewProjectionRelativeToEye
@@ -628,20 +628,20 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 4x4 transformation matrix that
      * transforms from eye coordinates to model coordinates.
      *
-     * @alias czm_inverseModelView
+     * @alias czm_f_inverseModelView
      * @glslUniform
      *
      * @see UniformState#inverseModelView
-     * @see czm_modelView
+     * @see czm_f_modelView
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_inverseModelView;
+     * uniform mat4 czm_f_inverseModelView;
      *
      * // Example
-     * vec4 modelPosition = czm_inverseModelView * eyePosition;
+     * vec4 modelPosition = czm_f_inverseModelView * eyePosition;
      */
-    "czm_inverseModelView" : AutomaticUniform(
+    "czm_f_inverseModelView" : AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -654,7 +654,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      /**
      * An automatic GLSL uniform representing a 4x4 transformation matrix that
      * transforms from eye coordinates to 3D model coordinates.  In 3D mode, this is identical to
-     * {@link czm_inverseModelView}, but in 2D and Columbus View it represents the inverse model-view matrix
+     * {@link czm_f_inverseModelView}, but in 2D and Columbus View it represents the inverse model-view matrix
      * as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
      * 2D and Columbus View in the same way that 3D is lit.
      *
@@ -662,8 +662,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#inverseModelView
-     * @see czm_inverseModelView
-     * @see czm_modelView3D
+     * @see czm_f_inverseModelView
+     * @see czm_f_modelView3D
      *
      * @example
      * // GLSL declaration
@@ -689,9 +689,9 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#viewProjection
-     * @see czm_view
-     * @see czm_projection
-     * @see czm_modelViewProjection
+     * @see czm_f_view
+     * @see czm_f_projection
+     * @see czm_f_modelViewProjection
      * @see czm_inverseViewProjection
      *
      * @example
@@ -702,7 +702,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * vec4 gl_Position = czm_viewProjection * czm_model * modelPosition;
      *
      * // The above is equivalent to, but more efficient than:
-     * gl_Position = czm_projection * czm_view * czm_model * modelPosition;
+     * gl_Position = czm_f_projection * czm_f_view * czm_model * modelPosition;
      */
      czm_viewProjection : new AutomaticUniform({
      size : 1,
@@ -743,29 +743,29 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * transforms model coordinates to clip coordinates.  Clip coordinates is the
      * coordinate system for a vertex shader's <code>gl_Position</code> output.
      *
-     * @alias czm_modelViewProjection
+     * @alias czm_f_modelViewProjection
      * @glslUniform
      *
      * @see UniformState#modelViewProjection
      * @see czm_model
-     * @see czm_view
-     * @see czm_projection
-     * @see czm_modelView
+     * @see czm_f_view
+     * @see czm_f_projection
+     * @see czm_f_modelView
      * @see czm_viewProjection
      * @see czm_modelViewInfiniteProjection
      * @see czm_inverseModelViewProjection
      *
      * @example
      * // GLSL declaration
-     * uniform mat4 czm_modelViewProjection;
+     * uniform mat4 czm_f_modelViewProjection;
      *
      * // Example
-     * vec4 gl_Position = czm_modelViewProjection * modelPosition;
+     * vec4 gl_Position = czm_f_modelViewProjection * modelPosition;
      *
      * // The above is equivalent to, but more efficient than:
-     * gl_Position = czm_projection * czm_view * czm_model * modelPosition;
+     * gl_Position = czm_f_projection * czm_f_view * czm_model * modelPosition;
      */
-    "czm_modelViewProjection": AutomaticUniform(
+    "czm_f_modelViewProjection": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -783,7 +783,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#modelViewProjection
-     * @see czm_modelViewProjection
+     * @see czm_f_modelViewProjection
      *
      * @example
      * // GLSL declaration
@@ -847,9 +847,9 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @see UniformState#modelViewInfiniteProjection
      * @see czm_model
-     * @see czm_view
+     * @see czm_f_view
      * @see czm_infiniteProjection
-     * @see czm_modelViewProjection
+     * @see czm_f_modelViewProjection
      *
      * @example
      * // GLSL declaration
@@ -859,7 +859,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * vec4 gl_Position = czm_modelViewInfiniteProjection * modelPosition;
      *
      * // The above is equivalent to, but more efficient than:
-     * gl_Position = czm_infiniteProjection * czm_view * czm_model * modelPosition;
+     * gl_Position = czm_infiniteProjection * czm_f_view * czm_model * modelPosition;
      */
      czm_modelViewInfiniteProjection : new AutomaticUniform({
      size : 1,
@@ -873,24 +873,24 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in model coordinates to eye coordinates.
      * <br /><br />
-     * Positions should be transformed to eye coordinates using {@link czm_modelView} and
-     * normals should be transformed using <code>czm_normal</code>.
+     * Positions should be transformed to eye coordinates using {@link czm_f_modelView} and
+     * normals should be transformed using <code>czm_f_normal</code>.
      *
-     * @alias czm_normal
+     * @alias czm_f_normal
      * @glslUniform
      *
      * @see UniformState#normal
      * @see czm_inverseNormal
-     * @see czm_modelView
+     * @see czm_f_modelView
      *
      * @example
      * // GLSL declaration
-     * uniform mat3 czm_normal;
+     * uniform mat3 czm_f_normal;
      *
      * // Example
-     * vec3 eyeNormal = czm_normal * normal;
+     * vec3 eyeNormal = czm_f_normal * normal;
      */
-    "czm_normal": AutomaticUniform(
+    "czm_f_normal": AutomaticUniform(
         size : 1,
         datatype : UniformDataType.FloatMatrix3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -903,27 +903,27 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in 3D model coordinates to eye coordinates.
      * In 3D mode, this is identical to
-     * {@link czm_normal}, but in 2D and Columbus View it represents the normal transformation
+     * {@link czm_f_normal}, but in 2D and Columbus View it represents the normal transformation
      * matrix as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
      * 2D and Columbus View in the same way that 3D is lit.
      * <br /><br />
-     * Positions should be transformed to eye coordinates using {@link czm_modelView3D} and
-     * normals should be transformed using <code>czm_normal3D</code>.
+     * Positions should be transformed to eye coordinates using {@link czm_f_modelView3D} and
+     * normals should be transformed using <code>czm_f_normal3D</code>.
      *
-     * @alias czm_normal3D
+     * @alias czm_f_normal3D
      * @glslUniform
      *
      * @see UniformState#normal3D
-     * @see czm_normal
+     * @see czm_f_normal
      *
      * @example
      * // GLSL declaration
-     * uniform mat3 czm_normal3D;
+     * uniform mat3 czm_f_normal3D;
      *
      * // Example
-     * vec3 eyeNormal = czm_normal3D * normal;
+     * vec3 eyeNormal = czm_f_normal3D * normal;
      */
-    "czm_normal3D": AutomaticUniform(
+    "czm_f_normal3D": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatMatrix3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -935,14 +935,14 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     /**
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in eye coordinates to model coordinates.  This is
-     * the opposite of the transform provided by {@link czm_normal}.
+     * the opposite of the transform provided by {@link czm_f_normal}.
      *
      * @alias czm_inverseNormal
      * @glslUniform
      *
      * @see UniformState#inverseNormal
-     * @see czm_normal
-     * @see czm_modelView
+     * @see czm_f_normal
+     * @see czm_f_modelView
      * @see czm_inverseView
      *
      * @example
@@ -964,7 +964,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      /**
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in eye coordinates to 3D model coordinates.  This is
-     * the opposite of the transform provided by {@link czm_normal}.
+     * the opposite of the transform provided by {@link czm_f_normal}.
      * In 3D mode, this is identical to
      * {@link czm_inverseNormal}, but in 2D and Columbus View it represents the inverse normal transformation
      * matrix as if the camera were at an equivalent location in 3D mode.  This is useful for lighting
@@ -1013,7 +1013,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * of the frustum defined by the camera.  This is the largest possible frustum, not an individual
      * frustum used for multi-frustum rendering.
      *
-     * @alias czm_entireFrustum
+     * @alias czm_f_entireFrustum
      * @glslUniform
      *
      * @see UniformState#entireFrustum
@@ -1021,12 +1021,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @example
      * // GLSL declaration
-     * uniform vec2 czm_entireFrustum;
+     * uniform vec2 czm_f_entireFrustum;
      *
      * // Example
-     * float frustumLength = czm_entireFrustum.y - czm_entireFrustum.x;
+     * float frustumLength = czm_f_entireFrustum.y - czm_f_entireFrustum.x;
      */
-    "czm_entireFrustum": AutomaticUniform(
+    "czm_f_entireFrustum": AutomaticUniform(
         size: 1,
         datatype: .FloatVec2,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1044,7 +1044,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * @glslUniform
      *
      * @see UniformState#currentFrustum
-     * @see czm_entireFrustum
+     * @see czm_f_entireFrustum
      *
      * @example
      * // GLSL declaration
@@ -1084,7 +1084,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @see UniformState#sunPositionWC
      * @see czm_sunPositionColumbusView
-     * @see czm_sunDirectionWC
+     * @see czm_a_sunDirectionWC
      *
      * @example
      * // GLSL declaration
@@ -1123,21 +1123,21 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing the normalized direction to the sun in eye coordinates.
      * This is commonly used for directional lighting computations.
      *
-     * @alias czm_sunDirectionEC
+     * @alias czm_a_sunDirectionEC
      * @glslUniform
      *
      * @see UniformState#sunDirectionEC
-     * @see czm_moonDirectionEC
-     * @see czm_sunDirectionWC
+     * @see czm_a_moonDirectionEC
+     * @see czm_a_sunDirectionWC
      *
      * @example
      * // GLSL declaration
-     * uniform vec3 czm_sunDirectionEC;
+     * uniform vec3 czm_a_sunDirectionEC;
      *
      * // Example
-     * float diffuse = max(dot(czm_sunDirectionEC, normalEC), 0.0);
+     * float diffuse = max(dot(czm_a_sunDirectionEC, normalEC), 0.0);
      */
-    "czm_sunDirectionEC": AutomaticUniform(
+    "czm_a_sunDirectionEC": AutomaticUniform(
         size: 1,
         datatype: UniformDataType.FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1150,18 +1150,18 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing the normalized direction to the sun in world coordinates.
      * This is commonly used for directional lighting computations.
      *
-     * @alias czm_sunDirectionWC
+     * @alias czm_a_sunDirectionWC
      * @glslUniform
      *
      * @see UniformState#sunDirectionWC
      * @see czm_sunPositionWC
-     * @see czm_sunDirectionEC
+     * @see czm_a_sunDirectionEC
      *
      * @example
      * // GLSL declaration
-     * uniform vec3 czm_sunDirectionWC;
+     * uniform vec3 czm_a_sunDirectionWC;
      */
-    "czm_sunDirectionWC": AutomaticUniform(
+    "czm_a_sunDirectionWC": AutomaticUniform(
         size: 1,
         datatype: .FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1174,20 +1174,20 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing the normalized direction to the moon in eye coordinates.
      * This is commonly used for directional lighting computations.
      *
-     * @alias czm_moonDirectionEC
+     * @alias czm_a_moonDirectionEC
      * @glslUniform
      *
      * @see UniformState#moonDirectionEC
-     * @see czm_sunDirectionEC
+     * @see czm_a_sunDirectionEC
      *
      * @example
      * // GLSL declaration
-     * uniform vec3 czm_moonDirectionEC;
+     * uniform vec3 czm_a_moonDirectionEC;
      *
      * // Example
-     * float diffuse = max(dot(czm_moonDirectionEC, normalEC), 0.0);
+     * float diffuse = max(dot(czm_a_moonDirectionEC, normalEC), 0.0);
      */
-    "czm_moonDirectionEC": AutomaticUniform(
+    "czm_a_moonDirectionEC": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatVec3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1247,14 +1247,14 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     /**
      * An automatic GLSL uniform representing the position of the viewer (camera) in world coordinates.
      *
-     * @alias czm_viewerPositionWC
+     * @alias czm_a_viewerPositionWC
      * @glslUniform
      *
      * @example
      * // GLSL declaration
-     * uniform vec3 czm_viewerPositionWC;
+     * uniform vec3 czm_a_viewerPositionWC;
      */
-    "czm_viewerPositionWC":  AutomaticUniform(
+    "czm_a_viewerPositionWC":  AutomaticUniform(
         size : 1,
         datatype : .FloatVec3,
         writeToBuffer : { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1267,14 +1267,14 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing the frame number. This uniform is automatically incremented
      * every frame.
      *
-     * @alias czm_frameNumber
+     * @alias czm_a_frameNumber
      * @glslUniform
      *
      * @example
      * // GLSL declaration
-     * uniform float czm_frameNumber;
+     * uniform float czm_a_frameNumber;
      */
-    "czm_frameNumber": AutomaticUniform(
+    "czm_a_frameNumber": AutomaticUniform(
         size: 1,
         datatype : .FloatVec1,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1286,17 +1286,17 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing the current morph transition time between
      * 2D/Columbus View and 3D, with 0.0 being 2D or Columbus View and 1.0 being 3D.
      *
-     * @alias czm_morphTime
+     * @alias czm_a_morphTime
      * @glslUniform
      *
      * @example
      * // GLSL declaration
-     * uniform float czm_morphTime;
+     * uniform float czm_a_morphTime;
      *
      * // Example
-     * vec4 p = czm_columbusViewMorph(position2D, position3D, czm_morphTime);
+     * vec4 p = czm_columbusViewMorph(position2D, position3D, czm_a_morphTime);
      */
-    "czm_morphTime": AutomaticUniform(
+    "czm_a_morphTime": AutomaticUniform(
         size: 1,
         datatype: .FloatVec1,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1341,7 +1341,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * An automatic GLSL uniform representing a 3x3 rotation matrix that transforms
      * from True Equator Mean Equinox (TEME) axes to the pseudo-fixed axes at the current scene time.
      *
-     * @alias czm_temeToPseudoFixed
+     * @alias czm_a_temeToPseudoFixed
      * @glslUniform
      *
      * @see UniformState#temeToPseudoFixedMatrix
@@ -1349,12 +1349,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      *
      * @example
      * // GLSL declaration
-     * uniform mat3 czm_temeToPseudoFixed;
+     * uniform mat3 czm_a_temeToPseudoFixed;
      *
      * // Example
-     * vec3 pseudoFixed = czm_temeToPseudoFixed * teme;
+     * vec3 pseudoFixed = czm_a_temeToPseudoFixed * teme;
      */
-    "czm_temeToPseudoFixed": AutomaticUniform(
+    "czm_a_temeToPseudoFixed": AutomaticUniform(
         size : 1,
         datatype : .FloatMatrix3,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
@@ -1386,12 +1386,12 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     /**
      * An automatic GLSL uniform scalar used to mix a color with the fog color based on the distance to the camera.
      *
-     * @alias czm_fogDensity
+     * @alias czm_a_fogDensity
      * @glslUniform
      *
      * @see czm_fog
      */
-    "czm_fogDensity": AutomaticUniform(
+    "czm_a_fogDensity": AutomaticUniform(
         size : 1,
         datatype: UniformDataType.FloatVec1,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in

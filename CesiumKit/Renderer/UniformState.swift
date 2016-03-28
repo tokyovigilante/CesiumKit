@@ -7,6 +7,35 @@
 //
 
 import Foundation
+import simd
+
+struct AutomaticUniformBufferLayout {
+    var czm_a_viewRotation = float3x3()
+    var czm_a_temeToPseudoFixed = float3x3()
+    var czm_a_sunDirectionEC = float3()
+    var czm_a_sunDirectionWC = float3()
+    var czm_a_moonDirectionEC = float3()
+    var czm_a_viewerPositionWC = float3()
+    var czm_a_morphTime = Float()
+    var czm_a_fogDensity = Float()
+    var czm_a_frameNumber = Float()
+}
+
+struct FrustumUniformBufferLayout {
+    var czm_f_viewportOrthographic = float4x4()
+    var czm_f_viewportTransformation = float4x4()
+    var czm_f_projection = float4x4()
+    var czm_f_inverseProjection = float4x4()
+    var czm_f_view = float4x4()
+    var czm_f_modelView = float4x4()
+    var czm_f_modelView3D = float4x4()
+    var czm_f_inverseModelView = float4x4()
+    var czm_f_modelViewProjection = float4x4()
+    var czm_f_viewport = float4()
+    var czm_f_normal = float3x3()
+    var czm_f_normal3D = float3x3()
+    var czm_f_entireFrustum = float2()
+}
 
 class UniformState {
     
@@ -838,6 +867,44 @@ class UniformState {
         updateFrustum(camera.frustum)
         
         _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(self.frameState.time!)
+    }
+    
+    func setAutomaticUniforms (buffer: Buffer) {
+        var layout = AutomaticUniformBufferLayout()
+        
+        layout.czm_a_viewRotation = viewRotation.floatRepresentation
+        layout.czm_a_temeToPseudoFixed = temeToPseudoFixedMatrix.floatRepresentation
+        layout.czm_a_sunDirectionEC = float3(sunDirectionEC.floatRepresentation)
+        layout.czm_a_sunDirectionWC = float3(sunDirectionWC.floatRepresentation)
+        layout.czm_a_moonDirectionEC = float3(moonDirectionEC.floatRepresentation)
+        layout.czm_a_viewerPositionWC = float3(inverseView.translation.floatRepresentation)
+        layout.czm_a_morphTime = Float(frameState.morphTime)
+        layout.czm_a_fogDensity = 0.0//fogDensity.floatRepresentation
+        layout.czm_a_frameNumber = Float(frameState.frameNumber)
+        
+        memcpy(buffer.data, &layout, sizeof(AutomaticUniformBufferLayout))
+        
+    }
+    
+    func setFrustumUniforms (buffer: Buffer) {
+
+        var layout = FrustumUniformBufferLayout()
+        
+        layout.czm_f_viewportOrthographic = viewportOrthographic.floatRepresentation
+        layout.czm_f_viewportTransformation = viewportTransformation.floatRepresentation
+        layout.czm_f_projection = projection.floatRepresentation
+        layout.czm_f_inverseProjection = inverseProjection.floatRepresentation
+        layout.czm_f_view = view.floatRepresentation
+        layout.czm_f_modelView = modelView.floatRepresentation
+        layout.czm_f_modelView3D = modelView3D.floatRepresentation
+        layout.czm_f_inverseModelView = inverseModelView.floatRepresentation
+        layout.czm_f_modelViewProjection = modelViewProjection.floatRepresentation
+        layout.czm_f_viewport = viewportCartesian4.floatRepresentation
+        layout.czm_f_normal = normal.floatRepresentation
+        layout.czm_f_normal3D = normal3D.floatRepresentation
+        layout.czm_f_entireFrustum = entireFrustum.floatRepresentation
+        
+        memcpy(buffer.data, &layout, sizeof(FrustumUniformBufferLayout))
     }
     
     func cleanViewport() {

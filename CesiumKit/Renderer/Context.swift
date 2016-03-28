@@ -387,7 +387,14 @@ class Context {
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
             let indexCount = count ?? va.numberOfIndices
             
-            commandEncoder.setVertexBuffer(bufferParams.buffer.metalBuffer, offset: 0, atIndex: 0)
+            // automatic uniforms
+            commandEncoder.setVertexBuffer(drawCommand.automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+
+            // frustum uniforms
+            commandEncoder.setVertexBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
+
+            // manual uniforms
+            commandEncoder.setVertexBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 2)
             
             for attribute in va.attributes {
                 if let buffer = attribute.buffer {
@@ -395,7 +402,14 @@ class Context {
                 }
             }
             
-            commandEncoder.setFragmentBuffer(bufferParams.buffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 0)
+            // automatic uniforms
+            commandEncoder.setFragmentBuffer(drawCommand.automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+            
+            // frustum uniforms
+            commandEncoder.setFragmentBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
+            
+            // manual uniforms
+            commandEncoder.setFragmentBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 2)
             
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)

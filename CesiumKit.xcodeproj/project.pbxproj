@@ -543,6 +543,8 @@
 		947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; };
 		947E32351BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; };
 		947E32361BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; };
+		9485CC361CA7BA930041F512 /* UniformStructs.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9485CC351CA7BA930041F512 /* UniformStructs.metal */; };
+		9485CC371CA7BA930041F512 /* UniformStructs.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9485CC351CA7BA930041F512 /* UniformStructs.metal */; };
 		94878A6B1B1B23FD0095A86F /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */; };
 		9487FA551BD747F20095A86F /* ViewportQuad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9487FA541BD747F20095A86F /* ViewportQuad.swift */; };
 		9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9487FA541BD747F20095A86F /* ViewportQuad.swift */; };
@@ -980,6 +982,7 @@
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		947E32311BC0D485001A40C8 /* AttributeCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeCompression.swift; sourceTree = "<group>"; };
 		947E32341BC0D85E001A40C8 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
+		9485CC351CA7BA930041F512 /* UniformStructs.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = UniformStructs.metal; sourceTree = "<group>"; };
 		94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
 		9487FA541BD747F20095A86F /* ViewportQuad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewportQuad.swift; sourceTree = "<group>"; };
 		94889B871B2857430095A86F /* PipelineCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineCache.swift; sourceTree = "<group>"; };
@@ -1632,6 +1635,7 @@
 			children = (
 				94E049E919DC0BB000FFAD81 /* Shaders.swift */,
 				9430A9511C8100BC0095A86F /* TextRenderer.metal */,
+				9485CC351CA7BA930041F512 /* UniformStructs.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -2217,6 +2221,7 @@
 				9413B8061A37B94500FFAD81 /* ImageryProvider.swift in Sources */,
 				9413B7CE1A37B93100FFAD81 /* TerrainProvider.swift in Sources */,
 				9413B7A61A37B93100FFAD81 /* Cartographic.swift in Sources */,
+				9485CC361CA7BA930041F512 /* UniformStructs.metal in Sources */,
 				94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
 				94ACB2D51C364B7E001A40C8 /* QueueManager.swift in Sources */,
 				9413B7D11A37B93100FFAD81 /* Transforms.swift in Sources */,
@@ -2433,6 +2438,7 @@
 				949E09F21BE452B50095A86F /* ImageryLayerFeatureInfo.swift in Sources */,
 				9478210B1B5A2D7B0095A86F /* Cartesian4.swift in Sources */,
 				94ECCBC61C93FD480041F512 /* OffscreenQuadPrimitive.swift in Sources */,
+				9485CC371CA7BA930041F512 /* UniformStructs.metal in Sources */,
 				9478210C1B5A2D7B0095A86F /* Cartographic.swift in Sources */,
 				9478210D1B5A2D7B0095A86F /* Clock.swift in Sources */,
 				9478210E1B5A2D7B0095A86F /* ComponentDatatype.swift in Sources */,

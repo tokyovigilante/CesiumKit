@@ -21,6 +21,8 @@ class Buffer {
     // bytes
     let length: Int
     
+    private let _entireRange: NSRange
+    
     var count: Int {
         return length / componentDatatype.elementSize
     }
@@ -32,25 +34,26 @@ class Buffer {
     init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
+        length = sizeInBytes
+        self.componentDatatype = componentDatatype
+        _entireRange = NSMakeRange(0, self.length)
+        
         if array != nil {
             #if os(OSX)
-                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeManaged)
+                metalBuffer = device.newBufferWithBytes(array, length: length, options: .StorageModeManaged)
             #elseif os(iOS)
-                metalBuffer = device.newBufferWithBytes(array, length: sizeInBytes, options: .StorageModeShared)
+                metalBuffer = device.newBufferWithBytes(array, length: length, options: .StorageModeShared)
             #endif
         } else {
             #if os(OSX)
-                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeManaged)
+                metalBuffer = device.newBufferWithLength(length, options: .StorageModeManaged)
             #elseif os(iOS)
-                metalBuffer = device.newBufferWithLength(sizeInBytes, options: .StorageModeShared)
+                metalBuffer = device.newBufferWithLength(length, options: .StorageModeShared)
             #endif
         }
         if let label = label {
             metalBuffer.label = label
         }
-        
-        self.componentDatatype = componentDatatype
-        self.length = sizeInBytes
     }
     
     func copyFromArray (array: UnsafePointer<Void>, length arrayLength: Int, offset: Int = 0) {
@@ -59,6 +62,13 @@ class Buffer {
         memcpy(data, array+offset, arrayLength)
         #if os(OSX)
             metalBuffer.didModifyRange(NSMakeRange(offset, arrayLength))
+        #endif
+    }
+    
+    
+    func signalWriteComplete (range: NSRange? = nil) {
+        #if os(OSX)
+            metalBuffer.didModifyRange(range ?? _entireRange)
         #endif
     }
     

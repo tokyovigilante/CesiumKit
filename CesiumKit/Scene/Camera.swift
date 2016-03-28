@@ -285,7 +285,7 @@ public class Camera: DRU {
      *
      * @type {Matrix4}
      *
-     * @see czm_view
+     * @see czm_f_view
      * @see Camera#inverseViewMatrix
      */
     var viewMatrix: Matrix4 {

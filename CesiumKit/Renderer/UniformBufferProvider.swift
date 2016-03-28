@@ -23,13 +23,10 @@ class UniformBufferProvider {
     
     private var _memBarrierIndex: Int = 0
     
-    private let _entireRange: NSRange
-    
     init (device: MTLDevice, capacity: Int, bufferSize: Int) {
         
         self.capacity = capacity
         self.bufferSize = bufferSize
-        _entireRange = NSMakeRange(0, self.bufferSize)
         
         for _ in 0..<capacity {
             _buffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: self.bufferSize))
@@ -38,12 +35,6 @@ class UniformBufferProvider {
     func advanceBuffer () -> Buffer {
         _memBarrierIndex = (_memBarrierIndex + 1) % capacity
         return currentBuffer
-    }
-
-    func signalWriteComplete (range: NSRange? = nil) {
-        #if os(OSX)
-            _buffers[_memBarrierIndex].metalBuffer.didModifyRange(range ?? _entireRange)
-        #endif
     }
 
 }

@@ -54,6 +54,8 @@ class RenderPipeline {
     func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
             command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(device)
+            command.automaticUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(AutomaticUniformBufferLayout))
+            command.frustumUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(FrustumUniformBufferLayout))
         }
         return shaderProgram.setUniforms(command, uniformState: uniformState)
     }

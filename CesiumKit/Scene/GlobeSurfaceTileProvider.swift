@@ -849,6 +849,8 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             let pipelineUniformSize = command.pipeline!.shaderProgram.uniformBufferSize
             if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
                 command.uniformBufferProvider = nil
+                command.automaticUniformBufferProvider = nil
+                command.frustumUniformBufferProvider = nil
             }
             command.renderState = renderState
             command.primitiveType = .Triangle

@@ -66,6 +66,10 @@ class ShaderProgram {
     private (set) var vertexUniformSize = -1
     private (set) var fragmentUniformSize = -1
     
+    var uniformCount: Int {
+        return _vertexUniforms.count + _fragmentUniforms.count
+    }
+    
     var uniformBufferSize: Int {
         return vertexUniformSize + fragmentUniformSize
     }
@@ -147,10 +151,10 @@ class ShaderProgram {
         
         findVertexAttributes()
         findUniforms()
-        setUniformBufferAlignment()
-        setUniformBufferOffsets()
-        //createUniformBuffers(context)
-        
+        if uniformCount > 0 {
+            setUniformBufferAlignment()
+            setUniformBufferOffsets()
+        }
        /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
     
@@ -215,7 +219,11 @@ class ShaderProgram {
         let vertexUniformCount = _vertexShader.uniformCount()
         for i in 0..<vertexUniformCount {
             let desc =  _vertexShader.uniformDescription(i)
-            let type: UniformType = desc.name.hasPrefix("czm_") ? .Automatic : .Manual
+            let type = uniformType(desc)
+            
+            if type != .Manual {
+                continue
+            }
             _vertexUniforms.append(Uniform.create(desc: desc, type: type))
         }
         
@@ -223,7 +231,11 @@ class ShaderProgram {
         let fragmentUniformCount = _fragmentShader.uniformCount()
         for i in 0..<fragmentUniformCount {
             let desc =  _fragmentShader.uniformDescription(i)
-            let type: UniformType = desc.name.hasPrefix("czm_") ? .Automatic : .Manual
+            
+            let type = uniformType(desc)
+            if type != .Manual {
+                continue
+            }
             _fragmentUniforms.append(Uniform.create(desc: desc, type: type))
         }
 
@@ -292,7 +304,7 @@ class ShaderProgram {
     }
 
     func createUniformBufferProvider(device: MTLDevice) -> UniformBufferProvider {
-        let provider = UniformBufferProvider(device: device, capacity: 3, bufferSize: uniformBufferSize)
+        let provider = UniformBufferProvider(device: device, capacity: 3, bufferSize: max(uniformBufferSize, 256))
         return provider
     }
     
@@ -306,7 +318,7 @@ class ShaderProgram {
 
         if  nativeMetalUniforms {
             let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
-            command.uniformBufferProvider.signalWriteComplete()
+            buffer.signalWriteComplete()
             return (buffer: buffer, fragmentOffset: 0, texturesValid: true, textures: textures)
         }
         
@@ -319,8 +331,16 @@ class ShaderProgram {
         for uniform in _fragmentUniforms {
             setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
         }
-    
-        command.uniformBufferProvider.signalWriteComplete()
+        
+        buffer.signalWriteComplete()
+        
+        let automaticUniformBuffer = command.automaticUniformBufferProvider.advanceBuffer()
+        uniformState.setAutomaticUniforms(automaticUniformBuffer)
+        automaticUniformBuffer.signalWriteComplete()
+        
+        let frustumUniformBuffer = command.frustumUniformBufferProvider.advanceBuffer()
+        uniformState.setFrustumUniforms(frustumUniformBuffer)
+        frustumUniformBuffer.signalWriteComplete()
 
         var textures = [Texture]()
         
@@ -351,7 +371,7 @@ class ShaderProgram {
         switch uniform.type {
             
         case .Automatic:
-            guard let index = uniform.automaticIndex else {
+            /*guard let index = uniform.automaticIndex else {
                 guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
                     assertionFailure("automatic uniform not found for \(uniform.name)")
                     return
@@ -363,8 +383,11 @@ class ShaderProgram {
             }
             let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
             uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
-            
+            */
+            assertionFailure("should not be setting automatic uniforms here")
+            return
         case .Frustum:
+            assertionFailure("should not be setting frustum uniforms here")
             return
         case .Manual:
             guard let index = uniform.mapIndex else {
