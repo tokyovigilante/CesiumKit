@@ -154,6 +154,9 @@ class ShaderProgram {
         if uniformCount > 0 {
             setUniformBufferAlignment()
             setUniformBufferOffsets()
+        } else {
+            vertexUniformSize = 0
+            fragmentUniformSize = 0
         }
        /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
@@ -312,14 +315,14 @@ class ShaderProgram {
     
     private let nullUniformMap = NullUniformMap()
     
-    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
         let buffer = command.uniformBufferProvider.advanceBuffer()
 
         if  nativeMetalUniforms {
             let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
             buffer.signalWriteComplete()
-            return (buffer: buffer, fragmentOffset: 0, texturesValid: true, textures: textures)
+            return (fragmentOffset: 0, texturesValid: true, textures: textures)
         }
         
         let map = command.uniformMap ?? nullUniformMap
@@ -356,7 +359,7 @@ class ShaderProgram {
             buffer.metalBuffer.didModifyRange(NSMakeRange(0, buffer.length))
         #endif
         let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
-        return (buffer: buffer, fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
+        return (fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
 
     }
 

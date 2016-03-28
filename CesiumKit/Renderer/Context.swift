@@ -409,7 +409,7 @@ class Context {
             commandEncoder.setFragmentBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
             
             // manual uniforms
-            commandEncoder.setFragmentBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 2)
+            commandEncoder.setFragmentBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
             
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)

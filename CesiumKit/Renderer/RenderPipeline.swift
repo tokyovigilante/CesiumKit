@@ -51,7 +51,7 @@ class RenderPipeline {
         return context.pipelineCache.getRenderPipeline(shaderSourceName: shaderSourceName, compiledMetalVertexName: vertex, compiledMetalFragmentName: fragment, uniformStructSize: uniformStructSize, vertexDescriptor: vd, colorMask: colorMask, depthStencil: depthStencil, blendingState: blendingState)
     }
     
-    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (buffer: Buffer, fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    func setUniforms(command: DrawCommand, device: MTLDevice, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         if command.uniformBufferProvider == nil {
             command.uniformBufferProvider = shaderProgram.createUniformBufferProvider(device)
             command.automaticUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(AutomaticUniformBufferLayout))
