@@ -36,7 +36,7 @@ class Buffer {
         
         length = sizeInBytes
         self.componentDatatype = componentDatatype
-        _entireRange = NSMakeRange(0, self.length)
+        _entireRange = NSMakeRange(0, length)
         
         if array != nil {
             #if os(OSX)
@@ -60,9 +60,7 @@ class Buffer {
         assert(offset + arrayLength <= length, "This buffer is not large enough")
         
         memcpy(data, array+offset, arrayLength)
-        #if os(OSX)
-            metalBuffer.didModifyRange(NSMakeRange(offset, arrayLength))
-        #endif
+        signalWriteComplete()
     }
     
     
