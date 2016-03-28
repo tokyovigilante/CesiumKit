@@ -336,11 +336,7 @@ class ShaderProgram {
         }
         
         buffer.signalWriteComplete()
-        
-        let automaticUniformBuffer = command.automaticUniformBufferProvider.advanceBuffer()
-        uniformState.setAutomaticUniforms(automaticUniformBuffer)
-        automaticUniformBuffer.signalWriteComplete()
-        
+                
         let frustumUniformBuffer = command.frustumUniformBufferProvider.advanceBuffer()
         uniformState.setFrustumUniforms(frustumUniformBuffer)
         frustumUniformBuffer.signalWriteComplete()

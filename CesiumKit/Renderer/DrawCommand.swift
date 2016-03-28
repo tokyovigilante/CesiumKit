@@ -105,7 +105,6 @@ class DrawCommand: Command {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    var automaticUniformBufferProvider: UniformBufferProvider! = nil
     var frustumUniformBufferProvider: UniformBufferProvider! = nil
 
     

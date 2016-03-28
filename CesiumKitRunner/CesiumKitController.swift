@@ -32,10 +32,11 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         _view.autoResizeDrawable = true
         
         let options = CesiumOptions(
+            //clock: Clock(multiplier: 600),
             clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
             terrain: true,
-            lighting: false,
+            lighting: true,
             skyBox: true,
             scene3DOnly: true
         )

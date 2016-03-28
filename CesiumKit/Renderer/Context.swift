@@ -80,7 +80,8 @@ class Context {
     private var _passStates = [Pass: PassState]()
     
     var uniformState: UniformState
-    
+    private let _automaticUniformBufferProvider: UniformBufferProvider
+
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
     * be used as a placeholder texture while other textures are downloaded.
@@ -190,12 +191,13 @@ class Context {
         
         _defaultRenderState = rs
         uniformState = us
+        _automaticUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(AutomaticUniformBufferLayout))
+
         _currentRenderState = rs
         defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
         _defaultPassState.context = self
         pipelineCache.context = self
-
         
         /**
         * @example
@@ -250,7 +252,13 @@ class Context {
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
             dispatch_semaphore_signal(self._inflight_semaphore)
         }
+        
+        let automaticUniformBuffer = _automaticUniformBufferProvider.advanceBuffer()
+        uniformState.setAutomaticUniforms(automaticUniformBuffer)
+        automaticUniformBuffer.signalWriteComplete()
+        
         return true
+
     }
     
     func createRenderPass(passState: PassState? = nil) -> RenderPass {
@@ -388,7 +396,7 @@ class Context {
             let indexCount = count ?? va.numberOfIndices
             
             // automatic uniforms
-            commandEncoder.setVertexBuffer(drawCommand.automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
 
             // frustum uniforms
             commandEncoder.setVertexBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
@@ -403,7 +411,7 @@ class Context {
             }
             
             // automatic uniforms
-            commandEncoder.setFragmentBuffer(drawCommand.automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
             
             // frustum uniforms
             commandEncoder.setFragmentBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
