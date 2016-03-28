@@ -23,9 +23,14 @@ class FrustumCommands {
 
     var commands = Array<[DrawCommand]>()
     
-    init (near: Double = 0.0, far: Double = 0.0) {
+    let opaqueUniformBufferProvider: UniformBufferProvider
+    let transparentUniformBufferProvider: UniformBufferProvider
+    
+    init (near: Double = 0.0, far: Double = 0.0, opaqueUniformBufferProvider: UniformBufferProvider, transparentUniformBufferProvider: UniformBufferProvider) {
         self.near = near
         self.far = far
+        self.opaqueUniformBufferProvider = opaqueUniformBufferProvider
+        self.transparentUniformBufferProvider = transparentUniformBufferProvider
         removeAll()
     }
     

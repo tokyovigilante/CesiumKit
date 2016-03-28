@@ -336,10 +336,6 @@ class ShaderProgram {
         }
         
         buffer.signalWriteComplete()
-                
-        let frustumUniformBuffer = command.frustumUniformBufferProvider.advanceBuffer()
-        uniformState.setFrustumUniforms(frustumUniformBuffer)
-        frustumUniformBuffer.signalWriteComplete()
 
         var textures = [Texture]()
         

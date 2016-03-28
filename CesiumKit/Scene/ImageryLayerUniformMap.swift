@@ -13,6 +13,8 @@ class ImageryLayerUniformMap: UniformMap {
     
     var textureDimensions = Cartesian2()
     
+    var viewportOrthographic = Matrix4()
+    
     var texture : Texture?
     
     let uniforms: [String: UniformFunc] = [
@@ -20,7 +22,13 @@ class ImageryLayerUniformMap: UniformMap {
         "u_textureDimensions": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! ImageryLayerUniformMap).textureDimensions.floatRepresentation
             memcpy(buffer, [simd], sizeof(float2))
+        },
+        
+        "u_viewportOrthographic": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
+            let simd = (map as! ImageryLayerUniformMap).viewportOrthographic.floatRepresentation
+            memcpy(buffer, [simd], sizeof(float4x4))
         }
+
     ]
     
     func textureForUniform(uniform: UniformSampler) -> Texture? {

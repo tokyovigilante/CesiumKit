@@ -104,10 +104,7 @@ class DrawCommand: Command {
     var uniformMap: UniformMap?
     
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
-    var frustumUniformBufferProvider: UniformBufferProvider! = nil
-
-    
+        
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))? = nil
     
     /**
@@ -222,8 +219,8 @@ class DrawCommand: Command {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {RenderPipeline} [renderPipeline] The render pipeline that will override the shader program of the command.
     */
-    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
-        context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline)
+    func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
+        context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
     }
 
 }

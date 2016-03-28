@@ -81,6 +81,10 @@ class Context {
     
     var uniformState: UniformState
     private let _automaticUniformBufferProvider: UniformBufferProvider
+    
+    private var _frustumUniformBufferProviderPool = [UniformBufferProvider]()
+    private (set) var wholeFrustumUniformBufferProvider: UniformBufferProvider! = nil
+    private (set) var frontFrustumUniformBufferProvider: UniformBufferProvider! = nil
 
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -192,13 +196,14 @@ class Context {
         _defaultRenderState = rs
         uniformState = us
         _automaticUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(AutomaticUniformBufferLayout))
-
         _currentRenderState = rs
         defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
         _defaultPassState.context = self
         pipelineCache.context = self
-        
+
+        wholeFrustumUniformBufferProvider = getFrustumUniformBufferProvider()
+
         /**
         * @example
         * {
@@ -286,6 +291,17 @@ class Context {
         encoder.endEncoding()
     }
     
+    func getFrustumUniformBufferProvider () -> UniformBufferProvider {
+        if _frustumUniformBufferProviderPool.isEmpty {
+            return UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(FrustumUniformBufferLayout))
+        }
+        return _frustumUniformBufferProviderPool.removeLast()
+    }
+    
+    func returnFrustumUniformBufferProvider (provider: UniformBufferProvider) {
+        _frustumUniformBufferProviderPool.append(provider)
+    }
+    
     func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
         
         let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? defaultFramebuffer
@@ -311,25 +327,18 @@ class Context {
             depthAttachment.loadAction = .Clear
             depthAttachment.storeAction = .DontCare
             depthAttachment.clearDepth = d
-        } /*else {
-            depthAttachment.loadAction = .DontCare
-            depthAttachment.storeAction = .DontCare
-        }*/
+        }
         
         let stencilAttachment = passDescriptor.stencilAttachment
         if let s = s {
             stencilAttachment.loadAction = .Clear
             stencilAttachment.storeAction = .Store
             stencilAttachment.clearStencil = s
-        }/*else {
-            stencilAttachment.loadAction = .DontCare
-            stencilAttachment.storeAction = .DontCare
-        }*/
+        }
     }
     
-    func draw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
+    func draw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
         
-        //_commandsExecutedThisFrame.append(drawCommand)
         /*
         let activePassState: Pas    sState
         if let pass = drawCommand.pass {
@@ -345,7 +354,7 @@ class Context {
         //var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
         
         beginDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
-        continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
+        continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
     }
     
     func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
@@ -366,7 +375,7 @@ class Context {
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
-    func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
+    func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?, frustumUniformBuffer: Buffer? = nil) {
         let primitiveType = drawCommand.primitiveType
         
         assert(drawCommand.vertexArray != nil, "drawCommand.vertexArray is required")
@@ -399,7 +408,7 @@ class Context {
             commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
 
             // frustum uniforms
-            commandEncoder.setVertexBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
+            commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
 
             // manual uniforms
             commandEncoder.setVertexBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 2)
@@ -414,7 +423,7 @@ class Context {
             commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
             
             // frustum uniforms
-            commandEncoder.setFragmentBuffer(drawCommand.frustumUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 1)
+            commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
             
             // manual uniforms
             commandEncoder.setFragmentBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)

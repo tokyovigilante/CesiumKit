@@ -188,7 +188,7 @@ public class Scene {
     private var _oit: OIT? = nil
     private var _executeOITFunction: ((
         scene: Scene,
-        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()),
+        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
         passState: PassState,
         commands: [DrawCommand]) -> ())? = nil
     
@@ -771,10 +771,17 @@ public class Scene {
                 _frustumCommandsList[m].far = curFar
             }
             else {
-                _frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar))
+                let opaque = context.getFrustumUniformBufferProvider()
+                let transparent = context.getFrustumUniformBufferProvider()
+                _frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar, opaqueUniformBufferProvider: opaque, transparentUniformBufferProvider: transparent))
             }
         }
         if _frustumCommandsList.count > numFrustums {
+            for i in numFrustums..<_frustumCommandsList.count {
+                let frustumCommands = _frustumCommandsList[i]
+                context.returnFrustumUniformBufferProvider(frustumCommands.opaqueUniformBufferProvider)
+                context.returnFrustumUniformBufferProvider(frustumCommands.transparentUniformBufferProvider)
+            }
             _frustumCommandsList.removeRange(Range(numFrustums..<_frustumCommandsList.count))
         }
     }
@@ -973,7 +980,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 0.0, 0.0, 1.0));
 */
     
-    func executeCommand(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil) {
+    func executeCommand(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
             return;
@@ -983,7 +990,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         if (scene.debugShowCommands || scene.debugShowFrustums) {
             executeDebugCommand(command, scene, passState, renderState, shaderProgram);
         } else {*/
-        command.execute(context, renderPass: renderPass, renderPipeline: renderPipeline)
+        command.execute(context, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
         //}
         
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
@@ -1103,7 +1110,7 @@ function isVisible(command, frameState) {
 }
 
     func executeTranslucentCommandsSorted(
-        scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         // FIXME: sorting
         //mergeSort(commands, translucentCompare, scene._camera.positionWC)
         
@@ -1241,15 +1248,18 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         frustum.near = camera.frustum.near
         frustum.far = camera.frustum.far
         context.uniformState.updateFrustum(frustum)
+        let wholeFrustumUniformBuffer = context.wholeFrustumUniformBufferProvider.advanceBuffer()
+        context.uniformState.setFrustumUniforms(wholeFrustumUniformBuffer)
+        wholeFrustumUniformBuffer.signalWriteComplete()
         
         let spaceRenderPass = context.createRenderPass(passState)
         
         if let skyBoxCommand = skyBoxCommand {
-            executeCommand(skyBoxCommand, renderPass: spaceRenderPass)
+            executeCommand(skyBoxCommand, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
         
         if let skyAtmosphereCommand = skyAtmosphereCommand {
-            executeCommand(skyAtmosphereCommand, renderPass: spaceRenderPass)
+            executeCommand(skyAtmosphereCommand, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
         
         /*
@@ -1280,7 +1290,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
         scene: Scene,
-        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()),
+        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
         passState: PassState,
         commands: [DrawCommand]) -> ())
         
@@ -1298,7 +1308,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         let clearDepth = _clearDepthCommand
 
         // Execute commands in each frustum in back to front order
-        for (index, frustumCommands) in _frustumCommandsList.enumerate() {
+        for (index, frustumCommands) in _frustumCommandsList.reverse().enumerate() {
             
             // Avoid tearing artifacts between adjacent frustums in the opaque passes
             frustum.near = index != 0 ? frustumCommands.near * OpaqueFrustumNearOffset : frustumCommands.near
@@ -1312,6 +1322,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 passState.framebuffer = globeDepth!.framebuffer
             }
             context.uniformState.updateFrustum(frustum)
+            
+            let opaqueFrustumUniformBuffer = frustumCommands.opaqueUniformBufferProvider.advanceBuffer()
+            context.uniformState.setFrustumUniforms(opaqueFrustumUniformBuffer)
+            opaqueFrustumUniformBuffer.signalWriteComplete()
+            
             clearDepth.execute(context, passState: passState)
         
             let globeCommandList = frustumCommands.commands[Pass.Globe.rawValue]
@@ -1320,7 +1335,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 let globeRenderPass = context.createRenderPass(passState)
                 
                 for command in globeCommandList {
-                    executeCommand(command, renderPass: globeRenderPass)
+                    executeCommand(command, renderPass: globeRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
                 
                 if globeDepth != nil && useGlobeDepthFramebuffer && (copyGlobeDepth || debugShowGlobeDepth) {
@@ -1341,7 +1356,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 let groundRenderPass = context.createRenderPass(passState)
                 
                 for command in groundCommandList {
-                    executeCommand(command, renderPass: groundRenderPass)
+                    executeCommand(command, renderPass: groundRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
                 groundRenderPass.complete()
             }
@@ -1351,7 +1366,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 
                 clearDepth.execute(context, passState: passState)
                 if useDepthPlane {
-                    _depthPlane.execute(context, renderPass: groundDepthRenderPass)
+                    _depthPlane.execute(context, renderPass: groundDepthRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
                 groundDepthRenderPass.complete()
             }
@@ -1367,7 +1382,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                     let renderPass = context.createRenderPass(passState)
                     
                     for command in commands {
-                        executeCommand(command, renderPass: renderPass)
+                        executeCommand(command, renderPass: renderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                     }
                     renderPass.complete()
                 }
@@ -1378,6 +1393,9 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 frustum.near = frustumCommands.near
                 context.uniformState.updateFrustum(frustum)
             }
+            let transparentUniformBuffer = frustumCommands.transparentUniformBufferProvider.advanceBuffer()
+            context.uniformState.setFrustumUniforms(transparentUniformBuffer)
+            transparentUniformBuffer.signalWriteComplete()
             
             let commands = frustumCommands.commands[Pass.Translucent.rawValue]
             executeTranslucentCommands(scene: self, executeFunction: executeCommand, passState: passState, commands: commands)

@@ -41,7 +41,7 @@ let Shaders: [String: String] = [
     
     "ReprojectWebMercatorFS": "\nuniform sampler2D u_texture;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    gl_FragColor = texture2D(u_texture, v_textureCoordinates);\n}\n",
     
-    "ReprojectWebMercatorVS": "\nattribute vec4 position;\nattribute float webMercatorT;\n\nuniform vec2 u_textureDimensions;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    v_textureCoordinates = vec2(position.x, webMercatorT);\n    gl_Position = czm_f_viewportOrthographic * (position * vec4(u_textureDimensions, 1.0, 1.0));\n}\n",
+    "ReprojectWebMercatorVS": "\nattribute vec4 position;\nattribute float webMercatorT;\n\nuniform mat4 u_viewportOrthographic;\nuniform vec2 u_textureDimensions;\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    v_textureCoordinates = vec2(position.x, webMercatorT);\n    gl_Position = u_viewportOrthographic * (position * vec4(u_textureDimensions, 1.0, 1.0));\n}\n",
     
     "ShadowVolumeFS": "\n#extension GL_EXT_frag_depth : enable\n\n// emulated noperspective\nvarying float v_WindowZ;\nvarying vec4 v_color;\n\nvoid writeDepthClampedToFarPlane()\n{\n    gl_FragDepthEXT = min(v_WindowZ * gl_FragCoord.w, 1.0);\n}\n\nvoid main(void)\n{\n    gl_FragColor = v_color;\n    writeDepthClampedToFarPlane();\n}",
     

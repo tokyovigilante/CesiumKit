@@ -816,6 +816,7 @@ public class ImageryLayer {
         let uniformMap = ImageryLayerUniformMap()
         
         uniformMap.textureDimensions = Cartesian2(x: Double(width), y: Double(height))
+        uniformMap.viewportOrthographic = Matrix4.computeOrthographicOffCenter(left: 0, right: uniformMap.textureDimensions.x, bottom: 0, top: uniformMap.textureDimensions.y, near: 0.0, far: 1.0)
         uniformMap.texture = texture
         
         var sinLatitude = sin(rectangle.south)

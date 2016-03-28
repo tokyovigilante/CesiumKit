@@ -417,7 +417,7 @@ class OIT {
         return getTranslucentShaderProgram(context, shaderProgram, oit._alphaShaderCache, alphaShaderSource);
         }
         */
-        func executeTranslucentCommandsSortedMultipass(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        func executeTranslucentCommandsSortedMultipass(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
             /*
         var command;
         var renderState;
@@ -466,7 +466,7 @@ class OIT {
         passState.framebuffer = framebuffer;*/
         }
 
-        func executeTranslucentCommandsSortedMRT(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        func executeTranslucentCommandsSortedMRT(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         /*var context = scene.context;
         var framebuffer = passState.framebuffer;
         var length = commands.length;
@@ -496,7 +496,7 @@ class OIT {
         passState.framebuffer = framebuffer;*/
         }
     
-    func executeCommands (scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?) -> ()), passState: PassState, commands: [DrawCommand]) {
+    func executeCommands (scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         if _translucentMRTSupport {
             executeTranslucentCommandsSortedMRT(scene, executeFunction: executeFunction, passState: passState, commands: commands)
             return
