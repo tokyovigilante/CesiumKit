@@ -181,7 +181,7 @@ class Context {
         _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
         
         processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_CONCURRENT)
-        textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
+        textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_CONCURRENT)
         
         //antialias = true
         

@@ -122,7 +122,6 @@ class TileTerrain {
         if state != .Unloaded {
             return
         }
-        
         guard let upsampleDetails = upsampleDetails else {
             assertionFailure("TileTerrain cannot upsample unless provided upsampleDetails")
             return

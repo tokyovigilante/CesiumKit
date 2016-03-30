@@ -28,6 +28,11 @@ enum QuadtreeTileLoadState: CustomStringConvertible {
     Loading,
     
     /**
+    * Draw commands are being generated
+    */
+    GeneratingCommands,
+    
+    /**
     * Loading is complete.
     * @type QuadtreeTileLoadState
     * @constant
@@ -52,6 +57,8 @@ enum QuadtreeTileLoadState: CustomStringConvertible {
                 return "Loading"
             case .Done:
                 return "Done"
+            case .GeneratingCommands:
+                return "GeneratingCommands"
             case .Failed:
                 return "Failed"
             }

@@ -457,16 +457,13 @@ class QuadtreePrimitive {
         if _tileLoadQueue.count == 0 {
             return
         }
-        
         // Remove any tiles that were not used this frame beyond the number
         // we're allowed to keep.
         _tileReplacementQueue.trimTiles(tileCacheSize)
         
         let endTime = NSDate(timeIntervalSinceNow: _loadQueueTimeSlice)
         
-        let len = _tileLoadQueue.count - 1
-        for i in len.stride(through: 0, by: -1) {
-            let tile = _tileLoadQueue[i]
+        for tile in _tileLoadQueue.reverse() {
             _tileReplacementQueue.markTileRendered(tile)
             _tileProvider.loadTile(tile, frameState: &frameState)
             if NSDate().compare(endTime) == NSComparisonResult.OrderedDescending {

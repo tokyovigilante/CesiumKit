@@ -605,14 +605,14 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
     */
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         
-        if true /*invalidateCache*/ {
+        /*if true /*invalidateCache*/ {
             tile._cachedCommands.removeAll()
         }
         
         if !tile._cachedCommands.isEmpty {
             frameState.commandList.appendContentsOf(tile._cachedCommands)
             return
-        }
+        }*/
         
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
@@ -882,7 +882,7 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
             command.boundingVolume = boundingSphere
             command.orientedBoundingBox = surfaceTile.orientedBoundingBox
             frameState.commandList.append(command)
-            tile._cachedCommands.append(command)
+            //tile._cachedCommands.append(command)
             
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor
@@ -907,11 +907,11 @@ class GlobeSurfaceTileProvider: QuadtreeTileProvider {
         pickCommand.pipeline = surfaceShaderSet.getPickRenderPipeline(context: context, sceneMode: frameState.mode, useWebMercatorProjection: useWebMercatorProjection)
         pickCommand.renderState = _pickRenderState
         
-        pickCommand.owner = drawCommand.owner;
-        pickCommand.primitiveType = drawCommand.primitiveType;
-        pickCommand.vertexArray = drawCommand.vertexArray;
-        pickCommand.uniformMap = drawCommand.uniformMap;
-        pickCommand.boundingVolume = drawCommand.boundingVolume;
+        pickCommand.owner = drawCommand.owner
+        pickCommand.primitiveType = drawCommand.primitiveType
+        pickCommand.vertexArray = drawCommand.vertexArray
+        pickCommand.uniformMap = drawCommand.uniformMap
+        pickCommand.boundingVolume = drawCommand.boundingVolume
         pickCommand.orientedBoundingBox = drawCommand.orientedBoundingBox
         pickCommand.pass = drawCommand.pass
         

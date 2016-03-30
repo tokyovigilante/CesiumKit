@@ -70,9 +70,9 @@ struct WebMercatorProjection: MapProjection {
         // Clamp the latitude coordinate to the valid Mercator bounds.
         var clampedLat = latitude
         if (clampedLat > WebMercatorProjection.maximumLatitude) {
-            clampedLat = WebMercatorProjection.maximumLatitude;
+            clampedLat = WebMercatorProjection.maximumLatitude
         } else if (clampedLat < -WebMercatorProjection.maximumLatitude) {
-            clampedLat = -WebMercatorProjection.maximumLatitude;
+            clampedLat = -WebMercatorProjection.maximumLatitude
         }
         let sinLatitude = sin(clampedLat);
         return 0.5 * log((1.0 + sinLatitude) / (1.0 - sinLatitude));
