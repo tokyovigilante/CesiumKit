@@ -589,6 +589,8 @@
 		94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB5F1AC630E10095A86F /* CameraEvent.swift */; };
 		94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */; };
 		94C6E5581B1475BF0095A86F /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C6E5571B1475BF0095A86F /* Buffer.swift */; };
+		94C91B0F1CAFA6CD0041F512 /* Intersections2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */; };
+		94C91B101CAFA6CD0041F512 /* Intersections2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */; };
 		94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */; };
 		94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
@@ -1047,6 +1049,7 @@
 		94BC43561948189A007117F2 /* Cartesian2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartesian2.swift; sourceTree = "<group>"; };
 		94C57E1319722AB90046791A /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
 		94C6E5571B1475BF0095A86F /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
+		94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersections2D.swift; sourceTree = "<group>"; };
 		94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCoordinateImageryProvider.swift; sourceTree = "<group>"; };
 		94CB63FC1A38465600FFAD81 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
@@ -1466,6 +1469,7 @@
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
 				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
+				94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
 				945B6A991C2577730095A86F /* JulianDate.swift */,
 				94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */,
@@ -2401,6 +2405,7 @@
 				9413B7A71A37B93100FFAD81 /* Clock.swift in Sources */,
 				9413B7DE1A37B93D00FFAD81 /* CubeMap.swift in Sources */,
 				9413B7AC1A37B93100FFAD81 /* EllipsoidTerrainProvider.swift in Sources */,
+				94C91B0F1CAFA6CD0041F512 /* Intersections2D.swift in Sources */,
 				9413B7CC1A37B93100FFAD81 /* TerrainData.swift in Sources */,
 				9413B80F1A37B94500FFAD81 /* QuadtreeTile.swift in Sources */,
 				940D88EA1BFF313E0095A86F /* FXAA.swift in Sources */,
@@ -2551,6 +2556,7 @@
 				947821591B5A2D7C0095A86F /* VertexType.swift in Sources */,
 				9478215A1B5A2D7C0095A86F /* WindingOrder.swift in Sources */,
 				9478215B1B5A2D7C0095A86F /* BingMapsAPI.swift in Sources */,
+				94C91B101CAFA6CD0041F512 /* Intersections2D.swift in Sources */,
 				94EB4DA41C2E6664001A40C8 /* NSData+ArrayView.swift in Sources */,
 				949090741BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				9478215C1B5A2D7C0095A86F /* BingMapsImageryProvider.swift in Sources */,

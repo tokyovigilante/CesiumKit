@@ -8,7 +8,7 @@
 
 import Foundation
 
-private let halfMaxShort = (UInt16.max / 2 ) | 0
+private let halfMaxShort = UInt16((Int16.max / 2) | 0)
 
 class QuantizedMeshUpsampler {
 /*
@@ -43,11 +43,11 @@ class QuantizedMeshUpsampler {
         ellipsoid: Ellipsoid)
     {
  
-        let minU = isEastChild ? halfMaxShort : 0;
-        var maxU = isEastChild ? UInt16.max : halfMaxShort
-        var minV = isNorthChild ? halfMaxShort : 0
-        var maxV = isNorthChild ? UInt16.max : halfMaxShort
-        
+        let minU = isEastChild ? halfMaxShort : 0
+        let maxU = isEastChild ? UInt16.max : halfMaxShort
+        let minV = isNorthChild ? halfMaxShort : 0
+        let maxV = isNorthChild ? UInt16.max : halfMaxShort
+        let halfMS = halfMaxShort
         var uBuffer = [UInt16]()
         var vBuffer = [UInt16]()
         var heightBuffer = [UInt16]()
@@ -86,45 +86,61 @@ class QuantizedMeshUpsampler {
         
         var clippedTriangleVertices = [Vertex](count: 3, repeatedValue: Vertex())
         
-        /*var clippedIndex;
-        var clipped2;
-        
-        for (i = 0; i < parentIndices.length; i += 3) {
-            var i0 = parentIndices[i];
-            var i1 = parentIndices[i + 1];
-            var i2 = parentIndices[i + 2];
+        for i in 0.stride(to: parentIndices.count, by: 3) {
+            var i0 = parentIndices[i]
+            var i1 = parentIndices[i + 1]
+            var i2 = parentIndices[i + 2]
             
-            var u0 = parentUBuffer[i0];
-            var u1 = parentUBuffer[i1];
-            var u2 = parentUBuffer[i2];
+            var u0 = parentUBuffer[i0]
+            var u1 = parentUBuffer[i1]
+            var u2 = parentUBuffer[i2]
             
-            triangleVertices[0].initializeIndexed(parentUBuffer, parentVBuffer, parentHeightBuffer, parentNormalBuffer, i0);
-            triangleVertices[1].initializeIndexed(parentUBuffer, parentVBuffer, parentHeightBuffer, parentNormalBuffer, i1);
-            triangleVertices[2].initializeIndexed(parentUBuffer, parentVBuffer, parentHeightBuffer, parentNormalBuffer, i2);
+            triangleVertices[0].initializeIndexed(
+                uBuffer: Array<UInt16>(parentUBuffer),
+                vBuffer: Array<UInt16>(parentVBuffer),
+                heightBuffer: Array<UInt16>(parentHeightBuffer),
+                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                index: i0
+            )
+            triangleVertices[1].initializeIndexed(
+                uBuffer: Array<UInt16>(parentUBuffer),
+                vBuffer: Array<UInt16>(parentVBuffer),
+                heightBuffer: Array<UInt16>(parentHeightBuffer),
+                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                index: i1
+            )
+            triangleVertices[2].initializeIndexed(
+                uBuffer: Array<UInt16>(parentUBuffer),
+                vBuffer: Array<UInt16>(parentVBuffer),
+                heightBuffer: Array<UInt16>(parentHeightBuffer),
+                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                index: i2
+            )
             
             // Clip triangle on the east-west boundary.
-            var clipped = Intersections2D.clipTriangleAtAxisAlignedThreshold(halfMaxShort, isEastChild, u0, u1, u2, clipScratch);
+            let clipped = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isEastChild, u0: u0, u1: u1, u2: u2)
             
             // Get the first clipped triangle, if any.
-            clippedIndex = 0;
+            var clippedIndex = 0
             
-            if (clippedIndex >= clipped.length) {
-                continue;
+            if clippedIndex >= clipped.count {
+                continue
             }
-            clippedIndex = clippedTriangleVertices[0].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
+            clippedIndex = clippedTriangleVertices[0].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
             
-            if (clippedIndex >= clipped.length) {
-                continue;
+            if clippedIndex >= clipped.count {
+                continue
             }
-            clippedIndex = clippedTriangleVertices[1].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
+            clippedIndex = clippedTriangleVertices[1].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
             
-            if (clippedIndex >= clipped.length) {
-                continue;
+            if clippedIndex >= clipped.count {
+                continue
             }
-            clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
+            clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
             
             // Clip the triangle against the North-south boundary.
-            clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(halfMaxShort, isNorthChild, clippedTriangleVertices[0].getV(), clippedTriangleVertices[1].getV(), clippedTriangleVertices[2].getV(), clipScratch2);
+            let clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
+            /*
             addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);
             
             // If there's another vertex in the original clipped result,
@@ -135,9 +151,9 @@ class QuantizedMeshUpsampler {
                 
                 clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(halfMaxShort, isNorthChild, clippedTriangleVertices[0].getV(), clippedTriangleVertices[1].getV(), clippedTriangleVertices[2].getV(), clipScratch2);
                 addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);
-            }
+            }*/
         }
-        
+        /*
         var uOffset = isEastChild ? -maxShort : 0;
         var vOffset = isNorthChild ? -maxShort : 0;
         
@@ -270,46 +286,44 @@ class QuantizedMeshUpsampler {
  
 }
 
- struct Vertex {
+private class Vertex {
     var vertexBuffer: [Float32]? = nil
-    var uBuffer: [Int]? = nil
-    var vBuffer: [Int]? = nil
-    var heightBuffer: [Int]? = nil
-    var normalBuffer: [Float]? = nil
+    var uBuffer: [UInt16]? = nil
+    var vBuffer: [UInt16]? = nil
+    var heightBuffer: [UInt16]? = nil
+    var normalBuffer: [UInt8]? = nil
     var index: Int? = nil
-    var first: Int? = nil
-    var second: Int? = nil
-    var ratio: Int? = nil
+    var first: Vertex? = nil
+    var second: Vertex? = nil
+    var ratio: Float? = nil
  
+    func clone (result: Vertex?) -> Vertex {
+        
+        var result = result ?? Vertex()
+
+        result.uBuffer = self.uBuffer
+        result.vBuffer = self.vBuffer
+        result.heightBuffer = self.heightBuffer
+        result.normalBuffer = self.normalBuffer
+        result.index = self.index
+        result.first = self.first
+        result.second = self.second
+        result.ratio = self.ratio
+ 
+        return result
+    }
+
+    func initializeIndexed (uBuffer uBuffer: [UInt16], vBuffer: [UInt16], heightBuffer: [UInt16], normalBuffer: [UInt8]?, index: Int) {
+        self.uBuffer = uBuffer
+        self.vBuffer = vBuffer
+        self.heightBuffer = heightBuffer
+        self.normalBuffer = normalBuffer
+        self.index = index
+        self.first = nil
+        self.second = nil
+        self.ratio = nil
+    }
  /*
- Vertex.prototype.clone = function(result) {
- if (!defined(result)) {
- result = new Vertex();
- }
- 
- result.uBuffer = this.uBuffer;
- result.vBuffer = this.vBuffer;
- result.heightBuffer = this.heightBuffer;
- result.normalBuffer = this.normalBuffer;
- result.index = this.index;
- result.first = this.first;
- result.second = this.second;
- result.ratio = this.ratio;
- 
- return result;
- };
- 
- Vertex.prototype.initializeIndexed = function(uBuffer, vBuffer, heightBuffer, normalBuffer, index) {
- this.uBuffer = uBuffer;
- this.vBuffer = vBuffer;
- this.heightBuffer = heightBuffer;
- this.normalBuffer = normalBuffer;
- this.index = index;
- this.first = undefined;
- this.second = undefined;
- this.ratio = undefined;
- };
- 
  Vertex.prototype.initializeInterpolated = function(first, second, ratio) {
  this.vertexBuffer = undefined;
  this.index = undefined;
@@ -318,26 +332,26 @@ class QuantizedMeshUpsampler {
  this.second = second;
  this.ratio = ratio;
  };
- 
- Vertex.prototype.initializeFromClipResult = function(clipResult, index, vertices) {
- var nextIndex = index + 1;
- 
- if (clipResult[index] !== -1) {
- vertices[clipResult[index]].clone(this);
- } else {
- this.vertexBuffer = undefined;
- this.index = undefined;
- this.first = vertices[clipResult[nextIndex]];
- ++nextIndex;
- this.second = vertices[clipResult[nextIndex]];
- ++nextIndex;
- this.ratio = clipResult[nextIndex];
- ++nextIndex;
- }
- 
- return nextIndex;
- };
- 
+     */
+    func initializeFromClipResult (clipResult clipResult: [Float], index: Int, vertices: [Vertex]) -> Int {
+        var nextIndex = index + 1
+        
+        if (clipResult[index] != -1) {
+            vertices[Int(clipResult[index])].clone(self)
+        } else {
+            vertexBuffer = nil
+            self.index = nil
+            first = vertices[Int(clipResult[nextIndex])]
+            nextIndex += 1
+            second = vertices[Int(clipResult[nextIndex])]
+            nextIndex += 1
+            ratio = clipResult[nextIndex]
+            nextIndex += 1
+        }
+        
+        return nextIndex
+    }
+ /*
  Vertex.prototype.getKey = function() {
  if (this.isIndexed()) {
  return this.index;
@@ -366,14 +380,14 @@ class QuantizedMeshUpsampler {
  }
  return CesiumMath.lerp(this.first.getU(), this.second.getU(), this.ratio);
  };
- 
- Vertex.prototype.getV = function() {
- if (defined(this.index)) {
- return this.vBuffer[this.index];
- }
- return CesiumMath.lerp(this.first.getV(), this.second.getV(), this.ratio);
- };
- 
+ */
+    func getV () -> UInt16 {
+        if let index = index {
+            return vBuffer![index]
+        }
+        return UInt16(Math.lerp(p: Double(first!.getV()), q: Double(second!.getV()), time: Double(ratio!)))
+    }
+ /*
  var encodedScratch = new Cartesian2();
  // An upsampled triangle may be clipped twice before it is assigned an index
  // In this case, we need a buffer to handle the recursion of getNormalX() and getNormalY().
