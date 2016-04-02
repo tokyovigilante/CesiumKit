@@ -132,27 +132,29 @@ class TileTerrain {
         let sourceY = upsampleDetails.y
         let sourceLevel = upsampleDetails.level
         
-        if !sourceData.upsample(
-            tilingScheme: terrainProvider.tilingScheme,
-            thisX: sourceX,
-            thisY: sourceY,
-            thisLevel: sourceLevel,
-            descendantX: x,
-            descendantY: y,
-            descendantLevel: level,
-            completionBlock: { terrainData in
-                if terrainData == nil {
-                    self.state = .Failed
-                    return
-                }
-                self.data = terrainData!
-                self.state = .Received
-        }) {
-            // The upsample request has been deferred - try again later.
-            return
-        } else {
-            state = .Receiving
-        }
+        state = .Receiving
+        
+        dispatch_async(frameState.context.processorQueue, {
+            sourceData.upsample(
+                tilingScheme: terrainProvider.tilingScheme,
+                thisX: sourceX,
+                thisY: sourceY,
+                thisLevel: sourceLevel,
+                descendantX: x,
+                descendantY: y,
+                descendantLevel: level,
+                completionBlock: { terrainData in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        if let terrainData = terrainData {
+                            self.data = terrainData
+                            self.state = .Received
+                        } else {
+                            self.state = .Failed
+                        }
+                    })
+            })
+        })
+
 
         if state == .Received {
             transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)

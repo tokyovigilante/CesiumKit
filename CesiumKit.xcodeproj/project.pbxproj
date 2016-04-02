@@ -596,6 +596,8 @@
 		94D5AC2519FBBC0600FFAD81 /* Matrix4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */; };
 		94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D653191C26ACAE001A40C8 /* OrbitType.swift */; };
 		94D6531B1C26ACAE001A40C8 /* OrbitType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D653191C26ACAE001A40C8 /* OrbitType.swift */; };
+		94DA67BB1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DA67BA1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift */; };
+		94DA67BC1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DA67BA1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift */; };
 		94DC79341918425300012DC4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79331918425300012DC4 /* XCTest.framework */; };
 		94DC79351918425300012DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79251918425300012DC4 /* Foundation.framework */; };
 		94DC79371918425300012DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94DC79361918425300012DC4 /* UIKit.framework */; };
@@ -1058,6 +1060,7 @@
 		94D5AC2219FBAE7F00FFAD81 /* BlendFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendFunction.swift; sourceTree = "<group>"; };
 		94D5AC2419FBBC0600FFAD81 /* Matrix4Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Matrix4Tests.swift; path = Core/Matrix4Tests.swift; sourceTree = "<group>"; };
 		94D653191C26ACAE001A40C8 /* OrbitType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrbitType.swift; sourceTree = "<group>"; };
+		94DA67BA1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshUpsampler.swift; sourceTree = "<group>"; };
 		94DC79251918425300012DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		94DC79291918425300012DC4 /* CesiumKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CesiumKit-Prefix.pch"; sourceTree = "<group>"; };
 		94DC79321918425300012DC4 /* CesiumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CesiumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1480,6 +1483,7 @@
 				947E32341BC0D85E001A40C8 /* Plane.swift */,
 				94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */,
 				94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */,
+				94DA67BA1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift */,
 				948B802F194D462F00012DC4 /* Quaternion.swift */,
 				949E67A419D6BCB200012DC4 /* Queue.swift */,
 				946D25A919592BFD0080379D /* Ray.swift */,
@@ -2329,6 +2333,7 @@
 				9413B7A01A37B92900FFAD81 /* String.swift in Sources */,
 				9413B7D21A37B93100FFAD81 /* VertexFormat.swift in Sources */,
 				9413B7A11A37B93100FFAD81 /* BoundingRectangle.swift in Sources */,
+				94DA67BB1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift in Sources */,
 				9413B7EF1A37B93D00FFAD81 /* VertexArray.swift in Sources */,
 				9413B7B21A37B93100FFAD81 /* GeometryAttribute.swift in Sources */,
 				9413B7D31A37B93100FFAD81 /* Visibility.swift in Sources */,
@@ -2523,6 +2528,7 @@
 				9478214A1B5A2D7C0095A86F /* PipelineCache.swift in Sources */,
 				94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */,
 				9478214C1B5A2D7C0095A86F /* RenderPass.swift in Sources */,
+				94DA67BC1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift in Sources */,
 				942A70471BF9DB2E001A40C8 /* DepthPlane.swift in Sources */,
 				9478214D1B5A2D7C0095A86F /* RenderPipeline.swift in Sources */,
 				9478214E1B5A2D7C0095A86F /* RenderState.swift in Sources */,

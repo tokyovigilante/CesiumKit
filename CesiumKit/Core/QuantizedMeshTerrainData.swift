@@ -298,42 +298,30 @@ class QuantizedMeshTerrainData: TerrainData {
  *          deferred.
  */
     func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
-        /*
-//>>includeStart('debug', pragmas.debug);
- if (!defined(tilingScheme)) {
- throw new DeveloperError('tilingScheme is required.');
- }
- if (!defined(thisX)) {
- throw new DeveloperError('thisX is required.');
- }
- if (!defined(thisY)) {
- throw new DeveloperError('thisY is required.');
- }
- if (!defined(thisLevel)) {
- throw new DeveloperError('thisLevel is required.');
- }
- if (!defined(descendantX)) {
- throw new DeveloperError('descendantX is required.');
- }
- if (!defined(descendantY)) {
- throw new DeveloperError('descendantY is required.');
- }
- if (!defined(descendantLevel)) {
- throw new DeveloperError('descendantLevel is required.');
- }
- var levelDifference = descendantLevel - thisLevel;
- if (levelDifference > 1) {
- throw new DeveloperError('Upsampling through more than one level at a time is not currently supported.');
- }
- //>>includeEnd('debug');
- 
- var isEastChild = thisX * 2 !== descendantX;
- var isNorthChild = thisY * 2 === descendantY;
- 
- var ellipsoid = tilingScheme.ellipsoid;
- var childRectangle = tilingScheme.tileXYToRectangle(descendantX, descendantY, descendantLevel);
- 
- var upsamplePromise = upsampleTaskProcessor.scheduleTask({
+        
+        let levelDifference = descendantLevel - thisLevel
+        if levelDifference > 1 {
+            assertionFailure("Upsampling through more than one level at a time is not currently supported")
+            completionBlock(nil)
+        }
+        
+        let isEastChild = thisX * 2 != descendantX
+        let isNorthChild = thisY * 2 == descendantY
+        
+        let ellipsoid = tilingScheme.ellipsoid
+        let childRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
+        
+        QuantizedMeshUpsampler.upsampleQuantizedTerrainMesh(
+            vertices: _quantizedVertices,
+            indices: _indices,
+            encodedNormals: _encodedNormals,
+            minimumHeight: _minimumHeight,
+            maximumHeight: _maximumHeight,
+            isEastChild: isEastChild,
+            isNorthChild: isNorthChild,
+            childRectangle: childRectangle,
+            ellipsoid: ellipsoid)
+ /*var upsamplePromise = upsampleTaskProcessor.scheduleTask({
  vertices : this._quantizedVertices,
  indices : this._indices,
  encodedNormals : this._encodedNormals,
