@@ -220,7 +220,6 @@ class TileTerrain {
             
             var indexBuffer = terrainMesh.indexBuffer
             if indexBuffer == nil {
-                // FIXME geometry with > 64k indices
                 let indices = terrainMesh.indices
                 if indices.count < Math.SixtyFourKilobytes {
                     let indicesShort = indices.map({ UInt16($0) })
@@ -241,10 +240,8 @@ class TileTerrain {
             }
             var attributes = terrainProvider.vertexAttributes
             attributes[0].buffer = vertexBuffer
-            //attributes[1].buffer = vertexBuffer
             let vertexArray = VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {
-                //dispatch_async(context.renderQueue, {
                 self.vertexArray = vertexArray
                 self.state = .Ready
             })
