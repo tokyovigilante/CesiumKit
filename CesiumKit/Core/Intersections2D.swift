@@ -42,13 +42,13 @@ class Intersections2D {
      * var result = Cesium.Intersections2D.clipTriangleAtAxisAlignedThreshold(0.5, false, 0.2, 0.6, 0.4);
      * // result === [2, 0, -1, 1, 0, 0.25, -1, 1, 2, 0.5]
      */
-    class func clipTriangleAtAxisAlignedThreshold (threshold thresholdInt: UInt16, keepAbove: Bool, u0 u0Int: UInt16, u1 u1Int: UInt16, u2 u2Int: UInt16) -> [Float] {
+    class func clipTriangleAtAxisAlignedThreshold (threshold thresholdInt: Int, keepAbove: Bool, u0 u0Int: Int, u1 u1Int: Int, u2 u2Int: Int) -> [Double] {
         
-        var result = [Float]()
-        let threshold = Float(thresholdInt)
-        let u0 = Float(u0Int)
-        let u1 = Float(u1Int)
-        let u2 = Float(u2Int)
+        var result = [Double]()
+        let threshold = Double(thresholdInt)
+        let u0 = Double(u0Int)
+        let u1 = Double(u1Int)
+        let u2 = Double(u2Int)
         
         let u0Behind: Bool
         let u1Behind: Bool
@@ -65,12 +65,12 @@ class Intersections2D {
         
         let numBehind = Int(u0Behind) + Int(u1Behind) + Int(u2Behind)
         
-        var u01Ratio: Float
-        var u02Ratio: Float
-        var u12Ratio: Float
-        var u10Ratio: Float
-        var u20Ratio: Float
-        var u21Ratio: Float
+        var u01Ratio: Double
+        var u02Ratio: Double
+        var u12Ratio: Double
+        var u10Ratio: Double
+        var u20Ratio: Double
+        var u21Ratio: Double
         
         if numBehind == 1 {
             if u0Behind {

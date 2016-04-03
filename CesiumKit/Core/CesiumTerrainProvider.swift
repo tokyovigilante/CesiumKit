@@ -518,16 +518,14 @@ class CesiumTerrainProvider: TerrainProvider {
             orientedBoundingBox = nil
         }
        let terrainData = QuantizedMeshTerrainData(
-            center: center,
+            quantizedVertices: encodedVertexBuffer,
+            indices: indices,
+            encodedNormals: encodedNormalBuffer,
             minimumHeight: minimumHeight,
             maximumHeight: maximumHeight,
             boundingSphere: boundingSphere,
-            boundingSphereCenter: boundingSphere.center,
             orientedBoundingBox: orientedBoundingBox,
             horizonOcclusionPoint: horizonOcclusionPoint,
-            quantizedVertices: encodedVertexBuffer,
-            encodedNormals: encodedNormalBuffer,
-            indices: indices,
             westIndices: westIndices,
             southIndices: southIndices,
             eastIndices: eastIndices,
@@ -591,7 +589,7 @@ class CesiumTerrainProvider: TerrainProvider {
         let tileLoader = { (tileUrl: String) in
             request(.GET, tileUrl, headers: self.getRequestHeader(extensionList))
                 .response(
-                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests),                    completionHandler: { (request, response, data, error) in
+                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), completionHandler: { (request, response, data, error) in
                         if let error = error {
                             print(error.localizedDescription)
                             return

@@ -8,7 +8,8 @@
 
 import Foundation
 
-private let halfMaxShort = UInt16((Int16.max / 2) | 0)
+private let halfMaxShort = Int((Int16.max / 2) | 0)
+private let maxShort = Int(Int16.max)
 
 class QuantizedMeshUpsampler {
 /*
@@ -35,21 +36,35 @@ class QuantizedMeshUpsampler {
         vertices parentVertices: [UInt16],
         indices parentIndices: [Int],
         encodedNormals parentNormalBuffer: [UInt8]?,
-        minimumHeight: Double,
-        maximumHeight: Double,
+        minimumHeight parentMinimumHeight: Double,
+        maximumHeight parentMaximumHeight: Double,
         isEastChild: Bool,
         isNorthChild: Bool,
         childRectangle: Rectangle,
-        ellipsoid: Ellipsoid)
+        ellipsoid: Ellipsoid) ->
+        (
+            vertices: [UInt16],
+            encodedNormals: [UInt8],
+            indices: [Int],
+            minimumHeight: Double,
+            maximumHeight: Double,
+            westIndices: [Int],
+            southIndices: [Int],
+            eastIndices: [Int],
+            northIndices: [Int],
+            boundingSphere: BoundingSphere,
+            orientedBoundingBox: OrientedBoundingBox,
+            horizonOcclusionPoint: Cartesian3
+        )
     {
  
         let minU = isEastChild ? halfMaxShort : 0
-        let maxU = isEastChild ? UInt16.max : halfMaxShort
+        let maxU = isEastChild ? maxShort : halfMaxShort
         let minV = isNorthChild ? halfMaxShort : 0
-        let maxV = isNorthChild ? UInt16.max : halfMaxShort
-        var uBuffer = [UInt16]()
-        var vBuffer = [UInt16]()
-        var heightBuffer = [UInt16]()
+        let maxV = isNorthChild ? maxShort : halfMaxShort
+        var uBuffer = [Int]()
+        var vBuffer = [Int]()
+        var heightBuffer = [Double]()
         var normalBuffer = [UInt8]()
  
         var indices = [Int]()
@@ -57,22 +72,23 @@ class QuantizedMeshUpsampler {
         var vertexMap = [String: Int]()
  
         let quantizedVertexCount = parentVertices.count / 3
-        let parentUBuffer = parentVertices[0..<quantizedVertexCount]
-        let parentVBuffer = parentVertices[quantizedVertexCount..<(2 * quantizedVertexCount)]
-        let parentHeightBuffer = parentVertices[(quantizedVertexCount*2)..<(3*quantizedVertexCount)]
+        let parentUBuffer = parentVertices[0..<quantizedVertexCount].map { Int($0) }
+        let parentVBuffer = parentVertices[quantizedVertexCount..<(2 * quantizedVertexCount)].map { Int($0) }
+        let parentHeightBuffer = parentVertices[(quantizedVertexCount*2)..<(3*quantizedVertexCount)].map { Double($0) }
  
         var vertexCount = 0
         let hasVertexNormals = parentNormalBuffer != nil
         
-        for (i, (u, v)) in zip(parentUBuffer, parentVBuffer).enumerate() {
-            
+        for (i, (parentU, parentV)) in zip(parentUBuffer, parentVBuffer).enumerate() {
+            let u = Int(parentU)
+            let v = Int(parentV)
             if (isEastChild && u >= halfMaxShort || !isEastChild && u <= halfMaxShort) &&
                 (isNorthChild && v >= halfMaxShort || !isNorthChild && v <= halfMaxShort) {
 
-                vertexMap["\(vertexMap.count)"] = vertexCount
+                vertexMap["\(i)"] = vertexCount
                 uBuffer.append(u)
                 vBuffer.append(v)
-                heightBuffer.append(parentHeightBuffer[parentHeightBuffer.startIndex+i])
+                heightBuffer.append(parentHeightBuffer[i])
                 if hasVertexNormals {
                     normalBuffer.append(parentNormalBuffer![i*2])
                     normalBuffer.append(parentNormalBuffer![i*2+1])
@@ -81,38 +97,38 @@ class QuantizedMeshUpsampler {
             }
         }
         
-        var triangleVertices = [Vertex](count: 3, repeatedValue: Vertex())
+        var triangleVertices = [Vertex(), Vertex(), Vertex()]
         
-        var clippedTriangleVertices = [Vertex](count: 3, repeatedValue: Vertex())
+        var clippedTriangleVertices = [Vertex(), Vertex(), Vertex()]
         
         for i in 0.stride(to: parentIndices.count, by: 3) {
-            var i0 = parentIndices[i]
-            var i1 = parentIndices[i + 1]
-            var i2 = parentIndices[i + 2]
+            let i0 = parentIndices[i]
+            let i1 = parentIndices[i + 1]
+            let i2 = parentIndices[i + 2]
             
-            var u0 = parentUBuffer[i0]
-            var u1 = parentUBuffer[i1]
-            var u2 = parentUBuffer[i2]
+            let u0 = Int(parentUBuffer[i0])
+            let u1 = Int(parentUBuffer[i1])
+            let u2 = Int(parentUBuffer[i2])
             
             triangleVertices[0].initializeIndexed(
-                uBuffer: Array<UInt16>(parentUBuffer),
-                vBuffer: Array<UInt16>(parentVBuffer),
-                heightBuffer: Array<UInt16>(parentHeightBuffer),
-                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                uBuffer: parentUBuffer,
+                vBuffer: parentVBuffer,
+                heightBuffer: parentHeightBuffer,
+                normalBuffer: parentNormalBuffer,
                 index: i0
             )
             triangleVertices[1].initializeIndexed(
-                uBuffer: Array<UInt16>(parentUBuffer),
-                vBuffer: Array<UInt16>(parentVBuffer),
-                heightBuffer: Array<UInt16>(parentHeightBuffer),
-                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                uBuffer: parentUBuffer,
+                vBuffer: parentVBuffer,
+                heightBuffer: parentHeightBuffer,
+                normalBuffer: parentNormalBuffer,
                 index: i1
             )
             triangleVertices[2].initializeIndexed(
-                uBuffer: Array<UInt16>(parentUBuffer),
-                vBuffer: Array<UInt16>(parentVBuffer),
-                heightBuffer: Array<UInt16>(parentHeightBuffer),
-                normalBuffer: parentNormalBuffer != nil ? Array<UInt8>(parentNormalBuffer!) : nil,
+                uBuffer: parentUBuffer,
+                vBuffer: parentVBuffer,
+                heightBuffer: parentHeightBuffer,
+                normalBuffer: parentNormalBuffer,
                 index: i2
             )
             
@@ -138,163 +154,132 @@ class QuantizedMeshUpsampler {
             clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
             
             // Clip the triangle against the North-south boundary.
-            let clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
+            var clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
             
             addClippedPolygon(uBuffer: &uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
             
             // If there's another vertex in the original clipped result,
             // it forms a second triangle.  Clip it as well.
             if clippedIndex < clipped.count {
-                /*clippedTriangleVertices[2].clone(clippedTriangleVertices[1]);
-                clippedTriangleVertices[2].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
+                clippedTriangleVertices[2].clone(clippedTriangleVertices[1])
+                clippedTriangleVertices[2].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
                 
-                clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(halfMaxShort, isNorthChild, clippedTriangleVertices[0].getV(), clippedTriangleVertices[1].getV(), clippedTriangleVertices[2].getV(), clipScratch2);
-                addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);*/
+                clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
+                addClippedPolygon(uBuffer: &uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
             }
         }
-        /*
-        var uOffset = isEastChild ? -maxShort : 0;
-        var vOffset = isNorthChild ? -maxShort : 0;
         
-        var parentMinimumHeight = parameters.minimumHeight;
-        var parentMaximumHeight = parameters.maximumHeight;
+        let uOffset = isEastChild ? -Int(maxShort) : 0
+        let vOffset = isNorthChild ? -Int(maxShort) : 0
         
-        var westIndices = [];
-        var southIndices = [];
-        var eastIndices = [];
-        var northIndices = [];
+        var westIndices = [Int]()
+        var southIndices = [Int]()
+        var eastIndices = [Int]()
+        var northIndices = [Int]()
         
-        var minimumHeight = Number.MAX_VALUE;
-        var maximumHeight = -minimumHeight;
+        var minimumHeight = Double(Int.max)
+        var maximumHeight = -minimumHeight
         
-        var cartesianVertices = verticesScratch;
-        cartesianVertices.length = 0;
+        var cartesianVertices = [Float]()
         
-        var ellipsoid = Ellipsoid.clone(parameters.ellipsoid);
-        var rectangle = parameters.childRectangle;
+        let north = childRectangle.north
+        let south = childRectangle.south
+        var east = childRectangle.east
+        let west = childRectangle.west
         
-        var north = rectangle.north;
-        var south = rectangle.south;
-        var east = rectangle.east;
-        var west = rectangle.west;
-        
-        if (east < west) {
-            east += CesiumMath.TWO_PI;
+        if east < west {
+            east += Math.TwoPi
         }
         
-        for (i = 0; i < uBuffer.length; ++i) {
-            u = Math.round(uBuffer[i]);
-            if (u <= minU) {
-                westIndices.push(i);
-                u = 0;
-            } else if (u >= maxU) {
-                eastIndices.push(i);
-                u = maxShort;
+        var u, v: Int
+
+        for i in 0..<uBuffer.count {
+            u = uBuffer[i]
+            if u <= minU {
+                westIndices.append(i)
+                u = 0
+            } else if u >= maxU {
+                eastIndices.append(i)
+                u = maxShort
             } else {
-                u = u * 2 + uOffset;
+                u = u * 2 + uOffset
             }
             
-            uBuffer[i] = u;
+            uBuffer[i] = u
             
-            v = Math.round(vBuffer[i]);
-            if (v <= minV) {
-                southIndices.push(i);
-                v = 0;
+            v = vBuffer[i]
+            if v <= minV {
+                southIndices.append(i)
+                v = 0
             } else if (v >= maxV) {
-                northIndices.push(i);
-                v = maxShort;
+                northIndices.append(i)
+                v = maxShort
             } else {
-                v = v * 2 + vOffset;
+                v = v * 2 + vOffset
             }
             
-            vBuffer[i] = v;
+            vBuffer[i] = v
             
-            var height = CesiumMath.lerp(parentMinimumHeight, parentMaximumHeight, heightBuffer[i] / maxShort);
-            if (height < minimumHeight) {
-                minimumHeight = height;
+            let height = Math.lerp(p: parentMinimumHeight, q: parentMaximumHeight, time: heightBuffer[i] / Double(maxShort))
+            if height < minimumHeight {
+                minimumHeight = height
             }
-            if (height > maximumHeight) {
-                maximumHeight = height;
+            if height > maximumHeight {
+                maximumHeight = height
             }
             
-            heightBuffer[i] = height;
+            heightBuffer[i] = height
             
-            cartographicScratch.longitude = CesiumMath.lerp(west, east, u / maxShort);
-            cartographicScratch.latitude = CesiumMath.lerp(south, north, v / maxShort);
-            cartographicScratch.height = height;
-            
-            ellipsoid.cartographicToCartesian(cartographicScratch, cartesian3Scratch);
-            
-            cartesianVertices.push(cartesian3Scratch.x);
-            cartesianVertices.push(cartesian3Scratch.y);
-            cartesianVertices.push(cartesian3Scratch.z);
+            let cartesian = ellipsoid.cartographicToCartesian(
+                Cartographic(
+                    longitude: Math.lerp(p: west, q: east, time: Double(u / maxShort)),
+                    latitude:  Math.lerp(p: south, q: north, time: Double(v / maxShort)),
+                    height: height
+                )
+            )
+            cartesianVertices.appendContentsOf(cartesian.floatRepresentation)
         }
         
-        var boundingSphere = BoundingSphere.fromVertices(cartesianVertices, Cartesian3.ZERO, 3, boundingSphereScratch);
-        var orientedBoundingBox = OrientedBoundingBox.fromRectangle(rectangle, minimumHeight, maximumHeight, ellipsoid, orientedBoundingBoxScratch);
+        let boundingSphere = BoundingSphere.fromVertices(cartesianVertices, center: Cartesian3.zero, stride: 3)
+        let orientedBoundingBox = OrientedBoundingBox(fromRectangle: childRectangle, minimumHeight: minimumHeight, maximumHeight: maximumHeight, ellipsoid: ellipsoid)
         
-        var occluder = new EllipsoidalOccluder(ellipsoid);
-        var horizonOcclusionPoint = occluder.computeHorizonCullingPointFromVertices(boundingSphere.center, cartesianVertices, 3, boundingSphere.center, horizonOcclusionPointScratch);
+        let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+        let horizonOcclusionPoint = occluder.computeHorizonCullingPointFromVertices(boundingSphere.center, vertices: cartesianVertices, stride: 3, center: boundingSphere.center)!
         
-        var heightRange = maximumHeight - minimumHeight;
-        
-        var vertices = new Uint16Array(uBuffer.length + vBuffer.length + heightBuffer.length);
-        
-        for (i = 0; i < uBuffer.length; ++i) {
-            vertices[i] = uBuffer[i];
-        }
-        
-        var start = uBuffer.length;
-        
-        for (i = 0; i < vBuffer.length; ++i) {
-            vertices[start + i] = vBuffer[i];
-        }
-        
-        start += vBuffer.length;
-        
-        for (i = 0; i < heightBuffer.length; ++i) {
-            vertices[start + i] = maxShort * (heightBuffer[i] - minimumHeight) / heightRange;
-        }
-        
-        var indicesTypedArray = IndexDatatype.createTypedArray(uBuffer.length, indices);
-        
-        var encodedNormals;
-        if (hasVertexNormals) {
-            var normalArray = new Uint8Array(normalBuffer);
-            transferableObjects.push(vertices.buffer, indicesTypedArray.buffer, normalArray.buffer);
-            encodedNormals = normalArray.buffer;
-        } else {
-            transferableObjects.push(vertices.buffer, indicesTypedArray.buffer);
-        }
-        
-        return {
-            vertices : vertices.buffer,
-            encodedNormals : encodedNormals,
-            indices : indicesTypedArray.buffer,
-            minimumHeight : minimumHeight,
-            maximumHeight : maximumHeight,
-            westIndices : westIndices,
-            southIndices : southIndices,
-            eastIndices : eastIndices,
-            northIndices : northIndices,
-            boundingSphere : boundingSphere,
-            orientedBoundingBox : orientedBoundingBox,
-            horizonOcclusionPoint : horizonOcclusionPoint
-        }*/
+        let heightRange = maximumHeight - minimumHeight
+
+        var vertices = uBuffer.map { UInt16 ($0) }
+        vertices.appendContentsOf(vBuffer.map { UInt16($0) })
+        vertices.appendContentsOf(heightBuffer.map { UInt16(Double(maxShort) * ($0 - minimumHeight) / heightRange) } )
+
+        return (
+            vertices: vertices,
+            encodedNormals: normalBuffer,
+            indices: indices,
+            minimumHeight: minimumHeight,
+            maximumHeight: maximumHeight,
+            westIndices: westIndices,
+            southIndices: southIndices,
+            eastIndices: eastIndices,
+            northIndices: northIndices,
+            boundingSphere: boundingSphere,
+            orientedBoundingBox: orientedBoundingBox,
+            horizonOcclusionPoint: horizonOcclusionPoint
+        )
     }
     
     private class func addClippedPolygon (
-        inout uBuffer uBuffer: [UInt16],
-        inout vBuffer: [UInt16],
-        inout heightBuffer: [UInt16],
+        inout uBuffer uBuffer: [Int],
+        inout vBuffer: [Int],
+        inout heightBuffer: [Double],
         inout normalBuffer: [UInt8],
         inout indices: [Int],
         inout vertexMap: [String: Int],
-        clipped: [Float],
+        clipped: [Double],
         triangleVertices: [Vertex],
         hasVertexNormals: Bool)
     {
-        var polygonVertices = [Vertex](count: 4, repeatedValue: Vertex())
+        var polygonVertices = [Vertex(), Vertex(), Vertex(), Vertex()]
         
         if clipped.count == 0 {
             return
@@ -307,14 +292,15 @@ class QuantizedMeshUpsampler {
             numVertices += 1
         }
         
-        for polygonVertex in polygonVertices {
+        for i in 0..<numVertices {
+            let polygonVertex = polygonVertices[i]
 
             if !polygonVertex.isIndexed {
                 let key = polygonVertex.getKey()
                 if let newIndex = vertexMap[key] {
                     polygonVertex.newIndex = newIndex
                 } else {
-                    var newIndex = uBuffer.count
+                    let newIndex = uBuffer.count
                     uBuffer.append(polygonVertex.getU())
                     vBuffer.append(polygonVertex.getV())
                     heightBuffer.append(polygonVertex.getH())
@@ -358,19 +344,19 @@ class QuantizedMeshUpsampler {
 
 private class Vertex {
     var vertexBuffer: [Float32]? = nil
-    var uBuffer: [UInt16]? = nil
-    var vBuffer: [UInt16]? = nil
-    var heightBuffer: [UInt16]? = nil
+    var uBuffer: [Int]? = nil
+    var vBuffer: [Int]? = nil
+    var heightBuffer: [Double]? = nil
     var normalBuffer: [UInt8]? = nil
     var index: Int? = nil
     var newIndex: Int? = nil
     var first: Vertex? = nil
     var second: Vertex? = nil
-    var ratio: Float? = nil
+    var ratio: Double? = nil
  
     func clone (result: Vertex?) -> Vertex {
         
-        var result = result ?? Vertex()
+        let result = result ?? Vertex()
 
         result.uBuffer = self.uBuffer
         result.vBuffer = self.vBuffer
@@ -384,7 +370,7 @@ private class Vertex {
         return result
     }
 
-    func initializeIndexed (uBuffer uBuffer: [UInt16], vBuffer: [UInt16], heightBuffer: [UInt16], normalBuffer: [UInt8]?, index: Int) {
+    func initializeIndexed (uBuffer uBuffer: [Int], vBuffer: [Int], heightBuffer: [Double], normalBuffer: [UInt8]?, index: Int) {
         self.uBuffer = uBuffer
         self.vBuffer = vBuffer
         self.heightBuffer = heightBuffer
@@ -404,7 +390,7 @@ private class Vertex {
  this.ratio = ratio;
  };
      */
-    func initializeFromClipResult (clipResult clipResult: [Float], index: Int, vertices: [Vertex]) -> Int {
+    func initializeFromClipResult (clipResult clipResult: [Double], index: Int, vertices: [Vertex]) -> Int {
         var nextIndex = index + 1
         
         if (clipResult[index] != -1) {
@@ -434,25 +420,25 @@ private class Vertex {
         return index != nil
     }
 
-    func getH () -> UInt16 {
+    func getH () -> Double {
         if let index = index {
             return heightBuffer![index]
         }
-        return UInt16(Math.lerp(p: Double(first!.getH()), q: Double(second!.getH()), time: Double(ratio!)))
+        return Math.lerp(p: first!.getH(), q: second!.getH(), time: Double(ratio!))
     }
     
-    func getU () -> UInt16 {
+    func getU () -> Int {
         if let index = index {
             return uBuffer![index]
         }
-        return UInt16(Math.lerp(p: Double(first!.getU()), q: Double(second!.getU()), time: Double(ratio!)))
+        return Int(Math.lerp(p: Double(first!.getU()), q: Double(second!.getU()), time: Double(ratio!)))
     }
  
-    func getV () -> UInt16 {
+    func getV () -> Int {
         if let index = index {
             return vBuffer![index]
         }
-        return UInt16(Math.lerp(p: Double(first!.getV()), q: Double(second!.getV()), time: Double(ratio!)))
+        return Int(Math.lerp(p: Double(first!.getV()), q: Double(second!.getV()), time: Double(ratio!)))
     }
  
     private var encodedScratch = Cartesian2()

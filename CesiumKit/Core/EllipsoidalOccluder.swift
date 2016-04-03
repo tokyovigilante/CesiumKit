@@ -225,10 +225,10 @@ class EllipsoidalOccluder {
             // The horizon culling point is undefined if there were no positions from which to compute it,
             // the directionToPoint is pointing opposite all of the positions,  or if we computed NaN or infinity.
             if (resultMagnitude <= 0.0 || resultMagnitude == 1.0 / 0.0 || resultMagnitude != resultMagnitude) {
-                return nil;
+                return nil
             }
             
-            return scaledSpaceDirectionToPoint.multiplyByScalar(resultMagnitude);
+            return scaledSpaceDirectionToPoint.multiplyByScalar(resultMagnitude)
     }
     
     func computeScaledSpaceDirectionToPoint(ellipsoid: Ellipsoid, directionToPoint: Cartesian3) -> Cartesian3 {

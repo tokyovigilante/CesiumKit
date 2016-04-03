@@ -139,16 +139,14 @@ class QuantizedMeshTerrainData: TerrainData {
     var childTileMask: Int
     
     init (
-        center: Cartesian3,
+        quantizedVertices: [UInt16],
+        indices: [Int],
+        encodedNormals: [UInt8]?,
         minimumHeight: Double,
         maximumHeight: Double,
         boundingSphere: BoundingSphere,
-        boundingSphereCenter: Cartesian3,
         orientedBoundingBox: OrientedBoundingBox?,
         horizonOcclusionPoint: Cartesian3,
-        quantizedVertices: [UInt16],
-        encodedNormals: [UInt8]?,
-        indices: [Int],
         westIndices: [Int],
         southIndices: [Int],
         eastIndices: [Int],
@@ -158,7 +156,7 @@ class QuantizedMeshTerrainData: TerrainData {
         eastSkirtHeight: Double,
         northSkirtHeight: Double,
         childTileMask: Int = 15,
-        waterMask: [UInt8]?,
+        waterMask: [UInt8]? = nil,
         createdByUpsampling: Bool = false)
     {
         _quantizedVertices = quantizedVertices
@@ -310,8 +308,13 @@ class QuantizedMeshTerrainData: TerrainData {
         
         let ellipsoid = tilingScheme.ellipsoid
         let childRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
-        
-        QuantizedMeshUpsampler.upsampleQuantizedTerrainMesh(
+        /*if (thisX == 379 && thisY == 90 && thisLevel == 8 && descendantX == 759 && descendantY == 181 && descendantLevel == 9) {
+            print("halt")
+        } else {
+            completionBlock(nil)
+            return false
+        }*/
+        let upsampledMesh = QuantizedMeshUpsampler.upsampleQuantizedTerrainMesh(
             vertices: _quantizedVertices,
             indices: _indices,
             encodedNormals: _encodedNormals,
@@ -321,64 +324,38 @@ class QuantizedMeshTerrainData: TerrainData {
             isNorthChild: isNorthChild,
             childRectangle: childRectangle,
             ellipsoid: ellipsoid)
- /*var upsamplePromise = upsampleTaskProcessor.scheduleTask({
- vertices : this._quantizedVertices,
- indices : this._indices,
- encodedNormals : this._encodedNormals,
- minimumHeight : this._minimumHeight,
- maximumHeight : this._maximumHeight,
- isEastChild : isEastChild,
- isNorthChild : isNorthChild,
- childRectangle : childRectangle,
- ellipsoid : ellipsoid
- });
- 
- if (!defined(upsamplePromise)) {
- // Postponed
- return undefined;
- }
- 
- var shortestSkirt = Math.min(this._westSkirtHeight, this._eastSkirtHeight);
- shortestSkirt = Math.min(shortestSkirt, this._southSkirtHeight);
- shortestSkirt = Math.min(shortestSkirt, this._northSkirtHeight);
- 
- var westSkirtHeight = isEastChild ? (shortestSkirt * 0.5) : this._westSkirtHeight;
- var southSkirtHeight = isNorthChild ? (shortestSkirt * 0.5) : this._southSkirtHeight;
- var eastSkirtHeight = isEastChild ? this._eastSkirtHeight : (shortestSkirt * 0.5);
- var northSkirtHeight = isNorthChild ? this._northSkirtHeight : (shortestSkirt * 0.5);
- 
- return when(upsamplePromise, function(result) {
- var quantizedVertices = new Uint16Array(result.vertices);
- var indicesTypedArray = IndexDatatype.createTypedArray(quantizedVertices.length / 3, result.indices);
- var encodedNormals;
- if (defined(result.encodedNormals)) {
- encodedNormals = new Uint8Array(result.encodedNormals);
- }
- 
- return new QuantizedMeshTerrainData({
- quantizedVertices : quantizedVertices,
- indices : indicesTypedArray,
- encodedNormals : encodedNormals,
- minimumHeight : result.minimumHeight,
- maximumHeight : result.maximumHeight,
- boundingSphere : BoundingSphere.clone(result.boundingSphere),
- orientedBoundingBox : OrientedBoundingBox.clone(result.orientedBoundingBox),
- horizonOcclusionPoint : Cartesian3.clone(result.horizonOcclusionPoint),
- westIndices : result.westIndices,
- southIndices : result.southIndices,
- eastIndices : result.eastIndices,
- northIndices : result.northIndices,
- westSkirtHeight : westSkirtHeight,
- southSkirtHeight : southSkirtHeight,
- eastSkirtHeight : eastSkirtHeight,
- northSkirtHeight : northSkirtHeight,
- childTileMask : 0,
- createdByUpsampling : true
- });
- });*/
-        completionBlock(nil)
-        return false
- }
+
+        let shortestSkirt = min(_westSkirtHeight, _eastSkirtHeight, _northSkirtHeight, _southSkirtHeight)
+        
+        let westSkirtHeight = isEastChild ? shortestSkirt * 0.5 : _westSkirtHeight
+        let southSkirtHeight = isNorthChild ? shortestSkirt * 0.5 : _southSkirtHeight
+        let eastSkirtHeight = isEastChild ? _eastSkirtHeight : shortestSkirt * 0.5
+        let northSkirtHeight = isNorthChild ? _northSkirtHeight : shortestSkirt * 0.5
+        
+        let data = QuantizedMeshTerrainData(
+            quantizedVertices : upsampledMesh.vertices,
+            indices: upsampledMesh.indices,
+            encodedNormals: upsampledMesh.encodedNormals,
+            minimumHeight: upsampledMesh.minimumHeight,
+            maximumHeight: upsampledMesh.maximumHeight,
+            boundingSphere: upsampledMesh.boundingSphere,
+            orientedBoundingBox: upsampledMesh.orientedBoundingBox,
+            horizonOcclusionPoint: upsampledMesh.horizonOcclusionPoint,
+            westIndices: upsampledMesh.westIndices,
+            southIndices: upsampledMesh.southIndices,
+            eastIndices: upsampledMesh.eastIndices,
+            northIndices: upsampledMesh.northIndices,
+            westSkirtHeight: westSkirtHeight,
+            southSkirtHeight: southSkirtHeight,
+            eastSkirtHeight: eastSkirtHeight,
+            northSkirtHeight: northSkirtHeight,
+            childTileMask: 0,
+            createdByUpsampling: true
+        )
+        
+        completionBlock(data)
+        return true
+    }
  /*
  var maxShort = 32767;
  var barycentricCoordinateScratch = new Cartesian3();
