@@ -18,91 +18,78 @@ import Foundation
 * @private
 */
 class AttributeCompression {
-/*
+    
+    /**
+     * Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
+     *
+     * Oct encoding is a compact representation of unit length vectors.  The encoding and decoding functions are low cost, and represent the normalized vector within 1 degree of error.
+     * The 'oct' encoding is described in "A Survey of Efficient Representations of Independent Unit Vectors",
+     * Cigolle et al 2014: {@link http://jcgt.org/published/0003/02/01/}
+     *
+     * @param {Cartesian3} vector The normalized vector to be compressed into 2 byte 'oct' encoding.
+     * @param {Cartesian2} result The 2 byte oct-encoded unit length vector.
+     * @returns {Cartesian2} The 2 byte oct-encoded unit length vector.
+     *
+     * @exception {DeveloperError} vector must be defined.
+     * @exception {DeveloperError} result must be defined.
+     * @exception {DeveloperError} vector must be normalized.
+     *
+     * @see AttributeCompression.octDecode
+     */
+    class func octEncode (vector: Cartesian3) -> Cartesian2 {
+        
+        let magSquared = vector.magnitudeSquared
+        assert(abs(magSquared - 1.0) <= Math.Epsilon6, "vector must be normalized.")
+        
+        var result = Cartesian2()
+        
+        result.x = vector.x / (abs(vector.x) + abs(vector.y) + abs(vector.z))
+        result.y = vector.y / (abs(vector.x) + abs(vector.y) + abs(vector.z))
+        if (vector.z < 0) {
+            let x = result.x
+            let y = result.y
+            result.x = (1.0 - abs(y)) * Double(Math.signNotZero(x))
+            result.y = (1.0 - abs(x)) * Double(Math.signNotZero(y))
+        }
+        
+        result.x = Double(Math.toSNorm(result.x))
+        result.y = Double(Math.toSNorm(result.y))
+        
+        return result
+    }
 
-/**
-* Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
-*
-* Oct encoding is a compact representation of unit length vectors.  The encoding and decoding functions are low cost, and represent the normalized vector within 1 degree of error.
-* The 'oct' encoding is described in "A Survey of Efficient Representations of Independent Unit Vectors",
-* Cigolle et al 2014: {@link http://jcgt.org/published/0003/02/01/}
-*
-* @param {Cartesian3} vector The normalized vector to be compressed into 2 byte 'oct' encoding.
-* @param {Cartesian2} result The 2 byte oct-encoded unit length vector.
-* @returns {Cartesian2} The 2 byte oct-encoded unit length vector.
-*
-* @exception {DeveloperError} vector must be defined.
-* @exception {DeveloperError} result must be defined.
-* @exception {DeveloperError} vector must be normalized.
-*
-* @see AttributeCompression.octDecode
-*/
-AttributeCompression.octEncode = function(vector, result) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(vector)) {
-throw new DeveloperError('vector is required.');
-}
-if (!defined(result)) {
-throw new DeveloperError('result is required.');
-}
-var magSquared = Cartesian3.magnitudeSquared(vector);
-if (Math.abs(magSquared - 1.0) > CesiumMath.EPSILON6) {
-throw new DeveloperError('vector must be normalized.');
-}
-//>>includeEnd('debug');
+    /**
+     * Decodes a unit-length vector in 'oct' encoding to a normalized 3-component vector.
+     *
+     * @param {Number} x The x component of the oct-encoded unit length vector.
+     * @param {Number} y The y component of the oct-encoded unit length vector.
+     * @param {Cartesian3} result The decoded and normalized vector
+     * @returns {Cartesian3} The decoded and normalized vector.
+     *
+     * @exception {DeveloperError} result must be defined.
+     * @exception {DeveloperError} x and y must be a signed normalized integer between 0 and 255.
+     *
+     * @see AttributeCompression.octEncode
+     */
+    class func octDecode (x x: UInt8, y: UInt8) -> Cartesian3 {
+        
+        assert(x >= 0 && x <= 255 && y >= 0 && y <= 255, "x and y must be a signed normalized integer between 0 and 255")
+        
+        var result = Cartesian3()
+        result.x = Math.fromSNorm(x)
+        result.y = Math.fromSNorm(y)
+        result.z = 1.0 - (abs(result.x) + abs(result.y))
+        
+        if (result.z < 0.0)
+        {
+            let oldVX = result.x
+            result.x = (1.0 - abs(result.y)) * Double(Math.signNotZero(oldVX))
+            result.y = (1.0 - abs(oldVX)) * Double(Math.signNotZero(result.y))
+        }
+        
+        return result.normalize()
+    }
 
-result.x = vector.x / (Math.abs(vector.x) + Math.abs(vector.y) + Math.abs(vector.z));
-result.y = vector.y / (Math.abs(vector.x) + Math.abs(vector.y) + Math.abs(vector.z));
-if (vector.z < 0) {
-var x = result.x;
-var y = result.y;
-result.x = (1.0 - Math.abs(y)) * CesiumMath.signNotZero(x);
-result.y = (1.0 - Math.abs(x)) * CesiumMath.signNotZero(y);
-}
-
-result.x = CesiumMath.toSNorm(result.x);
-result.y = CesiumMath.toSNorm(result.y);
-
-return result;
-};
-
-/**
-* Decodes a unit-length vector in 'oct' encoding to a normalized 3-component vector.
-*
-* @param {Number} x The x component of the oct-encoded unit length vector.
-* @param {Number} y The y component of the oct-encoded unit length vector.
-* @param {Cartesian3} result The decoded and normalized vector
-* @returns {Cartesian3} The decoded and normalized vector.
-*
-* @exception {DeveloperError} result must be defined.
-* @exception {DeveloperError} x and y must be a signed normalized integer between 0 and 255.
-*
-* @see AttributeCompression.octEncode
-*/
-AttributeCompression.octDecode = function(x, y, result) {
-//>>includeStart('debug', pragmas.debug);
-if (!defined(result)) {
-throw new DeveloperError('result is required.');
-}
-if (x < 0 || x > 255 || y < 0 || y > 255) {
-throw new DeveloperError('x and y must be a signed normalized integer between 0 and 255');
-}
-//>>includeEnd('debug');
-
-result.x = CesiumMath.fromSNorm(x);
-result.y = CesiumMath.fromSNorm(y);
-result.z = 1.0 - (Math.abs(result.x) + Math.abs(result.y));
-
-if (result.z < 0.0)
-{
-var oldVX = result.x;
-result.x = (1.0 - Math.abs(result.y)) * CesiumMath.signNotZero(oldVX);
-result.y = (1.0 - Math.abs(oldVX)) * CesiumMath.signNotZero(result.y);
-}
-
-return Cartesian3.normalize(result, result);
-};
-*/
     /**
      * Packs an oct encoded vector into a single floating-point number.
      *

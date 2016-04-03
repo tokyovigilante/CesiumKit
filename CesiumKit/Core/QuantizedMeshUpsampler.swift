@@ -47,15 +47,14 @@ class QuantizedMeshUpsampler {
         let maxU = isEastChild ? UInt16.max : halfMaxShort
         let minV = isNorthChild ? halfMaxShort : 0
         let maxV = isNorthChild ? UInt16.max : halfMaxShort
-        let halfMS = halfMaxShort
         var uBuffer = [UInt16]()
         var vBuffer = [UInt16]()
         var heightBuffer = [UInt16]()
         var normalBuffer = [UInt8]()
  
-        let indices = [Int]()
+        var indices = [Int]()
  
-        var vertexMap = [Int]()
+        var vertexMap = [String: Int]()
  
         let quantizedVertexCount = parentVertices.count / 3
         let parentUBuffer = parentVertices[0..<quantizedVertexCount]
@@ -69,8 +68,8 @@ class QuantizedMeshUpsampler {
             
             if (isEastChild && u >= halfMaxShort || !isEastChild && u <= halfMaxShort) &&
                 (isNorthChild && v >= halfMaxShort || !isNorthChild && v <= halfMaxShort) {
-                
-                vertexMap.append(vertexCount)
+
+                vertexMap["\(vertexMap.count)"] = vertexCount
                 uBuffer.append(u)
                 vBuffer.append(v)
                 heightBuffer.append(parentHeightBuffer[parentHeightBuffer.startIndex+i])
@@ -140,18 +139,18 @@ class QuantizedMeshUpsampler {
             
             // Clip the triangle against the North-south boundary.
             let clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
-            /*
-            addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);
+            
+            addClippedPolygon(uBuffer: &uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
             
             // If there's another vertex in the original clipped result,
             // it forms a second triangle.  Clip it as well.
-            if (clippedIndex < clipped.length) {
-                clippedTriangleVertices[2].clone(clippedTriangleVertices[1]);
+            if clippedIndex < clipped.count {
+                /*clippedTriangleVertices[2].clone(clippedTriangleVertices[1]);
                 clippedTriangleVertices[2].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
                 
                 clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(halfMaxShort, isNorthChild, clippedTriangleVertices[0].getV(), clippedTriangleVertices[1].getV(), clippedTriangleVertices[2].getV(), clipScratch2);
-                addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);
-            }*/
+                addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped2, clippedTriangleVertices, hasVertexNormals);*/
+            }
         }
         /*
         var uOffset = isEastChild ? -maxShort : 0;
@@ -283,6 +282,77 @@ class QuantizedMeshUpsampler {
             horizonOcclusionPoint : horizonOcclusionPoint
         }*/
     }
+    
+    private class func addClippedPolygon (
+        inout uBuffer uBuffer: [UInt16],
+        inout vBuffer: [UInt16],
+        inout heightBuffer: [UInt16],
+        inout normalBuffer: [UInt8],
+        inout indices: [Int],
+        inout vertexMap: [String: Int],
+        clipped: [Float],
+        triangleVertices: [Vertex],
+        hasVertexNormals: Bool)
+    {
+        var polygonVertices = [Vertex](count: 4, repeatedValue: Vertex())
+        
+        if clipped.count == 0 {
+            return
+        }
+        
+        var numVertices = 0
+        var clippedIndex = 0
+        while clippedIndex < clipped.count {
+            clippedIndex = polygonVertices[numVertices].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+            numVertices += 1
+        }
+        
+        for polygonVertex in polygonVertices {
+
+            if !polygonVertex.isIndexed {
+                let key = polygonVertex.getKey()
+                if let newIndex = vertexMap[key] {
+                    polygonVertex.newIndex = newIndex
+                } else {
+                    var newIndex = uBuffer.count
+                    uBuffer.append(polygonVertex.getU())
+                    vBuffer.append(polygonVertex.getV())
+                    heightBuffer.append(polygonVertex.getH())
+                    if hasVertexNormals {
+                        normalBuffer.append(polygonVertex.getNormalX())
+                        normalBuffer.append(polygonVertex.getNormalY())
+                    }
+                    polygonVertex.newIndex = newIndex
+                    vertexMap[key] = newIndex
+                }
+            } else {
+                polygonVertex.newIndex = vertexMap["\(polygonVertex.index!)"]
+                polygonVertex.uBuffer = uBuffer
+                polygonVertex.vBuffer = vBuffer
+                polygonVertex.heightBuffer = heightBuffer
+                if hasVertexNormals {
+                    polygonVertex.normalBuffer = normalBuffer
+                }
+            }
+        }
+        
+        if numVertices == 3 {
+            // A triangle.
+            indices.append(polygonVertices[0].newIndex!)
+            indices.append(polygonVertices[1].newIndex!)
+            indices.append(polygonVertices[2].newIndex!)
+        } else if numVertices == 4 {
+            // A quad - two triangles.
+            indices.append(polygonVertices[0].newIndex!)
+            indices.append(polygonVertices[1].newIndex!)
+            indices.append(polygonVertices[2].newIndex!)
+            
+            indices.append(polygonVertices[0].newIndex!)
+            indices.append(polygonVertices[2].newIndex!)
+            indices.append(polygonVertices[3].newIndex!)
+        }
+    }
+
  
 }
 
@@ -293,6 +363,7 @@ private class Vertex {
     var heightBuffer: [UInt16]? = nil
     var normalBuffer: [UInt8]? = nil
     var index: Int? = nil
+    var newIndex: Int? = nil
     var first: Vertex? = nil
     var second: Vertex? = nil
     var ratio: Float? = nil
@@ -351,150 +422,71 @@ private class Vertex {
         
         return nextIndex
     }
- /*
- Vertex.prototype.getKey = function() {
- if (this.isIndexed()) {
- return this.index;
- }
- return JSON.stringify({
- first : this.first.getKey(),
- second : this.second.getKey(),
- ratio : this.ratio
- });
- };
  
- Vertex.prototype.isIndexed = function() {
- return defined(this.index);
- };
+    func getKey () -> String {
+        if isIndexed {
+            return "\(index)"
+        }
+        return "first:\(first!.getKey()),second:\(second!.getKey()),ratio:\(ratio)"
+    }
  
- Vertex.prototype.getH = function() {
- if (defined(this.index)) {
- return this.heightBuffer[this.index];
- }
- return CesiumMath.lerp(this.first.getH(), this.second.getH(), this.ratio);
- };
+    var isIndexed: Bool {
+        return index != nil
+    }
+
+    func getH () -> UInt16 {
+        if let index = index {
+            return heightBuffer![index]
+        }
+        return UInt16(Math.lerp(p: Double(first!.getH()), q: Double(second!.getH()), time: Double(ratio!)))
+    }
+    
+    func getU () -> UInt16 {
+        if let index = index {
+            return uBuffer![index]
+        }
+        return UInt16(Math.lerp(p: Double(first!.getU()), q: Double(second!.getU()), time: Double(ratio!)))
+    }
  
- Vertex.prototype.getU = function() {
- if (defined(this.index)) {
- return this.uBuffer[this.index];
- }
- return CesiumMath.lerp(this.first.getU(), this.second.getU(), this.ratio);
- };
- */
     func getV () -> UInt16 {
         if let index = index {
             return vBuffer![index]
         }
         return UInt16(Math.lerp(p: Double(first!.getV()), q: Double(second!.getV()), time: Double(ratio!)))
     }
- /*
- var encodedScratch = new Cartesian2();
- // An upsampled triangle may be clipped twice before it is assigned an index
- // In this case, we need a buffer to handle the recursion of getNormalX() and getNormalY().
- var depth = -1;
- var cartesianScratch1 = [new Cartesian3(), new Cartesian3()];
- var cartesianScratch2 = [new Cartesian3(), new Cartesian3()];
- function lerpOctEncodedNormal(vertex, result) {
- ++depth;
  
- var first = cartesianScratch1[depth];
- var second = cartesianScratch2[depth];
+    private var encodedScratch = Cartesian2()
+    // An upsampled triangle may be clipped twice before it is assigned an index
+    // In this case, we need a buffer to handle the recursion of getNormalX() and getNormalY().
+    private var depth = -1
+    private var cartesianScratch1 = [Cartesian3(), Cartesian3()]
+    private var cartesianScratch2 = [Cartesian3(), Cartesian3()]
+    
+    func lerpOctEncodedNormal(vertex: Vertex) -> Cartesian2 {
+        depth += 1
+        // what about scratch variables
+        var first = cartesianScratch1[depth]
+        var second = cartesianScratch2[depth]
+        
+        first = AttributeCompression.octDecode(x: vertex.first!.getNormalX(), y: vertex.first!.getNormalY())
+        second = AttributeCompression.octDecode(x: vertex.second!.getNormalX(), y: vertex.second!.getNormalY())
+        
+        depth -= 1
+        return AttributeCompression.octEncode(first.lerp(second, t: Double(vertex.ratio!)).normalize())
+    }
  
- first = AttributeCompression.octDecode(vertex.first.getNormalX(), vertex.first.getNormalY(), first);
- second = AttributeCompression.octDecode(vertex.second.getNormalX(), vertex.second.getNormalY(), second);
- cartesian3Scratch = Cartesian3.lerp(first, second, vertex.ratio, cartesian3Scratch);
- Cartesian3.normalize(cartesian3Scratch, cartesian3Scratch);
- 
- AttributeCompression.octEncode(cartesian3Scratch, result);
- 
- --depth;
- 
- return result;
- }
- 
- Vertex.prototype.getNormalX = function() {
- if (defined(this.index)) {
- return this.normalBuffer[this.index * 2];
- }
- 
- encodedScratch = lerpOctEncodedNormal(this, encodedScratch);
- return encodedScratch.x;
- };
- 
- Vertex.prototype.getNormalY = function() {
- if (defined(this.index)) {
- return this.normalBuffer[this.index * 2 + 1];
- }
- 
- encodedScratch = lerpOctEncodedNormal(this, encodedScratch);
- return encodedScratch.y;
- };
- 
- var polygonVertices = [];
- polygonVertices.push(new Vertex());
- polygonVertices.push(new Vertex());
- polygonVertices.push(new Vertex());
- polygonVertices.push(new Vertex());
- 
- function addClippedPolygon(uBuffer, vBuffer, heightBuffer, normalBuffer, indices, vertexMap, clipped, triangleVertices, hasVertexNormals) {
- if (clipped.length === 0) {
- return;
- }
- 
- var numVertices = 0;
- var clippedIndex = 0;
- while (clippedIndex < clipped.length) {
- clippedIndex = polygonVertices[numVertices++].initializeFromClipResult(clipped, clippedIndex, triangleVertices);
- }
- 
- for (var i = 0; i < numVertices; ++i) {
- var polygonVertex = polygonVertices[i];
- if (!polygonVertex.isIndexed()) {
- var key = polygonVertex.getKey();
- if (defined(vertexMap[key])) {
- polygonVertex.newIndex = vertexMap[key];
- } else {
- var newIndex = uBuffer.length;
- uBuffer.push(polygonVertex.getU());
- vBuffer.push(polygonVertex.getV());
- heightBuffer.push(polygonVertex.getH());
- if (hasVertexNormals) {
- normalBuffer.push(polygonVertex.getNormalX());
- normalBuffer.push(polygonVertex.getNormalY());
- }
- polygonVertex.newIndex = newIndex;
- vertexMap[key] = newIndex;
- }
- } else {
- polygonVertex.newIndex = vertexMap[polygonVertex.index];
- polygonVertex.uBuffer = uBuffer;
- polygonVertex.vBuffer = vBuffer;
- polygonVertex.heightBuffer = heightBuffer;
- if (hasVertexNormals) {
- polygonVertex.normalBuffer = normalBuffer;
- }
- }
- }
- 
- if (numVertices === 3) {
- // A triangle.
- indices.push(polygonVertices[0].newIndex);
- indices.push(polygonVertices[1].newIndex);
- indices.push(polygonVertices[2].newIndex);
- } else if (numVertices === 4) {
- // A quad - two triangles.
- indices.push(polygonVertices[0].newIndex);
- indices.push(polygonVertices[1].newIndex);
- indices.push(polygonVertices[2].newIndex);
- 
- indices.push(polygonVertices[0].newIndex);
- indices.push(polygonVertices[2].newIndex);
- indices.push(polygonVertices[3].newIndex);
- }
- }
- 
- return createTaskProcessorWorker(upsampleQuantizedTerrainMesh);
- });
+    func getNormalX () -> UInt8 {
+        if let index = index {
+            return normalBuffer![index * 2]
+        }
+        return UInt8(lerpOctEncodedNormal(self).x)
+    }
+    
+    func getNormalY () -> UInt8 {
+        if let index = index {
+            return normalBuffer![index * 2 + 1]
+        }
+        return UInt8(lerpOctEncodedNormal(self).y)
+    }
 
- */
 }
