@@ -406,8 +406,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
                 // If the terrain provider has a water mask, "upsample" that as well
                 // by computing texture translation and scale.
                 if (terrainProvider.hasWaterMask) {
-                    // FIXME: Disabled
-                    //upsampleWaterMask(tile);
+                    upsampleWaterMask(tile)
                 }
                 GlobeSurfaceTile.propagateNewUpsampledDataToChildren(tile)
                 
@@ -611,39 +610,36 @@ class GlobeSurfaceTile: QuadTreeTileData {
         waterMaskTranslationAndScale = Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 1.0)
     }
     
-    /*
-    function upsampleWaterMask(tile) {
-        var surfaceTile = tile.data;
+    
+    class func upsampleWaterMask(tile: QuadtreeTile) {
+        let surfaceTile = tile.data!
 
         // Find the nearest ancestor with loaded terrain.
-        var sourceTile = tile.parent;
-        while (defined(sourceTile) && !defined(sourceTile.data.terrainData) || sourceTile.data.terrainData.wasCreatedByUpsampling()) {
-            sourceTile = sourceTile.parent;
+        var sourceTile = tile.parent
+        while sourceTile != nil && sourceTile!.data!.terrainData == nil || sourceTile!.data!.terrainData!.createdByUpsampling {
+            sourceTile = sourceTile!.parent
         }
 
-        if (!defined(sourceTile) || !defined(sourceTile.data.waterMaskTexture)) {
+        if sourceTile == nil || sourceTile!.data?.waterMaskTexture == nil {
             // No ancestors have a water mask texture - try again later.
-            return;
+            return
         }
 
-        surfaceTile.waterMaskTexture = sourceTile.data.waterMaskTexture;
-        ++surfaceTile.waterMaskTexture.referenceCount;
+        surfaceTile.waterMaskTexture = sourceTile!.data!.waterMaskTexture
 
         // Compute the water mask translation and scale
-        var sourceTileRectangle = sourceTile.rectangle;
-        var tileRectangle = tile.rectangle;
-        var tileWidth = tileRectangle.width;
-        var tileHeight = tileRectangle.height;
+        let sourceTileRectangle = sourceTile!.rectangle
+        let tileRectangle = tile.rectangle
+        let tileWidth = tileRectangle.width
+        let tileHeight = tileRectangle.height
 
-        var scaleX = tileWidth / sourceTileRectangle.width;
-        var scaleY = tileHeight / sourceTileRectangle.height;
-        surfaceTile.waterMaskTranslationAndScale.x = scaleX * (tileRectangle.west - sourceTileRectangle.west) / tileWidth;
-        surfaceTile.waterMaskTranslationAndScale.y = scaleY * (tileRectangle.south - sourceTileRectangle.south) / tileHeight;
-        surfaceTile.waterMaskTranslationAndScale.z = scaleX;
-        surfaceTile.waterMaskTranslationAndScale.w = scaleY;
+        let scaleX = tileWidth / sourceTileRectangle.width
+        let scaleY = tileHeight / sourceTileRectangle.height
+        surfaceTile.waterMaskTranslationAndScale.x = scaleX * (tileRectangle.west - sourceTileRectangle.west) / tileWidth
+        surfaceTile.waterMaskTranslationAndScale.y = scaleY * (tileRectangle.south - sourceTileRectangle.south) / tileHeight
+        surfaceTile.waterMaskTranslationAndScale.z = scaleX
+        surfaceTile.waterMaskTranslationAndScale.w = scaleY
     }
 
-    return GlobeSurfaceTile;
-});*/
 
 }
