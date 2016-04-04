@@ -11,14 +11,14 @@ import Foundation
 class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     
     private var _privateFinished: Bool = false
-    override var isFinished: Bool {
+    override var finished: Bool {
         get {
             return _privateFinished
         }
         set (newAnswer) {
-            willChangeValue(forKey: "isFinished")
+            willChangeValueForKey("isFinished")
             _privateFinished = newAnswer
-            didChangeValue(forKey: "isFinished")
+            didChangeValueForKey("isFinished")
         }
     }
     
@@ -42,8 +42,8 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     }
     
     override func start() {
-        if isCancelled {
-            isFinished = true
+        if cancelled {
+            finished = true
             return
         }
         
@@ -54,8 +54,8 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     }
 
     func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
-        if isCancelled {
-            isFinished = true
+        if cancelled {
+            finished = true
             sessionTask?.cancel()
             return
         }
@@ -64,8 +64,8 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     }
     
     func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
-        if isCancelled {
-            isFinished = true
+        if cancelled {
+            finished = true
             sessionTask?.cancel()
             return
         }
@@ -73,19 +73,19 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     }
     
     func urlSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
-        if isCancelled {
-            isFinished = true
+        if cancelled {
+            finished = true
             sessionTask?.cancel()
             return
         }
         if NSThread.isMainThread() { print("Main Thread!") }
         if error != nil {
             print("Failed to receive response: \(error)")
-            isFinished = true
+            finished = true
             return
         }
         processData()
-        isFinished = true
+        finished = true
     }
     
     func processData() {
