@@ -16,9 +16,9 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
             return _privateFinished
         }
         set (newAnswer) {
-            willChangeValueForKey("isFinished")
+            willChangeValue(forKey: "isFinished")
             _privateFinished = newAnswer
-            didChangeValueForKey("isFinished")
+            didChangeValue(forKey: "isFinished")
         }
     }
     
@@ -38,54 +38,58 @@ class NetworkOperation: NSOperation, NSURLSessionTaskDelegate {
     
     init(url: NSURL) {
         self.url = url
-        self.init()
+        super.init()
     }
     
     override func start() {
-        if cancelled {
-            finished = true
+        if isCancelled {
+            isFinished = true
             return
         }
         
-        let request = NSMutableURLRequest(URL: url)
+        let request = NSMutableURLRequest(url: url)
         
-        sessionTask = localURLSession.dataTaskWithRequest(request)
+        sessionTask = localURLSession.dataTask(with: request)
         sessionTask!.resume()
     }
 
-    func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
-        if cancelled {
-            finished = true
+    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+        if isCancelled {
+            isFinished = true
             sessionTask?.cancel()
             return
         }
         //Check the response code and react appropriately
-        completionHandler(.Allow)
+        completionHandler(.allow)
     }
     
-    func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
-        if cancelled {
-            finished = true
+    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
+        if isCancelled {
+            isFinished = true
             sessionTask?.cancel()
             return
         }
-        incomingData.appendData(data)
+        incomingData.append(data)
     }
     
-    func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
-        if cancelled {
-            finished = true
+    func urlSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+        if isCancelled {
+            isFinished = true
             sessionTask?.cancel()
             return
         }
-        if NSThread.isMainThread() { log("Main Thread!") }
+        if NSThread.isMainThread() { print("Main Thread!") }
         if error != nil {
-            log("Failed to receive response: \(error)")
-            finished = true
+            print("Failed to receive response: \(error)")
+            isFinished = true
             return
         }
         processData()
-        finished = true
+        isFinished = true
+    }
+    
+    func processData() {
+        
     }
     
 }
