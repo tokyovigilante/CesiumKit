@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 #if os(OSX)
 import AppKit.NSImage
 #endif

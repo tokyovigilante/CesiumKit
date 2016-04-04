@@ -14,17 +14,17 @@ class QueueManager {
     
     static let sharedInstance = QueueManager()
     
-    let processorQueue: dispatch_queue_t = dispatch_queue_create("cesiumkit.processorQueue", DISPATCH_QUEUE_SERIAL)
-    
-    private let _networkQueue: dispatch_queue_t = dispatch_queue_create("cesiumkit.networkQueue", DISPATCH_QUEUE_CONCURRENT)
-    
-    private let _networkSemaphore: dispatch_semaphore_t = dispatch_semaphore_create(_maxConcurrentNetworkRequests)
-        
-    func networkQueue(rateLimit rateLimit: Bool = true) -> dispatch_queue_t {
-        if rateLimit {
-            dispatch_semaphore_wait(_networkSemaphore, DISPATCH_TIME_FOREVER)
-            dispatch_semaphore_signal(_networkSemaphore)
-        }
-        return _networkQueue
+    let processorQueue = {
+        let queue = NSOperationQueue()
+        queue.qualityOfService = .utility
+        return queue
     }
+    
+    let networkQueue = {
+        let queue = NSOperationQueue()
+        queue.qualityOfService = .utility
+        queue.maxConcurrentOperationCount = _maxConcurrentNetworkRequests
+        return queue
+    }
+
 }

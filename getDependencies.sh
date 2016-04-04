@@ -9,9 +9,6 @@ rm -rf *
 echo "Cloning glsl-optimizer"
 git clone https://github.com/tokyovigilante/glsl-optimizer --depth 1
 
-echo "Cloning AlamoFire"
-git clone https://github.com/Alamofire/Alamofire
-
 echo "Cloning PMJSON"
 git clone https://github.com/postmates/PMJSON
 
