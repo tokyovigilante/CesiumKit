@@ -326,7 +326,8 @@ class Globe {
             _oceanNormalMapUrl = oceanNormalMapUrl
             
             if let oceanNormalMapUrl = oceanNormalMapUrl {
-                
+                // FIXME: oceannormalmap
+                /*
                 dispatch_async(QueueManager.sharedInstance.processorQueue, {
                     guard let oceanNormalMapImage = oceanNormalMapUrl.loadImageForSource() else {
                         return
@@ -347,7 +348,7 @@ class Globe {
                     dispatch_async(dispatch_get_main_queue(), {
                         self._oceanNormalMap = oceanNormalMap
                     })
-                })
+                })*/
             } else {
                 _oceanNormalMap = nil
             }

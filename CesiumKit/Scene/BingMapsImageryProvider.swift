@@ -445,6 +445,9 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         
         let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+        
+        //FIXME: request
+        /*
         request(.GET, metadataUrl, parameters: [
             "incl" : "ImageryProviders",
             "key" : self._key])
@@ -456,7 +459,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                         return
                     }
                     metadataSuccess(data as NSData!)
-            })
+            })*/
     }
     
     
@@ -516,6 +519,8 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     public func loadImage (url: String, completionBlock: (CGImage? -> Void)) {
+        //FIXME: loadImage
+        /*
         request(.GET, url)
             .response(
                 queue: QueueManager.sharedInstance.networkQueue(rateLimit: true),
@@ -532,7 +537,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                     dispatch_async(dispatch_get_main_queue(), {
                         completionBlock(image)
                     })
-            })
+            })*/
     }
     
     /*

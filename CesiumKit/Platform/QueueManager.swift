@@ -14,17 +14,19 @@ class QueueManager {
     
     static let sharedInstance = QueueManager()
     
-    let processorQueue: NSOperationQueue = {
-        let queue = NSOperationQueue()
-        queue.qualityOfService = .utility
-        return queue
+    let processorQueue: NSOperationQueue
+    
+    let networkQueue: NSOperationQueue
+    
+    init () {
+        processorQueue = NSOperationQueue()
+        processorQueue.qualityOfService = .Utility
+        
+        networkQueue = NSOperationQueue()
+        networkQueue.qualityOfService = .Utility
+        networkQueue.suspended = false
+        networkQueue.maxConcurrentOperationCount = _maxConcurrentNetworkRequests
     }
     
-    let networkQueue: NSOperationQueue = {
-        let queue = NSOperationQueue()
-        queue.qualityOfService = .utility
-        queue.maxConcurrentOperationCount = _maxConcurrentNetworkRequests
-        return queue
-    }
 
 }

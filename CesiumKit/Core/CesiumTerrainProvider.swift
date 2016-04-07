@@ -163,6 +163,8 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _littleEndianExtensionSize = true
     
+    var metadataOperation: NetworkOperation
+    
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false, credit: Credit = Credit(text: "CesiumKit")) {
         
         self.url = url
@@ -182,7 +184,7 @@ class CesiumTerrainProvider: TerrainProvider {
             metadataUrl = this._proxy.getURL(metadataUrl);
         }*/
         var metadataError: NSError? = nil
-        
+        /*
         let metadataSuccess = { (data: NSData) in
             
             do {
@@ -265,7 +267,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 dispatch_async(dispatch_get_main_queue(), {
                     self.ready = true
                 })
-                //that._readyPromise.resolve(true);*/
+                //that._readyPromise.resolve(true);
             } catch {
                 print("invalid JSON from terrain provider")
                 return
@@ -289,7 +291,24 @@ class CesiumTerrainProvider: TerrainProvider {
             var message = 'An error occurred while accessing ' + metadataUrl + '.';
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
-        
+        */
+        metadataOperation = NetworkOperation(url: metadataUrl)
+        metadataOperation.start()
+        dispatch_async(dispatch_get_global_queue(0, 0), {
+            while true {
+                print("\(self.metadataOperation.sessionTask?.state.rawValue)")
+                print("\(self.metadataOperation.sessionTask?.error?.localizedDescription)")
+                print("\(self.metadataOperation.sessionTask?.response.debugDescription)")
+                //print("\(self.metadataOperation.sessionTask?)")
+                sleep(1)
+            }
+        })
+        /*while metadataOperation.finished == false {
+            print("\(metadataOperation.sessionTask?.state.rawValue)")
+            sleep(1)
+        }*/
+        //QueueManager.sharedInstance.networkQueue.addOperation(metadataOperation)
+        /*
         let requestMetadata = {
             request(.GET, metadataUrl)
                 .response(
@@ -304,7 +323,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }
         dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: false), {
             requestMetadata()
-        })
+        })*/
     }
 
 /**
@@ -584,8 +603,9 @@ class CesiumTerrainProvider: TerrainProvider {
         if _requestWaterMask && _hasWaterMask {
             extensionList.append("watermask")
         }
-        
-        let tileLoader = { (tileUrl: String) in
+        //FIXME: tileLoader
+        /*let tileLoader = { (tileUrl: String) in
+            
             request(.GET, tileUrl, headers: self.getRequestHeader(extensionList))
                 .response(
                     queue: QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), completionHandler: { (request, response, data, error) in
@@ -609,7 +629,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }
         dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), {
             tileLoader(url)
-        })
+        })*/
     }
     
         /*

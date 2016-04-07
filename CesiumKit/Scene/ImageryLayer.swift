@@ -457,8 +457,8 @@ public class ImageryLayer {
     func requestImagery (imagery: Imagery) {
         
         imagery.state = .Transitioning
-        
-        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: true), {
+        // FIXME: requestImagery
+        /*dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: true), {
             
             let completionBlock: (CGImage? -> Void) = { (image) in
                 
@@ -480,7 +480,7 @@ public class ImageryLayer {
                 
             }
             self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
-        })
+        })*/
     }
     
     /**

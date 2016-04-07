@@ -122,4 +122,5 @@ class CesiumKitController: NSObject, MTKViewDelegate {
          _metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
          _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
     }
+
 }
