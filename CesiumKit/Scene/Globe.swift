@@ -326,14 +326,14 @@ class Globe {
             _oceanNormalMapUrl = oceanNormalMapUrl
             
             if let oceanNormalMapUrl = oceanNormalMapUrl {
-                // FIXME: oceannormalmap
-                /*
-                dispatch_async(QueueManager.sharedInstance.processorQueue, {
-                    guard let oceanNormalMapImage = oceanNormalMapUrl.loadImageForSource() else {
-                        return
-                    }
+                
+                let oceanMapOperation = NetworkOperation(url: oceanNormalMapUrl) { data, error in
                     if (oceanNormalMapUrl != self.oceanNormalMapUrl) {
                         // url changed while we were loading
+                        return
+                    }
+                    guard let oceanNormalMapImage = CGImage.fromData(data) else {
+                        self._oceanNormalMap = nil
                         return
                     }
                     let oceanNormalMap = Texture(
@@ -348,7 +348,8 @@ class Globe {
                     dispatch_async(dispatch_get_main_queue(), {
                         self._oceanNormalMap = oceanNormalMap
                     })
-                })*/
+                }
+                oceanMapOperation.start()
             } else {
                 _oceanNormalMap = nil
             }

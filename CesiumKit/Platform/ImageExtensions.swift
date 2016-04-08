@@ -30,17 +30,25 @@ import Foundation
 #endif
 
 extension CGImage {
-    class func fromURL (url: NSURL) -> CGImage? {
-        if let imageData = NSData(contentsOfURL: url) {
+    class func loadFromURL (url: String, completionBlock: (CGImage?, NSError?) -> ()) {
+        
+        let imageOperation = NetworkOperation(url: url) { data, error in
+            if let error = error {
+                completionBlock(nil, error)
+            }
+            completionBlock(CGImage.fromData(data), error)
+        }
+        imageOperation.start()
+    }
+    
+    class func fromData(data: NSData) -> CGImage? {
         #if os(OSX)
-            let nsImage = NSImage(data: imageData)
+            let nsImage = NSImage(data: data)
             return nsImage?.cgImage
         #elseif os(iOS)
-            let uiImage = UIImage(data: imageData)
+            let uiImage = UIImage(data: data)
             return uiImage?.CGImage
         #endif
-        }
-        return nil
     }
     
     func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int) {
