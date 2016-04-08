@@ -10,6 +10,10 @@ import Foundation
 
 //        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
 
+private let networkDelegateQueue: NSOperationQueue = {
+    let queue = NSOperationQueue()
+    return queue
+}()
 
 extension NSURLSessionConfiguration {
     /// Just like defaultSessionConfiguration, returns a
@@ -23,7 +27,9 @@ extension NSURLSessionConfiguration {
         // Eg my backend needs to be explicitly asked for JSON.
         //config.HTTPAdditionalHeaders = ["MyResponseType": "JSON"]
         // Eg we want to use pipelining.
-        //config.HTTPShouldUsePipelining = true
+        config.HTTPShouldUsePipelining = true
+        config.HTTPMaximumConnectionsPerHost = 12
+        config.requestCachePolicy = .ReloadIgnoringLocalCacheData
     /*configuration.HTTPAdditionalHeaders = ["Accept": "application/json",*/
 
         return config
@@ -41,7 +47,7 @@ extension NSURLSession {
             // The singleton URL session, configured
             // to use our custom config and delegate.
             static let session = NSURLSession(
-                configuration: NSURLSessionConfiguration.resourceSessionConfiguration(), delegate: ResourceSessionDelegate(), delegateQueue: nil)
+                configuration: NSURLSessionConfiguration.resourceSessionConfiguration(), delegate: ResourceSessionDelegate(), delegateQueue: networkDelegateQueue)
         }
         return Instance.session
     }
