@@ -14,13 +14,14 @@ class QueueManager {
     
     static let sharedInstance = QueueManager()
     
-    let processorQueue: NSOperationQueue
+    let processorQueue: dispatch_queue_t
     
     let networkQueue: NSOperationQueue
     
     init () {
-        processorQueue = NSOperationQueue()
-        processorQueue.qualityOfService = .Utility
+        processorQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
+        //processorQueue = NSOperationQueue()
+        //processorQueue.qualityOfService = .Utility
         
         networkQueue = NSOperationQueue()
         networkQueue.qualityOfService = .Utility

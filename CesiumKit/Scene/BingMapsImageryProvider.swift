@@ -379,6 +379,8 @@ public class BingMapsImageryProvider: ImageryProvider {
         let metadataSuccess = { (data: NSData) -> () in
             
             do {
+                let string = String(data: data, encoding: NSUTF8StringEncoding)
+                print(string)
                 let metadata = try JSON.decode(data, strict: true)
                 
                 let resource = try metadata.getArray("resourceSets")[0].getArray("resources")[0]
@@ -444,22 +446,23 @@ public class BingMapsImageryProvider: ImageryProvider {
         }
         
         
-        let metadataUrl = self._tileProtocol + self._url + "/REST/v1/Imagery/Metadata/" + self.mapStyle.rawValue
+        let metadataUrl = _tileProtocol + _url + "/REST/v1/Imagery/Metadata/" + mapStyle.rawValue
         
-        //FIXME: request
-        /*
-        request(.GET, metadataUrl, parameters: [
+        let metadataParameters = [
             "incl" : "ImageryProviders",
-            "key" : self._key])
-            .response(
-                queue: QueueManager.sharedInstance.networkQueue(rateLimit: false),
-                completionHandler: { (request, response, data, error) in
-                    if let error = error {
-                        metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
-                        return
-                    }
-                    metadataSuccess(data as NSData!)
-            })*/
+            "key" : self._key
+        ]
+        
+        let metadataOperation = NetworkOperation(url: metadataUrl, parameters: metadataParameters, completionBlock: { data, error in
+            dispatch_async(dispatch_get_main_queue(), {
+                if let error = error {
+                    metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
+                    return
+                }
+                metadataSuccess(data as NSData!)
+            })
+        })
+        metadataOperation.start()
     }
     
     
@@ -519,25 +522,22 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     public func loadImage (url: String, completionBlock: (CGImage? -> Void)) {
-        //FIXME: loadImage
-        /*
-        request(.GET, url)
-            .response(
-                queue: QueueManager.sharedInstance.networkQueue(rateLimit: true),
-                completionHandler: { (request, response, data, error) in
-                    if let error = error {
-                        print("error: \(error.localizedDescription)")
-                        return
-                    }
-                    #if os(iOS)
-                        let image = UIImage(data: data!)?.CGImage
-                    #elseif os(OSX)
-                        let image = NSImage(data: data!)?.cgImage
-                    #endif
-                    dispatch_async(dispatch_get_main_queue(), {
-                        completionBlock(image)
-                    })
-            })*/
+        
+        let imageryOperation = NetworkOperation(url: url) { (data, error) in
+            if let error = error {
+                print("error: \(error.localizedDescription)")
+                return
+            }
+            #if os(iOS)
+                let image = UIImage(data: data)?.CGImage
+            #elseif os(OSX)
+                let image = NSImage(data: data)?.cgImage
+            #endif
+            dispatch_async(dispatch_get_main_queue(), {
+                completionBlock(image)
+            })
+        }
+        imageryOperation.start()
     }
     
     /*

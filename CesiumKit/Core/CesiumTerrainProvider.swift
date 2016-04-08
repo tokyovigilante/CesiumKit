@@ -163,8 +163,6 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _littleEndianExtensionSize = true
     
-    var metadataOperation: NetworkOperation
-    
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false, credit: Credit = Credit(text: "CesiumKit")) {
         
         self.url = url
@@ -179,12 +177,12 @@ class CesiumTerrainProvider: TerrainProvider {
         
         //this._readyPromise = when.defer();
         
-        let metadataUrl = NSURL(string: url)!.URLByAppendingPathComponent("layer.json")
+        let metadataUrl = url + "/layer.json"
         /*if (defined(this._proxy)) {
             metadataUrl = this._proxy.getURL(metadataUrl);
         }*/
         var metadataError: NSError? = nil
-        /*
+        
         let metadataSuccess = { (data: NSData) in
             
             do {
@@ -291,39 +289,15 @@ class CesiumTerrainProvider: TerrainProvider {
             var message = 'An error occurred while accessing ' + metadataUrl + '.';
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
-        */
-        metadataOperation = NetworkOperation(url: metadataUrl)
-        metadataOperation.start()
-        dispatch_async(dispatch_get_global_queue(0, 0), {
-            while true {
-                print("\(self.metadataOperation.sessionTask?.state.rawValue)")
-                print("\(self.metadataOperation.sessionTask?.error?.localizedDescription)")
-                print("\(self.metadataOperation.sessionTask?.response.debugDescription)")
-                //print("\(self.metadataOperation.sessionTask?)")
-                sleep(1)
+        
+        let metadataOperation = NetworkOperation(url: metadataUrl, completionBlock: { data, error in
+            if let error = error {
+                metadataFailure(data as NSData!)
+                return
             }
+            metadataSuccess(data as NSData!)
         })
-        /*while metadataOperation.finished == false {
-            print("\(metadataOperation.sessionTask?.state.rawValue)")
-            sleep(1)
-        }*/
-        //QueueManager.sharedInstance.networkQueue.addOperation(metadataOperation)
-        /*
-        let requestMetadata = {
-            request(.GET, metadataUrl)
-                .response(
-                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: false),
-                    completionHandler: { (request, response, data, error) in
-                        if let error = error {
-                            metadataFailure(data as NSData!)
-                            return
-                        }
-                        metadataSuccess(data as NSData!)
-                })
-        }
-        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: false), {
-            requestMetadata()
-        })*/
+        metadataOperation.start()
     }
 
 /**
@@ -603,33 +577,26 @@ class CesiumTerrainProvider: TerrainProvider {
         if _requestWaterMask && _hasWaterMask {
             extensionList.append("watermask")
         }
-        //FIXME: tileLoader
-        /*let tileLoader = { (tileUrl: String) in
-            
-            request(.GET, tileUrl, headers: self.getRequestHeader(extensionList))
-                .response(
-                    queue: QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), completionHandler: { (request, response, data, error) in
-                        if let error = error {
-                            print(error.localizedDescription)
-                            return
-                        }
-                        dispatch_async(QueueManager.sharedInstance.processorQueue, {
-                            var terrainData: TerrainData? = nil
-                            if self._heightmapStructure != nil {
-                                terrainData = nil
-                                //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
-                            } else {
-                                self.createQuantizedMeshTerrainData(data!, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
-                            }
-                            dispatch_async(dispatch_get_main_queue(), {
-                                completionBlock(terrainData)
-                            })
-                        })
+        
+        let tileLoader = NetworkOperation(url: url, headers: getRequestHeader(extensionList), completionBlock: { (data, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            dispatch_async(QueueManager.sharedInstance.processorQueue, {
+                var terrainData: TerrainData? = nil
+                if self._heightmapStructure != nil {
+                    terrainData = nil
+                    //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
+                } else {
+                    self.createQuantizedMeshTerrainData(data, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
+                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    completionBlock(terrainData)
                 })
-        }
-        dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: throttleRequests), {
-            tileLoader(url)
-        })*/
+            })
+        })
+        tileLoader.start()
     }
     
         /*

@@ -457,30 +457,27 @@ public class ImageryLayer {
     func requestImagery (imagery: Imagery) {
         
         imagery.state = .Transitioning
-        // FIXME: requestImagery
-        /*dispatch_async(QueueManager.sharedInstance.networkQueue(rateLimit: true), {
+        
+        let completionBlock: (CGImage? -> Void) = { (image) in
             
-            let completionBlock: (CGImage? -> Void) = { (image) in
-                
-                if let image = image {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        imagery.image = image
-                        imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
-                        
-                        imagery.state = .Received
-                    })
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        imagery.state = .Failed
-                        
-                        let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                        print(message)
-                    })
-                }
-                
+            if let image = image {
+                dispatch_async(dispatch_get_main_queue(), {
+                    imagery.image = image
+                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+                    
+                    imagery.state = .Received
+                })
+            } else {
+                dispatch_async(dispatch_get_main_queue(), {
+                    imagery.state = .Failed
+                    
+                    let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
+                    print(message)
+                })
             }
-            self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
-        })*/
+            
+        }
+        self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
     }
     
     /**

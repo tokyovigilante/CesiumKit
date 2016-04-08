@@ -10,7 +10,48 @@ import Foundation
 
 //        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
 
-class NetworkOperation: /*NSOperation*/NSObject, NSURLSessionDataDelegate {
+
+extension NSURLSessionConfiguration {
+    /// Just like defaultSessionConfiguration, returns a
+    /// newly created session configuration object, customised
+    /// from the default to your requirements.
+    class func resourceSessionConfiguration() -> NSURLSessionConfiguration {
+        let config = defaultSessionConfiguration()
+        // Eg we think 60s is too long a timeout time.
+        //config.timeoutIntervalForRequest = 20
+        // Some headers that are common to all reqeuests.
+        // Eg my backend needs to be explicitly asked for JSON.
+        //config.HTTPAdditionalHeaders = ["MyResponseType": "JSON"]
+        // Eg we want to use pipelining.
+        //config.HTTPShouldUsePipelining = true
+    /*configuration.HTTPAdditionalHeaders = ["Accept": "application/json",*/
+
+        return config
+    }
+}
+
+extension NSURLSession {
+    /// Just like sharedSession, returns a shared singleton
+    /// session object.
+    class var resourceSharedSession: NSURLSession {
+        // The session is stored in a nested struct because
+        // you can't do a 'static let' singleton in a
+        // class extension.
+        struct Instance {
+            // The singleton URL session, configured
+            // to use our custom config and delegate.
+            static let session = NSURLSession(
+                configuration: NSURLSessionConfiguration.resourceSessionConfiguration(), delegate: ResourceSessionDelegate(), delegateQueue: nil)
+        }
+        return Instance.session
+    }
+}
+
+// delegate for receiving data
+
+let ResponseDelegateKey = "ResponseDelegateKey"
+
+class NetworkOperation: NSObject /*: NSOperation*/{
     
     private var _privateFinished: Bool = false
     /*override*/ var finished: Bool {
@@ -26,100 +67,108 @@ class NetworkOperation: /*NSOperation*/NSObject, NSURLSessionDataDelegate {
     
     let incomingData = NSMutableData()
     
-    var sessionTask: NSURLSessionTask?
+    private let completionBlock: (NSData, NSError?) -> ()
     
-    var localURLSession: NSURLSession!/* {
-        return NSURLSession(configuration: localConfig, delegate: self, delegateQueue: nil)
-    }*/
+    private let headers: [String: String]?
     
-    var localConfig: NSURLSessionConfiguration {
-        var configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("com.testtoast.cesiumkit")
-        /*configuration.HTTPAdditionalHeaders = ["Accept": "application/json",
-            //"Accept-Language": "en",
-            //"Authorization": authString,
-            //"User-Agent": userAgentString
-        ]*/
-        return configuration
-    }
+    private let parameters: [String: String]?
     
-    let url: NSURL
+    private let url: String
     
-    init(url: NSURL) {
+    init(url: String, headers: [String: String]? = nil, parameters: [String: String]? = nil, completionBlock: ((NSData, NSError?) -> ())) {
         self.url = url
-        super.init()
-        localURLSession = NSURLSession(configuration: localConfig, delegate: self, delegateQueue: NSOperationQueue.mainQueue())
+        self.headers = headers
+        self.parameters = parameters
+        self.completionBlock = completionBlock
     }
     
-    /*override*/func start() {
+    func start () {
         /*if cancelled {
-            finished = true
-            return
-        }*/
-        let request = NSMutableURLRequest(URL: NSURL(string: "http://google.com")!)//self.url)
-        //request.setValue("application/json", forHTTPHeaderField: "Accept")
-        sessionTask = localURLSession.dataTaskWithRequest(request)
+         finished = true
+         return
+         }*/
+        let session = NSURLSession.resourceSharedSession
         
-        sessionTask?.resume()
+        let completeURL: NSURL
+        if let parameters = parameters {
+            guard let urlComponents = NSURLComponents(string: self.url) else {
+                /*if cancelled {
+                 finished = true
+                 setError
+                 return
+                 }*/
+                return
+            }
+            urlComponents.percentEncodedQuery = encodeParameters(parameters)
+            completeURL = urlComponents.URL ?? NSURL(string: self.url)!
+        } else {
+            completeURL = NSURL(string: self.url)!
+        }
+        
+        let request = NSMutableURLRequest(URL: completeURL)
+        
+        NSURLProtocol.setProperty(self, forKey: "ResponseDelegateKey", inRequest: request)
+        
+        _ = headers?.map { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        let dataTask = session.dataTaskWithRequest(request)
+        dataTask.resume()
+    }
+    
+    func executeCompletionBlock (error: NSError?) {
+        completionBlock(incomingData, error)
+    }
+    
+    private func encodeParameters (parameters: [String: String]) -> String {
+        return (parameters.map { "\($0)=\($1)" }).joinWithSeparator("&")
+    }
+    
+}
+
+class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
+    
+    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+        /*if cancelled {
+         finished = true
+         sessionTask?.cancel()
+         return
+         }*/
+        //Check the response code and react appropriately
+        completionHandler(.Allow)
     }
     
     func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
-        print(challenge.proposedCredential?.debugDescription)
-        print(challenge.sender.debugDescription)
-        completionHandler(.UseCredential, challenge.proposedCredential)
-    }
-    
-    func URLSession(session: NSURLSession, task: NSURLSessionTask, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
-        print(challenge.proposedCredential?.debugDescription)
-        print(challenge.debugDescription)
-        completionHandler(.UseCredential, challenge.proposedCredential)
+        completionHandler(.PerformDefaultHandling, nil)
     }
     
     func URLSession(session: NSURLSession, didBecomeInvalidWithError error: NSError?) {
         print("invalid")
     }
     
-    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
-        /*if cancelled {
-            finished = true
-            sessionTask?.cancel()
-            return
-        }*/
-        //Check the response code and react appropriately
-        completionHandler(.Allow)
-    }
-    
-    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
-        /*if cancelled {
-            finished = true
-            sessionTask?.cancel()
-            return
-        }*/
-        //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
-        incomingData.appendData(data)
-    }
-    
-    func urlSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
-        /*if cancelled {
-            finished = true
-            sessionTask?.cancel()
-            return
-        }*/
-        if NSThread.isMainThread() { print("Main Thread!") }
-        if error != nil {
-            print("Failed to receive response: \(error)")
-            finished = true
+    func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
+        guard let request = dataTask.originalRequest else {
             return
         }
-        processData()
-        finished = true
+        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
+            return
+        }
+        /*if cancelled {
+         finished = true
+         sessionTask?.cancel()
+         return
+         }*/
+        //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
+        operation.incomingData.appendData(data)
+        
     }
     
-    func processData() {
-        print("done")
+    func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+        guard let request = task.originalRequest else {
+            return
+        }
+        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
+            return
+        }
+        operation.executeCompletionBlock(error)
     }
-    
-    deinit {
-        print("butts")
-    }
-    
 }
