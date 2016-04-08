@@ -43,7 +43,7 @@ extension CubeMapSources {
 class CubeMap {
     
     class func loadImagesForSources (sources: [String]) -> CubeMapSources {
-        return CubeMapSources(sources: sources.flatMap { $0.loadImageForSource() })
+        return CubeMapSources(sources: sources.flatMap { $0.loadImageForCubeMapSource() })
     }
     
 }
