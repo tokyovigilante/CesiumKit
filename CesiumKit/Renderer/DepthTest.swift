@@ -79,7 +79,6 @@ enum DepthFunction: UInt {
     */
     Always
     
-    //FIXME: toMetal()
     func toMetal() -> MTLCompareFunction {
         return MTLCompareFunction(rawValue: self.rawValue)!
     }

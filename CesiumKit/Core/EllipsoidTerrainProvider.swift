@@ -81,7 +81,6 @@ class EllipsoidTerrainProvider: TerrainProvider {
         // the ellipsoid is significantly smoother than actual terrain.
         _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: ellipsoid, tileImageWidth: 64,numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
 
-        // FIXME: terraindata
         _terrainData = HeightmapTerrainData(
             buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
             width : 16,

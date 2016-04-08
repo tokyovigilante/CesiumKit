@@ -63,7 +63,6 @@ class SkyBox {
         self.init(sources: CubeMap.loadImagesForSources(sources))
     }
 
-    
     init (sources: CubeMapSources) {
         self.sources = sources
         _cubemap = nil

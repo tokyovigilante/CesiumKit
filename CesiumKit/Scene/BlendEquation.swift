@@ -44,7 +44,6 @@ enum BlendEquation: UInt {
     
     // No min and max like in ColladaFX GLES2 profile
     
-    //FIXME: BlendEquation
     func toMetal() -> MTLBlendOperation {
         return MTLBlendOperation(rawValue: self.rawValue)!
     }

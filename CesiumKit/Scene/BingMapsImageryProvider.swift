@@ -379,8 +379,6 @@ public class BingMapsImageryProvider: ImageryProvider {
         let metadataSuccess = { (data: NSData) -> () in
             
             do {
-                let string = String(data: data, encoding: NSUTF8StringEncoding)
-                print(string)
                 let metadata = try JSON.decode(data, strict: true)
                 
                 let resource = try metadata.getArray("resourceSets")[0].getArray("resources")[0]

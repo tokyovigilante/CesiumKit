@@ -139,7 +139,6 @@ public class CesiumGlobe {
 
     var globe: Globe
     
-    // FIXME: ImageryProvider
     var imageryProvider: ImageryProvider? = nil
     
     var sceneMode: SceneMode

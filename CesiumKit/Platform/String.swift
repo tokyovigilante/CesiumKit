@@ -33,7 +33,7 @@ extension String {
     }
     
 }
-
+// FIXME: move to cubemap
 extension String {
     var referenceType: ObjectSourceReferenceType {
         if self.hasPrefix("/") {
@@ -61,11 +61,18 @@ extension String {
         }
     }
     
-    func loadImageForSource () -> CGImage? {
+    func loadImageForCubeMapSource () -> CGImage? {
+
         guard let sourceURL = urlForSource() else {
             return nil
         }
-        return CGImage.fromURL(sourceURL)
+        do {
+            let data = try NSData(contentsOfURL: sourceURL, options: [])
+            return CGImage.fromData(data)
+        } catch {
+            return nil
+        }
+
     }
     
 }
