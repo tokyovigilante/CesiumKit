@@ -42,8 +42,7 @@ class QuantizedMeshTerrainGenerator {
     {
 
         let quantizedVertexCount = quantizedVertices.count / 3
-        //let edgeVertexCount = westIndices.count + eastIndices.count +
-        southIndices.count + northIndices.count
+        //let edgeVertexCount = westIndices.count + eastIndices.count + southIndices.count + northIndices.count
         
         let west = rectangle.west
         let south = rectangle.south
