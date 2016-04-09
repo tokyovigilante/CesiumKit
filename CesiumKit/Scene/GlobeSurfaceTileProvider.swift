@@ -21,7 +21,7 @@ import Foundation
 *
 * @private
 */
-class GlobeSurfaceTileProvider: QuadtreeTileProvider {
+class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     
     /**
     * Gets or sets the {@link QuadtreePrimitive} for which this provider is

@@ -32,12 +32,7 @@ import Foundation
 
 class QuadtreePrimitive {
     
-    var tileProvider: QuadtreeTileProvider {
-        get {
-            return _tileProvider
-        }
-    }
-    private var _tileProvider: QuadtreeTileProvider
+    let tileProvider: GlobeSurfaceTileProvider//QuadtreeTileProvider
     
     private var _debug = (
         enableDebugOutput : false,
@@ -104,21 +99,21 @@ class QuadtreePrimitive {
     
     var _occluders: QuadtreeOccluders
 
-    init (tileProvider: QuadtreeTileProvider, maximumScreenSpaceError: Double = 2.0, tileCacheSize: Int = 100) {
+    init (tileProvider: /*QuadtreeTileProvider*/GlobeSurfaceTileProvider, maximumScreenSpaceError: Double = 2.0, tileCacheSize: Int = 100) {
         
         self.maximumScreenSpaceError = maximumScreenSpaceError
         self.tileCacheSize = tileCacheSize
         
         assert(tileProvider.quadtree == nil, "A QuadtreeTileProvider can only be used with a single QuadtreePrimitive")
         
-        self._tileProvider = tileProvider
+        self.tileProvider = tileProvider
         
         let tilingScheme = tileProvider.tilingScheme
         let ellipsoid = tilingScheme.ellipsoid
         
         _occluders = QuadtreeOccluders(ellipsoid : ellipsoid)
         
-        self._tileProvider.quadtree = self
+        self.tileProvider.quadtree = self
     }
     
     /**
@@ -222,15 +217,15 @@ class QuadtreePrimitive {
     */
     func update (context context: Context, inout frameState: FrameState) {
         if (frameState.passes.render) {
-            _tileProvider.beginUpdate(frameState: &frameState)
+            tileProvider.beginUpdate(frameState: &frameState)
             selectTilesForRendering(context: context, frameState: frameState)
             processTileLoadQueue(frameState: &frameState)
             createRenderCommandsForSelectedTiles(frameState: &frameState)
-            _tileProvider.endUpdate(frameState: &frameState)
+            tileProvider.endUpdate(frameState: &frameState)
         }
         
         if (frameState.passes.pick && _tilesToRender.count > 0) {
-            _tileProvider.endUpdate(frameState: &frameState)
+            tileProvider.endUpdate(frameState: &frameState)
         }
     }
     
@@ -296,8 +291,8 @@ class QuadtreePrimitive {
         
         // We can't render anything before the level zero tiles exist.
         if _levelZeroTiles.count == 0 {
-            if (_tileProvider.ready) {
-                _levelZeroTiles = QuadtreeTile.createLevelZeroTiles(_tileProvider.tilingScheme)
+            if (tileProvider.ready) {
+                _levelZeroTiles = QuadtreeTile.createLevelZeroTiles(tileProvider.tilingScheme)
             } else {
                 // Nothing to do until the provider is ready.
                 return
@@ -330,7 +325,7 @@ class QuadtreePrimitive {
                 queueTileLoad(tile)
             }
             
-            if tile.renderable && _tileProvider.computeTileVisibility(tile, frameState: frameState, occluders: _occluders) != .None {
+            if tile.renderable && tileProvider.computeTileVisibility(tile, frameState: frameState, occluders: _occluders) != .None {
                 _tileTraversalQueue.enqueue(tile)
             } else {
                 _debug.tilesCulled += 1
@@ -366,7 +361,7 @@ class QuadtreePrimitive {
                 
                 // PERFORMANCE_IDEA: traverse children front-to-back so we can avoid sorting by distance later.
                 for child in tile.children {
-                    if _tileProvider.computeTileVisibility(child, frameState: frameState, occluders: _occluders) != .None {
+                    if tileProvider.computeTileVisibility(child, frameState: frameState, occluders: _occluders) != .None {
                         _tileTraversalQueue.enqueue(child)
                     } else {
                         _debug.tilesCulled += 1
@@ -402,9 +397,9 @@ class QuadtreePrimitive {
             return screenSpaceError2D(context: context, frameState: frameState, tile: tile)
         }
         
-        let maxGeometricError = _tileProvider.levelMaximumGeometricError(tile.level)
+        let maxGeometricError = tileProvider.levelMaximumGeometricError(tile.level)
         
-        let distance = _tileProvider.computeDistanceToTile(tile, frameState: frameState)
+        let distance = tileProvider.computeDistanceToTile(tile, frameState: frameState)
         tile.distance = distance
         
         // PERFORMANCE_IDEA: factor out stuff that's constant across tiles.
@@ -414,7 +409,7 @@ class QuadtreePrimitive {
     func screenSpaceError2D(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
         let frustum = frameState.camera!.frustum
 
-        let maxGeometricError = _tileProvider.levelMaximumGeometricError(tile.level)
+        let maxGeometricError = tileProvider.levelMaximumGeometricError(tile.level)
         let pixelSize = max(frustum.top - frustum.bottom, frustum.right - frustum.left) / max(Double(context.width), Double(context.height))
         return maxGeometricError / pixelSize
     }
@@ -465,7 +460,7 @@ class QuadtreePrimitive {
         
         for tile in _tileLoadQueue.reverse() {
             _tileReplacementQueue.markTileRendered(tile)
-            _tileProvider.loadTile(tile, frameState: &frameState)
+            tileProvider.loadTile(tile, frameState: &frameState)
             if NSDate().compare(endTime) == NSComparisonResult.OrderedDescending {
                 break
             }
@@ -474,7 +469,7 @@ class QuadtreePrimitive {
     
     func updateHeights(frameState: FrameState) {
 
-        let terrainProvider = _tileProvider.terrainProvider
+        let terrainProvider = tileProvider.terrainProvider
         
         var startTime = NSDate()
         var timeSlice = _updateHeightsTimeSlice
@@ -565,7 +560,7 @@ class QuadtreePrimitive {
         _tilesToRender.sortInPlace(tileDistanceSortFunction)
         
         for tile in _tilesToRender {
-            _tileProvider.showTileThisFrame(tile, frameState: &frameState)
+            tileProvider.showTileThisFrame(tile, frameState: &frameState)
             
             if tile.frameRendered != frameState.frameNumber - 1 {
                 _tilesToUpdateHeights.append(tile)
