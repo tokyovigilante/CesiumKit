@@ -59,6 +59,8 @@ public struct CesiumOptions {
         self.scene3DOnly = scene3DOnly
         self.mapProjection = mapProjection
         self.showRenderLoopErrors = showRenderLoopErrors
+        
+        //NSURLProtocol.registerClass(ResourceURLProtocol)
     }
 }
 

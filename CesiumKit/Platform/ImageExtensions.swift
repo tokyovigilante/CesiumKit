@@ -32,13 +32,14 @@ import Foundation
 extension CGImage {
     class func loadFromURL (url: String, completionBlock: (CGImage?, NSError?) -> ()) {
         
-        let imageOperation = NetworkOperation(url: url) { data, error in
-            if let error = error {
+        let imageOperation = NetworkOperation(url: url)
+        imageOperation.completionBlock = {
+            if let error = imageOperation.error {
                 completionBlock(nil, error)
             }
-            completionBlock(CGImage.fromData(data), error)
+            completionBlock(CGImage.fromData(imageOperation.data), nil)
         }
-        imageOperation.start()
+        imageOperation.enqueue()
     }
     
     class func fromData(data: NSData) -> CGImage? {

@@ -451,16 +451,19 @@ public class BingMapsImageryProvider: ImageryProvider {
             "key" : self._key
         ]
         
-        let metadataOperation = NetworkOperation(url: metadataUrl, parameters: metadataParameters, completionBlock: { data, error in
-            dispatch_async(dispatch_get_main_queue(), {
-                if let error = error {
+        let metadataHeaders = ["Accept": "application/json"]
+
+        let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders, parameters: metadataParameters)
+        metadataOperation.completionBlock = {
+            dispatch_async(dispatch_get_main_queue()) {
+                if let error = metadataOperation.error {
                     metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
                     return
                 }
-                metadataSuccess(data as NSData!)
-            })
-        })
-        metadataOperation.start()
+                metadataSuccess(metadataOperation.data)
+            }
+        }
+        metadataOperation.enqueue()
     }
     
     
@@ -521,21 +524,22 @@ public class BingMapsImageryProvider: ImageryProvider {
     */
     public func loadImage (url: String, completionBlock: (CGImage? -> Void)) {
         
-        let imageryOperation = NetworkOperation(url: url) { (data, error) in
-            if let error = error {
+        let imageryOperation = NetworkOperation(url: url)
+        imageryOperation.completionBlock = {
+            if let error = imageryOperation.error {
                 print("error: \(error.localizedDescription)")
                 return
             }
             #if os(iOS)
-                let image = UIImage(data: data)?.CGImage
+                let image = UIImage(data: imageryOperation.data)?.CGImage
             #elseif os(OSX)
-                let image = NSImage(data: data)?.cgImage
+                let image = NSImage(data: imageryOperation.data)?.cgImage
             #endif
             dispatch_async(dispatch_get_main_queue(), {
                 completionBlock(image)
             })
         }
-        imageryOperation.start()
+        imageryOperation.enqueue()
     }
     
     /*

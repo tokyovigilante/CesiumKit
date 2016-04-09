@@ -22,16 +22,9 @@ extension NSURLSessionConfiguration {
     class func resourceSessionConfiguration() -> NSURLSessionConfiguration {
         let config = defaultSessionConfiguration()
         // Eg we think 60s is too long a timeout time.
-        //config.timeoutIntervalForRequest = 20
-        // Some headers that are common to all reqeuests.
-        // Eg my backend needs to be explicitly asked for JSON.
-        //config.HTTPAdditionalHeaders = ["MyResponseType": "JSON"]
-        // Eg we want to use pipelining.
+        config.timeoutIntervalForRequest = 20
         config.HTTPShouldUsePipelining = true
-        config.HTTPMaximumConnectionsPerHost = 12
-        config.requestCachePolicy = .ReloadIgnoringLocalCacheData
-    /*configuration.HTTPAdditionalHeaders = ["Accept": "application/json",*/
-
+        config.HTTPMaximumConnectionsPerHost = 4
         return config
     }
 }
@@ -40,6 +33,7 @@ extension NSURLSession {
     /// Just like sharedSession, returns a shared singleton
     /// session object.
     class var resourceSharedSession: NSURLSession {
+                
         // The session is stored in a nested struct because
         // you can't do a 'static let' singleton in a
         // class extension.
@@ -53,14 +47,12 @@ extension NSURLSession {
     }
 }
 
-// delegate for receiving data
+let ResponseDelegateKey = "responseDelegateObject"
 
-let ResponseDelegateKey = "ResponseDelegateKey"
-
-class NetworkOperation: NSObject /*: NSOperation*/{
+class NetworkOperation: NSOperation {
     
     private var _privateFinished: Bool = false
-    /*override*/ var finished: Bool {
+    override var finished: Bool {
         get {
             return _privateFinished
         }
@@ -71,9 +63,13 @@ class NetworkOperation: NSObject /*: NSOperation*/{
         }
     }
     
-    let incomingData = NSMutableData()
+    var data: NSData {
+        return NSData(data: _incomingData)
+    }
     
-    private let completionBlock: (NSData, NSError?) -> ()
+    private let _incomingData = NSMutableData()
+    
+    var error: NSError?
     
     private let headers: [String: String]?
     
@@ -81,28 +77,29 @@ class NetworkOperation: NSObject /*: NSOperation*/{
     
     private let url: String
     
-    init(url: String, headers: [String: String]? = nil, parameters: [String: String]? = nil, completionBlock: ((NSData, NSError?) -> ())) {
+    init(url: String, headers: [String: String]? = nil, parameters: [String: String]? = nil) {
         self.url = url
         self.headers = headers
         self.parameters = parameters
-        self.completionBlock = completionBlock
+        super.init()
     }
     
-    func start () {
-        /*if cancelled {
-         finished = true
-         return
-         }*/
+    func enqueue () {
+        QueueManager.sharedInstance.networkQueue.addOperation(self)
+    }
+    
+    override func start () {
+        if cancelled {
+            finished = true
+            return
+        }
         let session = NSURLSession.resourceSharedSession
         
         let completeURL: NSURL
         if let parameters = parameters {
             guard let urlComponents = NSURLComponents(string: self.url) else {
-                /*if cancelled {
-                 finished = true
-                 setError
-                 return
-                 }*/
+                finished = true
+                //setError
                 return
             }
             urlComponents.percentEncodedQuery = encodeParameters(parameters)
@@ -113,16 +110,12 @@ class NetworkOperation: NSObject /*: NSOperation*/{
         
         let request = NSMutableURLRequest(URL: completeURL)
         
-        NSURLProtocol.setProperty(self, forKey: "ResponseDelegateKey", inRequest: request)
+        NSURLProtocol.setProperty(self, forKey: ResponseDelegateKey, inRequest: request)
         
         _ = headers?.map { request.setValue($1, forHTTPHeaderField: $0) }
         
         let dataTask = session.dataTaskWithRequest(request)
         dataTask.resume()
-    }
-    
-    func executeCompletionBlock (error: NSError?) {
-        completionBlock(incomingData, error)
     }
     
     private func encodeParameters (parameters: [String: String]) -> String {
@@ -134,11 +127,17 @@ class NetworkOperation: NSObject /*: NSOperation*/{
 class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
     
     func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
-        /*if cancelled {
-         finished = true
-         sessionTask?.cancel()
-         return
-         }*/
+        guard let request = dataTask.originalRequest else {
+            return
+        }
+        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
+            return
+        }
+        if operation.cancelled {
+            completionHandler(.Cancel)
+            operation.finished = true
+            return
+        }
         //Check the response code and react appropriately
         completionHandler(.Allow)
     }
@@ -158,23 +157,25 @@ class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
         guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
-        /*if cancelled {
-         finished = true
-         sessionTask?.cancel()
+        if operation.cancelled {
+         operation.finished = true
+         dataTask.cancel()
          return
-         }*/
+         }
         //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
-        operation.incomingData.appendData(data)
+        operation._incomingData.appendData(data)
         
     }
     
     func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+
         guard let request = task.originalRequest else {
             return
         }
         guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
-        operation.executeCompletionBlock(error)
+        operation.error = error
+        operation.finished = true
     }
 }

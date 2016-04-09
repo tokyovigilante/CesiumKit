@@ -327,12 +327,13 @@ class Globe {
             
             if let oceanNormalMapUrl = oceanNormalMapUrl {
                 
-                let oceanMapOperation = NetworkOperation(url: oceanNormalMapUrl) { data, error in
+                let oceanMapOperation = NetworkOperation(url: oceanNormalMapUrl)
+                oceanMapOperation.completionBlock = {
                     if (oceanNormalMapUrl != self.oceanNormalMapUrl) {
                         // url changed while we were loading
                         return
                     }
-                    guard let oceanNormalMapImage = CGImage.fromData(data) else {
+                    guard let oceanNormalMapImage = CGImage.fromData(oceanMapOperation.data) else {
                         self._oceanNormalMap = nil
                         return
                     }
@@ -349,7 +350,7 @@ class Globe {
                         self._oceanNormalMap = oceanNormalMap
                     })
                 }
-                oceanMapOperation.start()
+                oceanMapOperation.enqueue()
             } else {
                 _oceanNormalMap = nil
             }

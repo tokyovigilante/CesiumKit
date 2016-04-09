@@ -290,14 +290,18 @@ class CesiumTerrainProvider: TerrainProvider {
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
-        let metadataOperation = NetworkOperation(url: metadataUrl, completionBlock: { data, error in
-            if let error = error {
-                metadataFailure(data as NSData!)
+        let metadataHeaders = ["Accept": "application/json"]
+        
+        let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders)
+        
+        metadataOperation.completionBlock = {
+            if let error = metadataOperation.error {
+                metadataFailure(metadataOperation.data)
                 return
             }
-            metadataSuccess(data as NSData!)
-        })
-        metadataOperation.start()
+            metadataSuccess(metadataOperation.data)
+        }
+        metadataOperation.enqueue()
     }
 
 /**
@@ -578,25 +582,26 @@ class CesiumTerrainProvider: TerrainProvider {
             extensionList.append("watermask")
         }
         
-        let tileLoader = NetworkOperation(url: url, headers: getRequestHeader(extensionList), completionBlock: { (data, error) in
-            if let error = error {
+        let tileLoader = NetworkOperation(url: url, headers: getRequestHeader(extensionList))
+        tileLoader.completionBlock = {
+            if let error = tileLoader.error {
                 print(error.localizedDescription)
                 return
             }
-            dispatch_async(QueueManager.sharedInstance.processorQueue, {
+            dispatch_async(QueueManager.sharedInstance.processorQueue) {
                 var terrainData: TerrainData? = nil
                 if self._heightmapStructure != nil {
                     terrainData = nil
                     //return createHeightmapTerrainData(that, buffer, level, x, y, tmsY);
                 } else {
-                    self.createQuantizedMeshTerrainData(data, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
+                    self.createQuantizedMeshTerrainData(tileLoader.data, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
                 }
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatch_get_main_queue()) {
                     completionBlock(terrainData)
-                })
-            })
-        })
-        tileLoader.start()
+                }
+            }
+        }
+        tileLoader.enqueue()
     }
     
         /*
