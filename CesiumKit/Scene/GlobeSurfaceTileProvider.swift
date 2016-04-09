@@ -605,27 +605,23 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     */
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         
-        /*if true /*invalidateCache*/ {
+        if true /*invalidateCache*/ {
             tile._cachedCommands.removeAll()
         }
         
         if !tile._cachedCommands.isEmpty {
             frameState.commandList.appendContentsOf(tile._cachedCommands)
             return
-        }*/
+        }
         
         let otherPassesInitialColor = Cartesian4(x: 0.0, y: 0.0, z: 0.0, w: 0.0)
 
         let surfaceTile = tile.data!
         
-        let viewMatrix = frameState.camera!.viewMatrix
-        
         let waterMaskTexture = surfaceTile.waterMaskTexture
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
         let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
-        
-        var rtc = surfaceTile.center
         
         var scratchArray = [Float32](count: 1, repeatedValue: 0.0)
         
@@ -652,13 +648,13 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             tileRectangle.w = northeast.y
             
             // In 2D and Columbus View, use the center of the tile for RTC rendering.
-            if frameState.mode != .Morphing {
+            /*if frameState.mode != .Morphing {
                 rtc = Cartesian3(x: 0.0, y: (tileRectangle.z + tileRectangle.x) * 0.5, z: (tileRectangle.w + tileRectangle.y) * 0.5)
                 tileRectangle.x -= rtc.y
                 tileRectangle.y -= rtc.z
                 tileRectangle.z -= rtc.y
                 tileRectangle.w -= rtc.z
-            }
+            }*/
             
             if projection is WebMercatorProjection {
                 southLatitude = tile.rectangle.south
@@ -677,9 +673,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             }
         }
         
-        let centerEye = viewMatrix.multiplyByPoint(rtc)
-        let modifiedModelView = viewMatrix.setTranslation(centerEye)
-        
         let tileImageryCollection = surfaceTile.imagery
         var imageryIndex = 0
         let imageryLen = tileImageryCollection.count
@@ -695,7 +688,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         }
         
         let context = frameState.context
-
         
         var maxTextures = context.limits.maximumTextureImageUnits
         
@@ -752,7 +744,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             
             uniformMap.southAndNorthLatitude = Cartesian2(x: southLatitude, y: northLatitude)
             uniformMap.southMercatorYLowAndHighAndOneOverHeight = Cartesian3(x: southMercatorYLow, y: southMercatorYHigh, z: oneOverMercatorHeight)
-            uniformMap.modifiedModelView = modifiedModelView
+
             var applyBrightness = false
             var applyContrast = false
             var applyHue = false
@@ -881,12 +873,26 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             
             command.boundingVolume = boundingSphere
             command.orientedBoundingBox = surfaceTile.orientedBoundingBox
-            frameState.commandList.append(command)
-            //tile._cachedCommands.append(command)
             
+            frameState.commandList.append(command)
+            tile._cachedCommands.append(command)
+            
+            updateRTCPosition(forTile: tile, frameState: frameState)
+
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor
         } while (imageryIndex < imageryLen)
+    }
+    
+    func updateRTCPosition(forTile tile: QuadtreeTile, frameState: FrameState) {
+        let viewMatrix = frameState.camera!.viewMatrix
+        let rtc = tile.data!.center
+        let centerEye = viewMatrix.multiplyByPoint(rtc)
+        let modifiedModelView = viewMatrix.setTranslation(centerEye)
+        
+        for command in tile._cachedCommands {
+            ((command as! DrawCommand).uniformMap! as! TileUniformMap).modifiedModelView = modifiedModelView
+        }
     }
 
     func addPickCommandsForTile(drawCommand: DrawCommand, context: Context, frameState: FrameState, inout commandList: [Command]) {
