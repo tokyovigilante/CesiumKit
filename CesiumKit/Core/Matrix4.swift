@@ -579,7 +579,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double = 0.0, far: Double = 1.0) -> Matrix4 {
         
         // Converted to Metal NDC coordinates - z: [0-1]
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205348(v=vs.85).aspx
@@ -679,7 +679,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * // Example 2.  Create viewport transformation using the context's viewport.
     * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
     */
-    internal static func computeViewportTransformation (viewport: BoundingRectangle = BoundingRectangle(), nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
+    internal static func computeViewportTransformation (viewport: Cartesian4, nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
         
         let x = viewport.x
         let y = viewport.y

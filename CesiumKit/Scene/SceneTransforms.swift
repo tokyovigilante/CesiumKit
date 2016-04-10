@@ -183,8 +183,8 @@ struct SceneTransforms {
         let positionNDC = position.divideByScalar(position.w)
         
         // Assuming viewport takes up the entire canvas...
-        let viewport = BoundingRectangle(width: Double(scene.drawableWidth), height: Double(scene.drawableHeight))
-        let viewportTransform = Matrix4.computeViewportTransformation(viewport, nearDepthRange: 0.0, farDepthRange: 1.0)
+        let viewport = Cartesian4(x: 0, y: 0, width: Double(scene.drawableWidth), height: Double(scene.drawableHeight))
+        let viewportTransform = Matrix4.computeViewportTransformation(viewport)
         
         // Viewport transform to transform from clip coordinates to window coordinates
         let positionWC = viewportTransform.multiplyByPoint(Cartesian3(fromCartesian4: positionNDC))

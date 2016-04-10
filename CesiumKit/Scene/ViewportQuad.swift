@@ -31,7 +31,7 @@ public class ViewportQuad: Primitive {
      * @example
      * viewportQuad.rectangle = new Cesium.BoundingRectangle(0, 0, 80, 40);
      */
-    public var rectangle: BoundingRectangle
+    public var rectangle: Cartesian4
     
     /**
      * The surface appearance of the viewport quad.  This can be one of several built-in {@link Material} objects or a custom material, scripted with
@@ -59,7 +59,7 @@ public class ViewportQuad: Primitive {
     
     private var _rs: RenderState! = nil
     
-    public init (rectangle: BoundingRectangle, material: Material = Material(fromType: ColorMaterialType(fabric: ColorFabricDescription(), source: nil))) {
+    public init (rectangle: Cartesian4, material: Material = Material(fromType: ColorMaterialType(fabric: ColorFabricDescription(), source: nil))) {
         self.rectangle = rectangle
         self.material = material
     }
@@ -81,7 +81,7 @@ public class ViewportQuad: Primitive {
         }
         let context = frameState.context
 
-        if _rs == nil || _rs.viewport != rectangle {
+        if _rs == nil || _rs.viewport! != rectangle {
             _rs = RenderState(
                 device: context.device,
                 viewport : rectangle

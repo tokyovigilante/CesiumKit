@@ -47,8 +47,7 @@ class UniformState {
     /**
     * @private
     */
-    private var _viewport = BoundingRectangle()
-    private var _viewportCartesian4 = Cartesian4()
+    private var _viewport = Cartesian4()
     private var _viewportDirty = false
     private var _viewportOrthographicMatrix = Matrix4.identity
     private var _viewportTransformation = Matrix4.identity
@@ -164,25 +163,16 @@ class UniformState {
     * @memberof UniformState.prototype
     * @type {BoundingRectangle}
     */
-    var viewport: BoundingRectangle {
+    var viewport: Cartesian4 {
         get {
             return _viewport
         }
         set (value) {
             _viewport = value
-            _viewportCartesian4 = Cartesian4(x: value.x, y: value.y, z: value.width, w: value.height)
             _viewportDirty = true
         }
     }
-    
-    /**
-    * @memberof UniformState.prototype
-    * @private
-    */
-    var viewportCartesian4: Cartesian4 {
-        return _viewportCartesian4
-    }
-    
+
     var viewportOrthographic: Matrix4 {
         cleanViewport()
         return _viewportOrthographicMatrix
@@ -899,7 +889,7 @@ class UniformState {
         layout.czm_f_modelView3D = modelView3D.floatRepresentation
         layout.czm_f_inverseModelView = inverseModelView.floatRepresentation
         layout.czm_f_modelViewProjection = modelViewProjection.floatRepresentation
-        layout.czm_f_viewport = viewportCartesian4.floatRepresentation
+        layout.czm_f_viewport = viewport.floatRepresentation
         layout.czm_f_normal = normal.floatRepresentation
         layout.czm_f_normal3D = normal3D.floatRepresentation
         layout.czm_f_entireFrustum = entireFrustum.floatRepresentation
@@ -909,10 +899,8 @@ class UniformState {
     
     func cleanViewport() {
         if _viewportDirty {
-            let v = _viewport
-            
-            _viewportOrthographicMatrix = Matrix4.computeOrthographicOffCenter(left: v.x, right: v.x + v.width, bottom: v.y, top: v.y + v.height, near: 0.0, far: 1.0)
-            _viewportTransformation = Matrix4.computeViewportTransformation(v, nearDepthRange: 0.0, farDepthRange: 1.0)
+            _viewportOrthographicMatrix = Matrix4.computeOrthographicOffCenter(left: _viewport.x, right: _viewport.x + _viewport.width, bottom: _viewport.y, top: _viewport.y + _viewport.height)
+            _viewportTransformation = Matrix4.computeViewportTransformation(_viewport)
             _viewportDirty = false
         }
     }

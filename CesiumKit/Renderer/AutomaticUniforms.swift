@@ -38,7 +38,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: UniformDataType.FloatVec4,
         writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.viewportCartesian4.floatRepresentation
+            let simd = uniformState.viewport.floatRepresentation
             memcpy(buffer, [simd], strideofValue(simd))
         }
     ),

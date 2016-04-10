@@ -690,7 +690,7 @@ public class Scene {
             fontName: "HelveticaNeue",
             color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
             pointSize: 40,
-            rectangle: BoundingRectangle(x: 40, y: 40, width: 500, height: 60)
+            rectangle: Cartesian4(x: 40, y: 40, width: 500, height: 60)
         )
                 
         #if os(iOS)

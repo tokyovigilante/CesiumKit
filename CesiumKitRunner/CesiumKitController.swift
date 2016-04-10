@@ -52,7 +52,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //
         
         // Everest
-        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
+        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offsetCartesian: nil, offsetHPR: HeadingPitchRange(heading: Math.toRadians(180.0), pitch: Math.toRadians(-90), range: 1000))
         
         // Murrumbeena
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), heading: 0, pitch: 0, roll: 0)
@@ -81,9 +81,9 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         let viewportFabric = ColorFabricDescription(color: Color(fromRed: 40/255, green: 144/255, blue: 252/255, alpha: 1.0))
         let material = Material(fromType: ColorMaterialType(fabric: viewportFabric))
 
-        window.addRectangle(x: 50, y: 50, width: 50, height: 50, material: material)
+        window.addRectangle(Cartesian4(x: 50, y: 50, width: 50, height: 50), material: material)
         
-        window.addString("Test", fontName: "HelveticaNeue", color: blue, pointSize: 20, rectangle: BoundingRectangle(x: 110, y: 50, width: 600, height: 50))
+        window.addString("Test", fontName: "HelveticaNeue", color: blue, pointSize: 20, rectangle: Cartesian4(x: 110, y: 50, width: 600, height: 50))
         
         super.init()
     }

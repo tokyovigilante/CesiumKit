@@ -75,7 +75,7 @@ class ComputeEngine {
         let pipeline = computeCommand.pipeline ?? createViewportQuadPipeline(computeCommand.fragmentShaderSource!)
         let renderState = RenderState(
             device: context.device,
-            viewport: BoundingRectangle(width: Double(outputTexture.width), height: Double(outputTexture.height)))
+            viewport: Cartesian4(x: 0, y: 0, width: Double(outputTexture.width), height: Double(outputTexture.height)))
         
         
         var clearCommand = ClearCommand(color: Cartesian4(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))

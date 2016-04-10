@@ -51,7 +51,7 @@ public class OffscreenQuadPrimitive: Primitive {
         _passState.framebuffer = framebuffer
     }
     
-    public func addString (string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle) -> Int {
+    public func addString (string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4) -> Int {
         let text = TextRenderer(context: _context, string: string, fontName: fontName, color: color, pointSize: pointSize, rectangle: rectangle, offscreenTarget: true)
         _text.append(text)
         return _text.count-1
@@ -61,11 +61,11 @@ public class OffscreenQuadPrimitive: Primitive {
         
     }
     
-    public func addRectangle (x x: Double, y: Double, width: Double, height: Double, material: Material) -> Int {
+    public func addRectangle (bounds: Cartesian4, material: Material) -> Int {
         
         let rs = RenderState(
             device: _context.device,
-            viewport : BoundingRectangle(x: x, y: y, width: width, height: height)
+            viewport : bounds
         )
         
         let overrides = ViewportQuadOverrides(

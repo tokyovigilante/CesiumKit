@@ -189,7 +189,7 @@ struct RenderState/*: Printable*/ {
     }
     let sampleCoverage: SampleCoverage// = SampleCoverage()
     
-    let viewport: BoundingRectangle?// = nil
+    let viewport: Cartesian4?
     
     var wireFrame: Bool = false
     
@@ -209,7 +209,7 @@ struct RenderState/*: Printable*/ {
         blending: BlendingState = BlendingState.Disabled(),
         stencilTest: RenderState.StencilTest = StencilTest(),
         sampleCoverage: RenderState.SampleCoverage = SampleCoverage(),
-        viewport: BoundingRectangle? = nil,
+        viewport: Cartesian4? = nil,
         wireFrame: Bool = false) {
             self.windingOrder = windingOrder
             self.cullFace = cullFace
@@ -506,7 +506,7 @@ struct RenderState/*: Printable*/ {
     
     func applyViewport(encoder: MTLRenderCommandEncoder, passState: PassState) {
         
-        var actualViewport = BoundingRectangle()
+        var actualViewport = Cartesian4()
         let context = passState.context!
         
         if viewport == nil {

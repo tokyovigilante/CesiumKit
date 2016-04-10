@@ -23,7 +23,7 @@ import simd
 * @see Cartesian3
 * @see Packable
 */
-public struct Cartesian4 {
+public struct Cartesian4: Equatable {
     
     private (set) internal var simdType: double4
     
@@ -74,8 +74,31 @@ public struct Cartesian4 {
     var blue: Double { return z }
     var alpha: Double { return w }
     
+    var width: Double {
+        get {
+            return z
+        }
+        set {
+            z = newValue
+        }
+    }
+    
+    var height: Double {
+        get {
+            return w
+        }
+        set {
+            w = newValue
+        }
+    }
+    
     public init (x: Double, y: Double, z: Double, w: Double) {
         simdType = double4(x, y, z, w)
+        floatRepresentation = vector_float(simdType)
+    }
+    
+    public init (x: Double, y: Double, width: Double, height: Double) {
+        simdType = double4(x, y, width, height)
         floatRepresentation = vector_float(simdType)
     }
     

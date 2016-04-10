@@ -37,9 +37,9 @@ class TextRenderer {
     
     private var _string: String = " "
     
-    var rectangle: BoundingRectangle
+    var rectangle: Cartesian4
     
-    private var _rectangle = BoundingRectangle(x: Double.infinity, y: Double.infinity, width: Double.infinity, height: Double.infinity)
+    private var _rectangle = Cartesian4(x: Double.infinity, y: Double.infinity, width: Double.infinity, height: Double.infinity)
     
     private let _pointSize: Int
     
@@ -68,7 +68,7 @@ class TextRenderer {
             normalize: false)
     ]
     
-    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: BoundingRectangle, offscreenTarget: Bool = false) {
+    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4, offscreenTarget: Bool = false) {
         
         self.string = string
         _pointSize = pointSize
