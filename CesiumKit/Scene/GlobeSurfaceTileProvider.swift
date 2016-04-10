@@ -610,6 +610,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         }
         
         if !tile._cachedCommands.isEmpty {
+            updateRTCPosition(forTile: tile, frameState: frameState)
             frameState.commandList.appendContentsOf(tile._cachedCommands)
             return
         }
