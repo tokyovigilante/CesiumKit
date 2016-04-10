@@ -145,7 +145,7 @@ class QuadtreeTile: Equatable {
     */
     var data: GlobeSurfaceTile? = nil
     
-    var _cachedCommands = [Command]()
+    var _cachedCommands = [DrawCommand]()
     
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
         
@@ -221,6 +221,7 @@ class QuadtreeTile: Equatable {
                 frameUpdated = parent!.frameUpdated
             }
         }
+    
     }
     
     /**
@@ -230,16 +231,22 @@ class QuadtreeTile: Equatable {
     *
     * @memberof QuadtreeTile
     */
-    func freeResources () {
+    func freeResources (provider: GlobeSurfaceTileProvider) {
         state = .Start
         renderable = false
         upsampledFromParent = false
+        
+        for command in _cachedCommands {
+            if let bufferProvider = command.uniformBufferProvider {
+                provider.returnManualUniformBufferProvider(bufferProvider)
+            }
+        }
         
         data?.freeResources()
         
         if _children != nil {
             for tile in _children! {
-                tile.freeResources()
+                tile.freeResources(provider)
             }
             _children = nil
         }

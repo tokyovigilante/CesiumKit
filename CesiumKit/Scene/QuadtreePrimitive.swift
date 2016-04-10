@@ -64,7 +64,7 @@ class QuadtreePrimitive {
     
     private var _tileLoadQueue = [QuadtreeTile]()
     
-    private var _tileReplacementQueue = TileReplacementQueue()
+    private var _tileReplacementQueue: TileReplacementQueue
     
     private var _levelZeroTiles = [QuadtreeTile]()
     private var _levelZeroTilesReady = false
@@ -107,6 +107,7 @@ class QuadtreePrimitive {
         assert(tileProvider.quadtree == nil, "A QuadtreeTileProvider can only be used with a single QuadtreePrimitive")
         
         self.tileProvider = tileProvider
+        _tileReplacementQueue = TileReplacementQueue(tileProvider: self.tileProvider)
         
         let tilingScheme = tileProvider.tilingScheme
         let ellipsoid = tilingScheme.ellipsoid
@@ -140,7 +141,7 @@ class QuadtreePrimitive {
                 //_addHeightCallbacks.append(data)
             }
             
-            tile.freeResources()
+            tile.freeResources(tileProvider)
         }
         _levelZeroTiles.removeAll()
     }

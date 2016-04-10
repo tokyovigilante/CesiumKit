@@ -23,6 +23,12 @@ class TileReplacementQueue {
     var count = 0
     
     private var _lastBeforeStartOfFrame: QuadtreeTile? = nil
+    
+    private var _tileProvider: GlobeSurfaceTileProvider
+    
+    init (tileProvider: GlobeSurfaceTileProvider) {
+        _tileProvider = tileProvider
+    }
 
     /**
     * Marks the start of the render frame.  Tiles before (closer to the head) this tile in the
@@ -50,7 +56,7 @@ class TileReplacementQueue {
             let previous = tileToTrim!.replacementPrevious
             
             if tileToTrim!.eligibleForUnloading {
-                tileToTrim!.freeResources()
+                tileToTrim!.freeResources(_tileProvider)
                 remove(tileToTrim!)
             }
             tileToTrim = previous

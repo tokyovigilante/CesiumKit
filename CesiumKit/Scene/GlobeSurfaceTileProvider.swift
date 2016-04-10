@@ -118,7 +118,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
 
     private var _drawCommands = [DrawCommand]()
     
-    private var _uniformMaps = [TileUniformMap]()
+    private var _manualUniformBufferProviderPool = [UniformBufferProvider]()
     
     private var _pickCommands = [DrawCommand]()
     
@@ -463,27 +463,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         return sqrt(result)
     }
     
-    /**
-    * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
-    * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
-    * <br /><br />
-    * Once an object is destroyed, it should not be used; calling any function other than
-    * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
-    * assign the return value (<code>undefined</code>) to the object as done in the example.
-    *
-    * @returns {undefined}
-    *
-    * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
-    *
-    * @see GlobeSurfaceTileProvider#isDestroyed
-    *
-    * @example
-    * provider = provider && provider();
-    */
-    deinit {
-        //this._tileProvider = this._tileProvider && this._tileProvider.destroy();
-    }
-    
     /*
     GlobeSurfaceTileProvider.prototype._onLayerAdded = function(layer, index) {
     if (layer.show) {
@@ -545,64 +524,24 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     };
     */
     
-    func createTileUniformMap(maxTextureCount: Int) -> TileUniformMap {
+    private func createTileUniformMap(maxTextureCount: Int) -> TileUniformMap {
         
         return TileUniformMap(maxTextureCount: maxTextureCount)
     }
     
-    /*
-    function createWireframeVertexArrayIfNecessary(context, provider, tile) {
-    var surfaceTile = tile.data;
     
-    if (defined(surfaceTile.wireframeVertexArray)) {
-    return;
+    private func getManualUniformBufferProvider (context: Context, size: Int) -> UniformBufferProvider {
+        if _manualUniformBufferProviderPool.isEmpty {
+            return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: size)
+        }
+        return _manualUniformBufferProviderPool.removeLast()
     }
     
-    if (defined(surfaceTile.meshForWireframePromise)) {
-    return;
+    func returnManualUniformBufferProvider (provider: UniformBufferProvider) {
+        _manualUniformBufferProviderPool.append(provider)
     }
     
-    surfaceTile.meshForWireframePromise = surfaceTile.terrainData.createMesh(provider._terrainProvider.tilingScheme, tile.x, tile.y, tile.level);
-    if (!defined(surfaceTile.meshForWireframePromise)) {
-    // deferrred
-    return;
-    }
-    
-    var vertexArray = surfaceTile.vertexArray;
-    
-    when(surfaceTile.meshForWireframePromise, function(mesh) {
-    if (surfaceTile.vertexArray === vertexArray) {
-    surfaceTile.wireframeVertexArray = createWireframeVertexArray(context, surfaceTile.vertexArray, mesh);
-    }
-    surfaceTile.meshForWireframePromise = undefined;
-    });
-    }
-    
-    /**
-    * Creates a vertex array for wireframe rendering of a terrain tile.
-    *
-    * @private
-    *
-    * @param {Context} context The context in which to create the vertex array.
-    * @param {VertexArray} vertexArray The existing, non-wireframe vertex array.  The new vertex array
-    *                      will share vertex buffers with this existing one.
-    * @param {TerrainMesh} terrainMesh The terrain mesh containing non-wireframe indices.
-    * @returns {VertexArray} The vertex array for wireframe rendering.
-    */
-    function createWireframeVertexArray(context, vertexArray, terrainMesh) {
-    var geometry = {
-    indices : terrainMesh.indices,
-    primitiveType : PrimitiveType.TRIANGLES
-    };
-    
-    GeometryPipeline.toWireframe(geometry);
-    
-    var wireframeIndices = geometry.indices;
-    var wireframeIndexBuffer = context.createIndexBuffer(wireframeIndices, BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT);
-    return context.createVertexArray(vertexArray._attributes, wireframeIndexBuffer);
-    }
-    
-    */
+
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         
         if true /*invalidateCache*/ {
@@ -611,7 +550,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         
         if !tile._cachedCommands.isEmpty {
             updateRTCPosition(forTile: tile, frameState: frameState)
-            frameState.commandList.appendContentsOf(tile._cachedCommands)
+            frameState.commandList.appendContentsOf(tile._cachedCommands.map { $0 as Command })
             return
         }
         
@@ -711,16 +650,16 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 command.boundingVolume = BoundingSphere()
                 command.orientedBoundingBox = nil
                 
-                uniformMap = createTileUniformMap(maxTextures)
                 
                 _drawCommands.append(command)
-                _uniformMaps.append(uniformMap)
+                //_uniformMaps.append(uniformMap)
             } else {
                 command = _drawCommands[_usedDrawCommands]
-                uniformMap = _uniformMaps[_usedDrawCommands]
+                //uniformMap = _uniformMaps[_usedDrawCommands]
             }
             
-            
+            uniformMap = createTileUniformMap(maxTextures)
+
             _usedDrawCommands += 1
             
             /*if (tile === tileProvider._debug.boundingSphereTile) {
@@ -849,7 +788,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 command.uniformBufferProvider = nil
             }
             if command.uniformBufferProvider == nil {
-                command.uniformBufferProvider = command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+                command.uniformBufferProvider = getManualUniformBufferProvider(context, size: pipelineUniformSize)
             }
             command.pass = .Globe
             
