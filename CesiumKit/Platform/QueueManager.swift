@@ -18,8 +18,11 @@ class QueueManager {
     
     let networkQueue: NSOperationQueue
     
+    let upsampleQueue: dispatch_queue_t
+    
     init () {
-        processorQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_CONCURRENT)
+        processorQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
+        upsampleQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
         //processorQueue = NSOperationQueue()
         //processorQueue.qualityOfService = .Utility
         

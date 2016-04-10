@@ -134,7 +134,7 @@ class TileTerrain {
         
         state = .Receiving
         
-        dispatch_async(frameState.context.processorQueue, {
+        dispatch_async(QueueManager.sharedInstance.upsampleQueue, {
             sourceData.upsample(
                 tilingScheme: terrainProvider.tilingScheme,
                 thisX: sourceX,
