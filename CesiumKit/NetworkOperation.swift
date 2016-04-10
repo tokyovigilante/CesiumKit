@@ -47,7 +47,7 @@ extension NSURLSession {
     }
 }
 
-let ResponseDelegateKey = "responseDelegateObject"
+private let ResponseDelegateKey = "responseDelegateObject"
 
 class NetworkOperation: NSOperation {
     
@@ -64,10 +64,13 @@ class NetworkOperation: NSOperation {
     }
     
     var data: NSData {
-        return NSData(data: _incomingData)
+        if let data = _incomingData {
+           return NSData(data: data)
+        }
+        return NSData()
     }
     
-    private let _incomingData = NSMutableData()
+    private var _incomingData: NSMutableData? = nil
     
     var error: NSError?
     
@@ -110,23 +113,40 @@ class NetworkOperation: NSOperation {
         
         let request = NSMutableURLRequest(URL: completeURL)
         
-        NSURLProtocol.setProperty(self, forKey: ResponseDelegateKey, inRequest: request)
-        
         _ = headers?.map { request.setValue($1, forHTTPHeaderField: $0) }
         
         let dataTask = session.dataTaskWithRequest(request)
+        dataTask.networkOperation = self
+        //NSURLProtocol.setProperty(self, forKey: ResponseDelegateKey, inRequest: request)
+        
         dataTask.resume()
     }
     
     private func encodeParameters (parameters: [String: String]) -> String {
         return (parameters.map { "\($0)=\($1)" }).joinWithSeparator("&")
     }
+}
+
+extension NSURLSessionTask {
     
+    private struct AssociatedKeys {
+        static var networkOperation = "networkOperationKey"
+    }
+    
+    var networkOperation: NetworkOperation? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.networkOperation) as? NetworkOperation
+        }
+        
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.networkOperation, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
 }
 
 class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
     
-    func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+    /*func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
         guard let request = dataTask.originalRequest else {
             return
         }
@@ -140,7 +160,7 @@ class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
         }
         //Check the response code and react appropriately
         completionHandler(.Allow)
-    }
+    }*/
     
     func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
         completionHandler(.PerformDefaultHandling, nil)
@@ -151,30 +171,42 @@ class ResourceSessionDelegate: NSObject, NSURLSessionDataDelegate {
     }
     
     func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
-        guard let request = dataTask.originalRequest else {
-            return
-        }
-        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
+        
+        guard let operation = dataTask.networkOperation else {
+        //guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
         if operation.cancelled {
-         operation.finished = true
-         dataTask.cancel()
-         return
-         }
-        //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
-        operation._incomingData.appendData(data)
+            operation.finished = true
+            dataTask.cancel()
+            return
+        }
         
+        if operation._incomingData == nil {
+            var capacity = -1
+
+            if let response = dataTask.response {
+                capacity = Int(response.expectedContentLength)
+            }
+            if capacity == -1 {
+                operation._incomingData = NSMutableData()
+            } else {
+                operation._incomingData = NSMutableData(capacity: capacity)
+            }
+        }
+        //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
+        data.enumerateByteRangesUsingBlock { pointer, range, stop in
+            operation._incomingData!.appendBytes(pointer, length: range.length)
+        }
     }
     
     func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
 
-        guard let request = task.originalRequest else {
+        guard let operation = task.networkOperation else {
+        //guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
-        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
-            return
-        }
+        task.networkOperation = nil
         operation.error = error
         operation.finished = true
     }
