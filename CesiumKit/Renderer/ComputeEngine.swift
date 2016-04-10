@@ -87,6 +87,9 @@ class ComputeEngine {
         drawCommand.renderState = renderState
         drawCommand.pipeline = pipeline
         drawCommand.uniformMap = computeCommand.uniformMap
+        if drawCommand.uniformBufferProvider == nil {
+            drawCommand.uniformBufferProvider = drawCommand.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+        }
         
         let renderPass = context.createRenderPass(passState)
         drawCommand.execute(context, renderPass: renderPass)

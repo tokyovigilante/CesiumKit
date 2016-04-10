@@ -370,7 +370,7 @@ class Globe {
             _surface.maximumScreenSpaceError = maximumScreenSpaceError
             _surface.tileCacheSize = tileCacheSize
             
-            var tileProvider = _surface.tileProvider
+            let tileProvider = _surface.tileProvider
             tileProvider.terrainProvider = terrainProvider
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.hasWaterMask = hasWaterMask
@@ -409,10 +409,7 @@ class Globe {
         this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
         
         this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
-        
-        this._northPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram && this._northPoleCommand.shaderProgram.destroy();
-        this._southPoleCommand.shaderProgram = this._northPoleCommand.shaderProgram;
-        
+         
         this._depthCommand.shaderProgram = this._depthCommand.shaderProgram && this._depthCommand.shaderProgram.destroy();
         this._depthCommand.vertexArray = this._depthCommand.vertexArray && this._depthCommand.vertexArray.destroy();
         

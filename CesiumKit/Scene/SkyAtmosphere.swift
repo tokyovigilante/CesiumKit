@@ -129,6 +129,7 @@ class SkyAtmosphere {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
             )
+            _command.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device)
             
         }
     
@@ -144,7 +145,6 @@ class SkyAtmosphere {
             // Camera in atmosphere
             _command.pipeline = _rpSkyFromAtmosphere
         }
-        
         return _command
     }
 

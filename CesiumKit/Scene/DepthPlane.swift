@@ -118,6 +118,7 @@ class DepthPlane {
                 pass: .Opaque,
                 owner: self
             )
+            _command!.uniformBufferProvider = _command!.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
         }
         // update depth plane
         let depthQuad = computeDepthQuad(ellipsoid, frameState: frameState)

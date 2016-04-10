@@ -550,10 +550,11 @@ class Context {
         return vertexArray
     }
     
-    func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true, blendingState: BlendingState? = nil) -> DrawCommand {
+    func createViewportQuadCommand (fragmentShaderSource fss: ShaderSource, overrides: ViewportQuadOverrides? = nil, depthStencil: Bool = true, blendingState: BlendingState? = nil) -> DrawCommand
+    {
         
         let vertexArray = getViewportQuadVertexArray()
-        return DrawCommand(
+        let command = DrawCommand(
             vertexArray: vertexArray,
             uniformMap: overrides?.uniformMap,
             renderState: overrides?.renderState,
@@ -567,6 +568,8 @@ class Context {
             ),
             owner: self
         )
+        command.uniformBufferProvider = command.pipeline!.shaderProgram.createUniformBufferProvider(device)
+        return command
     }
 
     /*

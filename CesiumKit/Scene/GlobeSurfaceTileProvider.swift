@@ -840,13 +840,17 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             )
             // recreate uniform buffer provider if shader program uniform size has changed
             let pipelineUniformSize = command.pipeline!.shaderProgram.uniformBufferSize
-            if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
-                command.uniformBufferProvider = nil
-            }
+
             command.renderState = renderState
             command.primitiveType = .Triangle
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
+            if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
+                command.uniformBufferProvider = nil
+            }
+            if command.uniformBufferProvider == nil {
+                command.uniformBufferProvider = command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+            }
             command.pass = .Globe
             
             command.renderState!.wireFrame = _debug.wireframe

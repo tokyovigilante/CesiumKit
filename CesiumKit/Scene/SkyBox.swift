@@ -119,7 +119,6 @@ class SkyBox {
             uniformMap.cubemap = _cubemap
             _command.uniformMap = uniformMap
             
-
             let geometry = BoxGeometry(
                 fromDimensions: Cartesian3(x: 2.0, y: 2.0, z: 2.0),
                 vertexFormat : VertexFormat.PositionOnly()
@@ -141,7 +140,8 @@ class SkyBox {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
             )
-            
+            _command.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+
             _command.renderState = RenderState(
                 device: context.device
             )

@@ -109,6 +109,8 @@ class TextRenderer {
             return [self._fontAtlas.texture].flatMap( { $0 })
         }
         
+        _command.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+        
         _command.uniformMap = nil
         _command.owner = self
     }
