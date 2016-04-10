@@ -139,7 +139,7 @@ extension NSURLSessionTask {
         }
         
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.networkOperation, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.networkOperation, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
     }
 }
