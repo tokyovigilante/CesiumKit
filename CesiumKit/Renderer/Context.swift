@@ -411,7 +411,9 @@ class Context {
             commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
 
             // manual uniforms
-            commandEncoder.setVertexBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 2)
+            if let uniformBuffer = drawCommand.uniformBufferProvider?.currentBuffer {
+                commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 2)
+            }
             
             for attribute in va.attributes {
                 if let buffer = attribute.buffer {
@@ -426,8 +428,9 @@ class Context {
             commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
             
             // manual uniforms
-            commandEncoder.setFragmentBuffer(drawCommand.uniformBufferProvider.currentBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
-            
+            if let uniformBuffer = drawCommand.uniformBufferProvider?.currentBuffer {
+                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 2)
+            }
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
                 commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)

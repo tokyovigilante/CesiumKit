@@ -317,26 +317,26 @@ class ShaderProgram {
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
-        let buffer = command.uniformBufferProvider.advanceBuffer()
-
-        if  nativeMetalUniforms {
-            let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
+        if let buffer = command.uniformBufferProvider?.advanceBuffer() {
+            
+            if  nativeMetalUniforms {
+                let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
+                buffer.signalWriteComplete()
+                return (fragmentOffset: 0, texturesValid: true, textures: textures)
+            }
+            
+            let map = command.uniformMap ?? nullUniformMap
+            
+            for uniform in _vertexUniforms {
+                setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
+            }
+            
+            for uniform in _fragmentUniforms {
+                setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
+            }
+            
             buffer.signalWriteComplete()
-            return (fragmentOffset: 0, texturesValid: true, textures: textures)
         }
-        
-        let map = command.uniformMap ?? nullUniformMap
-        
-        for uniform in _vertexUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
-        }
-        
-        for uniform in _fragmentUniforms {
-            setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
-        }
-        
-        buffer.signalWriteComplete()
-
         var textures = [Texture]()
         
         var texturesValid = true
@@ -347,9 +347,7 @@ class ShaderProgram {
                 texturesValid = false
             }
         }
-        #if os(OSX)
-            buffer.metalBuffer.didModifyRange(NSMakeRange(0, buffer.length))
-        #endif
+
         let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
         return (fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
 
