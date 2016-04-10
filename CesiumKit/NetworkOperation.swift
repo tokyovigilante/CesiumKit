@@ -23,8 +23,7 @@ extension NSURLSessionConfiguration {
         let config = defaultSessionConfiguration()
         // Eg we think 60s is too long a timeout time.
         config.timeoutIntervalForRequest = 20
-        config.HTTPShouldUsePipelining = true
-        config.HTTPMaximumConnectionsPerHost = 4
+        config.HTTPMaximumConnectionsPerHost = 2
         return config
     }
 }
