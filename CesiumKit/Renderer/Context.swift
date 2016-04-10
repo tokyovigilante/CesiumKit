@@ -429,7 +429,7 @@ class Context {
             
             // manual uniforms
             if let uniformBuffer = drawCommand.uniformBufferProvider?.currentBuffer {
-                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 2)
+                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
             }
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)

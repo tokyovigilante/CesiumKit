@@ -364,19 +364,6 @@ class ShaderProgram {
         switch uniform.type {
             
         case .Automatic:
-            /*guard let index = uniform.automaticIndex else {
-                guard let index = AutomaticUniforms.indexForKey(uniform.name) else {
-                    assertionFailure("automatic uniform not found for \(uniform.name)")
-                    return
-                }
-                uniform.automaticIndex = index
-                let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
-                uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
-                break
-            }
-            let uniformFunc = AutomaticUniforms[index].1.writeToBuffer
-            uniformFunc(uniformState: uniformState, buffer: metalBufferPointer)
-            */
             assertionFailure("should not be setting automatic uniforms here")
             return
         case .Frustum:
