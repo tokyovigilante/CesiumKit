@@ -502,21 +502,15 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         }
     }
     
-    private var _lastRenderTime: UInt64 = 0
-    private var _lastUpdateTime: UInt64 = 0
+    private var _lastRenderTime = NSDate()
+    private var _lastUpdateTime = NSDate()
     private var _avgFPS = 0.0
     
     func updateFramerate () {
-        let currentTime = mach_absolute_time()
+        let currentTime = NSDate()
         
-        var info = mach_timebase_info_data_t()
-        if mach_timebase_info(&info) != KERN_SUCCESS {
-            print("mach_timebase_info failed\n")
-            return
-        }
-        let timebase = (Double(info.numer) / Double(info.denom)) / Double(NSEC_PER_SEC)
-        let elapsed = Double(currentTime - _lastRenderTime) * timebase
-        let updateElapsed = Double(currentTime - _lastUpdateTime) * timebase
+        let elapsed = currentTime.timeIntervalSinceDate(_lastRenderTime)
+        let updateElapsed = currentTime.timeIntervalSinceDate(_lastUpdateTime)
         _lastRenderTime = currentTime
         
         let fps = 1.0 / elapsed
