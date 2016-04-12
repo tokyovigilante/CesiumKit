@@ -53,7 +53,14 @@ public struct Matrix4 {
     
     private (set) internal var simdType: double4x4
     
-    private (set) var floatRepresentation: float4x4
+    var floatRepresentation: float4x4 {
+        return float4x4([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2]),
+            vector_float(simdType[3])
+        ])
+    }
     
     public init(
         _ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double, _ column3Row0: Double,
@@ -67,12 +74,6 @@ public struct Matrix4 {
             double4(column0Row1, column1Row1, column2Row1, column3Row1),
             double4(column0Row2, column1Row2, column2Row2, column3Row2),
             double4(column0Row3, column1Row3, column2Row3, column3Row3)
-            ])
-        floatRepresentation = float4x4([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2]),
-            vector_float(simdType[3])
             ])
     }
 
@@ -88,22 +89,14 @@ public struct Matrix4 {
     
     public init (fromSIMD simd: double4x4) {
         simdType = simd
-        floatRepresentation = float4x4([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2]),
-            vector_float(simdType[3])
-            ])
     }
     
     public init (_ scalar: Double = 0.0) {
         simdType = double4x4(scalar)
-        floatRepresentation = float4x4(Float(scalar))
     }
     
     public init (diagonal: double4) {
         simdType = double4x4(diagonal: diagonal)
-        floatRepresentation = float4x4(diagonal: vector_float(diagonal))
     }
 
 /*

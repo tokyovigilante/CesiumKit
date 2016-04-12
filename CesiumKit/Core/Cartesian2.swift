@@ -26,7 +26,9 @@ public struct Cartesian2 {
     
     private (set) internal var simdType: double2
     
-    private (set) var floatRepresentation: float2
+    var floatRepresentation: float2 {
+        return vector_float(simdType)
+    }
     
     var x: Double {
         get {
@@ -34,7 +36,6 @@ public struct Cartesian2 {
         }
         set (new) {
             simdType.x = new
-            floatRepresentation.x = Float(new)
         }
     }
     
@@ -44,23 +45,19 @@ public struct Cartesian2 {
         }
         set (new) {
             simdType.y = new
-            floatRepresentation.y = Float(new)
         }
     }
     
     init (x: Double, y: Double) {
         simdType = double2(x, y)
-        floatRepresentation = vector_float(simdType)
     }
     
     init(_ scalar: Double = 0.0) {
         simdType = double2(scalar)
-        floatRepresentation = float2(Float(scalar))
     }
     
     init(fromSIMD simd: double2) {
         simdType = simd
-        floatRepresentation = vector_float(simdType)
     }
     
     /**

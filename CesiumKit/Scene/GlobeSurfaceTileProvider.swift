@@ -695,7 +695,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
 
             uniformStruct.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
             
-            uniformStruct.center3D = float3(surfaceTile.center.floatRepresentation)
+            uniformStruct.center3D = surfaceTile.center.floatRepresentation
             
             uniformStruct.tileRectangle = tileRectangle.floatRepresentation
             

@@ -864,10 +864,10 @@ class UniformState {
         
         layout.czm_a_viewRotation = viewRotation.floatRepresentation
         layout.czm_a_temeToPseudoFixed = temeToPseudoFixedMatrix.floatRepresentation
-        layout.czm_a_sunDirectionEC = float3(sunDirectionEC.floatRepresentation)
-        layout.czm_a_sunDirectionWC = float3(sunDirectionWC.floatRepresentation)
-        layout.czm_a_moonDirectionEC = float3(moonDirectionEC.floatRepresentation)
-        layout.czm_a_viewerPositionWC = float3(inverseView.translation.floatRepresentation)
+        layout.czm_a_sunDirectionEC = sunDirectionEC.floatRepresentation
+        layout.czm_a_sunDirectionWC = sunDirectionWC.floatRepresentation
+        layout.czm_a_moonDirectionEC = moonDirectionEC.floatRepresentation
+        layout.czm_a_viewerPositionWC = inverseView.translation.floatRepresentation
         layout.czm_a_morphTime = Float(frameState.morphTime)
         layout.czm_a_fogDensity = 0.0//fogDensity.floatRepresentation
         layout.czm_a_frameNumber = Float(frameState.frameNumber)

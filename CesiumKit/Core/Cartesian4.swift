@@ -27,7 +27,9 @@ public struct Cartesian4: Equatable {
     
     private (set) internal var simdType: double4
     
-    private (set) var floatRepresentation: float4
+    var floatRepresentation: float4 {
+        return vector_float(simdType)
+    }
     
     var x: Double {
         get {
@@ -35,7 +37,6 @@ public struct Cartesian4: Equatable {
         }
         set (new) {
         simdType.x = new
-        floatRepresentation.x = Float(new)
         }
     }
     
@@ -45,7 +46,6 @@ public struct Cartesian4: Equatable {
         }
         set (new) {
             simdType.y = new
-            floatRepresentation.y = Float(new)
         }
     }
     
@@ -55,7 +55,6 @@ public struct Cartesian4: Equatable {
         }
         set (new) {
             simdType.z = new
-            floatRepresentation.z = Float(new)
         }
     }
     
@@ -65,7 +64,6 @@ public struct Cartesian4: Equatable {
         }
         set (new) {
             simdType.w = new
-            floatRepresentation.w = Float(new)
         }
     }
 
@@ -94,17 +92,14 @@ public struct Cartesian4: Equatable {
     
     public init (x: Double, y: Double, z: Double, w: Double) {
         simdType = double4(x, y, z, w)
-        floatRepresentation = vector_float(simdType)
     }
     
     public init (x: Double, y: Double, width: Double, height: Double) {
         simdType = double4(x, y, width, height)
-        floatRepresentation = vector_float(simdType)
     }
     
     init(_ scalar: Double = 0.0) {
         simdType = double4(scalar)
-        floatRepresentation = float4(Float(scalar))
     }
     
     /**
@@ -121,7 +116,6 @@ public struct Cartesian4: Equatable {
     
     init (fromSIMD simd: double4) {
         simdType = simd
-        floatRepresentation = vector_float(simd)
     }
     
     /**

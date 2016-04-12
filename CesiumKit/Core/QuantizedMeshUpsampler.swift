@@ -237,7 +237,7 @@ class QuantizedMeshUpsampler {
                     height: height
                 )
             )
-            cartesianVertices.appendContentsOf(cartesian.floatRepresentation)
+            cartesianVertices.appendContentsOf((0..<3).map { cartesian.floatRepresentation[$0] })
         }
         
         let boundingSphere = BoundingSphere.fromVertices(cartesianVertices, center: Cartesian3.zero, stride: 3)

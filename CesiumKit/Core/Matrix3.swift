@@ -37,7 +37,13 @@ public struct Matrix3 {
     
     private (set) internal var simdType: double3x3
     
-    private (set) var floatRepresentation: float3x3
+    var floatRepresentation: float3x3 {
+        return float3x3([
+            vector_float(simdType[0]),
+            vector_float(simdType[1]),
+            vector_float(simdType[2])
+        ])
+    }
     
     public init(_ column0Row0: Double, _ column1Row0: Double, _ column2Row0: Double,
         _ column0Row1: Double, _ column1Row1: Double, _ column2Row1: Double,
@@ -47,11 +53,6 @@ public struct Matrix3 {
                 double3(column0Row0, column1Row0, column2Row0),
                 double3(column0Row1, column1Row1, column2Row1),
                 double3(column0Row2, column1Row2, column2Row2),
-            ])
-            floatRepresentation = float3x3([
-                vector_float(simdType[0]),
-                vector_float(simdType[1]),
-                vector_float(simdType[2])
             ])
     }
     
@@ -107,21 +108,14 @@ public struct Matrix3 {
     
     public init (fromSIMD simd: double3x3) {
         simdType = simd
-        floatRepresentation = float3x3([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2])
-        ])
     }
     
     public init (_ scalar: Double = 0.0) {
         simdType = double3x3(scalar)
-        floatRepresentation = float3x3(Float(scalar))
     }
     
     public init (diagonal: double3) {
         simdType = double3x3(diagonal: diagonal)
-        floatRepresentation = float3x3(diagonal: vector_float(diagonal))
     }
     
     public subscript (column: Int) -> Cartesian3 {
@@ -165,11 +159,6 @@ public struct Matrix3 {
     public init(rows: [Cartesian3]) {
         assert(rows.count == 3, "invalid row array")
         simdType = double3x3(rows: [rows[0].simdType, rows[1].simdType, rows[2].simdType])
-        floatRepresentation = float3x3([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2])
-        ])
     }
     /*
     /**
