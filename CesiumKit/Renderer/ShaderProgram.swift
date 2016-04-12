@@ -59,6 +59,8 @@ class ShaderProgram {
     
     private var _fragmentUniforms = [Uniform]()
     
+    private let _manualUniformStruct: String?
+    
     private var _samplerUniforms = [UniformSampler]()
     
     private var _uniformBufferAlignment: Int = -1
@@ -93,15 +95,25 @@ class ShaderProgram {
         return (vst, fst, keyword)
     }
     
-    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, combinedShaders: (vst: String, fst: String, keyword: String)) {
+    init(device: MTLDevice, optimizer: GLSLOptimizer, logShaderCompilation: Bool = false, vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, manualUniformStruct: String? = nil, uniformStructSize: Int? = nil, combinedShaders: (vst: String, fst: String, keyword: String)) {
         _logShaderCompilation = logShaderCompilation
         vertexShaderSource = vss
         fragmentShaderSource = fss
+        _manualUniformStruct = manualUniformStruct
         _vertexShaderText = combinedShaders.vst
         _fragmentShaderText = combinedShaders.fst
         keyword = combinedShaders.keyword
-        nativeMetalUniforms = false
+        nativeMetalUniforms = _manualUniformStruct != nil
         initialize(device, optimizer: optimizer)
+        
+        if manualUniformStruct != nil {
+            guard let uniformStructSize = uniformStructSize else {
+                assertionFailure("uniform struct size not provided")
+                return
+            }
+            vertexUniformSize = uniformStructSize
+            fragmentUniformSize = 0
+        }
     }
 
     init? (device: MTLDevice, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
@@ -138,6 +150,7 @@ class ShaderProgram {
         
         vertexShaderSource = nil
         _vertexShaderText = nil
+        _manualUniformStruct = nil
         fragmentShaderSource = nil
         _fragmentShaderText = nil
         nativeMetalUniforms = true
@@ -163,11 +176,11 @@ class ShaderProgram {
     
     private func createMetalProgram(optimizer: GLSLOptimizer) {
         
-        _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, options: 0)
+        _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
         assert(_vertexShader.status(), _vertexShader.log())
         _metalVertexShaderSource = _vertexShader.output()
         
-        _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, options: 0)
+        _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
         assert(_fragmentShader.status(), _fragmentShader.log())
         _metalFragmentShaderSource = _fragmentShader.output()
     }

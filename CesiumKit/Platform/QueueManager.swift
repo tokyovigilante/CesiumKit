@@ -20,12 +20,16 @@ class QueueManager {
     
     let upsampleQueue: dispatch_queue_t
     
+    let resourceLoadQueue: dispatch_queue_t
+    
+    let fontAtlasQueue: dispatch_queue_t
+    
     init () {
-        processorQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
-        upsampleQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL)
-        //processorQueue = NSOperationQueue()
-        //processorQueue.qualityOfService = .Utility
-        
+        processorQueue = dispatch_queue_create("com.testtoast.CesiumKit.processorQueue", DISPATCH_QUEUE_SERIAL)
+        upsampleQueue = dispatch_queue_create("com.testtoast.CesiumKit.upsampleQueue", DISPATCH_QUEUE_SERIAL)
+        resourceLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
+        fontAtlasQueue = dispatch_queue_create("com.testtoast.CesiumKit.fontAtlasQueue", DISPATCH_QUEUE_SERIAL)
+
         networkQueue = NSOperationQueue()
         networkQueue.qualityOfService = .Utility
         networkQueue.suspended = false

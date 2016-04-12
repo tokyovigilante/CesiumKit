@@ -85,7 +85,7 @@ final class FontAtlas: JSONEncodable {
         _textureSize = textureSize
         _spread = estimatedLineWidthForFont(parentFont) * 0.5
         
-        dispatch_async(context.processorQueue, {
+        dispatch_async(QueueManager.sharedInstance.fontAtlasQueue, {
             self.createTextureData()
             self.createTexture(context)
         })
@@ -94,7 +94,7 @@ final class FontAtlas: JSONEncodable {
     internal convenience init (fromJSON json: JSON, context: Context) throws {
         try self.init(fromJSON: json)
         
-        dispatch_async(context.processorQueue, {
+        dispatch_async(QueueManager.sharedInstance.fontAtlasQueue, {
             self.createTexture(context)
         })
     }

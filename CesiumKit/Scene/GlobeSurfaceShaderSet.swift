@@ -70,6 +70,8 @@ class GlobeSurfaceShaderSet {
         return useWebMercatorProjection ? get2DYPositionFractionMercatorProjection : get2DYPositionFractionGeographicProjection
     }
     
+    private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
+    
     func getRenderPipeline (context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> RenderPipeline {
         
         let flags: Int = Int(sceneMode.rawValue) |
@@ -111,7 +113,7 @@ class GlobeSurfaceShaderSet {
                 for i in 0..<numberOfDayTextures {
                     textureArrayDefines += "uniform sampler2D u_dayTexture\(i);\n"
                 }
-                textureArrayDefines += "uniform vec4 u_dayTextureTranslationAndScale[TEXTURE_UNITS];\n\n#ifdef APPLY_ALPHA\nuniform float u_dayTextureAlpha[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_BRIGHTNESS\nuniform float u_dayTextureBrightness[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_CONTRAST\nuniform float u_dayTextureContrast[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_HUE\nuniform float u_dayTextureHue[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_SATURATION\nuniform float u_dayTextureSaturation[TEXTURE_UNITS];\n#endif\n\n#ifdef APPLY_GAMMA\nuniform float u_dayTextureOneOverGamma[TEXTURE_UNITS];\n#endif\n\nuniform vec4 u_dayTextureTexCoordsRectangle[TEXTURE_UNITS];\n\n"
+                textureArrayDefines += "uniform vec4 u_dayTextureTranslationAndScale[TEXTURE_UNITS];\nuniform float u_dayTextureAlpha[TEXTURE_UNITS];\nuniform float u_dayTextureBrightness[TEXTURE_UNITS];\nuniform float u_dayTextureContrast[TEXTURE_UNITS];\nuniform float u_dayTextureHue[TEXTURE_UNITS];\nuniform float u_dayTextureSaturation[TEXTURE_UNITS];\nuniform float u_dayTextureOneOverGamma[TEXTURE_UNITS];\nuniform vec4 u_dayTextureTexCoordsRectangle[TEXTURE_UNITS];\n"
                 
                 fs.sources.insert(textureArrayDefines, atIndex: 0)
             }
@@ -119,26 +121,26 @@ class GlobeSurfaceShaderSet {
             if applyBrightness {
                 fs.defines.append("APPLY_BRIGHTNESS")
             }
-            if (applyContrast) {
+            if applyContrast {
                 fs.defines.append("APPLY_CONTRAST")
             }
-            if (applyHue) {
+            if applyHue {
                 fs.defines.append("APPLY_HUE")
             }
-            if (applySaturation) {
+            if applySaturation {
                 fs.defines.append("APPLY_SATURATION")
             }
-            if (applyGamma) {
+            if applyGamma {
                 fs.defines.append("APPLY_GAMMA")
             }
-            if (applyAlpha) {
+            if applyAlpha {
                 fs.defines.append("APPLY_ALPHA")
             }
-            if (showReflectiveOcean) {
+            if showReflectiveOcean {
                 fs.defines.append("SHOW_REFLECTIVE_OCEAN")
                 vs.defines.append("SHOW_REFLECTIVE_OCEAN")
             }
-            if (showOceanWaves) {
+            if showOceanWaves {
                 fs.defines.append("SHOW_OCEAN_WAVES")
             }
             
@@ -178,7 +180,7 @@ class GlobeSurfaceShaderSet {
  (applyGamma ? "u_dayTextureOneOverGamma[\(i)]" : "0.0") + "\n" +
  ");\n"*/
             }
- 
+        
             computeDayColor += "return color;\n}"
  
             fs.sources.append(computeDayColor)
@@ -192,7 +194,9 @@ class GlobeSurfaceShaderSet {
                 fragmentShaderSource: fs,
                 vertexDescriptor: vertexDescriptor,
                 colorMask: nil,
-                depthStencil: context.depthTexture
+                depthStencil: context.depthTexture,
+                manualUniformStruct: uniformStructString,
+                uniformStructSize: sizeof(TileUniformStruct)
             )
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 

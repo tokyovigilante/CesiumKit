@@ -1587,18 +1587,18 @@
 			isa = PBXGroup;
 			children = (
 				94EFB03F1C84D7CD0095A86F /* PMJSON */,
-				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
+				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
 				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
 				946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */,
+				94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */,
+				94EFB0671C85C9690095A86F /* LocalStorage.swift */,
+				945643321CB1447D0095A86F /* NetworkOperation.swift */,
 				94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */,
 				946D129D1C2CBF40001A40C8 /* NSDate+TAI.swift */,
 				94ACB2CE1C364900001A40C8 /* QueueManager.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
-				94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */,
-				94EFB0671C85C9690095A86F /* LocalStorage.swift */,
-				945643321CB1447D0095A86F /* NetworkOperation.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";

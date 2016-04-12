@@ -107,6 +107,8 @@ class DrawCommand: Command {
         
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))? = nil
     
+    var metalUniformStruct: MetalUniformStruct? = nil
+    
     /**
      * The render state.
      *

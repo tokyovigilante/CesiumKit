@@ -9,7 +9,7 @@
 import Foundation
 import simd
 
-private struct TextUniforms {
+private struct TextUniformStruct: MetalUniformStruct {
     var modelMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var viewProjectionMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var foregroundColor: float4 = Color().floatRepresentation
@@ -45,7 +45,7 @@ class TextRenderer {
     
     private var _rs: RenderState! = nil
     
-    private var _uniforms = TextUniforms()
+    private var _uniforms = TextUniformStruct()
     
     private let _attributes = [
         // attribute vec4 position;
@@ -94,7 +94,7 @@ class TextRenderer {
             shaderSourceName: "TextRenderer",
             compiledMetalVertexName: "text_vertex_shade",
             compiledMetalFragmentName: "text_fragment_shade",
-            uniformStructSize: strideof(TextUniforms),
+            uniformStructSize: strideof(TextUniformStruct),
             vertexDescriptor: VertexDescriptor(attributes: _attributes),
             depthStencil: offscreenTarget ? false : context.depthTexture,
             blendingState: blendingState
@@ -104,7 +104,7 @@ class TextRenderer {
             self._uniforms.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
             /*uniforms.foregroundColor = MBETextColor;*/
             
-            memcpy(buffer.data, &self._uniforms, sizeof(TextUniforms))
+            memcpy(buffer.data, &self._uniforms, sizeof(TextUniformStruct))
             
             return [self._fontAtlas.texture].flatMap( { $0 })
         }

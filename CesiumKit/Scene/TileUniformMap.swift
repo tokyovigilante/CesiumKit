@@ -1,4 +1,4 @@
-    //
+//
 //  TileUniformMap.swift
 //  CesiumKit
 //
@@ -9,6 +9,39 @@
 import Foundation
 import simd
 
+typealias Float4Tuple = (float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4, float4)
+
+var float4Tuple: Float4Tuple = {
+    (float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4(), float4())
+}()
+
+typealias FloatTuple = (Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float)
+
+var floatTuple: FloatTuple = {
+    (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+}()
+
+struct TileUniformStruct: MetalUniformStruct {
+    // Honestly...
+    var dayTextureTexCoordsRectangle = float4Tuple
+    var dayTextureTranslationAndScale = float4Tuple
+    var dayTextureAlpha = floatTuple
+    var dayTextureBrightness = floatTuple
+    var dayTextureContrast = floatTuple
+    var dayTextureHue = floatTuple
+    var dayTextureSaturation = floatTuple
+    var dayTextureOneOverGamma = floatTuple
+    var waterMaskTranslationAndScale = float4()
+    var initialColor = float4()
+    var tileRectangle = float4()
+    var modifiedModelView = float4x4()
+    var center3D = float3()
+    var southMercatorYAndOneOverHeight = float2()
+    var southAndNorthLatitude = float2()
+    var lightingFadeDistance = float2()
+    var zoomedOutOceanSpecularIntensity = Float(0.0)
+}
+    
 class TileUniformMap: UniformMap {
     
     let maxTextureCount: Int
@@ -163,6 +196,5 @@ class TileUniformMap: UniformMap {
         }
         return dayTextures[uniform.textureUnitIndex]
     }
-    
     
 }

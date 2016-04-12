@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * Provides quadtree tiles representing the surface of the globe.  This type is intended to be used
@@ -282,6 +283,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     func levelMaximumGeometricError(level: Int) -> Double {
         return terrainProvider.levelMaximumGeometricError(level)
     }
+    
     /**
     * Loads, or continues loading, a given tile.  This function will continue to be called
     * until {@link QuadtreeTile#state} is no longer {@link QuadtreeTileLoadState#LOADING}.  This function should
@@ -296,7 +298,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     func loadTile (tile: QuadtreeTile, inout frameState: FrameState) {
         GlobeSurfaceTile.processStateMachine(tile, frameState: &frameState, terrainProvider: terrainProvider, imageryLayerCollection: imageryLayers)
     }
-    
     
     /**
     * Determines the visibility of a given tile.  The tile may be fully visible, partially visible, or not
@@ -381,7 +382,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         _debug.texturesRendered += readyTextureCount
     }
     
-    
+    private let _negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
+    private let _negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
     /**
     * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.
     *
@@ -394,8 +396,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     */
     func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState) -> Double {
         
-        let negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
-        let negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
+
         
         let surfaceTile = tile.data!
         
@@ -416,9 +417,9 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             northeastCornerCartesian.z = northeastCornerCartesian.y
             northeastCornerCartesian.y = northeastCornerCartesian.x
             northeastCornerCartesian.x = 0.0
-            westNormal = negativeUnitY
+            westNormal = _negativeUnitY
             eastNormal = Cartesian3.unitY
-            southNormal = negativeUnitZ
+            southNormal = _negativeUnitZ
             northNormal = Cartesian3.unitZ
             maximumHeight = 0.0
         }
@@ -531,8 +532,16 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     
     
     private func getManualUniformBufferProvider (context: Context, size: Int) -> UniformBufferProvider {
+        if _manualUniformBufferProviderPool.count < 10 {
+            dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
+                let newProviders = (0..<10).map { _ in return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: strideof(TileUniformStruct)) }
+                dispatch_async(dispatch_get_main_queue(), {
+                    self._manualUniformBufferProviderPool.appendContentsOf(newProviders)
+                })
+            })
+        }
         if _manualUniformBufferProviderPool.isEmpty {
-            return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: size)
+            return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: strideof(TileUniformStruct))
         }
         return _manualUniformBufferProviderPool.removeLast()
     }
@@ -541,11 +550,16 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         _manualUniformBufferProviderPool.append(provider)
     }
     
+    
+    private var _dayTextureTranslationAndScale = [float4](count: 31, repeatedValue: float4())
+    private var _dayTextureTexCoordsRectangle = [float4](count: 31, repeatedValue: float4())
 
     func addDrawCommandsForTile(tile: QuadtreeTile, inout frameState: FrameState) {
         
-        if true /*invalidateCache*/ {
+        
+        if tile.invalidateCommandCache {
             tile._cachedCommands.removeAll()
+            tile._cachedTextureArrays.removeAll()
         }
         
         if !tile._cachedCommands.isEmpty {
@@ -642,24 +656,26 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             var numberOfDayTextures = 0
             
             var command: DrawCommand
-            var uniformMap: TileUniformMap
+            //var uniformMap: TileUniformMap
             
-            if (_drawCommands.count <= _usedDrawCommands) {
+            //if (_drawCommands.count <= _usedDrawCommands) {
                 command = DrawCommand()
                 command.cull = false
                 command.boundingVolume = BoundingSphere()
                 command.orientedBoundingBox = nil
                 
                 
-                _drawCommands.append(command)
+                //_drawCommands.append(command)
                 //_uniformMaps.append(uniformMap)
-            } else {
-                command = _drawCommands[_usedDrawCommands]
+            //} else {
+              //  command = _drawCommands[_usedDrawCommands]
                 //uniformMap = _uniformMaps[_usedDrawCommands]
-            }
+            //}
             
-            uniformMap = createTileUniformMap(maxTextures)
-
+            //uniformMap = createTileUniformMap(maxTextures)
+            var uniformStruct = TileUniformStruct()
+            var textures = [Texture]()
+            
             _usedDrawCommands += 1
             
             /*if (tile === tileProvider._debug.boundingSphereTile) {
@@ -672,18 +688,19 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                     getDebugBoundingSphere(surfaceTile.boundingSphere3D, Color.RED).update(context, frameState, commandList);
                 }
             }*/
-            uniformMap.initialColor = initialColor
-            uniformMap.oceanNormalMap = oceanNormalMap
-            uniformMap.lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance)
+            
+            uniformStruct.initialColor = initialColor.floatRepresentation
+            //uniformMap.oceanNormalMap = oceanNormalMap
+            uniformStruct.lightingFadeDistance = Cartesian2(x: lightingFadeOutDistance, y: lightingFadeInDistance).floatRepresentation
 
-            uniformMap.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
+            uniformStruct.zoomedOutOceanSpecularIntensity = zoomedOutOceanSpecularIntensity
             
-            uniformMap.center3D = surfaceTile.center
+            uniformStruct.center3D = float3(surfaceTile.center.floatRepresentation)
             
-            uniformMap.tileRectangle = tileRectangle
+            uniformStruct.tileRectangle = tileRectangle.floatRepresentation
             
-            uniformMap.southAndNorthLatitude = Cartesian2(x: southLatitude, y: northLatitude)
-            uniformMap.southMercatorYLowAndHighAndOneOverHeight = Cartesian3(x: southMercatorYLow, y: southMercatorYHigh, z: oneOverMercatorHeight)
+            uniformStruct.southAndNorthLatitude = Cartesian2(x: southLatitude, y: northLatitude).floatRepresentation
+            uniformStruct.southMercatorYAndOneOverHeight = Cartesian2(x: southMercatorYHigh, y: oneOverMercatorHeight).floatRepresentation
 
             var applyBrightness = false
             var applyContrast = false
@@ -692,15 +709,15 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             var applyGamma = false
             var applyAlpha = false
             
-            uniformMap.dayTextures.removeAll()
-            uniformMap.dayTextureTranslationAndScale.removeAll()
-            uniformMap.dayTextureTexCoordsRectangle.removeAll()
-            uniformMap.dayTextureAlpha.removeAll()
-            uniformMap.dayTextureBrightness.removeAll()
-            uniformMap.dayTextureContrast.removeAll()
-            uniformMap.dayTextureHue.removeAll()
-            uniformMap.dayTextureSaturation.removeAll()
-            uniformMap.dayTextureOneOverGamma.removeAll()
+            //uniformMap.dayTextures.removeAll()
+            //uniformMap.dayTextureTranslationAndScale.removeAll()
+            //uniformMap.dayTextureTexCoordsRectangle.removeAll()
+            //uniformMap.dayTextureAlpha.removeAll()
+            //uniformMap.dayTextureBrightness.removeAll()
+            //uniformMap.dayTextureContrast.removeAll()
+            //uniformMap.dayTextureHue.removeAll()
+            //uniformMap.dayTextureSaturation.removeAll()
+            //uniformMap.dayTextureOneOverGamma.removeAll()
 
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
 
@@ -717,28 +734,32 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 if tileImagery.textureTranslationAndScale == nil {
                     tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: tileImagery)
                 }
+                textures.append(imagery!.texture!)
                 
-                uniformMap.dayTextures.append(imagery!.texture!)
-                uniformMap.dayTextureTranslationAndScale.append(tileImagery.textureTranslationAndScale!)
-                uniformMap.dayTextureTexCoordsRectangle.append(tileImagery.textureCoordinateRectangle!)
+                _dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale!.floatRepresentation
+                _dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle!.floatRepresentation
+
+                //memcpy(&uniformStruct.dayTextureTexCoordsRectangle, [tileImagery.textureCoordinateRectangle!.floatRepresentation], sizeof(float4))
                 
-                uniformMap.dayTextureAlpha.append(imageryLayer.alpha())
-                applyAlpha = applyAlpha || uniformMap.dayTextureAlpha[numberOfDayTextures] != 1.0
+                //let alpha = imageryLayer.alpha()
                 
-                uniformMap.dayTextureBrightness.append(imageryLayer.brightness())
-                applyBrightness = applyBrightness || (uniformMap.dayTextureBrightness[numberOfDayTextures] != imageryLayer.defaultBrightness)
+                //uniformStruct.dayTextureAlpha[numberOfDayTextures] = imageryLayer.alpha()
+                //applyAlpha = applyAlpha || uniformStruct.dayTextureAlpha[numberOfDayTextures] != 1.0
                 
-                uniformMap.dayTextureContrast.append(imageryLayer.contrast())
-                applyContrast = applyContrast || uniformMap.dayTextureContrast[numberOfDayTextures] != imageryLayer.defaultContrast
+                //uniformStruct.dayTextureBrightness[numberOfDayTextures] = imageryLayer.brightness()
+                //applyBrightness = applyBrightness || (uniformStruct.dayTextureBrightness[numberOfDayTextures] != imageryLayer.defaultBrightness)
                 
-                uniformMap.dayTextureHue.append(imageryLayer.hue())
-                applyHue = applyHue || uniformMap.dayTextureHue[numberOfDayTextures] != imageryLayer.defaultHue
+                //uniformStruct.dayTextureContrast[numberOfDayTextures] = imageryLayer.contrast()
+                //applyContrast = applyContrast || uniformStruct.dayTextureContrast[numberOfDayTextures] != imageryLayer.defaultContrast
                 
-                uniformMap.dayTextureSaturation.append(imageryLayer.saturation())
-                applySaturation = applySaturation || uniformMap.dayTextureSaturation[numberOfDayTextures] != imageryLayer.defaultSaturation
+                //uniformStruct.dayTextureHue[numberOfDayTextures] = imageryLayer.hue()
+                //applyHue = applyHue || uniformStruct.dayTextureHue[numberOfDayTextures] != imageryLayer.defaultHue
                 
-                uniformMap.dayTextureOneOverGamma.append(1.0 / imageryLayer.gamma())
-                applyGamma = applyGamma || uniformMap.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.defaultGamma
+                //uniformStruct.dayTextureSaturation[numberOfDayTextures] = imageryLayer.saturation()
+                //applySaturation = applySaturation || uniformStruct.dayTextureSaturation[numberOfDayTextures] != imageryLayer.defaultSaturation
+                
+                //uniformStruct.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma()
+                //applyGamma = applyGamma || uniformStruct.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.defaultGamma
                 
                 // FIXME: Credits
                 /*if imagery!.credits.count > 0 {
@@ -752,13 +773,29 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 numberOfDayTextures += 1
             }
             
+            memcpy(&uniformStruct.dayTextureTranslationAndScale, _dayTextureTranslationAndScale, sizeof(float4) * numberOfDayTextures)
+            memcpy(&uniformStruct.dayTextureTexCoordsRectangle, _dayTextureTexCoordsRectangle, sizeof(float4) * numberOfDayTextures)
             // trim texture array to the used length so we don't end up using old textures
             // which might get destroyed eventually
-            if uniformMap.dayTextures.count > numberOfDayTextures {
+            /*if textures.count > numberOfDayTextures {
                 uniformMap.dayTextures.removeRange(Range(numberOfDayTextures..<uniformMap.dayTextures.count))
+            }*/
+            
+            if let waterMaskTexture = waterMaskTexture {
+                textures.append(waterMaskTexture)
             }
-            uniformMap.waterMask = waterMaskTexture
-            uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale
+            if let oceanNormalMap = oceanNormalMap {
+                textures.append(oceanNormalMap)
+            }
+            uniformStruct.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale.floatRepresentation
+            
+            ////////////////
+            let viewMatrix = frameState.camera!.viewMatrix
+            let rtc = tile.data!.center
+            let centerEye = viewMatrix.multiplyByPoint(rtc)
+            let modifiedModelView = viewMatrix.setTranslation(centerEye)
+            uniformStruct.modifiedModelView = modifiedModelView.floatRepresentation
+            ////////////////
             
             command.pipeline = surfaceShaderSet.getRenderPipeline(
                 context: context,
@@ -778,18 +815,23 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 useWebMercatorProjection: useWebMercatorProjection
             )
             // recreate uniform buffer provider if shader program uniform size has changed
-            let pipelineUniformSize = command.pipeline!.shaderProgram.uniformBufferSize
+            //let pipelineUniformSize = command.pipeline!.shaderProgram.uniformBufferSize
 
             command.renderState = renderState
             command.primitiveType = .Triangle
             command.vertexArray = surfaceTile.vertexArray
-            command.uniformMap = uniformMap
-            if command.uniformBufferProvider != nil && command.uniformBufferProvider.bufferSize != pipelineUniformSize {
-                command.uniformBufferProvider = nil
-            }
+            command.metalUniformStruct = uniformStruct
+
             if command.uniformBufferProvider == nil {
-                command.uniformBufferProvider = getManualUniformBufferProvider(context, size: pipelineUniformSize)
+                command.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct))
             }
+            
+            command.metalUniformUpdateBlock = { buffer in
+                memcpy(buffer.data, &uniformStruct, sizeof(TileUniformStruct))
+                return textures
+            }
+
+            
             command.pass = .Globe
             
             command.renderState!.wireFrame = _debug.wireframe
@@ -820,7 +862,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             
             frameState.commandList.append(command)
             tile._cachedCommands.append(command)
-            
+            tile.invalidateCommandCache = false
             updateRTCPosition(forTile: tile, frameState: frameState)
 
             renderState = otherPassesRenderState
@@ -835,7 +877,9 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         let modifiedModelView = viewMatrix.setTranslation(centerEye)
         
         for command in tile._cachedCommands {
-            ((command as! DrawCommand).uniformMap! as! TileUniformMap).modifiedModelView = modifiedModelView
+            var uniformStruct = command.metalUniformStruct! as! TileUniformStruct
+            uniformStruct.modifiedModelView = modifiedModelView.floatRepresentation
+            command.metalUniformStruct = uniformStruct  
         }
     }
 

@@ -277,6 +277,10 @@ class GlobeSurfaceTile: QuadTreeTileData {
             }
             
             let thisTileDoneLoading = tileImagery.processStateMachine(tile, frameState: &frameState)
+            if thisTileDoneLoading {
+                // update cached draw commands
+                tile.invalidateCommandCache = true
+            }
             isDoneLoading = isDoneLoading && thisTileDoneLoading
             
             // The imagery is renderable as soon as we have any renderable imagery for this region.

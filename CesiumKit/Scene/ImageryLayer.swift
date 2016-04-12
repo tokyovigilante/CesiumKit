@@ -492,7 +492,7 @@ public class ImageryLayer {
         
         let context = frameState.context
         
-        dispatch_async(context.textureLoadQueue, {
+        dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
             
             // If this imagery provider has a discard policy, use it to check if this
             // image should be discarded.
@@ -630,7 +630,7 @@ public class ImageryLayer {
         
         let context = frameState.context
         // Use mipmaps if this texture has power-of-two dimensions.
-        dispatch_async(context.textureLoadQueue, {
+        dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
             let texture = imagery.texture!
             if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
                 var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?

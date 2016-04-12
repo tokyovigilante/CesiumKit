@@ -49,6 +49,11 @@ class QuadtreeTile: Equatable {
     */
     var renderable = false
     
+    /**
+    * tile imagery or terrain has changed, so draw commands need updating
+    */
+    var invalidateCommandCache = true
+    
     // QuadtreeTileReplacementQueue gets/sets these private properties.
     var replacementPrevious: QuadtreeTile? = nil
     var replacementNext: QuadtreeTile? = nil
@@ -146,6 +151,8 @@ class QuadtreeTile: Equatable {
     var data: GlobeSurfaceTile? = nil
     
     var _cachedCommands = [DrawCommand]()
+    
+    var _cachedTextureArrays = [Array<Texture>]()
     
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
         

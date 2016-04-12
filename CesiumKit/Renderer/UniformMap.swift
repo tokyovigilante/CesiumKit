@@ -6,6 +6,10 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
+protocol MetalUniformStruct {
+    
+}
+
 public protocol UniformMap {
     
     var uniforms: [String: UniformFunc] { get }

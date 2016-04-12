@@ -27,10 +27,7 @@ class Context {
     return view.renderQueue
     }
     }*/
-    
-    let processorQueue: dispatch_queue_t
-    let textureLoadQueue: dispatch_queue_t
-    
+
     private let _inflight_semaphore: dispatch_semaphore_t
     
     let view: MTKView
@@ -179,9 +176,6 @@ class Context {
         id = NSUUID().UUIDString
         
         _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
-        
-        processorQueue = dispatch_queue_create("com.testtoast.cesiumkit.processorqueue", DISPATCH_QUEUE_CONCURRENT)
-        textureLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_CONCURRENT)
         
         //antialias = true
         

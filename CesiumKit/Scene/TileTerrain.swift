@@ -88,6 +88,9 @@ class TileTerrain {
         // Transfer ownership of the vertex array to the tile itself.
         surfaceTile.vertexArray = vertexArray
         vertexArray = nil
+        
+        // update cached draw commands
+        tile.invalidateCommandCache = true
     }
     
     func processLoadStateMachine (frameState frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
@@ -177,7 +180,7 @@ class TileTerrain {
         
         let context = frameState.context
         
-        dispatch_async(context.processorQueue, {
+        dispatch_async(QueueManager.sharedInstance.processorQueue, {
             data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, exaggeration: frameState.terrainExaggeration, completionBlock: { mesh in
                 
                 if let mesh = mesh {
@@ -203,7 +206,7 @@ class TileTerrain {
         self.state = .Buffering
         var terrainMesh = self.mesh!
         
-        dispatch_async(context.processorQueue, {
+        dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
             let datatype = ComponentDatatype.Float32
             let meshBufferSize = terrainMesh.vertices.sizeInBytes
             

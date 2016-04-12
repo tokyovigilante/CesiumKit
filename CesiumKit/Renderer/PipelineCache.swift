@@ -75,7 +75,7 @@ class PipelineCache {
     *
     * @returns {ShaderProgram} The cached or newly created shader program.
     */
-    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline {
+    func getRenderPipeline (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil, manualUniformStruct: String? = nil, uniformStructSize: Int? = nil) -> RenderPipeline {
 
         let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
         
@@ -92,6 +92,8 @@ class PipelineCache {
             optimizer: _optimizer,
             vertexShaderSource: vss,
             fragmentShaderSource: fss,
+            manualUniformStruct: manualUniformStruct,
+            uniformStructSize: uniformStructSize,
             combinedShaders: combinedShaders
         )
         
