@@ -332,39 +332,17 @@ class Context {
     }
     
     func draw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
-        
-        /*
-        let activePassState: Pas    sState
-        if let pass = drawCommand.pass {
-            let commandPassState = _passStates[pass]
-            activePassState = commandPassState ?? _defaultPassState
-        } else {
-            activePassState = _currentPassState ?? _defaultPassState
-        }
-        if _currentPassState == nil /*|| _currentPassState! != activePassState*/ {
-            _currentPassState = activePassState
-        }*/
-        // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-        //var framebuffer = defaultValue(drawCommand.framebuffer, passState.framebuffer);
-        
         beginDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
         continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
     }
     
     func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
-        
-        
-        let rs = /*(renderPass.pa ??*/ drawCommand.renderState/*)*/ ?? _defaultRenderState
-        
-        /*if framebuffer != nil && rs.depthTest.enabled {
-        assert(framebuffer!.hasDepthAttachment, "The depth test can not be enabled (drawCommand.renderState.depthTest.enabled) because the framebuffer (drawCommand.framebuffer) does not have a depth or depth-stencil renderbuffer.")
-        }*/
+        let rs = drawCommand.renderState ?? _defaultRenderState
+
         let commandEncoder = renderPass.commandEncoder
         let renderPipeline = renderPipeline ?? drawCommand.pipeline!
 
         commandEncoder.setRenderPipelineState(renderPipeline.state)
-                
-        //_maxFrameTextureUnitIndex = max(_maxFrameTextureUnitIndex, sp!.maximumTextureUnitIndex)
 
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }

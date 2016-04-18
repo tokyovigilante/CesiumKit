@@ -46,23 +46,71 @@ class TileUniformMap: UniformMap {
     
     let maxTextureCount: Int
     
-    var initialColor = Cartesian4()
+    var initialColor: Cartesian4 {
+        get {
+            return Cartesian4(fromSIMD: vector_double(_uniformStruct.initialColor))
+        }
+        set {
+            _uniformStruct.initialColor = newValue.floatRepresentation
+        }
+    }
     
-    var zoomedOutOceanSpecularIntensity: Float = 0.5
+    var zoomedOutOceanSpecularIntensity: Float {
+        get {
+            return _uniformStruct.zoomedOutOceanSpecularIntensity
+        }
+        set {
+            _uniformStruct.zoomedOutOceanSpecularIntensity = newValue
+        }
+    }
     
     var oceanNormalMap: Texture? = nil
     
-    var lightingFadeDistance = Cartesian2(x: 6500000, y: 9000000)
+    var lightingFadeDistance: Cartesian2 {
+        get {
+            return Cartesian2(fromSIMD: vector_double(_uniformStruct.lightingFadeDistance))
+        }
+        set {
+            _uniformStruct.lightingFadeDistance = newValue.floatRepresentation
+        }
+    }
     
-    var center3D = Cartesian3()
+    var center3D: Cartesian3 {
+        get {
+            return Cartesian3(fromSIMD: vector_double(_uniformStruct.center3D))
+        }
+        set {
+            _uniformStruct.center3D = newValue.floatRepresentation
+        }
+    }
     
-    var modifiedModelView = Matrix4()
+    var modifiedModelView: Matrix4 {
+        get {
+            let mmv = _uniformStruct.modifiedModelView
+            return Matrix4(fromSIMD: double4x4([
+                vector_double(mmv[0]),
+                vector_double(mmv[1]),
+                vector_double(mmv[2]),
+                vector_double(mmv[3])
+            ]))
+        }
+        set {
+            _uniformStruct.modifiedModelView = newValue.floatRepresentation
+        }
+    }
     
-    var tileRectangle = Cartesian4()
+    var tileRectangle: Cartesian4 {
+        get {
+            return Cartesian4(fromSIMD: vector_double(_uniformStruct.tileRectangle))
+        }
+        set {
+            _uniformStruct.tileRectangle = newValue.floatRepresentation
+        }
+    }
     
     var dayTextures: [Texture]
     
-    var dayTextureTranslationAndScale: [Cartesian4]
+    var dayTextureTranslationAndScale: [Cartesian4] 
     var dayTextureTexCoordsRectangle: [Cartesian4]
     var dayTextureAlpha: [Float]
     var dayTextureBrightness: [Float]
@@ -80,6 +128,8 @@ class TileUniformMap: UniformMap {
     var waterMask: Texture? = nil
     
     var waterMaskTranslationAndScale = Cartesian4()
+    
+    private var _uniformStruct = TileUniformStruct()
     
     let uniforms: [String: UniformFunc] = [
         

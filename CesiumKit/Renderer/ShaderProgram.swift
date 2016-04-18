@@ -333,7 +333,7 @@ class ShaderProgram {
         if let buffer = command.uniformBufferProvider?.advanceBuffer() {
             
             if  nativeMetalUniforms {
-                let textures = command.metalUniformUpdateBlock?(buffer: buffer) ?? [Texture]()
+                let textures = command.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
                 buffer.signalWriteComplete()
                 return (fragmentOffset: 0, texturesValid: true, textures: textures)
             }

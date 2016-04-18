@@ -827,6 +827,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             }
             
             command.metalUniformUpdateBlock = { buffer in
+                
                 memcpy(buffer.data, &uniformStruct, sizeof(TileUniformStruct))
                 return textures
             }
@@ -879,7 +880,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         for command in tile._cachedCommands {
             var uniformStruct = command.metalUniformStruct! as! TileUniformStruct
             uniformStruct.modifiedModelView = modifiedModelView.floatRepresentation
-            command.metalUniformStruct = uniformStruct  
+            command.metalUniformStruct = uniformStruct
         }
     }
 
