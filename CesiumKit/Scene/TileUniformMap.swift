@@ -21,6 +21,8 @@ var floatTuple: FloatTuple = {
     (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 }()
 
+private let MaximumMetalTextureCount = 31
+
 struct TileUniformStruct: MetalUniformStruct {
     // Honestly...
     var dayTextureTexCoordsRectangle = float4Tuple
@@ -46,12 +48,12 @@ class TileUniformMap: UniformMap {
     
     let maxTextureCount: Int
     
-    var initialColor: Cartesian4 {
+    var initialColor: float4 {
         get {
-            return Cartesian4(fromSIMD: vector_double(_uniformStruct.initialColor))
+            return _uniformStruct.initialColor
         }
         set {
-            _uniformStruct.initialColor = newValue.floatRepresentation
+            _uniformStruct.initialColor = newValue
         }
     }
     
@@ -66,52 +68,66 @@ class TileUniformMap: UniformMap {
     
     var oceanNormalMap: Texture? = nil
     
-    var lightingFadeDistance: Cartesian2 {
+    var lightingFadeDistance: float2 {
         get {
-            return Cartesian2(fromSIMD: vector_double(_uniformStruct.lightingFadeDistance))
+            return _uniformStruct.lightingFadeDistance
         }
         set {
-            _uniformStruct.lightingFadeDistance = newValue.floatRepresentation
+            _uniformStruct.lightingFadeDistance = newValue
         }
     }
     
-    var center3D: Cartesian3 {
+    var center3D: float3 {
         get {
-            return Cartesian3(fromSIMD: vector_double(_uniformStruct.center3D))
+            return _uniformStruct.center3D
         }
         set {
-            _uniformStruct.center3D = newValue.floatRepresentation
+            _uniformStruct.center3D = newValue
         }
     }
     
-    var modifiedModelView: Matrix4 {
+    var modifiedModelView: float4x4 {
         get {
-            let mmv = _uniformStruct.modifiedModelView
-            return Matrix4(fromSIMD: double4x4([
-                vector_double(mmv[0]),
-                vector_double(mmv[1]),
-                vector_double(mmv[2]),
-                vector_double(mmv[3])
-            ]))
+            return _uniformStruct.modifiedModelView
         }
         set {
-            _uniformStruct.modifiedModelView = newValue.floatRepresentation
+            _uniformStruct.modifiedModelView = newValue
         }
     }
     
-    var tileRectangle: Cartesian4 {
+    var tileRectangle: float4 {
         get {
-            return Cartesian4(fromSIMD: vector_double(_uniformStruct.tileRectangle))
+            return _uniformStruct.tileRectangle
         }
         set {
-            _uniformStruct.tileRectangle = newValue.floatRepresentation
+            _uniformStruct.tileRectangle = newValue
         }
     }
     
     var dayTextures: [Texture]
     
-    var dayTextureTranslationAndScale: [Cartesian4] 
-    var dayTextureTexCoordsRectangle: [Cartesian4]
+    var dayTextureTranslationAndScale: [float4] {
+        get {
+            var floatArray = [float4](count: MaximumMetalTextureCount, repeatedValue: float4())
+            memcpy(&floatArray, &_uniformStruct.dayTextureTranslationAndScale, sizeof(float4) * MaximumMetalTextureCount)
+            return floatArray
+        }
+        set {
+            memcpy(&_uniformStruct.dayTextureTranslationAndScale, newValue, sizeof(float4) * MaximumMetalTextureCount)
+        }
+    }
+    
+    var dayTextureTexCoordsRectangle: [float4] {
+        get {
+            var floatArray = [float4](count: MaximumMetalTextureCount, repeatedValue: float4())
+            memcpy(&floatArray, &_uniformStruct.dayTextureTexCoordsRectangle, sizeof(float4) * MaximumMetalTextureCount)
+            return floatArray
+        }
+        set {
+            memcpy(&_uniformStruct.dayTextureTexCoordsRectangle, newValue, sizeof(float4) * MaximumMetalTextureCount)
+        }
+    }
+    
     var dayTextureAlpha: [Float]
     var dayTextureBrightness: [Float]
     var dayTextureContrast: [Float]
@@ -121,18 +137,40 @@ class TileUniformMap: UniformMap {
     
     var dayIntensity = 0.0
     
-    var southAndNorthLatitude = Cartesian2()
+    var southAndNorthLatitude: float2 {
+        get {
+            return _uniformStruct.southAndNorthLatitude
+        }
+        set {
+            _uniformStruct.southAndNorthLatitude = newValue
+        }
+    }
     
-    var southMercatorYLowAndHighAndOneOverHeight = Cartesian3()
+    var southMercatorYAndOneOverHeight: float2 {
+        get {
+            return _uniformStruct.southMercatorYAndOneOverHeight
+        }
+        set {
+            _uniformStruct.southMercatorYAndOneOverHeight = newValue
+        }
+    }
     
     var waterMask: Texture? = nil
     
-    var waterMaskTranslationAndScale = Cartesian4()
+    var waterMaskTranslationAndScale: float4 {
+        get {
+            return _uniformStruct.waterMaskTranslationAndScale
+        }
+        set {
+            _uniformStruct.waterMaskTranslationAndScale = newValue
+        }
+    }
     
     private var _uniformStruct = TileUniformStruct()
     
-    let uniforms: [String: UniformFunc] = [
-        
+    let uniforms: [String: UniformFunc] = [:
+            /*
+    
         "u_initialColor": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
             let simd = (map as! TileUniformMap).initialColor.floatRepresentation
             memcpy(buffer, [simd], strideofValue(simd))
@@ -220,22 +258,38 @@ class TileUniformMap: UniformMap {
             let simd = (map as! TileUniformMap).waterMaskTranslationAndScale.floatRepresentation
             memcpy(buffer, [simd], sizeof(float4))
         }
-    
+    */
     ]
     
     init(maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
         dayTextures = [Texture]()
         dayTextures.reserveCapacity(maxTextureCount)
-        dayTextureTranslationAndScale = [Cartesian4]()
-        dayTextureTexCoordsRectangle = [Cartesian4]()
+        //dayTextureTranslationAndScale = [Cartesian4]()
+        //dayTextureTexCoordsRectangle = [Cartesian4]()
         dayTextureAlpha = [Float]()
         dayTextureBrightness = [Float]()
         dayTextureContrast = [Float]()
         dayTextureHue = [Float]()
         dayTextureSaturation = [Float]()
         dayTextureOneOverGamma = [Float]()
+        
+         metalUniformUpdateBlock = { buffer in
+            memcpy(buffer.data, &self._uniformStruct, sizeof(TileUniformStruct))
+            var textures = self.dayTextures
+            if let waterMask = self.waterMask {
+                textures.append(waterMask)
+            }
+            if let oceanNormalMap = self.oceanNormalMap {
+                textures.append(oceanNormalMap)
+            }
+            return textures
+        }
+
     }
+    
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
+    
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
         let dayTextureCount = dayTextures.count
