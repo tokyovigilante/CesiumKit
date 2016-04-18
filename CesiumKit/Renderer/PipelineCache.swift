@@ -79,7 +79,7 @@ class PipelineCache {
 
         let combinedShaders = ShaderProgram.combineShaders(vertexShaderSource: vss, fragmentShaderSource: fss)
         
-        let keyword = combinedShaders.keyword + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
+        let keyword = (combinedShaders.keyword + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")).md5
         
         if let pipeline = _pipelines[keyword] {
             //pipeline.count++
