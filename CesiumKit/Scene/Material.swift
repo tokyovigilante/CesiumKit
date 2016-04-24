@@ -1058,7 +1058,7 @@ public class Material {
      }
      */
     func createUniforms () {
-        if let uniforms = _template?.fabric.uniforms {
+        if let uniforms = _template?.fabric.uniformTypes {
             for (key, uniformId) in uniforms {
                 createUniform(key)
             }
@@ -1130,7 +1130,7 @@ public class Material {
         } else {
             uniforms[newUniformId] = uniformMap?.uniforms[uniformId]
         }
-        uniformMap = type.fabric
+        uniformMap = type.fabric.uniformMap
     }
     
     // Determines the uniform type based on the uniform in the template.
