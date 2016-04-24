@@ -342,6 +342,8 @@
 		941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */; };
 		942251421B1062CC0095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251411B1062CC0095A86F /* Metal.framework */; };
 		942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251431B1062D20095A86F /* QuartzCore.framework */; };
+		9427F3841CCCB3A00095A86F /* BufferSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9427F3831CCCB3A00095A86F /* BufferSyncState.swift */; };
+		9427F3851CCCB3A00095A86F /* BufferSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9427F3831CCCB3A00095A86F /* BufferSyncState.swift */; };
 		942A703B1BF9D8C8001A40C8 /* OIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A703A1BF9D8C8001A40C8 /* OIT.swift */; };
 		942A703C1BF9D8C8001A40C8 /* OIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942A703A1BF9D8C8001A40C8 /* OIT.swift */; };
 		942A70431BF9DA16001A40C8 /* GlobeDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942501841BF316A20095A86F /* GlobeDepth.swift */; };
@@ -854,6 +856,7 @@
 		942251431B1062D20095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		942251451B106CCF0095A86F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		942501841BF316A20095A86F /* GlobeDepth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobeDepth.swift; sourceTree = "<group>"; };
+		9427F3831CCCB3A00095A86F /* BufferSyncState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferSyncState.swift; sourceTree = "<group>"; };
 		942A703A1BF9D8C8001A40C8 /* OIT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OIT.swift; sourceTree = "<group>"; };
 		942A70451BF9DB2E001A40C8 /* DepthPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthPlane.swift; sourceTree = "<group>"; };
 		942AEB1A1955286F00CD0858 /* ComponentDatatype.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentDatatype.swift; sourceTree = "<group>"; };
@@ -1523,6 +1526,7 @@
 				945E45031B17387E0095A86F /* VertexType.swift */,
 				947A241019C99C860040042F /* WindingOrder.swift */,
 				941378091C3AA2C90095A86F /* TextureUsage.swift */,
+				9427F3831CCCB3A00095A86F /* BufferSyncState.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -2327,6 +2331,7 @@
 				945B6A9A1C2577730095A86F /* JulianDate.swift in Sources */,
 				9413B7DB1A37B93D00FFAD81 /* ClearCommand.swift in Sources */,
 				9413B7D51A37B93100FFAD81 /* WebMercatorTilingScheme.swift in Sources */,
+				9427F3841CCCB3A00095A86F /* BufferSyncState.swift in Sources */,
 				94EFB04B1C84D7CD0095A86F /* Accessors.swift in Sources */,
 				941A28171BF40B54001A40C8 /* GroundPrimitive.swift in Sources */,
 				942A70461BF9DB2E001A40C8 /* DepthPlane.swift in Sources */,
@@ -2462,6 +2467,7 @@
 				947821341B5A2D7B0095A86F /* TerrainMesh.swift in Sources */,
 				947821351B5A2D7B0095A86F /* TerrainProvider.swift in Sources */,
 				947821361B5A2D7B0095A86F /* TilingScheme.swift in Sources */,
+				9427F3851CCCB3A00095A86F /* BufferSyncState.swift in Sources */,
 				947821371B5A2D7B0095A86F /* Transforms.swift in Sources */,
 				947821381B5A2D7B0095A86F /* VertexFormat.swift in Sources */,
 				947821391B5A2D7B0095A86F /* Visibility.swift in Sources */,
