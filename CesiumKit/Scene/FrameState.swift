@@ -34,7 +34,7 @@ struct FrameState {
     
     /**
     * An array of rendering commands.
-    * @type {DrawCommand[]}
+    * @type {Command[]}
     */
     var commandList = [Command]()
     

@@ -168,6 +168,8 @@ class TileUniformMap: UniformMap {
     
     private var _uniformStruct = TileUniformStruct()
     
+    var uniformBufferProvider: UniformBufferProvider! = nil
+    
     let uniforms: [String: UniformFunc] = [:
             /*
     
@@ -261,6 +263,8 @@ class TileUniformMap: UniformMap {
     */
     ]
     
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
+    
     init(maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
         dayTextures = [Texture]()
@@ -288,9 +292,6 @@ class TileUniformMap: UniformMap {
 
     }
     
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
-    
-    
     func textureForUniform (uniform: UniformSampler) -> Texture? {
         let dayTextureCount = dayTextures.count
         if uniform.textureUnitIndex == dayTextureCount {
@@ -300,5 +301,5 @@ class TileUniformMap: UniformMap {
         }
         return dayTextures[uniform.textureUnitIndex]
     }
-    
+
 }

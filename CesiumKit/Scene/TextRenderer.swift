@@ -15,6 +15,12 @@ private struct TextUniformStruct: MetalUniformStruct {
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
+private class TextUniformMap: UniformMap {
+    var uniformBufferProvider: UniformBufferProvider! = nil
+    var uniforms: [String : UniformFunc] = [:]
+}
+
+
 /**
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
@@ -109,9 +115,8 @@ class TextRenderer {
             return [self._fontAtlas.texture].flatMap( { $0 })
         }
         
-        _command.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
-        
-        _command.uniformMap = nil
+        _command.uniformMap = TextUniformMap()
+        _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         _command.owner = self
     }
     

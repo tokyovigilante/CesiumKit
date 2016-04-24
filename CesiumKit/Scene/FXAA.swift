@@ -81,6 +81,7 @@ class FXAA {
             let uniformMap = FXAAUniformMap()
             uniformMap.texture = _texture
             uniformMap.step = Cartesian2(x: 1.0 / Double(_texture!.width), y: 1.0 / Double(_texture!.height))
+            uniformMap.uniformBufferProvider = _command!.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             _command!.uniformMap = uniformMap
         }
     }
@@ -112,6 +113,8 @@ class FXAAUniformMap: UniformMap {
     
     var texture : Texture?
     
+    var uniformBufferProvider: UniformBufferProvider! = nil
+
     let uniforms: [String: UniformFunc] = [
 
         "u_step": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in

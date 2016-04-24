@@ -129,7 +129,7 @@ class SkyAtmosphere {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
             )
-            _command.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device)
+            _command.uniformMap?.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             
         }
     
@@ -167,6 +167,8 @@ private class SkyAtmosphereUniformMap: UniformMap {
     var fScaleDepth = Float.NaN
     
     var fScaleOverScaleDepth = Float.NaN
+    
+    var uniformBufferProvider: UniformBufferProvider! = nil
 
     let uniforms: [String: UniformFunc] = [
         

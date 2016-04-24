@@ -242,13 +242,7 @@ class QuadtreeTile: Equatable {
         state = .Start
         renderable = false
         upsampledFromParent = false
-        
-        for command in _cachedCommands {
-            if let bufferProvider = command.uniformBufferProvider {
-                provider.returnManualUniformBufferProvider(bufferProvider)
-            }
-        }
-        
+
         data?.freeResources()
         
         if _children != nil {

@@ -103,7 +103,6 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
-    var uniformBufferProvider: UniformBufferProvider! = nil
         
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))? = nil
     
@@ -223,6 +222,13 @@ class DrawCommand: Command {
     */
     func execute(context: Context, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
         context.draw(self, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
+    }
+    
+    deinit {
+        guard let provider = uniformMap?.uniformBufferProvider else {
+            return
+        }
+        provider.deallocationBlock?(provider)
     }
 
 }

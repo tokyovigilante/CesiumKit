@@ -9,33 +9,26 @@
 import Foundation
 import Metal
 
-class UniformBufferProvider {
-    
-    let capacity: Int
+public class UniformBufferProvider {
     
     let bufferSize: Int
     
-    var currentBuffer: Buffer {
-        return _buffers[_memBarrierIndex]
-    }
-    
     private var _buffers = [Buffer]()
     
-    private var _memBarrierIndex: Int = 0
+    let deallocationBlock: UniformMapDeallocBlock?
     
-    init (device: MTLDevice, capacity: Int, bufferSize: Int) {
+    init (device: MTLDevice, bufferSize: Int, deallocationBlock: UniformMapDeallocBlock?) {
         
-        self.capacity = capacity
         self.bufferSize = bufferSize
+        self.deallocationBlock = deallocationBlock
         
-        for _ in 0..<capacity {
+        for _ in 0..<BufferSyncState.count {
             _buffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: self.bufferSize))
         }
     }
-    func advanceBuffer () -> Buffer {
-        _memBarrierIndex = (_memBarrierIndex + 1) % capacity
-        return currentBuffer
+    
+    func currentBuffer(index: BufferSyncState) -> Buffer {
+        return _buffers[index.rawValue]
     }
-
 }
 

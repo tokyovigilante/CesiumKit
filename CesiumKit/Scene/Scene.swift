@@ -1248,7 +1248,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         frustum.near = camera.frustum.near
         frustum.far = camera.frustum.far
         context.uniformState.updateFrustum(frustum)
-        let wholeFrustumUniformBuffer = context.wholeFrustumUniformBufferProvider.advanceBuffer()
+        let wholeFrustumUniformBuffer = context.wholeFrustumUniformBufferProvider.currentBuffer(context.bufferSyncState)
         context.uniformState.setFrustumUniforms(wholeFrustumUniformBuffer)
         wholeFrustumUniformBuffer.signalWriteComplete()
         
@@ -1323,7 +1323,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
             context.uniformState.updateFrustum(frustum)
             
-            let opaqueFrustumUniformBuffer = frustumCommands.opaqueUniformBufferProvider.advanceBuffer()
+            let opaqueFrustumUniformBuffer = frustumCommands.opaqueUniformBufferProvider.currentBuffer(context.bufferSyncState)
             context.uniformState.setFrustumUniforms(opaqueFrustumUniformBuffer)
             opaqueFrustumUniformBuffer.signalWriteComplete()
             
@@ -1393,7 +1393,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 frustum.near = frustumCommands.near
                 context.uniformState.updateFrustum(frustum)
             }
-            let transparentUniformBuffer = frustumCommands.transparentUniformBufferProvider.advanceBuffer()
+            let transparentUniformBuffer = frustumCommands.transparentUniformBufferProvider.currentBuffer(context.bufferSyncState)
             context.uniformState.setFrustumUniforms(transparentUniformBuffer)
             transparentUniformBuffer.signalWriteComplete()
             

@@ -39,17 +39,20 @@ public struct ColorMaterialType: MaterialType {
     }
 }
 
-public protocol FabricDescription: UniformMap {
+public protocol FabricDescription {
     var uniformTypes: [String: UniformDataType] { get }
+    var uniformMap: UniformMap { get }
 }
 
-public struct ColorFabricDescription: FabricDescription {
+public class ColorFabricDescription: FabricDescription {
     
     public var color: Color
     
     public let uniforms: [String: UniformFunc]
     
     public let uniformTypes: [String : UniformDataType]
+    
+    public var uniformMap: UniformMap = NullUniformMap()
     
     public init (color: Color = Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)) {
         
@@ -69,6 +72,9 @@ public struct ColorFabricDescription: FabricDescription {
 }
 
 public struct ImageFabricDescription: FabricDescription {
+    
+    public var uniformMap: UniformMap = NullUniformMap()
+
     public var uniforms: [String: UniformFunc]
     
     public var uniformTypes: [String : UniformDataType]

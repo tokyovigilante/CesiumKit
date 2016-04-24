@@ -140,7 +140,7 @@ class SkyBox {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
             )
-            _command.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device)
+            _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
 
             _command.renderState = RenderState(
                 device: context.device
@@ -163,6 +163,8 @@ private class SkyBoxUniformMap: UniformMap {
     var cubemap : Texture?
     
     let uniforms: [String : UniformFunc] = [:]
+    
+    var uniformBufferProvider: UniformBufferProvider! = nil
     
     func textureForUniform(uniform: UniformSampler) -> Texture? {
         return cubemap

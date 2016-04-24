@@ -531,10 +531,10 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     
-    private func getManualUniformBufferProvider (context: Context, size: Int) -> UniformBufferProvider {
+    private func getManualUniformBufferProvider (context: Context, size: Int, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
         if _manualUniformBufferProviderPool.count < 10 {
             dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
-                let newProviders = (0..<10).map { _ in return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: size)
+                let newProviders = (0..<10).map { _ in return UniformBufferProvider(device: context.device, bufferSize: size, deallocationBlock: deallocationBlock)
                 }
                 dispatch_async(dispatch_get_main_queue(), {
                     self._manualUniformBufferProviderPool.appendContentsOf(newProviders)
@@ -542,7 +542,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             })
         }
         if _manualUniformBufferProviderPool.isEmpty {
-            return UniformBufferProvider(device: context.device, capacity: 3, bufferSize: size)
+            return UniformBufferProvider(device: context.device, bufferSize: size, deallocationBlock: deallocationBlock)
         }
         return _manualUniformBufferProviderPool.removeLast()
     }
@@ -783,7 +783,10 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             
-            command.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct))
+            command.uniformMap?.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct), deallocationBlock: { provider in
+                    self.returnManualUniformBufferProvider(provider)
+                }
+            )
             
             command.metalUniformUpdateBlock = { buffer in
                 return (command.uniformMap as! TileUniformMap).metalUniformUpdateBlock!(buffer: buffer)

@@ -17,6 +17,8 @@ class ImageryLayerUniformMap: UniformMap {
     
     var texture : Texture?
     
+    var uniformBufferProvider: UniformBufferProvider! = nil
+    
     let uniforms: [String: UniformFunc] = [
         
         "u_textureDimensions": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in

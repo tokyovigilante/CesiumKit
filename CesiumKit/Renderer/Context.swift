@@ -30,6 +30,10 @@ class Context {
 
     private let _inflight_semaphore: dispatch_semaphore_t
     
+    private (set) var bufferSyncState: BufferSyncState = .zero
+    
+    private var _lastFrameDrawCommands = Array<[DrawCommand]>(count: 3, repeatedValue: [DrawCommand]())
+    
     let view: MTKView
     
     internal let device: MTLDevice!
@@ -189,7 +193,7 @@ class Context {
         
         _defaultRenderState = rs
         uniformState = us
-        _automaticUniformBufferProvider = UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(AutomaticUniformBufferLayout))
+        _automaticUniformBufferProvider = UniformBufferProvider(device: device, bufferSize: strideof(AutomaticUniformBufferLayout), deallocationBlock: nil)
         _currentRenderState = rs
         defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
@@ -240,19 +244,23 @@ class Context {
             dispatch_semaphore_signal(_inflight_semaphore)
             return false
         }
-        //assert(_drawable != nil, "drawable == nil")
+        
         defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         
         _commandBuffer = _commandQueue.commandBuffer()
         
         // call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
+        let bufferIndex = self.bufferSyncState.rawValue
         _commandBuffer.addCompletedHandler { buffer in
             // GPU has completed rendering the frame and is done using the contents of any buffers previously encoded on the CPU for that frame.
+            // Decrement references for last frame's commands
+            self._lastFrameDrawCommands[bufferIndex].removeAll()
+            
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
             dispatch_semaphore_signal(self._inflight_semaphore)
         }
         
-        let automaticUniformBuffer = _automaticUniformBufferProvider.advanceBuffer()
+        let automaticUniformBuffer = _automaticUniformBufferProvider.currentBuffer(bufferSyncState)
         uniformState.setAutomaticUniforms(automaticUniformBuffer)
         automaticUniformBuffer.signalWriteComplete()
         
@@ -287,13 +295,15 @@ class Context {
     
     func getFrustumUniformBufferProvider () -> UniformBufferProvider {
         if _frustumUniformBufferProviderPool.isEmpty {
-            return UniformBufferProvider(device: device, capacity: 3, bufferSize: strideof(FrustumUniformBufferLayout))
+            return UniformBufferProvider(device: device, bufferSize: strideof(FrustumUniformBufferLayout), deallocationBlock: { provider in
+                    self._frustumUniformBufferProviderPool.append(provider)
+                }
+            )
         }
         return _frustumUniformBufferProviderPool.removeLast()
     }
     
     func returnFrustumUniformBufferProvider (provider: UniformBufferProvider) {
-        _frustumUniformBufferProviderPool.append(provider)
     }
     
     func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
@@ -331,38 +341,38 @@ class Context {
         }
     }
     
-    func draw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
-        beginDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline)
-        continueDraw(drawCommand, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
+    func draw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
+        _lastFrameDrawCommands[bufferSyncState.rawValue].append(command)
+        beginDraw(command, renderPass: renderPass, renderPipeline: renderPipeline)
+        continueDraw(command, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
     }
     
-    func beginDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
-        let rs = drawCommand.renderState ?? _defaultRenderState
+    func beginDraw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
+        let rs = command.renderState ?? _defaultRenderState
 
         let commandEncoder = renderPass.commandEncoder
-        let renderPipeline = renderPipeline ?? drawCommand.pipeline!
+        let renderPipeline = renderPipeline ?? command.pipeline!
 
         commandEncoder.setRenderPipelineState(renderPipeline.state)
 
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
-    func continueDraw(drawCommand: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?, frustumUniformBuffer: Buffer? = nil) {
-        let primitiveType = drawCommand.primitiveType
+    func continueDraw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?, frustumUniformBuffer: Buffer? = nil) {
+        let primitiveType = command.primitiveType
         
-        assert(drawCommand.vertexArray != nil, "drawCommand.vertexArray is required")
-        let va = drawCommand.vertexArray!
-        var offset = drawCommand.offset
-        var count = drawCommand.count
+        assert(command.vertexArray != nil, "drawCommand.vertexArray is required")
+        let va = command.vertexArray!
+        var offset = command.offset
+        var count = command.count
         
         assert(offset >= 0, "drawCommand.offset must be omitted or greater than or equal to zero")
         assert(count == nil || count! >= 0, "drawCommand.count must be omitted or greater than or equal to zero")
         
+        uniformState.model = command.modelMatrix ?? Matrix4.identity
         
-        uniformState.model = drawCommand.modelMatrix ?? Matrix4.identity
-        
-        let renderPipeline = renderPipeline ?? drawCommand.pipeline!
-        let bufferParams = renderPipeline.setUniforms(drawCommand, device: device, uniformState: uniformState)
+        let renderPipeline = renderPipeline ?? command.pipeline!
+        let bufferParams = renderPipeline.setUniforms(command, device: device, uniformState: uniformState)
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
@@ -377,13 +387,13 @@ class Context {
             let indexCount = count ?? va.numberOfIndices
             
             // automatic uniforms
-            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, atIndex: 0)
 
             // frustum uniforms
             commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
 
             // manual uniforms
-            if let uniformBuffer = drawCommand.uniformBufferProvider?.currentBuffer {
+            if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
                 commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 2)
             }
             
@@ -394,13 +404,13 @@ class Context {
             }
             
             // automatic uniforms
-            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer.metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, atIndex: 0)
             
             // frustum uniforms
             commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
             
             // manual uniforms
-            if let uniformBuffer = drawCommand.uniformBufferProvider?.currentBuffer {
+            if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
                 commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
             }
             for (index, texture) in bufferParams.textures.enumerate() {
@@ -418,7 +428,6 @@ class Context {
     }
     
     func endFrame () {
-
         _commandBuffer.presentDrawable(_drawable)
         _commandBuffer.commit()
         
@@ -432,6 +441,7 @@ class Context {
         if (this.drawBuffers) {
         this._drawBuffers.drawBuffersWEBGL(scratchBackBufferArray);
         }*/
+        bufferSyncState = bufferSyncState.advance()
         
         _maxFrameTextureUnitIndex = 0
         _debug.renderCountThisFrame = 0
@@ -543,7 +553,6 @@ class Context {
             ),
             owner: self
         )
-        command.uniformBufferProvider = command.pipeline!.shaderProgram.createUniformBufferProvider(device)
         return command
     }
 

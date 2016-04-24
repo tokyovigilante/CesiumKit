@@ -319,8 +319,8 @@ class ShaderProgram {
         fragmentUniformSize = offset - vertexUniformSize
     }
 
-    func createUniformBufferProvider(device: MTLDevice) -> UniformBufferProvider {
-        let provider = UniformBufferProvider(device: device, capacity: 3, bufferSize: max(uniformBufferSize, 256))
+    func createUniformBufferProvider(device: MTLDevice, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
+        let provider = UniformBufferProvider(device: device, bufferSize: max(uniformBufferSize, 256), deallocationBlock: deallocationBlock)
         return provider
     }
     
@@ -330,15 +330,15 @@ class ShaderProgram {
     
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
-        if let buffer = command.uniformBufferProvider?.advanceBuffer() {
+        let map = command.uniformMap ?? nullUniformMap
+        
+        if let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) {
             
             if  nativeMetalUniforms {
                 let textures = command.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
                 buffer.signalWriteComplete()
                 return (fragmentOffset: 0, texturesValid: true, textures: textures)
             }
-            
-            let map = command.uniformMap ?? nullUniformMap
             
             for uniform in _vertexUniforms {
                 setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
