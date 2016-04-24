@@ -326,35 +326,6 @@ public class CesiumGlobe {
         
         renderLoopRunning = true
         _lastFrameTime = nil
-        /*
-        func render() {
-            //if (widget.isDestroyed()) {
-            //  return;
-            //}
-            
-            if (useDefaultRenderLoop) {
-                if (targetFrameRate == nil) {
-                    resize()
-                    render()
-                    requestAnimationFrame(render)
-                } else {
-                    var lastFrameTime = self.lastFrameTime
-                    var interval = 1000.0 / targetFrameRate
-                    var now = NSDate.timeIntervalSinceReferenceDate() + NSTimeIntervalSince1970
-                    var delta = now - lastFrameTime
-                    
-                    if (delta > interval) {
-                        resize()
-                        render()
-                        lastFrameTime = now - (delta % interval)
-                    }
-                    requestAnimationFrame(render)
-                }
-            } else {
-                renderLoopRunning = false
-            }
-        }
-        requestAnimationFrame(render)*/
     }
 
     func configureCanvasSize(size: Cartesian2) {
