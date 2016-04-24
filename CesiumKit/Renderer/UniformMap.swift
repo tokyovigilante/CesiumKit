@@ -10,9 +10,13 @@ protocol MetalUniformStruct {
     
 }
 
-public protocol UniformMap {
+typealias UniformMapDeallocBlock = (UniformBufferProvider) -> Void
+
+public protocol UniformMap: class {
     
     var uniforms: [String: UniformFunc] { get }
+    
+    var uniformBufferProvider: UniformBufferProvider! { get set }
     
     func indexForUniform(name: String) -> UniformIndex?
     
@@ -37,5 +41,8 @@ extension UniformMap {
     
 }
 
-class NullUniformMap: UniformMap { let uniforms = [String : UniformFunc]() }
+class NullUniformMap: UniformMap {
+    let uniforms = [String : UniformFunc]()
+    var uniformBufferProvider: UniformBufferProvider! = nil
+}
 
