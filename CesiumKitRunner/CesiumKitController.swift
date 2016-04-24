@@ -74,7 +74,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             text: "A label"
         )
         _globe.scene.primitives.add(labels)*/
-        
+        /*
         let window = _globe.scene.addOffscreenQuad(width: 400, height: 400)
         
         let blue = Color(fromRed: 40/255, green: 144/255, blue: 252/255, alpha: 1.0)
@@ -83,7 +83,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
 
         window.addRectangle(Cartesian4(x: 50, y: 50, width: 50, height: 50), material: material)
         
-        window.addString("Test", fontName: "HelveticaNeue", color: blue, pointSize: 20, rectangle: Cartesian4(x: 110, y: 50, width: 600, height: 50))
+        window.addString("Test", fontName: "HelveticaNeue", color: blue, pointSize: 20, rectangle: Cartesian4(x: 110, y: 50, width: 600, height: 50))*/
         
         super.init()
     }
@@ -99,7 +99,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     func drawInMTKView(view: MTKView) {
                 
         #if os(iOS)
-            view.contentScaleFactor = 1.0
+            view.contentScaleFactor = 2.0
             let scaleFactor = view.contentScaleFactor
         #elseif os(OSX)
             let scaleFactor = view.layer?.contentsScale ?? 1.0
