@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 /**
 * Contains functions to create a mesh from a heightmap image.
@@ -85,182 +86,239 @@ class HeightmapTessellator {
     */
     class func computeVertices (
         heightmap heightmap: [UInt16],
-        height: Int,
-        width: Int,
-        skirtHeight: Double,
-        nativeRectangle: Rectangle,
-        rectangle: Rectangle?,
-        isGeographic: Bool = true,
-        relativeToCenter: Cartesian3 = Cartesian3.zero,
-        ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
-        structure: HeightmapStructure = HeightmapStructure(),
-        exaggeration: Double
-        ) -> (maximumHeight: Double, minimumHeight: Double, vertices: [Float]) {
-            
-            // This function tends to be a performance hotspot for terrain rendering,
-            // so it employs a lot of inlining and unrolling as an optimization.
-            // In particular, the functionality of Ellipsoid.cartographicToCartesian
-            // is inlined.
-            let piOverTwo = M_PI_2
-            
-            let oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius
-            
-            var geographicWest: Double
-            var geographicSouth: Double
-            var geographicEast: Double
-            var geographicNorth: Double
-            
-            if rectangle == nil {
-                if isGeographic {
-                    geographicWest = Math.toRadians(nativeRectangle.west)
-                    geographicSouth = Math.toRadians(nativeRectangle.south)
-                    geographicEast = Math.toRadians(nativeRectangle.east)
-                    geographicNorth = Math.toRadians(nativeRectangle.north)
-                } else {
-                    geographicWest = nativeRectangle.west * oneOverGlobeSemimajorAxis
-                    geographicSouth = piOverTwo - (2.0 * atan(exp(-nativeRectangle.south * oneOverGlobeSemimajorAxis)))
-                    geographicEast = nativeRectangle.east * oneOverGlobeSemimajorAxis;
-                    geographicNorth = piOverTwo - (2.0 * atan(exp(-nativeRectangle.north * oneOverGlobeSemimajorAxis)))
-                }
+                  height: Int,
+                  width: Int,
+                  skirtHeight: Double,
+                  nativeRectangle: Rectangle,
+                  rectangle: Rectangle?,
+                  isGeographic: Bool = true,
+                  ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
+                  structure: HeightmapStructure = HeightmapStructure(),
+                  relativeToCenter: Cartesian3? = nil,
+                  exaggeration: Double
+        ) -> (
+        vertices: [Float],
+        maximumHeight: Double,
+        minimumHeight: Double,
+        encoding: TerrainEncoding,
+        boundingSphere3D: BoundingSphere,
+        orientedBoundingBox: OrientedBoundingBox?,
+        occludeePointInScaledSpace: Cartesian3?
+        )
+    {
+        
+        // This function tends to be a performance hotspot for terrain rendering,
+        // so it employs a lot of inlining and unrolling as an optimization.
+        // In particular, the functionality of Ellipsoid.cartographicToCartesian
+        // is inlined.
+        let piOverTwo = M_PI_2
+        
+        let oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius
+        
+        var geographicWest: Double
+        var geographicSouth: Double
+        var geographicEast: Double
+        var geographicNorth: Double
+        
+        if rectangle == nil {
+            if isGeographic {
+                geographicWest = Math.toRadians(nativeRectangle.west)
+                geographicSouth = Math.toRadians(nativeRectangle.south)
+                geographicEast = Math.toRadians(nativeRectangle.east)
+                geographicNorth = Math.toRadians(nativeRectangle.north)
             } else {
-                geographicWest = rectangle!.west
-                geographicSouth = rectangle!.south
-                geographicEast = rectangle!.east
-                geographicNorth = rectangle!.north
+                geographicWest = nativeRectangle.west * oneOverGlobeSemimajorAxis
+                geographicSouth = piOverTwo - (2.0 * atan(exp(-nativeRectangle.south * oneOverGlobeSemimajorAxis)))
+                geographicEast = nativeRectangle.east * oneOverGlobeSemimajorAxis;
+                geographicNorth = piOverTwo - (2.0 * atan(exp(-nativeRectangle.north * oneOverGlobeSemimajorAxis)))
+            }
+        } else {
+            geographicWest = rectangle!.west
+            geographicSouth = rectangle!.south
+            geographicEast = rectangle!.east
+            geographicNorth = rectangle!.north
+        }
+        
+        let heightScale = structure.heightScale
+        let heightOffset = structure.heightOffset
+        let elementsPerHeight = structure.elementsPerHeight
+        let stride = structure.stride
+        let elementMultiplier = structure.elementMultiplier
+        let isBigEndian = structure.isBigEndian
+        
+        let granularityX = nativeRectangle.width / Double(width - 1)
+        let granularityY = nativeRectangle.height / Double(height - 1)
+        
+        let radiiSquared = ellipsoid.radiiSquared
+        let radiiSquaredX = radiiSquared.x
+        let radiiSquaredY = radiiSquared.y
+        let radiiSquaredZ = radiiSquared.z
+        
+        var minimumHeight = 65536.0
+        var maximumHeight = -65536.0
+        
+        let fromENU = Transforms.eastNorthUpToFixedFrame(relativeToCenter!, ellipsoid: ellipsoid)
+        let toENU = fromENU.inverse
+        
+        var minimum = Cartesian3(fromSIMD: double3(Double.infinity))
+        var maximum = Cartesian3(fromSIMD: double3(-Double.infinity))
+        
+        var hMin = Double.infinity
+        
+        var positions = [Cartesian3]()
+        var heights = [Double]()
+        var uvs = [Cartesian2]()
+        
+        var startRow = 0
+        var endRow = height
+        var startCol = 0
+        var endCol = width
+        
+        if (skirtHeight > 0) {
+            startRow -= 1
+            endRow += 1
+            startCol -= 1
+            endCol += 1
+        }
+        
+        for rowIndex in startRow..<endRow {
+            var row = rowIndex
+            if row < 0 {
+                row = 0
+            }
+            if row >= height {
+                row = height - 1
             }
             
-            let heightScale = structure.heightScale
-            let heightOffset = structure.heightOffset
-            let elementsPerHeight = structure.elementsPerHeight
-            let stride = structure.stride
-            let elementMultiplier = structure.elementMultiplier
-            let isBigEndian = structure.isBigEndian
+            var latitude = nativeRectangle.north - granularityY * Double(row)
             
-            let granularityX = nativeRectangle.width / Double(width - 1)
-            let granularityY = nativeRectangle.height / Double(height - 1)
-            
-            let radiiSquared = ellipsoid.radiiSquared
-            let radiiSquaredX = radiiSquared.x
-            let radiiSquaredY = radiiSquared.y
-            let radiiSquaredZ = radiiSquared.z
-                        
-            var minimumHeight = 65536.0
-            var maximumHeight = -65536.0
-            
-            var startRow = 0
-            var endRow = height
-            var startCol = 0
-            var endCol = width
-            
-            if (skirtHeight > 0) {
-                startRow -= 1
-                endRow += 1
-                startCol -= 1
-                endCol += 1
+            if !isGeographic {
+                latitude = piOverTwo - (2.0 * atan(exp(-latitude * oneOverGlobeSemimajorAxis)))
+            } else {
+                latitude = Math.toRadians(latitude)
             }
             
-            var vertices = [Float]()
+            let cosLatitude = cos(latitude)
+            let nZ = sin(latitude)
+            let kZ = radiiSquaredZ * nZ
             
-            for rowIndex in startRow..<endRow {
-                var row = rowIndex
-                if row < 0 {
-                    row = 0
+            let v = Math.clamp((latitude - geographicSouth) / (geographicNorth - geographicSouth), min: 0.0, max: 1.0)
+            
+            for colIndex in startCol..<endCol {
+                var col = colIndex
+                if col < 0 {
+                    col = 0
                 }
-                if row >= height {
-                    row = height - 1
+                if col >= width {
+                    col = width - 1
                 }
                 
-                var latitude = nativeRectangle.north - granularityY * Double(row)
+                var longitude = nativeRectangle.west + granularityX * Double(col)
                 
                 if !isGeographic {
-                    latitude = piOverTwo - (2.0 * atan(exp(-latitude * oneOverGlobeSemimajorAxis)))
+                    longitude = longitude * oneOverGlobeSemimajorAxis
                 } else {
-                    latitude = Math.toRadians(latitude)
+                    longitude = Math.toRadians(longitude)
                 }
                 
-                let cosLatitude = cos(latitude)
-                let nZ = sin(latitude)
-                let kZ = radiiSquaredZ * nZ
+                let terrainOffset = row * (width * stride) + col * stride
                 
-                let v = (latitude - geographicSouth) / (geographicNorth - geographicSouth)
-                
-                for colIndex in startCol..<endCol {
-                    var col = colIndex
-                    if col < 0 {
-                        col = 0
-                    }
-                    if col >= width {
-                        col = width - 1
-                    }
+                var heightSample: Double
+                if elementsPerHeight == 1 {
+                    heightSample = Double(heightmap[terrainOffset])
+                } else {
+                    heightSample = 0
                     
-                    var longitude = nativeRectangle.west + granularityX * Double(col)
-                    
-                    if !isGeographic {
-                        longitude = longitude * oneOverGlobeSemimajorAxis
+                    if isBigEndian {
+                        for elementOffset in 0.stride(to: elementsPerHeight, by: 1) {
+                            heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
+                        }
                     } else {
-                        longitude = Math.toRadians(longitude)
-                    }
-                    
-                    let terrainOffset = row * (width * stride) + col * stride
-                    
-                    var heightSample: Double
-                    if (elementsPerHeight == 1) {
-                        heightSample = Double(heightmap[terrainOffset])
-                    } else {
-                        heightSample = 0
-                        
-                        if isBigEndian {
-                            for elementOffset in 0.stride(to: elementsPerHeight, by: 1) {
-                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
-                            }
-                        } else {
-                            for elementOffset in (elementsPerHeight - 1).stride(through: 0, by: -1) {
-                                heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
-                            }
+                        for elementOffset in (elementsPerHeight - 1).stride(through: 0, by: -1) {
+                            heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                         }
                     }
-                    
-                    heightSample = heightSample * heightScale + heightOffset * exaggeration
-                    
-                    maximumHeight = max(maximumHeight, heightSample)
-                    minimumHeight = min(minimumHeight, heightSample)
-                    
-                    if colIndex != col || rowIndex != row {
-                        heightSample -= skirtHeight
-                    }
-                    
-                    let nX = cosLatitude * cos(longitude)
-                    let nY = cosLatitude * sin(longitude)
-                    
-                    let kX = radiiSquaredX * nX
-                    let kY = radiiSquaredY * nY
-                    
-                    let gammaSquare = kX * nX + kY * nY + kZ * nZ
-                    let gamma = sqrt(gammaSquare)
-                    let oneOverGamma = 1.0 / gamma
-                    
-                    let rSurfaceX = kX * oneOverGamma
-                    let rSurfaceY = kY * oneOverGamma
-                    let rSurfaceZ = kZ * oneOverGamma
-                    
-                    vertices.append(Float(rSurfaceX + nX * heightSample - relativeToCenter.x))
-                    vertices.append(Float(rSurfaceY + nY * heightSample - relativeToCenter.y))
-                    vertices.append(Float(rSurfaceZ + nZ * heightSample - relativeToCenter.z))
-                    
-                    vertices.append(Float(heightSample))
-                    
-                    let u = (longitude - geographicWest) / (geographicEast - geographicWest)
-                    
-                    vertices.append(Float(u))
-                    vertices.append(Float(v))
                 }
+                
+                heightSample = heightSample * heightScale + heightOffset * exaggeration
+                
+                maximumHeight = max(maximumHeight, heightSample)
+                minimumHeight = min(minimumHeight, heightSample)
+                
+                if colIndex != col || rowIndex != row {
+                    heightSample -= skirtHeight
+                }
+                
+                let nX = cosLatitude * cos(longitude)
+                let nY = cosLatitude * sin(longitude)
+                
+                let kX = radiiSquaredX * nX
+                let kY = radiiSquaredY * nY
+                
+                let gamma = sqrt(kX * nX + kY * nY + kZ * nZ)
+                let oneOverGamma = 1.0 / gamma
+                
+                let rSurfaceX = kX * oneOverGamma
+                let rSurfaceY = kY * oneOverGamma
+                let rSurfaceZ = kZ * oneOverGamma
+                
+                let position = Cartesian3(
+                    x: rSurfaceX + nX * heightSample,
+                    y: rSurfaceY + nY * heightSample,
+                    z: rSurfaceZ + nZ * heightSample
+                )
+                positions.append(position)
+                
+                heights.append(heightSample)
+                
+                let u = (longitude - geographicWest) / (geographicEast - geographicWest)
+                uvs.append(Cartesian2(x: u, y: v))
+                
+                let point = toENU.multiplyByPoint(position)
+                minimum = point.minimumByComponent(minimum)
+                maximum = point.minimumByComponent(maximum)
             }
-            
-            return (
-                maximumHeight : maximumHeight,
-                minimumHeight : minimumHeight,
-                vertices: vertices
-            )
+        }
+        
+        let boundingSphere3D = BoundingSphere(fromPoints: positions)
+        
+        var orientedBoundingBox: OrientedBoundingBox? = nil
+        if let rectangle = rectangle {
+            if rectangle.width < piOverTwo + Math.Epsilon5 {
+                // Here, rectangle.width < pi/2, and rectangle.height < pi
+                // (though it would still work with rectangle.width up to pi)
+                orientedBoundingBox = OrientedBoundingBox(
+                    fromRectangle: rectangle,
+                    minimumHeight: minimumHeight,
+                    maximumHeight: maximumHeight,
+                    ellipsoid: ellipsoid)
+            }
+        }
+        
+        var occludeePointInScaledSpace: Cartesian3? = nil
+
+        if let center = relativeToCenter {
+            let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+            occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromPoints(directionToPoint: center, points: positions)
+        }
+        
+        let aaBox = AxisAlignedBoundingBox(minimum: minimum, maximum: maximum, center: relativeToCenter)
+        let encoding = TerrainEncoding(axisAlignedBoundingBox: aaBox, minimumHeight: hMin, maximumHeight: maximumHeight, fromENU: fromENU, hasVertexNormals: false)
+        var vertices = [Float]()
+        
+        for j in 0..<positions.count {
+            encoding.encode(&vertices, position: positions[j], uv: uvs[j], height: heights[j], normalToPack: nil)
+        }
+        
+        return (
+            vertices: vertices,
+            maximumHeight: maximumHeight,
+            minimumHeight: minimumHeight,
+            encoding: encoding,
+            boundingSphere3D: boundingSphere3D,
+            orientedBoundingBox: orientedBoundingBox,
+            occludeePointInScaledSpace: occludeePointInScaledSpace
+        )
     }
     
 }

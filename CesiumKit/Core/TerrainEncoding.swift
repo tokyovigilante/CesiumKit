@@ -86,8 +86,6 @@ struct TerrainEncoding {
 
     init (axisAlignedBoundingBox: AxisAlignedBoundingBox, minimumHeight: Double, maximumHeight: Double, fromENU: Matrix4, hasVertexNormals: Bool) {
         
-        var matrix: Matrix4
-        
         let minimum = axisAlignedBoundingBox.minimum
         let maximum = axisAlignedBoundingBox.maximum
         
@@ -95,7 +93,6 @@ struct TerrainEncoding {
         let hDim = maximumHeight - minimumHeight
         let maxDim = max(dimensions.maximumComponent(), hDim)
         
-        let quantization: TerrainQuantization
         if maxDim < shiftLeft12 - 1.0 {
             quantization = .bits12
         } else {
@@ -103,86 +100,78 @@ struct TerrainEncoding {
         }
         
         let center = axisAlignedBoundingBox.center
-        let toENU = fromENU.inverseTransformation
+        var toENU = fromENU.inverse
         
-        let translation = minimum.negate
-        self.toENU = multiply(Matrix4(fromTranslation: translation).multiply(toENU)
+        toENU = Matrix4(translation: minimum.negate()).multiply(toENU)
         
-        var scale = cartesian3Scratch;
-        scale.x = 1.0 / dimensions.x;
-        scale.y = 1.0 / dimensions.y;
-        scale.z = 1.0 / dimensions.z;
-        Matrix4(fromScale: scale).multiply(toENU)
+        let scale = Cartesian3(
+            x: 1.0 / dimensions.x,
+            y: 1.0 / dimensions.y,
+            z: 1.0 / dimensions.z
+        )
+        toENU = Matrix4(scale: scale).multiply(toENU)
         
-        matrix = Matrix4.clone(fromENU);
-        Matrix4.setTranslation(matrix, Cartesian3.ZERO, matrix);
+        var matrix = fromENU
+        matrix.setTranslation(Cartesian3.zero)
         
-        fromENU = Matrix4.clone(fromENU, new Matrix4());
+        var fromENU = fromENU
         
-        var translationMatrix = Matrix4.fromTranslation(minimum, matrix4Scratch);
-        var scaleMatrix =  Matrix4.fromScale(dimensions, matrix4Scratch2);
-        var st = Matrix4.multiply(translationMatrix, scaleMatrix,matrix4Scratch);
+        let translationMatrix = Matrix4(translation: minimum)
+        let scaleMatrix =  Matrix4(scale: dimensions)
+        let st = translationMatrix.multiply(scaleMatrix)
         
-        Matrix4.multiply(fromENU, st, fromENU);
-        Matrix4.multiply(matrix, st, matrix);
+        fromENU = fromENU.multiply(st)
+        matrix = matrix.multiply(st)
         
-        self.quantization = quantization
-        self minimumHeight = minimumHeight
+        self.minimumHeight = minimumHeight
         self.maximumHeight = maximumHeight
         self.center = center
         self.toScaledENU = toENU
         self.fromScaledENU = fromENU
         self.matrix = matrix
-        this.hasVertexNormals = hasVertexNormals
+        self.hasVertexNormals = hasVertexNormals
     }
 
-
-
-
-    TerrainEncoding.prototype.encode = function(vertexBuffer, bufferIndex, position, uv, height, normalToPack) {
-    var u = uv.x;
-    var v = uv.y;
-    
-    if (this.quantization === TerrainQuantization.BITS12) {
-    position = Matrix4.multiplyByPoint(this.toScaledENU, position, cartesian3Scratch);
-    
-    position.x = CesiumMath.clamp(position.x, 0.0, 1.0);
-    position.y = CesiumMath.clamp(position.y, 0.0, 1.0);
-    position.z = CesiumMath.clamp(position.z, 0.0, 1.0);
-    
-    var hDim = this.maximumHeight - this.minimumHeight;
-    var h = CesiumMath.clamp((height - this.minimumHeight) / hDim, 0.0, 1.0);
-    
-    Cartesian2.fromElements(position.x, position.y, cartesian2Scratch);
-    var compressed0 = AttributeCompression.compressTextureCoordinates(cartesian2Scratch);
-    
-    Cartesian2.fromElements(position.z, h, cartesian2Scratch);
-    var compressed1 = AttributeCompression.compressTextureCoordinates(cartesian2Scratch);
-    
-    Cartesian2.fromElements(u, v, cartesian2Scratch);
-    var compressed2 = AttributeCompression.compressTextureCoordinates(cartesian2Scratch);
-    
-    vertexBuffer[bufferIndex++] = compressed0;
-    vertexBuffer[bufferIndex++] = compressed1;
-    vertexBuffer[bufferIndex++] = compressed2;
-    } else {
-    Cartesian3.subtract(position, this.center, cartesian3Scratch);
-    
-    vertexBuffer[bufferIndex++] = cartesian3Scratch.x;
-    vertexBuffer[bufferIndex++] = cartesian3Scratch.y;
-    vertexBuffer[bufferIndex++] = cartesian3Scratch.z;
-    vertexBuffer[bufferIndex++] = height;
-    vertexBuffer[bufferIndex++] = u;
-    vertexBuffer[bufferIndex++] = v;
+    func encode (inout vertexBuffer: [Float], position: Cartesian3, uv: Cartesian2, height: Double, normalToPack: Cartesian2? = nil) {
+        let u = uv.x
+        let v = uv.y
+        
+        if quantization == .bits12 {
+            var position = toScaledENU.multiplyByPoint(position)
+            
+            position.x = Math.clamp(position.x, min: 0.0, max: 1.0)
+            position.y = Math.clamp(position.y, min: 0.0, max: 1.0)
+            position.z = Math.clamp(position.z, min: 0.0, max: 1.0)
+            
+            let hDim = maximumHeight - minimumHeight;
+            let h = Math.clamp((height - minimumHeight) / hDim, min: 0.0, max: 1.0)
+            
+            let compressed0 = AttributeCompression.compressTextureCoordinates(Cartesian2(x: position.x, y: position.y))
+            
+            let compressed1 = AttributeCompression.compressTextureCoordinates(Cartesian2(x: position.z, y: h))
+            
+            let compressed2 = AttributeCompression.compressTextureCoordinates(Cartesian2(x: u, y: v))
+            
+            vertexBuffer.append(compressed0)
+            vertexBuffer.append(compressed1)
+            vertexBuffer.append(compressed2)
+        } else {
+            let positionRTC = position.subtract(center)
+            
+            vertexBuffer.append(Float(positionRTC.x))
+            vertexBuffer.append(Float(positionRTC.y))
+            vertexBuffer.append(Float(positionRTC.z))
+            vertexBuffer.append(Float(height))
+            vertexBuffer.append(Float(u))
+            vertexBuffer.append(Float(v))
+        }
+        
+        if hasVertexNormals {
+            vertexBuffer.append(AttributeCompression.octPackFloat(normalToPack!))
+        }
     }
     
-    if (this.hasVertexNormals) {
-    vertexBuffer[bufferIndex++] = AttributeCompression.octPackFloat(normalToPack);
-    }
-    
-    return bufferIndex;
-    };
-    
+    /*
     TerrainEncoding.prototype.decodePosition = function(buffer, index, result) {
     if (!defined(result)) {
     result = new Cartesian3();
@@ -221,15 +210,14 @@ struct TerrainEncoding {
     return Cartesian2.fromElements(buffer[index + 4], buffer[index + 5], result);
     };
     */
-    func decodeHeight (buffer: Float, index: Int) {
-        index *= getStride()
+    func decodeHeight (buffer: [Float], index: Int) -> Double {
+        var index = index * getStride()
         
-        if (this.quantization === TerrainQuantization.BITS12) {
-            var zh = AttributeCompression.decompressTextureCoordinates(buffer[index + 1], cartesian2Scratch);
-            return zh.y * (this.maximumHeight - this.minimumHeight) + this.minimumHeight;
+        if quantization == .bits12 {
+            let zh = AttributeCompression.decompressTextureCoordinates(buffer[index + 1])
+            return zh.y * (maximumHeight - minimumHeight) + minimumHeight
         }
-        
-        return buffer[index + 3]
+        return Double(buffer[index + 3])
     }
     /*
     TerrainEncoding.prototype.getOctEncodedNormal = function(buffer, index, result) {
@@ -243,22 +231,22 @@ struct TerrainEncoding {
     return Cartesian2.fromElements(x, y, result);
     };
     */
+    
     private func getStride () -> Int {
-    let vertexStride: Int
-    
-    switch quantization {
-    case TerrainQuantization.BITS12:
-    vertexStride = 3;
-    break;
-    default:
-    vertexStride = 6;
-    }
-    
-    if (this.hasVertexNormals) {
-    ++vertexStride;
-    }
-    
-    return vertexStride;
+        var vertexStride: Int
+        
+        switch quantization {
+        case .bits12:
+            vertexStride = 3
+        default:
+            vertexStride = 6
+        }
+        
+        if hasVertexNormals {
+            vertexStride += 1
+        }
+        
+        return vertexStride
     }
     /*
     var attributesNone = {

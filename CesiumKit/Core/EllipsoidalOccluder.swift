@@ -182,6 +182,34 @@ class EllipsoidalOccluder {
     }
     
     /**
+     * Computes a point that can be used for horizon culling from a list of positions.  If the point is below
+     * the horizon, all of the positions are guaranteed to be below the horizon as well.  The returned point
+     * is expressed in the ellipsoid-scaled space and is suitable for use with
+     * {@link EllipsoidalOccluder#isScaledSpacePointVisible}.
+     *
+     * @param {Cartesian3} directionToPoint The direction that the computed point will lie along.
+     *                     A reasonable direction to use is the direction from the center of the ellipsoid to
+     *                     the center of the bounding sphere computed from the positions.  The direction need not
+     *                     be normalized.
+     * @param {Cartesian3[]} points  The vertices from which to compute the horizon culling point.  The positions
+     *                   must be expressed in a reference frame centered at the ellipsoid and aligned with the
+     *                   ellipsoid's axes.
+     * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
+     * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
+     */
+    func computeHorizonCullingPointFromPoints (directionToPoint directionToPoint: Cartesian3, points: [Cartesian3]) -> Cartesian3 {
+        
+        let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
+        var resultMagnitude = 0.0
+        
+        for point in points {
+            let candidateMagnitude = computeMagnitude(ellipsoid, position: point, scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
+            resultMagnitude = max(resultMagnitude, candidateMagnitude)
+        }
+        return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)!
+    }
+    
+    /**
     * Computes a point that can be used for horizon culling of an rectangle.  If the point is below
     * the horizon, the ellipsoid-conforming rectangle is guaranteed to be below the horizon as well.
     * The returned point is expressed in the ellipsoid-scaled space and is suitable for use with

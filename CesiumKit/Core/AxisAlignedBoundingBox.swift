@@ -235,7 +235,7 @@ struct AxisAlignedBoundingBox: Equatable {
  * @param {AxisAlignedBoundingBox} [right] The second AxisAlignedBoundingBox.
  * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
  */
-func == (left: AxisAlignedBoundingBox, right: AxisAlignedBoundingBox) {
+func == (left: AxisAlignedBoundingBox, right: AxisAlignedBoundingBox) -> Bool {
     return left.center == right.center &&
         left.minimum == right.minimum &&
         left.maximum == right.maximum

@@ -254,16 +254,6 @@ class QuantizedMeshTerrainData: TerrainData {
             exaggeration: exaggeration
         )
  
-        //let vertexCount = _quantizedVertices.count / 3  + _westIndices.count + _southIndices.count + _eastIndices.count + _northIndices.count
-        
-        //var rtc = result.center;
-        //var minimumHeight = result.minimumHeight;
-        //var maximumHeight = result.maximumHeight;
-        //var boundingSphere = defaultValue(result.boundingSphere, that._boundingSphere);
-        //var obb = defaultValue(result.orientedBoundingBox, _orientedBoundingBox);
-        //var occlusionPoint = defaultValue(result.occludeePointInScaledSpace, that._horizonOcclusionPoint);
-        //var stride = result.vertexStride;
- 
         let terrainMesh = TerrainMesh(
             center: mesh.center,
             vertices: mesh.vertices,
@@ -273,7 +263,9 @@ class QuantizedMeshTerrainData: TerrainData {
             boundingSphere3D: mesh.boundingSphere ?? _boundingSphere,
             occludeePointInScaledSpace: mesh.occludeePointInScaledSpace ?? _horizonOcclusionPoint,
             vertexStride: mesh.vertexStride,
-            orientedBoundingBox: mesh.orientedBoundingBox)
+            orientedBoundingBox: mesh.orientedBoundingBox,
+            encoding: mesh.encoding,
+            exaggeration: exaggeration)
         completionBlock(terrainMesh)
         return true
     }

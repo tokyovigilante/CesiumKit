@@ -110,9 +110,9 @@ struct TerrainMesh {
      * The amount that this mesh was exaggerated.
      * @type {Number}
      */
-    let exaggeration: Float
+    let exaggeration: Double
     
-    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?, encoding: TerrainEncoding, exaggeration: Float) {
+    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?, encoding: TerrainEncoding, exaggeration: Double) {
         self.center = center
         self.vertices = vertices
         self.indices = indices

@@ -160,7 +160,7 @@ Matrix4.fromColumnMajorArray = function(values, result) {
     init(rowMajorArray grid: [Double]) {
         self.init(grid: grid)
    }
-/*
+
 /**
 * Computes a Matrix4 instance from a Matrix3 representing the rotation
 * and a Cartesian3 representing the translation.
@@ -170,34 +170,15 @@ Matrix4.fromColumnMajorArray = function(values, result) {
 * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
 * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
 */
-Matrix4.fromRotationTranslation = function(rotation, translation = Cartesian3.zero(), result) {
-    
-    if (!defined(result)) {
-        return new Matrix4(rotation[0], rotation[3], rotation[6], translation.x,
-            rotation[1], rotation[4], rotation[7], translation.y,
-            rotation[2], rotation[5], rotation[8], translation.z,
-            0.0,         0.0,         0.0,           1.0);
+    init (rotation: Matrix3, translation: Cartesian3 = Cartesian3.zero) {
+        self.init(
+            rotation[0,0], rotation[1,0], rotation[2,0], translation.x,
+            rotation[0,1], rotation[1,1], rotation[2,1], translation.y,
+            rotation[0,2], rotation[1,2], rotation[2,2], translation.z,
+            0.0,         0.0,         0.0,           1.0
+        )
     }
-    
-    result[0] = rotation[0];
-    result[1] = rotation[1];
-    result[2] = rotation[2];
-    result[3] = 0.0;
-    result[4] = rotation[3];
-    result[5] = rotation[4];
-    result[6] = rotation[5];
-    result[7] = 0.0;
-    result[8] = rotation[6];
-    result[9] = rotation[7];
-    result[10] = rotation[8];
-    result[11] = 0.0;
-    result[12] = translation.x;
-    result[13] = translation.y;
-    result[14] = translation.z;
-    result[15] = 1.0;
-    return result;
-};
-
+/*
 var scratchTrsRotation = new Matrix3();
 
 /**
@@ -280,7 +261,7 @@ Matrix4.fromTranslationQuaternionRotationScale = function(translation, rotation,
     
     return result;
 };
-
+*/
 /**
 * Creates a Matrix4 instance from a Cartesian3 representing the translation.
 *
@@ -290,64 +271,35 @@ Matrix4.fromTranslationQuaternionRotationScale = function(translation, rotation,
 *
 * @see Matrix4.multiplyByTranslation
 */
-Matrix4.fromTranslation = function(translation, result) {
-    //>>includeStart('debug', pragmas.debug);
-            if (!defined(translation)) {
-                throw new DeveloperError('translation is required.');
-            }
-            //>>includeEnd('debug');
-    return Matrix4.fromRotationTranslation(Matrix3.IDENTITY, translation, result);
-};
-
-/**
-* Computes a Matrix4 instance representing a non-uniform scale.
-*
-* @param {Cartesian3} scale The x, y, and z scale factors.
-* @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
-* @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
-*
-* @example
-* // Creates
-* //   [7.0, 0.0, 0.0, 0.0]
-* //   [0.0, 8.0, 0.0, 0.0]
-* //   [0.0, 0.0, 9.0, 0.0]
-* //   [0.0, 0.0, 0.0, 1.0]
-* var m = Cesium.Matrix4.fromScale(new Cartesian3(7.0, 8.0, 9.0));
-*/
-Matrix4.fromScale = function(scale, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(scale)) {
-        throw new DeveloperError('scale is required.');
+    init (translation: Cartesian3) {
+        self.init(rotation: Matrix3.identity, translation: translation)
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-        return new Matrix4(
-            scale.x, 0.0,     0.0,     0.0,
-            0.0,     scale.y, 0.0,     0.0,
-            0.0,     0.0,     scale.z, 0.0,
-            0.0,     0.0,     0.0,     1.0);
-    }
-    
-    result[0] = scale.x;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = 0.0;
-    result[5] = scale.y;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = 0.0;
-    result[9] = 0.0;
-    result[10] = scale.z;
-    result[11] = 0.0;
-    result[12] = 0.0;
-    result[13] = 0.0;
-    result[14] = 0.0;
-    result[15] = 1.0;
-    return result;
-};
 
+    /**
+     * Computes a Matrix4 instance representing a non-uniform scale.
+     *
+     * @param {Cartesian3} scale The x, y, and z scale factors.
+     * @param {Matrix4} [result] The object in which the result will be stored, if undefined a new instance will be created.
+     * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
+     *
+     * @example
+     * // Creates
+     * //   [7.0, 0.0, 0.0, 0.0]
+     * //   [0.0, 8.0, 0.0, 0.0]
+     * //   [0.0, 0.0, 9.0, 0.0]
+     * //   [0.0, 0.0, 0.0, 1.0]
+     * var m = Cesium.Matrix4.fromScale(new Cartesian3(7.0, 8.0, 9.0));
+     */
+    init (scale: Cartesian3) {
+        let diagonal = double4([scale.simdType.x, scale.simdType.y, scale.simdType.z, 1.0])
+        self.simdType = double4x4(diagonal: diagonal)
+        /*Matrix4(
+         scale.x, 0.0,     0.0,     0.0,
+         0.0,     scale.y, 0.0,     0.0,
+         0.0,     0.0,     scale.z, 0.0,
+         0.0,     0.0,     0.0,     1.0);*/
+    }
+/*
 /**
 * Computes a Matrix4 instance representing a uniform scale.
 *
