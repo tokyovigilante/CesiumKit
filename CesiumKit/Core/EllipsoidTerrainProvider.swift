@@ -64,8 +64,6 @@ class EllipsoidTerrainProvider: TerrainProvider {
     
     private var _levelZeroMaximumGeometricError: Double = 0.0
     
-    private let _terrainData: HeightmapTerrainData
-    
     var heightmapTerrainQuality = 0.25
     
     required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
@@ -80,11 +78,6 @@ class EllipsoidTerrainProvider: TerrainProvider {
         // Note: the 64 below does NOT need to match the actual vertex dimensions, because
         // the ellipsoid is significantly smoother than actual terrain.
         _levelZeroMaximumGeometricError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: ellipsoid, tileImageWidth: 64,numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
-
-        _terrainData = HeightmapTerrainData(
-            buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
-            width : 16,
-            height : 16)
     }
 
     /**
@@ -102,9 +95,12 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          returns undefined instead of a promise, it is an indication that too many requests are already
      *          pending and the request will be retried later.
      */
-    
     func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
-        completionBlock(_terrainData)
+        let terrainData = HeightmapTerrainData(
+            buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
+            width : 16,
+            height : 16)
+        completionBlock(terrainData)
     }
 
     /**

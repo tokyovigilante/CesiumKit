@@ -227,6 +227,11 @@ struct BoxGeometry {
     func createGeometry (context: Context) -> Geometry {
         let min = _minimum
         let max = _maximum
+        
+        /*if min == max {
+            return
+        }*/
+        
         let vertexFormat = _vertexFormat
         
         let attributes = GeometryAttributes()

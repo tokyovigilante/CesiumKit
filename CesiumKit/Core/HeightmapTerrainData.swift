@@ -63,13 +63,11 @@ import Foundation
 * var heightBuffer = new Uint16Array(buffer, 0, that._heightmapWidth * that._heightmapWidth);
 * var childTileMask = new Uint8Array(buffer, heightBuffer.byteLength, 1)[0];
 * var waterMask = new Uint8Array(buffer, heightBuffer.byteLength + 1, buffer.byteLength - heightBuffer.byteLength - 1);
-* var structure = Cesium.HeightmapTessellator.DEFAULT_STRUCTURE;
 * var terrainData = new Cesium.HeightmapTerrainData({
 *   buffer : heightBuffer,
 *   width : 65,
 *   height : 65,
 *   childTileMask : childTileMask,
-*   structure : structure,
 *   waterMask : waterMask
 * });
 */
@@ -83,7 +81,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     * @type {Uint8Array|Image|Canvas}
     */
     
-    private let _buffer: [UInt16]
+    private var _buffer: [UInt16]
     
     private let _width: Int
     
@@ -91,58 +89,37 @@ class HeightmapTerrainData: TerrainData, Equatable {
         
     private let _structure: HeightmapStructure
     
+    private var _skirtHeight: Double = 0.0
+    
+    private var _mesh: TerrainMesh? = nil
+    
     let waterMask: [UInt8]?
     
     let createdByUpsampling: Bool
     
     let childTileMask: Int
+    
+    init (buffer: [UInt16],
+          width: Int,
+          height: Int,
+          childTileMask: Int = 15,
+          structure: HeightmapStructure = HeightmapStructure(),
+          waterMask: [UInt8]? = nil,
+          createdByUpsampling: Bool = false)
+    {
+            
+        _buffer = buffer
+        _width = width
+        _height = height
         
-    init (
-        buffer: [UInt16],
-        width: Int,
-        height: Int,
-        childTileMask: Int = 15,
-        structure: HeightmapStructure = HeightmapStructure(),
-        waterMask: [UInt8]? = nil,
-        createdByUpsampling: Bool = false
-        ) {
-            
-            _buffer = buffer
-            _width = width
-            _height = height
-            
-            self.childTileMask = childTileMask
-            
-            _structure = structure
+        self.childTileMask = childTileMask
         
-            self.waterMask = waterMask
-            self.createdByUpsampling = createdByUpsampling
+        _structure = structure
+        
+        self.waterMask = waterMask
+        self.createdByUpsampling = createdByUpsampling
     }
     
-    /**
-    * Computes the terrain height at a specified longitude and latitude.
-    * @function
-    *
-    * @param {Rectangle} rectangle The rectangle covered by this terrain data.
-    * @param {Number} longitude The longitude in radians.
-    * @param {Number} latitude The latitude in radians.
-    * @returns {Number} The terrain height at the specified position.  If the position
-    *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
-    *          incorrect for positions far outside the rectangle.
-    */
-    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
-        
-        var heightSample: Double
-        
-        if _structure.stride > 1 {
-            heightSample = interpolateHeightWithStride(sourceHeights: _buffer, elementsPerHeight: _structure.elementsPerHeight, elementMultiplier: _structure.elementMultiplier, stride: _structure.stride, isBigEndian: _structure.isBigEndian, sourceRectangle: rectangle, width: _width, height: _height, longitude: longitude, latitude: latitude)
-        } else {
-            heightSample = interpolateHeight2(sourceHeights: _buffer, sourceRectangle: rectangle, width: _width, height: _height, longitude: longitude, latitude: latitude)
-        }
-        
-        return heightSample * _structure.heightScale + _structure.heightOffset
-    }
-        
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
     * @function
@@ -170,14 +147,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
             numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
         let thisLevelMaxError = levelZeroMaxError / Double(1 << level)
         
-        let skirtHeight = min(thisLevelMaxError * 4.0, 1000.0)
-        
+        _skirtHeight = min(thisLevelMaxError * 4.0, 1000.0)
+
         let numberOfAttributes = 6
         
         var arrayWidth = _width
         var arrayHeight = _height
         
-        if skirtHeight > 0.0 {
+        if _skirtHeight > 0.0 {
             arrayWidth += 2
             arrayHeight += 2
         }
@@ -186,7 +163,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
             heightmap: _buffer,
             height: _height,
             width: _width,
-            skirtHeight: skirtHeight,
+            skirtHeight: _skirtHeight,
             nativeRectangle: nativeRectangle,
             rectangle: rectangle,
             isGeographic: tilingScheme is GeographicTilingScheme,
@@ -208,7 +185,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
         let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: statistics.vertices, stride: numberOfAttributes, center: center)
-        let mesh = TerrainMesh(
+        _mesh = TerrainMesh(
             center: center,
             vertices: statistics.vertices,
             indices: EllipsoidTerrainProvider.getRegularGridIndices(width: arrayWidth, height: arrayHeight),
@@ -217,8 +194,39 @@ class HeightmapTerrainData: TerrainData, Equatable {
             boundingSphere3D: boundingSphere3D,
             occludeePointInScaledSpace: occludeePointInScaledSpace!,
             orientedBoundingBox: orientedBoundingBox)
-        completionBlock(mesh)
+        
+        // Free memory received from server after mesh is created.
+        _buffer = []
+        
+        completionBlock(_mesh)
         return true
+    }
+    
+    /**
+     * Computes the terrain height at a specified longitude and latitude.
+     *
+     * @param {Rectangle} rectangle The rectangle covered by this terrain data.
+     * @param {Number} longitude The longitude in radians.
+     * @param {Number} latitude The latitude in radians.
+     * @returns {Number} The terrain height at the specified position.  If the position
+     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
+     *          incorrect for positions far outside the rectangle.
+     */
+    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
+        
+        let heightSample: Double
+        
+        if let mesh = _mesh {
+            /*var encoding = this._mesh.encoding;
+             var skirtHeight = this._skirtHeight;
+             var exaggeration = this._mesh.exaggeration;
+             heightSample = interpolateMeshHeight(mesh.vertices, encoding, heightOffset, heightScale, skirtHeight, rectangle, width, height, longitude, latitude, exaggeration);*/
+        } else {
+            heightSample = interpolateHeight2(sourceHeights: _buffer, elementsPerHeight: _structure.elementsPerHeight, elementMultiplier: _structure.elementMultiplier, stride: _structure.stride, isBigEndian: _structure.isBigEndian, sourceRectangle: rectangle, width: _width, height: _height, longitude: longitude, latitude: latitude)
+            heightSample = heightSample * _structure.heightScale + _structure.heightOffset
+        }
+        
+        return heightSample
     }
 
     /**
@@ -241,183 +249,53 @@ class HeightmapTerrainData: TerrainData, Equatable {
         let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
         
-        let result: TerrainData
+        let stride = _structure.stride
         
-        if _width % 2 == 1 && _height % 2 == 1 {
-            // We have an odd number of posts greater than 2 in each direction,
-            // so we can upsample by simply dropping half of the posts in each direction.
-            result = upsampleBySubsetting(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
-        } else {
-            // The number of posts in at least one direction is even, so we must upsample
-            // by interpolating heights.
-            result = upsampleByInterpolating(tilingScheme, thisX: thisX, thisY: thisY, thisLevel: thisLevel, descendantX: descendantX, descendantY: descendantY, descendantLevel: descendantLevel)
+        var heights = [Float](count: _width * _height * stride, repeatedValue: 0.0)
+        
+        guard let mesh = _mesh else {
+            return false
         }
-        completionBlock(result)
-        return true
-    }
-    
-    private func upsampleBySubsetting(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
         
-        let levelDifference = 1
+        let buffer = mesh.vertices
+        let encoding = mesh.encoding
         
-        // Compute the post indices of the corners of this tile within its own level.
-        var leftPostIndex = descendantX * (_width - 1)
-        var rightPostIndex = leftPostIndex + _width - 1
-        var topPostIndex = descendantY * (_height - 1)
-        var bottomPostIndex = topPostIndex + _height - 1
-        
-        // Transform the post indices to the ancestor's level.
-        let twoToTheLevelDifference = 1 << levelDifference
-        leftPostIndex /= twoToTheLevelDifference
-        rightPostIndex /= twoToTheLevelDifference
-        topPostIndex /= twoToTheLevelDifference
-        bottomPostIndex /= twoToTheLevelDifference
-        
-        // Adjust the indices to be relative to the northwest corner of the source tile.
-        let sourceLeft = thisX * (_width - 1)
-        let sourceTop = thisY * (_height - 1)
-        leftPostIndex -= sourceLeft
-        rightPostIndex -= sourceLeft
-        topPostIndex -= sourceTop
-        bottomPostIndex -= sourceTop
-    
-        let leftInteger = leftPostIndex | 0
-        let rightInteger = rightPostIndex | 0
-        let topInteger = topPostIndex | 0
-        let bottomInteger = bottomPostIndex | 0
-        
-        let upsampledWidth = (rightInteger - leftInteger + 1)
-        let upsampledHeight = (bottomInteger - topInteger + 1)
-        
-        let sourceHeights = _buffer
-        
-        // Copy the relevant posts.
-        let numberOfHeights = upsampledWidth * upsampledHeight
-        let numberOfElements = numberOfHeights * _structure.stride
-        var heights = [UInt16](count: numberOfElements, repeatedValue: 0)
-        
-        var outputIndex = 0
-        
-        if _structure.stride > 1 {
-            for i in topInteger...bottomInteger {
-                for j in leftInteger...rightInteger {
-                    let index = (j * _width + i) * _structure.stride
-                    for k in 0..<_structure.stride {
-                        heights[outputIndex] = sourceHeights[index + k]
-                        outputIndex += 1
-                    }
-                }
-            }
-        } else {
-            for j in topInteger...bottomInteger {
-                for i in leftInteger...rightInteger {
-                    heights[outputIndex] = sourceHeights[j * _width + i]
-                    outputIndex += 1
-                }
-            }
-        }
-
-        return HeightmapTerrainData(
-            buffer : heights,
-            width : upsampledWidth,
-            height : upsampledHeight,
-            childTileMask : 0,
-            structure : _structure,
-            createdByUpsampling : true)
-    }
-    
-    private func upsampleByInterpolating(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int) -> HeightmapTerrainData {
-
-        let sourceHeights = _buffer
-
-        let numberOfElements = _width * _height * _structure.stride
-        
-        var heights = [Double](count: numberOfElements, repeatedValue: 0.0)
-
         // PERFORMANCE_IDEA: don't recompute these rectangles - the caller already knows them.
         let sourceRectangle = tilingScheme.tileXYToRectangle(x: thisX, y: thisY, level: thisLevel)
         let destinationRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
         
-        var latitude, longitude: Double
+        let heightOffset = _structure.heightOffset
+        let heightScale = _structure.heightScale
+        let exaggeration = mesh.exaggeration
         
-        if _structure.stride > 1 {
-            let elementsPerHeight = _structure.elementsPerHeight
-            let elementMultiplier = _structure.elementMultiplier
-            let isBigEndian = _structure.isBigEndian
-            
-            let divisor = pow(elementMultiplier, Double(elementsPerHeight - 1))
-            
-            for j in 0..<_height {
-                latitude = Math.lerp(
-                    p: destinationRectangle.north,
-                    q: destinationRectangle.south,
-                    time: Double(j) / (Double(_height) - 1.0)
-                )
-                for i in 0..<_width {
-                    longitude = Math.lerp(
-                        p: destinationRectangle.west,
-                        q: destinationRectangle.east,
-                        time: Double(i) / (Double(_width) - 1.0)
-                    )
-                    let heightSample = interpolateHeightWithStride(
-                        sourceHeights: sourceHeights,
-                        elementsPerHeight: elementsPerHeight,
-                        elementMultiplier: elementMultiplier,
-                        stride: _structure.stride,
-                        isBigEndian: isBigEndian,
-                        sourceRectangle: sourceRectangle,
-                        width: _width,
-                        height: _height,
-                        longitude: longitude,
-                        latitude: latitude)
-                    
-                    setHeight(
-                        heights: &heights,
-                        elementsPerHeight: elementsPerHeight,
-                        elementMultiplier: elementMultiplier,
-                        divisor: divisor,
-                        stride: _structure.stride,
-                        isBigEndian: isBigEndian,
-                        index: j * _width + i,
-                        height: heightSample
-                    )
-                }
-            }
-        } else {
-            for j in 0..<_height {
-                latitude = Math.lerp(
-                    p: destinationRectangle.north,
-                    q: destinationRectangle.south,
-                    time: Double(j) / Double(_height - 1))
-                for i in 0..<_width {
-                    longitude = Math.lerp(
-                        p: destinationRectangle.west,
-                        q: destinationRectangle.east,
-                        time: Double(i) / Double(_width - 1)
-                    )
-
-                    heights[j * _width + i] = interpolateHeight2(
-                        sourceHeights: sourceHeights,
-                        sourceRectangle: sourceRectangle,
-                        width: _width,
-                        height: _height,
-                        longitude: longitude,
-                        latitude: latitude
-                    )
-                }
+        let elementsPerHeight = _structure.elementsPerHeight
+        let elementMultiplier = _structure.elementMultiplier
+        let isBigEndian = _structure.isBigEndian
+        
+        let divisor = pow(elementMultiplier, Double(elementsPerHeight - 1))
+        
+        for j in 0..<_height {
+            let latitude = Math.lerp(p: destinationRectangle.north, q: destinationRectangle.south, time: Double(j) / Double(_height - 1))
+            for i in 0..<_width {
+                var longitude = Math.lerp(p: destinationRectangle.west, q: destinationRectangle.east, time: Double(i) / Double(_width - 1))
+                var heightSample = interpolateMeshHeight(buffer, encoding, heightOffset, heightScale, _skirtHeight, sourceRectangle, _width, _height, longitude, latitude, exaggeration);
+                setHeight(heights, elementsPerHeight, elementMultiplier, divisor, stride, isBigEndian, j * _width + i, heightSample)
             }
         }
-        return HeightmapTerrainData(
-            buffer: heights.map({ UInt16($0) }),
-            width: _width,
-            height: _height,
-            childTileMask: 0,
-            structure: _structure,
-            createdByUpsampling: true
-        )
+        
+        return new HeightmapTerrainData({
+            buffer : heights,
+            width : width,
+            height : height,
+            childTileMask : 0,
+            structure : this._structure,
+            createdByUpsampling : true
+        });
+        completionBlock(result)
+        return true
     }
     
-    private func interpolateHeight2(sourceHeights sourceHeights: [UInt16], sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
+    private func interpolateHeight2(sourceHeights sourceHeights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
         let fromWest = (longitude - sourceRectangle.west) * Double(width - 1) / (sourceRectangle.east - sourceRectangle.west)
         let fromSouth = (latitude - sourceRectangle.south) * Double(height - 1) / (sourceRectangle.north - sourceRectangle.south)
         
@@ -441,28 +319,43 @@ class HeightmapTerrainData: TerrainData, Equatable {
         southInteger = height - 1 - southInteger
         northInteger = height - 1 - northInteger
         
-        let southwestHeight = Double(sourceHeights[southInteger * width + westInteger])
-        let southeastHeight = Double(sourceHeights[southInteger * width + eastInteger])
-        let northwestHeight = Double(sourceHeights[northInteger * width + westInteger])
-        let northeastHeight = Double(sourceHeights[northInteger * width + eastInteger])
+        let southwestHeight = getHeight(heights: sourceHeights, elementsPerHeight: elementsPerHeight, elementMultiplier: elementMultiplier, stride: stride, isBigEndian: isBigEndian, index: southInteger * width + westInteger)
+        let southeastHeight = getHeight(heights: sourceHeights, elementsPerHeight: elementsPerHeight, elementMultiplier: elementMultiplier, stride: stride, isBigEndian: isBigEndian, index: southInteger * width + eastInteger)
+        let northwestHeight = getHeight(heights: sourceHeights, elementsPerHeight: elementsPerHeight, elementMultiplier: elementMultiplier, stride: stride, isBigEndian: isBigEndian, index: northInteger * width + westInteger)
+        let northeastHeight = getHeight(heights: sourceHeights, elementsPerHeight: elementsPerHeight, elementMultiplier: elementMultiplier, stride: stride, isBigEndian: isBigEndian, index: northInteger * width + eastInteger)
         
         return triangleInterpolateHeight(dX: dx, dY: dy, southwestHeight: southwestHeight, southeastHeight: southeastHeight, northwestHeight: northwestHeight, northeastHeight: northeastHeight)
     }
     
-    private func interpolateHeightWithStride(sourceHeights sourceHeights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double) -> Double {
-        let fromWest = (longitude - sourceRectangle.west) * (Double(width) - 1.0) / (sourceRectangle.east - sourceRectangle.west)
-        let fromSouth = (latitude - sourceRectangle.south) * (Double(height) - 1.0) / (sourceRectangle.north - sourceRectangle.south)
+    private func interpolateMeshHeight(buffer: [Float], encoding: TerrainEncoding, heightOffset: Float, heightScale: Float, skirtHeight: Float, sourceRectangle: Rectangle, width: Int, height: Int, longitude: Double, latitude: Double, exaggeration: Float)
+    {
+
+        var fromWest = (longitude - sourceRectangle.west) * Double(width - 1) / (sourceRectangle.east - sourceRectangle.west)
+        var fromSouth = (latitude - sourceRectangle.south) * Double(height - 1) / (sourceRectangle.north - sourceRectangle.south)
         
+        var width = width
+        var height = height
+        
+        if skirtHeight > 0 {
+            fromWest += 1.0
+            fromSouth += 1.0
+            
+            width += 2
+            height += 2
+        }
+    
+        let widthEdge = skirtHeight > 0 ? width - 1 : width
         var westInteger = Int(floor(fromWest))
         var eastInteger = westInteger + 1
-        if eastInteger >= width {
+        if eastInteger >= widthEdge {
             eastInteger = width - 1
             westInteger = width - 2
         }
         
+        let heightEdge = skirtHeight > 0 ? height - 1 : height
         var southInteger = Int(floor(fromSouth))
         var northInteger = southInteger + 1
-        if northInteger >= height {
+        if northInteger >= heightEdge {
             northInteger = height - 1
             southInteger = height - 2
         }
@@ -473,48 +366,14 @@ class HeightmapTerrainData: TerrainData, Equatable {
         southInteger = height - 1 - southInteger
         northInteger = height - 1 - northInteger
         
-        let southwestHeight = getHeight(
-            heights: sourceHeights,
-            elementsPerHeight: elementsPerHeight,
-            elementMultiplier: elementMultiplier,
-            stride: stride,
-            isBigEndian: isBigEndian,
-            index: southInteger * width + westInteger
-        )
-        let southeastHeight = getHeight(
-            heights: sourceHeights,
-            elementsPerHeight: elementsPerHeight,
-            elementMultiplier: elementMultiplier,
-            stride: stride,
-            isBigEndian: isBigEndian,
-            index: southInteger * width + eastInteger
-        )
-        let northwestHeight = getHeight(
-            heights: sourceHeights,
-            elementsPerHeight: elementsPerHeight,
-            elementMultiplier: elementMultiplier,
-            stride: stride,
-            isBigEndian: isBigEndian,
-            index: northInteger * width + westInteger
-        )
-        let northeastHeight = getHeight(
-            heights: sourceHeights,
-            elementsPerHeight: elementsPerHeight,
-            elementMultiplier: elementMultiplier,
-            stride: stride,
-            isBigEndian: isBigEndian,
-            index: northInteger * width + eastInteger
-        )
+        let southwestHeight = (encoding.decodeHeight(buffer, southInteger * width + westInteger) / exaggeration - heightOffset) / heightScale
+        let southeastHeight = (encoding.decodeHeight(buffer, southInteger * width + eastInteger) / exaggeration - heightOffset) / heightScale
+        let northwestHeight = (encoding.decodeHeight(buffer, northInteger * width + westInteger) / exaggeration - heightOffset) / heightScale
+        let northeastHeight = (encoding.decodeHeight(buffer, northInteger * width + eastInteger) / exaggeration - heightOffset) / heightScale
         
-        return triangleInterpolateHeight(
-            dX: dx,
-            dY: dy,
-            southwestHeight: southwestHeight,
-            southeastHeight: southeastHeight,
-            northwestHeight: northwestHeight,
-            northeastHeight: northeastHeight)
+        return triangleInterpolateHeight(dx, dy, southwestHeight, southeastHeight, northwestHeight, northeastHeight)
     }
-    
+
     private func triangleInterpolateHeight(dX dX: Double, dY: Double, southwestHeight: Double, southeastHeight: Double, northwestHeight: Double, northeastHeight: Double) -> Double {
         // The HeightmapTessellator bisects the quad from southwest to northeast.
         if (dY < dX) {

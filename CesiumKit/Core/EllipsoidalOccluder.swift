@@ -33,28 +33,30 @@ import Foundation
 class EllipsoidalOccluder {
     
     var ellipsoid: Ellipsoid
+    
     var cameraPosition: Cartesian3 = Cartesian3() {
-    didSet {
-        // See http://cesiumjs.org/2013/04/25/Horizon-culling/
-        self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
-        self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared - 1.0;
+        didSet {
+            // See http://cesiumjs.org/2013/04/25/Horizon-culling/
+            _cameraPositionInScaledSpace = ellipsoid.transformPositionToScaledSpace(cameraPosition)
+            _distanceToLimbInScaledSpaceSquared = _cameraPositionInScaledSpace.magnitudeSquared - 1.0
+        }
     }
-    }
-    var cameraPositionInScaledSpace: Cartesian3
-    var distanceToLimbInScaledSpaceSquared: Double
+    
+    private var _cameraPositionInScaledSpace: Cartesian3
+    private var _distanceToLimbInScaledSpaceSquared: Double
     
     init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3? = nil) {
         self.ellipsoid = ellipsoid
         
-        if cameraPosition != nil {
-            self.cameraPosition = cameraPosition!
-            self.cameraPositionInScaledSpace = self.ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
-            self.distanceToLimbInScaledSpaceSquared = self.cameraPositionInScaledSpace.magnitudeSquared - 1.0;
+        if let cameraPosition = cameraPosition {
+            self.cameraPosition = cameraPosition
+            _cameraPositionInScaledSpace = ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
+            _distanceToLimbInScaledSpaceSquared = _cameraPositionInScaledSpace.magnitudeSquared - 1.0
         }
         else {
             self.cameraPosition = Cartesian3()
-            self.cameraPositionInScaledSpace = Cartesian3()
-            self.distanceToLimbInScaledSpaceSquared = 0.0
+            _cameraPositionInScaledSpace = Cartesian3()
+            _distanceToLimbInScaledSpaceSquared = 0.0
         }
     }
     
@@ -98,12 +100,14 @@ class EllipsoidalOccluder {
     * var scaledSpacePoint = ellipsoid.transformPositionToScaledSpace(point);
     * occluder.isScaledSpacePointVisible(scaledSpacePoint); //returns true
     */
-    func isScaledSpacePointVisible(occludeeScaledSpacePosition: Cartesian3) -> Bool {
+    func isScaledSpacePointVisible (occludeeScaledSpacePosition: Cartesian3) -> Bool {
         // See http://cesiumjs.org/2013/04/25/Horizon-culling/
-        let vt = occludeeScaledSpacePosition.subtract(cameraPositionInScaledSpace)
-        let vtDotVc = -vt.dot(cameraPositionInScaledSpace)
-        let isOccluded = vtDotVc > distanceToLimbInScaledSpaceSquared &&
-            vtDotVc * vtDotVc / vt.magnitudeSquared > distanceToLimbInScaledSpaceSquared
+        let vt = occludeeScaledSpacePosition.subtract(_cameraPositionInScaledSpace)
+        let vtDotVc = -vt.dot(_cameraPositionInScaledSpace)
+        // If vhMagnitudeSquared < 0 then we are below the surface of the ellipsoid and
+        // in this case, set the culling plane to be on V.
+        var isOccluded = _distanceToLimbInScaledSpaceSquared < 0 ? vtDotVc > 0 : (vtDotVc > _distanceToLimbInScaledSpaceSquared &&
+            vtDotVc * vtDotVc / vt.magnitudeSquared > _distanceToLimbInScaledSpaceSquared)
         return !isOccluded
     }
     

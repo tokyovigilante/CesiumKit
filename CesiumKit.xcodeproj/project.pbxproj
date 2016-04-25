@@ -374,6 +374,12 @@
 		943416BA1BC8D864001A40C8 /* ComputeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416B81BC8D864001A40C8 /* ComputeCommand.swift */; };
 		943416BC1BC8D932001A40C8 /* ComputeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416BB1BC8D932001A40C8 /* ComputeEngine.swift */; };
 		943416BD1BC8D932001A40C8 /* ComputeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943416BB1BC8D932001A40C8 /* ComputeEngine.swift */; };
+		9438E0DD1CCCF4350095A86F /* TerrainEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */; };
+		9438E0DE1CCCF4350095A86F /* TerrainEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */; };
+		9438E0E01CCD75E60095A86F /* TerrainQuantization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */; };
+		9438E0E11CCD75E60095A86F /* TerrainQuantization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */; };
+		9438E0E31CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */; };
+		9438E0E41CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */; };
 		944787D91A3D8BF200FFAD81 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		944787DA1A3D8BF500FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		9447FD971C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */; };
@@ -881,6 +887,9 @@
 		943416BB1BC8D932001A40C8 /* ComputeEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComputeEngine.swift; sourceTree = "<group>"; };
 		943744F51945D09F0017FE14 /* Cartographic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cartographic.swift; sourceTree = "<group>"; };
 		943744F71945D5320017FE14 /* Ellipsoid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipsoid.swift; sourceTree = "<group>"; };
+		9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainEncoding.swift; sourceTree = "<group>"; };
+		9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainQuantization.swift; sourceTree = "<group>"; };
+		9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxisAlignedBoundingBox.swift; sourceTree = "<group>"; };
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* MapProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapProjection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
@@ -1403,6 +1412,9 @@
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */,
+				9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */,
+				9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */,
 				947E32311BC0D485001A40C8 /* AttributeCompression.swift */,
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
@@ -1438,8 +1450,8 @@
 				94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */,
 				949ABA8019410120009B1183 /* Intersect.swift */,
 				94B87DCE194D71A200012DC4 /* Intersectable.swift */,
-				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
 				94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */,
+				94E5D5A61AC7EAA30095A86F /* IntersectionTests.swift */,
 				9417EC441942C31B00586516 /* Interval.swift */,
 				945B6A991C2577730095A86F /* JulianDate.swift */,
 				94B9DB5D1AC630020095A86F /* KeyboardEventModifier.swift */,
@@ -2254,12 +2266,14 @@
 				9413B81D1A37B94500FFAD81 /* TileUniformMap.swift in Sources */,
 				9413B8051A37B94500FFAD81 /* ImageryLayerCollection.swift in Sources */,
 				9413B79F1A37B92900FFAD81 /* Array.swift in Sources */,
+				9438E0E31CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */,
 				94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */,
 				9413B7D41A37B93100FFAD81 /* WebMercatorProjection.swift in Sources */,
 				9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */,
 				9413B7A31A37B93100FFAD81 /* Cartesian2.swift in Sources */,
 				9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */,
 				9413B7AF1A37B93100FFAD81 /* GeographicProjection.swift in Sources */,
+				9438E0DD1CCCF4350095A86F /* TerrainEncoding.swift in Sources */,
 				9413B7BC1A37B93100FFAD81 /* Math.swift in Sources */,
 				9413B8091A37B94500FFAD81 /* Pass.swift in Sources */,
 				9413B7B81A37B93100FFAD81 /* Intersect.swift in Sources */,
@@ -2308,6 +2322,7 @@
 				9413B7AE1A37B93100FFAD81 /* Event.swift in Sources */,
 				9413B7FC1A37B94500FFAD81 /* Frustum.swift in Sources */,
 				9413B7D01A37B93100FFAD81 /* TilingScheme.swift in Sources */,
+				9438E0E01CCD75E60095A86F /* TerrainQuantization.swift in Sources */,
 				94EFB0591C84D7CD0095A86F /* JSONObject.swift in Sources */,
 				942F56BA1C5D6D3A0095A86F /* VerticalOrigin.swift in Sources */,
 				94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */,
@@ -2403,6 +2418,7 @@
 				947821081B5A2D7B0095A86F /* BoundingSphere.swift in Sources */,
 				947821091B5A2D7B0095A86F /* Cartesian2.swift in Sources */,
 				9478210A1B5A2D7B0095A86F /* Cartesian3.swift in Sources */,
+				9438E0E11CCD75E60095A86F /* TerrainQuantization.swift in Sources */,
 				946D129F1C2CBF40001A40C8 /* ImageExtensions.swift in Sources */,
 				949E09F21BE452B50095A86F /* ImageryLayerFeatureInfo.swift in Sources */,
 				9478210B1B5A2D7B0095A86F /* Cartesian4.swift in Sources */,
@@ -2438,6 +2454,7 @@
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
 				94E9B5DC1C0170E7001A40C8 /* SceneTransforms.swift in Sources */,
+				9438E0DE1CCCF4350095A86F /* TerrainEncoding.swift in Sources */,
 				947821241B5A2D7B0095A86F /* Math.swift in Sources */,
 				947821251B5A2D7B0095A86F /* Matrix2.swift in Sources */,
 				942A703C1BF9D8C8001A40C8 /* OIT.swift in Sources */,
@@ -2559,6 +2576,7 @@
 				94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */,
 				94EFB0521C84D7CD0095A86F /* Encoder.swift in Sources */,
 				947821701B5A2D7C0095A86F /* ImageryLayer.swift in Sources */,
+				9438E0E41CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */,
 				947821711B5A2D7C0095A86F /* ImageryLayerCollection.swift in Sources */,
 				947821721B5A2D7C0095A86F /* ImageryLayerUniformMap.swift in Sources */,
 				947821731B5A2D7C0095A86F /* ImageryProvider.swift in Sources */,

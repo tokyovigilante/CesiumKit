@@ -109,6 +109,10 @@ struct EllipsoidGeometry {
     func createGeometry (context: Context) -> Geometry {
         
         let ellipsoid = Ellipsoid(radii: _radii)
+        
+        /*if ((radii.x <= 0) || (radii.y <= 0) || (radii.z <= 0)) {
+            return;
+        }*/
     
         // The extra slice and stack are for duplicating points at the x axis and poles.
         // We need the texture coordinates to interpolate from (2 * pi - delta) to 2 * pi instead of
@@ -160,7 +164,7 @@ struct EllipsoidGeometry {
     
         for _ in 0..<slicePartitions {
             // duplicate first point for correct
-            // texture coordinates at the north pole.
+            // texture coordinates at the sorth pole.
             positions.append(0.0)
             positions.append(0.0)
             positions.append(-_radii.z)
@@ -263,7 +267,13 @@ struct EllipsoidGeometry {
             }
         }
         
-        for i in 0..<(stackPartitions-1) {
+        for j in 0..<(slicePartitions - 1) {
+            indices.append(slicePartitions + j)
+            indices.append(slicePartitions + j + 1)
+            indices.append(j + 1)
+        }
+        
+        for i in 0..<(stackPartitions - 1) {
             let topOffset = i * slicePartitions
             let bottomOffset = (i + 1) * slicePartitions
             
@@ -276,6 +286,16 @@ struct EllipsoidGeometry {
                 indices.append(topOffset + j + 1)
                 indices.append(topOffset + j)
             }
+        }
+        
+        let i = stackPartitions - 2
+        let topOffset = i * slicePartitions
+        let bottomOffset = (i + 1) * slicePartitions
+        
+        for j in 0..<(slicePartitions - 1) {
+            indices.append(bottomOffset + j)
+            indices.append(topOffset + j + 1)
+            indices.append(topOffset + j)
         }
         
         return  Geometry(

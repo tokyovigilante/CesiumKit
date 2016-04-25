@@ -100,7 +100,19 @@ struct TerrainMesh {
     */
     let orientedBoundingBox: OrientedBoundingBox?
     
-    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?) {
+     /**
+     * Information for decoding the mesh vertices.
+     * @type {TerrainEncoding}
+     */
+    let encoding: TerrainEncoding
+    
+    /**
+     * The amount that this mesh was exaggerated.
+     * @type {Number}
+     */
+    let exaggeration: Float
+    
+    init (center: Cartesian3, vertices: [Float], indices: [Int], minimumHeight: Double, maximumHeight: Double, boundingSphere3D: BoundingSphere, occludeePointInScaledSpace: Cartesian3, vertexStride: Int = 6, orientedBoundingBox: OrientedBoundingBox?, encoding: TerrainEncoding, exaggeration: Float) {
         self.center = center
         self.vertices = vertices
         self.indices = indices
@@ -110,5 +122,7 @@ struct TerrainMesh {
         self.occludeePointInScaledSpace = occludeePointInScaledSpace
         self.stride = vertexStride
         self.orientedBoundingBox = orientedBoundingBox
+        self.encoding = encoding
+        self.exaggeration = exaggeration
     }
 }
