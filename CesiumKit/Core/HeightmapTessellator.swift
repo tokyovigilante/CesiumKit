@@ -18,17 +18,9 @@ import simd
 class HeightmapTessellator {
 
     /**
-    * Fills an array of vertices from a heightmap image.  On return, the vertex data is in the order
-    * [X, Y, Z, H, U, V], where X, Y, and Z represent the Cartesian position of the vertex, H is the
-    * height above the ellipsoid, and U and V are the texture coordinates.
+    * Fills an array of vertices from a heightmap image.
     *
     * @param {Object} options Object with the following properties:
-    * @param {Array|Float32Array} options.vertices The array to use to store computed vertices.
-    *                             If options.skirtHeight is 0.0, the array should have
-    *                             options.width * options.height * 6 elements.  If
-    *                             options.skirtHeight is greater than 0.0, the array should
-    *                             have (options.width + 2) * (options.height * 2) * 6
-    *                             elements.
     * @param {TypedArray} options.heightmap The heightmap to tessellate.
     * @param {Number} options.width The width of the heightmap, in height samples.
     * @param {Number} options.height The height of the heightmap, in height samples.
@@ -44,6 +36,7 @@ class HeightmapTessellator {
     * @param {Cartesian3} [options.relativetoCenter=Cartesian3.ZERO] The positions will be computed as <code>Cartesian3.subtract(worldPosition, relativeToCenter)</code>.
     * @param {Ellipsoid} [options.ellipsoid=Ellipsoid.WGS84] The ellipsoid to which the heightmap applies.
     * @param {Object} [options.structure] An object describing the structure of the height data.
+    * @param {Number} [options.exaggeration=1.0] The scale used to exaggerate the terrain.
     * @param {Number} [options.structure.heightScale=1.0] The factor by which to multiply height samples in order to obtain
     *                 the height above the heightOffset, in meters.  The heightOffset is added to the resulting
     *                 height after multiplying by the scale.
@@ -277,6 +270,8 @@ class HeightmapTessellator {
                 let point = toENU.multiplyByPoint(position)
                 minimum = point.minimumByComponent(minimum)
                 maximum = point.minimumByComponent(maximum)
+                hMin = min(hMin, heightSample)
+
             }
         }
         

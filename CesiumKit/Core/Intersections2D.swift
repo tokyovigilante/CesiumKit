@@ -193,7 +193,7 @@ class Intersections2D {
         // else Completely behind threshold
         return result
     }
-     /*
+    
      /**
      * Compute the barycentric coordinates of a 2D position within a 2D triangle.
      *
@@ -213,57 +213,21 @@ class Intersections2D {
      * var result = Cesium.Intersections2D.computeBarycentricCoordinates(0.0, 0.0, 0.0, 1.0, -1, -0.5, 1, -0.5);
      * // result === new Cesium.Cartesian3(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0);
      */
-     Intersections2D.computeBarycentricCoordinates = function(x, y, x1, y1, x2, y2, x3, y3, result) {
-     //>>includeStart('debug', pragmas.debug);
-     if (!defined(x)) {
-     throw new DeveloperError('x is required.');
-     }
-     if (!defined(y)) {
-     throw new DeveloperError('y is required.');
-     }
-     if (!defined(x1)) {
-     throw new DeveloperError('x1 is required.');
-     }
-     if (!defined(y1)) {
-     throw new DeveloperError('y1 is required.');
-     }
-     if (!defined(x2)) {
-     throw new DeveloperError('x2 is required.');
-     }
-     if (!defined(y2)) {
-     throw new DeveloperError('y2 is required.');
-     }
-     if (!defined(x3)) {
-     throw new DeveloperError('x3 is required.');
-     }
-     if (!defined(y3)) {
-     throw new DeveloperError('y3 is required.');
-     }
-     //>>includeEnd('debug');
-     
-     var x1mx3 = x1 - x3;
-     var x3mx2 = x3 - x2;
-     var y2my3 = y2 - y3;
-     var y1my3 = y1 - y3;
-     var inverseDeterminant = 1.0 / (y2my3 * x1mx3 + x3mx2 * y1my3);
-     var ymy3 = y - y3;
-     var xmx3 = x - x3;
-     var l1 = (y2my3 * xmx3 + x3mx2 * ymy3) * inverseDeterminant;
-     var l2 = (-y1my3 * xmx3 + x1mx3 * ymy3) * inverseDeterminant;
-     var l3 = 1.0 - l1 - l2;
-     
-     if (defined(result)) {
-     result.x = l1;
-     result.y = l2;
-     result.z = l3;
-     return result;
-     } else {
-     return new Cartesian3(l1, l2, l3);
-     }
-     };
-     
-     return Intersections2D;
-     });
+    static func computeBarycentricCoordinates (x x: Double, y: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Cartesian3 {
+        
+        let x1mx3 = x1 - x3
+        let x3mx2 = x3 - x2
+        let y2my3 = y2 - y3
+        let y1my3 = y1 - y3
+        let inverseDeterminant = 1.0 / (y2my3 * x1mx3 + x3mx2 * y1my3)
+        let ymy3 = y - y3
+        let xmx3 = x - x3
+        let l1 = (y2my3 * xmx3 + x3mx2 * ymy3) * inverseDeterminant
+        let l2 = (-y1my3 * xmx3 + x1mx3 * ymy3) * inverseDeterminant
+        let l3 = 1.0 - l1 - l2
+        
+        return Cartesian3(x: l1, y: l2, z: l3)
+    }
 
- */
+
 }

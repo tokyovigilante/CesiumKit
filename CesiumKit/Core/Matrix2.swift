@@ -578,6 +578,10 @@ public struct Matrix2 {
 
 extension Matrix2: Packable {
     
+    var length: Int {
+        return Matrix2.packedLength()
+    }
+    
     public static func packedLength() -> Int {
         return 4
     }

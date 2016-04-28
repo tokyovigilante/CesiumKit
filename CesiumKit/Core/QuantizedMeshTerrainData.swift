@@ -9,6 +9,8 @@
 import Foundation
 import simd
 
+private let maxShort = Double(Int16.max)
+
 /**
  * Terrain data for a single tile where the terrain data is represented as a quantized mesh.  A quantized
  * mesh consists of three vertex attributes, longitude, latitude, and height.  All attributes are expressed
@@ -85,17 +87,17 @@ import simd
  */
 class QuantizedMeshTerrainData: TerrainData {
     
-    private let _quantizedVertices: [UInt16]
+    private var _quantizedVertices: [UInt16]!
     
-    private let _uValues: ArraySlice<UInt16>
+    private var _uValues: ArraySlice<UInt16>!
     
-    private let _vValues: ArraySlice<UInt16>
+    private var _vValues: ArraySlice<UInt16>!
     
-    private let _heightValues: ArraySlice<UInt16>
+    private var _heightValues: ArraySlice<UInt16>!
     
-    private let _encodedNormals: [UInt8]?
+    private var _encodedNormals: [UInt8]?
     
-    private let _indices: [Int]
+    private var _indices: [Int]!
     
     private let _minimumHeight: Double
     
@@ -116,6 +118,8 @@ class QuantizedMeshTerrainData: TerrainData {
     private let _southSkirtHeight: Double
     private let _eastSkirtHeight: Double
     private let _northSkirtHeight: Double
+    
+    private var _mesh: TerrainMesh? = nil
     
     /**
      * The water mask included in this terrain data, if any.  A water mask is a rectangular
@@ -234,7 +238,7 @@ class QuantizedMeshTerrainData: TerrainData {
  */
     func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
     {
-        let mesh = QuantizedMeshTerrainGenerator.computeMesh(
+        let result = QuantizedMeshTerrainGenerator.computeMesh(
             minimumHeight: _minimumHeight,
             maximumHeight: _maximumHeight,
             quantizedVertices: _quantizedVertices,
@@ -254,19 +258,35 @@ class QuantizedMeshTerrainData: TerrainData {
             exaggeration: exaggeration
         )
  
-        let terrainMesh = TerrainMesh(
-            center: mesh.center,
-            vertices: mesh.vertices,
-            indices: mesh.indices,
-            minimumHeight: mesh.minimumHeight,
-            maximumHeight: mesh.maximumHeight,
-            boundingSphere3D: mesh.boundingSphere ?? _boundingSphere,
-            occludeePointInScaledSpace: mesh.occludeePointInScaledSpace ?? _horizonOcclusionPoint,
-            vertexStride: mesh.vertexStride,
-            orientedBoundingBox: mesh.orientedBoundingBox,
-            encoding: mesh.encoding,
-            exaggeration: exaggeration)
-        completionBlock(terrainMesh)
+        _mesh = TerrainMesh(
+            center: result.center,
+            vertices: result.vertices,
+            indices: result.indices,
+            minimumHeight: result.minimumHeight,
+            maximumHeight: result.maximumHeight,
+            boundingSphere3D: result.boundingSphere ?? _boundingSphere,
+            occludeePointInScaledSpace: result.occludeePointInScaledSpace ?? _horizonOcclusionPoint,
+            vertexStride: result.vertexStride,
+            orientedBoundingBox: result.orientedBoundingBox,
+            encoding: result.encoding,
+            exaggeration: exaggeration
+        )
+        
+        //Free memory received from server after mesh is created.
+        
+        _quantizedVertices = nil
+        _encodedNormals = nil
+        _indices = nil
+        
+        _uValues = nil
+        _vValues = nil
+        _heightValues = nil
+        
+        _westIndices = nil
+        _southIndices = nil
+        _eastIndices = nil
+        _northIndices = nil
+        completionBlock(_mesh!)
         return true
     }
  /*
@@ -295,17 +315,17 @@ class QuantizedMeshTerrainData: TerrainData {
             completionBlock(nil)
         }
         
+        if _mesh != nil {
+            completionBlock(nil)
+            return false
+        }
+        
         let isEastChild = thisX * 2 != descendantX
         let isNorthChild = thisY * 2 == descendantY
         
         let ellipsoid = tilingScheme.ellipsoid
         let childRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
-        /*if (thisX == 379 && thisY == 90 && thisLevel == 8 && descendantX == 759 && descendantY == 181 && descendantLevel == 9) {
-            print("halt")
-        } else {
-            completionBlock(nil)
-            return false
-        }*/
+        
         let upsampledMesh = QuantizedMeshUpsampler.upsampleQuantizedTerrainMesh(
             vertices: _quantizedVertices,
             indices: _indices,
@@ -348,10 +368,6 @@ class QuantizedMeshTerrainData: TerrainData {
         completionBlock(data)
         return true
     }
- /*
- var maxShort = 32767;
- var barycentricCoordinateScratch = new Cartesian3();
- */
     /**
      * Computes the terrain height at a specified longitude and latitude.
      *
@@ -362,42 +378,70 @@ class QuantizedMeshTerrainData: TerrainData {
      *          the rectangle, so expect incorrect results for positions far outside the rectangle.
      */
     func interpolateHeight (rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
-        /*
-         var u = CesiumMath.clamp((longitude - rectangle.west) / rectangle.width, 0.0, 1.0);
-         u *= maxShort;
-         var v = CesiumMath.clamp((latitude - rectangle.south) / rectangle.height, 0.0, 1.0);
-         v *= maxShort;
-         
-         var uBuffer = this._uValues;
-         var vBuffer = this._vValues;
-         var heightBuffer = this._heightValues;
-         
-         var indices = this._indices;
-         for (var i = 0, len = indices.length; i < len; i += 3) {
-         var i0 = indices[i];
-         var i1 = indices[i + 1];
-         var i2 = indices[i + 2];
-         
-         var u0 = uBuffer[i0];
-         var u1 = uBuffer[i1];
-         var u2 = uBuffer[i2];
-         
-         var v0 = vBuffer[i0];
-         var v1 = vBuffer[i1];
-         var v2 = vBuffer[i2];
-         
-         var barycentric = Intersections2D.computeBarycentricCoordinates(u, v, u0, v0, u1, v1, u2, v2, barycentricCoordinateScratch);
-         if (barycentric.x >= -1e-15 && barycentric.y >= -1e-15 && barycentric.z >= -1e-15) {
-         var quantizedHeight = barycentric.x * heightBuffer[i0] +
-         barycentric.y * heightBuffer[i1] +
-         barycentric.z * heightBuffer[i2];
-         return CesiumMath.lerp(this._minimumHeight, this._maximumHeight, quantizedHeight / maxShort);
-         }
-         }
-         
-         // Position does not lie in any triangle in this mesh.
-         return undefined;*/
+        let u = Math.clamp((longitude - rectangle.west) / rectangle.width, min: 0.0, max: 1.0) * maxShort
+        let v = Math.clamp((latitude - rectangle.south) / rectangle.height, min: 0.0, max: 1.0) * maxShort
+        
+        if _mesh != nil {
+            return interpolateMeshHeight(u: u, v: v)
+        }
+        return interpolateHeight(u: u, v: v)
+    }
+    
+    private func interpolateMeshHeight (u u: Double, v: Double) -> Double? {
+
+        guard let mesh = _mesh else {
+            assertionFailure("mesh should exist")
+            return Double.NaN
+        }
+        let vertices = mesh.vertices
+        let encoding = mesh.encoding
+        let indices = mesh.indices
+        
+        for i in 0.stride(to: indices.count, by: 3) {
+            let i0 = indices[i]
+            let i1 = indices[i + 1]
+            let i2 = indices[i + 2]
+            
+            let uv0 = encoding.decodeTextureCoordinates(vertices, index: i0)
+            let uv1 = encoding.decodeTextureCoordinates(vertices, index: i1)
+            let uv2 = encoding.decodeTextureCoordinates(vertices, index: i2)
+            
+            let barycentric = Intersections2D.computeBarycentricCoordinates(x: u, y: v, x1: uv0.x, y1: uv0.y, x2: uv1.x, y2: uv1.y, x3: uv2.x, y3: uv2.y)
+            if barycentric.x >= -1e-15 && barycentric.y >= -1e-15 && barycentric.z >= -1e-15 {
+                let h0 = encoding.decodeHeight(vertices, index: i0)
+                let h1 = encoding.decodeHeight(vertices, index: i1)
+                let h2 = encoding.decodeHeight(vertices, index: i2)
+                return barycentric.x * h0 + barycentric.y * h1 + barycentric.z * h2
+            }
+        }
+        // Position does not lie in any triangle in this mesh.
         return nil
     }
-  
+    
+    private func interpolateHeight (u u: Double, v: Double) -> Double? {
+
+        for i in 0.stride(to: _indices.count, by: 3) {
+            let i0 = _indices[i]
+            let i1 = _indices[i + 1]
+            let i2 = _indices[i + 2]
+            
+            let u0 = Double(_uValues[i0])
+            let u1 = Double(_uValues[i1])
+            let u2 = Double(_uValues[i2])
+            
+            let v0 = Double(_vValues[i0])
+            let v1 = Double(_vValues[i1])
+            let v2 = Double(_vValues[i2])
+            
+            var barycentric = Intersections2D.computeBarycentricCoordinates(x: u, y: v, x1: u0, y1: v0, x2: u1, y2: v1, x3: u2, y3: v2)
+            if barycentric.x >= -1e-15 && barycentric.y >= -1e-15 && barycentric.z >= -1e-15 {
+                let quantizedHeight = barycentric.x * Double(_heightValues[i0]) +
+                    barycentric.y * Double(_heightValues[i1]) +
+                    barycentric.z * Double(_heightValues[i2])
+                return Math.lerp(p: _minimumHeight, q: _maximumHeight, time: quantizedHeight / maxShort)
+            }
+        }
+        // Position does not lie in any triangle in this mesh.
+        return nil
+    }
 }

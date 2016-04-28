@@ -923,6 +923,10 @@ public struct Matrix3 {
 
 extension Matrix3: Packable {
     
+    var length: Int {
+        return Matrix3.packedLength()
+    }
+    
     public static func packedLength() -> Int {
         return 9
     }

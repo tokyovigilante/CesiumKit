@@ -1479,6 +1479,10 @@ Matrix4.abs = function(matrix, result) {
 
 extension Matrix4: Packable {
     
+    var length: Int {
+        return Matrix4.packedLength()
+    }
+    
     static func packedLength () -> Int {
         return 16
     }

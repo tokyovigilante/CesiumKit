@@ -195,23 +195,18 @@ struct TerrainEncoding {
     result.z = buffer[index + 2];
     return Cartesian3.add(result, this.center, result);
     };
-    
-    TerrainEncoding.prototype.decodeTextureCoordinates = function(buffer, index, result) {
-    if (!defined(result)) {
-    result = new Cartesian2();
-    }
-    
-    index *= this.getStride();
-    
-    if (this.quantization === TerrainQuantization.BITS12) {
-    return AttributeCompression.decompressTextureCoordinates(buffer[index + 2], result);
-    }
-    
-    return Cartesian2.fromElements(buffer[index + 4], buffer[index + 5], result);
-    };
     */
+    func decodeTextureCoordinates (buffer: [Float], index: Int) -> Cartesian2 {
+        let index = index * getStride()
+        
+        if quantization == .bits12 {
+            return AttributeCompression.decompressTextureCoordinates(buffer[index + 2])
+        }
+        return Cartesian2(x: Double(buffer[index + 4]), y: Double(buffer[index + 5]))
+    }
+    
     func decodeHeight (buffer: [Float], index: Int) -> Double {
-        var index = index * getStride()
+        let index = index * getStride()
         
         if quantization == .bits12 {
             let zh = AttributeCompression.decompressTextureCoordinates(buffer[index + 1])
@@ -232,7 +227,7 @@ struct TerrainEncoding {
     };
     */
     
-    private func getStride () -> Int {
+    func getStride () -> Int {
         var vertexStride: Int
         
         switch quantization {

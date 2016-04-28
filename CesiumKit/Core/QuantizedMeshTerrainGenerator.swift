@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import simd
 
 private let maxShort = Double(Int16.max)
 
@@ -36,34 +36,39 @@ class QuantizedMeshTerrainGenerator {
         eastSkirtHeight: Double,
         northSkirtHeight: Double,
         rectangle: Rectangle,
-        relativeToCenter: Cartesian3,
+        relativeToCenter center: Cartesian3,
         ellipsoid: Ellipsoid,
-        exaggeration: Double) -> (boundingSphere: BoundingSphere?, center: Cartesian3, indices: [Int], maximumHeight: Double, minimumHeight: Double, occludeePointInScaledSpace: Cartesian3?, orientedBoundingBox: OrientedBoundingBox?, vertexStride: Int, vertices: [Float32])
+        exaggeration: Double) -> (vertices: [Float], indices: [Int], vertexStride: Int, center: Cartesian3, minimumHeight: Double, maximumHeight: Double, boundingSphere: BoundingSphere?, orientedBoundingBox: OrientedBoundingBox?, occludeePointInScaledSpace: Cartesian3?, encoding: TerrainEncoding, skirtIndex: Int)
     {
-
         let quantizedVertexCount = quantizedVertices.count / 3
-        //let edgeVertexCount = westIndices.count + eastIndices.count + southIndices.count + northIndices.count
+        let edgeVertexCount = westIndices.count + eastIndices.count + southIndices.count + northIndices.count
         
         let west = rectangle.west
         let south = rectangle.south
         let east = rectangle.east
         let north = rectangle.north
         
+        var minimumHeight = minimumHeight * exaggeration
+        var maximumHeight = maximumHeight * exaggeration
+        
+        var fromENU = Transforms.eastNorthUpToFixedFrame(center, ellipsoid: ellipsoid)
+        var toENU = fromENU.inverse
+        
         let uBuffer = quantizedVertices[0..<quantizedVertexCount]
         let vBuffer = quantizedVertices[quantizedVertexCount..<(quantizedVertexCount * 2)]
         let heightBuffer = quantizedVertices[(quantizedVertexCount * 2)..<(quantizedVertexCount * 3)]
         let hasVertexNormals = octEncodedNormals != nil
         
-        let vertexStride: Int
-        if hasVertexNormals {
-            vertexStride = 7
-        } else {
-            vertexStride = 6
-        }
+        var positions = [Cartesian3]()
+        var heights = [Double]()
+        var uvs = [Cartesian2]()
         
-        var vertexBuffer = [Float32]()
+        var minimum = Cartesian3(fromSIMD: double3(Double.infinity))
+        var maximum = Cartesian3(fromSIMD: double3(-Double.infinity))
         
-        for (var i = 0, bufferIndex = 0, n = 0; i < quantizedVertexCount; i += 1, bufferIndex += vertexStride, n += 2) {
+        var positionENU = Cartesian3()
+        
+        for i in 0..<quantizedVertexCount {
             let uStartIndex = uBuffer.startIndex
             let vStartIndex = vBuffer.startIndex
             let hStartIndex = heightBuffer.startIndex
@@ -78,67 +83,117 @@ class QuantizedMeshTerrainGenerator {
                 height: height
             )
             
-            let cartesian = ellipsoid.cartographicToCartesian(cartographic)
+            let position = ellipsoid.cartographicToCartesian(cartographic)
             
-            vertexBuffer.append(Float(cartesian.x - relativeToCenter.x))
-            vertexBuffer.append(Float(cartesian.y - relativeToCenter.y))
-            vertexBuffer.append(Float(cartesian.z - relativeToCenter.z))
-            vertexBuffer.append(Float(height))
-            vertexBuffer.append(Float(u))
-            vertexBuffer.append(Float(v))
-            if hasVertexNormals {
-                let toPack = Cartesian2(
-                    x: Double(octEncodedNormals![n]),
-                    y: Double(octEncodedNormals![n + 1])
-                )
-                vertexBuffer.append(AttributeCompression.octPackFloat(toPack))
-            }
+            uvs.append(Cartesian2(x: u, y: v))
+            heights.append(height)
+            positions.append(position)
+            
+            positionENU = toENU.multiplyByPoint(position)
+            minimum = positionENU.minimumByComponent(minimum)
+            maximum = positionENU.minimumByComponent(maximum)
         }
         
-        var indexBuffer = indices
+        var occludeePointInScaledSpace: Cartesian3? = nil
+        var orientedBoundingBox: OrientedBoundingBox? = nil
+        var boundingSphere: BoundingSphere? = nil
         
+        if exaggeration != 1.0 {
+            // Bounding volumes and horizon culling point need to be recomputed since the tile payload assumes no exaggeration.
+            boundingSphere = BoundingSphere(fromPoints: positions)
+            orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, minimumHeight: minimumHeight, maximumHeight: maximumHeight, ellipsoid: ellipsoid)
+            
+            let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
+            occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromPoints(directionToPoint: center, points: positions);
+        }
+        
+        var hMin = minimumHeight
+        hMin = min(hMin, findMinMaxSkirts(westIndices, edgeHeight: westSkirtHeight, heights: heights, uvs: uvs, rectangle: rectangle, ellipsoid: ellipsoid, toENU: toENU, minimum: &minimum, maximum: &maximum))
+        hMin = min(hMin, findMinMaxSkirts(southIndices, edgeHeight: southSkirtHeight, heights: heights, uvs: uvs, rectangle: rectangle, ellipsoid: ellipsoid, toENU: toENU, minimum: &minimum, maximum: &maximum))
+        hMin = min(hMin, findMinMaxSkirts(eastIndices, edgeHeight: eastSkirtHeight, heights: heights, uvs: uvs, rectangle: rectangle, ellipsoid: ellipsoid, toENU: toENU, minimum: &minimum, maximum: &maximum))
+        hMin = min(hMin, findMinMaxSkirts(northIndices, edgeHeight: northSkirtHeight, heights: heights, uvs: uvs, rectangle: rectangle, ellipsoid: ellipsoid, toENU: toENU, minimum: &minimum, maximum: &maximum))
+        
+        let aaBox = AxisAlignedBoundingBox(minimum: minimum, maximum: maximum, center: center)
+        let encoding = TerrainEncoding(axisAlignedBoundingBox: aaBox, minimumHeight: hMin, maximumHeight: maximumHeight, fromENU: fromENU, hasVertexNormals: hasVertexNormals)
+        let vertexStride = encoding.getStride()
+        let size = quantizedVertexCount * vertexStride + edgeVertexCount * vertexStride
+        
+        var vertexBuffer = [Float]()
+        
+        var toPack: Cartesian2? = nil
+        
+        for j in 0..<quantizedVertexCount {
+            if hasVertexNormals {
+                let n = j * 2
+                let toPackX = octEncodedNormals![n]
+                let toPackY = octEncodedNormals![n + 1]
+                
+                if exaggeration != 1.0 {
+                    var normal = AttributeCompression.octDecode(x: toPackX, y: toPackY)
+                    let fromENUNormal = Transforms.eastNorthUpToFixedFrame(positionENU, ellipsoid: ellipsoid)
+                    let toENUNormal = fromENUNormal.inverse
+                    
+                    normal = toENUNormal.multiplyByPointAsVector(normal)
+                    normal.z *= exaggeration
+                    normal = normal.normalize()
+                    
+                    normal = fromENUNormal.multiplyByPointAsVector(normal)
+                    normal = normal.normalize()
+                    
+                    toPack = AttributeCompression.octEncode(normal)
+                } else {
+                    toPack = Cartesian2(x: Double(toPackX), y: Double(toPackY))
+                    
+                }
+            }
+            encoding.encode(&vertexBuffer, position: positions[j], uv: uvs[j], height: heights[j], normalToPack: toPack)
+        }
+        
+        //let edgeTriangleCount = max(0, (edgeVertexCount - 4) * 2)
+        //var indexBufferLength = parameters.indices.length + edgeTriangleCount * 3;
+        //var indexBuffer = IndexDatatype.createTypedArray(quantizedVertexCount + edgeVertexCount, indexBufferLength);
+        //indexBuffer.set(parameters.indices, 0);
+        var indexBuffer = indices
+        let skirtIndex = indices.count
         // Add skirts.
-        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: westIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
-        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: southIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: southSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
-        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: eastIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: eastSkirtHeight, isWestOrNorthEdge: false, hasVertexNormals: hasVertexNormals)
-        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: northIndices, center: relativeToCenter, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: northSkirtHeight, isWestOrNorthEdge: true, hasVertexNormals: hasVertexNormals)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: westIndices, encoding: encoding, heights: heights, uvs: uvs, octEncodedNormals: octEncodedNormals, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: westSkirtHeight, isWestOrNorthEdge: true, exaggeration: exaggeration)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: southIndices, encoding: encoding, heights: heights, uvs: uvs, octEncodedNormals: octEncodedNormals, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: southSkirtHeight, isWestOrNorthEdge: false, exaggeration: exaggeration)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: eastIndices, encoding: encoding, heights: heights, uvs: uvs, octEncodedNormals: octEncodedNormals, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: eastSkirtHeight, isWestOrNorthEdge: false, exaggeration: exaggeration)
+        addSkirt(&vertexBuffer, indexBuffer: &indexBuffer, edgeVertices: northIndices, encoding: encoding, heights: heights, uvs: uvs, octEncodedNormals: octEncodedNormals, ellipsoid: ellipsoid, rectangle: rectangle, skirtLength: northSkirtHeight, isWestOrNorthEdge: true, exaggeration: exaggeration)
 
         
+
         return (
-            boundingSphere: nil,
-            center: relativeToCenter,
-            indices: indexBuffer,
-            maximumHeight: maximumHeight,
-            minimumHeight: minimumHeight,
-            occludeePointInScaledSpace: nil,
-            orientedBoundingBox: nil,
+            vertices: vertexBuffer,
+            indices : indexBuffer,
             vertexStride: vertexStride,
-            vertices: vertexBuffer
+            center: center,
+            minimumHeight: minimumHeight,
+            maximumHeight: maximumHeight,
+            boundingSphere: boundingSphere,
+            orientedBoundingBox: orientedBoundingBox,
+            occludeePointInScaledSpace: occludeePointInScaledSpace,
+            encoding: encoding,
+            skirtIndex : skirtIndex
         )
     }
     
-    class func addSkirt(inout vertexBuffer: [Float32], inout indexBuffer: [Int], edgeVertices: [Int], center: Cartesian3, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, hasVertexNormals: Bool) {
-        
-        let vertexStride: Int
-        if hasVertexNormals {
-            vertexStride = 7
-        } else {
-            vertexStride = 6
-        }
+    class func addSkirt(inout vertexBuffer: [Float32], inout indexBuffer: [Int], edgeVertices: [Int], encoding: TerrainEncoding, heights: [Double], uvs: [Cartesian2], octEncodedNormals: [UInt8]?, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, exaggeration: Double) {
         
         let start, end, increment: Int
         if isWestOrNorthEdge {
             start = edgeVertices.count - 1
-            end = -1;
+            end = -1
             increment = -1
         } else {
-            start = 0;
+            start = 0
             end = edgeVertices.count
             increment = 1
         }
         
         var previousIndex = -1
         
+        let vertexStride = encoding.getStride()
         var vertexIndex = vertexBuffer.count / vertexStride
         
         let north = rectangle.north
@@ -152,28 +207,42 @@ class QuantizedMeshTerrainGenerator {
         
         for i in start.stride(to: end, by: increment) {
             let index = edgeVertices[i]
-            let offset = index * vertexStride
-            let u = Double(vertexBuffer[offset + uIndex])
-            let v = Double(vertexBuffer[offset + vIndex])
-            let h = Double(vertexBuffer[offset + hIndex])
+            let h = heights[index]
+            var uv = uvs[index]
             
             let cartographic = Cartographic(
-                longitude: Double(Math.lerp(p: west, q: east, time: u)),
-                latitude: Double(Math.lerp(p: south, q: north, time: v)),
+                longitude: Double(Math.lerp(p: west, q: east, time: uv.x)),
+                latitude: Double(Math.lerp(p: south, q: north, time: uv.y)),
                 height: h - skirtLength
             )
             
-            let position = ellipsoid.cartographicToCartesian(cartographic).subtract(center)
+            let position = ellipsoid.cartographicToCartesian(cartographic)
             
-            vertexBuffer.append(Float(position.x))
-            vertexBuffer.append(Float(position.y))
-            vertexBuffer.append(Float(position.z))
-            vertexBuffer.append(Float(cartographic.height))
-            vertexBuffer.append(Float(u))
-            vertexBuffer.append(Float(v))
-            if (hasVertexNormals) {
-                vertexBuffer.append(vertexBuffer[offset + nIndex])
+            var toPack: Cartesian2? = nil
+            if let vertexNormals = octEncodedNormals {
+                let n = index * 2
+
+                let toPackX = vertexNormals[n]
+                let toPackY = vertexNormals[n + 1]
+                
+                if exaggeration != 1.0 {
+                    var normal = AttributeCompression.octDecode(x: toPackX, y: toPackY)
+                    let fromENUNormal = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: ellipsoid)
+                    let toENUNormal = fromENUNormal.inverse
+                    
+                    normal = toENUNormal.multiplyByPointAsVector(normal)
+                    normal.z *= exaggeration
+                    normal = normal.normalize()
+                    
+                    normal = fromENUNormal.multiplyByPointAsVector(normal)
+                    normal = normal.normalize()
+                    
+                    toPack = AttributeCompression.octEncode(normal)
+                } else {
+                    toPack = Cartesian2(x: Double(toPackX), y: Double(toPackY))
+                }
             }
+            encoding.encode(&vertexBuffer, position: position, uv: uv, height: cartographic.height, normalToPack: toPack)
             
             if (previousIndex != -1) {
                 indexBuffer.append(previousIndex)
@@ -190,4 +259,38 @@ class QuantizedMeshTerrainGenerator {
         }
     }
     
+    class func findMinMaxSkirts(edgeIndices: [Int], edgeHeight: Double, heights: [Double], uvs: [Cartesian2], rectangle: Rectangle, ellipsoid: Ellipsoid, toENU: Matrix4, inout minimum: Cartesian3, inout maximum: Cartesian3) -> Double {
+        var hMin = Double.infinity
+        
+        let north = rectangle.north
+        let south = rectangle.south
+        var east = rectangle.east
+        let west = rectangle.west
+        
+        if east < west {
+            east += M_2_PI
+        }
+        
+        for i in 0..<edgeIndices.count {
+            let index = edgeIndices[i]
+            let h = heights[index]
+            let uv = uvs[index]
+            
+            let cartographic = Cartographic(
+                longitude:  Math.lerp(p: west, q: east, time: uv.x),
+                latitude: Math.lerp(p: south, q: north, time: uv.y),
+                height: h - edgeHeight
+            )
+
+            var position = ellipsoid.cartographicToCartesian(cartographic)
+            position = toENU.multiplyByPoint(position)
+            
+            minimum = position.minimumByComponent(minimum)
+            maximum = position.maximumByComponent(maximum)
+            
+            hMin = min(hMin, cartographic.height)
+        }
+        return hMin
+    }
+
 }

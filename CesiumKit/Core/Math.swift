@@ -696,6 +696,24 @@ throw new DeveloperError('radius is required.');
 return 2.0 * radius * Math.sin(angle * 0.5);
 };
 */
+    /**
+     * Finds the logarithm of a number to a base.
+     *
+     * @param {Number} number The number.
+     * @param {Number} base The base.
+     * @returns {Number} The result.
+     */
+    static func logBase (number: Double, base: Double) -> Double {
+        return log(number) / log(base)
+    }
+    
+    /**
+     * @private
+     */
+    static func fog (distanceToCamera: Double, density: Double) -> Double {
+        let scalar = distanceToCamera * density
+        return 1.0 - exp(-(scalar * scalar))
+    }
 
 }
 
