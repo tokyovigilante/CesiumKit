@@ -341,24 +341,28 @@ class Context {
         }
     }
     
-    func draw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
+    func draw(command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         _lastFrameDrawCommands[bufferSyncState.rawValue].append(command)
-        beginDraw(command, renderPass: renderPass, renderPipeline: renderPipeline)
-        continueDraw(command, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
+        beginDraw(command, renderPass: renderPass)
+        continueDraw(command, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
     }
     
-    func beginDraw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?) {
+    func beginDraw(command: DrawCommand, renderPass: RenderPass) {
         let rs = command.renderState ?? _defaultRenderState
 
         let commandEncoder = renderPass.commandEncoder
-        let renderPipeline = renderPipeline ?? command.pipeline!
+        
+        guard let renderPipeline = command.pipeline else {
+            assertionFailure("no render pipeline set")
+            return
+        }
 
         commandEncoder.setRenderPipelineState(renderPipeline.state)
 
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
-    func continueDraw(command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline?, frustumUniformBuffer: Buffer? = nil) {
+    func continueDraw(command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         let primitiveType = command.primitiveType
         
         assert(command.vertexArray != nil, "drawCommand.vertexArray is required")
@@ -371,7 +375,11 @@ class Context {
         
         uniformState.model = command.modelMatrix ?? Matrix4.identity
         
-        let renderPipeline = renderPipeline ?? command.pipeline!
+        guard let renderPipeline = command.pipeline else {
+            assertionFailure("no render pipeline set")
+            return
+        }
+        
         let bufferParams = renderPipeline.setUniforms(command, device: device, uniformState: uniformState)
         
         // Don't render unless any textures required are available

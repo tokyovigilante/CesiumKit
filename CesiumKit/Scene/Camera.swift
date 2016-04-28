@@ -632,16 +632,19 @@ public class Camera: DRU {
         
         let directionChanged = _direction != direction
         if directionChanged {
+            direction = direction.normalize()
             _direction = direction
         }
         
         let upChanged = _up != up
         if upChanged {
+            up = _up.normalize()
             _up = up
         }
         
         let rightChanged = _right != right
         if rightChanged {
+            right = right.normalize()
             _right = right
         }
         
@@ -693,9 +696,7 @@ public class Camera: DRU {
         if directionChanged || upChanged || rightChanged {
             let det = _direction.dot(up.cross(right))
             if abs(1.0 - det) > Math.Epsilon2 {
-                //orthonormalize axes
-                direction = _direction.normalize()
-                
+               
                 let invUpMag = 1.0 / up.magnitudeSquared
                 let w0 = direction.multiplyByScalar(up.dot(direction) * invUpMag)
                 _up = up.subtract(w0).normalize()
@@ -776,11 +777,14 @@ public class Camera: DRU {
             frustum.right = this._maxCoord.x * maxZoomOut;
             frustum.left = -frustum.right;
             frustum.top = ratio * frustum.right;
-            frustum.bottom = -frustum.top;*/
+            frustum.bottom = -frustum.top;
+             if (this._mode === SceneMode.SCENE2D) {
+                         clampMove2D(this, this.position);
+           }*/
         }
     }
     
-    func _setTransform (transform: Matrix4) {
+    private func _setTransform (transform: Matrix4) {
         let position = positionWC
         let up = upWC
         let direction = directionWC
@@ -888,15 +892,9 @@ public class Camera: DRU {
     private func setView2D(
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
-        heading: Double,
-        pitch: Double,
-        roll: Double,
         ellipsoid: Ellipsoid,
         projection: MapProjection)
     {
-        let pitch = -M_PI_2
-        let roll = 0.0
-        
         var cartesian: Cartesian3! = cartesianIn
         var cartographic: Cartographic! = cartographicIn
         
@@ -922,67 +920,92 @@ public class Camera: DRU {
                 frustum.bottom = -frustum.top
             }
         }
-        
-        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
-        let rotMat = Matrix3(fromQuaternion: rotQuat)
-        
-        direction = rotMat.column(0)
-        up = rotMat.column(2)
-        
-        right = direction.cross(up)
-        
         _setTransform(currentTransform)
     }
     
     /**
-     * Sets the camera position and orientation with heading, pitch and roll angles.
-     *
-     * The position can be given as either a cartesian or a cartographic. If both are given,
-     * then the cartesian will be used. If neither is given, then the current camera position
-     * will be used.
+     * Sets the camera position, orientation and transform.
      *
      * @param {Object} options Object with the following properties:
-     * @param {Cartesian3} [options.position] The cartesian position of the camera.
-     * @param {Cartographic} [options.positionCartographic] The cartographic position of the camera.
-     * @param {Number} [options.heading] The heading in radians or the current heading will be used if undefined.
-     * @param {Number} [options.pitch] The pitch in radians or the current pitch will be used if undefined.
-     * @param {Number} [options.roll] The roll in radians or the current roll will be used if undefined.
+     * @param {Cartesian3|Rectangle} [options.destination] The final position of the camera in WGS84 (world) coordinates or a rectangle that would be visible from a top-down view.
+     * @param {Object} [options.orientation] An object that contains either direction and up properties or heading, pith and roll properties. By default, the direction will point
+     * towards the center of the frame in 3D and in the negative z direction in Columbus view. The up direction will point towards local north in 3D and in the positive
+     * y direction in Columbus view. Orientation is not used in 2D.
+     * @param {Matrix4} [options.endTransform] Transform matrix representing the reference frame of the camera.
      *
      * @example
-     * // 1. Set view with heading, pitch and roll
-     * camera.setView({
-     *     position : cartesianPosition,
-     *     heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
-     *     pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
-     *     roll : 0.0                             // default value
+     * // 1. Set position with a top-down view
+     * viewer.camera.setView({
+     *     destination : Cesium.Cartesian3.fromDegrees(-117.16, 32.71, 15000.0)
      * });
      *
-     * // 2. Set default top-down view with a cartographic position
-     * camera.setView({
-     *     positionCartographic : cartographic
+     * // 2 Set view with heading, pitch and roll
+     * viewer.camera.setView({
+     *     destination : cartesianPosition,
+     *     orientation: {
+     *         heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
+     *         pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
+     *         roll : 0.0                             // default value
+     *     }
      * });
      *
      * // 3. Change heading, pitch and roll with the camera position remaining the same.
-     * camera.setView({
-     *     heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
-     *     pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
-     *     roll : 0.0                             // default value
+     * viewer.camera.setView({
+     *     orientation: {
+     *         heading : Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
+     *         pitch : Cesium.Math.toRadians(-90),    // default value (looking down)
+     *         roll : 0.0                             // default value
+     *     }
+     * });
+     *
+     *
+     * // 4. View rectangle with a top-down view
+     * viewer.camera.setView({
+     *     destination : Cesium.Rectangle.fromDegrees(west, south, east, north)
+     * });
+     *
+     * // 5. Setposition with an orientation using unit vectors.
+     * viewer.camera.setView({
+     *     destination : Cesium.Cartesian3.fromDegrees(-122.19, 46.25, 5000.0),
+     *     orientation : {
+     *         direction : new Cesium.Cartesian3(-0.04231243104240401, -0.20123236049443421, -0.97862924300734),
+     *         up : new Cesium.Cartesian3(-0.47934589305293746, -0.8553216253114552, 0.1966022179118339)
+     *     }
      * });
      */
     public func setView (
         position cartesianIn: Cartesian3? = nil,
         positionCartographic cartographicIn: Cartographic? = nil,
-        heading headingIn: Double? = nil,
-        pitch pitchIn: Double? = nil,
-        roll rollIn: Double? = nil)
+        orientation: Orientation? = nil,
+        destination: Destination? = nil,
+        endTransform: Matrix4? = nil,
+        convert: Bool = true
+    )
     {
         if _mode == .Morphing {
             return
         }
         
-        let heading = headingIn ?? self.heading
-        let pitch = pitchIn ?? self.pitch
-        let roll = rollIn ?? self.roll
+        if let endTransform  = endTransform {
+            _setTransform(endTransform)
+        }
+        
+        var convert = convert
+        var destination = destination ?? .cartesian(positionWC)
+        
+        if case let Destination.rectangle(rectangle) = destination {
+            destination = getRectangleCameraCoordinates(destination)
+            convert = false
+        }
+        
+        
+        if (defined(orientation.direction)) {
+            orientation = directionUpToHeadingPitchRoll(this, destination, orientation, scratchSetViewOptions.orientation);
+        }
+        
+        var heading = defaultValue(orientation.heading, 0.0);
+        var pitch = defaultValue(orientation.pitch, -CesiumMath.PI_OVER_TWO);
+        var roll = defaultValue(orientation.roll, 0.0);
         
         let projection = _projection
         let ellipsoid = _projection.ellipsoid
@@ -1952,7 +1975,7 @@ public class Camera: DRU {
     Cartesian3.clone(Cartesian3.UNIT_X, camera.right);
     Cartesian3.clone(Cartesian3.UNIT_Y, camera.up);
     }
-    
+    */
     return result;
     }
     /**
@@ -1982,7 +2005,7 @@ public class Camera: DRU {
     
     return undefined;
     };
-    */
+
     /**
     * View a rectangle on an ellipsoid or map.
     *

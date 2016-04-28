@@ -990,7 +990,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         if (scene.debugShowCommands || scene.debugShowFrustums) {
             executeDebugCommand(command, scene, passState, renderState, shaderProgram);
         } else {*/
-        command.execute(context, renderPass: renderPass, renderPipeline: renderPipeline, frustumUniformBuffer: frustumUniformBuffer)
+        command.execute(context, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
         //}
         
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {

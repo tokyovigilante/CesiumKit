@@ -90,18 +90,36 @@ public struct Rectangle {
     */
     static func fromCartographicArray(cartographics: [Cartographic]) -> Rectangle {
         
-        var minLon = Double.infinity
-        var maxLon = -Double.infinity
-        var minLat = Double.infinity
-        var maxLat = -Double.infinity
+        var west = Double.infinity
+        var east = -Double.infinity
+        var westOverIDL = Double.infinity
+        var eastOverIDL = -Double.infinity
+        var south = Double.infinity
+        var north = -Double.infinity
         
         for cartographic in cartographics {
-            minLon = min(minLon, cartographic.longitude);
-            maxLon = max(maxLon, cartographic.longitude);
-            minLat = min(minLat, cartographic.latitude);
-            maxLat = max(maxLat, cartographic.latitude);
+            west = min(west, cartographic.longitude)
+            east = max(east, cartographic.longitude)
+            south = min(south, cartographic.latitude)
+            north = max(north, cartographic.latitude)
+            
+            let lonAdjusted = cartographic.longitude >= 0 ? cartographic.longitude : cartographic.longitude +  Math.TwoPi
+            westOverIDL = min(westOverIDL, lonAdjusted)
+            eastOverIDL = max(eastOverIDL, lonAdjusted)
         }
-        return Rectangle(west: minLon, south: minLat, east: maxLon, north: maxLat)
+        
+        if east - west > eastOverIDL - westOverIDL {
+            west = westOverIDL
+            east = eastOverIDL
+            
+            if east > M_PI {
+                east = east - Math.TwoPi
+            }
+            if west > M_PI {
+                west = west - Math.TwoPi
+            }
+        }
+        return Rectangle(west: west, south: south, east: east, north: north)
     }
     
     /**
@@ -298,7 +316,68 @@ public struct Rectangle {
         
         return Rectangle(west: west, south: south, east: east, north: north)
     }
+    /*
+    /**
+     * Computes a rectangle that is the union of two rectangles.
+     *
+     * @param {Rectangle} rectangle A rectangle to enclose in rectangle.
+     * @param {Rectangle} otherRectangle A rectangle to enclose in a rectangle.
+     * @param {Rectangle} [result] The object onto which to store the result.
+     * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
+     */
+    Rectangle.union = function(rectangle, otherRectangle, result) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(rectangle)) {
+    throw new DeveloperError('rectangle is required');
+    }
+    if (!defined(otherRectangle)) {
+    throw new DeveloperError('otherRectangle is required.');
+    }
+    //>>includeEnd('debug');
     
+    if (!defined(result)) {
+    result = new Rectangle();
+    }
+    
+    result.west = Math.min(rectangle.west, otherRectangle.west);
+    result.south = Math.min(rectangle.south, otherRectangle.south);
+    result.east = Math.max(rectangle.east, otherRectangle.east);
+    result.north = Math.max(rectangle.north, otherRectangle.north);
+    
+    return result;
+    };
+    
+    /**
+     * Computes a rectangle by enlarging the provided rectangle until it contains the provided cartographic.
+     *
+     * @param {Rectangle} rectangle A rectangle to expand.
+     * @param {Cartographic} cartographic A cartographic to enclose in a rectangle.
+     * @param {Rectangle} [result] The object onto which to store the result.
+     * @returns {Rectangle} The modified result parameter or a new Rectangle instance if one was not provided.
+     */
+    Rectangle.expand = function(rectangle, cartographic, result) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defined(rectangle)) {
+    throw new DeveloperError('rectangle is required.');
+    }
+    if (!defined(cartographic)) {
+    throw new DeveloperError('cartographic is required.');
+    }
+    //>>includeEnd('debug');
+    
+    if (!defined(result)) {
+    result = new Rectangle();
+    }
+    
+    result.west = Math.min(rectangle.west, cartographic.longitude);
+    result.south = Math.min(rectangle.south, cartographic.latitude);
+    result.east = Math.max(rectangle.east, cartographic.longitude);
+    result.north = Math.max(rectangle.north, cartographic.latitude);
+    
+    return result;
+    }
+
+*/
     /**
     * Returns true if the cartographic is on or inside the rectangle, false otherwise.
     *

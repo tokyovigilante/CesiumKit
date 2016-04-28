@@ -590,6 +590,10 @@
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		94AB53FC1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
 		94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
+		94AC517D1CD21D030041F512 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC517C1CD21D030041F512 /* Orientation.swift */; };
+		94AC517E1CD21D030041F512 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC517C1CD21D030041F512 /* Orientation.swift */; };
+		94AC51801CD21E400041F512 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC517F1CD21E400041F512 /* Destination.swift */; };
+		94AC51811CD21E400041F512 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC517F1CD21E400041F512 /* Destination.swift */; };
 		94AC67201B539ED9001A40C8 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AC671F1B539ED9001A40C8 /* RenderPass.swift */; };
 		94ACAF261B1AB5C10095A86F /* RenderPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */; };
 		94ACB2D51C364B7E001A40C8 /* QueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94ACB2CE1C364900001A40C8 /* QueueManager.swift */; };
@@ -997,6 +1001,8 @@
 		949E67A419D6BCB200012DC4 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		94A833161A80C81800FFAD81 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftRegex.swift; path = Platform/SwiftRegex.swift; sourceTree = "<group>"; };
 		94AB53F51C18FA040095A86F /* BoxGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxGeometry.swift; sourceTree = "<group>"; };
+		94AC517C1CD21D030041F512 /* Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
+		94AC517F1CD21E400041F512 /* Destination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		94AC671F1B539ED9001A40C8 /* RenderPass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPass.swift; sourceTree = "<group>"; };
 		94ACAF251B1AB5C10095A86F /* RenderPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderPipeline.swift; sourceTree = "<group>"; };
 		94ACB2CE1C364900001A40C8 /* QueueManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QueueManager.swift; path = Platform/QueueManager.swift; sourceTree = "<group>"; };
@@ -1412,10 +1418,8 @@
 		943999031930418C00012DC4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */,
-				9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */,
-				9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */,
 				947E32311BC0D485001A40C8 /* AttributeCompression.swift */,
+				9438E0E21CCD765D0095A86F /* AxisAlignedBoundingBox.swift */,
 				94BC4354194816B8007117F2 /* BoundingRectangle.swift */,
 				948D03D81944802300DC0E52 /* BoundingSphere.swift */,
 				94AB53F51C18FA040095A86F /* BoxGeometry.swift */,
@@ -1464,6 +1468,7 @@
 				948E2A391A0E2D6A00FFAD81 /* MergeSort.swift */,
 				94B87DD0194D75A100012DC4 /* Occluder.swift */,
 				94D653191C26ACAE001A40C8 /* OrbitType.swift */,
+				94AC517C1CD21D030041F512 /* Orientation.swift */,
 				94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				947E32341BC0D85E001A40C8 /* Plane.swift */,
@@ -1479,8 +1484,10 @@
 				9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */,
 				948D03DE1944EC1B00DC0E52 /* Spherical.swift */,
 				94786824194A95B800B3F462 /* TerrainData.swift */,
+				9438E0DC1CCCF4350095A86F /* TerrainEncoding.swift */,
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
+				9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */,
 				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
 				9403AC921C19A610001A40C8 /* TimeConstants.swift */,
 				9403AC8A1C19A449001A40C8 /* TimeStandard.swift */,
@@ -1489,6 +1496,7 @@
 				9460F806194DA5AF00012DC4 /* Visibility.swift */,
 				947540E019483BD5005251CC /* WebMercatorProjection.swift */,
 				94E61B3B194ACC2000415870 /* WebMercatorTilingScheme.swift */,
+				94AC517F1CD21E400041F512 /* Destination.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1505,6 +1513,7 @@
 			children = (
 				94CE3DBD1A24771A00FFAD81 /* AutomaticUniforms.swift */,
 				94C6E5571B1475BF0095A86F /* Buffer.swift */,
+				9427F3831CCCB3A00095A86F /* BufferSyncState.swift */,
 				9460F81A194DB87400012DC4 /* ClearCommand.swift */,
 				94B119921C13038A0095A86F /* ColorMask.swift */,
 				943416B11BC8D843001A40C8 /* Command.swift */,
@@ -1529,6 +1538,7 @@
 				9460F816194DB0ED00012DC4 /* ShaderProgram.swift */,
 				945BF6481AAAD0AC00FFAD81 /* ShaderSource.swift */,
 				9465B0251956F5DE00355D2C /* Texture.swift */,
+				941378091C3AA2C90095A86F /* TextureUsage.swift */,
 				94DCAA641A36F0B800FFAD81 /* Uniform.swift */,
 				94889B891B286E990095A86F /* UniformBufferProvider.swift */,
 				9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */,
@@ -1537,8 +1547,6 @@
 				94878A6A1B1B23FD0095A86F /* VertexDescriptor.swift */,
 				945E45031B17387E0095A86F /* VertexType.swift */,
 				947A241019C99C860040042F /* WindingOrder.swift */,
-				941378091C3AA2C90095A86F /* TextureUsage.swift */,
-				9427F3831CCCB3A00095A86F /* BufferSyncState.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -2355,6 +2363,7 @@
 				946007AE1AC2C97F0095A86F /* CameraEventType.swift in Sources */,
 				943416B21BC8D843001A40C8 /* Command.swift in Sources */,
 				9413B8001A37B94500FFAD81 /* GlobeSurfaceTile.swift in Sources */,
+				94AC51801CD21E400041F512 /* Destination.swift in Sources */,
 				9413B7FD1A37B94500FFAD81 /* FrustumCommands.swift in Sources */,
 				9413B8081A37B94500FFAD81 /* OrthographicFrustum.swift in Sources */,
 				9413B7C91A37B93100FFAD81 /* ScreenSpaceEventHandler.swift in Sources */,
@@ -2395,6 +2404,7 @@
 				94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */,
 				9413B7AA1A37B93100FFAD81 /* Ellipsoid.swift in Sources */,
 				9430A9521C8100BC0095A86F /* TextRenderer.metal in Sources */,
+				94AC517D1CD21D030041F512 /* Orientation.swift in Sources */,
 				94ECCBC51C93FD480041F512 /* OffscreenQuadPrimitive.swift in Sources */,
 				943416B91BC8D864001A40C8 /* ComputeCommand.swift in Sources */,
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
@@ -2487,6 +2497,7 @@
 				9427F3851CCCB3A00095A86F /* BufferSyncState.swift in Sources */,
 				947821371B5A2D7B0095A86F /* Transforms.swift in Sources */,
 				947821381B5A2D7B0095A86F /* VertexFormat.swift in Sources */,
+				94AC51811CD21E400041F512 /* Destination.swift in Sources */,
 				947821391B5A2D7B0095A86F /* Visibility.swift in Sources */,
 				9478213A1B5A2D7B0095A86F /* WebMercatorProjection.swift in Sources */,
 				9478213B1B5A2D7B0095A86F /* WebMercatorTilingScheme.swift in Sources */,
@@ -2548,6 +2559,7 @@
 				947821621B5A2D7C0095A86F /* CameraEvent.swift in Sources */,
 				947821631B5A2D7C0095A86F /* CameraEventAggregator.swift in Sources */,
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
+				94AC517E1CD21D030041F512 /* Orientation.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
 				9413780B1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,

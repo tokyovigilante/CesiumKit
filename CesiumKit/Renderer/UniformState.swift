@@ -19,6 +19,7 @@ struct AutomaticUniformBufferLayout {
     var czm_a_morphTime = Float()
     var czm_a_fogDensity = Float()
     var czm_a_frameNumber = Float()
+    var czm_a_pass = Float()
 }
 
 struct FrustumUniformBufferLayout {
@@ -159,6 +160,10 @@ class UniformState {
     private var _frustum2DWidth = 0.0
     private var _eyeHeight2D = Cartesian2()
     
+    private var _fogDensity: Float = 1.0
+    
+    private var _pass: Pass = .Compute
+    
     /**
     * @memberof UniformState.prototype
     * @type {BoundingRectangle}
@@ -270,15 +275,7 @@ class UniformState {
     * @type {Matrix4}
     */
     var view3D: Matrix4 {
-        if _view3DDirty {
-            if _mode == .Scene3D {
-                _view3D = _view
-            } else {
-                _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)
-            }
-            _viewRotation3D = _view3D.rotation
-            _view3DDirty = false
-        }
+        updateView3D()
         return _view3D
     }
     
@@ -288,6 +285,7 @@ class UniformState {
     * @type {Matrix3}
     */
     var viewRotation: Matrix3 {
+        updateView3D()
         return _viewRotation
     }
     
@@ -308,7 +306,7 @@ class UniformState {
         return _inverseView
     }
     
-    /*
+    
     /**
     * the 4x4 inverse-view matrix that transforms from eye to 3D world coordinates.  In 3D mode, this is
     * identical to {@link UniformState#inverseView}, but in 2D and Columbus View it is a synthetic matrix
@@ -316,17 +314,12 @@ class UniformState {
     * @memberof UniformState.prototype
     * @type {Matrix4}
     */
-    inverseView3D : {
-    get : function() {
-    if (this._inverseView3DDirty) {
-    Matrix4.inverseTransformation(this.view3D, this._inverseView3D);
-    Matrix4.getRotation(this._inverseView3D, this._inverseViewRotation3D);
-    this._inverseView3DDirty = false;
+    var inverseView3D: Matrix4 {
+        updateInverseView3D()
+        return _inverseView3D
     }
-    return this._inverseView3D;
-    }
-    },
-    
+
+    /*
     /**
     * @memberof UniformState.prototype
     * @type {Matrix3}
@@ -733,6 +726,19 @@ class UniformState {
     }
     });
     */
+    
+    var fogDensity: Float {
+        return _fogDensity
+    }
+    
+    /**
+     * @memberof UniformState.prototype
+     * @type {Pass}
+     */
+    var pass: Float {
+        return Float(_pass.rawValue)
+    }
+    
     func setView(matrix: Matrix4) {
         _view = matrix
         _viewRotation = _view.rotation
@@ -792,6 +798,10 @@ class UniformState {
         var ellipsoid = projection.ellipsoid;
         var sunCartographic = ellipsoid.cartesianToCartographic(uniformState._sunPositionWC, sunCartographicScratch);
         projection.project(sunCartographic, uniformState._sunPositionColumbusView)*/
+    }
+    
+    func updatePass (pass: Pass) {
+        _pass = pass
     }
     
     /**
@@ -871,6 +881,7 @@ class UniformState {
         layout.czm_a_morphTime = Float(frameState.morphTime)
         layout.czm_a_fogDensity = 0.0//fogDensity.floatRepresentation
         layout.czm_a_frameNumber = Float(frameState.frameNumber)
+        layout.czm_a_pass = pass
         
         memcpy(buffer.data, &layout, sizeof(AutomaticUniformBufferLayout))
         
@@ -1117,4 +1128,24 @@ class UniformState {
             -r.dot(position3D), -u.dot(position3D), d.dot(position3D), 1.0)
     }
     
+    private func updateView3D () {
+        if _view3DDirty {
+            if _mode == .Scene3D {
+                _view3D = _view
+            } else {
+                _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)
+            }
+            _viewRotation3D = _view3D.rotation
+            _view3DDirty = false
+        }
+    }
+    
+    private func updateInverseView3D () {
+        if _inverseView3DDirty {
+            _inverseView3D = view3D.inverse
+            _inverseViewRotation3D = _inverseView3D.rotation
+            _inverseView3DDirty = false
+        }
+    }
+
 }
