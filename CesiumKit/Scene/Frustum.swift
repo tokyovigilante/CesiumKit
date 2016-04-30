@@ -155,7 +155,7 @@ protocol Frustum {
     *     height : canvas.clientHeight
     * }, distance);
     */
-    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2
+    func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2
     
     /**
     * Returns a duplicate of a PerspectiveFrustum instance.

@@ -214,11 +214,8 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var distance = Cesium.Cartesian3.magnitude(toCenterProj);
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight), distance);
     */
-    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2 {
         update()
-        
-        let width = drawingBufferDimensions.x
-        let height = drawingBufferDimensions.y
         
         assert(width > 0 && height > 0, "drawingBufferDimensions.y must be greater than zero")
         
@@ -226,11 +223,11 @@ class PerspectiveOffCenterFrustum: Frustum {
         
         let inverseNear = 1.0 / near
         var tanTheta = top * inverseNear
-        let pixelHeight = 2.0 * localDistance * tanTheta / height;
+        let pixelHeight = 2.0 * localDistance * tanTheta / Double(height)
         tanTheta = right * inverseNear
-        let pixelWidth = 2.0 * localDistance * tanTheta / width
+        let pixelWidth = 2.0 * localDistance * tanTheta / Double(width)
         
-        return Cartesian2(x: pixelWidth, y: pixelHeight);
+        return Cartesian2(x: pixelWidth, y: pixelHeight)
     }
 
     /**

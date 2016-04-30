@@ -284,20 +284,9 @@ struct OrthographicFrustum: Frustum {
     * // Get the width and height of a pixel.
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight));
     */
-    func pixelSize (drawingBufferDimensions drawingBufferDimensions: Cartesian2, distance: Double) -> Cartesian2 {
+    func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2 {
 /*    update(this);
-    
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(drawingBufferDimensions)) {
-    throw new DeveloperError('drawingBufferDimensions is required.');
-    }
-    if (drawingBufferDimensions.x <= 0) {
-    throw new DeveloperError('drawingBufferDimensions.x must be greater than zero.');
-    }
-    if (drawingBufferDimensions.y <= 0) {
-    throw new DeveloperError('drawingBufferDimensions.y must be greater than zero.');
-    }
-    //>>includeEnd('debug');
+
     
     var frustumWidth = this.right - this.left;
     var frustumHeight = this.top - this.bottom;
