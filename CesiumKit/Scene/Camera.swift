@@ -426,7 +426,7 @@ public class Camera: DRU {
         updateViewMatrix()
         
         // set default view
-        viewRectangle(defaultViewRectangle, ellipsoid: projection.ellipsoid)
+        position = rectangleCameraPosition3D(defaultViewRectangle, updateCamera: true)
         
         var mag = position.magnitude
         mag += mag * defaultViewFactor
@@ -453,8 +453,8 @@ public class Camera: DRU {
             updateViewMatrix()
             
             // set default view
-            viewRectangle(defaultViewRectangle)
-            
+            position = rectangleCameraPosition3D(defaultViewRectangle, updateCamera: true)
+        
             var mag = position.magnitude
             mag += mag * defaultViewFactor
             position  = position.normalize().multiplyByScalar(mag)
@@ -463,31 +463,12 @@ public class Camera: DRU {
     
     func updateViewMatrix() {
         
-        var newViewMatrix = Matrix4()
-        
-        newViewMatrix = Matrix4(
+        let newViewMatrix = Matrix4(
             right.x, right.y, right.z, -right.dot(position),
             up.x, up.y, up.z, -up.dot(position),
             -direction.x, -direction.y, -direction.z, direction.dot(position),
             0.0, 0.0, 0.0, 1.0
         )
-        /*newViewMatrix[0,0] = right.x
-        newViewMatrix[0,1] = up.x
-        newViewMatrix[0,2] = -direction.x
-        newViewMatrix[0,3] = 0.0
-        newViewMatrix[1,0] = right.y
-        newViewMatrix[1,1] = up.y
-        newViewMatrix[1,2] = -direction.y
-        newViewMatrix[1,3] = 0.0
-        newViewMatrix[2,0] = right.z
-        newViewMatrix[2,1] = up.z
-        newViewMatrix[2,2] = -direction.z
-        newViewMatrix[2,3] = 0.0
-        newViewMatrix[3,0] = -right.dot(position)
-        newViewMatrix[3,1] = -up.dot(position)
-        newViewMatrix[3,2] = direction.dot(position)
-        newViewMatrix[3,3] = 1.0*/
-        
         _viewMatrix = newViewMatrix.multiply(_actualInvTransform)
         _invViewMatrix = _viewMatrix.inverse
     }
@@ -638,7 +619,7 @@ public class Camera: DRU {
         
         let upChanged = _up != up
         if upChanged {
-            up = _up.normalize()
+            up = up.normalize()
             _up = up
         }
         
@@ -784,7 +765,7 @@ public class Camera: DRU {
         }
     }
     
-    private func _setTransform (transform: Matrix4) {
+    func _setTransform (transform: Matrix4) {
         let position = positionWC
         let up = upWC
         let direction = directionWC
@@ -800,119 +781,64 @@ public class Camera: DRU {
         updateMembers()
     }
     
-    private func setView3D(
-        position cartesianIn: Cartesian3? = nil,
-        positionCartographic cartographicIn: Cartographic? = nil,
-        heading: Double,
-        pitch: Double,
-        roll: Double)
-    {
-        let cartesian: Cartesian3
+    private func setView3D (position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
         
-        if cartesianIn == nil {
-            if cartographicIn != nil {
-                cartesian = _projection.ellipsoid.cartographicToCartesian(cartographicIn!)
+        let currentTransform = transform
+        let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
+        _setTransform(localTransform)
+        
+        self.position = Cartesian3.zero
+        
+        let rotQuat = Quaternion(heading: heading - M_PI_2, pitch: pitch, roll: roll)
+        let rotMat = Matrix3(quaternion: rotQuat)
+        
+        direction = rotMat.column(0)
+        up = rotMat.column(2)
+        right = direction.cross(up)
+        
+        _setTransform(currentTransform)
+    }
+    
+    private func setViewCV(position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
+        
+        let currentTransform = transform
+        _setTransform(Matrix4.identity)
+        
+        if position != positionWC {
+            if (convert) {
+                let cartographic = _projection.ellipsoid.cartesianToCartographic(position)
+                self.position = _projection.project(cartographic!)
             } else {
-                cartesian = positionWC
+                self.position = position
             }
-        } else {
-            cartesian = cartesianIn!
         }
+        let rotQuat = Quaternion(heading: heading - M_PI_2, pitch: pitch, roll: roll)
+        let rotMat = Matrix3(quaternion: rotQuat)
         
-        let currentTransform = transform
-        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
-        _setTransform(localTransform)
-        
-        position = Cartesian3.zero
-        
-        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
-        let rotMat = Matrix3(fromQuaternion: rotQuat)
         
         direction = rotMat.column(0)
         up = rotMat.column(2)
-        
         right = direction.cross(up)
         
         _setTransform(currentTransform)
     }
     
-    public func setView3D (positionCart cartographic: Cartographic, rotation: Matrix3) {
-        
-        let cartesian = _projection.ellipsoid.cartographicToCartesian(cartographic)
-        
-        let currentTransform = transform
-        let localTransform = Transforms.eastNorthUpToFixedFrame(cartesian, ellipsoid: _projection.ellipsoid)
-        _setTransform(localTransform)
-        
-        position = Cartesian3.zero
-        
-        direction = rotation.column(0)
-        up = rotation.column(2)
-        
-        right = direction.cross(up)
-        
-        _setTransform(currentTransform)
-    }
-    
-    private func setViewCV(
-        position cartesianIn: Cartesian3? = nil,
-        positionCartographic cartographicIn: Cartographic? = nil,
-        heading: Double,
-        pitch: Double,
-        roll: Double,
-        ellipsoid: Ellipsoid,
-        projection: MapProjection)
-    {
-        
-        let currentTransform = transform
-        _setTransform(Matrix4.identity)
-        var cartesian: Cartesian3! = cartesianIn
-        var cartographic: Cartographic! = cartographicIn
-        
-        if cartesianIn != nil && cartesianIn! != positionWC {
-            cartographic = ellipsoid.cartesianToCartographic(cartesianIn!)
-        }
-        
-        if cartographic != nil {
-            cartesian = projection.project(cartographic)
-        }
-        position = cartesian
-        
-        let rotQuat = Quaternion(fromHeading: heading - M_PI_2, pitch: pitch, roll: roll)
-        let rotMat = Matrix3(fromQuaternion: rotQuat)
-        
-        direction = rotMat.column(0)
-        up = rotMat.column(2)
-        
-        right = direction.cross(up)
-        
-        _setTransform(currentTransform)
-    }
-    
-    private func setView2D(
-        position cartesianIn: Cartesian3? = nil,
-        positionCartographic cartographicIn: Cartographic? = nil,
-        ellipsoid: Ellipsoid,
-        projection: MapProjection)
-    {
-        var cartesian: Cartesian3! = cartesianIn
-        var cartographic: Cartographic! = cartographicIn
-        
+    private func setView2D(position: Cartesian3, convert: Bool) {
         let currentTransform = transform
         _setTransform(Matrix4.identity)
         
-        if cartesian != nil && cartesian! != positionWC {
-            cartographic = ellipsoid.cartesianToCartographic(cartesian)
-        }
-        
-        if cartographic != nil {
-            cartesian = projection.project(cartographic)
-            position = cartesian
+        if position != positionWC {
+            if (convert) {
+                let cartographic = _projection.ellipsoid.cartesianToCartographic(position)
+                self.position = _projection.project(cartographic!)
+            } else {
+                self.position = position
+            }
             
-            let newLeft = -cartographic.height * 0.5
+            let newLeft = -self.position.z * 0.5
             let newRight = -newLeft
             
-            if (newRight > newLeft) {
+            if newRight > newLeft {
                 let ratio = frustum.top / frustum.right
                 frustum.right = newRight
                 frustum.left = newLeft
@@ -921,6 +847,34 @@ public class Camera: DRU {
             }
         }
         _setTransform(currentTransform)
+    }
+    
+    private func directionUpToHeadingPitchRoll(position: Cartesian3, orientation: Orientation) -> Orientation {
+        
+        var direction: Cartesian3
+        var up: Cartesian3
+        if case let Orientation.directionUp(directionIn, upIn) = orientation {
+            direction = directionIn
+            up = upIn
+        } else {
+            return orientation
+        }
+        
+        if _mode == .Scene3D {
+            let transform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
+            let invTransform = transform.inverse
+            
+            direction = invTransform.multiplyByPointAsVector(direction)
+            up = invTransform.multiplyByPointAsVector(up)
+        }
+        
+        let right = direction.cross(up)
+        
+        return Orientation.headingPitchRoll(
+            heading: getHeading(direction: direction, up: up),
+            pitch: getPitch(direction: direction),
+            roll: getRoll(direction: direction, up: up, right: right)
+        )
     }
     
     /**
@@ -973,15 +927,7 @@ public class Camera: DRU {
      *     }
      * });
      */
-    public func setView (
-        position cartesianIn: Cartesian3? = nil,
-        positionCartographic cartographicIn: Cartographic? = nil,
-        orientation: Orientation? = nil,
-        destination: Destination? = nil,
-        endTransform: Matrix4? = nil,
-        convert: Bool = true
-    )
-    {
+    public func setView (orientation orientation: Orientation? = nil, destination: Destination? = nil, endTransform: Matrix4? = nil) {
         if _mode == .Morphing {
             return
         }
@@ -990,32 +936,38 @@ public class Camera: DRU {
             _setTransform(endTransform)
         }
         
-        var convert = convert
+        var convert = true
         var destination = destination ?? .cartesian(positionWC)
         
         if case let Destination.rectangle(rectangle) = destination {
-            destination = getRectangleCameraCoordinates(destination)
+            destination = Destination.cartesian(getRectangleCameraCoordinates(rectangle))
             convert = false
         }
-        
-        
-        if (defined(orientation.direction)) {
-            orientation = directionUpToHeadingPitchRoll(this, destination, orientation, scratchSetViewOptions.orientation);
+        var orientation = orientation
+        if orientation != nil {
+            if case Orientation.directionUp(direction: _, up: _) = orientation! {
+                orientation = directionUpToHeadingPitchRoll(destination.cartesian!, orientation: orientation!)
+            }
         }
         
-        var heading = defaultValue(orientation.heading, 0.0);
-        var pitch = defaultValue(orientation.pitch, -CesiumMath.PI_OVER_TWO);
-        var roll = defaultValue(orientation.roll, 0.0);
+        var heading = 0.0
+        var pitch = -M_PI_2
+        var roll = 0.0
         
-        let projection = _projection
-        let ellipsoid = _projection.ellipsoid
-        
+        if let orientation = orientation {
+            if case let Orientation.headingPitchRoll(headingIn, pitchIn, rollIn) = orientation {
+                heading = headingIn
+                pitch = pitchIn
+                roll = rollIn
+            }
+        }
+
         if _mode == .Scene3D {
-            setView3D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll)
+            setView3D(destination.cartesian!, heading: heading, pitch: pitch, roll: roll)
         } else if _mode == SceneMode.Scene2D {
-            setView2D(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll, ellipsoid: ellipsoid, projection: projection)
+            setView2D(destination.cartesian!, convert: convert)
         } else {
-            setViewCV(position: cartesianIn, positionCartographic: cartographicIn, heading: heading, pitch: pitch, roll: roll, ellipsoid: ellipsoid, projection: projection)
+            setViewCV(destination.cartesian!, heading: heading, pitch: pitch, roll: roll, convert: convert)
         }
     }
     
@@ -1338,8 +1290,8 @@ public class Camera: DRU {
     public func look (axis axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultLookAmount
-        let quaternion = Quaternion(fromAxis: axis, angle: -turnAngle)
-        let rotation = Matrix3(fromQuaternion: quaternion)
+        let quaternion = Quaternion(axis: axis, angle: -turnAngle)
+        let rotation = Matrix3(quaternion: quaternion)
         
         direction = rotation.multiplyByVector(direction)
         up = rotation.multiplyByVector(up)
@@ -1397,8 +1349,8 @@ public class Camera: DRU {
     func rotate (axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultRotateAmount
-        let quaternion = Quaternion(fromAxis: axis, angle: -turnAngle)
-        let rotation = Matrix3(fromQuaternion: quaternion)
+        let quaternion = Quaternion(axis: axis, angle: -turnAngle)
+        let rotation = Matrix3(quaternion: quaternion)
         position = rotation.multiplyByVector(position)
         direction = rotation.multiplyByVector(direction)
         up = rotation.multiplyByVector(up)
@@ -1639,10 +1591,10 @@ public class Camera: DRU {
         let clampPitch = Math.clamp(pitch, min: -M_PI_2, max: M_PI_2)
         let clampHeading = Math.zeroToTwoPi(heading) - M_PI_2
         
-        let pitchQuat = Quaternion(fromAxis: Cartesian3.unitY, angle: -clampPitch)
-        let headingQuat = Quaternion(fromAxis: Cartesian3.unitZ, angle: -clampHeading)
+        let pitchQuat = Quaternion(axis: Cartesian3.unitY, angle: -clampPitch)
+        let headingQuat = Quaternion(axis: Cartesian3.unitZ, angle: -clampHeading)
         let rotQuat = pitchQuat.multiply(headingQuat)
-        let rotMatrix = Matrix3(fromQuaternion: rotQuat)
+        let rotMatrix = Matrix3(quaternion: rotQuat)
         
         return rotMatrix.multiplyByVector(Cartesian3.unitX).negate().multiplyByScalar(range)
     }
@@ -1749,17 +1701,16 @@ public class Camera: DRU {
     var viewRectangle3DEllipsoidGeodesic: EllipsoidGeodesic! = nil
     
     private struct DefaultRF: DRU {
-        var direction: Cartesian3
-        var right: Cartesian3
-        var up: Cartesian3
+        var direction = Cartesian3()
+        var right = Cartesian3()
+        var up = Cartesian3()
     }
     
-    func rectangleCameraPosition3D (rectangle: Rectangle, ellipsoid: Ellipsoid, positionOnly: Bool = false) -> Cartesian3 {
+    func rectangleCameraPosition3D (rectangle: Rectangle, updateCamera: Bool) -> Cartesian3 {
         
-        var cameraRF: DRU = self
-        if positionOnly {
-            cameraRF = DefaultRF(direction: Cartesian3(), right: Cartesian3(), up: Cartesian3())
-        }
+        let ellipsoid = _projection.ellipsoid
+        
+        var camera: DRU = updateCamera ? self : DefaultRF()
         
         var north = rectangle.north
         var south = rectangle.south
@@ -1825,11 +1776,11 @@ public class Camera: DRU {
         southCenter = southCenter.subtract(center)
         
         let direction = ellipsoid.geodeticSurfaceNormal(center).negate()
-        cameraRF.direction = direction
+        camera.direction = direction
         let right = direction.cross(Cartesian3.unitZ).normalize()
-        cameraRF.right = right
+        camera.right = right
         let up = right.cross(direction)
-        cameraRF.up = up
+        camera.up = up
         
         var tanPhi = tan(frustum.fovy * 0.5)
         var tanTheta = frustum.aspectRatio * tanPhi
@@ -1975,9 +1926,10 @@ public class Camera: DRU {
     Cartesian3.clone(Cartesian3.UNIT_X, camera.right);
     Cartesian3.clone(Cartesian3.UNIT_Y, camera.up);
     }
-    */
+ 
     return result;
     }
+     */
     /**
     * Get the camera position needed to view an rectangle on an ellipsoid or map
     *
@@ -1988,42 +1940,20 @@ public class Camera: DRU {
     *
     * @returns {Cartesian3} The camera position needed to view the rectangle
     */
-    Camera.prototype.getRectangleCameraCoordinates = function(rectangle, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(rectangle)) {
-    throw new DeveloperError('rectangle is required');
-    }
-    //>>includeEnd('debug');
+    private func getRectangleCameraCoordinates (rectangle: Rectangle) -> Cartesian3 {
     
-    if (this._mode === SceneMode.SCENE3D) {
-    return rectangleCameraPosition3D(this, rectangle, this._projection.ellipsoid, result, true);
-    } else if (this._mode === SceneMode.COLUMBUS_VIEW) {
-    return rectangleCameraPositionColumbusView(this, rectangle, this._projection, result, true);
-    } else if (this._mode === SceneMode.SCENE2D) {
-    return rectangleCameraPosition2D(this, rectangle, this._projection, result, true);
+        switch _mode {
+        case .Scene3D:
+            return rectangleCameraPosition3D(rectangle, updateCamera: false)
+        /*case .ColumbusView:
+            return rectangleCameraPositionColumbusView(this, rectangle, this._projection, result, true)
+        case .Scene2D:
+            return rectangleCameraPosition2D(this, rectangle, this._projection, result, true);*/
+        default:
+            return Cartesian3()
+        }
     }
-    
-    return undefined;
-    };
 
-    /**
-    * View a rectangle on an ellipsoid or map.
-    *
-    * @memberof Camera
-    *
-    * @param {Rectangle} rectangle The rectangle to view.
-    * @param {Ellipsoid} [ellipsoid=Ellipsoid.WGS84] The ellipsoid to view.
-    */
-    public func viewRectangle(rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
-        if _mode == .Scene3D {
-            position = rectangleCameraPosition3D(rectangle, ellipsoid: ellipsoid)
-        } else { assert(false, "not implemented") }/*if mode == .ColumbusView {
-        rectangleCameraPositionColumbusView( rectangle, _projection, position)
-        } else if mode == .Scene2D {
-        rectangleCameraPosition2D(rectangle, _projection, position)
-        }*/
-    }
-    
     func pickEllipsoid3D(windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
         
         let ray = getPickRay(windowPosition)
