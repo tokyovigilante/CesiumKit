@@ -879,7 +879,7 @@ class UniformState {
         layout.czm_a_moonDirectionEC = moonDirectionEC.floatRepresentation
         layout.czm_a_viewerPositionWC = inverseView.translation.floatRepresentation
         layout.czm_a_morphTime = Float(frameState.morphTime)
-        layout.czm_a_fogDensity = 0.0//fogDensity.floatRepresentation
+        layout.czm_a_fogDensity = fogDensity
         layout.czm_a_frameNumber = Float(frameState.frameNumber)
         layout.czm_a_pass = pass
         
@@ -904,7 +904,6 @@ class UniformState {
         layout.czm_f_normal = normal.floatRepresentation
         layout.czm_f_normal3D = normal3D.floatRepresentation
         layout.czm_f_entireFrustum = entireFrustum.floatRepresentation
-        
         memcpy(buffer.data, &layout, sizeof(FrustumUniformBufferLayout))
     }
     
