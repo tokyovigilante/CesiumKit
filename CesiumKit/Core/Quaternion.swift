@@ -65,7 +65,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    public init(fromAxis axis: Cartesian3, angle: Double) {
+    public init(axis: Cartesian3, angle: Double) {
         let halfAngle = angle / 2.0
         let s = sin(halfAngle)
         let normAxis = axis.normalize()
@@ -86,7 +86,7 @@ public struct Quaternion {
     *
     * @see Matrix3.fromQuaternion
     */
-    init(fromRotationMatrix matrix: Matrix3) {
+    init(matrix: Matrix3) {
         
         let m00 = matrix[0,0]
         let m11 = matrix[1,1]
@@ -146,11 +146,11 @@ public struct Quaternion {
     * @param {Quaternion} result The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if none was provided.
     */
-    public init(fromHeading heading: Double, pitch: Double, roll: Double) {
+    public init(heading: Double, pitch: Double, roll: Double) {
         let HPRQuaternion =
-            Quaternion(fromAxis: Cartesian3.unitY, angle: -pitch) * // pitch
-            Quaternion(fromAxis: Cartesian3.unitX, angle: roll) * // roll
-            Quaternion(fromAxis: Cartesian3.unitZ, angle: -heading) // heading
+            Quaternion(axis: Cartesian3.unitY, angle: -pitch) * // pitch
+            Quaternion(axis: Cartesian3.unitX, angle: roll) * // roll
+            Quaternion(axis: Cartesian3.unitZ, angle: -heading) // heading
         
         self.init(x: HPRQuaternion.x, y: HPRQuaternion.y, z: HPRQuaternion.z, w: HPRQuaternion.w)
     }

@@ -62,7 +62,7 @@ public struct Matrix3 {
     * @param {Quaternion} quaternion the quaternion to use.
     * @returns {Matrix3} The 3x3 rotation matrix from this quaternion.
     */
-    public init(fromQuaternion quaternion: Quaternion) {
+    public init(quaternion: Quaternion) {
         
         let x2 = quaternion.x * quaternion.x
         let xy = quaternion.x * quaternion.y
@@ -106,7 +106,7 @@ public struct Matrix3 {
         )
     }
     
-    public init (fromSIMD simd: double3x3) {
+    public init (simd: double3x3) {
         simdType = simd
     }
     
@@ -294,7 +294,7 @@ public struct Matrix3 {
     * var m = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(45.0));
     * var rotated = Cesium.Matrix3.multiplyByVector(m, p);
     */
-    init (fromRotationX angle: Double) {
+    init (rotationX angle: Double) {
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
@@ -318,7 +318,7 @@ public struct Matrix3 {
     * var m = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(45.0));
     * var rotated = Cesium.Matrix3.multiplyByVector(m, p);
     */
-    init (fromRotationY angle: Double) {
+    init (rotationY angle: Double) {
         let cosAngle = cos(angle)
         let sinAngle = sin(angle)
         
@@ -342,7 +342,7 @@ public struct Matrix3 {
     * var m = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(45.0));
     * var rotated = Cesium.Matrix3.multiplyByVector(m, p);
     */
-    init (fromRotationZ angle: Double) {
+    init (rotationZ angle: Double) {
         let cosAngle: Double = cos(angle)
         let sinAngle: Double = sin(angle)
         
@@ -415,7 +415,7 @@ public struct Matrix3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
         var result = simdType
         result[index] = cartesian.simdType
-        return Matrix3(fromSIMD: result)
+        return Matrix3(simd: result)
     }
     /*
     /**
@@ -675,15 +675,15 @@ public struct Matrix3 {
      * @returns {MatrixType} The modified result parameter.
      */
     public func multiply(other: Matrix3) -> Matrix3 {
-        return Matrix3(fromSIMD: simdType * other.simdType)
+        return Matrix3(simd: simdType * other.simdType)
     }
     
     public var negate: Matrix3 {
-        return Matrix3(fromSIMD: -simdType)
+        return Matrix3(simd: -simdType)
     }
     
     public var transpose: Matrix3 {
-        return Matrix3(fromSIMD: simdType.transpose)
+        return Matrix3(simd: simdType.transpose)
     }
     
     public func equals(other: Matrix3) -> Bool {
