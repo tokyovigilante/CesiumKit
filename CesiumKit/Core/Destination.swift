@@ -12,4 +12,22 @@ public enum Destination {
     case cartesian(Cartesian3)
     
     case rectangle(Rectangle)
+    
+    var cartesian: Cartesian3? {
+        switch self {
+        case let cartesian(cartesian):
+            return cartesian
+        default:
+            return nil
+        }
+    }
+    
+    var rectangle: Rectangle? {
+        switch self {
+        case let rectangle(rectangle):
+            return rectangle
+        default:
+            return nil
+        }
+    }
 }
