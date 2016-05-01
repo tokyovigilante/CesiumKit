@@ -866,6 +866,8 @@ class UniformState {
         _entireFrustum.y = camera.frustum.far
         updateFrustum(camera.frustum)
         
+        _fogDensity = Float(frameState.fog.density)
+        
         _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(self.frameState.time!)
     }
     
