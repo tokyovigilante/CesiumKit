@@ -607,6 +607,8 @@
 		94C6E5581B1475BF0095A86F /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C6E5571B1475BF0095A86F /* Buffer.swift */; };
 		94C91B0F1CAFA6CD0041F512 /* Intersections2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */; };
 		94C91B101CAFA6CD0041F512 /* Intersections2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */; };
+		94C9E4F61CD4EB8A0095A86F /* Fog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C9E4F51CD4EB8A0095A86F /* Fog.swift */; };
+		94C9E4F71CD4EB8A0095A86F /* Fog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C9E4F51CD4EB8A0095A86F /* Fog.swift */; };
 		94CA7E091A9892B700FFAD81 /* TileCoordinateImageryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */; };
 		94CA7E0D1A998E5A00FFAD81 /* CesiumKit.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		94CA7E0F1A998EE100FFAD81 /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9413B7841A37B8D900FFAD81 /* CesiumKit.framework */; };
@@ -1028,6 +1030,7 @@
 		94C57E1319722AB90046791A /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
 		94C6E5571B1475BF0095A86F /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
 		94C91B0E1CAFA6CD0041F512 /* Intersections2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersections2D.swift; sourceTree = "<group>"; };
+		94C9E4F51CD4EB8A0095A86F /* Fog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fog.swift; sourceTree = "<group>"; };
 		94CA7E081A9892B700FFAD81 /* TileCoordinateImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCoordinateImageryProvider.swift; sourceTree = "<group>"; };
 		94CB63FC1A38465600FFAD81 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94CD3FAC199B6BF000012DC4 /* ImageryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryProvider.swift; sourceTree = "<group>"; };
@@ -1566,6 +1569,7 @@
 				946007AD1AC2C97F0095A86F /* CameraEventType.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				942A70451BF9DB2E001A40C8 /* DepthPlane.swift */,
+				94C9E4F51CD4EB8A0095A86F /* Fog.swift */,
 				94B87DC6194D6ADF00012DC4 /* FrameState.swift */,
 				94BA59EE19A695B90049322D /* Frustum.swift */,
 				94540424199F05D300012DC4 /* FrustumCommands.swift */,
@@ -2381,6 +2385,7 @@
 				9488A14C1CBE4BFC0095A86F /* Crypto.swift in Sources */,
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
+				94C9E4F61CD4EB8A0095A86F /* Fog.swift in Sources */,
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
 				94EFB04D1C84D7CD0095A86F /* DecimalNumber.swift in Sources */,
 				942F56B41C5D6CA90095A86F /* HorizontalOrigin.swift in Sources */,
@@ -2606,6 +2611,7 @@
 				9478217D1B5A2D7C0095A86F /* QuadtreeTile.swift in Sources */,
 				9478217E1B5A2D7C0095A86F /* QuadtreeTileLoadState.swift in Sources */,
 				94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */,
+				94C9E4F71CD4EB8A0095A86F /* Fog.swift in Sources */,
 				94EFB04C1C84D7CD0095A86F /* Accessors.swift in Sources */,
 				9478217F1B5A2D7C0095A86F /* QuadtreeTileProvider.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
