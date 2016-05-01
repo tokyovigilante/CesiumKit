@@ -311,6 +311,17 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     * @returns {Visibility} The visibility of the tile.
     */
     func computeTileVisibility (tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility {
+        
+        let distance = computeDistanceToTile(tile, frameState: frameState)
+        tile.distance = distance
+        
+        if frameState.fog.enabled {
+            if Math.fog(distance, density: frameState.fog.density) >= 1.0 {
+                // Tile is completely in fog so return that it is not visible.
+                return .None
+            }
+        }
+        
         let surfaceTile = tile.data!
         let cullingVolume = frameState.cullingVolume!
         var boundingVolume: BoundingVolume = surfaceTile.orientedBoundingBox ?? surfaceTile.boundingSphere3D
@@ -395,8 +406,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
     */
     func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState) -> Double {
-        
-
         
         let surfaceTile = tile.data!
         
@@ -577,6 +586,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         let showReflectiveOcean = hasWaterMask && waterMaskTexture != nil
         let showOceanWaves = showReflectiveOcean && oceanNormalMap != nil
         let hasVertexNormals = terrainProvider.ready && terrainProvider.hasVertexNormals
+        let enableFog = frameState.fog.enabled
         
         var scratchArray = [Float32](count: 1, repeatedValue: 0.0)
         
@@ -688,6 +698,9 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             
             uniformMap.southAndNorthLatitude = Cartesian2(x: southLatitude, y: northLatitude).floatRepresentation
             uniformMap.southMercatorYAndOneOverHeight = float2(x: Float(southMercatorYHigh), y: Float(oneOverMercatorHeight))
+            
+            // For performance, use fog in the shader only when the tile is in fog.
+            let applyFog = enableFog && Math.fog(tile.distance, density: frameState.fog.density) > Math.Epsilon3
 
             var applyBrightness = false
             var applyContrast = false
@@ -775,7 +788,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 showOceanWaves: showOceanWaves,
                 enableLighting: enableLighting,
                 hasVertexNormals: hasVertexNormals,
-                useWebMercatorProjection: useWebMercatorProjection
+                useWebMercatorProjection: useWebMercatorProjection,
+                enableFog: applyFog
             )
             
             command.renderState = renderState

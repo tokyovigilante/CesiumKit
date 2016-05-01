@@ -46,96 +46,99 @@ class Fog {
     
     
     // These values were found by sampling the density at certain views and finding at what point culled tiles impacted the view at the horizon.
-    private let heightsTable = [359.393, 800.749, 1275.6501, 2151.1192, 3141.7763, 4777.5198, 6281.2493, 12364.307, 15900.765, 49889.0549, 78026.8259, 99260.7344, 120036.3873, 151011.0158, 156091.1953, 203849.3112, 274866.9803, 319916.3149, 493552.0528, 628733.5874];
-    private let densityTable = [2.0e-5, 2.0e-4, 1.0e-4, 7.0e-5, 5.0e-5, 4.0e-5, 3.0e-5, 1.9e-5, 1.0e-5, 8.5e-6, 6.2e-6, 5.8e-6, 5.3e-6, 5.2e-6, 5.1e-6, 4.2e-6, 4.0e-6, 3.4e-6, 2.6e-6, 2.2e-6];
+    private let heightsTable = [359.393, 800.749, 1275.6501, 2151.1192, 3141.7763, 4777.5198, 6281.2493, 12364.307, 15900.765, 49889.0549, 78026.8259, 99260.7344, 120036.3873, 151011.0158, 156091.1953, 203849.3112, 274866.9803, 319916.3149, 493552.0528, 628733.5874]
+    private var densityTable = [2.0e-5, 2.0e-4, 1.0e-4, 7.0e-5, 5.0e-5, 4.0e-5, 3.0e-5, 1.9e-5, 1.0e-5, 8.5e-6, 6.2e-6, 5.8e-6, 5.3e-6, 5.2e-6, 5.1e-6, 4.2e-6, 4.0e-6, 3.4e-6, 2.6e-6, 2.2e-6]
+    
+    private var tableLastIndex = 0
+    
+    private let tableStartDensity: Double
+    
+    private let tableEndDensity: Double
     
     init () {
         // Scale densities by 1e6 to bring lowest value to ~1. Prevents divide by zero.
-        for (var i = 0; i < densityTable.length; ++i) {
-            densityTable[i] *= 1.0e6;
+        for i in 0..<densityTable.count {
+            densityTable[i] *= 1.0e6
         }
         // Change range to [0, 1].
-        var tableStartDensity = densityTable[1];
-        var tableEndDensity = densityTable[densityTable.length - 1];
-        for (var j = 0; j < densityTable.length; ++j) {
-            densityTable[j] = (densityTable[j] - tableEndDensity) / (tableStartDensity - tableEndDensity);
+        tableStartDensity = densityTable[1]
+        tableEndDensity = densityTable.last!
+        let difference = tableStartDensity - tableEndDensity
+        for i in 0..<densityTable.count {
+            densityTable[i] = (densityTable[i] - tableEndDensity) / difference
         }
-        
-        var tableLastIndex = 0;
     }
-    private func findInterval(height: Double) -> Int {
-        var heights = heightsTable;
-        var length = heights.length;
+    
+    private func findInterval (height: Double) -> Int {
+
+        let length = heightsTable.count
         
-        if (height < heights[0]) {
-            tableLastIndex = 0;
-            return tableLastIndex;
-        } else if (height > heights[length - 1]) {
-            tableLastIndex = length - 2;
-            return tableLastIndex;
+        if height < heightsTable[0] {
+            tableLastIndex = 0
+            return tableLastIndex
+        } else if height > heightsTable[length - 1] {
+            tableLastIndex = length - 2
+            return tableLastIndex
         }
         
         // Take advantage of temporal coherence by checking current, next and previous intervals
         // for containment of time.
-        if (height >= heights[tableLastIndex]) {
-            if (tableLastIndex + 1 < length && height < heights[tableLastIndex + 1]) {
-                return tableLastIndex;
-            } else if (tableLastIndex + 2 < length && height < heights[tableLastIndex + 2]) {
-                ++tableLastIndex;
-                return tableLastIndex;
+        if height >= heightsTable[tableLastIndex] {
+            if tableLastIndex + 1 < length && height < heightsTable[tableLastIndex + 1] {
+                return tableLastIndex
+            } else if tableLastIndex + 2 < length && height < heightsTable[tableLastIndex + 2] {
+                tableLastIndex += 1
+                return tableLastIndex
             }
-        } else if (tableLastIndex - 1 >= 0 && height >= heights[tableLastIndex - 1]) {
-            --tableLastIndex;
-            return tableLastIndex;
+        } else if (tableLastIndex - 1 >= 0 && height >= heightsTable[tableLastIndex - 1]) {
+            tableLastIndex -= 1
+            return tableLastIndex
         }
         
         // The above failed so do a linear search.
-        var i;
-        for (i = 0; i < length - 2; ++i) {
-            if (height >= heights[i] && height < heights[i + 1]) {
-                break;
+        var i = 0
+        for j in 0..<(length - 2) {
+            i = j
+            if height >= heightsTable[i] && height < heightsTable[i + 1] {
+                break
             }
         }
-        
-        tableLastIndex = i;
-        return tableLastIndex;
+        tableLastIndex = i
+        return tableLastIndex
     }
     
-    var scratchPositionNormal = new Cartesian3();
-    
-    func update (frameState: FrameState) {
-        var enabled = frameState.fog.enabled = this.enabled;
+    func update (inout frameState: FrameState) {
+        frameState.fog.enabled = enabled
         if (!enabled) {
             return;
         }
         
-        var camera = frameState.camera;
-        var positionCartographic = camera.positionCartographic;
+        let camera = frameState.camera!
+        let positionCartographic = camera.positionCartographic
         
         // Turn off fog in space.
-        if (!defined(positionCartographic) || positionCartographic.height > 800000.0 || frameState.mode !== SceneMode.SCENE3D) {
-            frameState.fog.enabled = false;
-            return;
+        if positionCartographic.height > 800000.0 || frameState.mode != .Scene3D {
+            frameState.fog.enabled = false
+            return
         }
         
-        var height = positionCartographic.height;
-        var i = findInterval(height);
-        var t = CesiumMath.clamp((height - heightsTable[i]) / (heightsTable[i + 1] - heightsTable[i]), 0.0, 1.0);
-        var density = CesiumMath.lerp(densityTable[i], densityTable[i + 1], t);
+        let height = positionCartographic.height
+        let i = findInterval(height)
+        let t = Math.clamp((height - heightsTable[i]) / (heightsTable[i + 1] - heightsTable[i]), min: 0.0, max: 1.0)
+        var density = Math.lerp(p: densityTable[i], q: densityTable[i + 1], time: t)
         
         // Again, scale value to be in the range of densityTable (prevents divide by zero) and change to new range.
-        var startDensity = this.density * 1.0e6;
-        var endDensity = (startDensity / tableStartDensity) * tableEndDensity;
-        density = (density * (startDensity - endDensity)) * 1.0e-6;
+        let startDensity = self.density * 1.0e6
+        let endDensity = (startDensity / tableStartDensity) * tableEndDensity
+        density = (density * (startDensity - endDensity)) * 1.0e-6
         
         // Fade fog in as the camera tilts toward the horizon.
-        var positionNormal = Cartesian3.normalize(camera.positionWC, scratchPositionNormal);
-        var dot = CesiumMath.clamp(Cartesian3.dot(camera.directionWC, positionNormal), 0.0, 1.0);
-        density *= 1.0 - dot;
+        let positionNormal = camera.positionWC.normalize()
+        let dot = Math.clamp(camera.directionWC.dot(positionNormal), min: 0.0, max: 1.0)
+        density *= 1.0 - dot
         
-        frameState.fog.density = density;
-        frameState.fog.sse = this.screenSpaceErrorFactor;
+        frameState.fog.density = density
+        frameState.fog.sse = screenSpaceErrorFactor
     }
-    
     
 }

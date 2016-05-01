@@ -72,7 +72,7 @@ class GlobeSurfaceShaderSet {
     
     private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
     
-    func getRenderPipeline (context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool) -> RenderPipeline {
+    func getRenderPipeline (context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool, enableFog: Bool) -> RenderPipeline {
         
         let flags: Int = Int(sceneMode.rawValue) |
             (Int(applyBrightness) << 2) |
@@ -85,7 +85,8 @@ class GlobeSurfaceShaderSet {
             (Int(showOceanWaves) << 9) |
             (Int(enableLighting) << 10) |
             (Int(hasVertexNormals) << 11) |
-            (Int(useWebMercatorProjection) << 12)
+            (Int(useWebMercatorProjection) << 12) |
+            (Int(enableFog) << 12)
         
         var surfacePipeline = surfaceTile.surfacePipeline
         if surfacePipeline != nil && surfacePipeline!.numberOfDayTextures == numberOfDayTextures && surfacePipeline!.flags == flags {
@@ -152,6 +153,10 @@ class GlobeSurfaceShaderSet {
                     vs.defines.append("ENABLE_DAYNIGHT_SHADING")
                     fs.defines.append("ENABLE_DAYNIGHT_SHADING")
                 }
+            }
+            if enableFog {
+                vs.defines.append("FOG")
+                fs.defines.append("FOG")
             }
             
             var computeDayColor = "vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates)\n{    \nvec4 color = initialColor;\n"

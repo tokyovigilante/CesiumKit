@@ -524,6 +524,15 @@ public class Scene {
      */
     var copyGlobeDepth = false
     
+    /**
+     * Blends the atmosphere to geometry far from the camera for horizon views. Allows for additional
+     * performance improvements by rendering less geometry and dispatching less terrain requests.
+     * @type {Fog}
+     */
+    let fog = Fog()
+    
+    private var _terrainExaggeration = 1.0
+    
     //this._performanceDisplay = undefined;
     private var _debugVolume: BoundingVolume? = nil
     
@@ -1561,6 +1570,8 @@ function callAfterRenderFunctions(frameState) {
         frameState.passes.render = true
         // FIXME: Creditdisplay
         //frameState.creditDisplay.beginFrame();
+        
+        fog.update(&frameState)
         
         uniformState.update(context, frameState: frameState)
         _computeCommandList.removeAll()

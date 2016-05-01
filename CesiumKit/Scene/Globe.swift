@@ -297,9 +297,9 @@ class Globe {
             let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
             
             _surfaceShaderSet = GlobeSurfaceShaderSet(
-                baseVertexShaderSource: ShaderSource(sources: [Shaders["GlobeVS"]!]),
-                                        baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
-                                                                  vertexDescriptor: vertexDescriptor)
+                baseVertexShaderSource: ShaderSource(sources: [Shaders["GroundAtmosphere"]!, Shaders["GlobeVS"]!]),
+                baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
+                vertexDescriptor: vertexDescriptor)
             
             _surface = QuadtreePrimitive(
                 tileProvider: GlobeSurfaceTileProvider(
