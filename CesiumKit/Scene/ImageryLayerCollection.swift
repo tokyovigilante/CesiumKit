@@ -345,7 +345,6 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
     
             // Find the terrain tile containing the picked location.
             var tilesToRender = scene.globe._surface._tilesToRender;
-            var length = tilesToRender.length;
             var pickedTile;
     
             for (var textureIndex = 0; !defined(pickedTile) && textureIndex < tilesToRender.length; ++textureIndex) {
@@ -360,7 +359,6 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
             }
     
             // Pick against all attached imagery tiles containing the pickedLocation.
-            var tileExtent = pickedTile.rectangle;
             var imageryTiles = pickedTile.data.imagery;
     
             var promises = [];
@@ -427,7 +425,33 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
                 return features;
             });
         };
-
+*/
+    /**
+     * Updates frame state to execute any queued texture re-projections.
+     *
+     * @private
+     *
+     * @param {FrameState} frameState The frameState.
+     */
+    func queueReprojectionCommands (inout frameState: FrameState) {
+        for layer in _layers {
+            layer.queueReprojectionCommands(&frameState)
+        }
+    }
+    
+    /**
+     * Cancels re-projection commands queued for the next frame.
+     *
+     * @private
+     */
+    func cancelReprojections () {
+        for layer in _layers {
+            layer.cancelReprojections()
+        }
+    }
+    
+    /*
+     
 /**
 * Returns true if this object was destroyed; otherwise, false.
 * <br /><br />

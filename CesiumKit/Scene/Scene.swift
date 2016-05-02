@@ -509,6 +509,14 @@ public class Scene {
     var fxaa = true
     
     /**
+     * When <code>true</code>, enables picking using the depth buffer.
+     *
+     * @type Boolean
+     * @default true
+     */
+    var useDepthPicking = true
+    
+    /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
      * @type {Number}
      * @default 500.0
@@ -661,6 +669,7 @@ public class Scene {
         
         _passState = PassState()
         _passState.context = context
+        _passState.viewport = Cartesian4(x: 0.0, y: 0.0, width: Double(context.width), height: Double(context.height))
         
         // initial guess at frustums.
         camera = Camera(
@@ -1496,6 +1505,29 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             textRenderPass.complete()
         }
 
+    }
+    
+    func updateEnvironment () {
+        /*var frameState = scene._frameState;
+        
+        // Update celestial and terrestrial environment effects.
+        var environmentState = scene._environmentState;
+        var renderPass = frameState.passes.render;
+        environmentState.skyBoxCommand = (renderPass && defined(scene.skyBox)) ? scene.skyBox.update(frameState) : undefined;
+        environmentState.skyAtmosphereCommand = (renderPass && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(frameState) : undefined;
+        var sunCommands = (renderPass && defined(scene.sun)) ? scene.sun.update(scene) : undefined;
+        environmentState.sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
+        environmentState.sunComputeCommand = defined(sunCommands) ? sunCommands.computeCommand : undefined;
+        environmentState.moonCommand = (renderPass && defined(scene.moon)) ? scene.moon.update(frameState) : undefined;
+        
+        var clearGlobeDepth = environmentState.clearGlobeDepth = defined(scene.globe) && (!scene.globe.depthTestAgainstTerrain || scene.mode === SceneMode.SCENE2D);
+        var useDepthPlane = environmentState.useDepthPlane = clearGlobeDepth && scene.mode === SceneMode.SCENE3D;
+        if (useDepthPlane) {
+            // Update the depth plane that is rendered in 3D when the primitives are
+            // not depth tested against terrain so primitives on the backface
+            // of the globe are not picked.
+            scene._depthPlane.update(frameState);
+        }*/
     }
 
 

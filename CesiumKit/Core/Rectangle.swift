@@ -213,7 +213,7 @@ public struct Rectangle {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
-    func southwest() -> Cartographic {
+    var southwest: Cartographic {
         return Cartographic(longitude: west, latitude: south, height:0.0)
     }
     
@@ -224,7 +224,7 @@ public struct Rectangle {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
-    func northwest() -> Cartographic {
+    var northwest: Cartographic {
         return Cartographic(longitude: west, latitude: north, height:0.0)
     }
     
@@ -236,7 +236,7 @@ public struct Rectangle {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
-    func northeast() -> Cartographic {
+    var northeast: Cartographic {
         return Cartographic(longitude: east, latitude: north, height:0.0)
     }
     
@@ -248,7 +248,7 @@ public struct Rectangle {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
-    func southeast() -> Cartographic {
+    var southeast: Cartographic {
         return Cartographic(longitude: east, latitude: south, height:0.0)
     }
     
@@ -259,7 +259,7 @@ public struct Rectangle {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if none was provided.
     */
-    func center() -> Cartographic {
+    var center: Cartographic {
         let east: Double
         if (self.east < west) {
             east = self.east + Math.TwoPi

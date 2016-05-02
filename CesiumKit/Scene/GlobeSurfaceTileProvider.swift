@@ -177,14 +177,16 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     /**
-    * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
+    * Called at the beginning of each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
     * or any other functions.
     *
     * @param {FrameState} frameState The frame state.
     */
-    func beginUpdate (inout frameState frameState: FrameState) {
+    func initialize (inout frameState: FrameState) {
         
         imageryLayers.update()
+        // update each layer for texture reprojection.
+        imageryLayers.queueReprojectionCommands(&frameState)
         
         if _layerOrderChanged {
             _layerOrderChanged = false
@@ -192,8 +194,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 tile.data?.imagery.sortInPlace(self.sortTileImageryByLayerIndex)
             })
         }
-        _tilesToRenderByTextureCount.removeAll()
-        _usedDrawCommands = 0
         
         // Add credits for terrain and imagery providers.
         // FIXME: Credits
@@ -212,12 +212,23 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     /**
+     * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
+     * or any other functions.
+     *
+     * @param {FrameState} frameState The frame state.
+     */
+    func beginUpdate (frameState: FrameState) {
+        _tilesToRenderByTextureCount.removeAll()
+        _usedDrawCommands = 0
+    }
+    
+    /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
     * and any other functions.
     *
     * @param {FrameState} frameState The frame state.
     */
-    func endUpdate (inout frameState frameState: FrameState) {
+    func endUpdate (inout frameState: FrameState) {
 
         let context = frameState.context
         
@@ -239,7 +250,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             )
         }
         // And the tile render commands to the command list, sorted by texture count.
-        
         for tilesToRender in _tilesToRenderByTextureCount.values {
             for tile in tilesToRender {
                 addDrawCommandsForTile(tile, frameState: &frameState)
@@ -273,6 +283,13 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         }
     }
     
+    /**
+     * Cancels any imagery re-projections in the queue.
+     */
+    func cancelReprojections () {
+        imageryLayers.cancelReprojections()
+    }
+ 
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be
     * called before {@link GlobeSurfaceTileProvider#ready} returns true.
@@ -393,8 +410,6 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         _debug.texturesRendered += readyTextureCount
     }
     
-    private let _negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
-    private let _negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
     /**
     * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.
     *
@@ -406,71 +421,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
     */
     func computeDistanceToTile (tile: QuadtreeTile, frameState: FrameState) -> Double {
-        
         let surfaceTile = tile.data!
-        
-        var southwestCornerCartesian = surfaceTile.southwestCornerCartesian
-        var northeastCornerCartesian = surfaceTile.northeastCornerCartesian
-        var westNormal = surfaceTile.westNormal
-        var southNormal = surfaceTile.southNormal
-        var eastNormal = surfaceTile.eastNormal
-        var northNormal = surfaceTile.northNormal
-        var maximumHeight = surfaceTile.maximumHeight
-        
-        if frameState.mode != .Scene3D {
-            southwestCornerCartesian = frameState.mapProjection.project(tile.rectangle.southwest())
-            southwestCornerCartesian.z = southwestCornerCartesian.y
-            southwestCornerCartesian.y = southwestCornerCartesian.x
-            southwestCornerCartesian.x = 0.0
-            northeastCornerCartesian = frameState.mapProjection.project(tile.rectangle.northeast())
-            northeastCornerCartesian.z = northeastCornerCartesian.y
-            northeastCornerCartesian.y = northeastCornerCartesian.x
-            northeastCornerCartesian.x = 0.0
-            westNormal = _negativeUnitY
-            eastNormal = Cartesian3.unitY
-            southNormal = _negativeUnitZ
-            northNormal = Cartesian3.unitZ
-            maximumHeight = 0.0
-        }
-        
-        let cameraCartesianPosition = frameState.camera!.positionWC
-        let cameraCartographicPosition = frameState.camera!.positionCartographic
-        
-        let vectorFromSouthwestCorner = cameraCartesianPosition.subtract(southwestCornerCartesian)
-        let distanceToWestPlane = vectorFromSouthwestCorner.dot(westNormal)
-        let distanceToSouthPlane = vectorFromSouthwestCorner.dot(southNormal)
-        
-        let vectorFromNortheastCorner = cameraCartesianPosition.subtract(northeastCornerCartesian)
-        let distanceToEastPlane = vectorFromNortheastCorner.dot(eastNormal)
-        let distanceToNorthPlane = vectorFromNortheastCorner.dot(northNormal)
-        
-        var cameraHeight: Double
-        if frameState.mode == .Scene3D {
-            cameraHeight = cameraCartographicPosition.height
-        } else {
-            cameraHeight = cameraCartesianPosition.x
-        }
-        let distanceFromTop = cameraHeight - maximumHeight
-        
-        var result = 0.0
-        
-        if distanceToWestPlane > 0.0 {
-            result += distanceToWestPlane * distanceToWestPlane
-        } else if distanceToEastPlane > 0.0 {
-            result += distanceToEastPlane * distanceToEastPlane
-        }
-        
-        if distanceToSouthPlane > 0.0 {
-            result += distanceToSouthPlane * distanceToSouthPlane
-        } else if distanceToNorthPlane > 0.0 {
-            result += distanceToNorthPlane * distanceToNorthPlane
-        }
-        
-        if distanceFromTop > 0.0 {
-            result += distanceFromTop * distanceFromTop
-        }
-        
-        return sqrt(result)
+        return surfaceTile.tileBoundingBox!.distanceToCamera(frameState)
     }
     
     /*
@@ -604,8 +556,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
 
         if frameState.mode != .Scene3D {
             let projection = frameState.mapProjection
-            let southwest = projection.project(tile.rectangle.southwest())
-            let northeast = projection.project(tile.rectangle.northeast())
+            let southwest = projection.project(tile.rectangle.southwest)
+            let northeast = projection.project(tile.rectangle.northeast)
             
             tileRectangle.x = southwest.x
             tileRectangle.y = southwest.y
@@ -620,6 +572,22 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 tileRectangle.z -= rtc.y
                 tileRectangle.w -= rtc.z
             }*/
+            
+            /*
+             if (frameState.mode === SceneMode.SCENE2D && encoding.quantization === TerrainQuantization.BITS12) {
+             // In 2D, the texture coordinates of the tile are interpolated over the rectangle to get the position in the vertex shader.
+             // When the texture coordinates are quantized, error is introduced. This can be seen through the 1px wide cracking
+             // between the quantized tiles in 2D. To compensate for the error, move the expand the rectangle in each direction by
+             // half the error amount.
+             var epsilon = (1.0 / (Math.pow(2.0, 12.0) - 1.0)) * 0.5;
+             var widthEpsilon = (tileRectangle.z - tileRectangle.x) * epsilon;
+             var heightEpsilon = (tileRectangle.w - tileRectangle.y) * epsilon;
+             tileRectangle.x -= widthEpsilon;
+             tileRectangle.y -= heightEpsilon;
+             tileRectangle.z += widthEpsilon;
+             tileRectangle.w += heightEpsilon;
+             }
+            */
             
             if projection is WebMercatorProjection {
                 southLatitude = tile.rectangle.south
@@ -773,9 +741,14 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             }
             uniformMap.waterMaskTranslationAndScale = surfaceTile.waterMaskTranslationAndScale.floatRepresentation
             
+            let encoding = surfaceTile.pickTerrain!.mesh!.encoding
+            
+            uniformMap.minMaxHeight = Cartesian2(x: encoding.minimumHeight, y: encoding.maximumHeight).floatRepresentation
+            
+            uniformMap.scaleAndBias = encoding.matrix.floatRepresentation
+            
             command.pipeline = surfaceShaderSet.getRenderPipeline(
-                context: context,
-                sceneMode: frameState.mode,
+                frameState: frameState,
                 surfaceTile: surfaceTile,
                 numberOfDayTextures: numberOfDayTextures,
                 applyBrightness: applyBrightness,
@@ -871,8 +844,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         _usedPickCommands += 1
         
         let useWebMercatorProjection = frameState.mapProjection is WebMercatorProjection
-        
-        pickCommand.pipeline = surfaceShaderSet.getPickRenderPipeline(context: context, sceneMode: frameState.mode, useWebMercatorProjection: useWebMercatorProjection)
+        // FIXME: pickCommand
+        //pickCommand.pipeline = surfaceShaderSet.getPickRenderPipeline(context: context, sceneMode: frameState.mode, useWebMercatorProjection: useWebMercatorProjection)
         pickCommand.renderState = _pickRenderState
         
         pickCommand.owner = drawCommand.owner

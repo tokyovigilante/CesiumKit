@@ -118,8 +118,8 @@ class WebMercatorTilingScheme: TilingScheme {
     *          is undefined.
     */
     func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle {
-        let southwest = projection.project(rectangle.southwest())
-        let northeast = projection.project(rectangle.northeast())
+        let southwest = projection.project(rectangle.southwest)
+        let northeast = projection.project(rectangle.northeast)
         
         return Rectangle(west: southwest.x, south: southwest.y, east: northeast.x, north: northeast.y)
         

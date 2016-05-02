@@ -25,62 +25,6 @@ class GlobeSurfaceTile: QuadTreeTileData {
     */
     var imagery = [TileImagery]()
     
-    /**
-    * The world coordinates of the southwest corner of the tile's rectangle.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var southwestCornerCartesian = Cartesian3()
-    
-    /**
-    * The world coordinates of the northeast corner of the tile's rectangle.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var northeastCornerCartesian = Cartesian3()
-    
-    /**
-    * A normal that, along with southwestCornerCartesian, defines a plane at the western edge of
-    * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var westNormal = Cartesian3()
-    
-    /**
-    * A normal that, along with southwestCornerCartesian, defines a plane at the southern edge of
-    * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
-    * Because points of constant latitude do not necessary lie in a plane, positions below this
-    * plane are not necessarily inside the tile, but they are close.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var southNormal = Cartesian3()
-    
-    /**
-    * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
-    * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var eastNormal = Cartesian3()
-    
-    /**
-    * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
-    * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
-    * Because points of constant latitude do not necessary lie in a plane, positions below this
-    * plane are not necessarily inside the tile, but they are close.
-    *
-    * @type {Cartesian3}
-    * @default Cartesian3()
-    */
-    var northNormal = Cartesian3()
-    
     var waterMaskTexture: Texture? = nil
     
     var waterMaskTranslationAndScale = Cartesian4(x: 0.0, y: 0.0, z: 1.0, w: 1.0)
@@ -97,6 +41,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
     var boundingSphere3D = BoundingSphere()
     var boundingSphere2D = BoundingSphere()
     var orientedBoundingBox: OrientedBoundingBox? = nil
+    var tileBoundingBox: TileBoundingBox? = nil
     
     var occludeePointInScaledSpace: Cartesian3? = Cartesian3()
     
@@ -145,9 +90,9 @@ class GlobeSurfaceTile: QuadTreeTileData {
     }
     
     
-    func getPosition(mode mode: SceneMode? = nil, projection: MapProjection, vertices: [Float], stride: Int, index: Int) -> Cartesian3 {
-        var result = Cartesian3.unpack(vertices, startingIndex: index * stride)
-        result = center.add(result)
+    func getPosition(encoding encoding: TerrainEncoding, mode: SceneMode? = nil, projection: MapProjection, vertices: [Float], index: Int) -> Cartesian3 {
+        
+        var result = encoding.decodePosition(vertices, index: index)
         
         if mode != nil && mode != .Scene3D {
             let positionCart = projection.ellipsoid.cartesianToCartographic(result)
@@ -160,24 +105,22 @@ class GlobeSurfaceTile: QuadTreeTileData {
 
     func pick (ray: Ray, mode: SceneMode, projection: MapProjection, cullBackFaces: Bool) -> Cartesian3? {
         
-        let mesh = pickTerrain?.mesh
-        if mesh == nil {
+        guard let mesh = pickTerrain?.mesh else {
             return nil
         }
         
-        let vertices = mesh!.vertices
-        let stride = mesh!.stride
-        let indices = mesh!.indices
-        
+        let vertices = mesh.vertices
+        let indices = mesh.indices
+        let encoding = mesh.encoding
         let length = indices.count
         for i in 0.stride(to: length, by: 3) {
             let i0 = indices[i]
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
             
-            let v0 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i0)
-            let v1 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i1)
-            let v2 = getPosition(mode: mode, projection: projection, vertices: vertices, stride: stride, index: i2)
+            let v0 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i0)
+            let v1 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i1)
+            let v2 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i2)
             
             let intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
             if intersection != nil {
@@ -326,35 +269,6 @@ class GlobeSurfaceTile: QuadTreeTileData {
                 }
             }
         }
-        
-        let ellipsoid = tile.tilingScheme.ellipsoid
-        
-        // Compute tile rectangle boundaries for estimating the distance to the tile.
-        let rectangle = tile.rectangle
-        
-        surfaceTile.southwestCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.southwest())
-        surfaceTile.northeastCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.northeast())
-        
-        // The middle latitude on the western edge.
-        let westernMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.west, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
-        
-        // Compute the normal of the plane on the western edge of the tile.
-        surfaceTile.westNormal = westernMidpointCartesian.cross(Cartesian3.unitZ).normalize()
-        
-        // The middle latitude on the eastern edge.
-        let easternMidpointCartesian = ellipsoid.cartographicToCartesian(Cartographic(longitude: rectangle.east, latitude: (rectangle.south + rectangle.north) * 0.5, height: 0.0))
-        
-        // Compute the normal of the plane on the eastern edge of the tile.
-        surfaceTile.eastNormal = Cartesian3.unitZ.cross(easternMidpointCartesian).normalize()
-        
-        // Compute the normal of the plane bounding the southern edge of the tile.
-        let southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast())
-        let westVector = westernMidpointCartesian.subtract(easternMidpointCartesian)
-        surfaceTile.southNormal = southeastCornerNormal.cross(westVector).normalize()
-        
-        // Compute the normal of the plane bounding the northern edge of the tile.
-        let northwestCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.northwest())
-        surfaceTile.northNormal = westVector.cross(northwestCornerNormal).normalize()
     }
 
     class func processTerrainStateMachine(tile: QuadtreeTile, frameState: FrameState, terrainProvider: TerrainProvider) {

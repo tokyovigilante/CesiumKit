@@ -195,7 +195,7 @@ struct OrientedBoundingBox: BoundingVolume {
         }
         
         // The bounding box will be aligned with the tangent plane at the center of the rectangle.
-        let tangentPointCartographic = rectangle.center()
+        let tangentPointCartographic = rectangle.center
         let tangentPoint = ellipsoid.cartographicToCartesian(tangentPointCartographic)
         let tangentPlane = EllipsoidTangentPlane(origin: tangentPoint, ellipsoid: ellipsoid)
         let plane = tangentPlane.plane

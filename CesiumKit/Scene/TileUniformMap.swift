@@ -34,6 +34,8 @@ struct TileUniformStruct: MetalUniformStruct {
     var dayTextureSaturation = floatTuple
     var dayTextureOneOverGamma = floatTuple
     var waterMaskTranslationAndScale = float4()
+    var minMaxHeight = float2()
+    var scaleandBias = float4x4()
     var initialColor = float4()
     var tileRectangle = float4()
     var modifiedModelView = float4x4()
@@ -166,102 +168,29 @@ class TileUniformMap: UniformMap {
         }
     }
     
+    var minMaxHeight: float2 {
+        get {
+            return _uniformStruct.minMaxHeight
+        }
+        set {
+            _uniformStruct.minMaxHeight = newValue
+        }
+    }
+    
+    var scaleAndBias: float4x4 {
+        get {
+            return _uniformStruct.scaleandBias
+        }
+        set {
+            _uniformStruct.scaleandBias = newValue
+        }
+    }
+    
     private var _uniformStruct = TileUniformStruct()
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    let uniforms: [String: UniformFunc] = [:
-            /*
-    
-        "u_initialColor": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).initialColor.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        },
-        
-        "u_zoomedOutOceanSpecularIntensity": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! TileUniformMap).zoomedOutOceanSpecularIntensity], sizeof(Float))
-        },
-        
-        "u_lightingFadeDistance": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).lightingFadeDistance.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float2))
-        },
-        
-        "u_center3D": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float((map as! TileUniformMap).center3D.simdType)
-            memcpy(buffer, [simd], sizeof(float3))
-        },
-        
-        "u_tileRectangle": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).tileRectangle.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float4x4))
-        },
-        
-        "u_modifiedModelView": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).modifiedModelView.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float4x4))
-        },
-
-        "u_dayTextureTranslationAndScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).dayTextureTranslationAndScale.map { $0.floatRepresentation }
-            memcpy(buffer, simd, simd.sizeInBytes)
-        },
-        
-        "u_dayTextureTexCoordsRectangle": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).dayTextureTexCoordsRectangle.map { $0.floatRepresentation }
-            memcpy(buffer, simd, simd.sizeInBytes)
-        },
-        
-        "u_dayTextureAlpha": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureAlpha = (map as! TileUniformMap).dayTextureAlpha
-            memcpy(buffer, dayTextureAlpha, dayTextureAlpha.sizeInBytes)
-        },
-        
-        "u_dayTextureBrightness": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureBrightness = (map as! TileUniformMap).dayTextureBrightness
-            memcpy(buffer, dayTextureBrightness, dayTextureBrightness.sizeInBytes)
-        },
-        
-        "u_dayTextureContrast": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureContrast = (map as! TileUniformMap).dayTextureContrast
-            memcpy(buffer, dayTextureContrast, dayTextureContrast.sizeInBytes)
-        },
-        
-        "u_dayTextureHue": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureHue = (map as! TileUniformMap).dayTextureHue
-            memcpy(buffer, dayTextureHue, dayTextureHue.sizeInBytes)
-        },
-        
-        "u_dayTextureSaturation": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureSaturation = (map as! TileUniformMap).dayTextureSaturation
-            memcpy(buffer, dayTextureSaturation, dayTextureSaturation.sizeInBytes)
-        },
-        
-        "u_dayTextureOneOverGamma": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let dayTextureOneOverGamma = (map as! TileUniformMap).dayTextureOneOverGamma
-            memcpy(buffer, dayTextureOneOverGamma, dayTextureOneOverGamma.sizeInBytes)
-        },
-        
-        "u_dayIntensity": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! TileUniformMap).dayIntensity], sizeof(Float))
-        },
-        
-        "u_southAndNorthLatitude": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).southAndNorthLatitude.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float2))
-        },
-        
-        "u_southMercatorYLowAndHighAndOneOverHeight": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float((map as! TileUniformMap).southMercatorYLowAndHighAndOneOverHeight.simdType)
-            memcpy(buffer, [simd], sizeof(float3))
-        },
-
-        "u_waterMaskTranslationAndScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! TileUniformMap).waterMaskTranslationAndScale.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float4))
-        }
-    */
-    ]
+    let uniforms: [String: UniformFunc] = [:]
     
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
     
@@ -269,8 +198,7 @@ class TileUniformMap: UniformMap {
         self.maxTextureCount = maxTextureCount
         dayTextures = [Texture]()
         dayTextures.reserveCapacity(maxTextureCount)
-        //dayTextureTranslationAndScale = [Cartesian4]()
-        //dayTextureTexCoordsRectangle = [Cartesian4]()
+
         dayTextureAlpha = [Float]()
         dayTextureBrightness = [Float]()
         dayTextureContrast = [Float]()

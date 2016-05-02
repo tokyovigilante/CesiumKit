@@ -97,7 +97,11 @@ class QuadtreePrimitive {
     */
     var tileCacheSize: Int
     
-    var _occluders: QuadtreeOccluders
+    private var _occluders: QuadtreeOccluders
+    
+    let tileLoadProgressEvent = Event()
+    
+    private var _lastTileLoadQueueLength = 0
 
     init (tileProvider: /*QuadtreeTileProvider*/GlobeSurfaceTileProvider, maximumScreenSpaceError: Double = 2.0, tileCacheSize: Int = 100) {
         
@@ -144,6 +148,7 @@ class QuadtreePrimitive {
             tile.freeResources(tileProvider)
         }
         _levelZeroTiles.removeAll()
+        tileProvider.cancelReprojections()
     }
     /**
     * Invokes a specified function for each {@link QuadtreeTile} that is partially
@@ -201,6 +206,14 @@ class QuadtreePrimitive {
         let object = CallbackObject(callback: callback)
         
         object.removeFunc = {
+            /*var addedCallbacks = primitive._addHeightCallbacks;
+            var length = addedCallbacks.length;
+            for (var i = 0; i < length; ++i) {
+                if (addedCallbacks[i] === object) {
+                    addedCallbacks.splice(i, 1);
+                    break;
+                }
+            }*/
             self._removeHeightCallbacks.append(object)
         }
         
@@ -208,44 +221,73 @@ class QuadtreePrimitive {
         return object.removeFunc
     }
     
-        /**
-    * Updates the primitive.
-    *
-    * @param {Context} context The rendering context to use.
-    * @param {FrameState} frameState The state of the current frame.
-    * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
-    *        commands to this array during the update call.
-    */
-    func update (context context: Context, inout frameState: FrameState) {
-        if (frameState.passes.render) {
-            tileProvider.beginUpdate(frameState: &frameState)
-            selectTilesForRendering(context: context, frameState: frameState)
-            processTileLoadQueue(frameState: &frameState)
-            createRenderCommandsForSelectedTiles(frameState: &frameState)
-            tileProvider.endUpdate(frameState: &frameState)
+    func beginFrame (inout frameState: FrameState) {
+        if !frameState.passes.render {
+            return
         }
-        
-        if (frameState.passes.pick && _tilesToRender.count > 0) {
-            tileProvider.endUpdate(frameState: &frameState)
+    
+        // Gets commands for any texture re-projections and updates the credit display
+        tileProvider.initialize(&frameState)
+
+        if _debug.suspendLodUpdate {
+            return
         }
+        _debug.maxDepth = 0
+        _debug.tilesVisited = 0
+        _debug.tilesCulled = 0
+        _debug.tilesRendered = 0
+        _debug.tilesWaitingForChildren = 0
+
+    
+        _tileLoadQueue.removeAll()
+        _tileReplacementQueue.markStartOfRenderFrame()
     }
     
-    /*
-    /**
-    * Returns true if this object was destroyed; otherwise, false.
-    * <br /><br />
-    * If this object was destroyed, it should not be used; calling any function other than
-    * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
-    *
-    * @memberof QuadtreePrimitive
-    *
-    * @returns {Boolean} True if this object was destroyed; otherwise, false.
-    *
-    * @see QuadtreePrimitive#destroy
-    */
-    QuadtreePrimitive.prototype.isDestroyed = function() {
-    return false;
+    func update (inout frameState: FrameState) {
+        if (frameState.passes.render) {
+            tileProvider.beginUpdate(frameState)
+            selectTilesForRendering(frameState)
+            createRenderCommandsForSelectedTiles(&frameState)
+            tileProvider.endUpdate(&frameState)
+        }
+        if frameState.passes.pick && _tilesToRender.count > 0 {
+            // FIXME: pick
+            //tileProvider.updateForPick(frameState)
+        }
+    }
+
+    func endFrame (inout frameState: FrameState) {
+        if !frameState.passes.render {
+            return
+        }
+    
+        // Load/create resources for terrain and imagery. Prepare texture re-projections for the next frame.
+        processTileLoadQueue(&frameState)
+        updateHeights(frameState)
+        
+        if (_debug.suspendLodUpdate) {
+            return;
+        }
+        
+        if _debug.enableDebugOutput {
+            if _debug.tilesVisited != _debug.lastTilesVisited ||
+                _debug.tilesRendered != _debug.lastTilesRendered ||
+                _debug.tilesCulled != _debug.lastTilesCulled ||
+                _debug.maxDepth != _debug.lastMaxDepth ||
+                _debug.tilesWaitingForChildren != _debug.lastTilesWaitingForChildren {
+                
+               print("Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)")
+                
+                _debug.lastTilesVisited = _debug.tilesVisited
+                _debug.lastTilesRendered = _debug.tilesRendered
+                _debug.lastTilesCulled = _debug.tilesCulled
+                _debug.lastMaxDepth = _debug.maxDepth
+                _debug.lastTilesWaitingForChildren = _debug.tilesWaitingForChildren
+            }
+        }
     };
+    
+    /*
     
     /**
     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
@@ -270,25 +312,11 @@ class QuadtreePrimitive {
     this._tileProvider = this._tileProvider && this._tileProvider.destroy();
     };
     */
-    func selectTilesForRendering(context context: Context, frameState: FrameState) {
-        
-        if _debug.suspendLodUpdate {
-            return
-        }
-        
+    func selectTilesForRendering(frameState: FrameState) {
+
         // Clear the render list.
         _tilesToRender.removeAll()
         _tileTraversalQueue.clear()
-        
-        _debug.maxDepth = 0
-        _debug.tilesVisited = 0
-        _debug.tilesCulled = 0
-        _debug.tilesRendered = 0
-        _debug.tilesWaitingForChildren = 0
-        
-        _tileLoadQueue.removeAll()
-        
-        _tileReplacementQueue.markStartOfRenderFrame()
         
         // We can't render anything before the level zero tiles exist.
         if _levelZeroTiles.count == 0 {
@@ -354,7 +382,7 @@ class QuadtreePrimitive {
             // There are a few different algorithms we could use here.
             // This one doesn't load children unless we refine to them.
             // We may want to revisit this in the future.
-            if screenSpaceError(context: context, frameState: frameState, tile: tile) < maximumScreenSpaceError {
+            if screenSpaceError(frameState, tile: tile) < maximumScreenSpaceError {
                 // This tile meets SSE requirements, so render it.
                 addTileToRenderList(tile)
             } else if queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(tile) {
@@ -374,28 +402,20 @@ class QuadtreePrimitive {
             }
         }
         
-        if _debug.enableDebugOutput {
-            if _debug.tilesVisited != _debug.lastTilesVisited ||
-               _debug.tilesRendered != _debug.lastTilesRendered ||
-               _debug.tilesCulled != _debug.lastTilesCulled ||
-               _debug.maxDepth != _debug.lastMaxDepth ||
-               _debug.tilesWaitingForChildren != _debug.lastTilesWaitingForChildren {
-                    
-                    /*global console*/
-                    print("Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)")
-                    
-                    _debug.lastTilesVisited = _debug.tilesVisited
-                    _debug.lastTilesRendered = _debug.tilesRendered
-                    _debug.lastTilesCulled = _debug.tilesCulled
-                    _debug.lastMaxDepth = _debug.maxDepth
-                    _debug.lastTilesWaitingForChildren = _debug.tilesWaitingForChildren
-            }
+        raiseTileLoadProgressEvent()
+    }
+    
+    func raiseTileLoadProgressEvent () {
+        let currentLoadQueueLength = _tileLoadQueue.count
+        if currentLoadQueueLength != _lastTileLoadQueueLength {
+            tileLoadProgressEvent.raiseEvent(/*currentLoadQueueLength*/)
+            _lastTileLoadQueueLength = currentLoadQueueLength
         }
     }
     
-    func screenSpaceError(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
+    func screenSpaceError(frameState: FrameState, tile: QuadtreeTile) -> Double {
         if frameState.mode == .Scene2D {
-            return screenSpaceError2D(context: context, frameState: frameState, tile: tile)
+            return screenSpaceError2D(frameState, tile: tile)
         }
         
         let maxGeometricError = tileProvider.levelMaximumGeometricError(tile.level)
@@ -404,14 +424,14 @@ class QuadtreePrimitive {
         tile.distance = distance
         
         // PERFORMANCE_IDEA: factor out stuff that's constant across tiles.
-        return (maxGeometricError * Double(context.height)) / (2 * distance * tan(0.5 * frameState.camera!.frustum.fovy))
+        return (maxGeometricError * Double(frameState.context.height)) / (2 * distance * tan(0.5 * frameState.camera!.frustum.fovy))
     }
     
-    func screenSpaceError2D(context context: Context, frameState: FrameState, tile: QuadtreeTile) -> Double {
+    func screenSpaceError2D(frameState: FrameState, tile: QuadtreeTile) -> Double {
         let frustum = frameState.camera!.frustum
 
         let maxGeometricError = tileProvider.levelMaximumGeometricError(tile.level)
-        let pixelSize = max(frustum.top - frustum.bottom, frustum.right - frustum.left) / max(Double(context.width), Double(context.height))
+        let pixelSize = max(frustum.top - frustum.bottom, frustum.right - frustum.left) / max(Double(frameState.context.width), Double(frameState.context.height))
         return maxGeometricError / pixelSize
     }
     
@@ -448,7 +468,7 @@ class QuadtreePrimitive {
         _tileLoadQueue.append(tile)
     }
     
-    func processTileLoadQueue(inout frameState frameState: FrameState) {
+    func processTileLoadQueue(inout frameState: FrameState) {
         
         if _tileLoadQueue.count == 0 {
             return
@@ -531,9 +551,10 @@ class QuadtreePrimitive {
                     }
                     
                     var tileDataAvailable = terrainProvider.getTileDataAvailable(child.x, child.y, child.level);
+         var parentTile = tile.parent;
                     if ((defined(tileDataAvailable) && !tileDataAvailable) ||
-                        (defined(parent) && defined(parent.data) && defined(parent.data.terrainData) &&
-                            !parent.data.terrainData.isChildAvailable(parent.x, parent.y, child.x, child.y))) {
+         (defined(parentTile) && defined(parentTile.data) && defined(parentTile.data.terrainData) &&
+                                  !parentTile.data.terrainData.isChildAvailable(parentTile.x, parentTile.y, child.x, child.y))) {
                                 data.removeFunc();
                     }
                 }
@@ -554,7 +575,7 @@ class QuadtreePrimitive {
         }*/
     }
     
-    func createRenderCommandsForSelectedTiles(inout frameState frameState: FrameState) {
+    func createRenderCommandsForSelectedTiles(inout frameState: FrameState) {
         func tileDistanceSortFunction(a: QuadtreeTile, b: QuadtreeTile) -> Bool {
             return a.distance < b.distance
         }

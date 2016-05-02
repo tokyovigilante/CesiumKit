@@ -110,15 +110,15 @@ public struct BoundingRectangle: Equatable {
         
         self.projection = projection
         
-        let lowerLeft = projection.project(rectangle.southwest())
-        let upperRight = projection.project(rectangle.northeast())
+        let lowerLeft = projection.project(rectangle.southwest)
+        let upperRight = projection.project(rectangle.northeast)
         
-        upperRight.subtract(lowerLeft);
+        upperRight.subtract(lowerLeft)
         
-        x = lowerLeft.x;
-        y = lowerLeft.y;
-        width = upperRight.x;
-        height = upperRight.y;
+        x = lowerLeft.x
+        y = lowerLeft.y
+        width = upperRight.x
+        height = upperRight.y
     }
     
     /**

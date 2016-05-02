@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
+import Foundation
+import Metal
+
 let VertexDescriptorFirstBufferOffset = 3 // auto = 0, frustum = 1, manual = 2
 
 struct VertexAttributes {
@@ -17,8 +20,6 @@ struct VertexAttributes {
     let size: Int
     let normalize: Bool
 }
-
-import Metal
 
 class VertexDescriptor {
     

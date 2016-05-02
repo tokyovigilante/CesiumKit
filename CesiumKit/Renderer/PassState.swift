@@ -56,6 +56,13 @@ class PassState {
     */
     var scissorTest: RenderState.ScissorTest? = nil
 
+    /**
+     * The viewport used when one is not defined by a {@link DrawCommand}'s render state.
+     * @type {BoundingRectangle}
+     * @default undefined
+     */
+    var viewport: Cartesian4? = nil
+    
 }
 
 

@@ -173,6 +173,7 @@ public class ImageryLayer {
     var layerIndex = -1
     
     //private var _requestImageError = undefined;
+    private var _reprojectComputeCommands = [Command]()
     
     /**
     * Gets a value indicating whether this layer is the base layer in the
@@ -211,6 +212,24 @@ public class ImageryLayer {
             self._minimumTerrainLevel = minimumTerrainLevel
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
+    }
+    
+    /**
+     * Computes the intersection of this layer's rectangle with the imagery provider's availability rectangle,
+     * producing the overall bounds of imagery that can be produced by this layer.
+     *
+     * @returns {Promise.<Rectangle>} A promise to a rectangle which defines the overall bounds of imagery that can be produced by this layer.
+     *
+     * @example
+     * // Zoom to an imagery layer.
+     * imageryLayer.getViewableRectangle().then(function (rectangle) {
+     *     return camera.flyTo({
+     *         destination: rectangle
+     *     });
+     * });
+     */
+    func getViewableRectangle () -> Rectangle? {
+        return imageryProvider.rectangle.intersection(_rectangle)
     }
     
     /**
@@ -322,8 +341,8 @@ public class ImageryLayer {
         }
         
         let imageryTilingScheme = imageryProvider.tilingScheme
-        var northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest(), level: imageryLevel)!
-        var southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast(), level: imageryLevel)!
+        var northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest, level: imageryLevel)!
+        var southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast, level: imageryLevel)!
         
         // If the southeast corner of the rectangle lies very close to the north or west side
         // of the southeast tile, we don't actually need the southernmost or easternmost
@@ -534,8 +553,8 @@ public class ImageryLayer {
     }
     
     /**
-     * Reproject a texture to a {@link GeographicProjection}, if necessary, and generate
-     * mipmaps for the geographic texture.
+     * Enqueues a command re-projecting a texture to a {@link GeographicProjection} on the next update,
+     * if necessary, and generates mipmaps for the geographic texture.
      *
      * @private
      *
@@ -568,7 +587,7 @@ public class ImageryLayer {
                 persists: true,
                 owner : self
             )
-            frameState.commandList.append(computeCommand)
+            _reprojectComputeCommands.append(computeCommand)
         } else {
             finalizeReprojectTexture(context, imagery: imagery, texture: texture)
         }
@@ -654,6 +673,27 @@ public class ImageryLayer {
         })
     }
     
+    /**
+     * Updates frame state to execute any queued texture re-projections.
+     *
+     * @private
+     *
+     * @param {FrameState} frameState The frameState.
+     */
+    func queueReprojectionCommands (inout frameState: FrameState) {
+        frameState.commandList.appendContentsOf(_reprojectComputeCommands)
+        _reprojectComputeCommands.removeAll()
+    }
+    
+    /**
+     * Cancels re-projection commands queued for the next frame.
+     *
+     * @private
+     */
+    func cancelReprojections () {
+        _reprojectComputeCommands.removeAll()
+    }
+        
     func getImageryFromCache (level level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]

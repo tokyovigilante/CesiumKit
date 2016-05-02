@@ -31,4 +31,17 @@ enum TerrainQuantization {
      * @constant
      */
     case bits12
+    
+    var define: String {
+        switch self {
+        case .bits12:
+            return "QUANTIZATION_BITS12"
+        case .none:
+            return ""
+        }
+    }
+    
+    var enabled: Bool {
+        return self == .bits12
+    }
 }

@@ -125,6 +125,17 @@ class Globe {
         }
     }
     
+    /**
+     * Gets an event that's raised when the length of the tile load queue has changed since the last render frame.  When the load queue is empty,
+     * all terrain and imagery for the current view have been loaded.  The event passes the new length of the tile load queue.
+     *
+     * @memberof Globe.prototype
+     * @type {Event}
+     */
+    var tileLoadProgressEvent: Event {
+        return _surface.tileLoadProgressEvent
+    }
+    
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool, lighting: Bool) {
         
         if terrain {
@@ -284,7 +295,7 @@ class Globe {
 /**
 * @private
 */
-    func update(inout frameState: FrameState) {
+    func beginFrame(inout frameState: FrameState) {
         if !show {
             return
         }
@@ -294,12 +305,11 @@ class Globe {
         }
         
         if _surface == nil {
-            let vertexDescriptor = VertexDescriptor(attributes: terrainProvider.vertexAttributes)
-            
+
             _surfaceShaderSet = GlobeSurfaceShaderSet(
                 baseVertexShaderSource: ShaderSource(sources: [Shaders["GroundAtmosphere"]!, Shaders["GlobeVS"]!]),
-                baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!]),
-                vertexDescriptor: vertexDescriptor)
+                baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!])
+            )
             
             _surface = QuadtreePrimitive(
                 tileProvider: GlobeSurfaceTileProvider(
@@ -354,7 +364,6 @@ class Globe {
             } else {
                 _oceanNormalMap = nil
             }
-            
         }
         
         let mode = frameState.mode
@@ -377,16 +386,36 @@ class Globe {
             tileProvider.oceanNormalMap = _oceanNormalMap
             tileProvider.enableLighting = enableLighting
             
-            _surface.update(context: context, frameState: &frameState)
+            _surface.beginFrame(&frameState)
         }
         
         if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
-            _surface.update(context: context, frameState: &frameState)
+            _surface.beginFrame(&frameState)
         }
     }
-
+    /**
+     * @private
+     */
+    func update (inout frameState: FrameState) {
+        if !show {
+            return
+        }
+        
+        if (frameState.passes.render) {
+            _surface.update(&frameState)
+        }
+    }
+    
+    func endFrame (inout frameState: FrameState) {
+        if show {
+            return
+        }
+        if frameState.passes.render {
+            _surface.endFrame(&frameState)
+        }
+    }
 /**
 * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
 * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
@@ -405,10 +434,7 @@ class Globe {
 * globe = globe && globe.destroy();
 */
     deinit {
-        /*this._northPoleCommand.vertexArray = this._northPoleCommand.vertexArray && this._northPoleCommand.vertexArray.destroy();
-        this._southPoleCommand.vertexArray = this._southPoleCommand.vertexArray && this._southPoleCommand.vertexArray.destroy();
-        
-        this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
+        /*this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
          
         this._depthCommand.shaderProgram = this._depthCommand.shaderProgram && this._depthCommand.shaderProgram.destroy();
         this._depthCommand.vertexArray = this._depthCommand.vertexArray && this._depthCommand.vertexArray.destroy();

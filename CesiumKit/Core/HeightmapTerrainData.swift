@@ -139,7 +139,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         
         // Compute the center of the tile for RTC rendering.
-        let center = ellipsoid.cartographicToCartesian(rectangle.center())
+        let center = ellipsoid.cartographicToCartesian(rectangle.center)
         
         let levelZeroMaxError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(
             ellipsoid: ellipsoid,
@@ -277,8 +277,8 @@ class HeightmapTerrainData: TerrainData, Equatable {
         for j in 0..<_height {
             let latitude = Math.lerp(p: destinationRectangle.north, q: destinationRectangle.south, time: Double(j) / Double(_height - 1))
             for i in 0..<_width {
-                var longitude = Math.lerp(p: destinationRectangle.west, q: destinationRectangle.east, time: Double(i) / Double(_width - 1))
-                var heightSample = interpolateMeshHeight(buffer, encoding: encoding, heightOffset: heightOffset, heightScale: heightScale, skirtHeight: _skirtHeight, sourceRectangle: sourceRectangle, width: _width, height: _height, longitude: longitude, latitude: latitude, exaggeration: exaggeration)
+                let longitude = Math.lerp(p: destinationRectangle.west, q: destinationRectangle.east, time: Double(i) / Double(_width - 1))
+                let heightSample = interpolateMeshHeight(buffer, encoding: encoding, heightOffset: heightOffset, heightScale: heightScale, skirtHeight: _skirtHeight, sourceRectangle: sourceRectangle, width: _width, height: _height, longitude: longitude, latitude: latitude, exaggeration: exaggeration)
                 setHeight(heights: &heights, elementsPerHeight: elementsPerHeight, elementMultiplier: elementMultiplier, divisor: divisor, stride: stride, isBigEndian: isBigEndian, index: j * _width + i, height: heightSample)
             }
         }

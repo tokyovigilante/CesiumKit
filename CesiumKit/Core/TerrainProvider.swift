@@ -85,12 +85,7 @@ protocol TerrainProvider {
     * @param {Number} height The number of vertices in the regular grid in the vertical direction.
     * @returns {Uint16Array} The list of indices.
     */
-    
-    /**
-    * Gets an array of vertex attributes describing the terrain vertices produced.
-    */
-    var vertexAttributes: [VertexAttributes] { get }
-    
+        
     static func getRegularGridIndices(width width: Int, height: Int) -> [Int]
     
     /**
@@ -167,40 +162,7 @@ extension TerrainProvider {
     func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
         return nil
     }
-    
-    var vertexAttributes: [VertexAttributes] {
-        let datatype = ComponentDatatype.Float32
-        let numTexCoordComponents: Int
-        if hasVertexNormals {
-            numTexCoordComponents = 3
-        } else {
-            numTexCoordComponents = 2
-        }
         
-        let position3DAndHeightLength = 4
-        
-        return [
-            //position3DAndHeight
-            VertexAttributes(
-                buffer: nil,
-                bufferIndex: VertexDescriptorFirstBufferOffset,
-                index: 0,
-                format: .Float4,
-                offset: 0,
-                size: position3DAndHeightLength * datatype.elementSize,
-                normalize: false),
-            // texCoordAndEncodedNormals
-            VertexAttributes(
-                buffer: nil,
-                bufferIndex: VertexDescriptorFirstBufferOffset,
-                index: 1,
-                format: hasVertexNormals ? .Float3 : .Float2,
-                offset: position3DAndHeightLength * datatype.elementSize,
-                size: numTexCoordComponents * datatype.elementSize,
-                normalize: false)
-        ]
-    }
-    
     static func estimatedLevelZeroGeometricErrorForAHeightmap(
         ellipsoid ellipsoid: Ellipsoid,
         tileImageWidth: Int,

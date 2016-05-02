@@ -1633,10 +1633,10 @@ public class Camera: DRU {
      * var range = 5000.0;
      * viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
-    public func lookAt (target: Cartesian3, offsetCartesian: Cartesian3? = nil, offsetHPR: HeadingPitchRange? = nil) {
+    public func lookAt (target: Cartesian3, offset: Cartesian3) {
         
         let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
-        lookAtTransform(transform, offsetCartesian: offsetCartesian, offsetHPR: offsetHPR)
+        lookAtTransform(transform, offset: offset)
     }
     
     func offsetFromHeadingPitchRange(heading: Double, pitch: Double, range: Double) -> Cartesian3 {
@@ -1686,23 +1686,12 @@ public class Camera: DRU {
      * viewer.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
     
-    public func lookAtTransform (transform: Matrix4, offsetCartesian: Cartesian3? = nil, offsetHPR: HeadingPitchRange? = nil) {
+    public func lookAtTransform (transform: Matrix4, offset: Cartesian3) {
         
         assert(_mode != .Morphing, "lookAtTransform is not supported while morphing.")
         
         _setTransform(transform)
-        
-        if offsetCartesian == nil && offsetHPR == nil {
-            return
-        }
-        
-        let offset: Cartesian3
-        if offsetCartesian == nil {
-            offset = offsetFromHeadingPitchRange(offsetHPR!.heading, pitch: offsetHPR!.pitch, range: offsetHPR!.range)
-        } else {
-            offset = offsetCartesian!
-        }
-        
+
         if _mode == .Scene2D {
             position.x = 0.0
             position.y = 0.0

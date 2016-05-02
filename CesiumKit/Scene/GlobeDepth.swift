@@ -21,7 +21,7 @@ class GlobeDepth {
     private var _clearColorCommand: ClearCommand
     private var _copyColorCommand: ClearCommand? = nil
     private var _copyDepthCommand: ClearCommand? = nil
-    
+        
     init () {
         _clearColorCommand = ClearCommand(
             color: Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
@@ -154,7 +154,7 @@ executeDebugGlobeDepth(this, context, passState);
     }
 
     func executeCopyColor (context: Context, passState: PassState) {
-        // FIXME create abstract blit class
+
         let origin = MTLOriginMake(0, 0, 0)
         let size = MTLSizeMake(_colorTexture.width, _colorTexture.height, 1)
         let blitEncoder = context.createBlitCommandEncoder()

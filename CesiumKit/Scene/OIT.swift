@@ -65,7 +65,10 @@ class OIT {
         this._adjustTranslucentCommand = undefined;
         this._adjustAlphaCommand = undefined;
         };
-        
+     
+             this._viewport = new BoundingRectangle();
+             this._rs = undefined;
+         }
         function destroyTextures(oit) {
         oit._accumulationTexture = oit._accumulationTexture && !oit._accumulationTexture.isDestroyed() && oit._accumulationTexture.destroy();
         oit._revealageTexture = oit._revealageTexture && !oit._revealageTexture.isDestroyed() && oit._revealageTexture.destroy();
@@ -278,6 +281,27 @@ class OIT {
                     owner : this
                 });
             }
+         +
+         +        this._viewport.width = width;
+         +        this._viewport.height = height;
+         +
+         +        if (!defined(this._rs) || !BoundingRectangle.equals(this._viewport, this._rs.viewport)) {
+         +            this._rs = RenderState.fromCache({
+         +                viewport : this._viewport
+         +            });
+         +        }
+         +
+         +        if (defined(this._compositeCommand)) {
+         +            this._compositeCommand.renderState = this._rs;
+         +        }
+         +
+         +        if (this._adjustTranslucentCommand) {
+         +            this._adjustTranslucentCommand.renderState = this._rs;
+         +        }
+         +
+         +        if (defined(this._adjustAlphaCommand)) {
+         +            this._adjustAlphaCommand.renderState = this._rs;
+         +        }
         }*/
     }
         /*

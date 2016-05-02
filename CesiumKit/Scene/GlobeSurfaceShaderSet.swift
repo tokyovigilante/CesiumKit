@@ -28,25 +28,21 @@ class GlobeSurfaceShaderSet {
     let baseVertexShaderSource: ShaderSource
     let baseFragmentShaderSource: ShaderSource
     
-    let vertexDescriptor: VertexDescriptor
-    
     private var _pipelinesByTexturesFlags = [Int: [Int: GlobeSurfacePipeline]]()
     private var _pickPipelines = [Int: RenderPipeline]()
     
     init (
         baseVertexShaderSource: ShaderSource,
-        baseFragmentShaderSource: ShaderSource,
-        vertexDescriptor: VertexDescriptor) {
+        baseFragmentShaderSource: ShaderSource) {
             self.baseVertexShaderSource = baseVertexShaderSource
             self.baseFragmentShaderSource = baseFragmentShaderSource
-            self.vertexDescriptor = vertexDescriptor
     }
     
     private func getPositionMode(sceneMode: SceneMode) -> String {
-        let getPosition3DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition3DMode(position3DWC); }"
-        let getPosition2DMode = "vec4 getPosition(vec3 position3DWC) { return getPosition2DMode(position3DWC); }"
-        let getPositionColumbusViewMode = "vec4 getPosition(vec3 position3DWC) { return getPositionColumbusViewMode(position3DWC); }"
-        let getPositionMorphingMode = "vec4 getPosition(vec3 position3DWC) { return getPositionMorphingMode(position3DWC); }"
+        let getPosition3DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition3DMode(position, height, textureCoordinates); }"
+        let getPosition2DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition2DMode(position, height, textureCoordinates); }"
+        let getPositionColumbusViewMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPositionColumbusViewMode(position, height, textureCoordinates); }"
+        let getPositionMorphingMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPositionMorphingMode(position, height, textureCoordinates); }"
         
         let positionMode: String
         
@@ -65,14 +61,39 @@ class GlobeSurfaceShaderSet {
     }
     
     func get2DYPositionFraction(useWebMercatorProjection: Bool) -> String {
-        let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction() { return get2DGeographicYPositionFraction(); }"
-        let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction() { return get2DMercatorYPositionFraction(); }"
+        let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction(vec2 textureCoordinates) { return get2DGeographicYPositionFraction(textureCoordinates); }"
+        let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction(vec2 textureCoordinates) { return get2DMercatorYPositionFraction(textureCoordinates); }"
         return useWebMercatorProjection ? get2DYPositionFractionMercatorProjection : get2DYPositionFractionGeographicProjection
     }
+
+    private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_minMaxHeight;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
     
-    private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
-    
-    func getRenderPipeline (context context: Context, sceneMode: SceneMode, surfaceTile: GlobeSurfaceTile, numberOfDayTextures: Int, applyBrightness: Bool, applyContrast: Bool, applyHue: Bool, applySaturation: Bool, applyGamma: Bool, applyAlpha: Bool, showReflectiveOcean: Bool, showOceanWaves: Bool, enableLighting: Bool, hasVertexNormals: Bool, useWebMercatorProjection: Bool, enableFog: Bool) -> RenderPipeline {
+    func getRenderPipeline (
+        frameState frameState: FrameState,
+        surfaceTile: GlobeSurfaceTile,
+        numberOfDayTextures: Int,
+        applyBrightness: Bool,
+        applyContrast: Bool,
+        applyHue: Bool,
+        applySaturation: Bool,
+        applyGamma: Bool,
+        applyAlpha: Bool,
+        showReflectiveOcean: Bool,
+        showOceanWaves: Bool,
+        enableLighting: Bool,
+        hasVertexNormals: Bool,
+        useWebMercatorProjection: Bool,
+        enableFog: Bool
+     ) -> RenderPipeline
+    {
+
+        
+        let terrainEncoding = surfaceTile.pickTerrain!.mesh!.encoding
+        let quantizationMode = terrainEncoding.quantization
+        let quantization = quantizationMode.enabled
+        let quantizationDefine = quantizationMode.define
+        
+        var sceneMode = frameState.mode
         
         let flags: Int = Int(sceneMode.rawValue) |
             (Int(applyBrightness) << 2) |
@@ -86,7 +107,8 @@ class GlobeSurfaceShaderSet {
             (Int(enableLighting) << 10) |
             (Int(hasVertexNormals) << 11) |
             (Int(useWebMercatorProjection) << 12) |
-            (Int(enableFog) << 12)
+            (Int(enableFog) << 13) |
+            (Int(quantization) << 14)
         
         var surfacePipeline = surfaceTile.surfacePipeline
         if surfacePipeline != nil && surfacePipeline!.numberOfDayTextures == numberOfDayTextures && surfacePipeline!.flags == flags {
@@ -106,6 +128,7 @@ class GlobeSurfaceShaderSet {
             var vs = baseVertexShaderSource
             var fs = baseFragmentShaderSource
             
+            fs.defines.append(quantizationDefine)
             fs.defines.append("TEXTURE_UNITS \(numberOfDayTextures)")
             
             // Account for Metal not supporting sampler arrays
@@ -194,12 +217,12 @@ class GlobeSurfaceShaderSet {
             vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
             
             let pipeline = RenderPipeline.fromCache(
-                context: context,
+                context: frameState.context,
                 vertexShaderSource: vs,
                 fragmentShaderSource: fs,
-                vertexDescriptor: vertexDescriptor,
+                vertexDescriptor: VertexDescriptor(attributes:  terrainEncoding.vertexAttributes),
                 colorMask: nil,
-                depthStencil: context.depthTexture,
+                depthStencil: frameState.context.depthTexture,
                 manualUniformStruct: uniformStructString,
                 uniformStructSize: sizeof(TileUniformStruct)
             )
@@ -212,12 +235,21 @@ class GlobeSurfaceShaderSet {
         return surfacePipeline!.pipeline
     }
     
-    func getPickRenderPipeline(context context: Context, sceneMode: SceneMode, useWebMercatorProjection: Bool) -> RenderPipeline {
+    func getPickRenderPipeline(frameState frameState: FrameState, surfaceTile: GlobeSurfaceTile, useWebMercatorProjection: Bool) -> RenderPipeline {
         
-        let flags = sceneMode.rawValue | (Int(useWebMercatorProjection) << 2)
+        let terrainEncoding = surfaceTile.pickTerrain!.mesh!.encoding
+        let quantizationMode = terrainEncoding.quantization
+        let quantization = quantizationMode.enabled
+        let quantizationDefine = quantizationMode.define
+        
+        let sceneMode = frameState.mode
+        
+        let flags = sceneMode.rawValue | (Int(useWebMercatorProjection) << 2) | (Int(quantization) << 3)
+        
         var pickShader: RenderPipeline! = _pickPipelines[flags]
         if pickShader == nil {
             var vs = baseVertexShaderSource
+            vs.defines.append(quantizationDefine)
             vs.sources.append(getPositionMode(sceneMode))
             vs.sources.append(get2DYPositionFraction(useWebMercatorProjection))
             
@@ -230,10 +262,10 @@ class GlobeSurfaceShaderSet {
                 ])
             
             pickShader = RenderPipeline.fromCache(
-                context : context,
+                context : frameState.context,
                 vertexShaderSource : vs,
                 fragmentShaderSource : fs,
-                vertexDescriptor: vertexDescriptor,
+                vertexDescriptor: VertexDescriptor(attributes:  terrainEncoding.vertexAttributes),
                 colorMask: ColorMask(
                     red : false,
                     green : false,

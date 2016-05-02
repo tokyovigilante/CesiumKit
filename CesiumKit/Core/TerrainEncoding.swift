@@ -82,7 +82,8 @@ struct TerrainEncoding {
      * @type {Boolean}
      */
     let hasVertexNormals: Bool
-
+    
+    let vertexAttributes: [VertexAttributes]
 
     init (axisAlignedBoundingBox: AxisAlignedBoundingBox, minimumHeight: Double, maximumHeight: Double, fromENU: Matrix4, hasVertexNormals: Bool) {
         
@@ -130,6 +131,53 @@ struct TerrainEncoding {
         self.fromScaledENU = fromENU
         self.matrix = matrix
         self.hasVertexNormals = hasVertexNormals
+        
+        let datatype = ComponentDatatype.Float32
+        
+        if quantization == .none {
+            let position3DAndHeightLength = 4
+            var numTexCoordComponents = 2
+            if hasVertexNormals {
+                numTexCoordComponents += 1
+            }
+            
+            vertexAttributes = [
+                //position3DAndHeight
+                VertexAttributes(
+                    buffer: nil,
+                    bufferIndex: VertexDescriptorFirstBufferOffset,
+                    index: 0,
+                    format: .Float4,
+                    offset: 0,
+                    size: position3DAndHeightLength * datatype.elementSize,
+                    normalize: false),
+                // texCoordAndEncodedNormals
+                VertexAttributes(
+                    buffer: nil,
+                    bufferIndex: VertexDescriptorFirstBufferOffset,
+                    index: 1,
+                    format: hasVertexNormals ? .Float3 : .Float2,
+                    offset: position3DAndHeightLength * datatype.elementSize,
+                    size: numTexCoordComponents * datatype.elementSize,
+                    normalize: false)
+            ]
+        } else {
+            var numComponents = 3
+            if hasVertexNormals {
+                numComponents += 1
+            }
+            vertexAttributes = [
+                // compressed
+                VertexAttributes(
+                    buffer: nil,
+                    bufferIndex: VertexDescriptorFirstBufferOffset,
+                    index: 0,
+                    format: hasVertexNormals ? .Float4 : .Float3,
+                    offset: 0,
+                    size: numComponents * datatype.elementSize,
+                    normalize: false)
+            ]
+        }
     }
 
     func encode (inout vertexBuffer: [Float], position: Cartesian3, uv: Cartesian2, height: Double, normalToPack: Cartesian2? = nil) {
@@ -171,31 +219,27 @@ struct TerrainEncoding {
         }
     }
     
-    /*
-    TerrainEncoding.prototype.decodePosition = function(buffer, index, result) {
-    if (!defined(result)) {
-    result = new Cartesian3();
+    func decodePosition (buffer: [Float], index: Int) -> Cartesian3 {
+        let index  = index * getStride()
+        
+        var result = Cartesian3()
+        
+        if quantization == .bits12 {
+            let xy = AttributeCompression.decompressTextureCoordinates(buffer[index])
+            result.x = xy.x
+            result.y = xy.y
+            
+            let zh = AttributeCompression.decompressTextureCoordinates(buffer[index + 1])
+            result.z = zh.x
+            
+            return fromScaledENU.multiplyByPoint(result)
+        }
+        result.x = Double(buffer[index])
+        result.y = Double(buffer[index + 1])
+        result.z = Double(buffer[index + 2])
+        return result.add(center)
     }
-    
-    index *= this.getStride();
-    
-    if (this.quantization === TerrainQuantization.BITS12) {
-    var xy = AttributeCompression.decompressTextureCoordinates(buffer[index], cartesian2Scratch);
-    result.x = xy.x;
-    result.y = xy.y;
-    
-    var zh = AttributeCompression.decompressTextureCoordinates(buffer[index + 1], cartesian2Scratch);
-    result.z = zh.x;
-    
-    return Matrix4.multiplyByPoint(this.fromScaledENU, result, result);
-    }
-    
-    result.x = buffer[index];
-    result.y = buffer[index + 1];
-    result.z = buffer[index + 2];
-    return Cartesian3.add(result, this.center, result);
-    };
-    */
+
     func decodeTextureCoordinates (buffer: [Float], index: Int) -> Cartesian2 {
         let index = index * getStride()
         
@@ -243,74 +287,5 @@ struct TerrainEncoding {
         
         return vertexStride
     }
-    /*
-    var attributesNone = {
-    position3DAndHeight : 0,
-    textureCoordAndEncodedNormals : 1
-    };
-    var attributes = {
-    compressed : 0
-    };
     
-    TerrainEncoding.prototype.getAttributes = function(buffer) {
-    var datatype = ComponentDatatype.FLOAT;
-    
-    if (this.quantization === TerrainQuantization.NONE) {
-    var sizeInBytes = ComponentDatatype.getSizeInBytes(datatype);
-    var position3DAndHeightLength = 4;
-    var numTexCoordComponents = this.hasVertexNormals ? 3 : 2;
-    var stride = (this.hasVertexNormals ? 7 : 6) * sizeInBytes;
-    return [{
-    index : attributesNone.position3DAndHeight,
-    vertexBuffer : buffer,
-    componentDatatype : datatype,
-    componentsPerAttribute : position3DAndHeightLength,
-    offsetInBytes : 0,
-    strideInBytes : stride
-    }, {
-    index : attributesNone.textureCoordAndEncodedNormals,
-    vertexBuffer : buffer,
-    componentDatatype : datatype,
-    componentsPerAttribute : numTexCoordComponents,
-    offsetInBytes : position3DAndHeightLength * sizeInBytes,
-    strideInBytes : stride
-    }];
-    }
-    
-    var numComponents = 3;
-    numComponents += this.hasVertexNormals ? 1 : 0;
-    return [{
-    index : attributes.compressed,
-    vertexBuffer : buffer,
-    componentDatatype : datatype,
-    componentsPerAttribute : numComponents
-    }];
-    };
-    
-    TerrainEncoding.prototype.getAttributeLocations = function() {
-    if (this.quantization === TerrainQuantization.NONE) {
-    return attributesNone;
-    } else {
-    return attributes;
-    }
-    };
-    
-    TerrainEncoding.clone = function(encoding, result) {
-    if (!defined(result)) {
-    result = new TerrainEncoding();
-    }
-    
-    result.quantization = encoding.quantization;
-    result.minimumHeight = encoding.minimumHeight;
-    result.maximumHeight = encoding.maximumHeight;
-    result.center = Cartesian3.clone(encoding.center);
-    result.toScaledENU = Matrix4.clone(encoding.toScaledENU);
-    result.fromScaledENU = Matrix4.clone(encoding.fromScaledENU);
-    result.matrix = Matrix4.clone(encoding.matrix);
-    result.hasVertexNormals = encoding.hasVertexNormals;
-    return result;
-    };
-    
-    return TerrainEncoding;
-    });*/
 }

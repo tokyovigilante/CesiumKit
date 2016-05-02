@@ -55,6 +55,8 @@ class PerspectiveFrustum: Frustum {
     }
     private var _fovy: Double = Double.NaN
     
+    private var _sseDenominator: Double = Double.NaN
+    
     /**
     * The aspect ratio of the frustum's width to it's height.
     * @type {Number}
@@ -85,6 +87,22 @@ class PerspectiveFrustum: Frustum {
     var far = 500000000.0
     private var _far = Double.NaN
     
+    /**
+     * Offsets the frustum in the x direction.
+     * @type {Number}
+     * @default 0.0
+     */
+    var xOffset = 0.0;
+    private var _xOffset = Double.NaN
+    
+    /**
+     * Offsets the frustum in the y direction.
+     * @type {Number}
+     * @default 0.0
+     */
+    var yOffset = 0.0;
+    private var _yOffset = Double.NaN
+        
     var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
@@ -92,24 +110,31 @@ class PerspectiveFrustum: Frustum {
         if (fov != _fov ||
             aspectRatio != _aspectRatio ||
             near != _near ||
-            far != _far) {
-                assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
-                
-                assert(aspectRatio > 0, "aspectRatio must be positive")
-                assert(near > 0 && near < far, "near must be greater than zero and less than far")
-                
-                _aspectRatio = aspectRatio
-                _fov = fov
-                _fovy = aspectRatio <= 1.0 ? _fov : atan(tan(_fov * 0.5) / _aspectRatio) * 2.0
-                _near = near
-                _far = far
-                
-                _offCenterFrustum.top = _near * tan(0.5 * _fovy)
-                _offCenterFrustum.bottom = -_offCenterFrustum.top
-                _offCenterFrustum.right = _aspectRatio * _offCenterFrustum.top
-                _offCenterFrustum.left = -_offCenterFrustum.right
-                _offCenterFrustum.near = _near
-                _offCenterFrustum.far = _far
+            far != _far)
+        {
+            assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
+            
+            assert(aspectRatio > 0, "aspectRatio must be positive")
+            assert(near > 0 && near < far, "near must be greater than zero and less than far")
+            
+            _aspectRatio = aspectRatio
+            _fov = fov
+            _fovy = aspectRatio <= 1.0 ? _fov : atan(tan(_fov * 0.5) / _aspectRatio) * 2.0
+            _near = near
+            _far = far
+            _sseDenominator = 2.0 * tan(0.5 * _fovy)
+            
+            _offCenterFrustum.top = _near * tan(0.5 * _fovy)
+            _offCenterFrustum.bottom = -_offCenterFrustum.top
+            _offCenterFrustum.right = _aspectRatio * _offCenterFrustum.top
+            _offCenterFrustum.left = -_offCenterFrustum.right
+            _offCenterFrustum.near = _near
+            _offCenterFrustum.far = _far
+            
+            _offCenterFrustum.right += xOffset
+            _offCenterFrustum.left += xOffset
+            _offCenterFrustum.top += yOffset
+            _offCenterFrustum.bottom += yOffset
         }
     }
     

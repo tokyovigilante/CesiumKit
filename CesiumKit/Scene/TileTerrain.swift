@@ -80,6 +80,13 @@ class TileTerrain {
         surfaceTile.maximumHeight = mesh.maximumHeight
         surfaceTile.boundingSphere3D = mesh.boundingSphere3D
         surfaceTile.orientedBoundingBox = mesh.orientedBoundingBox
+        surfaceTile.tileBoundingBox = TileBoundingBox(
+            rectangle: tile.rectangle,
+            minimumHeight: mesh.minimumHeight,
+            maximumHeight: mesh.maximumHeight,
+            ellipsoid: tile.tilingScheme.ellipsoid
+        )
+        
         tile.data!.occludeePointInScaledSpace = mesh.occludeePointInScaledSpace
         
         // Free the tile's existing vertex array, if any.
@@ -241,7 +248,7 @@ class TileTerrain {
                 }
                 terrainMesh.indexBuffer = indexBuffer!
             }
-            var attributes = terrainProvider.vertexAttributes
+            var attributes = terrainMesh.encoding.vertexAttributes
             attributes[0].buffer = vertexBuffer
             let vertexArray = VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
             dispatch_async(dispatch_get_main_queue(), {

@@ -202,13 +202,13 @@ struct BoundingSphere: BoundingVolume {
 
             self.init()
 
-            if rectangle == nil {
+            guard let rectangle = rectangle else {
                 return
             }
             
-            var fromRectangle2DSouthwest = rectangle!.southwest()
+            var fromRectangle2DSouthwest = rectangle.southwest
             fromRectangle2DSouthwest.height = minimumHeight
-            var fromRectangle2DNortheast = rectangle!.northeast()
+            var fromRectangle2DNortheast = rectangle.northeast
             fromRectangle2DNortheast.height = maximumHeight
             
             let lowerLeft = projection.project(fromRectangle2DSouthwest)
