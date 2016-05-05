@@ -16,7 +16,7 @@ struct EnvironmentState {
     var skyBoxCommand: DrawCommand! = nil
     var skyAtmosphereCommand: DrawCommand! = nil
     var sunDrawCommand: DrawCommand! = nil
-    var sunComputeCommand: DrawCommand! = nil
+    var sunComputeCommand: ComputeCommand! = nil
     var moonCommand: DrawCommand! = nil
     
     var isSunVisible: Bool = false
