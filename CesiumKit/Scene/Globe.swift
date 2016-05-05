@@ -27,6 +27,10 @@ class Globe {
         
     private var _surface: QuadtreePrimitive!
     
+    var surfaceTilesToRenderCount: Int {
+        return _surface.tilesToRender.count
+    }
+    
     /**
     * The terrain provider providing surface geometry for this globe.
     * @type {TerrainProvider}
@@ -300,9 +304,9 @@ class Globe {
             return
         }
         
-        if !terrainProvider.ready {
+        /*if !terrainProvider.ready {
             return
-        }
+        }*/
         
         if _surface == nil {
 
@@ -331,7 +335,7 @@ class Globe {
         
         let hasWaterMask = showWaterEffect && terrainProvider.ready && terrainProvider.hasWaterMask
         
-        if (hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl) {
+        if hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl {
             // url changed, load new normal map asynchronously
             _oceanNormalMapUrl = oceanNormalMapUrl
             
@@ -389,11 +393,11 @@ class Globe {
             _surface.beginFrame(&frameState)
         }
         
-        if (frameState.passes.pick && mode == .Scene3D) {
+        /*if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
             _surface.beginFrame(&frameState)
-        }
+        }*/
     }
     /**
      * @private
@@ -406,10 +410,14 @@ class Globe {
         if (frameState.passes.render) {
             _surface.update(&frameState)
         }
+        
+        if (frameState.passes.pick) {
+            _surface.update(&frameState)
+        }
     }
     
     func endFrame (inout frameState: FrameState) {
-        if show {
+        if !show {
             return
         }
         if frameState.passes.render {
