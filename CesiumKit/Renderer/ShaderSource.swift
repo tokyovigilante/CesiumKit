@@ -154,14 +154,6 @@ struct ShaderSource {
             result = "#version " + version!
         }
         
-        /*if isFragmentShader {
-            result += "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
-            "precision highp float;\n" +
-            "#else\n" +
-            "precision mediump float;\n" +
-            "#endif\n\n"
-        }*/
-        
         // Prepend #defines for uber-shaders
         for define in defines {
             if define.characters.count != 0 {
