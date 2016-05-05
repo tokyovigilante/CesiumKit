@@ -128,7 +128,7 @@ class GlobeSurfaceShaderSet {
             var vs = baseVertexShaderSource
             var fs = baseFragmentShaderSource
             
-            fs.defines.append(quantizationDefine)
+            vs.defines.append(quantizationDefine)
             fs.defines.append("TEXTURE_UNITS \(numberOfDayTextures)")
             
             // Account for Metal not supporting sampler arrays
