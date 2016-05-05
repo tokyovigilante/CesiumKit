@@ -83,10 +83,12 @@ class SkyBox {
     * @exception {DeveloperError} this.sources is required and must have positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ properties.
     * @exception {DeveloperError} this.sources properties must all be the same type.
     */
-    func update (context: Context, frameState: FrameState) -> DrawCommand? {
+    func update (frameState: FrameState) -> DrawCommand? {
         if !show {
             return nil
         }
+        
+        let context = frameState.context
         
         if frameState.mode != .Scene3D && frameState.mode != SceneMode.Morphing {
             return nil

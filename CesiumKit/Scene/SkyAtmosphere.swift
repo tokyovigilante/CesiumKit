@@ -67,7 +67,7 @@ class SkyAtmosphere {
         _command.owner = self
     }
     
-    func update (context: Context, frameState: FrameState) -> DrawCommand? {
+    func update (frameState: FrameState) -> DrawCommand? {
 
         if !show {
             return nil
@@ -81,6 +81,8 @@ class SkyAtmosphere {
         if !frameState.passes.render {
             return nil
         }
+        
+        let context = frameState.context
     
         if _command.vertexArray == nil {
             let geometry = EllipsoidGeometry(
@@ -95,7 +97,6 @@ class SkyAtmosphere {
                 context: context,
                 attributeLocations: GeometryPipeline.createAttributeLocations(geometry)
             )
-            //FIXME: blending
             _command.renderState = RenderState(
                 device: context.device,
                 cullFace: .Front

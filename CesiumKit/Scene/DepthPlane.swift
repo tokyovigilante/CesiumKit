@@ -68,7 +68,7 @@ class DepthPlane {
         return depthQuad
     }
     
-    func update (context: Context, frameState: FrameState) {
+    func update (frameState: FrameState) {
         _mode = frameState.mode
         
         if frameState.mode != .Scene3D {
@@ -76,6 +76,7 @@ class DepthPlane {
         }
         
         let ellipsoid = frameState.mapProjection.ellipsoid
+        let context = frameState.context
         
         if _command == nil {
             _rs = RenderState( // Write depth, not color

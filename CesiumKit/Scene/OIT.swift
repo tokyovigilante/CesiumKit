@@ -171,7 +171,7 @@ class OIT {
         }
         */
     func update (context: Context, passDescriptor: PassState) {
-        if !isSupported() {
+        if !isSupported {
             return
         }
         
@@ -551,9 +551,9 @@ class OIT {
         passState.framebuffer = framebuffer;
         };
         */
-        func isSupported () -> Bool {
-            return _translucentMRTSupport || _translucentMultipassSupport
-        }
+    var isSupported: Bool {
+        return _translucentMRTSupport || _translucentMultipassSupport
+    }
         /*
         OIT.prototype.isDestroyed = function() {
         return false;
