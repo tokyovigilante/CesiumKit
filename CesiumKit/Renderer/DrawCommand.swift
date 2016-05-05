@@ -178,6 +178,8 @@ class DrawCommand: Command {
     */
     //var oit = undefined;
     
+    var dirty: Bool = true
+    
     init(
         boundingVolume: BoundingVolume? = nil,
         orientedBoundingBox: OrientedBoundingBox? = nil,
