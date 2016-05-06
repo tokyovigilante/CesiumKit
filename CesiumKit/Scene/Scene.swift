@@ -744,7 +744,7 @@ public class Scene {
             context: context,
             string: "CesiumKit",
             fontName: "HelveticaNeue",
-            color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+            color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
             pointSize: 40,
             rectangle: Cartesian4(x: 40, y: 40, width: 500, height: 60)
         )

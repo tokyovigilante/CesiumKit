@@ -59,7 +59,7 @@ public extension Color {
      * @returns {Color} The modified result parameter or a new Color instance if one was not provided.
      */
     init(fromBytesRed red: Int, green: Int, blue: Int, alpha: Int) {
-        self.init(fromRed: Color.ByteToDouble(red), green: Color.ByteToDouble(green), blue: Color.ByteToDouble(blue), alpha: Color.ByteToDouble(alpha))
+        self.init(red: Color.ByteToDouble(red), green: Color.ByteToDouble(green), blue: Color.ByteToDouble(blue), alpha: Color.ByteToDouble(alpha))
     }
     /*
      /**
@@ -716,7 +716,7 @@ public extension Color {
      * @constant
      * @type {Color}
      */
-    static let Black = Color(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+    static let Black = Color(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
      /*
      /**
      * An immutable Color instance initialized to CSS color #FFEBCD
@@ -1930,7 +1930,7 @@ public extension Color {
      * @constant
      * @type {Color}
      */
-     static let White = Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+     static let White = Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
      /*
      /**
      * An immutable Color instance initialized to CSS color #F5F5F5

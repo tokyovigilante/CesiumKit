@@ -445,7 +445,7 @@ Matrix4.fromCamera = function(camera, result) {
 };
      */
     public subscript (column: Int) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType[column])
+        return Cartesian4(simd: simdType[column])
     }
     /// Access to individual elements.
     public subscript (column: Int, row: Int) -> Double {
@@ -709,7 +709,7 @@ Matrix4.getElementIndex = function(column, row) {
     */
     func getColumn (index: Int) -> Cartesian4 {
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
-        return Cartesian4(fromSIMD: simdType[index])
+        return Cartesian4(simd: simdType[index])
         
     }
 
@@ -1244,7 +1244,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
      * @returns {Cartesian4} The modified result parameter.
      */
     func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: self.simdType * cartesian.simdType)
+        return Cartesian4(simd: self.simdType * cartesian.simdType)
     }
 
     /**
@@ -1487,7 +1487,7 @@ extension Matrix4: Packable {
         return 16
     }
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in

@@ -579,7 +579,7 @@ struct Transforms {
         coords.multiplyByScalar(1.0 / coords.w)
         coords = viewportTransformation.multiplyByVector(coords)
         
-        return Cartesian2(fromCartesian4: coords)
+        return Cartesian2(cartesian4: coords)
     }
     /*
         var normalScratch = new Cartesian3();

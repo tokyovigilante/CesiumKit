@@ -189,7 +189,7 @@ struct SceneTransforms {
         // Viewport transform to transform from clip coordinates to window coordinates
         let positionWC = viewportTransform.multiplyByPoint(Cartesian3(fromCartesian4: positionNDC))
         
-        return Cartesian2(fromCartesian3: positionWC)
+        return Cartesian2(cartesian3: positionWC)
     }
     
     /*

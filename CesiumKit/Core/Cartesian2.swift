@@ -56,7 +56,7 @@ public struct Cartesian2 {
         simdType = double2(scalar)
     }
     
-    init(fromSIMD simd: double2) {
+    init(simd: double2) {
         simdType = simd
     }
     
@@ -69,7 +69,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    init (fromCartesian3 cartesian3: Cartesian3) {
+    init (cartesian3: Cartesian3) {
         self.init(x: cartesian3.x, y: cartesian3.y)
     }
     
@@ -82,7 +82,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    init (fromCartesian4 cartesian4: Cartesian4) {
+    init (cartesian4: Cartesian4) {
         self.init(x: cartesian4.x, y: cartesian4.y)
     }
     
@@ -116,7 +116,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(fromSIMD: min(simdType, other.simdType))
+        return Cartesian2(simd: min(simdType, other.simdType))
     }
     
     /**
@@ -128,7 +128,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(fromSIMD: max(simdType, other.simdType))
+        return Cartesian2(simd: max(simdType, other.simdType))
     }
     /**
     * Computes the provided Cartesian's squared magnitude.
@@ -190,7 +190,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func normalize() -> Cartesian2 {
-        return Cartesian2(fromSIMD: simd.normalize(simdType))
+        return Cartesian2(simd: simd.normalize(simdType))
     }
     
     /**
@@ -213,7 +213,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     func multiplyComponents(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(fromSIMD: simdType * other.simdType)
+        return Cartesian2(simd: simdType * other.simdType)
     }
     
     /**
@@ -225,7 +225,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     func add(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(fromSIMD: simdType + other.simdType)
+        return Cartesian2(simd: simdType + other.simdType)
     }
     
     /**
@@ -237,7 +237,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     func subtract(other: Cartesian2) -> Cartesian2 {
-        return Cartesian2(fromSIMD: simdType - other.simdType)
+        return Cartesian2(simd: simdType - other.simdType)
     }
     
     /**
@@ -249,7 +249,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     func multiplyByScalar(scalar: Double) -> Cartesian2 {
-        return Cartesian2(fromSIMD: simdType * scalar)
+        return Cartesian2(simd: simdType * scalar)
     }
     
     /**
@@ -272,7 +272,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     func negate() -> Cartesian2 {
-        return Cartesian2(fromSIMD: -simdType)
+        return Cartesian2(simd: -simdType)
     }
 
     /**
@@ -283,7 +283,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func absolute() -> Cartesian2 {
-        return Cartesian2(fromSIMD: vector_abs(simdType))
+        return Cartesian2(simd: vector_abs(simdType))
     }
     
     /**
@@ -296,7 +296,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func lerp(end: Cartesian2, t: Double) -> Cartesian2 {
-        return  Cartesian2(fromSIMD: mix(simdType, end.simdType, t: t))
+        return  Cartesian2(simd: mix(simdType, end.simdType, t: t))
     }
     
     /**
@@ -386,7 +386,7 @@ extension Cartesian2: Packable {
         return 2
     }
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         self.x = array[startingIndex]

@@ -63,8 +63,8 @@ class QuantizedMeshTerrainGenerator {
         var heights = [Double]()
         var uvs = [Cartesian2]()
         
-        var minimum = Cartesian3(fromSIMD: double3(Double.infinity))
-        var maximum = Cartesian3(fromSIMD: double3(-Double.infinity))
+        var minimum = Cartesian3(simd: double3(Double.infinity))
+        var maximum = Cartesian3(simd: double3(-Double.infinity))
         
         var positionENU = Cartesian3()
         

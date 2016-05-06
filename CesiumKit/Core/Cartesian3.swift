@@ -66,7 +66,7 @@ public struct Cartesian3 {
         simdType = double3(scalar)
     }
     
-    init(fromSIMD simd: double3) {
+    init(simd: double3) {
         simdType = simd
     }
     
@@ -131,7 +131,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: vector_min(simdType, other.simdType))
+        return Cartesian3(simd: vector_min(simdType, other.simdType))
     }
     
     /**
@@ -143,7 +143,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: vector_max(simdType, other.simdType))
+        return Cartesian3(simd: vector_max(simdType, other.simdType))
     }
     
     /**
@@ -205,7 +205,7 @@ public struct Cartesian3 {
     */
     
     public func normalize() -> Cartesian3 {
-        return Cartesian3(fromSIMD: simd.normalize(simdType))
+        return Cartesian3(simd: simd.normalize(simdType))
     }
     
     /**
@@ -220,7 +220,7 @@ public struct Cartesian3 {
     }
     
     public func multiplyComponents(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType * other.simdType)
+        return Cartesian3(simd: simdType * other.simdType)
     }
     
     /**
@@ -232,7 +232,7 @@ public struct Cartesian3 {
      * @returns {Cartesian4} The modified result parameter.
      */
     public func add(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType + other.simdType)
+        return Cartesian3(simd: simdType + other.simdType)
     }
     
     /**
@@ -244,7 +244,7 @@ public struct Cartesian3 {
      * @returns {Cartesian4} The modified result parameter.
      */
     public func subtract(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType - other.simdType)
+        return Cartesian3(simd: simdType - other.simdType)
     }
     
     /**
@@ -256,7 +256,7 @@ public struct Cartesian3 {
      * @returns {Cartesian4} The modified result parameter.
      */
     public func multiplyByScalar (scalar: Double) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType * scalar)
+        return Cartesian3(simd: simdType * scalar)
     }
     
     /**
@@ -268,7 +268,7 @@ public struct Cartesian3 {
      * @returns {Cartesian4} The modified result parameter.
      */
     public func divideByScalar (scalar: Double) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType * (1/scalar))
+        return Cartesian3(simd: simdType * (1/scalar))
     }
     
     /**
@@ -279,7 +279,7 @@ public struct Cartesian3 {
      * @returns {Cartesian3} The modified result parameter.
      */
     func negate () -> Cartesian3 {
-        return Cartesian3(fromSIMD: -simdType)
+        return Cartesian3(simd: -simdType)
     }
 
     /**
@@ -290,7 +290,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func absolute() -> Cartesian3 {
-        return Cartesian3(fromSIMD: vector_abs(simdType))
+        return Cartesian3(simd: vector_abs(simdType))
     }
     
     /**
@@ -303,7 +303,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
     func lerp(end: Cartesian3, t: Double) -> Cartesian3 {
-        return Cartesian3(fromSIMD: mix(simdType, end.simdType, t: t))
+        return Cartesian3(simd: mix(simdType, end.simdType, t: t))
     }
     
     /**
@@ -382,7 +382,7 @@ public struct Cartesian3 {
     * @returns {Cartesian3} The cross product.
     */
     public func cross(other: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simd.cross(simdType, other.simdType))
+        return Cartesian3(simd: simd.cross(simdType, other.simdType))
     }
     
     /**
@@ -560,7 +560,7 @@ extension Cartesian3: Packable {
     }
     
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         self.x = array[startingIndex]

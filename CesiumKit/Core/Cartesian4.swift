@@ -110,11 +110,11 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} [result] The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter or a new Cartesian4 instance if one was not provided.
     */
-    public init (fromRed red: Double, green: Double, blue: Double, alpha: Double) {
+    public init (red: Double, green: Double, blue: Double, alpha: Double) {
         self.init(x: red, y: green, z: blue, w: alpha)
     }
     
-    init (fromSIMD simd: double4) {
+    init (simd: double4) {
         simdType = simd
     }
     
@@ -147,7 +147,7 @@ public struct Cartesian4: Equatable {
     * @returns {Cartesian4} A cartesian with the minimum components.
     */
     func minimumByComponent(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: vector_min(simdType, other.simdType))
+        return Cartesian4(simd: vector_min(simdType, other.simdType))
     }
     
     /**
@@ -159,7 +159,7 @@ public struct Cartesian4: Equatable {
     * @returns {Cartesian4} A cartesian with the maximum components.
     */
     func maximumByComponent(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: vector_max(simdType, other.simdType))
+        return Cartesian4(simd: vector_max(simdType, other.simdType))
     }
     
     /**
@@ -225,7 +225,7 @@ public struct Cartesian4: Equatable {
     * @returns {Cartesian4} The modified result parameter.
     */
     func normalize() -> Cartesian4 {
-        return Cartesian4(fromSIMD: simd.normalize(simdType))
+        return Cartesian4(simd: simd.normalize(simdType))
     }
     
     /**
@@ -248,7 +248,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func multiplyComponents(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType * other.simdType)
+        return Cartesian4(simd: simdType * other.simdType)
     }
 
     /**
@@ -260,7 +260,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func add(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType + other.simdType)
+        return Cartesian4(simd: simdType + other.simdType)
     }
     
     /**
@@ -272,7 +272,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func subtract(other: Cartesian4) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType - other.simdType)
+        return Cartesian4(simd: simdType - other.simdType)
     }
 
     /**
@@ -284,7 +284,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func multiplyByScalar (scalar: Double) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType * scalar)
+        return Cartesian4(simd: simdType * scalar)
     }
     
     /**
@@ -296,7 +296,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func divideByScalar (scalar: Double) -> Cartesian4 {
-        return Cartesian4(fromSIMD: simdType * (1/scalar))
+        return Cartesian4(simd: simdType * (1/scalar))
     }
     
     /**
@@ -307,7 +307,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func negate () -> Cartesian4 {
-        return Cartesian4(fromSIMD: -simdType)
+        return Cartesian4(simd: -simdType)
     }
     
     /**
@@ -318,7 +318,7 @@ public struct Cartesian4: Equatable {
      * @returns {Cartesian4} The modified result parameter.
      */
     func absolute() -> Cartesian4 {
-        return Cartesian4(fromSIMD: vector_abs(simdType))
+        return Cartesian4(simd: vector_abs(simdType))
     }
     
     /**
@@ -331,7 +331,7 @@ public struct Cartesian4: Equatable {
     * @returns {Cartesian4} The modified result parameter.
     */
     func lerp(end: Cartesian4, t: Double) -> Cartesian4 {
-        return Cartesian4(fromSIMD: mix(simdType, end.simdType, t: t))
+        return Cartesian4(simd: mix(simdType, end.simdType, t: t))
     }
     
     /**
@@ -445,7 +445,7 @@ extension Cartesian4: Packable {
         return 4
     }
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         self.x = array[startingIndex]

@@ -181,7 +181,7 @@ struct EllipsoidGeometry {
         
         if _vertexFormat.st || _vertexFormat.normal || _vertexFormat.tangent || _vertexFormat.binormal {
             for i in 0..<vertexCount {
-                let position = Cartesian3(fromArray: positions, startingIndex: i * 3)
+                let position = Cartesian3(array: positions, startingIndex: i * 3)
                 let normal = ellipsoid.geodeticSurfaceNormal(position)
                 
                 if _vertexFormat.st {
@@ -194,7 +194,7 @@ struct EllipsoidGeometry {
                         if index > positions.count {
                             index = (i - slicePartitions * Int(floor(Double(stackPartitions) * 0.5))) * 3
                         }
-                        normalST = Cartesian3(fromArray: positions, startingIndex: index)
+                        normalST = Cartesian3(array: positions, startingIndex: index)
                         normalST = ellipsoid.geodeticSurfaceNormal(normalST)
                         normalST.x = -normalST.x
                         normalST.y = -normalST.y
@@ -317,15 +317,15 @@ extension EllipsoidGeometry: Packable {
         return Cartesian3.packedLength() + VertexFormat.packedLength() + 2
     }
 
-    init(fromArray array: [Double], startingIndex: Int) {
+    init(array: [Double], startingIndex: Int) {
         assert(array.count == EllipsoidGeometry.packedLength(), "Invalid packed array length")
 
         var index = startingIndex
-        _radii = Cartesian3(fromArray: array, startingIndex: index)
+        _radii = Cartesian3(array: array, startingIndex: index)
         
         index += Cartesian3.packedLength()
         
-        _vertexFormat = VertexFormat(fromArray: array, startingIndex: index)
+        _vertexFormat = VertexFormat(array: array, startingIndex: index)
         
         index += VertexFormat.packedLength()
         

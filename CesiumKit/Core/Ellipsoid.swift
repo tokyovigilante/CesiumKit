@@ -395,9 +395,9 @@ extension Ellipsoid: Packable {
         return Cartesian3.packedLength()
     }
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         assert(array.count - startingIndex >= Ellipsoid.packedLength(), "Invalid packed array length")
-        let radii = Cartesian3(fromArray: array, startingIndex: startingIndex)
+        let radii = Cartesian3(array: array, startingIndex: startingIndex)
         /*array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
             memcpy(&radii, pointer.baseAddress,  Cartesian3.packedLength() * strideof(Double))
         }*/

@@ -35,7 +35,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
         
-        let color = Cartesian4(fromRed: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        let color = Cartesian4(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
         let tileWidth: Int = 256
         

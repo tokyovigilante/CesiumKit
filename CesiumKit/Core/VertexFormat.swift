@@ -227,7 +227,7 @@ extension VertexFormat: Packable {
         ]
     }
     
-    init(fromArray array: [Double], startingIndex: Int) {
+    init(array: [Double], startingIndex: Int) {
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         position = array[startingIndex] == 1.0
         normal = array[startingIndex+1] == 1.0

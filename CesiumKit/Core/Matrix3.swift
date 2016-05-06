@@ -120,7 +120,7 @@ public struct Matrix3 {
     
     public subscript (column: Int) -> Cartesian3 {
         assert(column >= 0 && column <= 3, "column index out of range")
-        return Cartesian3(fromSIMD: simdType[column])
+        return Cartesian3(simd: simdType[column])
     }
     /// Access to individual elements.
     public subscript (column: Int, row: Int) -> Double {
@@ -397,7 +397,7 @@ public struct Matrix3 {
     */
     func column (index: Int) -> Cartesian3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
-        return Cartesian3(fromSIMD: simdType[index])
+        return Cartesian3(simd: simdType[index])
     }
     
     /**
@@ -601,7 +601,7 @@ public struct Matrix3 {
     * @returns {Cartesian3} The modified result parameter.
     */
     public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
-        return Cartesian3(fromSIMD: simdType * cartesian.simdType)
+        return Cartesian3(simd: simdType * cartesian.simdType)
     }
     /*
     /**
@@ -663,8 +663,7 @@ public struct Matrix3 {
         grid[6] *= scale.z
         grid[7] *= scale.z
         grid[8] *= scale.z
-        //return Matrix3()
-        return Matrix3(fromArray: grid)
+        return Matrix3(array: grid)
     }
     
     /**
@@ -931,7 +930,7 @@ extension Matrix3: Packable {
         return 9
     }
     
-    public init(fromArray array: [Double], startingIndex: Int = 0) {
+    public init(array: [Double], startingIndex: Int = 0) {
         self.init(
             array[startingIndex], array[startingIndex+3], array[startingIndex+6],
             array[startingIndex+1], array[startingIndex+4], array[startingIndex+7],

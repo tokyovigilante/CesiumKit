@@ -26,7 +26,7 @@ public class OffscreenQuadPrimitive: Primitive {
     private let _passState: PassState
     
     private let _clearCommand = ClearCommand(
-        color: Color(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+        color: Color(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
     )
     
     init (context: Context, width: Int, height: Int) {

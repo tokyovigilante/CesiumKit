@@ -481,7 +481,7 @@ extension Rectangle: Packable {
         return 4
     }
     
-    init(fromArray array: [Double], startingIndex: Int = 0) {
+    init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in

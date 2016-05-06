@@ -25,7 +25,7 @@ protocol Packable {
     */
     static func packedLength () -> Int
     
-    init (fromArray array: [Double], startingIndex: Int)
+    init (array: [Double], startingIndex: Int)
 
     /**
     * Stores the provided instance into the provided array.
@@ -114,7 +114,7 @@ extension Packable {
      * @param {Matrix3} [result] The object into which to store the result.
      */
     static func unpack(array: [Float], startingIndex: Int = 0) -> Self {
-        return Self(fromArray: array.map { Double($0) }, startingIndex: startingIndex)
+        return Self(array: array.map { Double($0) }, startingIndex: startingIndex)
     }
     
     func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool {

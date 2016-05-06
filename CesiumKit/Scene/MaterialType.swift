@@ -54,7 +54,7 @@ public class ColorFabricDescription: FabricDescription {
     
     public var uniformMap: UniformMap = NullUniformMap()
     
-    public init (color: Color = Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)) {
+    public init (color: Color = Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)) {
         
         self.color = color
         

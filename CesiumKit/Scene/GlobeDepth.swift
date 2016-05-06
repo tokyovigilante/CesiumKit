@@ -24,7 +24,7 @@ class GlobeDepth {
         
     init () {
         _clearColorCommand = ClearCommand(
-            color: Cartesian4(fromRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
+            color: Cartesian4(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
             stencil: 0
         )
         _clearColorCommand.owner = self
