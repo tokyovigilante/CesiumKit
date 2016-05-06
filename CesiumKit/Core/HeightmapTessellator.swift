@@ -153,8 +153,8 @@ class HeightmapTessellator {
         let fromENU = Transforms.eastNorthUpToFixedFrame(relativeToCenter!, ellipsoid: ellipsoid)
         let toENU = fromENU.inverse
         
-        var minimum = Cartesian3(fromSIMD: double3(Double.infinity))
-        var maximum = Cartesian3(fromSIMD: double3(-Double.infinity))
+        var minimum = Cartesian3(simd: double3(Double.infinity))
+        var maximum = Cartesian3(simd: double3(-Double.infinity))
         
         var hMin = Double.infinity
         
@@ -269,7 +269,7 @@ class HeightmapTessellator {
                 
                 let point = toENU.multiplyByPoint(position)
                 minimum = point.minimumByComponent(minimum)
-                maximum = point.minimumByComponent(maximum)
+                maximum = point.maximumByComponent(maximum)
                 hMin = min(hMin, heightSample)
 
             }
