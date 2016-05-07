@@ -590,3 +590,11 @@ public func == (left: Cartesian3, right: Cartesian3) -> Bool {
     return (left.x == right.x) && (left.y == right.y) && (left.z == right.z)
 }
 
+extension Cartesian3: Offset {
+    
+    public var offset: Cartesian3 {
+        return self
+    }
+    
+}
+
