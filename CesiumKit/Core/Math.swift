@@ -712,8 +712,7 @@ return 2.0 * radius * Math.sin(angle * 0.5);
      */
     static func fog (distanceToCamera: Double, density: Double) -> Double {
         let scalar = distanceToCamera * density
-        var result = 1.0 - exp(-(scalar * scalar))
-        return result
+        return 1.0 - exp(-(scalar * scalar))
     }
 
 }
