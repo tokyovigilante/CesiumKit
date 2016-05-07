@@ -1633,27 +1633,15 @@ public class Camera: DRU {
      * var range = 5000.0;
      * viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
-    public func lookAt (target: Cartesian3, offset: Cartesian3) {
+    public func lookAt (target: Cartesian3, offset: Offset) {
         
         let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
-        lookAtTransform(transform, offset: offset)
+        lookAtTransform(transform, offset: offset.offset)
     }
-    
-    func offsetFromHeadingPitchRange(heading: Double, pitch: Double, range: Double) -> Cartesian3 {
-        let clampPitch = Math.clamp(pitch, min: -M_PI_2, max: M_PI_2)
-        let clampHeading = Math.zeroToTwoPi(heading) - M_PI_2
-        
-        let pitchQuat = Quaternion(axis: Cartesian3.unitY, angle: -clampPitch)
-        let headingQuat = Quaternion(axis: Cartesian3.unitZ, angle: -clampHeading)
-        let rotQuat = pitchQuat.multiply(headingQuat)
-        let rotMatrix = Matrix3(quaternion: rotQuat)
-        
-        return rotMatrix.multiplyByVector(Cartesian3.unitX).negate().multiplyByScalar(range)
-    }
-    
+
     /**
-     -     * Sets the camera position and orientation with an eye position, target, and up vector.
-     -     * This method is not supported in 2D mode because there is only one direction to look.
+     * Sets the camera position and orientation with an eye position, target, and up vector.
+     * This method is not supported in 2D mode because there is only one direction to look.
      * Sets the camera position and orientation using a target and transformation matrix. The offset can be either a cartesian or heading/pitch/range.
      * If the offset is a cartesian, then it is an offset from the center of the reference frame defined by the transformation matrix. If the offset
      * is heading/pitch/range, then the heading and the pitch angles are defined in the reference frame defined by the transformation matrix.
@@ -1686,10 +1674,12 @@ public class Camera: DRU {
      * viewer.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
     
-    public func lookAtTransform (transform: Matrix4, offset: Cartesian3) {
+    public func lookAtTransform (transform: Matrix4, offset: Offset) {
         
         assert(_mode != .Morphing, "lookAtTransform is not supported while morphing.")
         
+        let offset = offset.offset
+
         _setTransform(transform)
 
         if _mode == .Scene2D {
