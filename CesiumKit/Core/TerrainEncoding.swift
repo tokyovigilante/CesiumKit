@@ -94,11 +94,11 @@ struct TerrainEncoding {
         let hDim = maximumHeight - minimumHeight
         let maxDim = max(dimensions.maximumComponent(), hDim)
         
-        //if maxDim < shiftLeft12 - 1.0 {
-        //    quantization = .bits12
-        //} else {
+        if maxDim < shiftLeft12 - 1.0 {
+            quantization = .bits12
+        } else {
             quantization = .none
-        //}
+        }
         
         let center = axisAlignedBoundingBox.center
         var toENU = fromENU.inverse
@@ -191,7 +191,7 @@ struct TerrainEncoding {
             position.y = Math.clamp(position.y, min: 0.0, max: 1.0)
             position.z = Math.clamp(position.z, min: 0.0, max: 1.0)
             
-            let hDim = maximumHeight - minimumHeight;
+            let hDim = maximumHeight - minimumHeight
             let h = Math.clamp((height - minimumHeight) / hDim, min: 0.0, max: 1.0)
             
             let compressed0 = AttributeCompression.compressTextureCoordinates(Cartesian2(x: position.x, y: position.y))

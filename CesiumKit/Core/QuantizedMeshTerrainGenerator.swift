@@ -48,11 +48,11 @@ class QuantizedMeshTerrainGenerator {
         let east = rectangle.east
         let north = rectangle.north
         
-        var minimumHeight = minimumHeight * exaggeration
-        var maximumHeight = maximumHeight * exaggeration
+        let minimumHeight = minimumHeight * exaggeration
+        let maximumHeight = maximumHeight * exaggeration
         
-        var fromENU = Transforms.eastNorthUpToFixedFrame(center, ellipsoid: ellipsoid)
-        var toENU = fromENU.inverse
+        let fromENU = Transforms.eastNorthUpToFixedFrame(center, ellipsoid: ellipsoid)
+        let toENU = fromENU.inverse
         
         let uBuffer = quantizedVertices[0..<quantizedVertexCount]
         let vBuffer = quantizedVertices[quantizedVertexCount..<(quantizedVertexCount * 2)]
