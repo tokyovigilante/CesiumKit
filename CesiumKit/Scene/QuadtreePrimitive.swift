@@ -35,7 +35,7 @@ class QuadtreePrimitive {
     let tileProvider: GlobeSurfaceTileProvider//QuadtreeTileProvider
     
     private var _debug = (
-        enableDebugOutput : false,
+        enableDebugOutput : true,
         
         maxDepth: 0,
         tilesVisited: 0,
@@ -285,7 +285,7 @@ class QuadtreePrimitive {
                 _debug.lastTilesWaitingForChildren = _debug.tilesWaitingForChildren
             }
         }
-    };
+    }
     
     /*
     
