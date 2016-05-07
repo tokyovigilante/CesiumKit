@@ -35,8 +35,8 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             clock: Clock(multiplier: 600),
             //clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
-            terrain: false,
-            lighting: false,
+            terrain: true,
+            lighting: true,
             skyBox: true,
             scene3DOnly: true
         )
