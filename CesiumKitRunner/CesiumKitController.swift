@@ -54,7 +54,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         )*/
         
         // Everest
-        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offset: Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.298056, height: 10000))
+        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offset: HeadingPitchRange(heading: 180.0, pitch: 0, range: 5000))
         
         // Murrumbeena
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), heading: 0, pitch: 0, roll: 0)
@@ -102,18 +102,22 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func drawInMTKView(view: MTKView) {
-                
+        //_globe.scene.camera.moveForward(50.0)
         #if os(iOS)
             view.contentScaleFactor = 2.0
             let scaleFactor = view.contentScaleFactor
         #elseif os(OSX)
-            let scaleFactor = view.layer?.contentsScale ?? 1.0
+            view.layer!.contentsScale = 2.0
+            let scaleFactor = view.layer!.contentsScale
         #endif
-        let viewBoundsSize = view.bounds.size
-        let renderWidth = viewBoundsSize.width * scaleFactor
-        let renderHeight = viewBoundsSize.height * scaleFactor
-        
-        let renderSize = CGSizeMake(renderWidth, renderHeight)
+            let viewBoundsSize = view.bounds.size
+            let renderWidth = viewBoundsSize.width * scaleFactor
+            let renderHeight = viewBoundsSize.height * scaleFactor
+            let renderSize = CGSizeMake(renderWidth, renderHeight)
+        #if os(OSX)
+            //view.autoResizeDrawable = false
+            //view.drawableSize = renderSize
+        #endif
         
         _globe.render(renderSize)
     }
