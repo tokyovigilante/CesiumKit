@@ -154,7 +154,7 @@ struct TileBoundingBox {
         let cameraCartographicPosition = camera.positionCartographic
         
         var result = 0.0
-        if rectangle.contains(cameraCartographicPosition) {
+        if !rectangle.contains(cameraCartographicPosition) {
             var southwestCornerCartesian = self.southwestCornerCartesian
             var northeastCornerCartesian = self.northeastCornerCartesian
             var westNormal = self.westNormal
