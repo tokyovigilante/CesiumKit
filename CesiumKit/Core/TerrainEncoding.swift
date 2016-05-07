@@ -94,11 +94,11 @@ struct TerrainEncoding {
         let hDim = maximumHeight - minimumHeight
         let maxDim = max(dimensions.maximumComponent(), hDim)
         
-        if maxDim < shiftLeft12 - 1.0 {
-            quantization = .bits12
-        } else {
+        //if maxDim < shiftLeft12 - 1.0 {
+        //    quantization = .bits12
+        //} else {
             quantization = .none
-        }
+        //}
         
         let center = axisAlignedBoundingBox.center
         var toENU = fromENU.inverse
