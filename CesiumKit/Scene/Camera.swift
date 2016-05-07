@@ -1171,7 +1171,7 @@ public class Camera: DRU {
     * @see Camera#moveUp
     * @see Camera#moveDown
     */
-    func move (direction: Cartesian3, amount: Double) {
+    public func move (direction: Cartesian3, amount: Double) {
         position = position.add(direction.multiplyByScalar(amount))
         if _mode == SceneMode.Scene2D {
             assertionFailure("unimplemented")
@@ -1188,11 +1188,10 @@ public class Camera: DRU {
      *
      * @see Camera#moveBackward
      */
-     /*Camera.prototype.moveForward = function(amount) {
-     amount = defaultValue(amount, this.defaultMoveAmount);
-     this.move(this.direction, amount);
-     };*/
-     
+    public func moveForward (amount: Double? = nil) {
+        let amount = amount ?? defaultMoveAmount
+        move(direction, amount: amount)
+    }
      /**
      * Translates the camera's position by <code>amount</code> along the opposite direction
      * of the camera's view vector.
@@ -1678,7 +1677,7 @@ public class Camera: DRU {
         
         assert(_mode != .Morphing, "lookAtTransform is not supported while morphing.")
         
-        let offset = offset.offset
+        let actualOffset = offset.offset
 
         _setTransform(transform)
 
@@ -1686,7 +1685,7 @@ public class Camera: DRU {
             position.x = 0.0
             position.y = 0.0
             
-            up = offset.negate()
+            up = actualOffset.negate()
             up.z = 0.0
             
             if up.magnitudeSquared < Math.Epsilon10 {
@@ -1700,7 +1699,7 @@ public class Camera: DRU {
             right = direction.cross(self.up).normalize()
             
             let ratio = frustum.top / frustum.right
-            frustum.right = offset.magnitude * 0.5
+            frustum.right = actualOffset.magnitude * 0.5
             frustum.left = -frustum.right
             frustum.top = ratio * frustum.right
             frustum.bottom = -frustum.top
@@ -1708,7 +1707,7 @@ public class Camera: DRU {
             
             return
         }
-        position = offset
+        position = actualOffset
         direction = position.negate().normalize()
         right = direction.cross(Cartesian3.unitZ).normalize()
         if right.magnitudeSquared < Math.Epsilon10 {
