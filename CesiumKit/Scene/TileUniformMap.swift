@@ -33,9 +33,9 @@ struct TileUniformStruct: MetalUniformStruct {
     var dayTextureHue = floatTuple
     var dayTextureSaturation = floatTuple
     var dayTextureOneOverGamma = floatTuple
-    var waterMaskTranslationAndScale = float4()
     var minMaxHeight = float2()
     var scaleandBias = float4x4()
+    var waterMaskTranslationAndScale = float4()
     var initialColor = float4()
     var tileRectangle = float4()
     var modifiedModelView = float4x4()
