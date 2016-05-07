@@ -35,8 +35,8 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             clock: Clock(multiplier: 600),
             //clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
-            terrain: true,
-            lighting: true,
+            terrain: false,
+            lighting: false,
             skyBox: true,
             scene3DOnly: true
         )
@@ -60,10 +60,10 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), heading: 0, pitch: 0, roll: 0)
         
         //Wellington,
-        _globe.scene.camera.setView(
+        /*_globe.scene.camera.setView(
             orientation: .headingPitchRoll(heading: 0.0, pitch: 0.0, roll: 0.0),
             destination: .cartesian(Cartesian3.fromDegrees(longitude: 174.784356, latitude: -41.438928, height: 1000))
-        )
+        )*/
         //_globe.scene.camera.viewRectangle(Rectangle(fromDegreesWest: 150, south: -90, east: 110, north: 20))
         
         /*let viewportFabric = ColorFabricDescription(color: Color(fromRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.8))
