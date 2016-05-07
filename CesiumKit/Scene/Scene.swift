@@ -1616,7 +1616,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         let useWebVR = _useWebVR && mode != SceneMode.Scene2D
         
         // Preserve the reference to the original framebuffer.
-        _environmentState.originalFramebuffer = passState.framebuffer
+        _environmentState.originalFramebuffer = passState.framebuffer ?? context.defaultFramebuffer
 
         // Manage sun bloom post-processing effect.
         
