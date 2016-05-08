@@ -67,20 +67,117 @@ struct SceneTransforms {
     * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     */
     static func wgs84ToWindowCoordinates (scene: Scene, position: Cartesian3) -> Cartesian2? {
+        return SceneTransforms.wgs84WithEyeOffsetToWindowCoordinates(scene, position: position, eyeOffset: Cartesian3.zero)
+    }
+    
+    
+    private static func worldToClip(position: Cartesian3, eyeOffset: Cartesian3, camera: Camera) -> Cartesian4 {
+        let viewMatrix = camera.viewMatrix
+        
+        var positionEC = viewMatrix.multiplyByVector(Cartesian4(x: position.x, y: position.y, z: position.z, w: 1.0))
+        
+        let zEyeOffset = eyeOffset.multiplyComponents(Cartesian3(cartesian4: positionEC.normalize()))
+        positionEC.x += eyeOffset.x + zEyeOffset.x
+        positionEC.y += eyeOffset.y + zEyeOffset.y
+        positionEC.z += zEyeOffset.z
+        
+        return camera.frustum.projectionMatrix.multiplyByVector(positionEC)
+    }
+    
+    static func wgs84WithEyeOffsetToWindowCoordinates (scene: Scene, position: Cartesian3, eyeOffset: Cartesian3) -> Cartesian2? {
         // Transform for 3D, 2D, or Columbus view
-        guard let actualPosition = SceneTransforms.computeActualWgs84Position(scene.frameState, position: position) else {
+        let frameState = scene.frameState
+        guard let actualPosition = SceneTransforms.computeActualWgs84Position(frameState, position: position) else {
             return nil
         }
-        // View-projection matrix to transform from world coordinates to clip coordinates
+        // Assuming viewport takes up the entire canvas...
+        let sceneWidth = Double(scene.drawableWidth)
+        let sceneHeight = Double(scene.drawableHeight)
+        var viewport = Cartesian4(x: 0, y: 0, width: sceneWidth, height: sceneHeight)
+        
         let camera = scene.camera
-        let viewProjection = camera.frustum.projectionMatrix.multiply(camera.viewMatrix)
-        let positionCC = viewProjection.multiplyByVector(Cartesian4(x: actualPosition.x, y: actualPosition.y, z: actualPosition.z, w: 1.0))
-        if positionCC.z < 0 && scene.mode != .Scene2D {
-            return nil
+        var cameraCentered = false
+        
+        var positionCC = Cartesian4()
+        var result = Cartesian2()
+        var windowCoord0 = Cartesian2()
+        var windowCoord1 = Cartesian2()
+        
+        if frameState.mode == .Scene2D {
+            let projection = scene.mapProjection
+            let maxCartographic = Cartographic(longitude: M_PI, latitude: M_PI_2)
+            let maxCoord = projection.project(maxCartographic)
+            
+            let cameraPosition = camera.position
+            let frustum = camera.frustum
+            
+            let viewportTransformation = Matrix4.computeViewportTransformation(viewport, nearDepthRange: 0.0, farDepthRange: 1.0)
+            let projectionMatrix = camera.frustum.projectionMatrix
+            
+            let x = camera.positionWC.y
+            let eyePoint = Cartesian3(x: Double(Math.sign(x)) * maxCoord.x - x, y: 0.0, z: -camera.positionWC.x)
+            let windowCoordinates = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix: projectionMatrix, viewportTransformation: viewportTransformation, point: eyePoint)
+            
+            if x == 0.0 || windowCoordinates.x <= 0.0 || windowCoordinates.x >= sceneWidth {
+                cameraCentered = true
+            } else {
+                if windowCoordinates.x > sceneWidth * 0.5 {
+                    viewport.width = windowCoordinates.x
+                    
+                    camera.frustum.right = maxCoord.x - x
+                    
+                    positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
+                    let windowCoord0 = SceneTransforms.clipToGLWindowCoordinates(viewport, position: positionCC)
+                    
+                    viewport.x += windowCoordinates.x
+                    
+                    camera.position.x = -camera.position.x
+                
+                    var right = camera.frustum.right
+                    camera.frustum.right = -camera.frustum.left
+                    camera.frustum.left = -right
+                    
+                    positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
+                    windowCoord1 = SceneTransforms.clipToGLWindowCoordinates(viewport, position: positionCC)
+                } else {
+                    viewport.x += windowCoordinates.x
+                    viewport.width -= windowCoordinates.x
+                    
+                    camera.frustum.left = -maxCoord.x - x
+                    
+                    positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
+                    windowCoord0 = SceneTransforms.clipToGLWindowCoordinates(viewport, position: positionCC)
+                    
+                    viewport.x -= viewport.width
+                    camera.position.x = -camera.position.x
+                    let left = camera.frustum.left
+                    camera.frustum.left = -camera.frustum.right
+                    camera.frustum.right = -left
+                    
+                    positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
+                    windowCoord1 = SceneTransforms.clipToGLWindowCoordinates(viewport, position: positionCC)
+                }
+                
+                camera.position = cameraPosition
+                camera.frustum = frustum
+                
+                result = windowCoord0
+                if result.x < 0.0 || result.x > sceneWidth {
+                    result.x = windowCoord1.x
+                }
+            }
+        }
+        if frameState.mode != SceneMode.Scene3D || cameraCentered {
+            // View-projection matrix to transform from world coordinates to clip coordinates
+            positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
+            if positionCC.z < 0 && frameState.mode != .Scene2D {
+                return nil
+            }
+            
+            result = SceneTransforms.clipToGLWindowCoordinates(viewport, position: positionCC)
         }
         
-        var result = SceneTransforms.clipToGLWindowCoordinates(scene, position: positionCC)
-        result.y = Double(scene.drawableHeight) - result.y
+        result.y = sceneHeight - result.y
         return result
     }
     /*
@@ -103,35 +200,14 @@ struct SceneTransforms {
     *     console.log(Cesium.SceneTransforms.wgs84ToWindowCoordinates(scene, position));
     * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     */
-    SceneTransforms.wgs84ToDrawingBufferCoordinates = function(scene, position, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(scene)) {
-    throw new DeveloperError('scene is required.');
-    }
-    
-    if (!defined(position)) {
-    throw new DeveloperError('position is required.');
-    }
-    //>>includeEnd('debug');
-    
-    // Transform for 3D, 2D, or Columbus view
-    var actualPosition = SceneTransforms.computeActualWgs84Position(scene.frameState, position, actualPositionScratch);
-    
-    if (!defined(actualPosition)) {
-    return undefined;
-    }
-    
-    // View-projection matrix to transform from world coordinates to clip coordinates
-    var camera = scene.camera;
-    var viewProjection = Matrix4.multiply(camera.frustum.projectionMatrix, camera.viewMatrix, viewProjectionScratch);
-    Matrix4.multiplyByVector(viewProjection, Cartesian4.fromElements(actualPosition.x, actualPosition.y, actualPosition.z, 1, positionCC), positionCC);
-    
-    if ((positionCC.z < 0) && (scene.mode !== SceneMode.SCENE2D)) {
-    return undefined;
-    }
-    
-    return SceneTransforms.clipToDrawingBufferCoordinates(scene, positionCC, result);
-    };
+     SceneTransforms.wgs84ToDrawingBufferCoordinates = function(scene, position, result) {
+     result = SceneTransforms.wgs84ToWindowCoordinates(scene, position, result);
+     if (!defined(result)) {
+     return undefined;
+     }
+     
+     return SceneTransforms.transformWindowToDrawingBuffer(scene, result, result);
+     };
     */
     
     /**
@@ -177,17 +253,15 @@ struct SceneTransforms {
     /**
     * @private
     */
-    private static func clipToGLWindowCoordinates (scene: Scene, position: Cartesian4) -> Cartesian2 {
+    private static func clipToGLWindowCoordinates (viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
         
         // Perspective divide to transform from clip coordinates to normalized device coordinates
         let positionNDC = position.divideByScalar(position.w)
         
-        // Assuming viewport takes up the entire canvas...
-        let viewport = Cartesian4(x: 0, y: 0, width: Double(scene.drawableWidth), height: Double(scene.drawableHeight))
+        // Viewport transform to transform from clip coordinates to window coordinates
         let viewportTransform = Matrix4.computeViewportTransformation(viewport)
         
-        // Viewport transform to transform from clip coordinates to window coordinates
-        let positionWC = viewportTransform.multiplyByPoint(Cartesian3(fromCartesian4: positionNDC))
+        let positionWC = viewportTransform.multiplyByPoint(Cartesian3(cartesian4: positionNDC))
         
         return Cartesian2(cartesian3: positionWC)
     }
@@ -196,13 +270,10 @@ struct SceneTransforms {
     /**
     * @private
     */
-    SceneTransforms.clipToDrawingBufferCoordinates = function(scene, position, result) {
+    SceneTransforms.clipToDrawingBufferCoordinates = function(viewport, position, result) {
     // Perspective divide to transform from clip coordinates to normalized device coordinates
     Cartesian3.divideByScalar(position, position.w, positionNDC);
     
-    // Assuming viewport takes up the entire canvas...
-    viewport.width = scene.drawingBufferWidth;
-    viewport.height = scene.drawingBufferHeight;
     Matrix4.computeViewportTransformation(viewport, 0.0, 1.0, viewportTransform);
     
     // Viewport transform to transform from clip coordinates to drawing buffer coordinates
@@ -229,9 +300,8 @@ struct SceneTransforms {
     */
     SceneTransforms.drawingBufferToWgs84Coordinates = function(scene, drawingBufferPosition, depth, result) {
     var context = scene.context;
-    var uniformState = context.uniformState;
     
-    var viewport = uniformState.viewport;
+     var viewport = scene._passState.viewport;    
     var viewportTransformation = uniformState.viewportTransformation;
     
     var ndc = Cartesian4.clone(Cartesian4.UNIT_W, scratchNDC);

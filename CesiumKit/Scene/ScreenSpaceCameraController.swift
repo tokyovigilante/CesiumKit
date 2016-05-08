@@ -277,7 +277,6 @@ public class ScreenSpaceCameraController {
     private var _rotateRateRangeAdjustment = 0.0
     private var _maximumRotateRate = 1.77
     private var _minimumRotateRate = 1.0 / 5000.0
-    /*this._translateFactor = 1.0;*/
     private var _minimumZoomRate = 20.0
     private var _maximumZoomRate = 5906376272000.0  // distance from the Sun to Pluto in meters.
     
@@ -471,12 +470,18 @@ public class ScreenSpaceCameraController {
             if mode == SceneMode.Scene2D {
                 let worldPosition = _zoomWorldPosition
                 let endPosition = camera.position
-                
-                if !(worldPosition == endPosition) {
+                // FIXME: Object
+                if !(worldPosition == endPosition) /*&& camera.positionCartographic.height < object._maxCoord.x * 2.0*/ {
                     let direction = worldPosition.subtract(endPosition).normalize()
                     
                     let d = worldPosition.distance(endPosition) * distance / (camera.getMagnitude() * 0.5)
                     camera.move(direction, amount: d * 0.5)
+                    
+                    // FIXME: savedX
+                    /*if (camera.position.x < 0.0 && savedX > 0.0) || (camera.position.x > 0.0 && savedX < 0.0) {
+                        pickedPosition = camera.getPickRay(startPosition, scratchZoomPickRay).origin;
+                        object._zoomWorldPosition = Cartesian3.clone(pickedPosition, object._zoomWorldPosition);
+                    }*/
                 }
             } else if mode == .Scene3D {
                 let cameraPositionNormal = camera.position.normalize()
@@ -561,95 +566,14 @@ public class ScreenSpaceCameraController {
     
     handleZoom(controller, startPosition, movement, controller._zoomFactor, camera.getMagnitude());
     }
-    
-    var twist2DStart = new Cartesian2();
-    var twist2DEnd = new Cartesian2();
-    function twist2D(controller, startPosition, movement) {
-    if (defined(movement.angleAndHeight)) {
-    singleAxisTwist2D(controller, startPosition, movement.angleAndHeight);
-    return;
-    }
-    
-    var scene = controller._scene;
-    var camera = scene.camera;
-    var canvas = scene.canvas;
-    var width = canvas.clientWidth;
-    var height = canvas.clientHeight;
-    
-    var start = twist2DStart;
-    start.x = (2.0 / width) * movement.startPosition.x - 1.0;
-    start.y = (2.0 / height) * (height - movement.startPosition.y) - 1.0;
-    start = Cartesian2.normalize(start, start);
-    
-    var end = twist2DEnd;
-    end.x = (2.0 / width) * movement.endPosition.x - 1.0;
-    end.y = (2.0 / height) * (height - movement.endPosition.y) - 1.0;
-    end = Cartesian2.normalize(end, end);
-    
-    var startTheta = CesiumMath.acosClamped(start.x);
-    if (start.y < 0) {
-    startTheta = CesiumMath.TWO_PI - startTheta;
-    }
-    var endTheta = CesiumMath.acosClamped(end.x);
-    if (end.y < 0) {
-    endTheta = CesiumMath.TWO_PI - endTheta;
-    }
-    var theta = endTheta - startTheta;
-    
-    camera.twistRight(theta);
-    }
-    
-    function singleAxisTwist2D(controller, startPosition, movement) {
-    var rotateRate = controller._rotateFactor * controller._rotateRateRangeAdjustment;
-    
-    if (rotateRate > controller._maximumRotateRate) {
-    rotateRate = controller._maximumRotateRate;
-    }
-    
-    if (rotateRate < controller._minimumRotateRate) {
-    rotateRate = controller._minimumRotateRate;
-    }
-    
-    var scene = controller._scene;
-    var camera = scene.camera;
-    var canvas = scene.canvas;
-    
-    var phiWindowRatio = (movement.endPosition.x - movement.startPosition.x) / canvas.clientWidth;
-    phiWindowRatio = Math.min(phiWindowRatio, controller.maximumMovementRatio);
-    
-    var deltaPhi = rotateRate * phiWindowRatio * Math.PI * 4.0;
-    
-    camera.twistRight(deltaPhi);
-    }
     */
     func update2D() {
-    /*var tweens = controller._tweens;
-    if (controller._aggregator.anyButtonDown) {
-    tweens.removeAll();
-    }
-    
-    var scene = controller._scene;
-    var camera = scene.camera;
-    
-    if (!tweens.contains(controller._tween)) {
-    if (!Matrix4.equals(Matrix4.IDENTITY, camera.transform)) {
-    reactToInput(controller, controller.enableRotate, controller.translateEventTypes, twist2D, controller.inertiaSpin, '_lastInertiaSpinMovement');
-    reactToInput(controller, controller.enableZoom, controller.zoomEventTypes, zoom2D, controller.inertiaZoom, '_lastInertiaZoomMovement');
-    } else {
-    reactToInput(controller, controller.enableTranslate, controller.translateEventTypes, translate2D, controller.inertiaTranslate, '_lastInertiaTranslateMovement');
-    reactToInput(controller, controller.enableZoom, controller.zoomEventTypes, zoom2D, controller.inertiaZoom, '_lastInertiaZoomMovement');
-    reactToInput(controller, controller.enableRotate, controller.tiltEventTypes, twist2D, controller.inertiaSpin, '_lastInertiaTiltMovement');
-    }
-    }
-    
-    if (!controller._aggregator.anyButtonDown &&
-    (!defined(controller._lastInertiaZoomMovement) || !controller._lastInertiaZoomMovement.active) &&
-    (!defined(controller._lastInertiaTranslateMovement) || !controller._lastInertiaTranslateMovement.active) &&
-    !tweens.contains(controller._tween)) {
-    var tween = camera.createCorrectPositionTween(controller.bounceAnimationTime);
-    if (defined(tween)) {
-    controller._tween = tweens.add(tween);
-    }
+/*
+         +        if (!Matrix4.equals(Matrix4.IDENTITY, controller._scene.camera.transform)) {
+         +            reactToInput(controller, controller.enableZoom, controller.zoomEventTypes, zoom2D, controller.inertiaZoom, '_lastInertiaZoomMovement');
+         +        } else {
+         +            reactToInput(controller, controller.enableTranslate, controller.translateEventTypes, translate2D, controller.inertiaTranslate, '_lastInertiaTranslateMovement');
+         +            reactToInput(controller, controller.enableZoom, controller.zoomEventTypes, zoom2D, controller.inertiaZoom, '_lastInertiaZoomMovement');
     }
     
     tweens.update();*/
@@ -674,10 +598,9 @@ public class ScreenSpaceCameraController {
         let pickDistance = depthIntersection?.distance(camera.positionWC) ?? Double.infinity
         let rayDistance = rayIntersection?.distance(camera.positionWC) ?? Double.infinity
         
-        if (pickDistance < rayDistance) {
+        if pickDistance < rayDistance {
             return depthIntersection
         }
-        
         return rayIntersection
     }
     
@@ -1274,8 +1197,8 @@ public class ScreenSpaceCameraController {
         
         let c0 = camera.worldToCameraCoordinates(Cartesian4(x: p0.x, y: p0.y, z: p0.z, w: 1.0)) //var pan3DP0 = Cartesian4.clone(Cartesian4.UNIT_W);
         let c1 = camera.worldToCameraCoordinates(Cartesian4(x: p1.x, y: p1.y, z: p1.z, w: 1.0)) //var pan3DP1 = Cartesian4.clone(Cartesian4.UNIT_W);
-        p0 = Cartesian3(fromCartesian4: c0)
-        p1 = Cartesian3(fromCartesian4: c1)
+        p0 = Cartesian3(cartesian4: c0)
+        p1 = Cartesian3(cartesian4: c1)
 
         if camera.constrainedAxis == nil {
             p0 = p0.normalize()
