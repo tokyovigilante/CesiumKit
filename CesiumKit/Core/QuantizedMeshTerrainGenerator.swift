@@ -65,14 +65,13 @@ class QuantizedMeshTerrainGenerator {
         
         var minimum = Cartesian3(simd: double3(Double.infinity))
         var maximum = Cartesian3(simd: double3(-Double.infinity))
+        var cartesian3Scratch = Cartesian3()
         
-        var positionENU = Cartesian3()
+        let uStartIndex = uBuffer.startIndex
+        let vStartIndex = vBuffer.startIndex
+        let hStartIndex = heightBuffer.startIndex
         
         for i in 0..<quantizedVertexCount {
-            let uStartIndex = uBuffer.startIndex
-            let vStartIndex = vBuffer.startIndex
-            let hStartIndex = heightBuffer.startIndex
-            
             let u = Double(uBuffer[uStartIndex + i]) / maxShort
             let v = Double(vBuffer[vStartIndex + i]) / maxShort
             let height = Math.lerp(p: minimumHeight, q: maximumHeight, time: Double(heightBuffer[hStartIndex + i]) / maxShort)
@@ -89,9 +88,10 @@ class QuantizedMeshTerrainGenerator {
             heights.append(height)
             positions.append(position)
             
-            positionENU = toENU.multiplyByPoint(position)
-            minimum = positionENU.minimumByComponent(minimum)
-            maximum = positionENU.minimumByComponent(maximum)
+            cartesian3Scratch = toENU.multiplyByPoint(position)
+           
+            minimum = cartesian3Scratch.minimumByComponent(minimum)
+            maximum = cartesian3Scratch.maximumByComponent(maximum)
         }
         
         var occludeePointInScaledSpace: Cartesian3? = nil
@@ -130,7 +130,7 @@ class QuantizedMeshTerrainGenerator {
                 
                 if exaggeration != 1.0 {
                     var normal = AttributeCompression.octDecode(x: toPackX, y: toPackY)
-                    let fromENUNormal = Transforms.eastNorthUpToFixedFrame(positionENU, ellipsoid: ellipsoid)
+                    let fromENUNormal = Transforms.eastNorthUpToFixedFrame(cartesian3Scratch, ellipsoid: ellipsoid)
                     let toENUNormal = fromENUNormal.inverse
                     
                     normal = toENUNormal.multiplyByPointAsVector(normal)
