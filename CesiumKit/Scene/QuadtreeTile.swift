@@ -40,7 +40,7 @@ class QuadtreeTile: Equatable {
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
-    var state: QuadtreeTileLoadState = .Start
+    var state: TileLoadState = .Start
     
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.

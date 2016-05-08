@@ -27,7 +27,7 @@ class TileTerrain {
     * @type {TerrainState}
     * @default {@link TerrainState.UNLOADED}
     */
-    var state: TerrainState = TerrainState.Unloaded
+    var state: TerrainState = .Unloaded
 
     var data: TerrainData? = nil
     
@@ -184,9 +184,7 @@ class TileTerrain {
             print(message)
             return
         }
-        
-        let context = frameState.context
-        
+                
         dispatch_async(QueueManager.sharedInstance.processorQueue, {
             data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, exaggeration: frameState.terrainExaggeration, completionBlock: { mesh in
                 
