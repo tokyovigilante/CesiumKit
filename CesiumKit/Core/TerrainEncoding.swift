@@ -112,8 +112,7 @@ struct TerrainEncoding {
         )
         toENU = Matrix4(scale: scale).multiply(toENU)
         
-        var matrix = fromENU
-        matrix.setTranslation(Cartesian3.zero)
+        var matrix = fromENU.setTranslation(Cartesian3.zero)
         
         var fromENU = fromENU
         
