@@ -98,7 +98,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
-    init(fromCartesian4 cartesian4: Cartesian4) {
+    init(cartesian4: Cartesian4) {
         self.init(x: cartesian4.x, y: cartesian4.y, z: cartesian4.z)
     }
     

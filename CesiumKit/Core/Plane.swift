@@ -83,7 +83,7 @@ struct Plane {
     * @returns {Plane} A new plane instance or the modified result parameter.
     */
     init (fromCartesian4 coefficients: Cartesian4) {
-        normal = Cartesian3(fromCartesian4: coefficients)
+        normal = Cartesian3(cartesian4: coefficients)
         distance = coefficients.w
     }
     

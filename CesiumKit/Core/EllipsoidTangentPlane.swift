@@ -80,10 +80,10 @@ struct EllipsoidTangentPlane {
         let eastNorthUp = Transforms.eastNorthUpToFixedFrame(origin, ellipsoid: ellipsoid)
         self.ellipsoid = ellipsoid
 
-        xAxis = Cartesian3(fromCartesian4: eastNorthUp.getColumn(0))
-        yAxis = Cartesian3(fromCartesian4: eastNorthUp.getColumn(1))
+        xAxis = Cartesian3(cartesian4: eastNorthUp.getColumn(0))
+        yAxis = Cartesian3(cartesian4: eastNorthUp.getColumn(1))
         
-        let normal = Cartesian3(fromCartesian4: eastNorthUp.getColumn(2))
+        let normal = Cartesian3(cartesian4: eastNorthUp.getColumn(2))
         self.plane = Plane(fromPoint: origin, normal: normal)
     }
     
