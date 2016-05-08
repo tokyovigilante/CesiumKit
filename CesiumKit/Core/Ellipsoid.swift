@@ -155,7 +155,7 @@ public struct Ellipsoid: Equatable {
     */
     public func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3 {
         var n = geodeticSurfaceNormalCartographic(cartographic)
-        var k = n.multiplyComponents(radiiSquared)
+        var k = radiiSquared.multiplyComponents(n)
         
         let gamma = sqrt(n.dot(k))
         k = k.divideByScalar(gamma)
