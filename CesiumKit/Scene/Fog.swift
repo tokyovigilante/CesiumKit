@@ -27,12 +27,12 @@ class Fog {
      * A scalar that determines the density of the fog. Terrain that is in full fog are culled.
      * The density of the fog increases as this number approaches 1.0 and becomes less dense as it approaches zero.
      * The more dense the fog is, the more aggressively the terrain is culled. For example, if the camera is a height of
-     * 1000.0m above the ellipsoid, increasing the value to 3.0e-3 will cause many tiles close to the viewer be culled.
+     * 1000.0m above the ellipsoid, increasing the value to 3.0e-4 will cause many tiles close to the viewer be culled.
      * Decreasing the value will push the fog further from the viewer, but decrease performance as more of the terrain is rendered.
      * @type {Number}
      * @default 2.0e-4
      */
-    var density = 2.0e-4
+    var density = 3.0e-4
     
     /**
      * A factor used to increase the screen space error of terrain tiles when they are partially in fog. The effect is to reduce
@@ -42,7 +42,7 @@ class Fog {
      * @type {Number}
      * @default 2.0
      */
-    var screenSpaceErrorFactor = 2.0
+    var screenSpaceErrorFactor = 4.0
     
     
     // These values were found by sampling the density at certain views and finding at what point culled tiles impacted the view at the horizon.
@@ -109,8 +109,8 @@ class Fog {
     
     func update (inout frameState: FrameState) {
         frameState.fog.enabled = enabled
-        if (!enabled) {
-            return;
+        if !enabled {
+            return
         }
         
         let camera = frameState.camera!

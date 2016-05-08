@@ -32,12 +32,13 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         _view.autoResizeDrawable = true
         
         let options = CesiumOptions(
-            clock: Clock(multiplier: 600),
-            //clock: Clock(clockStep: .SystemClock, isUTC: false),
+            //clock: Clock(multiplier: 600),
+            clock: Clock(clockStep: .SystemClock, isUTC: false),
             imageryProvider: nil,
             terrain: true,
             lighting: true,
             skyBox: true,
+            fog: true,
             scene3DOnly: true
         )
 
@@ -102,7 +103,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func drawInMTKView(view: MTKView) {
-        //_globe.scene.camera.moveForward(50.0)
+        _globe.scene.camera.moveForward(25.0)
         #if os(iOS)
             view.contentScaleFactor = 2.0
             let scaleFactor = view.contentScaleFactor

@@ -29,6 +29,7 @@ public struct CesiumOptions {
     public var terrain: Bool
     public var lighting: Bool
     public var skyBox: Bool
+    public var fog: Bool
     public var sceneMode: SceneMode = .Scene3D
     public var scene3DOnly = false
     public var mapProjection: MapProjection
@@ -45,6 +46,7 @@ public struct CesiumOptions {
         terrain: Bool = false,
         lighting: Bool = false,
         skyBox: Bool = true,
+        fog: Bool = true,
         sceneMode: SceneMode = SceneMode.Scene3D,
         scene3DOnly: Bool = false,
         mapProjection: MapProjection = GeographicProjection(),
@@ -55,6 +57,7 @@ public struct CesiumOptions {
         self.terrain = terrain
         self.lighting = lighting
         self.skyBox = skyBox
+        self.fog = fog
         self.sceneMode = sceneMode
         self.scene3DOnly = scene3DOnly
         self.mapProjection = mapProjection
@@ -289,6 +292,8 @@ public class CesiumGlobe {
         } else {
             scene.terrainProvider = EllipsoidTerrainProvider()
         }
+        
+        scene.fog.enabled = options.fog
         
         //self.screenSpaceEventHandler = ScreenSpaceEventHandler(view: view)
         self.sceneMode = options.sceneMode
