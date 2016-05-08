@@ -93,7 +93,7 @@ class QuadtreeTile: Equatable {
     */
     var needsLoading: Bool {
         get {
-            return state == QuadtreeTileLoadState.Start || state == QuadtreeTileLoadState.Loading
+            return state == .Start || state == .Loading
         }
     }
     
