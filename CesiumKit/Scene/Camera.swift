@@ -799,6 +799,22 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
+    public func setView3D (location: Cartographic, rotation: Matrix3) {
+        
+        let position = _projection.ellipsoid.cartographicToCartesian(location)
+        let currentTransform = transform
+        let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
+        _setTransform(localTransform)
+        
+        self.position = Cartesian3.zero
+        
+        direction = rotation.column(0)
+        up = rotation.column(2)
+        right = direction.cross(up)
+        
+        _setTransform(currentTransform)
+    }
+    
     private func setViewCV(position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
         
         let currentTransform = transform
