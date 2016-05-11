@@ -63,9 +63,6 @@ protocol TerrainProvider {
     */
     var ready: Bool { get }
     
-    //FIXME: terrain Queue
-    //var terrainProcessorQueue: dispatch_queue_t { get }
-    
     /**
     * Specifies the quality of terrain created from heightmaps.  A value of 1.0 will
     * ensure that adjacent heightmap vertices are separated by no more than
@@ -160,6 +157,9 @@ protocol TerrainProvider {
 extension TerrainProvider {
     
     func getTileDataAvailable(x x: Int, y: Int, level: Int) -> Bool? {
+        if level > 10 {
+            return false
+        }
         return nil
     }
         
