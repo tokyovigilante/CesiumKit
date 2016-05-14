@@ -1128,7 +1128,7 @@ public class Material {
              return matrixMap[uniformType].fromColumnMajorArray(material.uniforms[uniformId], scratchMatrix);
              };*/
         } else {
-            uniforms[newUniformId] = uniformMap?.uniforms[uniformId]
+            //uniforms[newUniformId] = uniformMap?.uniforms[uniformId]
         }
         uniformMap = type.fabric.uniformMap
     }
@@ -1136,7 +1136,7 @@ public class Material {
     // Determines the uniform type based on the uniform in the template.
     func getUniformType (uniformValue: String) -> UniformDataType? {
         
-        return type.fabric.uniformTypes[uniformValue] ?? nil
+        /*return type.fabric.uniformTypes[uniformValue] ??*/ return nil
         /*var uniformType = uniformValue.type;
          if (!defined(uniformType)) {
          var type = typeof uniformValue;

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import simd
 
 public protocol MaterialType {
     var name: String { get }
@@ -39,44 +40,53 @@ public struct ColorMaterialType: MaterialType {
     }
 }
 
-public protocol FabricDescription {
-    var uniformTypes: [String: UniformDataType] { get }
-    var uniformMap: UniformMap { get }
+public class FabricDescription {
+    var uniformMap: UniformMap? = nil
+    
+    var uniformTypes: [String: UniformDataType] {
+        return [:]
+    }
 }
 
 public class ColorFabricDescription: FabricDescription {
     
-    public var color: Color
+    public var color: Color {
+        get {
+            return Color(
+                red: Double(uniformStruct.color.x),
+                green: Double(uniformStruct.color.y),
+                blue: Double(uniformStruct.color.z),
+                alpha: Double(uniformStruct.color.w)
+            )
+        }
+        set {
+            uniformStruct.color = newValue.floatRepresentation
+        }
+    }
     
-    public let uniforms: [String: UniformFunc]
+    //public let uniforms: [String: UniformFunc]
     
-    public let uniformTypes: [String : UniformDataType]
+    //public let uniformTypes: [String : UniformDataType]
     
-    public var uniformMap: UniformMap = NullUniformMap()
+    var uniformStruct: ColorFabricUniformStruct
     
     public init (color: Color = Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)) {
-        
-        self.color = color
-        
-        uniforms = [
-            "color": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-                let simd = (map as! ColorFabricDescription).color.floatRepresentation
-                memcpy(buffer, [simd], strideofValue(simd))
-            }
-        ]
-        
-        uniformTypes = [
-                "color": .FloatVec4
-        ]
+        uniformStruct = ColorFabricUniformStruct(color: color.floatRepresentation)
     }
+
 }
 
-public struct ImageFabricDescription: FabricDescription {
-    
-    public var uniformMap: UniformMap = NullUniformMap()
+struct ColorFabricUniformStruct: UniformStruct {
+    var color: float4
+}
 
-    public var uniforms: [String: UniformFunc]
+
+public class ImageFabricDescription: FabricDescription {
     
-    public var uniformTypes: [String : UniformDataType]
+    //var uniformMap: UniformMap = NullUniformMap()
+
+    //public var uniforms: [String: UniformFunc]
+    
+    //public var uniformTypes: [String : UniformDataType]
     
 }
