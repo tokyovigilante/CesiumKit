@@ -86,7 +86,7 @@ class ShaderProgram {
     
     var maximumTextureUnitIndex: Int = 0
     
-    let nativeMetalUniforms: Bool
+    //let nativeMetalUniforms: Bool
     
     static func combineShaders (vertexShaderSource vss: ShaderSource, fragmentShaderSource fss: ShaderSource) -> (vst: String, fst: String, keyword: String) {
         let vst = vss.createCombinedVertexShader()
@@ -103,7 +103,7 @@ class ShaderProgram {
         _vertexShaderText = combinedShaders.vst
         _fragmentShaderText = combinedShaders.fst
         keyword = combinedShaders.keyword
-        nativeMetalUniforms = _manualUniformStruct != nil
+        //nativeMetalUniforms = _manualUniformStruct != nil
         initialize(device, optimizer: optimizer)
         
         if manualUniformStruct != nil {
@@ -153,7 +153,7 @@ class ShaderProgram {
         _manualUniformStruct = nil
         fragmentShaderSource = nil
         _fragmentShaderText = nil
-        nativeMetalUniforms = true
+        //nativeMetalUniforms = true
         self.keyword = keyword
     }
     
@@ -326,26 +326,26 @@ class ShaderProgram {
     
     //MARK:- Set uniforms
     
-    private let nullUniformMap = NullUniformMap()
-    
     func setUniforms (command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
-        let map = command.uniformMap ?? nullUniformMap
+        guard let map = command.uniformMap else {
+            return (0, false, [Texture]())
+        }
         
         if let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) {
             
-            if  nativeMetalUniforms {
-                let textures = command.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
+            //if  nativeMetalUniforms {
+                let textures = map.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
                 buffer.signalWriteComplete()
                 return (fragmentOffset: 0, texturesValid: true, textures: textures)
-            }
+            //}
             
             for uniform in _vertexUniforms {
-                setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
+                //setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
             }
             
             for uniform in _fragmentUniforms {
-                setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
+                //setUniform(uniform, buffer: buffer, uniformMap: map, uniformState: uniformState)
             }
             
             buffer.signalWriteComplete()
@@ -354,18 +354,18 @@ class ShaderProgram {
         
         var texturesValid = true
         for uniform in _samplerUniforms {
-            if let texture = command.uniformMap!.textureForUniform(uniform) {
-                textures.append(texture)
-            } else {
-                texturesValid = false
-            }
+            //if let texture = command.uniformMap!.textureForUniform(uniform) {
+            //    textures.append(texture)
+            //} else {
+            //    texturesValid = false
+            //}
         }
 
         let fragmentOffset = command.pipeline!.shaderProgram.vertexUniformSize
         return (fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
 
     }
-
+/*
     func setUniform (uniform: Uniform, buffer: Buffer, uniformMap map: UniformMap, uniformState: UniformState) {
         
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
@@ -400,7 +400,7 @@ class ShaderProgram {
             assertionFailure("Sampler not valid for setUniform")
             return
         }
-    }
+    }*/
 
 
     /**

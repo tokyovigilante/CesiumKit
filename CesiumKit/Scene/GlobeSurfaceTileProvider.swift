@@ -770,15 +770,11 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             
-            command.uniformMap?.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct), deallocationBlock: { provider in
+            command.uniformMap!.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct), deallocationBlock: { provider in
                     self.returnManualUniformBufferProvider(provider)
                 }
             )
-            
-            command.metalUniformUpdateBlock = { buffer in
-                return (command.uniformMap as! TileUniformMap).metalUniformUpdateBlock!(buffer: buffer)
-            }
-            
+                        
             command.pass = .Globe
             
             command.renderState!.wireFrame = _debug.wireframe

@@ -143,6 +143,10 @@ class SkyBox {
                 blendingState: .AlphaBlend()
             )
             _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+            
+            _command.uniformMap!.metalUniformUpdateBlock = { buffer in
+                return [self._cubemap!]
+            }
 
             _command.renderState = RenderState(
                 device: context.device
@@ -164,11 +168,16 @@ private class SkyBoxUniformMap: UniformMap {
     
     var cubemap : Texture?
     
-    let uniforms: [String : UniformFunc] = [:]
-    
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    func textureForUniform(uniform: UniformSampler) -> Texture? {
-        return cubemap
+    var uniformDescriptors: [UniformDescriptor] = []
+    
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
+    
+    init () {
+        metalUniformUpdateBlock = { buffer in
+            return [self.cubemap!]
+        }
     }
+    
 }

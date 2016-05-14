@@ -23,7 +23,7 @@ var floatTuple: FloatTuple = {
 
 private let MaximumMetalTextureCount = 31
 
-struct TileUniformStruct: MetalUniformStruct {
+struct TileUniformStruct: UniformStruct {
     // Honestly...
     var dayTextureTexCoordsRectangle = float4Tuple
     var dayTextureTranslationAndScale = float4Tuple
@@ -188,10 +188,32 @@ class TileUniformMap: UniformMap {
     
     private var _uniformStruct = TileUniformStruct()
     
+    let uniformDescriptors: [UniformDescriptor] = [
+        UniformDescriptor(name:  "u_dayTextureTexCoordsRectangle", type: .FloatVec4, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureTranslationAndScale", type: .FloatVec4, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureAlpha", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureBrightness", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureContrast", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureHue", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureSaturation", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureOneOverGamma", type: .FloatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_minMaxHeight", type: .FloatVec2, count: 1),
+        UniformDescriptor(name:  "u_scaleAndBias", type: .FloatMatrix4, count: 1),
+        UniformDescriptor(name:  "u_waterMaskTranslationAndScale", type: .FloatVec4, count: 1),
+        UniformDescriptor(name:  "u_initialColor", type: .FloatVec4, count: 1),
+        UniformDescriptor(name:  "u_tileRectangle", type: .FloatVec4, count: 1),
+        UniformDescriptor(name:  "u_modifiedModelView", type: .FloatMatrix4, count: 1),
+        UniformDescriptor(name:  "u_center3D", type: .FloatVec3, count: 1),
+        UniformDescriptor(name:  "u_southMercatorYAndOneOverHeight", type: .FloatVec2, count: 1),
+        UniformDescriptor(name:  "u_southAndNorthLatitude", type: .FloatVec2, count: 1),
+        UniformDescriptor(name:  "u_lightingFadeDistance", type: .FloatVec2, count: 1),
+        UniformDescriptor(name:  "u_zoomedOutOceanSpecularIntensity", type: .FloatVec1, count: 1)
+    ]
+    
+    /*let metalUniformStruct = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_scaleAndBias;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"*/
+    
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
-    let uniforms: [String: UniformFunc] = [:]
-    
+        
     var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
     
     init(maxTextureCount: Int) {

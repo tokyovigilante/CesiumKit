@@ -23,22 +23,22 @@ struct TransformedVertex
 
 struct Uniforms
 {
-    float4x4 modelMatrix;
-    float4x4 viewProjectionMatrix;
-    float4 foregroundColor;
+    float4x4 u_modelMatrix;
+    float4x4 u_viewProjectionMatrix;
+    float4 u_foregroundColor;
 };
 
 vertex TransformedVertex text_vertex_shade(Vertex inVert [[stage_in]], constant Uniforms &uniforms [[buffer(2)]])
 {
     TransformedVertex outVert;
-    outVert.position = uniforms.viewProjectionMatrix * uniforms.modelMatrix * float4(inVert.position);
+    outVert.position = uniforms.u_viewProjectionMatrix * uniforms.u_modelMatrix * float4(inVert.position);
     outVert.texCoords = inVert.texCoords;
     return outVert;
 }
 
 fragment half4 text_fragment_shade(TransformedVertex vert [[stage_in]], constant Uniforms &uniforms [[buffer(2)]], sampler samplr [[sampler(0)]], texture2d<float, access::sample> texture [[texture(0)]])
 {
-    float4 color = uniforms.foregroundColor;
+    float4 color = uniforms.u_foregroundColor;
     // Outline of glyph is the isocontour with value 50%
     float edgeDistance = 0.5;
     // Sample the signed-distance field to find distance from this fragment to the glyph outline

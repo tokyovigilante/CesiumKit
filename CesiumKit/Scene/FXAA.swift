@@ -107,24 +107,31 @@ class FXAA {
 
 }
 
+private struct FXAAUniformStruct: UniformStruct {
+    var step = float2()
+}
+
 class FXAAUniformMap: UniformMap {
     
-    var step = Cartesian2()
+    var step: Cartesian2 {
+        get {
+            return Cartesian2(simd: vector_double(_uniformStruct.step))
+        }
+        set {
+            _uniformStruct.step = newValue.floatRepresentation
+        }
+    }
     
     var texture : Texture?
     
     var uniformBufferProvider: UniformBufferProvider! = nil
-
-    let uniforms: [String: UniformFunc] = [
-
-        "u_step": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! FXAAUniformMap).step.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+    
+    private var _uniformStruct = FXAAUniformStruct()
+    
+    var uniformDescriptors: [UniformDescriptor] = [
+        UniformDescriptor(name: "u_step", type: .FloatVec2, count: 1)
     ]
     
-    func textureForUniform(uniform: UniformSampler) -> Texture? {
-        return texture
-    }
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! = nil
 }
 

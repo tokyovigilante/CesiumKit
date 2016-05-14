@@ -102,6 +102,8 @@ class SkyAtmosphere {
                 cullFace: .Front
             )
             
+            let metalStruct = _command.uniformMap!.generateMetalUniformStruct()
+            
             _rpSkyFromSpace = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
@@ -113,10 +115,11 @@ class SkyAtmosphere {
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
                 depthStencil: context.depthTexture,
-                blendingState: .AlphaBlend()
+                blendingState: .AlphaBlend(),
+                manualUniformStruct: metalStruct,
+                uniformStructSize: strideof(SkyAtmosphereUniformStruct)
             )
-            
-            
+                        
             _rpSkyFromAtmosphere = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
@@ -128,10 +131,12 @@ class SkyAtmosphere {
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
                 depthStencil: context.depthTexture,
-                blendingState: .AlphaBlend()
+                blendingState: .AlphaBlend(),
+                manualUniformStruct: metalStruct,
+                uniformStructSize: strideof(SkyAtmosphereUniformStruct)
             )
-            _command.uniformMap?.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             
+            _command.uniformMap?.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
     
         let cameraPosition = frameState.camera!.positionWC
@@ -148,7 +153,17 @@ class SkyAtmosphere {
         }
         return _command
     }
+}
 
+struct SkyAtmosphereUniformStruct: UniformStruct {
+    var u_cameraHeight = Float()
+    var u_cameraHeight2 = Float()
+    var u_outerRadius = Float()
+    var u_outerRadius2 = Float()
+    var u_innerRadius = Float()
+    var u_scale = Float()
+    var u_scaleDepth = Float()
+    var u_scaleOverScaleDepth = Float()
 }
 
 private class SkyAtmosphereUniformMap: UniformMap {
@@ -170,42 +185,37 @@ private class SkyAtmosphereUniformMap: UniformMap {
     var fScaleOverScaleDepth = Float.NaN
     
     var uniformBufferProvider: UniformBufferProvider! = nil
-
-    let uniforms: [String: UniformFunc] = [
-        
-        "fCameraHeight": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fCameraHeight], sizeof(Float))
-        },
-        
-        "fCameraHeight2": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fCameraHeight2], sizeof(Float))
-        },
-        
-        "fOuterRadius": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fOuterRadius], sizeof(Float))
-        },
-        
-        "fOuterRadius2": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fOuterRadius2], sizeof(Float))
-        },
-        
-        "fInnerRadius": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fInnerRadius], sizeof(Float))
-        },
-        
-        "fScale": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScale], sizeof(Float))
-        },
-        
-        "fScaleDepth": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScaleDepth], sizeof(Float))
-        },
-        
-        "fScaleOverScaleDepth": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [(map as! SkyAtmosphereUniformMap).fScaleOverScaleDepth], sizeof(Float))
-        }
-        
+    
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
+    
+    private var _uniformStruct = SkyAtmosphereUniformStruct()
+    
+    let uniformDescriptors: [UniformDescriptor] = [
+        UniformDescriptor(name: "u_cameraHeight", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_cameraHeight2", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_outerRadius", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_outerRadius2", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_innerRadius", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_scale", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_scaleDepth", type: .FloatVec1, count: 1),
+        UniformDescriptor(name: "u_scaleOverScaleDepth", type: .FloatVec1, count: 1)
     ]
-
+    
+    init () {
+        metalUniformUpdateBlock = { buffer in
+            
+            self._uniformStruct.u_cameraHeight = self.fCameraHeight
+            self._uniformStruct.u_cameraHeight2 = self.fCameraHeight2
+            self._uniformStruct.u_outerRadius = self.fOuterRadius
+            self._uniformStruct.u_outerRadius2 = self.fOuterRadius2
+            self._uniformStruct.u_innerRadius = self.fInnerRadius
+            self._uniformStruct.u_scale = self.fScale
+            self._uniformStruct.u_scaleDepth = self.fScaleDepth
+            self._uniformStruct.u_scaleOverScaleDepth = self.fScaleOverScaleDepth
+            memcpy(buffer.data, &self._uniformStruct, sizeof(SkyAtmosphereUniformStruct))
+                
+            return []
+        }
+    }
 }
 

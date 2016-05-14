@@ -9,15 +9,24 @@
 import Foundation
 import simd
 
-private struct TextUniformStruct: MetalUniformStruct {
+private struct TextUniformStruct: UniformStruct {
     var modelMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var viewProjectionMatrix: float4x4 = Matrix4.identity.floatRepresentation
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
 private class TextUniformMap: UniformMap {
+    
+    //FIXME: color etc here
+    
     var uniformBufferProvider: UniformBufferProvider! = nil
-    var uniforms: [String : UniformFunc] = [:]
+
+    private var _uniformStruct = TextUniformStruct()
+    
+    // compiled shader doesn't need to generate struct at runtime
+    var uniformDescriptors: [UniformDescriptor] = []
+    
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! = nil
 }
 
 
@@ -35,6 +44,8 @@ class TextRenderer {
      */
     var show = true
     
+    var color: Color
+    
     private let _command = DrawCommand()
     
     private let _fontAtlas: FontAtlas
@@ -50,8 +61,6 @@ class TextRenderer {
     private let _pointSize: Int
     
     private var _rs: RenderState! = nil
-    
-    private var _uniforms = TextUniformStruct()
     
     private let _attributes = [
         // attribute vec4 position;
@@ -77,12 +86,12 @@ class TextRenderer {
     init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4, offscreenTarget: Bool = false) {
         
         self.string = string
+        self.color = color
+        
         _pointSize = pointSize
         self.rectangle = rectangle
         
         _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
-        
-        _uniforms.foregroundColor = color.floatRepresentation
         
         let blendingState = BlendingState(
             enabled: true,
@@ -106,17 +115,21 @@ class TextRenderer {
             blendingState: blendingState
         )
         
-        _command.metalUniformUpdateBlock = { buffer in
-            self._uniforms.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
-            /*uniforms.foregroundColor = MBETextColor;*/
+        _command.uniformMap = TextUniformMap()
+        _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+        
+        _command.uniformMap!.metalUniformUpdateBlock = { buffer in
+            guard let uniformMap = self._command.uniformMap as? TextUniformMap else {
+                return [Texture]()
+            }
+            uniformMap._uniformStruct.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
+            uniformMap._uniformStruct.foregroundColor = self.color.floatRepresentation
             
-            memcpy(buffer.data, &self._uniforms, sizeof(TextUniformStruct))
+            memcpy(buffer.data, &uniformMap._uniformStruct, sizeof(TextUniformStruct))
             
             return [self._fontAtlas.texture].flatMap( { $0 })
         }
-        
-        _command.uniformMap = TextUniformMap()
-        _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+    
         _command.owner = self
     }
     

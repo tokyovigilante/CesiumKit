@@ -6,43 +6,53 @@
 //  Copyright (c) 2015 Test Toast. All rights reserved.
 //
 
-protocol MetalUniformStruct {
-    
+protocol UniformStruct {
+
 }
 
 typealias UniformMapDeallocBlock = (UniformBufferProvider) -> Void
 
-public protocol UniformMap: class {
+struct UniformDescriptor {
+    let name: String
+    let type: UniformDataType
+    let count: Int
     
-    var uniforms: [String: UniformFunc] { get }
+    func declaration () -> String {
+        var declaration = "\(type.metalDeclaration) \(name)"
+        
+        if count == 1 {
+            declaration += ";"
+        } else {
+            declaration += "[\(count)];"
+        }
+        
+        return declaration
+    }
+}
+
+protocol UniformMap: class {
     
     var uniformBufferProvider: UniformBufferProvider! { get set }
     
-    func indexForUniform(name: String) -> UniformIndex?
+    //FIXME: remove forced optional by creating in init
+    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! { get set }
     
-    func uniform(index: UniformIndex) -> UniformFunc
+    var uniformDescriptors: [UniformDescriptor] { get }
     
-    func textureForUniform (uniform: UniformSampler) -> Texture?
+    func generateMetalUniformStruct () -> String
 }
 
 extension UniformMap {
     
-    public func indexForUniform(name: String) -> UniformIndex? {
-        return uniforms.indexForKey(name)
+    func generateMetalUniformStruct () -> String {
+        
+        let prefix = "struct xlatMtlShaderUniform {\n"
+        let suffix = "};\n"
+        let uniformDefinitions = uniformDescriptors.reduce(prefix) { $0 + "    \($1.declaration())\n" }
+        
+        return uniformDefinitions + suffix
     }
-    
-    public func uniform(index: UniformIndex) -> UniformFunc {
-        return uniforms[index].1
-    }
-    
-    public func textureForUniform (uniform: UniformSampler) -> Texture? {
-        return nil
-    }
-    
 }
 
-class NullUniformMap: UniformMap {
-    let uniforms = [String : UniformFunc]()
-    var uniformBufferProvider: UniformBufferProvider! = nil
-}
+
 

@@ -544,7 +544,7 @@ public class Scene {
     * @type Boolean
     * @default true
     */
-    var fxaa = true
+    var fxaa = false
     
     /**
      * When <code>true</code>, enables picking using the depth buffer.
@@ -1228,7 +1228,6 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         if let skyBoxCommand = _environmentState.skyBoxCommand {
             executeCommand(skyBoxCommand, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
-        
         if _environmentState.isSkyAtmosphereVisible {
             executeCommand(_environmentState.skyAtmosphereCommand!, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
@@ -1257,7 +1256,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             moonCommand.execute(context, passState);
         }*/
         spaceRenderPass.complete()
-        
+
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
         scene: Scene,
@@ -1569,7 +1568,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         if firstViewport {
             updateAndClearFramebuffers(passState, clearColor: backgroundColor, picking: picking)
-            executeComputeCommands()
+            //executeComputeCommands()
         }
         
         executeCommands(passState)
