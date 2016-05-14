@@ -31,7 +31,7 @@ public struct Cartesian4: Equatable {
         return vector_float(simdType)
     }
     
-    var x: Double {
+    public var x: Double {
         get {
             return simdType.x
         }
@@ -40,7 +40,7 @@ public struct Cartesian4: Equatable {
         }
     }
     
-    var y: Double {
+    public var y: Double {
         get {
             return simdType.y
         }
@@ -49,7 +49,7 @@ public struct Cartesian4: Equatable {
         }
     }
     
-    var z: Double {
+    public var z: Double {
         get {
             return simdType.z
         }
@@ -58,7 +58,7 @@ public struct Cartesian4: Equatable {
         }
     }
     
-    var w: Double {
+    public var w: Double {
         get {
             return simdType.w
         }
@@ -67,12 +67,12 @@ public struct Cartesian4: Equatable {
         }
     }
 
-    var red: Double { return x }
-    var green: Double { return y }
-    var blue: Double { return z }
-    var alpha: Double { return w }
+    public var red: Double { return x }
+    public var green: Double { return y }
+    public var blue: Double { return z }
+    public var alpha: Double { return w }
     
-    var width: Double {
+    public var width: Double {
         get {
             return z
         }
@@ -81,7 +81,7 @@ public struct Cartesian4: Equatable {
         }
     }
     
-    var height: Double {
+    public var height: Double {
         get {
             return w
         }
