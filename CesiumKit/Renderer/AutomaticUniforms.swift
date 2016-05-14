@@ -36,11 +36,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_viewport": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatVec4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.viewport.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatVec4
     ),
     
     /**
@@ -72,11 +68,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_viewportOrthographic":  AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.viewportOrthographic.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     
     /**
@@ -116,11 +108,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     
     "czm_f_viewportTransformation": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.viewportTransformation.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     /*
      /**
@@ -224,11 +212,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_view": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.view.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     /*
      /**
@@ -280,11 +264,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_viewRotation": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.viewRotation.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix3
     ),
     /*
      /**
@@ -446,11 +426,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_projection": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.projection.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     
     /**
@@ -473,11 +449,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_inverseProjection": AutomaticUniform(
         size : 1,
-        datatype : UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.inverseProjection.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype : .FloatMatrix4
     ),
     /*
      /**
@@ -548,11 +520,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelView" : AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.modelView.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     
     /**
@@ -583,11 +551,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelView3D": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.modelView3D.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     /*
      /**
@@ -643,12 +607,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_inverseModelView" : AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.inverseModelView.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-            
-        }
+        datatype: .FloatMatrix4
     ),
     /*
      /**
@@ -767,11 +726,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelViewProjection": AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatMatrix4,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.modelViewProjection.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix4
     ),
     /*
      /**
@@ -892,11 +847,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_normal": AutomaticUniform(
         size : 1,
-        datatype : UniformDataType.FloatMatrix3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.normal.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype : .FloatMatrix3
     ),
     
     /**
@@ -925,11 +876,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_normal3D": AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatMatrix3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.normal3D.floatRepresentation.cmatrix
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatMatrix3
     ),
     
     /**
@@ -1028,11 +975,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_entireFrustum": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec2,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.entireFrustum.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-        }
+        datatype: .FloatVec2
     ),
     /*
      /**
@@ -1139,11 +1082,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_sunDirectionEC": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatVec3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float(uniformState.sunDirectionEC.simdType)
-            memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
-        }
+        datatype: UniformDataType.FloatVec3
     ),
     
     /**
@@ -1163,11 +1102,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_sunDirectionWC": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float(uniformState.sunDirectionWC.simdType)
-            memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
-        }
+        datatype: .FloatVec3
     ),
     
     /**
@@ -1189,11 +1124,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_moonDirectionEC": AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatVec3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float(uniformState.moonDirectionEC.simdType)
-            memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
-        }
+        datatype: .FloatVec3
     ),
     /*
      /**
@@ -1256,11 +1187,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_viewerPositionWC":  AutomaticUniform(
         size : 1,
-        datatype : .FloatVec3,
-        writeToBuffer : { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = vector_float(uniformState.inverseView.translation.simdType)
-            memcpy(buffer, [simd], UniformDataType.FloatVec3.elementStride)
-        }
+        datatype : .FloatVec3
     ),
     
     /**
@@ -1276,10 +1203,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_frameNumber": AutomaticUniform(
         size: 1,
-        datatype : .FloatVec1,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [Float(uniformState.frameState.frameNumber)], strideof(Float))
-        }
+        datatype : .FloatVec1
     ),
     
     /**
@@ -1298,10 +1222,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_morphTime": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec1,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            memcpy(buffer, [Float(uniformState.frameState.morphTime)], strideof(Float))
-        }
+        datatype: .FloatVec1
     ),
     
     /*
@@ -1356,12 +1277,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_temeToPseudoFixed": AutomaticUniform(
         size : 1,
-        datatype : .FloatMatrix3,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            let simd = uniformState.temeToPseudoFixedMatrix.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
-            
-        }
+        datatype : .FloatMatrix3
     ),
     /*
      /**
@@ -1393,11 +1309,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_fogDensity": AutomaticUniform(
         size : 1,
-        datatype: UniformDataType.FloatVec1,
-        writeToBuffer: { (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) in
-            //(uniformState.fogDensity)
-            memcpy(buffer, [Float(0.0)], strideof(Float))
-        }
+        datatype: .FloatVec1
     )
     
 ]
