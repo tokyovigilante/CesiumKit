@@ -69,6 +69,46 @@ public enum UniformDataType: UInt {
         }
     }
     
+    var metalDeclaration: String {
+        switch self {
+        case .FloatVec1:
+            return "float"
+        case .FloatVec2:
+            return "float2"
+        case .FloatVec3:
+            return "float3"
+        case .FloatVec4:
+            return "float4"
+        /*case .IntVec1:
+            return "int"
+        case .IntVec2:
+            return "ivec2"
+        case .IntVec3:
+            return "ivec3"
+        case .IntVec4:
+            return "ivec4"
+        case .BoolVec1:
+            return "bool"
+        case .BoolVec2:
+            return "bvec2"
+        case .BoolVec3:
+            return "bvec3"
+        case .BoolVec4:
+            return "bvec4"*/
+        case .FloatMatrix2:
+            return "float2x2"
+        case .FloatMatrix3:
+            return "float3x3"
+        case .FloatMatrix4:
+            return "float4x4"
+        case .Sampler2D:
+            return "sampler"
+        default:
+            assertionFailure("unimplemented")
+            return ""
+        }
+    }
+    
     var elementCount: Int {
         switch self {
         case .FloatVec1:
@@ -178,14 +218,11 @@ public enum UniformDataType: UInt {
     
 }
 
-public typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
-
-typealias AutomaticUniformFunc = (uniformState: UniformState, buffer: UnsafeMutablePointer<Void>) -> ()
+typealias UniformFunc = (map: UniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
 
 struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
-    let writeToBuffer: AutomaticUniformFunc
     
     func declaration (name: String) -> String {
         var declaration = "uniform \(datatype.declarationString) \(name)"
@@ -240,8 +277,6 @@ public class Uniform {
     }
     
     var mapIndex: UniformIndex? = nil
-    
-    var automaticIndex: AutomaticUniformIndex? = nil
     
     init (desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
         _desc = desc
@@ -328,9 +363,7 @@ public class Uniform {
     
 }
 
-public typealias UniformIndex = DictionaryIndex<String, UniformFunc>
-
-typealias AutomaticUniformIndex = DictionaryIndex<String, AutomaticUniform>
+typealias UniformIndex = DictionaryIndex<String, UniformFunc>
 
 
 /*
