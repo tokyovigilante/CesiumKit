@@ -87,7 +87,7 @@ public struct Matrix4 {
         )
     }
     
-    public init (fromSIMD simd: double4x4) {
+    public init (simd: double4x4) {
         simdType = simd
     }
     
@@ -743,7 +743,7 @@ Matrix4.getElementIndex = function(column, row) {
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         var result = simdType
         result[index] = double4(cartesian.x, cartesian.y, cartesian.z, cartesian.w)
-        return Matrix4(fromSIMD: result)
+        return Matrix4(simd: result)
     }
 
     /**
@@ -758,7 +758,7 @@ Matrix4.getElementIndex = function(column, row) {
     func setTranslation (translation: Cartesian3) -> Matrix4 {
         var result = simdType
         result[3] = double4(translation.x, translation.y, translation.z, simdType[3].w)
-        return Matrix4(fromSIMD: result)
+        return Matrix4(simd: result)
     }
     
     /**
@@ -806,15 +806,15 @@ Matrix4.getElementIndex = function(column, row) {
      * @returns {MatrixType} The modified result parameter.
      */
     func multiply(other: Matrix4) -> Matrix4 {
-        return Matrix4(fromSIMD: simdType * other.simdType)
+        return Matrix4(simd: simdType * other.simdType)
     }
     
     func negate() -> Matrix4 {
-        return Matrix4(fromSIMD: -simdType)
+        return Matrix4(simd: -simdType)
     }
     
     func transpose () -> Matrix4 {
-        return Matrix4(fromSIMD: simdType.transpose)
+        return Matrix4(simd: simdType.transpose)
     }
     
     /**
@@ -1430,7 +1430,7 @@ Matrix4.abs = function(matrix, result) {
         // when a model's node has a [0, 0, 0] scale.
         if rotation.equalsEpsilon(Matrix3.zero, epsilon: Math.Epsilon7) && self[3] == Cartesian4.unitW {
             
-            return Matrix4(fromSIMD: double4x4([
+            return Matrix4(simd: double4x4([
                 double4(),
                 double4(),
                 double4(),
@@ -1454,7 +1454,7 @@ Matrix4.abs = function(matrix, result) {
             result[15] = 1.0;
             return result;*/
         }
-        return Matrix4(fromSIMD: simdType.inverse)
+        return Matrix4(simd: simdType.inverse)
     }
     
     /**
