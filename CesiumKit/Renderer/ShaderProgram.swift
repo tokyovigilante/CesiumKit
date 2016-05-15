@@ -332,14 +332,96 @@ class ShaderProgram {
             return (0, true, [Texture]())
         }
         
+        if let map = map as? NativeUniformMap {
+            return setNativeUniforms(map, uniformState: uniformState)
+        }
+        
+        if let map = map as? LegacyUniformMap {
+            return setLegacyUniforms(map, uniformState: uniformState)
+        }
+        
+        return (0, false, [Texture]())
+    }
+    
+    private func setNativeUniforms (map: NativeUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
+    {
         guard let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) else {
             return (0, false, [Texture]())
         }
         
-        let textures = map.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
+        let textures = map.uniformUpdateBlock(buffer: buffer)
         buffer.signalWriteComplete()
         return (fragmentOffset: 0, texturesValid: true, textures: textures)
     }
+    
+    func setLegacyUniforms (map: LegacyUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+        
+        guard let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) else {
+            return (0, false, [Texture]())
+        }
+        
+        for uniform in _vertexUniforms {
+            setUniform(uniform, buffer: buffer, map: map, uniformState: uniformState)
+        }
+        
+        for uniform in _fragmentUniforms {
+            setUniform(uniform, buffer: buffer, map: map, uniformState: uniformState)
+        }
+        
+        buffer.signalWriteComplete()
+        
+        var textures = [Texture]()
+        
+        var texturesValid = true
+        for uniform in _samplerUniforms {
+            if let texture = map.textureForUniform(uniform) {
+                textures.append(texture)
+            } else {
+                texturesValid = false
+            }
+        }
+        
+        let fragmentOffset = vertexUniformSize
+        return (fragmentOffset: fragmentOffset, texturesValid: texturesValid, textures: textures)
+        
+    }    
+    
+    func setUniform (uniform: Uniform, buffer: Buffer, map: LegacyUniformMap, uniformState: UniformState) {
+        
+        // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
+        
+        //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
+        
+        let metalBufferPointer = buffer.data + uniform.offset
+        
+        switch uniform.type {
+            
+        case .Automatic:
+            assertionFailure("should not be setting automatic uniforms here")
+            return
+        case .Frustum:
+            assertionFailure("should not be setting frustum uniforms here")
+            return
+        case .Manual:
+            guard let index = uniform.mapIndex else {
+                guard let index = map.indexForUniform(uniform.name) else {
+                    assertionFailure("uniform not found for \(uniform.name)")
+                    return
+                }
+                uniform.mapIndex = index
+                let uniformFunc = map.uniform(index)
+                uniformFunc(map: map, buffer: metalBufferPointer)
+                break
+            }
+            let uniformFunc = map.uniform(index)
+            uniformFunc(map: map, buffer: metalBufferPointer)
+            
+        case .Sampler:
+            assertionFailure("Sampler not valid for setUniform")
+            return
+        }
+    }
+
 
     /**
     * Creates a GLSL shader source string by sending the input through three stages:

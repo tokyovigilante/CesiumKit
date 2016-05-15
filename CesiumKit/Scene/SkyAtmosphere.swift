@@ -102,7 +102,7 @@ class SkyAtmosphere {
                 cullFace: .Front
             )
             
-            let metalStruct = _command.uniformMap!.generateMetalUniformStruct()
+            let metalStruct = (_command.uniformMap as! NativeUniformMap).generateMetalUniformStruct()
             
             _rpSkyFromSpace = RenderPipeline.fromCache(
                 context : context,
@@ -167,7 +167,7 @@ struct SkyAtmosphereUniformStruct: UniformStruct {
     var u_scaleOverScaleDepth = Float()
 }
 
-private class SkyAtmosphereUniformMap: UniformMap {
+private class SkyAtmosphereUniformMap: NativeUniformMap {
     
     var fCameraHeight: Float {
         get {
@@ -243,7 +243,7 @@ private class SkyAtmosphereUniformMap: UniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    var uniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     private var _uniformStruct = SkyAtmosphereUniformStruct()
     

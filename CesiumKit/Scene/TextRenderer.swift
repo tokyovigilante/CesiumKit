@@ -15,18 +15,63 @@ private struct TextUniformStruct: UniformStruct {
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
-private class TextUniformMap: UniformMap {
+class TextUniformMap: NativeUniformMap {
     
     //FIXME: color etc here
+    var modelMatrix: Matrix4 {
+        get {
+            return Matrix4(simd: double4x4([
+                vector_double(_uniformStruct.modelMatrix[0]),
+                vector_double(_uniformStruct.modelMatrix[1]),
+                vector_double(_uniformStruct.modelMatrix[2]),
+                vector_double(_uniformStruct.modelMatrix[3])
+                ]))
+        }
+        set {
+            _uniformStruct.modelMatrix = newValue.floatRepresentation
+        }
+    }
+    
+    var viewProjectionMatrix: Matrix4 {
+        get {
+            return Matrix4(simd: double4x4([
+                vector_double(_uniformStruct.viewProjectionMatrix[0]),
+                vector_double(_uniformStruct.viewProjectionMatrix[1]),
+                vector_double(_uniformStruct.viewProjectionMatrix[2]),
+                vector_double(_uniformStruct.viewProjectionMatrix[3])
+                ]))
+        }
+        set {
+            _uniformStruct.viewProjectionMatrix = newValue.floatRepresentation
+        }
+    }
+    
+    var foregroundColor: Color {
+        get {
+            return Color(simd: vector_double(_uniformStruct.foregroundColor))
+        }
+        set {
+            _uniformStruct.foregroundColor = newValue.floatRepresentation
+        }
+    }
     
     var uniformBufferProvider: UniformBufferProvider! = nil
+    
+    private var _fontAtlasTexture: Texture! = nil
 
     private var _uniformStruct = TextUniformStruct()
     
     // compiled shader doesn't need to generate struct at runtime
-    var uniformDescriptors: [UniformDescriptor] = []
+    let uniformDescriptors: [UniformDescriptor] = []
     
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! = nil
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    
+    init () {
+        uniformUpdateBlock = { buffer in
+            memcpy(buffer.data, &self._uniformStruct, sizeof(TextUniformStruct))
+            return [self._fontAtlasTexture!]
+        }
+    }
 }
 
 
@@ -117,19 +162,7 @@ class TextRenderer {
         
         _command.uniformMap = TextUniformMap()
         _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
-        
-        _command.uniformMap!.metalUniformUpdateBlock = { buffer in
-            guard let uniformMap = self._command.uniformMap as? TextUniformMap else {
-                return [Texture]()
-            }
-            uniformMap._uniformStruct.viewProjectionMatrix = context.uniformState.viewportOrthographic.floatRepresentation
-            uniformMap._uniformStruct.foregroundColor = self.color.floatRepresentation
-            
-            memcpy(buffer.data, &uniformMap._uniformStruct, sizeof(TextUniformStruct))
-            
-            return [self._fontAtlas.texture].flatMap( { $0 })
-        }
-    
+
         _command.owner = self
     }
     
@@ -157,7 +190,16 @@ class TextRenderer {
             _string = string
         }
         
-        //frameState.commandList.append(_command)
+        guard let map = _command.uniformMap as? TextUniformMap else {
+            return nil
+        }
+        
+        map.modelMatrix = Matrix4.identity
+        map.viewProjectionMatrix = context.uniformState.viewportOrthographic
+        map.foregroundColor = color
+        
+        map._fontAtlasTexture = _fontAtlas.texture
+        
         return _command
     }
     

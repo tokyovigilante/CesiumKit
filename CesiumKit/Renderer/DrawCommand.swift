@@ -103,8 +103,6 @@ class DrawCommand: Command {
     */
     var uniformMap: UniformMap?
     
-    var metalUniformStruct: UniformStruct? = nil
-    
     /**
      * The render state.
      *

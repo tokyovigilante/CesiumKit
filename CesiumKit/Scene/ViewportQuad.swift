@@ -114,6 +114,10 @@ public class ViewportQuad: Primitive {
             )
             
             _overlayCommand.pass = .Overlay
+            
+            if let map = _overlayCommand.uniformMap {
+                map.uniformBufferProvider = _overlayCommand.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+            }
         }
         
         _material.update(context)

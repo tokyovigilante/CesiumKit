@@ -15,7 +15,6 @@ class FXAA {
     */
     private var _texture: Texture? = nil
     private var _depthTexture: Texture? = nil
-    //var _depthRenderbuffer = undefined;
     
     private var _fbo: Framebuffer? = nil
     private var _command: DrawCommand? = nil
@@ -111,7 +110,7 @@ private struct FXAAUniformStruct: UniformStruct {
     var step = float2()
 }
 
-class FXAAUniformMap: UniformMap {
+class FXAAUniformMap: NativeUniformMap {
     
     var step: Cartesian2 {
         get {
@@ -132,6 +131,13 @@ class FXAAUniformMap: UniformMap {
         UniformDescriptor(name: "u_step", type: .FloatVec2, count: 1)
     ]
     
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! = nil
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    
+    init () {
+        uniformUpdateBlock = { buffer in
+            memcpy(buffer.data, &self._uniformStruct, sizeof(FXAAUniformStruct))
+            return [self.texture!]
+        }
+    }
 }
 

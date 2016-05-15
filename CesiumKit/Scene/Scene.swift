@@ -1358,7 +1358,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             for pass in startPass..<endPass {
                 context.uniformState.updatePass(Pass(rawValue: pass)!)
                 let commands = frustumCommands.commands[pass]
-                if commands.isEmpty {
+                if !commands.isEmpty {
                     let renderPass = context.createRenderPass(passState)
                     
                     for command in commands {
@@ -1568,7 +1568,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         if firstViewport {
             updateAndClearFramebuffers(passState, clearColor: backgroundColor, picking: picking)
-            //executeComputeCommands()
+            executeComputeCommands()
         }
         
         executeCommands(passState)

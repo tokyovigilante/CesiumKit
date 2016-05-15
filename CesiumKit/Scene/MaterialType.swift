@@ -26,8 +26,8 @@ public struct ColorMaterialType: MaterialType {
     public var source: String? = nil
     
     public let components = [
-        "diffuse": "color.rgb",
-        "alpha": "color.a"
+        "diffuse": "u_color.rgb",
+        "alpha": "u_color.a"
     ]
     
     public let translucent = { (material: Material) in
@@ -41,10 +41,9 @@ public struct ColorMaterialType: MaterialType {
 }
 
 public class FabricDescription {
-    var uniformMap: UniformMap? = nil
-    
-    var uniformTypes: [String: UniformDataType] {
-        return [:]
+    var uniformMap: LegacyUniformMap! {
+        assertionFailure("invalid base class")
+        return nil
     }
 }
 
@@ -52,33 +51,44 @@ public class ColorFabricDescription: FabricDescription {
     
     public var color: Color {
         get {
-            return Color(
-                red: Double(uniformStruct.color.x),
-                green: Double(uniformStruct.color.y),
-                blue: Double(uniformStruct.color.z),
-                alpha: Double(uniformStruct.color.w)
-            )
+            return _uniformMap.color
         }
         set {
-            uniformStruct.color = newValue.floatRepresentation
+            _uniformMap.color = newValue
         }
     }
     
-    //public let uniforms: [String: UniformFunc]
-    
-    //public let uniformTypes: [String : UniformDataType]
-    
-    var uniformStruct: ColorFabricUniformStruct
-    
-    public init (color: Color = Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)) {
-        uniformStruct = ColorFabricUniformStruct(color: color.floatRepresentation)
+    override var uniformMap: LegacyUniformMap {
+        return _uniformMap
     }
-
+    
+    private let _uniformMap = ColorFabricUniformMap()
+    
+    public override init () {
+        
+    }
 }
 
-struct ColorFabricUniformStruct: UniformStruct {
-    var color: float4
+class ColorFabricUniformMap: LegacyUniformMap {
+    
+    var color = Color()
+    
+    var uniformBufferProvider: UniformBufferProvider! = nil
+    
+    let uniforms: [String: UniformFunc] = [
+        "u_color": { map, buffer in
+            let simd = (map as! ColorFabricUniformMap).color.floatRepresentation
+            memcpy(buffer, [simd], strideofValue(simd))
+        }
+    ]
+    
+    let uniformDescriptors = [
+        UniformDescriptor(name: "u_color", type: .FloatVec4, count: 1)
+    ]
 }
+
+
+
 
 
 public class ImageFabricDescription: FabricDescription {

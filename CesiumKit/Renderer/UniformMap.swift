@@ -10,6 +10,8 @@ protocol UniformStruct {
 
 }
 
+typealias UniformUpdateBlock = ((buffer: Buffer) -> [Texture])
+
 typealias UniformMapDeallocBlock = (UniformBufferProvider) -> Void
 
 struct UniformDescriptor {
@@ -34,15 +36,18 @@ protocol UniformMap: class {
     
     var uniformBufferProvider: UniformBufferProvider! { get set }
     
-    //FIXME: remove forced optional by creating in init
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! { get set }
-    
     var uniformDescriptors: [UniformDescriptor] { get }
+
+}
+
+protocol NativeUniformMap: class, UniformMap {
+    
+    var uniformUpdateBlock: UniformUpdateBlock! { get }
     
     func generateMetalUniformStruct () -> String
 }
 
-extension UniformMap {
+extension NativeUniformMap {
     
     func generateMetalUniformStruct () -> String {
         
@@ -53,6 +58,34 @@ extension UniformMap {
         return uniformDefinitions + suffix
     }
 }
+
+protocol LegacyUniformMap: class, UniformMap {
+    
+    var uniforms: [String: UniformFunc] { get }
+    
+    func indexForUniform(name: String) -> UniformIndex?
+    
+    func uniform(index: UniformIndex) -> UniformFunc
+    
+    func textureForUniform (uniform: UniformSampler) -> Texture?
+}
+
+extension LegacyUniformMap {
+    
+    public func indexForUniform(name: String) -> UniformIndex? {
+        return uniforms.indexForKey(name)
+    }
+    
+    public func uniform(index: UniformIndex) -> UniformFunc {
+        return uniforms[index].1
+    }
+    
+    public func textureForUniform (uniform: UniformSampler) -> Texture? {
+        return nil
+    }
+    
+}
+
 
 
 

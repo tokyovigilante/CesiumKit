@@ -10,11 +10,11 @@ import Foundation
 import simd
 
 private struct ImageryLayerUniformStruct: UniformStruct {
-    var textureDimensions = float2()
     var viewportOrthographic = float4x4()
+    var textureDimensions = float2()
 }
 
-class ImageryLayerUniformMap: UniformMap {
+class ImageryLayerUniformMap: NativeUniformMap {
     
     var textureDimensions: Cartesian2 {
         get {
@@ -44,31 +44,19 @@ class ImageryLayerUniformMap: UniformMap {
     var uniformBufferProvider: UniformBufferProvider! = nil
 
     let uniformDescriptors: [UniformDescriptor] = [
-        UniformDescriptor(name: "u_textureDimensions", type: .FloatVec2, count: 1),
-        UniformDescriptor(name: "u_viewportOrthographic", type: .FloatMatrix4, count: 1)
+        UniformDescriptor(name: "u_viewportOrthographic", type: .FloatMatrix4, count: 1),
+        UniformDescriptor(name: "u_textureDimensions", type: .FloatVec2, count: 1)
     ]
     
     private var _uniformStruct = ImageryLayerUniformStruct()
     
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! = nil
-    
-    /*
-    let uniforms: [String: UniformFunc] = [
-        
-        "u_textureDimensions": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! ImageryLayerUniformMap).textureDimensions.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float2))
-        },
-        
-        "u_viewportOrthographic": { (map: UniformMap, buffer: UnsafeMutablePointer<Void>) in
-            let simd = (map as! ImageryLayerUniformMap).viewportOrthographic.floatRepresentation
-            memcpy(buffer, [simd], sizeof(float4x4))
-        }
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
 
-    ]*/
-    
-    func textureForUniform(uniform: UniformSampler) -> Texture? {
-        return texture
+    init () {
+        uniformUpdateBlock = { buffer in
+            memcpy(buffer.data, &self._uniformStruct, sizeof(ImageryLayerUniformStruct))
+            return [self.texture!]
+        }
     }
 
 }

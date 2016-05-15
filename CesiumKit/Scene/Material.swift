@@ -232,7 +232,7 @@ public class Material {
      * @type {Object}
      * @default undefined
      */
-    var uniformMap: UniformMap? = nil
+    var uniformMap: LegacyUniformMap? = nil
     private (set) var uniforms = [String: UniformFunc]()
     
     /**
@@ -1058,21 +1058,17 @@ public class Material {
      }
      */
     func createUniforms () {
-        if let uniforms = _template?.fabric.uniformTypes {
-            for (key, uniformId) in uniforms {
-                createUniform(key)
+        if let uniforms = _template?.fabric.uniformMap.uniformDescriptors {
+            for uniform in uniforms {
+                createUniform(uniform)
             }
         }
     }
     
     // Writes uniform declarations to the shader file and connects uniform values with
     // corresponding material properties through the returnUniforms function.
-    func createUniform (uniformId: String) {
-        
-        guard let uniformType = getUniformType(uniformId) else {
-            assertionFailure("fabric: uniform " + uniformId + " has invalid type.")
-            return
-        }
+    func createUniform (descriptor: UniformDescriptor) {
+
         /*if (uniformType === 'channels') {
          if (replaceToken(material, uniformId, uniformValue, false) === 0 && strict) {
          throw new DeveloperError('strict: shader source does not use channels \'' + uniformId + '\'.');
@@ -1099,8 +1095,8 @@ public class Material {
          material.shaderSource = uniformDeclaration + material.shaderSource;
          }
          */
-        
-        let uniformDeclaration = "uniform " + uniformType.declarationString + " " + uniformId + ";\n"
+        let uniformId = descriptor.name
+        let uniformDeclaration = "uniform " + descriptor.type.declarationString + " " + uniformId + ";\n"
         shaderSource = uniformDeclaration + shaderSource
         
         let newUniformId = uniformId + "_" + "\(_count)"
@@ -1112,7 +1108,7 @@ public class Material {
         // Set uniform value
         /*material.uniforms[uniformId] = uniformValue;
          */
-        if uniformType == .Sampler2D {
+        if descriptor.type == .Sampler2D {
             /*material._uniforms[newUniformId] = function() {
              return material._textures[uniformId];
              };
@@ -1131,48 +1127,6 @@ public class Material {
             //uniforms[newUniformId] = uniformMap?.uniforms[uniformId]
         }
         uniformMap = type.fabric.uniformMap
-    }
-    
-    // Determines the uniform type based on the uniform in the template.
-    func getUniformType (uniformValue: String) -> UniformDataType? {
-        
-        /*return type.fabric.uniformTypes[uniformValue] ??*/ return nil
-        /*var uniformType = uniformValue.type;
-         if (!defined(uniformType)) {
-         var type = typeof uniformValue;
-         if (type === 'number') {
-         uniformType = 'float';
-         } else if (type === 'boolean') {
-         uniformType = 'bool';
-         } else if (type === 'string' || uniformValue instanceof HTMLCanvasElement) {
-         if (/^([rgba]){1,4}$/i.test(uniformValue)) {
-         uniformType = 'channels';
-         } else if (uniformValue === Material.DefaultCubeMapId) {
-         uniformType = 'samplerCube';
-         } else {
-         uniformType = 'sampler2D';
-         }
-         } else if (type === 'object') {
-         if (isArray(uniformValue)) {
-         if (uniformValue.length === 4 || uniformValue.length === 9 || uniformValue.length === 16) {
-         uniformType = 'mat' + Math.sqrt(uniformValue.length);
-         }
-         } else {
-         var numAttributes = 0;
-         for ( var attribute in uniformValue) {
-         if (uniformValue.hasOwnProperty(attribute)) {
-         numAttributes += 1;
-         }
-         }
-         if (numAttributes >= 2 && numAttributes <= 4) {
-         uniformType = 'vec' + numAttributes;
-         } else if (numAttributes === 6) {
-         uniformType = 'samplerCube';
-         }
-         }
-         }
-         }
-         return uniformType*/
     }
     
     // Create all sub-materials by combining source and uniforms together.
