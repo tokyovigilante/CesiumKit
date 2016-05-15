@@ -88,6 +88,7 @@ final class FontAtlas: JSONEncodable {
         dispatch_async(QueueManager.sharedInstance.fontAtlasQueue, {
             self.createTextureData()
             self.createTexture(context)
+            FontAtlas.writeToFile(self)
         })
     }
     
@@ -517,7 +518,6 @@ final class FontAtlas: JSONEncodable {
         if let atlas = _cache[fontName] {
             return atlas
         }
-        
         // try to decode from JSON
         let atlasFolderURL = LocalStorage.sharedInstance.getAppSupportURL().URLByAppendingPathComponent("FontAtlases")
         
@@ -540,13 +540,23 @@ final class FontAtlas: JSONEncodable {
         // add to cache 
         _cache[fontName] = atlas
 
+        return atlas
+    }
+    
+    class func writeToFile (atlas: FontAtlas) {
         // encode and save
+        let atlasFolderURL = LocalStorage.sharedInstance.getAppSupportURL().URLByAppendingPathComponent("FontAtlases")
+        let fontName = CTFontCopyPostScriptName(atlas.parentFont) as String
+        let jsonURL = atlasFolderURL
+            .URLByAppendingPathComponent(fontName)
+            .URLByAppendingPathExtension("json")
+        
         do {
             try NSFileManager.defaultManager().createDirectoryAtURL(atlasFolderURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
             print("cannot create directory at URL: \(atlasFolderURL): \(error.localizedDescription)")
         }
-
+        
         let atlasJSON = atlas.toJSON().object!
         
         let textureDataURL = atlasFolderURL
@@ -563,7 +573,6 @@ final class FontAtlas: JSONEncodable {
         } catch let error as NSError {
             print("Atlas cache write failed: \(error.localizedDescription)")
         }
-        return atlas
     }
     
     class func generateMipmapsIfRequired (context: Context) {
