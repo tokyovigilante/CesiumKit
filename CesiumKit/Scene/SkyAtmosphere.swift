@@ -140,6 +140,7 @@ class SkyAtmosphere {
         }
     
         let cameraPosition = frameState.camera!.positionWC
+        
         let map = _command.uniformMap as! SkyAtmosphereUniformMap
         map.fCameraHeight2 = Float(cameraPosition.magnitudeSquared)
         map.fCameraHeight = sqrt(map.fCameraHeight2)
@@ -168,25 +169,81 @@ struct SkyAtmosphereUniformStruct: UniformStruct {
 
 private class SkyAtmosphereUniformMap: UniformMap {
     
-    var fCameraHeight = Float.NaN
+    var fCameraHeight: Float {
+        get {
+            return _uniformStruct.u_cameraHeight
+        }
+        set {
+            _uniformStruct.u_cameraHeight = newValue
+        }
+    }
     
-    var fCameraHeight2 = Float.NaN
+    var fCameraHeight2: Float {
+        get {
+            return _uniformStruct.u_cameraHeight2
+        }
+        set {
+            _uniformStruct.u_cameraHeight2 = newValue
+        }
+    }
     
-    var fOuterRadius = Float.NaN
+    var fOuterRadius: Float {
+        get {
+            return _uniformStruct.u_outerRadius
+        }
+        set {
+            _uniformStruct.u_outerRadius = newValue
+        }
+    }
     
-    var fOuterRadius2 = Float.NaN
+    var fOuterRadius2: Float {
+        get {
+            return _uniformStruct.u_outerRadius2
+        }
+        set {
+            _uniformStruct.u_outerRadius2 = newValue
+        }
+    }
     
-    var fInnerRadius = Float.NaN
+    var fInnerRadius: Float {
+        get {
+            return _uniformStruct.u_innerRadius
+        }
+        set {
+            _uniformStruct.u_innerRadius = newValue
+        }
+    }
     
-    var fScale = Float.NaN
+    var fScale: Float {
+        get {
+            return _uniformStruct.u_scale
+        }
+        set {
+            _uniformStruct.u_scale = newValue
+        }
+    }
     
-    var fScaleDepth = Float.NaN
+    var fScaleDepth: Float {
+        get {
+            return _uniformStruct.u_scaleDepth
+        }
+        set {
+            _uniformStruct.u_scaleDepth = newValue
+        }
+    }
     
-    var fScaleOverScaleDepth = Float.NaN
+    var fScaleOverScaleDepth: Float {
+        get {
+            return _uniformStruct.u_scaleOverScaleDepth
+        }
+        set {
+            _uniformStruct.u_scaleOverScaleDepth = newValue
+        }
+    }
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
+    var uniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
     
     private var _uniformStruct = SkyAtmosphereUniformStruct()
     
@@ -202,18 +259,8 @@ private class SkyAtmosphereUniformMap: UniformMap {
     ]
     
     init () {
-        metalUniformUpdateBlock = { buffer in
-            
-            self._uniformStruct.u_cameraHeight = self.fCameraHeight
-            self._uniformStruct.u_cameraHeight2 = self.fCameraHeight2
-            self._uniformStruct.u_outerRadius = self.fOuterRadius
-            self._uniformStruct.u_outerRadius2 = self.fOuterRadius2
-            self._uniformStruct.u_innerRadius = self.fInnerRadius
-            self._uniformStruct.u_scale = self.fScale
-            self._uniformStruct.u_scaleDepth = self.fScaleDepth
-            self._uniformStruct.u_scaleOverScaleDepth = self.fScaleOverScaleDepth
+        uniformUpdateBlock = { buffer in
             memcpy(buffer.data, &self._uniformStruct, sizeof(SkyAtmosphereUniformStruct))
-                
             return []
         }
     }
