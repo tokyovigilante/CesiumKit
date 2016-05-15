@@ -10,6 +10,8 @@ protocol UniformStruct {
 
 }
 
+typealias UniformUpdateBlock = ((buffer: Buffer) -> [Texture])
+
 typealias UniformMapDeallocBlock = (UniformBufferProvider) -> Void
 
 struct UniformDescriptor {
@@ -34,8 +36,7 @@ protocol UniformMap: class {
     
     var uniformBufferProvider: UniformBufferProvider! { get set }
     
-    //FIXME: remove forced optional by creating in init
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> [Texture])! { get set }
+    var uniformUpdateBlock: UniformUpdateBlock! { get }
     
     var uniformDescriptors: [UniformDescriptor] { get }
     

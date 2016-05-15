@@ -243,7 +243,7 @@ private class SkyAtmosphereUniformMap: UniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    var uniformUpdateBlock: ((buffer: Buffer) -> [Texture])!
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     private var _uniformStruct = SkyAtmosphereUniformStruct()
     

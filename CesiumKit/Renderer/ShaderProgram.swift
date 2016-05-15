@@ -336,7 +336,7 @@ class ShaderProgram {
             return (0, false, [Texture]())
         }
         
-        let textures = map.metalUniformUpdateBlock!(buffer: buffer) //?? [Texture]()
+        let textures = map.uniformUpdateBlock(buffer: buffer)
         buffer.signalWriteComplete()
         return (fragmentOffset: 0, texturesValid: true, textures: textures)
     }

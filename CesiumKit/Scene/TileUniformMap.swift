@@ -210,14 +210,13 @@ class TileUniformMap: UniformMap {
         UniformDescriptor(name:  "u_zoomedOutOceanSpecularIntensity", type: .FloatVec1, count: 1)
     ]
     
-    /*let metalUniformStruct = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_scaleAndBias;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"*/
-    
     var uniformBufferProvider: UniformBufferProvider! = nil
         
-    var metalUniformUpdateBlock: ((buffer: Buffer) -> ([Texture]))!
+    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
-    init(maxTextureCount: Int) {
+    init (maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
+        
         dayTextures = [Texture]()
         dayTextures.reserveCapacity(maxTextureCount)
 
@@ -228,7 +227,7 @@ class TileUniformMap: UniformMap {
         dayTextureSaturation = [Float]()
         dayTextureOneOverGamma = [Float]()
         
-         metalUniformUpdateBlock = { buffer in
+         uniformUpdateBlock = { buffer in
             memcpy(buffer.data, &self._uniformStruct, sizeof(TileUniformStruct))
             var textures = self.dayTextures
             if let waterMask = self.waterMask {
@@ -239,7 +238,6 @@ class TileUniformMap: UniformMap {
             }
             return textures
         }
-
     }
     
     func textureForUniform (uniform: UniformSampler) -> Texture? {
