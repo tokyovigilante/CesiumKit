@@ -175,8 +175,8 @@ class TextRenderer {
         
         if _rs == nil || _rectangle != rectangle {
             _rs = RenderState(
-                device: context.device,
-                viewport: rectangle
+                device: context.device
+                //viewport: rectangle
             )
             _rectangle = rectangle
             _command.renderState = _rs

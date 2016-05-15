@@ -37,7 +37,6 @@ protocol UniformMap: class {
     var uniformBufferProvider: UniformBufferProvider! { get set }
     
     var uniformDescriptors: [UniformDescriptor] { get }
-
 }
 
 protocol NativeUniformMap: class, UniformMap {
