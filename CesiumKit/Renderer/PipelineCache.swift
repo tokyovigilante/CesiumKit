@@ -83,7 +83,6 @@ class PipelineCache {
         
         if let pipeline = _pipelines[keyword] {
             //pipeline.count++
-            print("cached")
             return pipeline
         }
         
@@ -140,7 +139,6 @@ class PipelineCache {
         
         if let pipeline = _pipelines[keyword] {
             pipeline.count += 1
-            print("cached")
             return pipeline
         }
         

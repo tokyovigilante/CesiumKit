@@ -175,16 +175,17 @@ class TextRenderer {
         
         if _rs == nil || _rectangle != rectangle {
             _rs = RenderState(
-                device: context.device
-                //viewport: rectangle
+                device: context.device,
+                viewport: rectangle
             )
             _rectangle = rectangle
             _command.renderState = _rs
-            _command.vertexArray = nil
+            
+            (_command.uniformMap as! TextUniformMap).viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: rectangle.width, bottom: 0, top: rectangle.height)
         }
 
         if _command.vertexArray == nil || string != _string {
-            let meshRect = CGRect(x: CGFloat(rectangle.x), y: CGFloat(rectangle.y), width: CGFloat(rectangle.width), height: CGFloat(rectangle.height))
+            let meshRect = CGRect(x: 0, y: 0, width: CGFloat(rectangle.width), height: CGFloat(rectangle.height))
             _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
             
             _string = string
@@ -195,7 +196,6 @@ class TextRenderer {
         }
         
         map.modelMatrix = Matrix4.identity
-        map.viewProjectionMatrix = context.uniformState.viewportOrthographic
         map.foregroundColor = color
         
         map._fontAtlasTexture = _fontAtlas.texture

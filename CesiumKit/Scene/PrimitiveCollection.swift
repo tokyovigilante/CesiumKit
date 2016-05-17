@@ -154,7 +154,7 @@ return true;
 
 return false;
 };
-
+*/
 /**
 * Removes all primitives in the collection.
 *
@@ -162,17 +162,10 @@ return false;
 *
 * @see PrimitiveCollection#destroyPrimitives
 */
-PrimitiveCollection.prototype.removeAll = function() {
-if (this.destroyPrimitives) {
-var primitives = this._primitives;
-var length = primitives.length;
-for ( var i = 0; i < length; ++i) {
-primitives[i].destroy();
-}
-}
-this._primitives = [];
-};
-
+    public func removeAll () {
+        _primitives.removeAll()
+    }
+/*
 /**
 * Determines if this collection contains a primitive.
 *
