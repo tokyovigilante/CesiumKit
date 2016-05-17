@@ -124,7 +124,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} cartesian The cartesian to use.
     * @returns {Number} The value of the maximum component.
     */
-    func maximumComponent() -> Double {
+    public func maximumComponent() -> Double {
         return vector_reduce_max(simdType)
     }
     
@@ -134,7 +134,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} cartesian The cartesian to use.
     * @returns {Number} The value of the minimum component.
     */
-    func minimumComponent() -> Double {
+    public func minimumComponent() -> Double {
         return vector_reduce_min(simdType)
     }
     
@@ -146,7 +146,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object into which to store the result.
     * @returns {Cartesian4} A cartesian with the minimum components.
     */
-    func minimumByComponent(other: Cartesian4) -> Cartesian4 {
+    public func minimumByComponent(other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: vector_min(simdType, other.simdType))
     }
     
@@ -158,7 +158,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object into which to store the result.
     * @returns {Cartesian4} A cartesian with the maximum components.
     */
-    func maximumByComponent(other: Cartesian4) -> Cartesian4 {
+    public func maximumByComponent(other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: vector_max(simdType, other.simdType))
     }
     
@@ -168,7 +168,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} cartesian The Cartesian instance whose squared magnitude is to be computed.
     * @returns {Number} The squared magnitude.
     */
-    func magnitudeSquared() -> Double {
+    public func magnitudeSquared() -> Double {
         return length_squared(simdType)//x * x + y * y + z * z + w * w
     }
     
@@ -178,7 +178,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} cartesian The Cartesian instance whose magnitude is to be computed.
     * @returns {Number} The magnitude.
     */
-    func magnitude() -> Double {
+    public func magnitude() -> Double {
         return length(simdType)
     }
     
@@ -195,7 +195,7 @@ public struct Cartesian4: Equatable {
     * new Cesium.Cartesian4(1.0, 0.0, 0.0, 0.0),
     * new Cesium.Cartesian4(2.0, 0.0, 0.0, 0.0));
     */
-    func distance(other: Cartesian4) -> Double {
+    public func distance(other: Cartesian4) -> Double {
         return simd.distance(simdType, other.simdType)
     }
     
@@ -213,7 +213,7 @@ public struct Cartesian4: Equatable {
     *   new Cesium.Cartesian4(1.0, 0.0, 0.0, 0.0),
     *   new Cesium.Cartesian4(3.0, 0.0, 0.0, 0.0));
     */
-    func distanceSquared (other: Cartesian4) -> Double {
+    public func distanceSquared (other: Cartesian4) -> Double {
         return distance_squared(simdType, other.simdType)
     }
     
@@ -224,7 +224,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter.
     */
-    func normalize() -> Cartesian4 {
+    public func normalize() -> Cartesian4 {
         return Cartesian4(simd: simd.normalize(simdType))
     }
     
@@ -235,7 +235,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} right The second Cartesian.
     * @returns {Number} The dot product.
     */
-    func dot(other: Cartesian4) -> Double {
+    public func dot(other: Cartesian4) -> Double {
         return simd.dot(simdType, other.simdType)
     }
     
@@ -247,7 +247,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func multiplyComponents(other: Cartesian4) -> Cartesian4 {
+    public func multiplyComponents(other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType * other.simdType)
     }
 
@@ -259,7 +259,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func add(other: Cartesian4) -> Cartesian4 {
+    public func add(other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType + other.simdType)
     }
     
@@ -271,7 +271,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func subtract(other: Cartesian4) -> Cartesian4 {
+    public func subtract(other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType - other.simdType)
     }
 
@@ -283,7 +283,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func multiplyByScalar (scalar: Double) -> Cartesian4 {
+    public func multiplyByScalar (scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * scalar)
     }
     
@@ -295,7 +295,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func divideByScalar (scalar: Double) -> Cartesian4 {
+    public func divideByScalar (scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * (1/scalar))
     }
     
