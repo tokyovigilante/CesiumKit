@@ -15,7 +15,7 @@ private struct TextUniformStruct: UniformStruct {
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
-class TextUniformMap: NativeUniformMap {
+public class TextUniformMap: NativeUniformMap {
     
     //FIXME: color etc here
     var modelMatrix: Matrix4 {
@@ -79,7 +79,7 @@ class TextUniformMap: NativeUniformMap {
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
  */
-class TextRenderer {
+public class TextRenderer {
     
     /**
      * Determines if the text is shown.
@@ -93,11 +93,13 @@ class TextRenderer {
     
     private let _command = DrawCommand()
     
-    private let _fontAtlas: FontAtlas
+    private var _fontAtlas: FontAtlas! = nil
     
     var string: String
     
     private var _string: String = " "
+
+    let fontName: String
     
     var rectangle: Cartesian4
     
@@ -106,6 +108,10 @@ class TextRenderer {
     private let _pointSize: Int
     
     private var _rs: RenderState! = nil
+    
+    private let _offscreenTarget: Bool
+    
+    private let _blendingState: BlendingState
     
     private let _attributes = [
         // attribute vec4 position;
@@ -128,17 +134,16 @@ class TextRenderer {
             normalize: false)
     ]
     
-    init (context: Context, string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4, offscreenTarget: Bool = false) {
+    public init (string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4, offscreenTarget: Bool = false) {
         
         self.string = string
+        self.fontName = fontName
         self.color = color
-        
         _pointSize = pointSize
         self.rectangle = rectangle
+        _offscreenTarget = offscreenTarget
         
-        _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
-        
-        let blendingState = BlendingState(
+        _blendingState = BlendingState(
             enabled: true,
             equationRgb: .Add,
             equationAlpha: .Add,
@@ -149,29 +154,37 @@ class TextRenderer {
             color: nil
         )
         
-        _command.pipeline = RenderPipeline.withCompiledShader(
-            context,
-            shaderSourceName: "TextRenderer",
-            compiledMetalVertexName: "text_vertex_shade",
-            compiledMetalFragmentName: "text_fragment_shade",
-            uniformStructSize: strideof(TextUniformStruct),
-            vertexDescriptor: VertexDescriptor(attributes: _attributes),
-            depthStencil: offscreenTarget ? false : context.depthTexture,
-            blendingState: blendingState
-        )
-        
         _command.uniformMap = TextUniformMap()
-        _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
 
         _command.owner = self
     }
     
     func update (frameState: FrameState) -> DrawCommand? {
        
+        let context = frameState.context
+
+        if _fontAtlas == nil {
+            _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: _pointSize)
+        }
+        
         if !show || !_fontAtlas.ready {
             return nil
         }
-        let context = frameState.context
+        
+        if _command.pipeline == nil {
+            _command.pipeline = RenderPipeline.withCompiledShader(
+                context,
+                shaderSourceName: "TextRenderer",
+                compiledMetalVertexName: "text_vertex_shade",
+                compiledMetalFragmentName: "text_fragment_shade",
+                uniformStructSize: strideof(TextUniformStruct),
+                vertexDescriptor: VertexDescriptor(attributes: _attributes),
+                depthStencil: _offscreenTarget ? false : context.depthTexture,
+                blendingState: _blendingState
+            )
+            _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+        }
+
         
         if _rs == nil || _rectangle != rectangle {
             _rs = RenderState(
@@ -194,12 +207,10 @@ class TextRenderer {
         guard let map = _command.uniformMap as? TextUniformMap else {
             return nil
         }
-        
+        map._fontAtlasTexture = _fontAtlas.texture
         map.modelMatrix = Matrix4.identity
         map.foregroundColor = color
-        
-        map._fontAtlasTexture = _fontAtlas.texture
-        
+                
         return _command
     }
     
