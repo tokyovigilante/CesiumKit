@@ -79,15 +79,7 @@ class TextUniformMap: NativeUniformMap {
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
  */
-class TextRenderer {
-    
-    /**
-     * Determines if the text is shown.
-     *
-     * @type {Boolean}
-     * @default true
-     */
-    var show = true
+class TextRenderer: Primitive {
     
     var color: Color
     
@@ -159,17 +151,18 @@ class TextRenderer {
             depthStencil: offscreenTarget ? false : context.depthTexture,
             blendingState: blendingState
         )
-        
+        _command.pass = .Overlay
         _command.uniformMap = TextUniformMap()
         _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
 
+        super.init()
         _command.owner = self
     }
     
-    func update (frameState: FrameState) -> DrawCommand? {
+    override func update (inout frameState: FrameState) {
        
         if !show || !_fontAtlas.ready {
-            return nil
+            return
         }
         let context = frameState.context
         
@@ -192,7 +185,7 @@ class TextRenderer {
         }
         
         guard let map = _command.uniformMap as? TextUniformMap else {
-            return nil
+            return
         }
         
         map.modelMatrix = Matrix4.identity
@@ -200,7 +193,7 @@ class TextRenderer {
         
         map._fontAtlasTexture = _fontAtlas.texture
         
-        return _command
+        frameState.commandList.append(_command)
     }
     
     private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray

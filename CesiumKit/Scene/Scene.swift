@@ -1803,11 +1803,11 @@ function callAfterRenderFunctions(frameState) {
         FontAtlas.generateMipmapsIfRequired(context)
         
         updateEnvironment()
+        updateFramerate(passState)
+
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
         resolveFramebuffers(passState)
         executeOverlayCommands(passState)
-        
-        updateFramerate(passState)
         
         if let globe = globe {
             globe.endFrame(&frameState)
@@ -2256,7 +2256,7 @@ Scene.prototype.isDestroyed = function() {
         return destroyObject(this);*/
     }
 
-    //MARK:= Offscreen quads
+    //MARK:- Offscreen quads
     func executeOffscreenCommands () {
         for quad in offscreenPrimitives {
             quad.execute(context)
@@ -2275,11 +2275,11 @@ Scene.prototype.isDestroyed = function() {
     func updateFramerate (passState: PassState) {
         
         framerateDisplay.string = "\(framerate)"
-        if let command = framerateDisplay.update(frameState) {
+        framerateDisplay.update(&frameState)/* {
             _clearNullCommand.execute(context, passState: passState)
             let textRenderPass = context.createRenderPass(passState)
             command.execute(context, renderPass: textRenderPass)
             textRenderPass.complete()
-        }
+        }*/
     }
 }
