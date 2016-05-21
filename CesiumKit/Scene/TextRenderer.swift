@@ -79,29 +79,21 @@ public class TextUniformMap: NativeUniformMap {
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
  */
-public class TextRenderer {
+public class TextRenderer: Primitive {
+   
+    public var color: Color
+
+    public var string: String
     
-    /**
-     * Determines if the text is shown.
-     *
-     * @type {Boolean}
-     * @default true
-     */
-    var show = true
+    var rectangle: Cartesian4
     
-    var color: Color
+    private var _string: String = " "
     
     private let _command = DrawCommand()
     
     private var _fontAtlas: FontAtlas! = nil
     
-    var string: String
-    
-    private var _string: String = " "
-
     let fontName: String
-    
-    var rectangle: Cartesian4
     
     private var _rectangle = Cartesian4(x: Double.infinity, y: Double.infinity, width: Double.infinity, height: Double.infinity)
     
@@ -154,12 +146,14 @@ public class TextRenderer {
             color: nil
         )
         
+        _command.pass = .Overlay
         _command.uniformMap = TextUniformMap()
 
+        super.init()
         _command.owner = self
     }
     
-    func update (frameState: FrameState) -> DrawCommand? {
+    override func update (inout frameState: FrameState) {
        
         let context = frameState.context
 
@@ -168,7 +162,7 @@ public class TextRenderer {
         }
         
         if !show || !_fontAtlas.ready {
-            return nil
+            return
         }
         
         if _command.pipeline == nil {
@@ -205,13 +199,15 @@ public class TextRenderer {
         }
         
         guard let map = _command.uniformMap as? TextUniformMap else {
-            return nil
+            return
         }
         map._fontAtlasTexture = _fontAtlas.texture
         map.modelMatrix = Matrix4.identity
         map.foregroundColor = color
-                
-        return _command
+        
+        map._fontAtlasTexture = _fontAtlas.texture
+        
+        frameState.commandList.append(_command)
     }
     
     private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray

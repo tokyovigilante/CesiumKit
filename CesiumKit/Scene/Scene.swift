@@ -746,7 +746,7 @@ public class Scene {
             fontName: "HelveticaNeue",
             color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
             pointSize: 40,
-            rectangle: Cartesian4(x: 40, y: 40, width: 500, height: 120)
+            rectangle: Cartesian4(x: 40, y: 40, width: 2000, height: 120)
         )
                 
         #if os(iOS)
@@ -1803,11 +1803,11 @@ function callAfterRenderFunctions(frameState) {
         FontAtlas.generateMipmapsIfRequired(context)
         
         updateEnvironment()
+        updateFramerate(passState)
+
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
         resolveFramebuffers(passState)
         executeOverlayCommands(passState)
-        
-        updateFramerate(passState)
         
         if let globe = globe {
             globe.endFrame(&frameState)
@@ -2256,7 +2256,7 @@ Scene.prototype.isDestroyed = function() {
         return destroyObject(this);*/
     }
 
-    //MARK:= Offscreen quads
+    //MARK:- Offscreen quads
     func executeOffscreenCommands () {
         for quad in offscreenPrimitives {
             quad.execute(context)
@@ -2275,11 +2275,14 @@ Scene.prototype.isDestroyed = function() {
     func updateFramerate (passState: PassState) {
         
         framerateDisplay.string = "\(framerate)"
-        if let command = framerateDisplay.update(frameState) {
+        if let debugString = globe.debugString {
+            framerateDisplay.string += "\n\(debugString)"
+        }
+        framerateDisplay.update(&frameState)/* {
             _clearNullCommand.execute(context, passState: passState)
             let textRenderPass = context.createRenderPass(passState)
             command.execute(context, renderPass: textRenderPass)
             textRenderPass.complete()
-        }
+        }*/
     }
 }

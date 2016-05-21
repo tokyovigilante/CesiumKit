@@ -255,7 +255,9 @@ class QuadtreePrimitive {
             //tileProvider.updateForPick(frameState)
         }
     }
-
+    
+    private (set) var debugDisplayString: String? = nil
+    
     func endFrame (inout frameState: FrameState) {
         if !frameState.passes.render {
             return
@@ -266,7 +268,7 @@ class QuadtreePrimitive {
         updateHeights(frameState)
         
         if (_debug.suspendLodUpdate) {
-            return;
+            return
         }
         
         if _debug.enableDebugOutput {
@@ -275,9 +277,8 @@ class QuadtreePrimitive {
                 _debug.tilesCulled != _debug.lastTilesCulled ||
                 _debug.maxDepth != _debug.lastMaxDepth ||
                 _debug.tilesWaitingForChildren != _debug.lastTilesWaitingForChildren {
-                
-               print("Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)")
-                
+               
+                debugDisplayString = "Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)"
                 _debug.lastTilesVisited = _debug.tilesVisited
                 _debug.lastTilesRendered = _debug.tilesRendered
                 _debug.lastTilesCulled = _debug.tilesCulled
