@@ -98,7 +98,7 @@ public struct Cartesian4: Equatable {
         simdType = double4(x, y, width, height)
     }
     
-    init(_ scalar: Double = 0.0) {
+    public init(_ scalar: Double = 0.0) {
         simdType = double4(scalar)
     }
     
