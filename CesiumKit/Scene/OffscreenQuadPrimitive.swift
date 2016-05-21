@@ -92,7 +92,9 @@ public class OffscreenQuadPrimitive: Primitive {
         
         _textCommands.removeAll()
         
-        _textCommands = _text.flatMap { $0.update(frameState) }
+        for text in _text {
+            text.update(&frameState)
+        }
     }
     
     /**

@@ -31,6 +31,10 @@ class Globe {
         return _surface.tilesToRender.count
     }
     
+    var debugString: String? {
+        return _surface.debugDisplayString
+    }
+    
     /**
     * The terrain provider providing surface geometry for this globe.
     * @type {TerrainProvider}
