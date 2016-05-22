@@ -22,7 +22,8 @@ enum Pass: Int {
     Ground,
     Opaque,
     Translucent,
-    Overlay
+    Overlay,
+    OverlayText
     
     static let count = 8
 }

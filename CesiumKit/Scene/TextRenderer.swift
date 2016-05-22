@@ -15,7 +15,7 @@ private struct TextUniformStruct: UniformStruct {
     var foregroundColor: float4 = Color().floatRepresentation
 }
 
-public class TextUniformMap: NativeUniformMap {
+class TextUniformMap: NativeUniformMap {
     
     //FIXME: color etc here
     var modelMatrix: Matrix4 {
@@ -83,19 +83,31 @@ public class TextRenderer: Primitive {
    
     public var color: Color
 
-    public var string: String
+    public var string: String {
+        didSet {
+            _updateMesh = true
+        }
+    }
     
-    var rectangle: Cartesian4
-    
-    private var _string: String = " "
-    
+    public var rectangle: Cartesian4 {
+        didSet {
+            _updateMesh = true
+        }
+    }
+
+    public var uiScale: Double = 1.0 {
+        didSet {
+            _updateMesh = true
+        }
+    }
+
     private let _command = DrawCommand()
     
     private var _fontAtlas: FontAtlas! = nil
     
-    let fontName: String
+    private var _updateMesh: Bool
     
-    private var _rectangle = Cartesian4(x: Double.infinity, y: Double.infinity, width: Double.infinity, height: Double.infinity)
+    let fontName: String
     
     private let _pointSize: Int
     
@@ -134,7 +146,7 @@ public class TextRenderer: Primitive {
         _pointSize = pointSize
         self.rectangle = rectangle
         _offscreenTarget = offscreenTarget
-        
+        _updateMesh = true
         _blendingState = BlendingState(
             enabled: true,
             equationRgb: .Add,
@@ -146,7 +158,7 @@ public class TextRenderer: Primitive {
             color: nil
         )
         
-        _command.pass = .Overlay
+        _command.pass = .OverlayText
         _command.uniformMap = TextUniformMap()
 
         super.init()
@@ -178,24 +190,23 @@ public class TextRenderer: Primitive {
             )
             _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
-
         
-        if _rs == nil || _rectangle != rectangle {
+        if _rs == nil || _updateMesh {
+            
+            let renderRectangle = rectangle.multiplyByScalar(uiScale)
             _rs = RenderState(
                 device: context.device,
-                viewport: rectangle
+                viewport: renderRectangle
             )
-            _rectangle = rectangle
             _command.renderState = _rs
-            
-            (_command.uniformMap as! TextUniformMap).viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: rectangle.width, bottom: 0, top: rectangle.height)
-        }
+            (_command.uniformMap as! TextUniformMap).viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: renderRectangle.width, bottom: 0, top: renderRectangle.height)
 
-        if _command.vertexArray == nil || string != _string {
-            let meshRect = CGRect(x: 0, y: 0, width: CGFloat(rectangle.width), height: CGFloat(rectangle.height))
-            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: _pointSize)
+
+
+            let meshRect = CGRect(x: 0, y: 0, width: CGFloat(renderRectangle.width), height: CGFloat(renderRectangle.height))
+            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(_pointSize) * uiScale))
             
-            _string = string
+            _updateMesh = false
         }
         
         guard let map = _command.uniformMap as? TextUniformMap else {
@@ -285,7 +296,7 @@ public class TextRenderer: Primitive {
     }
     
     
-    func enumerateGlyphsInFrame (frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
+    private func enumerateGlyphsInFrame (frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
         
         let entire = CFRangeMake(0, 0)
         

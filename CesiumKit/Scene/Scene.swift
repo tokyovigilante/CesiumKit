@@ -217,7 +217,8 @@ public class Scene {
     private var _computeCommandList = [ComputeCommand]()
     private var _frustumCommandsList = [FrustumCommands]()
     private var _overlayCommandList = [DrawCommand]()
-    
+    private var _overlayTextCommandList = [DrawCommand]()
+
     
     // TODO: OIT
     
@@ -741,7 +742,6 @@ public class Scene {
         _oit = oit
         
         framerateDisplay = TextRenderer(
-            context: context,
             string: "CesiumKit",
             fontName: "HelveticaNeue",
             color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
@@ -944,6 +944,8 @@ public class Scene {
                 _computeCommandList.append(command as! ComputeCommand)
             } else if command.pass == .Overlay {
                 _overlayCommandList.append(command as! DrawCommand)
+            } else if command.pass == .OverlayText {
+                _overlayTextCommandList.append(command as! DrawCommand)
             } else {
                 let command = command as! DrawCommand
                 if let boundingVolume = command.boundingVolume {
@@ -1415,6 +1417,18 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         }
     }
     
+    func executeOverlayTextCommands(passState: PassState) {
+        if !_overlayTextCommandList.isEmpty {
+            
+            _clearNullCommand.execute(context, passState: passState)
+            let overlayTextRenderPass = context.createRenderPass(passState)
+            for command in _overlayTextCommandList {
+                command.execute(context, renderPass: overlayTextRenderPass)
+            }
+            overlayTextRenderPass.complete()
+        }
+    }
+    
     func updateAndExecuteCommands(passState: PassState, backgroundColor: Cartesian4, picking: Bool = false) {
         
         let camera = frameState.camera
@@ -1786,6 +1800,7 @@ function callAfterRenderFunctions(frameState) {
         uniformState.update(context, frameState: frameState)
         _computeCommandList.removeAll()
         _overlayCommandList.removeAll()
+        _overlayTextCommandList.removeAll()
         
         let passState = _passState
         passState.framebuffer = nil
@@ -1808,6 +1823,7 @@ function callAfterRenderFunctions(frameState) {
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
         resolveFramebuffers(passState)
         executeOverlayCommands(passState)
+        executeOverlayTextCommands(passState)
         
         if let globe = globe {
             globe.endFrame(&frameState)
