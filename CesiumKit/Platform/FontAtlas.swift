@@ -173,7 +173,7 @@ final class FontAtlas: JSONEncodable {
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         var fitRange = CFRangeMake(0, 0)
         let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSizeMake(CGFloat.max, CGFloat.max), &fitRange)
-
+        
         return ceil(Double(textSize.width))
     }
     

@@ -590,6 +590,8 @@
 		949E09F41BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */; };
 		949E09F51BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */; };
 		949E09F61BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */; };
+		94A05DAA1CF1BA240041F512 /* CFRange+Comparison.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A05DA91CF1BA240041F512 /* CFRange+Comparison.swift */; };
+		94A05DAB1CF1BA240041F512 /* CFRange+Comparison.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A05DA91CF1BA240041F512 /* CFRange+Comparison.swift */; };
 		94A833171A80C81800FFAD81 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A833161A80C81800FFAD81 /* SwiftRegex.swift */; };
 		94AB53FC1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
 		94AB53FD1C18FB6C0095A86F /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94AB53F51C18FA040095A86F /* BoxGeometry.swift */; };
@@ -1009,6 +1011,7 @@
 		949E09EB1BE44CF40095A86F /* ImageryLayerFeatureInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerFeatureInfo.swift; sourceTree = "<group>"; };
 		949E09F31BE6C17C0095A86F /* EllipsoidGeodesic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidGeodesic.swift; sourceTree = "<group>"; };
 		949E67A419D6BCB200012DC4 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		94A05DA91CF1BA240041F512 /* CFRange+Comparison.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "CFRange+Comparison.swift"; path = "Platform/Extensions/CFRange+Comparison.swift"; sourceTree = "<group>"; };
 		94A833161A80C81800FFAD81 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftRegex.swift; path = Platform/SwiftRegex.swift; sourceTree = "<group>"; };
 		94AB53F51C18FA040095A86F /* BoxGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxGeometry.swift; sourceTree = "<group>"; };
 		94AC517C1CD21D030041F512 /* Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -1658,6 +1661,7 @@
 		94697D9E1A25C72000FFAD81 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				94A05DAC1CF1BA300041F512 /* Extensions */,
 				94EFB03F1C84D7CD0095A86F /* PMJSON */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
@@ -1706,6 +1710,14 @@
 				94985A681A38444C00FFAD81 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		94A05DAC1CF1BA300041F512 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				94A05DA91CF1BA240041F512 /* CFRange+Comparison.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		94DC79191918425300012DC4 = {
@@ -2274,6 +2286,7 @@
 				9413B7B61A37B93100FFAD81 /* HeightmapTessellator.swift in Sources */,
 				9413B7A41A37B93100FFAD81 /* Cartesian3.swift in Sources */,
 				946D129E1C2CBF40001A40C8 /* ImageExtensions.swift in Sources */,
+				94A05DAA1CF1BA240041F512 /* CFRange+Comparison.swift in Sources */,
 				949090731BCCE3D5001A40C8 /* ContextLimits.swift in Sources */,
 				942F56B71C5D6CC00095A86F /* LabelStyle.swift in Sources */,
 				940240231C1D982D0095A86F /* SkyAtmosphere.swift in Sources */,
@@ -2528,6 +2541,7 @@
 				947821401B5A2D7C0095A86F /* Context.swift in Sources */,
 				947821411B5A2D7C0095A86F /* CubeMap.swift in Sources */,
 				9487FA561BD747F20095A86F /* ViewportQuad.swift in Sources */,
+				94A05DAB1CF1BA240041F512 /* CFRange+Comparison.swift in Sources */,
 				947821431B5A2D7C0095A86F /* CullFace.swift in Sources */,
 				947821441B5A2D7C0095A86F /* DepthTest.swift in Sources */,
 				94EB4D9C1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift in Sources */,

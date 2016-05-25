@@ -17,7 +17,7 @@ public func deleteDuplicates<S:RangeReplaceableCollectionType where S.Generator.
 
 extension Array {
     var sizeInBytes: Int {
-        return self.count * strideofValue(self[0])
+        return count == 0 ? 0 : count * strideofValue(self[0])
     }
     
     /**

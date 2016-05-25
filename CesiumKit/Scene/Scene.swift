@@ -746,7 +746,7 @@ public class Scene {
             fontName: "HelveticaNeue",
             color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
             pointSize: 40,
-            rectangle: Cartesian4(x: 40, y: 40, width: 2000, height: 120)
+            viewportRect: Cartesian4(x: 40, y: 40, width: 2000, height: 120)
         )
                 
         #if os(iOS)

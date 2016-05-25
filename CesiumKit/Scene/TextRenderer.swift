@@ -89,27 +89,28 @@ public class TextRenderer: Primitive {
         }
     }
     
-    public var rectangle: Cartesian4 {
+    public var viewportRect: Cartesian4 {
+        didSet {
+            _updateMetrics = true
+        }
+    }
+    
+    public var pointSize: Int {
         didSet {
             _updateMesh = true
         }
     }
-
-    public var uiScale: Double = 1.0 {
-        didSet {
-            _updateMesh = true
-        }
-    }
+    
+    private var _updateMesh: Bool = true
+    private var _updateMetrics: Bool = false
+    
+    public private (set) var meshSize: Cartesian2 = Cartesian2()
 
     private let _command = DrawCommand()
     
     private var _fontAtlas: FontAtlas! = nil
     
-    private var _updateMesh: Bool
-    
     let fontName: String
-    
-    private let _pointSize: Int
     
     private var _rs: RenderState! = nil
     
@@ -138,15 +139,14 @@ public class TextRenderer: Primitive {
             normalize: false)
     ]
     
-    public init (string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4, offscreenTarget: Bool = false) {
+    public init (string: String, fontName: String, color: Color, pointSize: Int, viewportRect: Cartesian4, offscreenTarget: Bool = false) {
         
         self.string = string
         self.fontName = fontName
         self.color = color
-        _pointSize = pointSize
-        self.rectangle = rectangle
+        self.pointSize = pointSize
+        self.viewportRect = viewportRect
         _offscreenTarget = offscreenTarget
-        _updateMesh = true
         _blendingState = BlendingState(
             enabled: true,
             equationRgb: .Add,
@@ -157,11 +157,14 @@ public class TextRenderer: Primitive {
             functionDestinationAlpha: .OneMinusSourceAlpha,
             color: nil
         )
-        
         _command.pass = .OverlayText
         _command.uniformMap = TextUniformMap()
 
         super.init()
+        
+        let meshCGSize = computeSize()
+        meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
+        
         _command.owner = self
     }
     
@@ -170,13 +173,19 @@ public class TextRenderer: Primitive {
         let context = frameState.context
 
         if _fontAtlas == nil {
-            _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: _pointSize)
+            _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
+        }
+        
+        guard let map = _command.uniformMap as? TextUniformMap else {
+            return
         }
         
         if !show || !_fontAtlas.ready {
             return
         }
-        
+
+        map._fontAtlasTexture = _fontAtlas.texture
+
         if _command.pipeline == nil {
             _command.pipeline = RenderPipeline.withCompiledShader(
                 context,
@@ -188,37 +197,55 @@ public class TextRenderer: Primitive {
                 depthStencil: _offscreenTarget ? false : context.depthTexture,
                 blendingState: _blendingState
             )
-            _command.uniformMap!.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
+            map.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
         
         if _rs == nil || _updateMesh {
             
-            let renderRectangle = rectangle.multiplyByScalar(uiScale)
+            _updateMetrics = true
+            
+            let renderRectangle: Cartesian4
+            
+            let meshCGSize = computeSize()
+            meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
+            
             _rs = RenderState(
                 device: context.device,
-                viewport: renderRectangle
+                viewport: viewportRect
             )
+            
             _command.renderState = _rs
-            (_command.uniformMap as! TextUniformMap).viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: renderRectangle.width, bottom: 0, top: renderRectangle.height)
 
-
-
-            let meshRect = CGRect(x: 0, y: 0, width: CGFloat(renderRectangle.width), height: CGFloat(renderRectangle.height))
-            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(_pointSize) * uiScale))
+            let meshRect = CGRect(x: 0, y: 0, width: meshCGSize.width, height: meshCGSize.height)
+            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(pointSize)))
             
             _updateMesh = false
         }
         
-        guard let map = _command.uniformMap as? TextUniformMap else {
-            return
+        if _updateMetrics {
+            map.viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: viewportRect.width, bottom: 0, top: viewportRect.height)
+            _updateMetrics = false
         }
-        map._fontAtlasTexture = _fontAtlas.texture
-        map.modelMatrix = Matrix4.identity
+        
         map.foregroundColor = color
         
-        map._fontAtlasTexture = _fontAtlas.texture
         
         frameState.commandList.append(_command)
+    }
+    
+    private func computeSize () -> CGSize {
+        let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
+        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string)
+        let font = CTFontCreateWithName(fontName, CGFloat(pointSize), nil)
+        let stringRange = CFRangeMake(0, CFAttributedStringGetLength(attrString))
+        CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
+        
+        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+        var fitRange = CFRangeMake(0, 0)
+        let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSizeMake(CGFloat.max, CGFloat.max), &fitRange)
+        
+        assert(stringRange == fitRange, "Core Text layout failed")
+        return textSize
     }
     
     private func buildMesh (context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray

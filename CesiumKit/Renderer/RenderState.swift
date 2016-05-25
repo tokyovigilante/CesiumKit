@@ -231,8 +231,8 @@ struct RenderState/*: Printable*/ {
                     fatalError("renderState.lineWidth is out of range.  Check minimumAliasedLineWidth and maximumAliasedLineWidth.")
             }*/
             
-            assert(viewport == nil || (viewport != nil && viewport!.width > 0), "renderState.viewport.width must be greater than or equal to zero")
-            assert(viewport == nil || (viewport != nil && viewport!.height > 0), "renderState.viewport.height must be greater than or equal to zero")
+            assert(viewport == nil || (viewport != nil && viewport!.width >= 0), "renderState.viewport.width must be greater than or equal to zero")
+            assert(viewport == nil || (viewport != nil && viewport!.height >= 0), "renderState.viewport.height must be greater than or equal to zero")
             /*
             assert(viewport == nil || (viewport != nil && viewport!.height < context.limits.maximumViewportWidth), "renderState.viewport.width must be less than or equal to the maximum viewport width (" + maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
                 +            if (this.viewport.width > ContextLimits.maximumViewportWidth) {
