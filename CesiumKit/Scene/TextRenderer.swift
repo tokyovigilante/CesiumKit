@@ -232,7 +232,7 @@ public class TextRenderer: Primitive {
         
         frameState.commandList.append(_command)
     }
-    
+
     private func computeSize () -> CGSize {
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string)
@@ -321,7 +321,6 @@ public class TextRenderer: Primitive {
 
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
     }
-    
     
     private func enumerateGlyphsInFrame (frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
         
