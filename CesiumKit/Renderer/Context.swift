@@ -44,9 +44,7 @@ class Context {
     private var _commandBuffer: MTLCommandBuffer! = nil
     
     var limits: ContextLimits
-    
-    //private var _commandsExecutedThisFrame = [DrawCommand]()
-    
+        
     private (set) var depthTexture: Bool = true
     
     var allowTextureFilterAnisotropic: Bool = true
@@ -245,17 +243,13 @@ class Context {
             return false
         }
         
+        self._lastFrameDrawCommands[bufferSyncState.rawValue].removeAll()
+
         defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         
         _commandBuffer = _commandQueue.commandBuffer()
         
-        // call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
-        let bufferIndex = self.bufferSyncState.rawValue
         _commandBuffer.addCompletedHandler { buffer in
-            // GPU has completed rendering the frame and is done using the contents of any buffers previously encoded on the CPU for that frame.
-            // Decrement references for last frame's commands
-            self._lastFrameDrawCommands[bufferIndex].removeAll()
-            
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
             dispatch_semaphore_signal(self._inflight_semaphore)
         }
