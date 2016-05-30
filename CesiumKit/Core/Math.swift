@@ -296,7 +296,7 @@ public struct Math {
     * @example
     * var n = Cesium.Math.lerp(0.0, 2.0, 0.5); // returns 1.0
     */
-    static func lerp (p p: Double, q: Double, time: Double) -> Double {
+    static public func lerp (p p: Double, q: Double, time: Double) -> Double {
         return (1.0 - time) * p + time * q
     }
     /*
@@ -619,7 +619,7 @@ CesiumMath.nextPowerOfTwo = function(n) {
     * @param {Number} max The maximum value.
     * @returns {Number} The value clamped so that min <= value <= max.
     */
-    static func clamp (value: Double, min: Double, max: Double) -> Double {
+    static public func clamp (value: Double, min: Double, max: Double) -> Double {
         return value < min ? min : value > max ? max : value
     }
 /*
