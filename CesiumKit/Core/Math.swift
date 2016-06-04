@@ -717,7 +717,7 @@ return 2.0 * radius * Math.sin(angle * 0.5);
 
 }
 
-extension Double {
+public extension Double {
     
     var wholeComponent: Double {
         return self - (self % 1.0)
@@ -725,6 +725,31 @@ extension Double {
     
     var fractionalComponent: Double {
         return self % 1.0
+    }
+    
+    // Given a value to round and a factor to round to,
+    // round the value to the nearest multiple of that factor.
+    func roundTo(nearest: Double) -> Double {
+        return round(self / nearest) * nearest
+    }
+    
+    // Given a value to round and a factor to round to,
+    // round the value DOWN to the largest previous multiple
+    // of that factor.
+    func roundDown(nearest: Double) -> Double {
+        return floor(self / nearest) * nearest
+    }
+    
+    // Given a value to round and a factor to round to,
+    // round the value DOWN to the largest previous multiple
+    // of that factor.
+    func roundUp(nearest: Double) -> Double {
+        return ceil(self / nearest) * nearest
+    }
+    
+    func roundToPlaces(decimalPlaces: Int) -> Double {
+        let divisor = pow(10.0, Double(decimalPlaces))
+        return round(self * divisor) / divisor
     }
 }
 
