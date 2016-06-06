@@ -229,8 +229,7 @@ class Context {
         return device.newSamplerStateWithDescriptor(descriptor)
     }
     
-    func beginFrame() -> Bool {
-        
+    func updateDrawable () -> Bool {
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
         // signifying the CPU can go ahead and prepare another frame.
@@ -242,11 +241,13 @@ class Context {
             dispatch_semaphore_signal(_inflight_semaphore)
             return false
         }
-        
+        defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
+        return true
+    }
+    
+    func beginFrame() {
         self._lastFrameDrawCommands[bufferSyncState.rawValue].removeAll()
 
-        defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
-        
         _commandBuffer = _commandQueue.commandBuffer()
         
         _commandBuffer.addCompletedHandler { buffer in
@@ -258,8 +259,7 @@ class Context {
         uniformState.setAutomaticUniforms(automaticUniformBuffer)
         automaticUniformBuffer.signalWriteComplete()
         
-        return true
-
+        //updateDrawable()
     }
     
     func createRenderPass(passState: PassState? = nil) -> RenderPass {

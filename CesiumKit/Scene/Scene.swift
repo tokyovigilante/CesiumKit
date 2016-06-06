@@ -1811,9 +1811,7 @@ function callAfterRenderFunctions(frameState) {
             globe.beginFrame(&frameState)
         }
         
-        if !context.beginFrame() {
-            return
-        }
+        context.beginFrame()
         
         FontAtlas.generateMipmapsIfRequired(context)
         
@@ -1821,6 +1819,10 @@ function callAfterRenderFunctions(frameState) {
         updateFramerate(passState)
 
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
+        if !context.updateDrawable() {
+            globe.endFrame(&frameState)
+            return
+        }
         resolveFramebuffers(passState)
         executeOverlayCommands(passState)
         executeOverlayTextCommands(passState)
