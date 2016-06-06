@@ -63,7 +63,7 @@ let Shaders: [String: String] = [
     
     "ViewportQuadFS": "\n\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    czm_materialInput materialInput;\n    \n    materialInput.s = v_textureCoordinates.s;\n    materialInput.st = v_textureCoordinates;\n    materialInput.str = vec3(v_textureCoordinates, 0.0);\n    materialInput.normalEC = vec3(0.0, 0.0, -1.0);\n    \n    czm_material material = czm_getMaterial(materialInput);\n\n    gl_FragColor = vec4(material.diffuse + material.emission, material.alpha);\n}",
     
-    "ViewportQuadVS": "\nattribute vec4 position;\nattribute vec2 textureCoordinates;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main() \n{\n    gl_Position = position;\n    v_textureCoordinates = textureCoordinates;\n}",
+    "ViewportQuadVS": "\nattribute vec2 position;\nattribute vec2 textureCoordinates;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main() \n{\n    gl_Position = vec4(position, 0.0, 1.0);\n    v_textureCoordinates = textureCoordinates;\n}",
     
     "AdditiveBlendFS": "\nuniform sampler2D u_texture0;\nuniform sampler2D u_texture1;\n\nuniform vec2 u_center;\nuniform float u_radius;\n\nvarying vec2 v_textureCoordinates;\n\nvoid main()\n{\n    vec4 color0 = texture2D(u_texture0, v_textureCoordinates);\n    vec4 color1 = texture2D(u_texture1, v_textureCoordinates);\n    \n    float x = length(gl_FragCoord.xy - u_center) / u_radius;\n    float t = smoothstep(0.5, 0.8, x);\n    gl_FragColor = mix(color0 + color1, color0, t);\n}\n",
     
