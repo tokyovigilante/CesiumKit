@@ -54,7 +54,7 @@ class ImageryLayerUniformMap: NativeUniformMap {
 
     init () {
         uniformUpdateBlock = { buffer in
-            memcpy(buffer.data, &self._uniformStruct, sizeof(ImageryLayerUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: sizeof(ImageryLayerUniformStruct))
             return [self.texture!]
         }
     }

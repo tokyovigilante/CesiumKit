@@ -392,8 +392,6 @@ class ShaderProgram {
         
         //"It seems that protocol values provide 24 bytes of storage. If the underlying value fits within 24 bytes, it's stored inline, otherwise it's automatically spilled to the heap." https://www.mikeash.com/pyblog/friday-qa-2014-08-01-exploring-swift-memory-layout-part-ii.html
         
-        let metalBufferPointer = buffer.data + uniform.offset
-        
         switch uniform.type {
             
         case .Automatic:
@@ -410,11 +408,11 @@ class ShaderProgram {
                 }
                 uniform.mapIndex = index
                 let uniformFunc = map.uniform(index)
-                uniformFunc(map: map, buffer: metalBufferPointer)
+                uniformFunc(map: map, buffer: buffer, offset: uniform.offset)
                 break
             }
             let uniformFunc = map.uniform(index)
-            uniformFunc(map: map, buffer: metalBufferPointer)
+            uniformFunc(map: map, buffer: buffer, offset: uniform.offset)
             
         case .Sampler:
             assertionFailure("Sampler not valid for setUniform")

@@ -885,8 +885,7 @@ class UniformState {
         layout.czm_a_frameNumber = Float(frameState.frameNumber)
         layout.czm_a_pass = pass
         
-        memcpy(buffer.data, &layout, sizeof(AutomaticUniformBufferLayout))
-        
+        buffer.write(from: &layout, length: sizeof(AutomaticUniformBufferLayout))
     }
     
     func setFrustumUniforms (buffer: Buffer) {
@@ -906,7 +905,8 @@ class UniformState {
         layout.czm_f_normal = normal.floatRepresentation
         layout.czm_f_normal3D = normal3D.floatRepresentation
         layout.czm_f_entireFrustum = entireFrustum.floatRepresentation
-        memcpy(buffer.data, &layout, sizeof(FrustumUniformBufferLayout))
+        
+        buffer.write(from: &layout, length: sizeof(FrustumUniformBufferLayout))
     }
     
     func cleanViewport() {

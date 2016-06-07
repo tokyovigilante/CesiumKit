@@ -218,7 +218,7 @@ public enum UniformDataType: UInt {
     
 }
 
-typealias UniformFunc = (map: LegacyUniformMap, buffer: UnsafeMutablePointer<Void>) -> ()
+typealias UniformFunc = (map: LegacyUniformMap, buffer: Buffer, offset: Int) -> ()
 
 struct AutomaticUniform {
     let size: Int

@@ -151,7 +151,7 @@ class DepthPlane {
             )
             _command!.vertexArray = _va
         } else {
-            _va!.attributes[0].buffer?.copyFromArray(depthQuad, length: depthQuad.sizeInBytes)
+            _va!.attributes[0].buffer?.write(from: depthQuad, length: depthQuad.sizeInBytes)
         }
     }
     

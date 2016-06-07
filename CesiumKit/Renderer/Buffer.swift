@@ -14,10 +14,6 @@ class Buffer {
     
     var componentDatatype: ComponentDatatype
     
-    var data: UnsafeMutablePointer<Void> {
-        return metalBuffer.contents()
-    }
-    
     // bytes
     let length: Int
     
@@ -56,13 +52,21 @@ class Buffer {
         }
     }
     
-    func copyFromArray (array: UnsafePointer<Void>, length arrayLength: Int, offset: Int = 0) {
-        assert(offset + arrayLength <= length, "This buffer is not large enough")
-        
-        memcpy(data, array+offset, arrayLength)
-        signalWriteComplete()
+    func read (into data: UnsafeMutablePointer<Void>, length readLength: Int, offset: Int = 0) {
+        assert(offset + readLength <= length, "This buffer is not large enough")
+        memcpy(data, metalBuffer.contents()+offset, readLength)
     }
     
+    func write (from data: UnsafePointer<Void>, length writeLength: Int, offset: Int = 0) {
+        assert(offset + writeLength <= length, "This buffer is not large enough")
+        memcpy(metalBuffer.contents()+offset, data, writeLength)
+    }
+    
+    func copy (from other: Buffer, length copyLength: Int, sourceOffset: Int = 0, targetOffset: Int = 0) {
+        assert(sourceOffset + copyLength <= other.length, "source buffer not large enough")
+        assert(targetOffset + copyLength <= length, "This buffer is not large enough")
+        memcpy(metalBuffer.contents()+targetOffset, other.metalBuffer.contents()+sourceOffset, copyLength)
+    }
     
     func signalWriteComplete (range: NSRange? = nil) {
         #if os(OSX)

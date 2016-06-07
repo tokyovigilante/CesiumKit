@@ -68,7 +68,7 @@ class TextUniformMap: NativeUniformMap {
     
     init () {
         uniformUpdateBlock = { buffer in
-            memcpy(buffer.data, &self._uniformStruct, sizeof(TextUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: sizeof(TextUniformStruct))
             return [self._fontAtlasTexture!]
         }
     }

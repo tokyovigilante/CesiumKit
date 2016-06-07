@@ -135,7 +135,7 @@ class FXAAUniformMap: NativeUniformMap {
     
     init () {
         uniformUpdateBlock = { buffer in
-            memcpy(buffer.data, &self._uniformStruct, sizeof(FXAAUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: sizeof(FXAAUniformStruct))
             return [self.texture!]
         }
     }

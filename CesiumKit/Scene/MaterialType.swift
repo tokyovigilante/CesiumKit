@@ -76,9 +76,9 @@ class ColorFabricUniformMap: LegacyUniformMap {
     var uniformBufferProvider: UniformBufferProvider! = nil
     
     let uniforms: [String: UniformFunc] = [
-        "u_color": { map, buffer in
+        "u_color": { map, buffer, offset in
             let simd = (map as! ColorFabricUniformMap).color.floatRepresentation
-            memcpy(buffer, [simd], strideofValue(simd))
+            buffer.write(from: [simd], length: sizeofValue(simd))
         }
     ]
     

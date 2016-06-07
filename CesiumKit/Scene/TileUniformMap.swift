@@ -228,7 +228,7 @@ class TileUniformMap: NativeUniformMap {
         dayTextureOneOverGamma = [Float]()
         
          uniformUpdateBlock = { buffer in
-            memcpy(buffer.data, &self._uniformStruct, sizeof(TileUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: sizeof(TileUniformStruct))
             var textures = self.dayTextures
             if let waterMask = self.waterMask {
                 textures.append(waterMask)

@@ -152,7 +152,7 @@ class VertexArray {
                         let geometryArraySize = geometryAttribute.vertexArraySize
                         
                         doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
-                            memcpy(pointer.baseAddress, values.data, geometryArraySize)
+                            values.read(into: pointer.baseAddress, length: geometryArraySize)
                         })
                         geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
                     }
@@ -226,7 +226,7 @@ class VertexArray {
                     var doubleArray = [Double](count: geometryAttribute.vertexCount, repeatedValue: 0.0)
                     let geometryArraySize = geometryAttribute.vertexArraySize
                     doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
-                        memcpy(pointer.baseAddress, geometryAttribute.values!.data, geometryArraySize)
+                        geometryAttribute.values?.read(into: pointer.baseAddress, length: geometryArraySize)
                     })
                     geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }
@@ -282,12 +282,11 @@ class VertexArray {
                     for name in attributeNames {
                         let attribute = attributes[name]!
                         let elementSize = attribute.size
-                        let source = attribute.values!.data
-                        let target = buffer.data
+                        let source = attribute.values!
                         let sourceOffset = i * elementSize
                         let targetOffset = i * vertexSizeInBytes + attributeIndex
                         
-                        memcpy(target+targetOffset, source+sourceOffset, elementSize)
+                        buffer.copy(from: source, length: elementSize, sourceOffset: sourceOffset, targetOffset: targetOffset)
                         attributeIndex += elementSize
                     }
                 }

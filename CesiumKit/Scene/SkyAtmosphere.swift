@@ -260,7 +260,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
     
     init () {
         uniformUpdateBlock = { buffer in
-            memcpy(buffer.data, &self._uniformStruct, sizeof(SkyAtmosphereUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: sizeof(SkyAtmosphereUniformStruct))
             return []
         }
     }
