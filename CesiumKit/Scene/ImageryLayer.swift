@@ -722,13 +722,15 @@ public class ImageryLayer {
         let pipeline: RenderPipeline
         let sampler: Sampler
         let indexBuffer: Buffer
+        let indexCount: Int
         
-        init (vertexBuffer: Buffer, vertexAttributes: [VertexAttributes], pipeline: RenderPipeline, sampler: Sampler, indexBuffer: Buffer) {
+        init (vertexBuffer: Buffer, vertexAttributes: [VertexAttributes], pipeline: RenderPipeline, sampler: Sampler, indexBuffer: Buffer, indexCount: Int) {
             self.vertexBuffer = vertexBuffer
             self.vertexAttributes = vertexAttributes
             self.pipeline = pipeline
             self.sampler = sampler
             self.indexBuffer = indexBuffer
+            self.indexCount = indexCount
         }
         
         deinit {
@@ -840,7 +842,9 @@ public class ImageryLayer {
                 vertexAttributes: vertexAttributes,
                 pipeline: pipeline,
                 sampler: sampler,
-                indexBuffer: indexBuffer)
+                indexBuffer: indexBuffer,
+                indexCount: indices.count
+            )
             
             context.cache["imageryLayer_reproject"] = reproject
         }
@@ -882,7 +886,7 @@ public class ImageryLayer {
         var attributes = reproject.vertexAttributes
         attributes[1].buffer = webMercatorTBuffer
         
-        let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject.indexBuffer)
+        let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject.indexBuffer, indexCount: reproject.indexCount)
         
         let textureUsage: TextureUsage = [.RenderTarget, .ShaderRead]
         
