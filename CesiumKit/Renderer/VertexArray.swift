@@ -290,7 +290,7 @@ class VertexArray {
                         attributeIndex += elementSize
                     }
                 }
-                let vertexBuffer = buffer
+                buffer.signalWriteComplete()
                 
                 /*
                 var views = {};
@@ -326,7 +326,7 @@ class VertexArray {
                 }*/
                 
                 return (
-                    buffer : vertexBuffer,
+                    buffer : buffer,
                     offsetsInBytes : offsetsInBytes,
                     vertexSizeInBytes : vertexSizeInBytes
                 )
