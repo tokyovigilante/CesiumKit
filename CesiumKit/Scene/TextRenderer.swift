@@ -319,7 +319,7 @@ public class TextRenderer: Primitive {
         var attributes = _attributes
         attributes[0].buffer = vertexBuffer
 
-        return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+        return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indices.count)
     }
     
     private func enumerateGlyphsInFrame (frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {

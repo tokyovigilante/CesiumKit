@@ -10,20 +10,24 @@ import Metal
 
 class VertexArray {
     
-    var attributes: [VertexAttributes]
+    let attributes: [VertexAttributes]
     
-    var vertexCount: Int
+    let vertexCount: Int
     
     let indexBuffer: Buffer?
     
-    var numberOfIndices: Int {
-        return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
-    }
+    let indexCount: Int?
     
-    init(attributes: [VertexAttributes], vertexCount: Int, indexBuffer: Buffer? = nil) {
+    /*var numberOfIndices: Int {
+        return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
+    }*/
+    
+    init(attributes: [VertexAttributes], vertexCount: Int, indexBuffer: Buffer? = nil, indexCount: Int? = nil) {
+        assert(indexBuffer == nil || (indexBuffer != nil && indexCount != nil), "must provide indexcount with indexBuffer")
         self.attributes = attributes
         self.vertexCount = vertexCount
         self.indexBuffer = indexBuffer
+        self.indexCount = indexCount
     }
     
     /**
@@ -178,17 +182,18 @@ class VertexArray {
             }
         }
         let indexBuffer: Buffer?
-        let indices = geometry.indices
-        if indices != nil {
-            if indices!.count < Math.SixtyFourKilobytes {
-                let indicesShort = indices!.map({ UInt16($0) })
+        let indexCount: Int?
+        if let indices = geometry.indices {
+            indexCount = indices.count
+            if indexCount < Math.SixtyFourKilobytes {
+                let indicesShort = indices.map({ UInt16($0) })
                 indexBuffer = Buffer(
                     device: context.device,
                     array: indicesShort,
                     componentDatatype: ComponentDatatype.UnsignedShort,
                     sizeInBytes: indicesShort.sizeInBytes)
             } else {
-                let indicesInt = indices!.map({ UInt32($0) })
+                let indicesInt = indices.map({ UInt32($0) })
                 indexBuffer = Buffer(
                     device: context.device,
                     array: indicesInt,
@@ -197,8 +202,9 @@ class VertexArray {
             }
         } else {
             indexBuffer = nil
+            indexCount = nil
         }
-        self.init(attributes: vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+        self.init(attributes: vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indexCount)
     }
     
     class func computeNumberOfVertices(attribute: GeometryAttribute) -> Int {

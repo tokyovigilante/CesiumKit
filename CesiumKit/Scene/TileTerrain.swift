@@ -248,7 +248,7 @@ class TileTerrain {
             }
             var attributes = terrainMesh.encoding.vertexAttributes
             attributes[0].buffer = vertexBuffer
-            let vertexArray = VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer)
+            let vertexArray = VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: terrainMesh.indexBuffer?.count)
             dispatch_async(dispatch_get_main_queue(), {
                 self.vertexArray = vertexArray
                 self.state = .Ready
