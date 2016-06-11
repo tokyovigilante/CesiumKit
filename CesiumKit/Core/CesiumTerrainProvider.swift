@@ -704,6 +704,36 @@ class CesiumTerrainProvider: TerrainProvider {
         return _levelZeroMaximumGeometricError / Double(1 << level)
     }
     
+    func calculateTileCount () {
+        var tileCount = 0
+        do {
+            guard let availableTiles = _availableTiles else {
+                return
+            }
+            for i in 0...15 {
+                var thisLevelCount = 0
+                guard let tileArray = availableTiles[i].array else { continue }
+                do {
+                    for tileBlock in tileArray {
+                        let blockStartX = try tileBlock.getInt("startX")
+                        let blockStartY = try tileBlock.getInt("startY")
+                        let blockEndX = try tileBlock.getInt("endX")
+                        let blockEndY = try tileBlock.getInt("endY")
+                        let blockWidth = blockEndX - blockStartX + 1
+                        let blockHeight = blockEndY - blockStartY + 1
+                        let blockCount = blockWidth * blockHeight
+                        thisLevelCount += blockCount
+                    }
+                }
+                tileCount += thisLevelCount
+                print("\(thisLevelCount) tiles at level \(i), \(tileCount) total")
+                
+            }
+        } catch {
+            return
+        }
+    }
+    
     func getChildMaskForTile(level: Int, x: Int, y: Int) -> Int {
         guard let availableTiles = _availableTiles else {
             return 15
