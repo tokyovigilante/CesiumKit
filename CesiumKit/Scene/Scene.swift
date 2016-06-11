@@ -685,10 +685,7 @@ public class Scene {
         context = Context(view: view)
         
         if let name = context.device.name {
-            if name.hasPrefix("NVIDIA") {
-                print("FXAA disabled - NVIDIA GPU")
-                fxaa = false
-            } else if  name.hasPrefix("Apple") {
+            if  name.hasPrefix("Apple") {
                 print("FXAA disabled - Mobile")
                 fxaa = false
             }
