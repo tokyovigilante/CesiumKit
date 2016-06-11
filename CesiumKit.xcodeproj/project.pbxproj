@@ -669,6 +669,8 @@
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
 		94F0B82E1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
 		94F0B82F1BC85DFC0095A86F /* OrientedBoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */; };
+		94F493391D0C26050041F512 /* CreditDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F493381D0C26050041F512 /* CreditDisplay.swift */; };
+		94F4933A1D0C26050041F512 /* CreditDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F493381D0C26050041F512 /* CreditDisplay.swift */; };
 		94FCEDC51C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
 		94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
 		94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
@@ -1099,6 +1101,7 @@
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OrientedBoundingBox.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		94F3ECA41A283ADB00FFAD81 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = String.swift; path = Platform/String.swift; sourceTree = "<group>"; };
+		94F493381D0C26050041F512 /* CreditDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditDisplay.swift; sourceTree = "<group>"; };
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
 		94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshTerrainGenerator.swift; sourceTree = "<group>"; };
@@ -1644,6 +1647,7 @@
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				942F56B91C5D6D3A0095A86F /* VerticalOrigin.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
+				94F493381D0C26050041F512 /* CreditDisplay.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -2443,6 +2447,7 @@
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
 				9413B8121A37B94500FFAD81 /* Scene.swift in Sources */,
 				9413B7AD1A37B93100FFAD81 /* EncodedCartesian3.swift in Sources */,
+				94F493391D0C26050041F512 /* CreditDisplay.swift in Sources */,
 				94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */,
 				9413780A1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
 			);
@@ -2647,6 +2652,7 @@
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,
 				9498959E1C7DDF340095A86F /* FontAtlas.swift in Sources */,
+				94F4933A1D0C26050041F512 /* CreditDisplay.swift in Sources */,
 				947821821B5A2D7C0095A86F /* SceneTransitioner.swift in Sources */,
 				947821831B5A2D7C0095A86F /* ScreenSpaceCameraController.swift in Sources */,
 				94BD6B211CD5D58A0041F512 /* TileBoundingBox.swift in Sources */,
