@@ -1584,6 +1584,7 @@
 				94B9DB5F1AC630E10095A86F /* CameraEvent.swift */,
 				94B9DB5B1AC6212A0095A86F /* CameraEventAggregator.swift */,
 				946007AD1AC2C97F0095A86F /* CameraEventType.swift */,
+				94F493381D0C26050041F512 /* CreditDisplay.swift */,
 				94B87DCC194D706800012DC4 /* CullingVolume.swift */,
 				942A70451BF9DB2E001A40C8 /* DepthPlane.swift */,
 				94BD6B221CD601580041F512 /* EnvironmentState.swift */,
@@ -1647,7 +1648,6 @@
 				94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */,
 				942F56B91C5D6D3A0095A86F /* VerticalOrigin.swift */,
 				9487FA541BD747F20095A86F /* ViewportQuad.swift */,
-				94F493381D0C26050041F512 /* CreditDisplay.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";

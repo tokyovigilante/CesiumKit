@@ -197,7 +197,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    public var credit: Credit = Credit(text: "CesiumKit")
+    public var credit: Credit? = nil
     
     /**
     * Gets the proxy used by this provider.
@@ -238,7 +238,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
     public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
-        return [credit]
+        return [credit].flatMap { $0 }
     }
     
     /**

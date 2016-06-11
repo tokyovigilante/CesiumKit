@@ -112,7 +112,7 @@ struct FrameState {
     * The credit display.
     * @type {CreditDisplay}
     */
-    //this.creditDisplay = creditDisplay;
+    var creditDisplay = CreditDisplay()
     
     /**
     * An array of functions to be called at the end of the frame.  This array

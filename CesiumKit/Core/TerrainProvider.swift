@@ -41,7 +41,7 @@ protocol TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Credit}
     */
-    var credit : Credit { get }
+    var credit : Credit? { get }
     
     /**
     * Gets the tiling scheme used by the provider.  This function should

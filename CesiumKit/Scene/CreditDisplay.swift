@@ -8,116 +8,23 @@
 
 import Foundation
 
+/**
+ * The credit display is responsible for displaying credits on screen.
+ *
+ * @param {HTMLElement} container The HTML element where credits will be displayed
+ * @param {String} [delimiter= ' • '] The string to separate text credits
+ *
+ * @alias CreditDisplay
+ * @constructor
+ *
+ * @example
+ * var creditDisplay = new Cesium.CreditDisplay(creditContainer);
+ */
 class CreditDisplay {
     
-    private func displayTextCredit(credit: Credit, delimiter: String) {
-        if (!defined(credit.element)) {
-            var text = credit.text;
-            var link = credit.link;
-            var span = document.createElement('span');
-            if (credit.hasLink()) {
-                var a = document.createElement('a');
-                a.textContent = text;
-                a.href = link;
-                a.target = '_blank';
-                span.appendChild(a);
-            } else {
-                span.textContent = text;
-            }
-            span.className = 'cesium-credit-text';
-            credit.element = span;
-        }
-        if (container.hasChildNodes()) {
-            var del = document.createElement('span');
-            del.textContent = delimiter;
-            del.className = 'cesium-credit-delimiter';
-            container.appendChild(del);
-        }
-        container.appendChild(credit.element);
-    }
+    private var _creditRenderer: TextRenderer
     
-    func displayImageCredit(credit: Credit) {
-        if (!defined(credit.element)) {
-            var text = credit.text;
-            var link = credit.link;
-            var span = document.createElement('span');
-            var content = document.createElement('img');
-            content.src = credit.imageUrl;
-            content.style['vertical-align'] = 'bottom';
-            if (defined(text)) {
-                content.alt = text;
-                content.title = text;
-            }
-            
-            if (credit.hasLink()) {
-                var a = document.createElement('a');
-                a.appendChild(content);
-                a.href = link;
-                a.target = '_blank';
-                span.appendChild(a);
-            } else {
-                span.appendChild(content);
-            }
-            span.className = 'cesium-credit-image';
-            credit.element = span;
-        }
-        container.appendChild(credit.element);
-    }
-    
-    func contains(credits, credit) {
-        var len = credits.length;
-        for ( var i = 0; i < len; i++) {
-            var existingCredit = credits[i];
-            if (Credit.equals(existingCredit, credit)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    func removeCreditDomElement(credit) {
-        var element = credit.element;
-        if (defined(element)) {
-            var container = element.parentNode;
-            if (!credit.hasImage()) {
-                var delimiter = element.previousSibling;
-                if (delimiter === null) {
-                    delimiter = element.nextSibling;
-                }
-                if (delimiter !== null) {
-                    container.removeChild(delimiter);
-                }
-            }
-            container.removeChild(element);
-        }
-    }
-    
-    func displayTextCredits(creditDisplay, textCredits) {
-        var i;
-        var index;
-        var credit;
-        var displayedTextCredits = creditDisplay._displayedCredits.textCredits;
-        for (i = 0; i < textCredits.length; i++) {
-            credit = textCredits[i];
-            if (defined(credit)) {
-                index = displayedTextCredits.indexOf(credit);
-                if (index === -1) {
-                    displayTextCredit(credit, creditDisplay._textContainer, creditDisplay._delimiter);
-                } else {
-                    displayedTextCredits.splice(index, 1);
-                }
-            }
-        }
-        for (i = 0; i < displayedTextCredits.length; i++) {
-            credit = displayedTextCredits[i];
-            if (defined(credit)) {
-                removeCreditDomElement(credit);
-            }
-        }
-        
-    }
-    
-    func displayImageCredits(creditDisplay, imageCredits) {
+    /*func displayImageCredits(creditDisplay, imageCredits) {
         var i;
         var index;
         var credit;
@@ -139,54 +46,49 @@ class CreditDisplay {
                 removeCreditDomElement(credit);
             }
         }
+    }*/
+    
+    let delimiter: String
+    
+    
+    private var _defaultImageCredits = [Credit]()
+    private var _defaultTextCredits = [Credit]()
+    
+    
+    
+    private var _displayedCredits = (
+        imageCredits: [Credit](),
+        textCredits: [Credit]()
+    )
+    
+    private var _currentFrameCredits = (
+        imageCredits: [Int: Credit](),
+        textCredits: [Int: Credit]()
+    )
+    
+    init (delimiter: String = ". ") {
+        self.delimiter = delimiter
+        
+        _creditRenderer = TextRenderer(
+            string: "CesiumKit",
+            fontName: "HelveticaNeue",
+            color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+            pointSize: 40,
+            viewportRect: Cartesian4(x: 200, y: 40, width: 2000, height: 240)
+        )
     }
     
-    /**
-     * The credit display is responsible for displaying credits on screen.
-     *
-     * @param {HTMLElement} container The HTML element where credits will be displayed
-     * @param {String} [delimiter= ' • '] The string to separate text credits
-     *
-     * @alias CreditDisplay
-     * @constructor
-     *
-     * @example
-     * var creditDisplay = new Cesium.CreditDisplay(creditContainer);
-     */
-    init (container, delimiter) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(container)) {
-            throw new DeveloperError('credit container is required');
+    func update(inout frameState: FrameState) {
+        _creditRenderer.update(&frameState)
+    }
+    
+    private func contains(credit: Credit, inCredits credits: [Credit]) -> Bool {
+        for existingCredit in credits {
+            if credit == existingCredit {
+                return true
+            }
         }
-        //>>includeEnd('debug');
-        
-        var imageContainer = document.createElement('span');
-        imageContainer.className = 'cesium-credit-imageContainer';
-        var textContainer = document.createElement('span');
-        textContainer.className = 'cesium-credit-textContainer';
-        container.appendChild(imageContainer);
-        container.appendChild(textContainer);
-        
-        this._delimiter = defaultValue(delimiter, ' • ');
-        this._textContainer = textContainer;
-        this._imageContainer = imageContainer;
-        this._defaultImageCredits = [];
-        this._defaultTextCredits = [];
-        
-        this._displayedCredits = {
-            imageCredits : [],
-            textCredits : []
-        };
-        this._currentFrameCredits = {
-            imageCredits : [],
-            textCredits : []
-        }
-        
-        /**
-         * The HTML element where credits will be displayed.
-         * @type {HTMLElement}
-         */
-        this.container = container;
+        return false
     }
     
     /**
@@ -195,24 +97,16 @@ class CreditDisplay {
      * @param {Credit} credit The credit to display
      */
     func addCredit (credit: Credit) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(credit)) {
-            throw new DeveloperError('credit must be defined');
-        }
-        //>>includeEnd('debug');
-        
-        if (credit.hasImage()) {
-            var imageCredits = this._currentFrameCredits.imageCredits;
-            if (!contains(this._defaultImageCredits, credit)) {
-                imageCredits[credit.id] = credit;
+        if false/*credit.hasImage*/ {
+            if !contains(credit, inCredits: _defaultImageCredits) {
+                _currentFrameCredits.imageCredits[credit.id] = credit
             }
         } else {
-            var textCredits = this._currentFrameCredits.textCredits;
-            if (!contains(this._defaultTextCredits, credit)) {
-                textCredits[credit.id] = credit;
+            if !contains(credit, inCredits: _defaultTextCredits) {
+                _currentFrameCredits.textCredits[credit.id] = credit
             }
         }
-    };
+    }
     
     /**
      * Adds credits that will persist until they are removed
@@ -220,24 +114,18 @@ class CreditDisplay {
      * @param {Credit} credit The credit to added to defaults
      */
     func addDefaultCredit (credit: Credit) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(credit)) {
-            throw new DeveloperError('credit must be defined');
-        }
-        //>>includeEnd('debug');
         
-        if (credit.hasImage()) {
-            var imageCredits = this._defaultImageCredits;
-            if (!contains(imageCredits, credit)) {
-                imageCredits.push(credit);
+        if false/*credit.hasImage*/ {
+            if !contains(credit, inCredits: _defaultImageCredits) {
+                _defaultImageCredits.append(credit)
             }
         } else {
-            var textCredits = this._defaultTextCredits;
-            if (!contains(textCredits, credit)) {
-                textCredits.push(credit);
+            if !contains(credit, inCredits: _defaultTextCredits) {
+                _defaultTextCredits.append(credit)
             }
         }
-    };
+    }
+    
     
     /**
      * Removes a default credit
@@ -245,14 +133,9 @@ class CreditDisplay {
      * @param {Credit} credit The credit to be removed from defaults
      */
     func removeDefaultCredit (credit: Credit) {
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(credit)) {
-            throw new DeveloperError('credit must be defined');
-        }
-        //>>includeEnd('debug');
-        
+        /*
         var index;
-        if (credit.hasImage()) {
+        if false/*credit.hasImage*/ {
             index = this._defaultImageCredits.indexOf(credit);
             if (index !== -1) {
                 this._defaultImageCredits.splice(index, 1);
@@ -262,8 +145,8 @@ class CreditDisplay {
             if (index !== -1) {
                 this._defaultTextCredits.splice(index, 1);
             }
-        }
-    };
+        }*/
+    }
     
     /**
      * Resets the credit display to a beginning of frame state, clearing out current credits.
@@ -271,8 +154,8 @@ class CreditDisplay {
      * @param {Credit} credit The credit to display
      */
     func beginFrame () {
-        this._currentFrameCredits.imageCredits.length = 0;
-        this._currentFrameCredits.textCredits.length = 0;
+        _currentFrameCredits.imageCredits.removeAll()
+        _currentFrameCredits.textCredits.removeAll()
     }
     
     /**
@@ -281,14 +164,16 @@ class CreditDisplay {
      * @param {Credit} credit The credit to display
      */
     func endFrame () {
-        var textCredits = this._defaultTextCredits.concat(this._currentFrameCredits.textCredits);
-        var imageCredits = this._defaultImageCredits.concat(this._currentFrameCredits.imageCredits);
+        //var textCredits = _defaultTextCredits.concat(this._currentFrameCredits.textCredits);
+        //var imageCredits = _defaultImageCredits.concat(this._currentFrameCredits.imageCredits);
+        _creditRenderer.string = _currentFrameCredits.textCredits.values
+            .filter { $0.hasText }
+            .reduce("") { $0 + $1.text! + delimiter }
+        //displayTextCredits(_currentFrameCredits.textCredits)//textCredits)
+        //displayImageCredits(imageCredits)
         
-        displayTextCredits(this, textCredits);
-        displayImageCredits(this, imageCredits);
-        
-        this._displayedCredits.textCredits = textCredits;
-        this._displayedCredits.imageCredits = imageCredits;
-    };
+        //_displayedCredits.textCredits = textCredits
+        //_displayedCredits.imageCredits = imageCredits
+    }
     
 }

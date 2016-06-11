@@ -166,7 +166,7 @@ public protocol ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    var credit: Credit { get }
+    var credit: Credit? { get }
     
     /**
     * Gets the proxy used by this provider.

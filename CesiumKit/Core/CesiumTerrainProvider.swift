@@ -86,7 +86,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @memberof TerrainProvider.prototype
      * @type {Credit}
      */
-    private (set) var credit: Credit
+    private (set) var credit: Credit? = nil
     
     /**
      * Gets a value indicating whether or not the provider is ready for use.
@@ -163,14 +163,13 @@ class CesiumTerrainProvider: TerrainProvider {
     
     private var _littleEndianExtensionSize = true
     
-    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false, credit: Credit = Credit(text: "CesiumKit")) {
+    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
         
         self.url = url
         self.ellipsoid = ellipsoid
         self.tilingScheme = tilingScheme
         self.requestVertexNormals = requestVertexNormals
         _requestWaterMask = requestWaterMask
-        self.credit = credit
         
         _levelZeroMaximumGeometricError = CesiumTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: _heightmapWidth, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
         

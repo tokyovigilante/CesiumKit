@@ -197,18 +197,18 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         
         // Add credits for terrain and imagery providers.
         // FIXME: Credits
-        /*var creditDisplay = frameState.creditDisplay;
+        let creditDisplay = frameState.creditDisplay
         
-        if (this._terrainProvider.ready && defined(this._terrainProvider.credit)) {
-        creditDisplay.addCredit(this._terrainProvider.credit);
+        if let credit = terrainProvider.credit where terrainProvider.ready {
+            creditDisplay.addCredit(credit)
         }
-        
-        for (i = 0, len = imageryLayers.length; i < len; ++i) {
-        var imageryProvider = imageryLayers.get(i).imageryProvider;
-        if (imageryProvider.ready && defined(imageryProvider.credit)) {
-        creditDisplay.addCredit(imageryProvider.credit);
+        for i in 0..<imageryLayers.count {
+            if let imageryProvider = imageryLayers[i]?.imageryProvider {
+                if let credit = imageryProvider.credit where imageryProvider.ready {
+                    creditDisplay.addCredit(credit)
+                }
+            }
         }
-        }*/
     }
     
     /**

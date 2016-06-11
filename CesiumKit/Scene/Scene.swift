@@ -1790,8 +1790,8 @@ function callAfterRenderFunctions(frameState) {
         let frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
         frameState.passes.render = true
-        // FIXME: Creditdisplay
-        //frameState.creditDisplay.beginFrame();
+        
+        frameState.creditDisplay.beginFrame()
         
         fog.update(&frameState)
         
@@ -1830,8 +1830,8 @@ function callAfterRenderFunctions(frameState) {
             globe.endFrame(&frameState)
         }
         
-        /*frameState.creditDisplay.endFrame();
-        
+        frameState.creditDisplay.endFrame()
+        /*
         if (scene.debugShowFramesPerSecond) {
             // TODO: Performance display
 /*            if (!defined(scene._performanceDisplay)) {
@@ -2301,5 +2301,6 @@ Scene.prototype.isDestroyed = function() {
             command.execute(context, renderPass: textRenderPass)
             textRenderPass.complete()
         }*/
+        frameState.creditDisplay.update(&frameState)
     }
 }

@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Test Toast. All rights reserved.
 //
 
-var nextCreditId = 0
-var creditToId = [String: Int]()
+private var _nextCreditId = 0
+private var _creditToId = [String: Int]()
 
 /**
 * A credit contains data pertaining to how to display attributions/credits for certain content on the screen.
@@ -31,6 +31,18 @@ public struct Credit: Equatable {
     
     public let link: String?
     
+    var hasText: Bool {
+        return text != nil
+    }
+    
+    var hasImage: Bool {
+        return imageUrl != nil
+    }
+    
+    var hasLink: Bool {
+        return link != nil
+    }
+    
     /**
     * @memberof Credit.prototype
     * @type {Number}
@@ -52,12 +64,12 @@ public struct Credit: Equatable {
         
         // Credits are immutable so generate an id to use to optimize equal()
         let key = "[\(self.text), \(self.imageUrl), \(self.link)]"
-        if let creditToId = creditToId[key] {
-            id = creditToId
+        if let _creditToId = _creditToId[key] {
+            id = _creditToId
         } else {
-            id = nextCreditId
-            creditToId[key] = id
-            nextCreditId += 1
+            id = _nextCreditId
+            _creditToId[key] = id
+            _nextCreditId += 1
         }
     }
 }

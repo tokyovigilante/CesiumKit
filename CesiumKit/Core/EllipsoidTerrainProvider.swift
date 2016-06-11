@@ -53,7 +53,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @memberof TerrainProvider.prototype
     * @type {Credit}
     */
-    var credit: Credit
+    var credit: Credit? = nil
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -71,7 +71,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
         self.tilingScheme = tilingScheme
         self.ellipsoid = ellipsoid
         
-        credit = Credit(text: "CesiumKit", imageUrl: nil, link: nil)
+        credit = nil
         
         errorEvent = Event()
 
