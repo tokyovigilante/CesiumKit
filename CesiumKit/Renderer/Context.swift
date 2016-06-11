@@ -325,6 +325,9 @@ class Context {
             depthAttachment.loadAction = .Clear
             depthAttachment.storeAction = .DontCare
             depthAttachment.clearDepth = d
+        } else {
+            depthAttachment.loadAction = .DontCare
+            depthAttachment.storeAction = .DontCare
         }
         
         let stencilAttachment = passDescriptor.stencilAttachment
@@ -332,9 +335,13 @@ class Context {
             stencilAttachment.loadAction = .Clear
             stencilAttachment.storeAction = .Store
             stencilAttachment.clearStencil = s
+        } else {
+            stencilAttachment.loadAction = .DontCare
+            stencilAttachment.storeAction = .DontCare
+            
         }
     }
-    
+
     func draw(command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         _lastFrameDrawCommands[bufferSyncState.rawValue].append(command)
         beginDraw(command, renderPass: renderPass)
@@ -386,7 +393,10 @@ class Context {
         if let indexBuffer = va.indexBuffer {
             let indexType = va.indexBuffer!.componentDatatype.toMTLIndexType()
             offset *= indexBuffer.componentDatatype.elementSize // offset in vertices to offset in bytes
-            let indexCount = count ?? va.numberOfIndices
+            guard let indexCount = count ?? va.indexCount else {
+                assertionFailure("index count not provided for indexed primitive")
+                return
+            }
             
             // automatic uniforms
             commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, atIndex: 0)
@@ -415,6 +425,7 @@ class Context {
             if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
                 commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
             }
+            
             for (index, texture) in bufferParams.textures.enumerate() {
                 commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
                 commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)
