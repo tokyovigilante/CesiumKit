@@ -71,8 +71,6 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public let url: String
         
-        public let key: String?
-        
         public let tileProtocol: String
         
         public let mapStyle: BingMapsStyle
@@ -85,7 +83,6 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
             self.url = url
-            self.key = key
             self.tileProtocol = tileProtocol
             self.mapStyle = mapStyle
             self.culture = culture
@@ -337,7 +334,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     private var _imageUrlSubdomains: JSONArray? = nil
     
-    public init(options: Options = Options()) {
+    public init(key: String? = nil, options: Options = Options()) {
 
         if options.mapStyle == .Aerial || options.mapStyle == .AerialWithLabels {
             defaultGamma = 1.3
@@ -348,7 +345,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         mapStyle = options.mapStyle
         culture = options.culture
         
-        _key = BingMapsAPI.getKey(options.key)
+        _key = BingMapsAPI.getKey(key)
         
         _url = options.url
         
@@ -381,7 +378,16 @@ public class BingMapsImageryProvider: ImageryProvider {
             do {
                 let metadata = try JSON.decode(data, strict: true)
                 
-                let resource = try metadata.getArray("resourceSets")[0].getArray("resources")[0]
+                guard let resourceSet = try metadata.getArray("resourceSets").first else {
+                    let error = try metadata.getArray("errorDetails")
+                    print("metadata error: ")// + error.first?)
+                    return
+                }
+                guard let resource = try resourceSet.getArray("resources").first else {
+                    let error = try metadata.getString("errorDetails")
+                    print("metadata error: " + error)
+                    return
+                }
                 self._tileWidth = try resource.getInt("imageWidth")
                 self._tileHeight = try resource.getInt("imageHeight")
                 self._maximumLevel = try resource.getInt("zoomMax") - 1
