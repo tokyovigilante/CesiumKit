@@ -99,5 +99,7 @@ class Framebuffer {
         _rpd.colorAttachments[0].texture = nil
         _rpd.colorAttachments[0].loadAction = .Load
         _rpd.colorAttachments[0].storeAction = .DontCare
+        _rpd.depthAttachment.texture = nil
+        _rpd.stencilAttachment.texture = nil
     }
 }
