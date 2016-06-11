@@ -74,11 +74,21 @@ class CreditDisplay {
             fontName: "HelveticaNeue",
             color: Color(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
             pointSize: 40,
-            viewportRect: Cartesian4(x: 200, y: 40, width: 2000, height: 240)
+            viewportRect: Cartesian4(x: 40, y: 40, width: 2000, height: 240)
         )
     }
     
     func update(inout frameState: FrameState) {
+        //_creditRenderer.update(&frameState)
+        let context = frameState.context
+        var meshSize = _creditRenderer.computeSize(Double(context.width - 80))
+        var viewPortRect = Cartesian4(
+            x: 40,
+            y: Double(context.height - 40) - Double(meshSize.height),
+            width: min(Double(meshSize.width), Double(context.width - 80)),
+            height: Double(meshSize.height)
+        )
+        _creditRenderer.viewportRect = viewPortRect
         _creditRenderer.update(&frameState)
     }
     

@@ -229,11 +229,12 @@ public class TextRenderer: Primitive {
         
         map.foregroundColor = color
         
-        
         frameState.commandList.append(_command)
     }
 
-    private func computeSize () -> CGSize {
+    func computeSize (constraintWidth: Double? = nil) -> CGSize {
+        
+        let constrainedWidth = constraintWidth ?? viewportRect.width
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string)
         let font = CTFontCreateWithName(fontName, CGFloat(pointSize), nil)
@@ -242,7 +243,7 @@ public class TextRenderer: Primitive {
         
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         var fitRange = CFRangeMake(0, 0)
-        let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSizeMake(CGFloat.max, CGFloat.max), &fitRange)
+        let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSizeMake(CGFloat(constrainedWidth), CGFloat.max), &fitRange)
         
         assert(stringRange == fitRange, "Core Text layout failed")
         return textSize
