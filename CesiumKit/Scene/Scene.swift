@@ -234,7 +234,7 @@ public class Scene {
     private let _fxaa = FXAA()
     
     
-    var _clearColorCommand = ClearCommand(color: Cartesian4.zero, stencil: 0/*, owner: self*/)
+    var _clearColorCommand = ClearCommand(color: Cartesian4.zero/*, owner: self*/)
     
     let _clearDepthCommand = ClearCommand(depth: 1.0/*, owner: self*/)
     
@@ -1406,10 +1406,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     }
     
     func executeOverlayCommands(passState: PassState) {
+        
         if !_overlayCommandList.isEmpty {
-            
             _clearNullCommand.execute(context, passState: passState)
             let overlayRenderPass = context.createRenderPass(passState)
+
             for command in _overlayCommandList {
                 command.execute(context, renderPass: overlayRenderPass)
             }
@@ -1819,8 +1820,9 @@ function callAfterRenderFunctions(frameState) {
         updateFramerate(passState)
 
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
+        
         if !context.updateDrawable() {
-            globe.endFrame(&frameState)
+            context.endFrame()
             return
         }
         resolveFramebuffers(passState)
