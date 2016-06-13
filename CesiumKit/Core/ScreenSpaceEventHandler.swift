@@ -10,36 +10,37 @@
 
 import Foundation
 
-enum MouseButton: Int {
+public enum MouseButton: Int {
     case Left = 0,
     Middle,
     Right
 }
 
-protocol EventGeometry {}
+protocol InputEvent {}
 
-struct TouchStartEventGeometry: EventGeometry {
+struct TouchStartEvent: InputEvent {
     var position: Cartesian2
 }
 
-struct Touch2StartEventGeometry: EventGeometry {
+struct Touch2StartEvent: InputEvent {
     var position1: Cartesian2
     var position2: Cartesian2
 }
 
-struct TouchMoveEventGeometry: EventGeometry {
+struct TouchMoveEvent: InputEvent {
     var startPosition: Cartesian2
     var endPosition: Cartesian2
 }
 
-struct TouchEndEventGeometry: EventGeometry {
-    var position: Cartesian2
-}
-struct TouchClickEventGeometry: EventGeometry {
+struct TouchEndEvent: InputEvent {
     var position: Cartesian2
 }
 
-struct TouchPinchMovementEventGeometry: EventGeometry {
+struct TouchClickEvent: InputEvent {
+    var position: Cartesian2
+}
+
+struct TouchPinchMovementEvent: InputEvent {
     var distance = (
         startPosition: Cartesian2(),
         endPosition: Cartesian2()
@@ -50,11 +51,32 @@ struct TouchPinchMovementEventGeometry: EventGeometry {
     )
 }
 
-typealias EventAction = (geometry: EventGeometry) -> ()
+struct MouseDownEvent: InputEvent {
+    var position: Cartesian2
+}
+
+struct MouseMoveEvent: InputEvent {
+    var startPosition: Cartesian2
+    var endPosition: Cartesian2
+}
+
+struct MouseUpEvent: InputEvent {
+    var position: Cartesian2
+}
+
+struct MouseClickEvent: InputEvent {
+    var position: Cartesian2
+}
+
+struct WheelEvent: InputEvent {
+    var deltaX: Double
+    var deltaY: Double
+}
+
+
+typealias EventAction = (event: InputEvent) -> ()
 
 public class ScreenSpaceEventHandler {
-    
-    //private weak var _layer: CAMetalLayer!
     
     private var _inputEvents: [String: EventAction]
     var _buttonDown: MouseButton? = nil
@@ -72,7 +94,7 @@ public class ScreenSpaceEventHandler {
     
     // TODO: Revisit when doing mobile development. May need to be configurable
     // or determined based on the platform?
-    private var _clickPixelTolerance = 5
+    private var _clickPixelTolerance = 5.0
     
     init(/*view: UIView, */_ something: Bool = false) {
         //self._view = view
@@ -81,20 +103,6 @@ public class ScreenSpaceEventHandler {
         registerListeners()
     }
     
-    /*function getPosition(screenSpaceEventHandler, event, result) {
-    var element = screenSpaceEventHandler._element;
-    if (element === document) {
-    result.x = event.clientX;
-    result.y = event.clientY;
-    return result;
-    }
-    
-    var rect = element.getBoundingClientRect();
-    result.x = event.clientX - rect.left;
-    result.y = event.clientY - rect.top;
-    return result;
-    }
-    */
     func getInputEventKey(type: ScreenSpaceEventType, modifier: KeyboardEventModifier? = nil) -> String {
         return "\(type.rawValue)" + (modifier != nil ? "+\(modifier!.rawValue)" : "")
     }
@@ -198,136 +206,89 @@ public class ScreenSpaceEventHandler {
     //event.preventDefault()
     }*/
     
-    /*var mouseDownEvent = {
-    position : new Cartesian2()
-    };
-    
-    function handleMouseDown(screenSpaceEventHandler, event) {
-    if (screenSpaceEventHandler._seenAnyTouchEvents) {
-    return;
+    public func handleMouseDown (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        if _seenAnyTouchEvents {
+            return
+        }
+        
+        _buttonDown = button
+        
+        let screenSpaceEventType: ScreenSpaceEventType
+        switch button {
+        case .Left:
+            screenSpaceEventType = .LeftDown
+        case .Middle:
+            screenSpaceEventType = .MiddleDown
+        case .Right:
+            screenSpaceEventType = .RightDown
+        }
+        _primaryPosition = position
+        _primaryStartPosition = position
+        _primaryPreviousPosition = position
+        
+        if let action = getInputAction(screenSpaceEventType, modifier: modifier) {
+            
+            let mouseDownEvent = MouseDownEvent(position: position)
+            action(event: mouseDownEvent)
+            
+        }
     }
-    
-    var button = event.button;
-    screenSpaceEventHandler._buttonDown = button;
-    
-    var screenSpaceEventType;
-    if (button === MouseButton.LEFT) {
-    screenSpaceEventType = ScreenSpaceEventType.LEFT_DOWN;
-    } else if (button === MouseButton.MIDDLE) {
-    screenSpaceEventType = ScreenSpaceEventType.MIDDLE_DOWN;
-    } else if (button === MouseButton.RIGHT) {
-    screenSpaceEventType = ScreenSpaceEventType.RIGHT_DOWN;
-    } else {
-    return;
+
+    public func handleMouseUp (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        if _seenAnyTouchEvents {
+            return
+        }
+        
+        _buttonDown = nil
+        
+        let screenSpaceEventType: ScreenSpaceEventType
+        let clickScreenSpaceEventType: ScreenSpaceEventType
+        switch button {
+        case .Left:
+            screenSpaceEventType = .LeftDown
+            clickScreenSpaceEventType = .LeftClick
+        case .Middle:
+            screenSpaceEventType = .MiddleDown
+            clickScreenSpaceEventType = ScreenSpaceEventType.MiddleClick
+
+        case .Right:
+            screenSpaceEventType = .RightDown
+            clickScreenSpaceEventType = ScreenSpaceEventType.RightClick
+        }
+        
+        if let action = getInputAction(screenSpaceEventType, modifier: modifier) {
+            _primaryPosition = position
+            action(event: MouseUpEvent(position: position))
+        }
+        
+        if let clickAction = getInputAction(clickScreenSpaceEventType, modifier: modifier) {
+            _primaryPosition = position
+            let startPosition = _primaryStartPosition
+            let xDiff = startPosition.x - position.x
+            let yDiff = startPosition.y - position.y
+            let totalPixels = sqrt(xDiff * xDiff + yDiff * yDiff)
+            
+            if totalPixels < _clickPixelTolerance {
+                clickAction(event: MouseClickEvent(position: position))
+            }
+        }
     }
-    
-    var position = getPosition(screenSpaceEventHandler, event, screenSpaceEventHandler._primaryPosition);
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryStartPosition);
-    Cartesian2.clone(position, screenSpaceEventHandler._primaryPreviousPosition);
-    
-    var modifier = getModifier(event);
-    
-    var action = screenSpaceEventHandler.getInputAction(screenSpaceEventType, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(position, mouseDownEvent.position);
-    
-    action(mouseDownEvent);
-    
-    event.preventDefault();
+   
+    public func handleMouseMove (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        if _seenAnyTouchEvents {
+            return
+        }
+        
+        _primaryPosition = position
+        let previousPosition = _primaryPreviousPosition
+        
+        if let action = getInputAction(.MouseMove, modifier: modifier) {
+            let mouseMoveEvent = MouseMoveEvent(startPosition: previousPosition, endPosition: position)
+            action(event: mouseMoveEvent)
+        }
+        _primaryPreviousPosition = position
     }
-    }
-    
-    var mouseUpEvent = {
-    position : new Cartesian2()
-    };
-    var mouseClickEvent = {
-    position : new Cartesian2()
-    };
-    
-    function handleMouseUp(screenSpaceEventHandler, event) {
-    if (screenSpaceEventHandler._seenAnyTouchEvents) {
-    return;
-    }
-    
-    var button = event.button;
-    screenSpaceEventHandler._buttonDown = undefined;
-    
-    var screenSpaceEventType;
-    var clickScreenSpaceEventType;
-    if (button === MouseButton.LEFT) {
-    screenSpaceEventType = ScreenSpaceEventType.LEFT_UP;
-    clickScreenSpaceEventType = ScreenSpaceEventType.LEFT_CLICK;
-    } else if (button === MouseButton.MIDDLE) {
-    screenSpaceEventType = ScreenSpaceEventType.MIDDLE_UP;
-    clickScreenSpaceEventType = ScreenSpaceEventType.MIDDLE_CLICK;
-    } else if (button === MouseButton.RIGHT) {
-    screenSpaceEventType = ScreenSpaceEventType.RIGHT_UP;
-    clickScreenSpaceEventType = ScreenSpaceEventType.RIGHT_CLICK;
-    } else {
-    return;
-    }
-    
-    var modifier = getModifier(event);
-    
-    var action = screenSpaceEventHandler.getInputAction(screenSpaceEventType, modifier);
-    var clickAction = screenSpaceEventHandler.getInputAction(clickScreenSpaceEventType, modifier);
-    
-    if (defined(action) || defined(clickAction)) {
-    var position = getPosition(screenSpaceEventHandler, event, screenSpaceEventHandler._primaryPosition);
-    
-    if (defined(action)) {
-    Cartesian2.clone(position, mouseUpEvent.position);
-    
-    action(mouseUpEvent);
-    }
-    
-    if (defined(clickAction)) {
-    var startPosition = screenSpaceEventHandler._primaryStartPosition;
-    var xDiff = startPosition.x - position.x;
-    var yDiff = startPosition.y - position.y;
-    var totalPixels = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-    
-    if (totalPixels < screenSpaceEventHandler._clickPixelTolerance) {
-    Cartesian2.clone(position, mouseClickEvent.position);
-    
-    clickAction(mouseClickEvent);
-    }
-    }
-    }
-    }
-    
-    var mouseMoveEvent = {
-    startPosition : new Cartesian2(),
-    endPosition : new Cartesian2()
-    };
-    
-    function handleMouseMove(screenSpaceEventHandler, event) {
-    if (screenSpaceEventHandler._seenAnyTouchEvents) {
-    return;
-    }
-    
-    var modifier = getModifier(event);
-    
-    var position = getPosition(screenSpaceEventHandler, event, screenSpaceEventHandler._primaryPosition);
-    var previousPosition = screenSpaceEventHandler._primaryPreviousPosition;
-    
-    var action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.MOUSE_MOVE, modifier);
-    
-    if (defined(action)) {
-    Cartesian2.clone(previousPosition, mouseMoveEvent.startPosition);
-    Cartesian2.clone(position, mouseMoveEvent.endPosition);
-    
-    action(mouseMoveEvent);
-    }
-    
-    Cartesian2.clone(position, previousPosition);
-    
-    if (defined(screenSpaceEventHandler._buttonDown)) {
-    event.preventDefault();
-    }
-    }
-    
+    /*
     var mouseDblClickEvent = {
     position : new Cartesian2()
     };
@@ -356,47 +317,34 @@ public class ScreenSpaceEventHandler {
     action(mouseDblClickEvent);
     }
     }
-    
-    function handleWheel(screenSpaceEventHandler, event) {
-    // currently this event exposes the delta value in terms of
-    // the obsolete mousewheel event type.  so, for now, we adapt the other
-    // values to that scheme.
-    var delta;
-    
-    // standard wheel event uses deltaY.  sign is opposite wheelDelta.
-    // deltaMode indicates what unit it is in.
-    if (defined(event.deltaY)) {
-    var deltaMode = event.deltaMode;
-    if (deltaMode === event.DOM_DELTA_PIXEL) {
-    delta = -event.deltaY;
-    } else if (deltaMode === event.DOM_DELTA_LINE) {
-    delta = -event.deltaY * 40;
-    } else {
-    // DOM_DELTA_PAGE
-    delta = -event.deltaY * 120;
-    }
-    } else if (event.detail > 0) {
-    // old Firefox versions use event.detail to count the number of clicks. The sign
-    // of the integer is the direction the wheel is scrolled.
-    delta = event.detail * -120;
-    } else {
-    delta = event.wheelDelta;
-    }
-    
-    if (!defined(delta)) {
-    return;
+     */
+    public func handleWheel (deltaX: Double, deltaY: Double) {
+        
+        // standard wheel event uses deltaY.  sign is opposite wheelDelta.
+        // deltaMode indicates what unit it is in.
+        /*if (defined(event.deltaY)) {
+            var deltaMode = event.deltaMode;
+            if (deltaMode === event.DOM_DELTA_PIXEL) {
+                delta = -event.deltaY;
+            } else if (deltaMode === event.DOM_DELTA_LINE) {
+                delta = -event.deltaY * 40;
+            } else {
+                // DOM_DELTA_PAGE
+                delta = -event.deltaY * 120;
+            }
+        } else if (event.detail > 0) {
+            // old Firefox versions use event.detail to count the number of clicks. The sign
+            // of the integer is the direction the wheel is scrolled.
+            delta = event.detail * -120;
+        } else {
+            delta = event.wheelDelta;
+        }*/
+        
+        if let action = getInputAction(.Wheel, modifier: nil) {
+            action(event: WheelEvent(deltaX: deltaX, deltaY: deltaY))
+        }
     }
     
-    var modifier = getModifier(event);
-    var action = screenSpaceEventHandler.getInputAction(ScreenSpaceEventType.WHEEL, modifier);
-    
-    if (defined(action)) {
-    action(delta);
-    
-    event.preventDefault();
-    }
-    }
-    */
     public func handleTouchStart(touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
@@ -481,7 +429,7 @@ public class ScreenSpaceEventHandler {
             action = getInputAction(.LeftUp, modifier: modifier)
             
             if action != nil {
-                action!(geometry: TouchEndEventGeometry(position: _primaryPosition))
+                action!(event: TouchEndEvent(position: _primaryPosition))
             }
             
             if numberOfTouches == 0 {
@@ -511,7 +459,7 @@ public class ScreenSpaceEventHandler {
             _isPinching = false
             
             if let action = getInputAction(.PinchEnd, modifier: modifier) {
-                action(geometry: TouchEndEventGeometry(position: _primaryPosition))
+                action(event: TouchEndEvent(position: _primaryPosition))
             }
         }
         
@@ -527,7 +475,7 @@ public class ScreenSpaceEventHandler {
                 action = getInputAction(ScreenSpaceEventType.LeftDown, modifier: modifier)
                 
                 if action != nil {
-                    action!(geometry: TouchStartEventGeometry(position: position))
+                    action!(event: TouchStartEvent(position: position))
                 }
             }
         }
@@ -539,7 +487,7 @@ public class ScreenSpaceEventHandler {
             action = getInputAction(.PinchStart, modifier: modifier)
             
             if action != nil {
-                action!(geometry: Touch2StartEventGeometry(position1: _positions[0]!, position2: _positions[1]!))
+                action!(event: Touch2StartEvent(position1: _positions[0]!, position2: _positions[1]!))
             }
         }
     }
@@ -562,7 +510,7 @@ public class ScreenSpaceEventHandler {
                 action = getInputAction(.MouseMove, modifier: modifier)
                 
                 if action != nil {
-                    action!(geometry: TouchMoveEventGeometry(
+                    action!(event: TouchMoveEvent(
                         startPosition: previousPosition,
                         endPosition: position)
                     )
@@ -593,7 +541,7 @@ public class ScreenSpaceEventHandler {
                 let angle = atan2(dY, dX)
                 let prevAngle = atan2(prevDY, prevDX)
                 
-                let touchPinchMovementEvent = TouchPinchMovementEventGeometry(
+                let touchPinchMovementEvent = TouchPinchMovementEvent(
                     distance:
                     (startPosition: Cartesian2(x: 0.0, y: prevDist),
                         endPosition: Cartesian2(x: 0.0, y: dist)),
@@ -601,7 +549,7 @@ public class ScreenSpaceEventHandler {
                     (startPosition: Cartesian2(x: prevAngle, y: prevCY),
                         endPosition: Cartesian2(x: angle, y: cY))
                 )
-                action!(geometry: touchPinchMovementEvent)
+                action!(event: touchPinchMovementEvent)
             }
         }
     }

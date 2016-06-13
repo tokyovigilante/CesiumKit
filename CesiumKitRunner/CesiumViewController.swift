@@ -1,5 +1,5 @@
 //
-//  GameViewController.swift
+//  CesiumViewController.swift
 //  CesiumKitRunner
 //
 //  Created by Ryan Walklin on 10/12/14.

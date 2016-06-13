@@ -14,7 +14,7 @@
 * @namespace
 * @alias KeyboardEventModifier
 */
-enum KeyboardEventModifier: Int  {
+public enum KeyboardEventModifier: Int  {
     /**
     * Represents the shift key being held down.
     *

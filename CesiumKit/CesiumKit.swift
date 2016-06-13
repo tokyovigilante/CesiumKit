@@ -295,7 +295,6 @@ public class CesiumGlobe {
         
         scene.fog.enabled = options.fog
         
-        //self.screenSpaceEventHandler = ScreenSpaceEventHandler(view: view)
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
         

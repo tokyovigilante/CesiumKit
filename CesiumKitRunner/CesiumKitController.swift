@@ -55,7 +55,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         )*/
         
         // Everest
-        _globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offset: HeadingPitchRange(heading: 180.0, pitch: 0, range: 5000))
+        //_globe.scene.camera.lookAt(Cartesian3.fromDegrees(longitude: 86.95278, latitude: 28.288056, height: 10000), offset: HeadingPitchRange(heading: 180.0, pitch: 0, range: 5000))
         
         // Murrumbeena
         //_globe.scene.camera.setView(position: Cartesian3.fromDegrees(longitude: 145.075, latitude: -37.892, height: 1000), heading: 0, pitch: 0, roll: 0)
@@ -103,7 +103,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func drawInMTKView(view: MTKView) {
-        _globe.scene.camera.moveForward(25.0)
+        //_globe.scene.camera.moveForward(25.0)
         #if os(iOS)
             view.contentScaleFactor = 2.0
             let scaleFactor = view.contentScaleFactor
@@ -132,5 +132,22 @@ class CesiumKitController: NSObject, MTKViewDelegate {
          _metalView.metalLayer.frame = CGRectMake(0, 0, layerSize.width, layerSize.height)
          _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
     }
+    
+    func handleMouseDown (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        _globe.eventHandler.handleMouseDown(button, position: position, modifier: modifier)
+    }
+    
+    func handleMouseMove (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        _globe.eventHandler.handleMouseMove(button, position: position, modifier: modifier)
+    }
+    
+    func handleMouseUp (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+        _globe.eventHandler.handleMouseMove(button, position: position, modifier: modifier)
+    }
+    
+    func handleWheel (deltaX: Double, deltaY: Double) {
+        _globe.eventHandler.handleWheel(deltaX, deltaY: deltaY)
+    }
+
 
 }

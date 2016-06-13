@@ -149,7 +149,7 @@ public class ScreenSpaceCameraController {
     * @type {CameraEventType|Array|undefined}
     * @default [{@link CameraEventType.RIGHT_DRAG}, {@link CameraEventType.WHEEL}, {@link CameraEventType.PINCH}]
     */
-    var zoomEventTypes: [CameraEvent] = [/*CameraEvent(type: .RightDrag), CameraEvent(type: .Wheel),*/ CameraEvent(type: .Pinch)]
+    var zoomEventTypes: [CameraEvent] = [/*CameraEvent(type: .RightDrag),*/ CameraEvent(type: .Wheel), CameraEvent(type: .Pinch)]
     
     /**
     * The input that allows the user to rotate around the globe or another object. This only applies in 3D and Columbus view modes.
@@ -1624,7 +1624,7 @@ public class ScreenSpaceCameraController {
 
     func update3D() {
         reactToInput(enableRotate, eventTypes: rotateEventTypes, action: spin3D, inertiaConstant: inertiaSpin, inertiaStateName: "_lastInertiaSpinMovement")
-        //reactToInput(enableZoom, eventTypes: zoomEventTypes, action: zoom3D, inertiaConstant: inertiaZoom, inertiaStateName: "_lastInertiaZoomMovement")
+        reactToInput(enableZoom, eventTypes: zoomEventTypes, action: zoom3D, inertiaConstant: inertiaZoom, inertiaStateName: "_lastInertiaZoomMovement")
         /*reactToInput(enableTilt, tiltEventTypes, tilt3D, controller.inertiaSpin, "_lastInertiaTiltMovement");
         reactToInput(enableLook, lookEventTypes, look3D)*/
     }

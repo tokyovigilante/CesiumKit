@@ -62,7 +62,7 @@ class CameraEventAggregator {
         eventHandler = ScreenSpaceEventHandler(/*layer: layer,*/ true)
         // FIXME: eventaggregator view
         //_view = view
-        //listenToWheel(this, undefined);
+        listenToWheel()
         listenToPinch()
         listenMouseButtonDownUp(CameraEventType.LeftDrag)
         //listenMouseButtonDownUp(this, undefined, CameraEventType.RIGHT_DRAG);
@@ -113,23 +113,23 @@ class CameraEventAggregator {
             _movement[key] = movement
         }
         
-        eventHandler.setInputAction(.PinchStart, modifier: modifier, action: { (geometry: EventGeometry) in
-            self._buttonsDown++
+        eventHandler.setInputAction(.PinchStart, modifier: modifier, action: { (geometry: InputEvent) in
+            self._buttonsDown += 1
             self._isDown[key] = true
             self._pressTime[key] = NSDate()
             //self._eventStartPosition[key] = (geometry as! Touch2StartEventGeometry).position1
         })
         
-        eventHandler.setInputAction(.PinchEnd, modifier: modifier, action: { (geometry: EventGeometry) in
+        eventHandler.setInputAction(.PinchEnd, modifier: modifier, action: { (geometry: InputEvent) in
             self._buttonsDown = max(self._buttonsDown - 1, 0)
             self._isDown[key] = false
             self._releaseTime[key] = NSDate()
         })
         
-        eventHandler.setInputAction(.PinchMove, modifier: modifier, action: { (geometry: EventGeometry) in
+        eventHandler.setInputAction(.PinchMove, modifier: modifier, action: { (geometry: InputEvent) in
             if self._isDown[key]! {
                 // Aggregate several input events into a single animation frame.
-                let geometry = (geometry as! TouchPinchMovementEventGeometry)
+                let geometry = (geometry as! TouchPinchMovementEvent)
                 var movement = self._movement[key]
                 if movement == nil {
                     movement = MouseMovement()
@@ -160,35 +160,37 @@ class CameraEventAggregator {
             }
         })
     }
-    /*
-    function listenToWheel(aggregator, modifier) {
-    var key = getKey(CameraEventType.WHEEL, modifier);
     
-    var update = aggregator._update;
-    update[key] = true;
-    
-    var movement = aggregator._movement[key];
-    if (!defined(movement)) {
-    movement = aggregator._movement[key] = {};
+    func listenToWheel() {
+        let key = getKey(.Wheel, modifier: nil)
+        
+        _update[key] = true
+        
+        var movement: MouseMovement! = _movement[key]
+        if movement == nil {
+            movement = MouseMovement()
+            _movement[key] = movement
+        }
+
+        movement.startPosition = Cartesian2()
+        movement.endPosition = Cartesian2()
+        
+        eventHandler.setInputAction(.Wheel, modifier: nil) { (geometry: InputEvent) in
+            // TODO: magic numbers
+            let delta = geometry as! WheelEvent
+            let arcLength = 15.0 * Math.toRadians(delta.deltaY) * 100
+            if !self._update[key]! {
+                movement.endPosition.y = movement.endPosition.y + arcLength
+            } else {
+                movement.startPosition = Cartesian2.zero
+                movement.endPosition.x = 0.0
+                movement.endPosition.y = arcLength
+                self._update[key] = false
+            }
+            self._movement[key] = movement
+        }
     }
     
-    movement.startPosition = new Cartesian2();
-    movement.endPosition = new Cartesian2();
-    
-    aggregator._eventHandler.setInputAction(function(delta) {
-    // TODO: magic numbers
-    var arcLength = 15.0 * CesiumMath.toRadians(delta);
-    if (!update[key]) {
-    movement.endPosition.y = movement.endPosition.y + arcLength;
-    } else {
-    Cartesian2.clone(Cartesian2.ZERO, movement.startPosition);
-    movement.endPosition.x = 0.0;
-    movement.endPosition.y = arcLength;
-    update[key] = false;
-    }
-    }, ScreenSpaceEventType.WHEEL, modifier);
-    }
-    */
     func listenMouseButtonDownUp(type: CameraEventType, modifier: KeyboardEventModifier? = nil) {
         let key = getKey(type, modifier: modifier)
         
@@ -215,9 +217,8 @@ class CameraEventAggregator {
             up = .MiddleUp
         }
         
-        eventHandler.setInputAction(down, modifier: modifier, action: { (geometry: EventGeometry) in
-            self._buttonsDown++
-            //var lastMovement = self._lastMovement[key]
+        eventHandler.setInputAction(down, modifier: modifier) { (geometry: InputEvent) in
+            self._buttonsDown += 1
             self._lastMovement[key] = MouseMovement(
                 startPosition: lastMovement!.startPosition,
                 endPosition:  lastMovement!.endPosition,
@@ -227,10 +228,10 @@ class CameraEventAggregator {
                 valid: false)
             self._isDown[key] = true
             self._pressTime[key] = NSDate()
-            self._eventStartPosition[key] = (geometry as! TouchStartEventGeometry).position
-        })
+            self._eventStartPosition[key] = (geometry as! MouseDownEvent).position
+        }
         
-        eventHandler.setInputAction(up, modifier: modifier, action: { (geometry: EventGeometry) in
+        eventHandler.setInputAction(up, modifier: modifier, action: { (geometry: InputEvent) in
             self._buttonsDown = max(self._buttonsDown - 1, 0)
             self._isDown[key] = false
             self._releaseTime[key] = NSDate()
@@ -268,17 +269,17 @@ class CameraEventAggregator {
             }
         }
         
-        eventHandler.setInputAction(.MouseMove, modifier: modifier, action: { (geometry: EventGeometry) in
+        eventHandler.setInputAction(.MouseMove, modifier: modifier, action: { (geometry: InputEvent) in
             for i in 0..<CameraEventType.COUNT.rawValue {
                 let type = CameraEventType(rawValue: i)!
                 let key = self.getKey(type, modifier: modifier)
                 if self._isDown[key] != nil && self._isDown[key]! {
                     if !(self._update[key]!) {
                         var movement = self._movement[key]!
-                        movement.endPosition = (geometry as! TouchMoveEventGeometry).endPosition
+                        movement.endPosition = (geometry as! MouseMoveEvent).endPosition
                         self._movement[key] = movement
                     } else {
-                        let geometry = (geometry as! TouchMoveEventGeometry)
+                        let geometry = (geometry as! MouseMoveEvent)
                         var movement = self._movement[key]!
                         movement.valid = true
                         self._lastMovement[key] = movement
@@ -293,7 +294,7 @@ class CameraEventAggregator {
                     }
                 }
             }
-            self._currentMousePosition = (geometry as! TouchMoveEventGeometry).endPosition
+            self._currentMousePosition = (geometry as! MouseMoveEvent).endPosition
         })
     }
     
