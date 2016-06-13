@@ -180,7 +180,7 @@ public class TextRenderer: Primitive {
             return
         }
         
-        if !show || !_fontAtlas.ready {
+        if !show || !_fontAtlas.ready || string == "" {
             return
         }
 
@@ -203,9 +203,7 @@ public class TextRenderer: Primitive {
         if _rs == nil || _updateMesh {
             
             _updateMetrics = true
-            
-            let renderRectangle: Cartesian4
-            
+                        
             let meshCGSize = computeSize()
             meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
             

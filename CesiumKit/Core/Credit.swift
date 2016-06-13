@@ -63,9 +63,9 @@ public struct Credit: Equatable {
         self.link = link
         
         // Credits are immutable so generate an id to use to optimize equal()
-        let key = "[\(self.text), \(self.imageUrl), \(self.link)]"
-        if let _creditToId = _creditToId[key] {
-            id = _creditToId
+        let key = "[\(text ?? ""):\(imageUrl ?? ""):\(link ?? "")]"
+        if let creditToId = _creditToId[key] {
+            id = creditToId
         } else {
             id = _nextCreditId
             _creditToId[key] = id
@@ -81,6 +81,6 @@ public struct Credit: Equatable {
 * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
 */
 
-public func ==(left: Credit, right: Credit) -> Bool {
+public func == (left: Credit, right: Credit) -> Bool {
     return left.id == right.id
 }

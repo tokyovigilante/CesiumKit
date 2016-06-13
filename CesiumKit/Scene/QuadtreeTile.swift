@@ -151,7 +151,7 @@ class QuadtreeTile: Equatable {
     var data: GlobeSurfaceTile? = nil
     
     var _cachedCommands = [DrawCommand]()
-    
+    var _cachedCredits = [Credit]()
     var _cachedTextureArrays = [Array<Texture>]()
     
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {

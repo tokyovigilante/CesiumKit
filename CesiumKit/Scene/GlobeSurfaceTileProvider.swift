@@ -522,11 +522,13 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         if tile.invalidateCommandCache {
             tile._cachedCommands.removeAll()
             tile._cachedTextureArrays.removeAll()
+            tile._cachedCredits.removeAll()
         }
         
         if !tile._cachedCommands.isEmpty {
             updateRTCPosition(forTile: tile, frameState: frameState)
             frameState.commandList.appendContentsOf(tile._cachedCommands.map { $0 as Command })
+            tile._cachedCredits.map { frameState.creditDisplay.addCredit($0) }
             return
         }
         
@@ -682,19 +684,22 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             while (numberOfDayTextures < maxTextures && imageryIndex < imageryLen) {
                 
                 let tileImagery = tileImageryCollection[imageryIndex]
-                let imagery = tileImagery.readyImagery
                 imageryIndex += 1
                 
-                if imagery == nil || imagery!.state != .Ready || imagery!.imageryLayer.alpha() == 0.0 {
+                guard let imagery = tileImagery.readyImagery else {
                     continue
                 }
                 
-                let imageryLayer = imagery!.imageryLayer
+                if imagery.state != .Ready || imagery.imageryLayer.alpha() == 0.0 {
+                    continue
+                }
+                
+                let imageryLayer = imagery.imageryLayer
                 
                 if tileImagery.textureTranslationAndScale == nil {
                     tileImagery.textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: tileImagery)
                 }
-                uniformMap.dayTextures.append(imagery!.texture!)
+                uniformMap.dayTextures.append(imagery.texture!)
                 
                 _dayTextureTranslationAndScale[numberOfDayTextures] = tileImagery.textureTranslationAndScale!.floatRepresentation
                 _dayTextureTexCoordsRectangle[numberOfDayTextures] = tileImagery.textureCoordinateRectangle!.floatRepresentation
@@ -719,14 +724,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 //uniformStruct.dayTextureOneOverGamma[numberOfDayTextures] = 1.0 / imageryLayer.gamma()
                 //applyGamma = applyGamma || uniformStruct.dayTextureOneOverGamma[numberOfDayTextures] != 1.0 / imageryLayer.defaultGamma
                 
-                // FIXME: Credits
-                /*if imagery!.credits.count > 0 {
-                 var creditDisplay = frameState.creditDisplay
-                 var credits = imagery.credits;
-                 for (var creditIndex = 0, creditLength = credits.length; creditIndex < creditLength; ++creditIndex) {
-                 creditDisplay.addCredit(credits[creditIndex]);
-                 }
-                 }*/
+                tile._cachedCredits.appendContentsOf(imagery.credits)
                 
                 numberOfDayTextures += 1
             }
@@ -805,12 +803,14 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             
             frameState.commandList.append(command)
             tile._cachedCommands.append(command)
+            
             tile.invalidateCommandCache = false
             
             renderState = otherPassesRenderState
             initialColor = otherPassesInitialColor
         } while (imageryIndex < imageryLen)
         
+        tile._cachedCredits.map { frameState.creditDisplay.addCredit($0) }
         updateRTCPosition(forTile: tile, frameState: frameState)
 
     }
