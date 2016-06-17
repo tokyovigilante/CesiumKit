@@ -8,5 +8,5 @@
 
 struct CameraEvent {
     let type: CameraEventType
-    let modifier: KeyboardEventModifier? = nil
+    let modifier: KeyboardEventModifier?
 }
