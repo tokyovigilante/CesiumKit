@@ -160,7 +160,7 @@ public struct Matrix3 {
         assert(rows.count == 3, "invalid row array")
         simdType = double3x3(rows: [rows[0].simdType, rows[1].simdType, rows[2].simdType])
     }
-    /*
+    
     /**
     * Computes a Matrix3 instance representing a non-uniform scale.
     *
@@ -175,32 +175,10 @@ public struct Matrix3 {
     * //   [0.0, 0.0, 9.0]
     * var m = Cesium.Matrix3.fromScale(new Cesium.Cartesian3(7.0, 8.0, 9.0));
     */
-    Matrix3.fromScale = function(scale, result) {
-    //>>includeStart('debug', pragmas.debug);
-    if (!defined(scale)) {
-    throw new DeveloperError('scale is required.');
+    init (scale: Cartesian3) {
+        self.init(simd: double3x3(diagonal: scale.simdType))
     }
-    //>>includeEnd('debug');
-    
-    if (!defined(result)) {
-    return new Matrix3(
-    scale.x, 0.0,     0.0,
-    0.0,     scale.y, 0.0,
-    0.0,     0.0,     scale.z);
-    }
-    
-    result[0] = scale.x;
-    result[1] = 0.0;
-    result[2] = 0.0;
-    result[3] = 0.0;
-    result[4] = scale.y;
-    result[5] = 0.0;
-    result[6] = 0.0;
-    result[7] = 0.0;
-    result[8] = scale.z;
-    return result;
-    };
-    
+    /*
     /**
     * Computes a Matrix3 instance representing a uniform scale.
     *
