@@ -397,6 +397,8 @@ extension Cartesian2: Packable {
     }
 }
 
+extension Cartesian2: Equatable {}
+
 /**
 * Compares the provided Cartesians componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.
