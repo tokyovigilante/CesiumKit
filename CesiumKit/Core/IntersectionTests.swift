@@ -359,7 +359,8 @@ class IntersectionTests {
     func quadraticVectorExpression(A: Matrix3, b: Cartesian3, c: Double, x: Double, w: Double) -> [Double] {
         let xSquared = x * x
         let wSquared = w * w
-        
+        return [Double]()
+        /*
         let l2 = (A[1,1] - A[2,2] * wSquared
         let l1: Double = w * (x * addWithCancellationCheck(A[1,0], A[0,1], tolerance: Math.Epsilon15) + b.y)
         let l0 = (A[0,0] * xSquared + A[2,2] * wSquared) + x * b.x + c
@@ -517,10 +518,10 @@ class IntersectionTests {
         let A = temp
             .multiply(D_I)
             .multiply(B)
-        let b = temp.multiply(position)
+        //let b = temp.multiply(position)
         
         // Solve for the solutions to the expression in standard form:
-        var solutions = quadraticVectorExpression(A, Cartesian3.negate(b, firstAxisScratch), 0.0, 0.0, 1.0)
+        /*var solutions = quadraticVectorExpression(A, Cartesian3.negate(b, firstAxisScratch), 0.0, 0.0, 1.0)
         
         var s;
         var altitude;
@@ -541,15 +542,15 @@ class IntersectionTests {
             }
             
             var surfacePoint = ellipsoid.cartesianToCartographic(closest, surfPointScratch);
-            maximumValue = CesiumMath.clamp(maximumValue, 0.0, 1.0);
+            maximumValue = Math.clamp(maximumValue, 0.0, 1.0);
             altitude = Cartesian3.magnitude(Cartesian3.subtract(closest, position, referenceScratch)) * Math.sqrt(1.0 - maximumValue * maximumValue);
             altitude = intersects ? -altitude : altitude;
             surfacePoint.height = altitude;
-            return ellipsoid.cartographicToCartesian(surfacePoint, new Cartesian3());
-        }
+            return ellipsoid.cartographicToCartesian(surfacePoint)
+        }*/
         
         return nil
-    };
+    }
     /*
      var lineSegmentPlaneDifference = new Cartesian3();
      

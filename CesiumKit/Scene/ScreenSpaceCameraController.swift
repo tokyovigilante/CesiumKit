@@ -1331,7 +1331,7 @@ public class ScreenSpaceCameraController {
     
     func tilt3DOnEllipsoid(startPosition: Cartesian2, movement: MouseMovement) {
         
-        let camera = _scene.camera
+        /*let camera = _scene.camera
         let minHeight = minimumZoomDistance * 0.25
         let height = _ellipsoid.cartesianToCartographic(camera.positionWC)!.height
         if height - minHeight - 1.0 < Math.Epsilon3 &&
@@ -1380,11 +1380,11 @@ public class ScreenSpaceCameraController {
         
         var radius = oldEllipsoid.maximumRadius;
         controller._rotateFactor = 1.0 / radius;
-        controller._rotateRateRangeAdjustment = radius;
+        controller._rotateRateRangeAdjustment = radius;*/
     }
     
     func tilt3DOnTerrain(startPosition: Cartesian2, movement: MouseMovement) {
-        var ellipsoid = controller._ellipsoid;
+        /*var ellipsoid = controller._ellipsoid;
         var scene = controller._scene;
         var camera = scene.camera;
         
@@ -1521,9 +1521,9 @@ public class ScreenSpaceCameraController {
             Cartesian3.cross(camera.right, camera.direction, camera.up);
             
             camera._setTransform(oldTransform);
-        }
+        }*/
     }
-    */
+    
     /*
     var look3DStartPos = new Cartesian2();
     var look3DEndPos = new Cartesian2();
