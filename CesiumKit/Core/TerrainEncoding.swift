@@ -131,7 +131,7 @@ struct TerrainEncoding {
         self.matrix = matrix
         self.hasVertexNormals = hasVertexNormals
         
-        let datatype = ComponentDatatype.Float32
+        let datatype = ComponentDatatype.float32
         
         if quantization == .none {
             let position3DAndHeightLength = 4
@@ -146,7 +146,7 @@ struct TerrainEncoding {
                     buffer: nil,
                     bufferIndex: VertexDescriptorFirstBufferOffset,
                     index: 0,
-                    format: .Float4,
+                    format: .float4,
                     offset: 0,
                     size: position3DAndHeightLength * datatype.elementSize,
                     normalize: false),
@@ -155,7 +155,7 @@ struct TerrainEncoding {
                     buffer: nil,
                     bufferIndex: VertexDescriptorFirstBufferOffset,
                     index: 1,
-                    format: hasVertexNormals ? .Float3 : .Float2,
+                    format: hasVertexNormals ? .float3 : .float2,
                     offset: position3DAndHeightLength * datatype.elementSize,
                     size: numTexCoordComponents * datatype.elementSize,
                     normalize: false)
@@ -171,7 +171,7 @@ struct TerrainEncoding {
                     buffer: nil,
                     bufferIndex: VertexDescriptorFirstBufferOffset,
                     index: 0,
-                    format: hasVertexNormals ? .Float4 : .Float3,
+                    format: hasVertexNormals ? .float4 : .float3,
                     offset: 0,
                     size: numComponents * datatype.elementSize,
                     normalize: false)
@@ -179,7 +179,7 @@ struct TerrainEncoding {
         }
     }
 
-    func encode (inout vertexBuffer: [Float], position: Cartesian3, uv: Cartesian2, height: Double, normalToPack: Cartesian2? = nil) {
+    func encode (_ vertexBuffer: inout [Float], position: Cartesian3, uv: Cartesian2, height: Double, normalToPack: Cartesian2? = nil) {
         let u = uv.x
         let v = uv.y
         
@@ -218,7 +218,7 @@ struct TerrainEncoding {
         }
     }
     
-    func decodePosition (buffer: [Float], index: Int) -> Cartesian3 {
+    func decodePosition (_ buffer: [Float], index: Int) -> Cartesian3 {
         let index  = index * getStride()
         
         var result = Cartesian3()
@@ -239,7 +239,7 @@ struct TerrainEncoding {
         return result.add(center)
     }
 
-    func decodeTextureCoordinates (buffer: [Float], index: Int) -> Cartesian2 {
+    func decodeTextureCoordinates (_ buffer: [Float], index: Int) -> Cartesian2 {
         let index = index * getStride()
         
         if quantization == .bits12 {
@@ -248,7 +248,7 @@ struct TerrainEncoding {
         return Cartesian2(x: Double(buffer[index + 4]), y: Double(buffer[index + 5]))
     }
     
-    func decodeHeight (buffer: [Float], index: Int) -> Double {
+    func decodeHeight (_ buffer: [Float], index: Int) -> Double {
         let index = index * getStride()
         
         if quantization == .bits12 {

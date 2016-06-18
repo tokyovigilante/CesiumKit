@@ -162,7 +162,7 @@ class UniformState {
     
     private var _fogDensity: Float = 1.0
     
-    private var _pass: Pass = .Compute
+    private var _pass: Pass = .compute
     
     /**
     * @memberof UniformState.prototype
@@ -739,7 +739,7 @@ class UniformState {
         return Float(_pass.rawValue)
     }
     
-    func setView(matrix: Matrix4) {
+    func setView(_ matrix: Matrix4) {
         _view = matrix
         _viewRotation = _view.rotation
         
@@ -760,12 +760,12 @@ class UniformState {
         _inverseNormal3DDirty = true
     }
     
-    func setInverseView(matrix: Matrix4) {
+    func setInverseView(_ matrix: Matrix4) {
         _inverseView = matrix
         _inverseViewRotation = matrix.rotation
     }
     
-    func setCamera(camera: Camera) {
+    func setCamera(_ camera: Camera) {
         _cameraPosition = camera.positionWC
         _cameraDirection = camera.directionWC
         _cameraRight = camera.rightWC
@@ -775,7 +775,7 @@ class UniformState {
     
     //var transformMatrix = new Matrix3();
     //var sunCartographicScratch = new Cartographic();
-    func setSunAndMoonDirections(frameState: FrameState) {
+    func setSunAndMoonDirections(_ frameState: FrameState) {
 
         var transformMatrix = Matrix3()
         if Transforms.computeIcrfToFixedMatrix(frameState.time) == nil {
@@ -800,7 +800,7 @@ class UniformState {
         projection.project(sunCartographic, uniformState._sunPositionColumbusView)*/
     }
     
-    func updatePass (pass: Pass) {
+    func updatePass (_ pass: Pass) {
         _pass = pass
     }
     
@@ -811,7 +811,7 @@ class UniformState {
     *
     * @param {Object} frustum The frustum to synchronize with.
     */
-    func updateFrustum (frustum: Frustum) {
+    func updateFrustum (_ frustum: Frustum) {
         var frustum = frustum
         projection = frustum.projectionMatrix
         if frustum.infiniteProjectionMatrix != nil {
@@ -820,7 +820,7 @@ class UniformState {
         _currentFrustum.x = frustum.near
         _currentFrustum.y = frustum.far
     
-        if frustum.top != Double.NaN {
+        if frustum.top != Double.nan {
             frustum = (frustum as! PerspectiveFrustum)._offCenterFrustum
         }
         
@@ -837,7 +837,7 @@ class UniformState {
     *
     * @param {FrameState} frameState The frameState to synchronize with.
     */
-    func update(context: Context, frameState: FrameState) {
+    func update(_ context: Context, frameState: FrameState) {
         
         self.frameState = frameState
         _mode = self.frameState.mode
@@ -849,7 +849,7 @@ class UniformState {
         setInverseView(camera.inverseViewMatrix)
         setCamera(camera)
         
-        if self.frameState.mode == SceneMode.Scene2D {
+        if self.frameState.mode == SceneMode.scene2D {
             _frustum2DWidth = camera.frustum.right - camera.frustum.left
             _eyeHeight2D.x = _frustum2DWidth * 0.5
             _eyeHeight2D.y = _eyeHeight2D.x * _eyeHeight2D.x
@@ -871,7 +871,7 @@ class UniformState {
         _temeToPseudoFixed = Transforms.computeTemeToPseudoFixedMatrix(self.frameState.time!)
     }
     
-    func setAutomaticUniforms (buffer: Buffer) {
+    func setAutomaticUniforms (_ buffer: Buffer) {
         var layout = AutomaticUniformBufferLayout()
         
         layout.czm_a_viewRotation = viewRotation.floatRepresentation
@@ -888,7 +888,7 @@ class UniformState {
         buffer.write(from: &layout, length: sizeof(AutomaticUniformBufferLayout))
     }
     
-    func setFrustumUniforms (buffer: Buffer) {
+    func setFrustumUniforms (_ buffer: Buffer) {
 
         var layout = FrustumUniformBufferLayout()
         
@@ -1085,7 +1085,7 @@ class UniformState {
     var view2Dto3DCartesian3Scratch = new Cartesian3();
     var view2Dto3DMatrix4Scratch = new Matrix4();
     */
-    func view2Dto3D(position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: MapProjection) -> Matrix4 {
+    func view2Dto3D(_ position2D: Cartesian3, direction2D: Cartesian3, right2D: Cartesian3, up2D: Cartesian3, frustum2DWidth: Double, mode: SceneMode, projection: MapProjection) -> Matrix4 {
         
         // The camera position and directions are expressed in the 2D coordinate system where the Y axis is to the East,
         // the Z axis is to the North, and the X axis is out of the map.  Express them instead in the ENU axes where
@@ -1100,7 +1100,7 @@ class UniformState {
         
         // In 2D, the camera height is always 12.7 million meters.
         // The apparent height is equal to half the frustum width.
-        if mode == .Scene2D {
+        if mode == .scene2D {
             p.z = frustum2DWidth * 0.5
         }
         
@@ -1131,7 +1131,7 @@ class UniformState {
     
     private func updateView3D () {
         if _view3DDirty {
-            if _mode == .Scene3D {
+            if _mode == .scene3D {
                 _view3D = _view
             } else {
                 _view3D = view2Dto3D(_cameraPosition, direction2D: _cameraDirection, right2D: _cameraRight, up2D: _cameraUp, frustum2DWidth: _frustum2DWidth, mode: _mode!, projection: _mapProjection!)

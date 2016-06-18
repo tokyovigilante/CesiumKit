@@ -62,24 +62,24 @@ protocol LegacyUniformMap: class, UniformMap {
     
     var uniforms: [String: UniformFunc] { get }
     
-    func indexForUniform(name: String) -> UniformIndex?
+    func indexForUniform(_ name: String) -> UniformIndex?
     
-    func uniform(index: UniformIndex) -> UniformFunc
+    func uniform(_ index: UniformIndex) -> UniformFunc
     
-    func textureForUniform (uniform: UniformSampler) -> Texture?
+    func textureForUniform (_ uniform: UniformSampler) -> Texture?
 }
 
 extension LegacyUniformMap {
     
-    public func indexForUniform(name: String) -> UniformIndex? {
-        return uniforms.indexForKey(name)
+    public func indexForUniform(_ name: String) -> UniformIndex? {
+        return uniforms.index(forKey: name)
     }
     
-    public func uniform(index: UniformIndex) -> UniformFunc {
+    public func uniform(_ index: UniformIndex) -> UniformFunc {
         return uniforms[index].1
     }
     
-    public func textureForUniform (uniform: UniformSampler) -> Texture? {
+    public func textureForUniform (_ uniform: UniformSampler) -> Texture? {
         return nil
     }
     

@@ -115,7 +115,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [result] The object into which to store the result.
     * @returns {Cartesian2} A cartesian with the minimum components.
     */
-    public func minimumByComponent(other: Cartesian2) -> Cartesian2 {
+    public func minimumByComponent(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: min(simdType, other.simdType))
     }
     
@@ -127,7 +127,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [result] The object into which to store the result.
     * @returns {Cartesian2} A cartesian with the maximum components.
     */
-    public func maximumByComponent(other: Cartesian2) -> Cartesian2 {
+    public func maximumByComponent(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: max(simdType, other.simdType))
     }
     /**
@@ -162,7 +162,7 @@ public struct Cartesian2 {
     * // Returns 1.0
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(2.0, 0.0));
     */
-    public func distance(other: Cartesian2) -> Double {
+    public func distance(_ other: Cartesian2) -> Double {
         return simd.distance(simdType, other.simdType)
     }
     
@@ -178,7 +178,7 @@ public struct Cartesian2 {
     * // Returns 4.0, not 2.0
     * var d = Cesium.Cartesian2.distance(new Cesium.Cartesian2(1.0, 0.0), new Cesium.Cartesian2(3.0, 0.0));
     */
-    public func distanceSquared (other: Cartesian2) -> Double {
+    public func distanceSquared (_ other: Cartesian2) -> Double {
         return distance_squared(simdType, other.simdType)
     }
 
@@ -200,7 +200,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} right The second Cartesian.
     * @returns {Number} The dot product.
     */
-    public func dot(other: Cartesian2) -> Double {
+    public func dot(_ other: Cartesian2) -> Double {
         return simd.dot(simdType, other.simdType)
     }
     
@@ -212,7 +212,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func multiplyComponents(other: Cartesian2) -> Cartesian2 {
+    public func multiplyComponents(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType * other.simdType)
     }
     
@@ -224,7 +224,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func add(other: Cartesian2) -> Cartesian2 {
+    public func add(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType + other.simdType)
     }
     
@@ -236,7 +236,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func subtract(other: Cartesian2) -> Cartesian2 {
+    public func subtract(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType - other.simdType)
     }
     
@@ -248,7 +248,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func multiplyByScalar(scalar: Double) -> Cartesian2 {
+    public func multiplyByScalar(_ scalar: Double) -> Cartesian2 {
         return Cartesian2(simd: simdType * scalar)
     }
     
@@ -260,7 +260,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func divideByScalar(scalar: Double) -> Cartesian2 {
+    public func divideByScalar(_ scalar: Double) -> Cartesian2 {
         return multiplyByScalar(1.0/scalar)
     }
     
@@ -295,7 +295,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
-    func lerp(end: Cartesian2, t: Double) -> Cartesian2 {
+    func lerp(_ end: Cartesian2, t: Double) -> Cartesian2 {
         return  Cartesian2(simd: mix(simdType, end.simdType, t: t))
     }
     
@@ -306,7 +306,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} right The second Cartesian.
     * @returns {Number} The angle between the Cartesians.
     */
-    func angleBetween(other: Cartesian2) -> Double {
+    func angleBetween(_ other: Cartesian2) -> Double {
         return Math.acosClamped(normalize().dot(other.normalize()))
     }
     
@@ -330,7 +330,7 @@ public struct Cartesian2 {
         return result
     }
     
-    func equalsArray (array: [Float], offset: Int) -> Bool {
+    func equalsArray (_ array: [Float], offset: Int) -> Bool {
         return Float(x) == array[offset] && Float(y) == array[offset + 1]
     }
     
@@ -345,7 +345,7 @@ public struct Cartesian2 {
     * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
+    func equalsEpsilon(_ other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         return self == other ||
                 (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
                 Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon))

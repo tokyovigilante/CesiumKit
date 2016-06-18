@@ -30,7 +30,7 @@ public struct CesiumOptions {
     public var lighting: Bool
     public var skyBox: Bool
     public var fog: Bool
-    public var sceneMode: SceneMode = .Scene3D
+    public var sceneMode: SceneMode = .scene3D
     public var scene3DOnly = false
     public var mapProjection: MapProjection
     public var showRenderLoopErrors = true
@@ -47,7 +47,7 @@ public struct CesiumOptions {
         lighting: Bool = false,
         skyBox: Bool = true,
         fog: Bool = true,
-        sceneMode: SceneMode = SceneMode.Scene3D,
+        sceneMode: SceneMode = SceneMode.scene3D,
         scene3DOnly: Bool = false,
         mapProjection: MapProjection = GeographicProjection(),
         showRenderLoopErrors: Bool = true)
@@ -130,7 +130,7 @@ public class CesiumGlobe {
     var renderLoopRunning = false
     var showRenderLoopErrors = false
     
-    var _lastFrameTime: NSDate?
+    var _lastFrameTime: Date?
             
     /**
     * Gets the scene.
@@ -298,10 +298,10 @@ public class CesiumGlobe {
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
         
-        if self.sceneMode == SceneMode.Scene2D {
+        if self.sceneMode == SceneMode.scene2D {
             self.scene.morphTo2D(0)
         }
-        if self.sceneMode == SceneMode.ColumbusView {
+        if self.sceneMode == SceneMode.columbusView {
             self.scene.morphToColumbusView(0)
         }
         configureCanvasSize(Cartesian2(x: Double(view.drawableSize.width), y: Double(view.drawableSize.height)))
@@ -320,7 +320,7 @@ public class CesiumGlobe {
         }*/
     }
 
-    func getDefaultSkyBoxUrl(suffix: String) -> String {
+    func getDefaultSkyBoxUrl(_ suffix: String) -> String {
         //FIXME: Skybox URL
         //return buildModuleUrl('Assets/Textures/SkyBox/tycho2t3_80_' + suffix + '.jpg')
         return suffix
@@ -332,7 +332,7 @@ public class CesiumGlobe {
         _lastFrameTime = nil
     }
 
-    func configureCanvasSize(size: Cartesian2) {
+    func configureCanvasSize(_ size: Cartesian2) {
         
         scene.resize(size)
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
@@ -344,7 +344,7 @@ public class CesiumGlobe {
         let width = scene.drawableWidth
         let height = scene.drawableHeight
         if width != 0 && height != 0 {
-            if scene.camera.frustum.aspectRatio != Double.NaN {
+            if scene.camera.frustum.aspectRatio != Double.nan {
                 scene.camera.frustum.aspectRatio = Double(width) / Double(height)
             } else {
                 scene.camera.frustum.top = scene.camera.frustum.right * (Double(height) / Double(width))
@@ -366,7 +366,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} message A helpful, user-facing message to display prior to the detailed error information.  This string is interpreted as HTML.
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
-    public func showErrorPanel(title: String, message: String, error: String) {
+    public func showErrorPanel(_ title: String, message: String, error: String) {
         print(title, terminator: "")
         print(message, terminator: "")
         print(error, terminator: "")   /*
@@ -455,7 +455,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * This function is called automatically as needed unless
     * <code>useDefaultRenderLoop</code> is set to false.
     */
-    func resize(size: Cartesian2) {
+    func resize(_ size: Cartesian2) {
         if scene.drawableWidth == Int(size.x) && scene.drawableHeight == Int(size.y) {
             return
         }
@@ -466,7 +466,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
-    public func render(size: CGSize) {
+    public func render(_ size: CGSize) {
         
         updateFramerate()
         resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
@@ -477,15 +477,15 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         }
     }
     
-    private var _lastRenderTime = NSDate()
-    private var _lastUpdateTime = NSDate()
+    private var _lastRenderTime = Date()
+    private var _lastUpdateTime = Date()
     private var _avgFPS = 0.0
     
     func updateFramerate () {
-        let currentTime = NSDate()
+        let currentTime = Date()
         
-        let elapsed = currentTime.timeIntervalSinceDate(_lastRenderTime)
-        let updateElapsed = currentTime.timeIntervalSinceDate(_lastUpdateTime)
+        let elapsed = currentTime.timeIntervalSince(_lastRenderTime)
+        let updateElapsed = currentTime.timeIntervalSince(_lastUpdateTime)
         _lastRenderTime = currentTime
         
         let fps = 1.0 / elapsed

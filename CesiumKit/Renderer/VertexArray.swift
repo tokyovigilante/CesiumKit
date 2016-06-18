@@ -148,17 +148,17 @@ class VertexArray {
             var vaCount = 0
             for geometryAttribute in geometry.attributes {
                 
-                if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
-                    geometryAttribute.componentDatatype = ComponentDatatype.Float32
+                if (geometryAttribute.componentDatatype == ComponentDatatype.float64) {
+                    geometryAttribute.componentDatatype = ComponentDatatype.float32
                     if let values = geometryAttribute.values {
                         
-                        var doubleArray = [Double](count: values.count, repeatedValue: 0.0)
+                        var doubleArray = [Double](repeating: 0.0, count: values.count)
                         let geometryArraySize = geometryAttribute.vertexArraySize
                         
-                        doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
+                        doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
                             values.read(into: pointer.baseAddress, length: geometryArraySize)
                         })
-                        geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                        geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
                     }
 
                 }
@@ -190,14 +190,14 @@ class VertexArray {
                 indexBuffer = Buffer(
                     device: context.device,
                     array: indicesShort,
-                    componentDatatype: ComponentDatatype.UnsignedShort,
+                    componentDatatype: ComponentDatatype.unsignedShort,
                     sizeInBytes: indicesShort.sizeInBytes)
             } else {
                 let indicesInt = indices.map({ UInt32($0) })
                 indexBuffer = Buffer(
                     device: context.device,
                     array: indicesInt,
-                    componentDatatype: ComponentDatatype.UnsignedInt,
+                    componentDatatype: ComponentDatatype.unsignedInt,
                     sizeInBytes: indicesInt.sizeInBytes)
             }
         } else {
@@ -207,14 +207,14 @@ class VertexArray {
         self.init(attributes: vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indexCount)
     }
     
-    class func computeNumberOfVertices(attribute: GeometryAttribute) -> Int {
+    class func computeNumberOfVertices(_ attribute: GeometryAttribute) -> Int {
         guard let values = attribute.values else {
             return 0
         }
         return values.count / attribute.componentsPerAttribute
     }
     
-    class func interleaveAttributes(context: Context, attributes: GeometryAttributes) -> (
+    class func interleaveAttributes(_ context: Context, attributes: GeometryAttributes) -> (
         buffer : Buffer,
         offsetsInBytes : [Int],
         vertexSizeInBytes : Int
@@ -222,19 +222,19 @@ class VertexArray {
             
             // Extract attribute names.
             var attributeNames = [String]()
-            for (i, geometryAttribute) in attributes.enumerate() {
+            for (i, geometryAttribute) in attributes.enumerated() {
                 
                 // Attribute needs to have per-vertex values; not a constant value for all vertices.
                 attributeNames.append(geometryAttribute.name)
                 
-                if (geometryAttribute.componentDatatype == ComponentDatatype.Float64) {
-                    geometryAttribute.componentDatatype = ComponentDatatype.Float32
-                    var doubleArray = [Double](count: geometryAttribute.vertexCount, repeatedValue: 0.0)
+                if (geometryAttribute.componentDatatype == ComponentDatatype.float64) {
+                    geometryAttribute.componentDatatype = ComponentDatatype.float32
+                    var doubleArray = [Double](repeating: 0.0, count: geometryAttribute.vertexCount)
                     let geometryArraySize = geometryAttribute.vertexArraySize
-                    doubleArray.withUnsafeMutableBufferPointer({ (inout pointer: UnsafeMutableBufferPointer<Double>) in
+                    doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
                         geometryAttribute.values?.read(into: pointer.baseAddress, length: geometryArraySize)
                     })
-                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .Float32, sizeInBytes: doubleArray.count * strideof(Float))
+                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }
             }
             
@@ -252,7 +252,7 @@ class VertexArray {
             }
             
             // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
-            attributeNames.sortInPlace({ a, b in
+            attributeNames.sort(isOrderedBefore: { a, b in
                 return attributes[a]!.componentDatatype.elementSize > attributes[b]!.componentDatatype.elementSize
             })
             // Compute sizes and strides.
@@ -281,7 +281,7 @@ class VertexArray {
                 let buffer = Buffer(
                     device: context.device,
                     array: nil,
-                    componentDatatype: .Float32,
+                    componentDatatype: .float32,
                     sizeInBytes: vertexBufferSizeInBytes)
                 for i in 0..<numberOfVertices {
                     var attributeIndex = 0

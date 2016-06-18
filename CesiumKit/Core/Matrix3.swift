@@ -373,7 +373,7 @@ public struct Matrix3 {
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    func column (index: Int) -> Cartesian3 {
+    func column (_ index: Int) -> Cartesian3 {
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
         return Cartesian3(simd: simdType[index])
     }
@@ -388,7 +388,7 @@ public struct Matrix3 {
     *
     * @exception {DeveloperError} index must be 0, 1, or 2.
     */
-    func setColumn (index: Int, cartesian: Cartesian3) -> Matrix3 {
+    func setColumn (_ index: Int, cartesian: Cartesian3) -> Matrix3 {
     
         assert(index >= 0 && index <= 2, "index must be 0, 1, or 2.")
         var result = simdType
@@ -578,7 +578,7 @@ public struct Matrix3 {
     * @param {Cartesian3} result The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter.
     */
-    public func multiplyByVector (cartesian: Cartesian3) -> Cartesian3 {
+    public func multiplyByVector (_ cartesian: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simdType * cartesian.simdType)
     }
     /*
@@ -630,7 +630,7 @@ public struct Matrix3 {
     * // Instead of Cesium.Matrix3.multiply(m, Cesium.Matrix3.fromScale(scale), m);
     * Cesium.Matrix3.multiplyByScale(m, scale, m);
     */
-    func multiplyByScale (scale: Cartesian3) -> Matrix3 {
+    func multiplyByScale (_ scale: Cartesian3) -> Matrix3 {
         var grid = toArray()
         grid[0] *= scale.x
         grid[1] *= scale.x
@@ -651,7 +651,7 @@ public struct Matrix3 {
      * @param {MatrixType} other The second matrix.
      * @returns {MatrixType} The modified result parameter.
      */
-    public func multiply(other: Matrix3) -> Matrix3 {
+    public func multiply(_ other: Matrix3) -> Matrix3 {
         return Matrix3(simd: simdType * other.simdType)
     }
     
@@ -663,7 +663,7 @@ public struct Matrix3 {
         return Matrix3(simd: simdType.transpose)
     }
     
-    public func equals(other: Matrix3) -> Bool {
+    public func equals(_ other: Matrix3) -> Bool {
         return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
     }
     
@@ -677,7 +677,7 @@ public struct Matrix3 {
      * @param {Number} epsilon The epsilon to use for equality testing.
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
-    func equalsEpsilon(other: Matrix3, epsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Matrix3, epsilon: Double) -> Bool {
         return matrix_almost_equal_elements(simdType.cmatrix, other.simdType.cmatrix, epsilon)
 
     }

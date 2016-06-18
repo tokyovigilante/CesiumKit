@@ -8,33 +8,33 @@
 
 enum TerrainState: Int, CustomStringConvertible {
     
-    case Failed = 0,
-    Unloaded,
-    Receiving,
-    Received,
-    Transforming,
-    Transformed,
-    Buffering,
-    Ready
+    case failed = 0,
+    unloaded,
+    receiving,
+    received,
+    transforming,
+    transformed,
+    buffering,
+    ready
     
     var description: String {
         get {
             switch self {
-            case .Failed:
+            case .failed:
                 return "Failed"
-            case .Unloaded:
+            case .unloaded:
                 return "Unloaded"
-            case .Receiving:
+            case .receiving:
                 return "Receiving"
-            case .Received:
+            case .received:
                 return "Received"
-            case .Transforming:
+            case .transforming:
                 return "Transforming"
-            case .Transformed:
+            case .transformed:
                 return "Transformed"
-            case .Buffering:
+            case .buffering:
                 return "Buffering"
-            case .Ready:
+            case .ready:
                 return "Ready"
             }
         }

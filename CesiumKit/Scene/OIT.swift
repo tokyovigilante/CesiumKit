@@ -170,7 +170,7 @@ class OIT {
         return supported;
         }
         */
-    func update (context: Context, passDescriptor: PassState) {
+    func update (_ context: Context, passDescriptor: PassState) {
         if !isSupported {
             return
         }
@@ -441,7 +441,7 @@ class OIT {
         return getTranslucentShaderProgram(context, shaderProgram, oit._alphaShaderCache, alphaShaderSource);
         }
         */
-        func executeTranslucentCommandsSortedMultipass(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        func executeTranslucentCommandsSortedMultipass(_ scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
             /*
         var command;
         var renderState;
@@ -490,7 +490,7 @@ class OIT {
         passState.framebuffer = framebuffer;*/
         }
 
-        func executeTranslucentCommandsSortedMRT(scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
+        func executeTranslucentCommandsSortedMRT(_ scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         /*var context = scene.context;
         var framebuffer = passState.framebuffer;
         var length = commands.length;
@@ -520,7 +520,7 @@ class OIT {
         passState.framebuffer = framebuffer;*/
         }
     
-    func executeCommands (scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
+    func executeCommands (_ scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         if _translucentMRTSupport {
             executeTranslucentCommandsSortedMRT(scene, executeFunction: executeFunction, passState: passState, commands: commands)
             return
@@ -528,7 +528,7 @@ class OIT {
         executeTranslucentCommandsSortedMultipass(scene, executeFunction: executeFunction, passState: passState, commands: commands)
     }
     
-    func execute (context: Context, passState: PassState) {
+    func execute (_ context: Context, passState: PassState) {
         //_compositeCommand.execute(context, passState);
     }
         /*

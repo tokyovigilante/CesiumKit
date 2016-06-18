@@ -23,7 +23,7 @@ enum Visibility: Int {
     * @type {Number}
     * @constant
     */
-    case None = -1,
+    case none = -1,
     
     /**
     * Represents that part, but not all, of an object is visible
@@ -31,7 +31,7 @@ enum Visibility: Int {
     * @type {Number}
     * @constant
     */
-    Partial,
+    partial,
     
     /**
     * Represents that an object is visible in its entirety.
@@ -39,5 +39,5 @@ enum Visibility: Int {
     * @type {Number}
     * @constant
     */
-    Full
+    full
 }

@@ -95,9 +95,9 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          returns undefined instead of a promise, it is an indication that too many requests are already
      *          pending and the request will be retried later.
      */
-    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> ()) {
         let terrainData = HeightmapTerrainData(
-            buffer: [UInt16](count: 16 * 16, repeatedValue: 0),
+            buffer: [UInt16](repeating: 0, count: 16 * 16),
             width : 16,
             height : 16)
         completionBlock(terrainData)
@@ -109,7 +109,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
      * @param {Number} level The tile level for which to get the maximum geometric error.
      * @returns {Number} The maximum geometric error.
      */
-    func levelMaximumGeometricError(level: Int) -> Double {
+    func levelMaximumGeometricError(_ level: Int) -> Double {
         return _levelZeroMaximumGeometricError / Double(1 << level)
     }
 

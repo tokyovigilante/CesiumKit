@@ -2015,6 +2015,7 @@
 					9413B7831A37B8D900FFAD81 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = 7AS9FJBK47;
+						LastSwiftMigration = 0800;
 					};
 					947820DA1B5A2C0E0095A86F = {
 						CreatedOnToolsVersion = 7.0;
@@ -2984,6 +2985,7 @@
 				PRODUCT_NAME = CesiumKit;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_INCLUDE_PATHS = "${SRCROOT}/CesiumKit/Platform";
+				SWIFT_VERSION = 3.0;
 				VALID_ARCHS = arm64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -3010,6 +3012,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.testtoast.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = CesiumKit;
 				SWIFT_INCLUDE_PATHS = "${SRCROOT}/CesiumKit/Platform";
+				SWIFT_VERSION = 3.0;
 				VALID_ARCHS = arm64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

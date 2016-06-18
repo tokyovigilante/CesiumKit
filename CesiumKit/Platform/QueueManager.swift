@@ -14,25 +14,25 @@ class QueueManager {
     
     static let sharedInstance = QueueManager()
     
-    let processorQueue: dispatch_queue_t
+    let processorQueue: DispatchQueue
     
-    let networkQueue: NSOperationQueue
+    let networkQueue: OperationQueue
     
-    let upsampleQueue: dispatch_queue_t
+    let upsampleQueue: DispatchQueue
     
-    let resourceLoadQueue: dispatch_queue_t
+    let resourceLoadQueue: DispatchQueue
     
-    let fontAtlasQueue: dispatch_queue_t
+    let fontAtlasQueue: DispatchQueue
     
     init () {
-        processorQueue = dispatch_queue_create("com.testtoast.CesiumKit.processorQueue", DISPATCH_QUEUE_SERIAL)
-        upsampleQueue = dispatch_queue_create("com.testtoast.CesiumKit.upsampleQueue", DISPATCH_QUEUE_SERIAL)
-        resourceLoadQueue = dispatch_queue_create("com.testtoast.CesiumKit.textureLoadQueue", DISPATCH_QUEUE_SERIAL)
-        fontAtlasQueue = dispatch_queue_create("com.testtoast.CesiumKit.fontAtlasQueue", DISPATCH_QUEUE_SERIAL)
+        processorQueue = DispatchQueue(label: "com.testtoast.CesiumKit.processorQueue", attributes: DispatchQueueAttributes.serial)
+        upsampleQueue = DispatchQueue(label: "com.testtoast.CesiumKit.upsampleQueue", attributes: DispatchQueueAttributes.serial)
+        resourceLoadQueue = DispatchQueue(label: "com.testtoast.CesiumKit.textureLoadQueue", attributes: DispatchQueueAttributes.serial)
+        fontAtlasQueue = DispatchQueue(label: "com.testtoast.CesiumKit.fontAtlasQueue", attributes: DispatchQueueAttributes.serial)
 
-        networkQueue = NSOperationQueue()
-        networkQueue.qualityOfService = .Utility
-        networkQueue.suspended = false
+        networkQueue = OperationQueue()
+        networkQueue.qualityOfService = .utility
+        networkQueue.isSuspended = false
         networkQueue.maxConcurrentOperationCount = _maxConcurrentNetworkRequests
     }
     

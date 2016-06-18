@@ -29,7 +29,7 @@ class FXAA {
         _clearCommand.owner = self
     }
 
-    func update (context: Context) {
+    func update (_ context: Context) {
         let width = context.width
         let height = context.height
         
@@ -51,7 +51,7 @@ class FXAA {
                     options: TextureOptions(
                     width: width,
                     height: height,
-                    pixelFormat: .Depth32FloatStencil8,
+                    pixelFormat: .depth32FloatStencil8,
                     usage: .RenderTarget)
                 )
             }
@@ -85,11 +85,11 @@ class FXAA {
         }
     }
 
-    func execute (context: Context, renderPass: RenderPass) {
+    func execute (_ context: Context, renderPass: RenderPass) {
         _command!.execute(context, renderPass: renderPass)
     }
     
-    func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
+    func clear (_ context: Context, passState: PassState, clearColor: Cartesian4) {
         let framebuffer = passState.framebuffer
         
         passState.framebuffer = _fbo
@@ -128,7 +128,7 @@ class FXAAUniformMap: NativeUniformMap {
     private var _uniformStruct = FXAAUniformStruct()
     
     var uniformDescriptors: [UniformDescriptor] = [
-        UniformDescriptor(name: "u_step", type: .FloatVec2, count: 1)
+        UniformDescriptor(name: "u_step", type: .floatVec2, count: 1)
     ]
     
     private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil

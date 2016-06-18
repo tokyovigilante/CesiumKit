@@ -146,7 +146,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object into which to store the result.
     * @returns {Cartesian4} A cartesian with the minimum components.
     */
-    public func minimumByComponent(other: Cartesian4) -> Cartesian4 {
+    public func minimumByComponent(_ other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: vector_min(simdType, other.simdType))
     }
     
@@ -158,7 +158,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object into which to store the result.
     * @returns {Cartesian4} A cartesian with the maximum components.
     */
-    public func maximumByComponent(other: Cartesian4) -> Cartesian4 {
+    public func maximumByComponent(_ other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: vector_max(simdType, other.simdType))
     }
     
@@ -195,7 +195,7 @@ public struct Cartesian4: Equatable {
     * new Cesium.Cartesian4(1.0, 0.0, 0.0, 0.0),
     * new Cesium.Cartesian4(2.0, 0.0, 0.0, 0.0));
     */
-    public func distance(other: Cartesian4) -> Double {
+    public func distance(_ other: Cartesian4) -> Double {
         return simd.distance(simdType, other.simdType)
     }
     
@@ -213,7 +213,7 @@ public struct Cartesian4: Equatable {
     *   new Cesium.Cartesian4(1.0, 0.0, 0.0, 0.0),
     *   new Cesium.Cartesian4(3.0, 0.0, 0.0, 0.0));
     */
-    public func distanceSquared (other: Cartesian4) -> Double {
+    public func distanceSquared (_ other: Cartesian4) -> Double {
         return distance_squared(simdType, other.simdType)
     }
     
@@ -235,7 +235,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} right The second Cartesian.
     * @returns {Number} The dot product.
     */
-    public func dot(other: Cartesian4) -> Double {
+    public func dot(_ other: Cartesian4) -> Double {
         return simd.dot(simdType, other.simdType)
     }
     
@@ -247,7 +247,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func multiplyComponents(other: Cartesian4) -> Cartesian4 {
+    public func multiplyComponents(_ other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType * other.simdType)
     }
 
@@ -259,7 +259,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func add(other: Cartesian4) -> Cartesian4 {
+    public func add(_ other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType + other.simdType)
     }
     
@@ -271,7 +271,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func subtract(other: Cartesian4) -> Cartesian4 {
+    public func subtract(_ other: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: simdType - other.simdType)
     }
 
@@ -283,7 +283,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func multiplyByScalar (scalar: Double) -> Cartesian4 {
+    public func multiplyByScalar (_ scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * scalar)
     }
     
@@ -295,7 +295,7 @@ public struct Cartesian4: Equatable {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func divideByScalar (scalar: Double) -> Cartesian4 {
+    public func divideByScalar (_ scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * (1/scalar))
     }
     
@@ -330,7 +330,7 @@ public struct Cartesian4: Equatable {
     * @param {Cartesian4} result The object onto which to store the result.
     * @returns {Cartesian4} The modified result parameter.
     */
-    func lerp(end: Cartesian4, t: Double) -> Cartesian4 {
+    func lerp(_ end: Cartesian4, t: Double) -> Cartesian4 {
         return Cartesian4(simd: mix(simdType, end.simdType, t: t))
     }
     
@@ -372,7 +372,7 @@ public struct Cartesian4: Equatable {
         return result
     }
     
-    func equalsArray (array: [Float], offset: Int) -> Bool {
+    func equalsArray (_ array: [Float], offset: Int) -> Bool {
         return Float(x) == array[offset] &&
             Float(y) == array[offset + 1] &&
             Float(z) == array[offset + 2] &&
@@ -390,7 +390,7 @@ public struct Cartesian4: Equatable {
     * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian4, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Cartesian4, relativeEpsilon: Double, absoluteEpsilon: Double) -> Bool {
         return self == other ||
             (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
             Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&

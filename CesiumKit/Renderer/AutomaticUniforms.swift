@@ -36,7 +36,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_viewport": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec4
+        datatype: .floatVec4
     ),
     
     /**
@@ -68,7 +68,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_viewportOrthographic":  AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     
     /**
@@ -108,7 +108,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
     
     "czm_f_viewportTransformation": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     /*
      /**
@@ -212,7 +212,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_view": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     /*
      /**
@@ -264,7 +264,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_viewRotation": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix3
+        datatype: .floatMatrix3
     ),
     /*
      /**
@@ -426,7 +426,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_projection": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     
     /**
@@ -449,7 +449,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_inverseProjection": AutomaticUniform(
         size : 1,
-        datatype : .FloatMatrix4
+        datatype : .floatMatrix4
     ),
     /*
      /**
@@ -520,7 +520,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelView" : AutomaticUniform(
         size : 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     
     /**
@@ -551,7 +551,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelView3D": AutomaticUniform(
         size: 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     /*
      /**
@@ -607,7 +607,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_inverseModelView" : AutomaticUniform(
         size : 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     /*
      /**
@@ -726,7 +726,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_modelViewProjection": AutomaticUniform(
         size : 1,
-        datatype: .FloatMatrix4
+        datatype: .floatMatrix4
     ),
     /*
      /**
@@ -847,7 +847,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_normal": AutomaticUniform(
         size : 1,
-        datatype : .FloatMatrix3
+        datatype : .floatMatrix3
     ),
     
     /**
@@ -876,7 +876,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_normal3D": AutomaticUniform(
         size : 1,
-        datatype: .FloatMatrix3
+        datatype: .floatMatrix3
     ),
     
     /**
@@ -975,7 +975,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_f_entireFrustum": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec2
+        datatype: .floatVec2
     ),
     /*
      /**
@@ -1082,7 +1082,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_sunDirectionEC": AutomaticUniform(
         size: 1,
-        datatype: UniformDataType.FloatVec3
+        datatype: UniformDataType.floatVec3
     ),
     
     /**
@@ -1102,7 +1102,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_sunDirectionWC": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec3
+        datatype: .floatVec3
     ),
     
     /**
@@ -1124,7 +1124,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_moonDirectionEC": AutomaticUniform(
         size : 1,
-        datatype: .FloatVec3
+        datatype: .floatVec3
     ),
     /*
      /**
@@ -1187,7 +1187,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_viewerPositionWC":  AutomaticUniform(
         size : 1,
-        datatype : .FloatVec3
+        datatype : .floatVec3
     ),
     
     /**
@@ -1203,7 +1203,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_frameNumber": AutomaticUniform(
         size: 1,
-        datatype : .FloatVec1
+        datatype : .floatVec1
     ),
     
     /**
@@ -1222,7 +1222,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_morphTime": AutomaticUniform(
         size: 1,
-        datatype: .FloatVec1
+        datatype: .floatVec1
     ),
     
     /*
@@ -1277,7 +1277,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_temeToPseudoFixed": AutomaticUniform(
         size : 1,
-        datatype : .FloatMatrix3
+        datatype : .floatMatrix3
     ),
     /*
      /**
@@ -1309,7 +1309,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      */
     "czm_a_fogDensity": AutomaticUniform(
         size : 1,
-        datatype: .FloatVec1
+        datatype: .floatVec1
     )
     
 ]

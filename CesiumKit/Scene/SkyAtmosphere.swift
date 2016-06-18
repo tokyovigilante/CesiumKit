@@ -67,13 +67,13 @@ class SkyAtmosphere {
         _command.owner = self
     }
     
-    func update (frameState: FrameState) -> DrawCommand? {
+    func update (_ frameState: FrameState) -> DrawCommand? {
 
         if !show {
             return nil
         }
         
-        if frameState.mode != .Scene3D && frameState.mode != SceneMode.Morphing {
+        if frameState.mode != .scene3D && frameState.mode != SceneMode.morphing {
             return nil
         }
         
@@ -98,14 +98,14 @@ class SkyAtmosphere {
                 attributeLocations: GeometryPipeline.createAttributeLocations(geometry)
             )
             _command.renderState = RenderState(
-                device: context.device,
-                cullFace: .Front
+                device: context!.device,
+                cullFace: .front
             )
             
             let metalStruct = (_command.uniformMap as! NativeUniformMap).generateMetalUniformStruct()
             
             _rpSkyFromSpace = RenderPipeline.fromCache(
-                context : context,
+                context : context!,
                 vertexShaderSource : ShaderSource(
                     defines: ["SKY_FROM_SPACE"],
                     sources: [Shaders["SkyAtmosphereVS"]!]
@@ -114,14 +114,14 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture,
+                depthStencil: (context?.depthTexture)!,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
                 uniformStructSize: strideof(SkyAtmosphereUniformStruct)
             )
                         
             _rpSkyFromAtmosphere = RenderPipeline.fromCache(
-                context : context,
+                context : context!,
                 vertexShaderSource : ShaderSource(
                     defines: ["SKY_FROM_ATMOSPHERE"],
                     sources: [Shaders["SkyAtmosphereVS"]!]
@@ -130,7 +130,7 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture,
+                depthStencil: (context?.depthTexture)!,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
                 uniformStructSize: strideof(SkyAtmosphereUniformStruct)
@@ -248,14 +248,14 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
     private var _uniformStruct = SkyAtmosphereUniformStruct()
     
     let uniformDescriptors: [UniformDescriptor] = [
-        UniformDescriptor(name: "u_cameraHeight", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_cameraHeight2", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_outerRadius", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_outerRadius2", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_innerRadius", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_scale", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_scaleDepth", type: .FloatVec1, count: 1),
-        UniformDescriptor(name: "u_scaleOverScaleDepth", type: .FloatVec1, count: 1)
+        UniformDescriptor(name: "u_cameraHeight", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_cameraHeight2", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_outerRadius", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_outerRadius2", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_innerRadius", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_scale", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_scaleDepth", type: .floatVec1, count: 1),
+        UniformDescriptor(name: "u_scaleOverScaleDepth", type: .floatVec1, count: 1)
     ]
     
     init () {

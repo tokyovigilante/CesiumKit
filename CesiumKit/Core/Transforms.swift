@@ -36,7 +36,7 @@ struct Transforms {
     * var center = Cesium.Cartesian3.fromDegrees(0.0, 0.0);
     * var transform = Cesium.Transforms.eastNorthUpToFixedFrame(center);
     */
-    static func eastNorthUpToFixedFrame (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
+    static func eastNorthUpToFixedFrame (_ origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
         
         // If x and y are zero, assume origin is at a pole, which is a special case.
         if Math.equalsEpsilon(origin.x, 0.0, relativeEpsilon: Math.Epsilon14) &&
@@ -301,7 +301,7 @@ struct Transforms {
     *    camera.lookAtTransform(transform, offset);
     * });
     */
-    static func computeTemeToPseudoFixedMatrix (date: JulianDate) -> Matrix3 {
+    static func computeTemeToPseudoFixedMatrix (_ date: JulianDate) -> Matrix3 {
         
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
@@ -320,9 +320,9 @@ struct Transforms {
         }
         
         let gmst0 = _gmstConstant0 + t * (_gmstConstant1 + t * (_gmstConstant2 + t * _gmstConstant3))
-        let angle = (gmst0 * _twoPiOverSecondsInDay) % Math.TwoPi
+        let angle = (gmst0 * _twoPiOverSecondsInDay).truncatingRemainder(dividingBy: Math.TwoPi)
         let ratio = _wgs84WRPrecessing + _rateCoef * (utcDayNumber - 2451545.5)
-        let secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SecondsPerDay * 0.5) % TimeConstants.SecondsPerDay
+        let secondsSinceMidnight = (utcSecondsIntoDay + TimeConstants.SecondsPerDay * 0.5).truncatingRemainder(dividingBy: TimeConstants.SecondsPerDay)
         let gha = angle + (ratio * secondsSinceMidnight)
         let cosGha = cos(gha)
         let sinGha = sin(gha)
@@ -420,7 +420,7 @@ struct Transforms {
     *   }
     * });
     */
-    static func computeIcrfToFixedMatrix (date: JulianDate) -> Matrix3? {
+    static func computeIcrfToFixedMatrix (_ date: JulianDate) -> Matrix3? {
         guard let fixedToIcrfMtx: Matrix3 = Transforms.computeFixedToIcrfMatrix(date) else {
             return nil
         }
@@ -456,7 +456,7 @@ struct Transforms {
     *     pointInInertial = Cesium.Matrix3.multiplyByVector(fixedToIcrf, pointInFixed, pointInInertial);
     * }
     */
-    static func computeFixedToIcrfMatrix (date: JulianDate) -> Matrix3? {
+    static func computeFixedToIcrfMatrix (_ date: JulianDate) -> Matrix3? {
         return nil
     /*
     // Compute pole wander
@@ -562,7 +562,7 @@ struct Transforms {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
-    static func pointToWindowCoordinates(modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    static func pointToWindowCoordinates(modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var result = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix: modelViewProjectionMatrix, viewportTransformation: viewportTransformation, point: point)
         result.y = 2.0 * viewportTransformation[1,1] - result.y
@@ -570,7 +570,7 @@ struct Transforms {
         return result
     }
 
-    static func pointToGLWindowCoordinates (modelViewProjectionMatrix modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    static func pointToGLWindowCoordinates (modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
         coords.multiplyByScalar(1.0 / coords.w)

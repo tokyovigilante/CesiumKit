@@ -88,7 +88,7 @@ public struct Rectangle {
     * @param {Rectangle} [result] The object onto which to store the result, or undefined if a new instance should be created.
     * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
     */
-    static func fromCartographicArray(cartographics: [Cartographic]) -> Rectangle {
+    static func fromCartographicArray(_ cartographics: [Cartographic]) -> Rectangle {
         
         var west = Double.infinity
         var east = -Double.infinity
@@ -169,7 +169,7 @@ public struct Rectangle {
     * @param {Rectangle} [right] The second Rectangle.
     * @returns {Boolean} <code>true</code> if left and right are equal; otherwise <code>false</code>.
     */
-    func equals(other: Rectangle) -> Bool {
+    func equals(_ other: Rectangle) -> Bool {
         return (west == other.west) && (south == other.south) && (east == other.east) && (north == other.north)
     }
     
@@ -182,7 +182,7 @@ public struct Rectangle {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if the Rectangles are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Rectangle, epsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Rectangle, epsilon: Double) -> Bool {
         return abs(west - other.west) <= epsilon &&
             abs(south - other.south) <= epsilon &&
             abs(east - other.east) <= epsilon &&
@@ -280,7 +280,7 @@ public struct Rectangle {
     * @param {Rectangle} [result] The object onto which to store the result.
     * @returns {Rectangle|undefined} The modified result parameter, a new Rectangle instance if none was provided or undefined if there is no intersection.
     */
-    func intersection(other: Rectangle) -> Rectangle? {
+    func intersection(_ other: Rectangle) -> Rectangle? {
         
         var thisEast = self.east
         var thisWest = self.west
@@ -385,7 +385,7 @@ public struct Rectangle {
     * @param {Cartographic} cartographic The cartographic to test.
     * @returns {Boolean} true if the provided cartographic is inside the rectangle, false otherwise.
     */
-    func contains(cartographic: Cartographic) -> Bool {
+    func contains(_ cartographic: Cartographic) -> Bool {
         var longitude = cartographic.longitude
         let latitude = cartographic.latitude
         
@@ -414,7 +414,7 @@ public struct Rectangle {
     * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
     * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
     */
-    func subsample(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
+    func subsample(_ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
         
         var result = [Cartesian3]()
         

@@ -10,25 +10,25 @@ import Foundation
 
 enum OrbitType {
     
-    case Circular
+    case circular
     
-    case Elliptical
+    case elliptical
     
-    case Parabolic
+    case parabolic
     
-    case Hyperbolic
+    case hyperbolic
     
-    static func fromEccentricity(eccentricity: Double, tolerance: Double) -> OrbitType {
+    static func fromEccentricity(_ eccentricity: Double, tolerance: Double) -> OrbitType {
         assert(eccentricity >= 0, "eccentricity cannot be negative.")
         
         if eccentricity <= tolerance {
-            return .Circular
+            return .circular
         } else if eccentricity < 1.0 - tolerance {
-            return .Elliptical
+            return .elliptical
         } else if eccentricity <= 1.0 + tolerance {
-            return .Parabolic
+            return .parabolic
         } else {
-            return .Hyperbolic
+            return .hyperbolic
         }
     }
     

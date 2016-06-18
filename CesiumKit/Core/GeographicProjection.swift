@@ -46,7 +46,7 @@ public struct GeographicProjection: MapProjection {
     *          coordinates are copied there and that instance is returned.  Otherwise, a new instance is
     *          created and returned.
     */
-    public func project(cartographic: Cartographic) -> Cartesian3 {
+    public func project(_ cartographic: Cartographic) -> Cartesian3 {
     // Actually this is the special case of equidistant cylindrical called the plate carree
         return Cartesian3(x: cartographic.longitude * semimajorAxis,
             y: cartographic.latitude * semimajorAxis,
@@ -65,7 +65,7 @@ public struct GeographicProjection: MapProjection {
     *          coordinates are copied there and that instance is returned.  Otherwise, a new instance is
     *          created and returned.
     */
-    public func unproject(cartesian: Cartesian3) -> Cartographic {
+    public func unproject(_ cartesian: Cartesian3) -> Cartographic {
         let longitude = cartesian.x * oneOverSemimajorAxis
         let latitude = cartesian.y * oneOverSemimajorAxis
         let height = cartesian.z

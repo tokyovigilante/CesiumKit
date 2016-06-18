@@ -30,7 +30,7 @@ struct FrameState {
     * @type {SceneMode}
     * @default {@link SceneMode.SCENE3D}
     */
-    var mode = SceneMode.Scene3D
+    var mode = SceneMode.scene3D
     
     /**
     * An array of rendering commands.
@@ -44,7 +44,7 @@ struct FrameState {
     *
     * @type {Number}
     */
-    var morphTime: Double = SceneMode.Scene3D.morphTime ?? 0.0
+    var morphTime: Double = SceneMode.scene3D.morphTime ?? 0.0
     
     /**
     * The current frame number.
@@ -153,13 +153,13 @@ struct FrameState {
         * @type {Number}
         * @default undefined
         */
-        Double.NaN,
+        Double.nan,
         /**
         * A scalar used to modify the screen space error of geometry partially in fog.
         * @type {Number}
         * @default undefined
         */
-        Double.NaN
+        Double.nan
     )
     
     /**

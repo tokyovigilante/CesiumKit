@@ -243,7 +243,7 @@ public class ImageryLayer {
      * @param {Number} insertionPoint The position to insert new skeletons before in the tile's imagery list.
      * @returns {Boolean} true if this layer overlaps any portion of the terrain tile; otherwise, false.
      */
-    func createTileImagerySkeletons (tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
+    func createTileImagerySkeletons (_ tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
         let surfaceTile = tile.data!
         
         if _minimumTerrainLevel != nil && tile.level < _minimumTerrainLevel {
@@ -262,8 +262,8 @@ public class ImageryLayer {
             // Instead, add a placeholder so that we'll know to create
             // the skeletons once the provider is ready.
             _skeletonPlaceholder.loadingImagery!.addReference()
-            surfaceTile.imagery.removeAtIndex(insertionPoint!)
-            surfaceTile.imagery.insert(_skeletonPlaceholder, atIndex: insertionPoint!)
+            surfaceTile.imagery.remove(at: insertionPoint!)
+            surfaceTile.imagery.insert(_skeletonPlaceholder, at: insertionPoint!)
             return true
         }
         
@@ -431,7 +431,7 @@ public class ImageryLayer {
                 
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
                 let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
-                surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), atIndex: insertionPoint!)
+                surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), at: insertionPoint!)
                 insertionPoint! += 1
             }
         }
@@ -449,7 +449,7 @@ public class ImageryLayer {
      * @returns {Cartesian4} The translation and scale where X and Y are the translation and Z and W
      *          are the scale.
      */
-    func calculateTextureTranslationAndScale (tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4 {
+    func calculateTextureTranslationAndScale (_ tile: QuadtreeTile, tileImagery: TileImagery) -> Cartesian4 {
         let imageryRectangle = tileImagery.readyImagery!.rectangle!
         let terrainRectangle = tile.rectangle
         let terrainWidth = terrainRectangle.width
@@ -473,22 +473,22 @@ public class ImageryLayer {
      *
      * @param {Imagery} imagery The imagery to request.
      */
-    func requestImagery (imagery: Imagery) {
+    func requestImagery (_ imagery: Imagery) {
         
-        imagery.state = .Transitioning
+        imagery.state = .transitioning
         
-        let completionBlock: (CGImage? -> Void) = { (image) in
+        let completionBlock: ((CGImage?) -> Void) = { (image) in
             
             if let image = image {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     imagery.image = image
                     imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                     
-                    imagery.state = .Received
+                    imagery.state = .received
                 })
             } else {
-                dispatch_async(dispatch_get_main_queue(), {
-                    imagery.state = .Failed
+                DispatchQueue.main.async(execute: {
+                    imagery.state = .failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
                     print(message)
@@ -507,11 +507,11 @@ public class ImageryLayer {
      * @param {Context} context The rendered context to use to create textures.
      * @param {Imagery} imagery The imagery for which to create a texture.
      */
-    func createTexture (frameState frameState: FrameState, imagery: Imagery) {
+    func createTexture (frameState: FrameState, imagery: Imagery) {
         
         let context = frameState.context
         
-        dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
+        QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
             
             // If this imagery provider has a discard policy, use it to check if this
             // image should be discarded.
@@ -519,35 +519,35 @@ public class ImageryLayer {
                 // If the discard policy is not ready yet, transition back to the
                 // RECEIVED state and we'll try again next time.
                 if !discardPolicy.isReady {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        imagery.state = .Received
+                    DispatchQueue.main.async(execute: {
+                        imagery.state = .received
                     })
                     return
                 }
                 
                 // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
                 if (discardPolicy.shouldDiscardImage(imagery.image!)) {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        imagery.state = .Invalid
+                    DispatchQueue.main.async(execute: {
+                        imagery.state = .invalid
                     })
                     return
                 }
             }
             // Imagery does not need to be discarded, so upload it to GL.
             let texture = Texture(context: context, options: TextureOptions(
-                source : .Image(imagery.image!),
-                pixelFormat: .RGBA8Unorm,
+                source : .image(imagery.image!),
+                pixelFormat: .rgba8Unorm,
                 flipY: true, // CGImage
                 usage: .ShaderRead
                 )
             )
             
             //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 //dispatch_async(context.renderQueue, {
                 imagery.texture = texture
                 imagery.image = nil
-                imagery.state = ImageryState.TextureLoaded
+                imagery.state = ImageryState.textureLoaded
             })
         })
     }
@@ -561,7 +561,7 @@ public class ImageryLayer {
      * @param {FrameState} frameState The frameState.
      * @param {Imagery} imagery The imagery instance to reproject.
      */
-    func reprojectTexture (inout frameState frameState: FrameState, imagery: Imagery) {
+    func reprojectTexture (frameState: inout FrameState, imagery: Imagery) {
         
         let texture = imagery.texture!
         let rectangle = imagery.rectangle!
@@ -578,22 +578,22 @@ public class ImageryLayer {
                 // Update render resources right before execution instead of now.
                 // This allows different ImageryLayers to share the same vao and buffers.
                 preExecute: { command in
-                    self.reprojectToGeographic(command, context: context, texture: texture, rectangle: rectangle)
+                    self.reprojectToGeographic(command, context: context!, texture: texture, rectangle: rectangle)
                 },
                 postExecute: { outputTexture in
                     imagery.texture = outputTexture
-                    self.finalizeReprojectTexture(context, imagery: imagery, texture: outputTexture)
+                    self.finalizeReprojectTexture(context!, imagery: imagery, texture: outputTexture)
                 },
                 persists: true,
                 owner : self
             )
             _reprojectComputeCommands.append(computeCommand)
         } else {
-            finalizeReprojectTexture(context, imagery: imagery, texture: texture)
+            finalizeReprojectTexture(context!, imagery: imagery, texture: texture)
         }
         
     }
-    func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture) {
+    func finalizeReprojectTexture(_ context: Context, imagery: Imagery, texture: Texture) {
         /*
         // Use mipmaps if this texture has power-of-two dimensions.
         if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
@@ -627,7 +627,7 @@ public class ImageryLayer {
         if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
             if mipmapSampler == nil {
-                mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
+                mipmapSampler = Sampler(context: context, mipMagFilter: .linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
             }
             // FIXME: Mipmaps
             context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
@@ -639,22 +639,22 @@ public class ImageryLayer {
             }
             texture.sampler = nonMipmapSampler!
         }
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             // dispatch_async(context.renderQueue, {
-            imagery.state = .Ready
+            imagery.state = .ready
         })
     }
     
-    func generateMipmaps (inout frameState frameState: FrameState, imagery: Imagery) {
+    func generateMipmaps (frameState: inout FrameState, imagery: Imagery) {
         
         let context = frameState.context
         // Use mipmaps if this texture has power-of-two dimensions.
-        dispatch_async(QueueManager.sharedInstance.resourceLoadQueue, {
+        QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
             let texture = imagery.texture!
             if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
                 var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
                 if mipmapSampler == nil {
-                    mipmapSampler = Sampler(context: context, mipMagFilter: .Linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
+                    mipmapSampler = Sampler(context: context, mipMagFilter: .linear, maximumAnisotropy: context.limits.maximumTextureFilterAnisotropy)
                 }
                 // FIXME: Mipmaps
                 context.cache["imageryLayer_mipmapSampler"] = mipmapSampler
@@ -666,9 +666,9 @@ public class ImageryLayer {
                 }
                 texture.sampler = nonMipmapSampler!
             }
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 // dispatch_async(context.renderQueue, {
-                imagery.state = .Ready
+                imagery.state = .ready
             })
         })
     }
@@ -680,8 +680,8 @@ public class ImageryLayer {
      *
      * @param {FrameState} frameState The frameState.
      */
-    func queueReprojectionCommands (inout frameState: FrameState) {
-        frameState.commandList.appendContentsOf(_reprojectComputeCommands)
+    func queueReprojectionCommands (_ frameState: inout FrameState) {
+        frameState.commandList.append(contentsOf: _reprojectComputeCommands)
         _reprojectComputeCommands.removeAll()
     }
     
@@ -694,7 +694,7 @@ public class ImageryLayer {
         _reprojectComputeCommands.removeAll()
     }
         
-    func getImageryFromCache (level level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+    func getImageryFromCache (level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
@@ -707,12 +707,12 @@ public class ImageryLayer {
         return imagery!
     }
     
-    func removeImageryFromCache (imagery: Imagery) {
+    func removeImageryFromCache (_ imagery: Imagery) {
         let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
-        _imageryCache.removeValueForKey(cacheKey)
+        _imageryCache.removeValue(forKey: cacheKey)
     }
     
-    private func getImageryCacheKey(level level: Int, x: Int, y: Int) -> String {
+    private func getImageryCacheKey(level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
@@ -743,7 +743,7 @@ public class ImageryLayer {
         }
     }
     
-    func reprojectToGeographic(command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
+    func reprojectToGeographic(_ command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
         
         // This function has gone through a number of iterations, because GPUs are awesome.
         //
@@ -796,11 +796,11 @@ public class ImageryLayer {
                 positions.append(y)
             }
             
-            let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .Float32, sizeInBytes: positions.sizeInBytes)
+            let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .float32, sizeInBytes: positions.sizeInBytes)
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
             
-            let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .UnsignedShort, sizeInBytes: indices.sizeInBytes)
+            let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .unsignedShort, sizeInBytes: indices.sizeInBytes)
             
             let vertexAttributes = [
                 //position
@@ -808,7 +808,7 @@ public class ImageryLayer {
                     buffer: vertexBuffer,
                     bufferIndex: VertexDescriptorFirstBufferOffset,
                     index: 0,
-                    format: .Float2,
+                    format: .float2,
                     offset: 0,
                     size: sizeof(Float) * 2,
                     normalize: false
@@ -818,7 +818,7 @@ public class ImageryLayer {
                     buffer: nil,
                     bufferIndex: VertexDescriptorFirstBufferOffset+1,
                     index: 1,
-                    format: .Float,
+                    format: .float,
                     offset: 0,
                     size: sizeof(Float),
                     normalize: false
@@ -881,12 +881,12 @@ public class ImageryLayer {
             webMercatorT.append(mercatorFraction)
             webMercatorT.append(mercatorFraction)
         }
-        let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .Float32, sizeInBytes: webMercatorT.sizeInBytes)
+        let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .float32, sizeInBytes: webMercatorT.sizeInBytes)
         
-        var attributes = reproject.vertexAttributes
+        var attributes = reproject?.vertexAttributes
         attributes[1].buffer = webMercatorTBuffer
         
-        let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject.indexBuffer, indexCount: reproject.indexCount)
+        let vertexArray = VertexArray(attributes: attributes!, vertexCount: 128, indexBuffer: reproject?.indexBuffer, indexCount: reproject?.indexCount)
         
         let textureUsage: TextureUsage = [.RenderTarget, .ShaderRead]
         
@@ -900,9 +900,9 @@ public class ImageryLayer {
                 usage: textureUsage
             )
         )
-        outputTexture.sampler = reproject.sampler
+        outputTexture.sampler = (reproject?.sampler)!
         
-        command.pipeline = reproject.pipeline
+        command.pipeline = reproject?.pipeline
         command.outputTexture = outputTexture
         command.uniformMap = uniformMap
         command.vertexArray = vertexArray
@@ -915,7 +915,7 @@ public class ImageryLayer {
      * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
      * @returns {Number} The level with the specified texel spacing or less.
      */
-    func levelWithMaximumTexelSpacing(texelSpacing texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
+    func levelWithMaximumTexelSpacing(texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0

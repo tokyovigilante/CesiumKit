@@ -40,7 +40,7 @@ class QuadtreeTile: Equatable {
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
-    var state: TileLoadState = .Start
+    var state: TileLoadState = .start
     
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.
@@ -93,7 +93,7 @@ class QuadtreeTile: Equatable {
     */
     var needsLoading: Bool {
         get {
-            return state == .Start || state == .Loading
+            return state == .start || state == .loading
         }
     }
     
@@ -175,7 +175,7 @@ class QuadtreeTile: Equatable {
     * @returns {QuadtreeTile[]} An array containing the tiles at level of detail zero, starting with the
     * tile in the northwest corner and followed by the tile (if any) to its east.
     */
-    class func createLevelZeroTiles (tilingScheme: TilingScheme) -> [QuadtreeTile] {
+    class func createLevelZeroTiles (_ tilingScheme: TilingScheme) -> [QuadtreeTile] {
         
         let numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAtLevel(0)
         let numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAtLevel(0)
@@ -190,23 +190,23 @@ class QuadtreeTile: Equatable {
         return result
     }
     
-    private func updateCustomData (frameNumber: Int, added: [CustomData]? = nil, removed: [CustomData]? = nil) {
+    private func updateCustomData (_ frameNumber: Int, added: [CustomData]? = nil, removed: [CustomData]? = nil) {
         
         
         if added != nil && removed != nil {
             // level zero tile
             
-            for (i, data) in removed!.enumerate() {
+            for (i, data) in removed!.enumerated() {
                 
                 for j in 0..<customData.count {
                     if (customData[j] === data) {
-                        customData.removeAtIndex(j)
+                        customData.remove(at: j)
                         break
                     }
                 }
             }
             
-            for (i, data) in added!.enumerate() {
+            for (i, data) in added!.enumerated() {
                 if rectangle.contains(data.positionCartographic) {
                     customData.append(data)
                 }
@@ -238,8 +238,8 @@ class QuadtreeTile: Equatable {
     *
     * @memberof QuadtreeTile
     */
-    func freeResources (provider: GlobeSurfaceTileProvider) {
-        state = .Start
+    func freeResources (_ provider: GlobeSurfaceTileProvider) {
+        state = .start
         renderable = false
         upsampledFromParent = false
 

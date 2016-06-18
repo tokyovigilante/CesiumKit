@@ -93,7 +93,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @param {Number} level The level-of-detail.
     * @returns {Number} The number of tiles in the X direction at the given level.
     */
-    func numberOfXTilesAtLevel(level: Int) -> Int {
+    func numberOfXTilesAtLevel(_ level: Int) -> Int {
         return self.numberOfLevelZeroTilesX << level
     }
     
@@ -103,7 +103,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @param {Number} level The level-of-detail.
     * @returns {Number} The number of tiles in the Y direction at the given level.
     */
-    func numberOfYTilesAtLevel(level: Int) -> Int {
+    func numberOfYTilesAtLevel(_ level: Int) -> Int {
         return self.numberOfLevelZeroTilesY << level
     }
     
@@ -117,7 +117,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the native rectangle if 'result'
     *          is undefined.
     */
-    func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle {
+    func rectangleToNativeRectangle(_ rectangle: Rectangle) -> Rectangle {
         let southwest = projection.project(rectangle.southwest)
         let northeast = projection.project(rectangle.northeast)
         
@@ -137,7 +137,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToNativeRectangle(x x: Int, y: Int, level: Int) -> Rectangle {
+    func tileXYToNativeRectangle(x: Int, y: Int, level: Int) -> Rectangle {
         let xTiles = numberOfXTilesAtLevel(level)
         let yTiles = numberOfYTilesAtLevel(level)
         
@@ -163,7 +163,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToRectangle(x x: Int, y: Int, level: Int) -> Rectangle {
+    func tileXYToRectangle(x: Int, y: Int, level: Int) -> Rectangle {
         var nativeRectangle = tileXYToNativeRectangle(x: x, y: y, level: level)
         
         let southwest = projection.unproject(Cartesian3(x: nativeRectangle.west, y: nativeRectangle.south, z: 0.0))
@@ -187,7 +187,7 @@ class WebMercatorTilingScheme: TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)? {
+    func positionToTileXY(position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         
         if !rectangle.contains(position) {
                 // outside the bounds of the tiling scheme

@@ -38,7 +38,7 @@ public class PrimitiveCollection: Primitive {
     private var _primitives = [Primitive]()
     
     override init () {
-        guid = NSUUID().UUIDString
+        guid = UUID().uuidString
     }
     /*
 
@@ -107,7 +107,7 @@ return this._primitives.length;
 * @example
 * var billboards = scene.primitives.add(new Cesium.BillboardCollection());
 */
-    public func add (primitive: Primitive) -> Primitive {
+    public func add (_ primitive: Primitive) -> Primitive {
         /*
          var external = (primitive._external = primitive._external || {});
          var composites = (external._composites = external._composites || {});
@@ -329,7 +329,7 @@ return this._primitives[index];
 /**
 * @private
 */
-    override func update (inout frameState: FrameState) {
+    override func update (_ frameState: inout FrameState) {
         if !show {
             return
         }

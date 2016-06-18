@@ -11,7 +11,7 @@ import Metal
 class Sampler {
     let state: MTLSamplerState
     
-    init (context: Context, wrapS: TextureWrap = .ClampToEdge, wrapT: TextureWrap  = .ClampToEdge, minFilter: TextureMinMagFilter = .Linear, magFilter: TextureMinMagFilter = .Linear, mipMagFilter: TextureMipFilter = .NotMipmapped, maximumAnisotropy: Int = 1) {
+    init (context: Context, wrapS: TextureWrap = .clampToEdge, wrapT: TextureWrap  = .clampToEdge, minFilter: TextureMinMagFilter = .linear, magFilter: TextureMinMagFilter = .linear, mipMagFilter: TextureMipFilter = .notMipmapped, maximumAnisotropy: Int = 1) {
         
         let descriptor = MTLSamplerDescriptor()
         descriptor.minFilter = minFilter.toMetal()
@@ -27,11 +27,11 @@ class Sampler {
 
 enum TextureWrap: UInt {
 
-    case ClampToEdge
-    case MirrorClampToEdge
-    case Repeat
-    case MirrorRepeat
-    case ClampToZero
+    case clampToEdge
+    case mirrorClampToEdge
+    case `repeat`
+    case mirrorRepeat
+    case clampToZero
     
     func toMetal() -> MTLSamplerAddressMode {
         return MTLSamplerAddressMode(rawValue: self.rawValue)!
@@ -40,8 +40,8 @@ enum TextureWrap: UInt {
 
 enum TextureMinMagFilter: UInt {
     
-    case Nearest
-    case Linear
+    case nearest
+    case linear
     
     func toMetal() -> MTLSamplerMinMagFilter {
         return MTLSamplerMinMagFilter(rawValue: self.rawValue)!
@@ -50,9 +50,9 @@ enum TextureMinMagFilter: UInt {
 
 enum TextureMipFilter: UInt {
     
-    case NotMipmapped
-    case Nearest
-    case Linear
+    case notMipmapped
+    case nearest
+    case linear
     
     func toMetal() -> MTLSamplerMipFilter {
         return MTLSamplerMipFilter(rawValue: self.rawValue)!

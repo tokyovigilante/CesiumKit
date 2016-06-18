@@ -207,7 +207,7 @@ struct GeometryPipeline {
      * //   'normal' : 1
      * // }
      */
-    static func createAttributeLocations (geometry: Geometry) -> [String: Int] {
+    static func createAttributeLocations (_ geometry: Geometry) -> [String: Int] {
         
         // There can be a WebGL performance hit when attribute 0 is disabled, so
         // assign attribute locations to well-known attributes.

@@ -33,17 +33,17 @@ struct CullingVolume {
     * @param {Object} boundingVolume The bounding volume whose intersection with the culling volume is to be tested.
     * @returns {Intersect}  Intersect.OUTSIDE, Intersect.INTERSECTING, or Intersect.INSIDE.
     */
-    func visibility(boundingVolume: BoundingVolume) -> Intersect {
+    func visibility(_ boundingVolume: BoundingVolume) -> Intersect {
         var intersecting = false
         
         for plane in planes {
             let result = boundingVolume.intersectPlane(Plane(fromCartesian4: plane))
-            if result == .Outside {
+            if result == .outside {
                 return result
-            } else if result == .Intersecting {
+            } else if result == .intersecting {
                 intersecting = true
             }
         }
-        return intersecting ? Intersect.Intersecting : Intersect.Inside
+        return intersecting ? Intersect.intersecting : Intersect.inside
     }
 }

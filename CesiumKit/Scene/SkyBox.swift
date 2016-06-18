@@ -83,14 +83,14 @@ class SkyBox {
     * @exception {DeveloperError} this.sources is required and must have positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ properties.
     * @exception {DeveloperError} this.sources properties must all be the same type.
     */
-    func update (frameState: FrameState) -> DrawCommand? {
+    func update (_ frameState: FrameState) -> DrawCommand? {
         if !show {
             return nil
         }
         
         let context = frameState.context
         
-        if frameState.mode != .Scene3D && frameState.mode != SceneMode.Morphing {
+        if frameState.mode != .scene3D && frameState.mode != SceneMode.morphing {
             return nil
         }
         
@@ -100,11 +100,11 @@ class SkyBox {
         }
         
         if _sourcesUpdated {
-            let width = Int(CGImageGetWidth(sources.positiveX))
+            let width = Int(sources.positiveX.width)
             _cubemap = Texture(
-                context: context,
+                context: context!,
                 options: TextureOptions(
-                    source: .CubeMap(sources),
+                    source: .cubeMap(sources),
                     width: width,
                     height: width,
                     cubeMap: true,
@@ -135,17 +135,17 @@ class SkyBox {
             )
             
             _command.pipeline = RenderPipeline.fromCache(
-                context: context,
+                context: context!,
                 vertexShaderSource: ShaderSource(sources: [Shaders["SkyBoxVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["SkyBoxFS"]!]),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: context.depthTexture,
+                depthStencil: (context?.depthTexture)!,
                 blendingState: .AlphaBlend()
             )
             _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             
             _command.renderState = RenderState(
-                device: context.device
+                device: (context?.device)!
             )
         }
         if _cubemap == nil {
@@ -155,7 +155,7 @@ class SkyBox {
         return _command
     }
         
-    class func getDefaultSkyBoxUrl (face: String) -> String {
+    class func getDefaultSkyBoxUrl (_ face: String) -> String {
         return "tycho2t3_80_" + face + ".jpg"
     }
 }

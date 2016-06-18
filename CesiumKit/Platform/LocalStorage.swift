@@ -14,16 +14,16 @@ class LocalStorage {
     // Singleton
     static let sharedInstance = LocalStorage()
     
-    func getAppSupportURL () -> NSURL {
+    func getAppSupportURL () -> URL {
         #if os(OSX)
             return NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0].URLByAppendingPathComponent(getExecutableName())
         #elseif os(iOS)
-            return NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
+            return FileManager.default().urlsForDirectory(.applicationSupportDirectory, inDomains: .userDomainMask)[0]
         #endif
     }
     
     func getExecutableName () -> String {
-        return NSProcessInfo.processInfo().processName
+        return ProcessInfo.processInfo().processName
     }
     
 }

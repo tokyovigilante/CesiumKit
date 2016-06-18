@@ -23,11 +23,11 @@ public class UniformBufferProvider {
         self.deallocationBlock = deallocationBlock
         
         for _ in 0..<BufferSyncState.count {
-            _buffers.append(Buffer(device: device, array: nil, componentDatatype: .Byte, sizeInBytes: self.bufferSize))
+            _buffers.append(Buffer(device: device, array: nil, componentDatatype: .byte, sizeInBytes: self.bufferSize))
         }
     }
     
-    func currentBuffer(index: BufferSyncState) -> Buffer {
+    func currentBuffer(_ index: BufferSyncState) -> Buffer {
         return _buffers[index.rawValue]
     }
 }

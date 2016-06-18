@@ -9,27 +9,27 @@
 import Foundation
 
 enum ObjectSourceReferenceType {
-    case BundleResource
-    case NetworkURL
-    case FilePath
+    case bundleResource
+    case networkURL
+    case filePath
 }
 
 extension String {
     subscript (r: Range<Int>) -> String {
         get {
-            let startIndex = self.startIndex.advancedBy(r.startIndex)
-            let endIndex = self.startIndex.advancedBy(r.endIndex - r.startIndex)
+            let startIndex = self.characters.index(self.startIndex, offsetBy: r.lowerBound)
+            let endIndex = self.characters.index(self.startIndex, offsetBy: r.upperBound - r.lowerBound)
             
             return self[startIndex..<endIndex]
         }
     }
     
-    func replace(existingString: String, _ newString: String) -> String {
-        return self.stringByReplacingOccurrencesOfString(existingString, withString: newString, options: NSStringCompareOptions.LiteralSearch, range: nil)
+    func replace(_ existingString: String, _ newString: String) -> String {
+        return self.replacingOccurrences(of: existingString, with: newString, options: NSString.CompareOptions.literalSearch, range: nil)
     }
     
-    func indexOf(findStr:String, startIndex: String.Index? = nil) -> String.Index? {
-        return self.rangeOfString(findStr, options: [], range: nil, locale: nil)?.startIndex
+    func indexOf(_ findStr:String, startIndex: String.Index? = nil) -> String.Index? {
+        return self.range(of: findStr, options: [], range: nil, locale: nil)?.lowerBound
     }
     
 }
@@ -37,27 +37,27 @@ extension String {
 extension String {
     var referenceType: ObjectSourceReferenceType {
         if self.hasPrefix("/") {
-            return .FilePath
+            return .filePath
         } else if self.hasPrefix("http") {
-            return .NetworkURL
+            return .networkURL
         }
-        return .BundleResource
+        return .bundleResource
     }
     
     
-    func urlForSource () -> NSURL? {
+    func urlForSource () -> URL? {
         switch self.referenceType {
-        case .BundleResource:
-            let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") ?? NSBundle.mainBundle()
+        case .bundleResource:
+            let bundle = Bundle(identifier: "com.testtoast.CesiumKit") ?? Bundle.main()
             #if os(OSX)
                 return bundle.URLForImageResource(self)
             #elseif os(iOS)
-                return bundle.URLForResource((self as NSString).stringByDeletingPathExtension, withExtension: (self as NSString).pathExtension)
+                return bundle.urlForResource((self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
             #endif
-        case .FilePath:
-            return NSURL(fileURLWithPath: self, isDirectory: false)
-        case .NetworkURL:
-            return NSURL(string: self)
+        case .filePath:
+            return URL(fileURLWithPath: self, isDirectory: false)
+        case .networkURL:
+            return URL(string: self)
         }
     }
     
@@ -67,7 +67,7 @@ extension String {
             return nil
         }
         do {
-            let data = try NSData(contentsOfURL: sourceURL, options: [])
+            let data = try Data(contentsOf: sourceURL, options: [])
             return CGImage.fromData(data)
         } catch {
             return nil

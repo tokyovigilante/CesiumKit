@@ -224,7 +224,7 @@ struct BoxGeometry {
     * @param {BoxGeometry} boxGeometry A description of the box.
     * @returns {Geometry} The computed vertices and indices.
     */
-    func createGeometry (context: Context) -> Geometry {
+    func createGeometry (_ context: Context) -> Geometry {
         let min = _minimum
         let max = _maximum
         
@@ -253,9 +253,9 @@ struct BoxGeometry {
                     ]
                     
                     attributes.position = GeometryAttribute(
-                        componentDatatype : ComponentDatatype.Float64,
+                        componentDatatype : ComponentDatatype.float64,
                         componentsPerAttribute : 3,
-                        values : Buffer(device: context.device, array: positions, componentDatatype: .Float64, sizeInBytes: positions.sizeInBytes)
+                        values : Buffer(device: context.device, array: positions, componentDatatype: .float64, sizeInBytes: positions.sizeInBytes)
                     )
                 }
                 
@@ -269,9 +269,9 @@ struct BoxGeometry {
                         0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0] // -y face
                     
                     attributes.normal = GeometryAttribute(
-                        componentDatatype : .Float32,
+                        componentDatatype : .float32,
                         componentsPerAttribute : 3,
-                        values : Buffer(device: context.device, array: normals, componentDatatype: .Float32, sizeInBytes: normals.sizeInBytes)
+                        values : Buffer(device: context.device, array: normals, componentDatatype: .float32, sizeInBytes: normals.sizeInBytes)
                     )
                 }
                 
@@ -286,9 +286,9 @@ struct BoxGeometry {
                     ]
                     
                     attributes.st = GeometryAttribute(
-                        componentDatatype : .Float32,
+                        componentDatatype : .float32,
                         componentsPerAttribute : 2,
-                        values : Buffer(device: context.device, array: texCoords, componentDatatype: .Float32, sizeInBytes: texCoords.sizeInBytes)
+                        values : Buffer(device: context.device, array: texCoords, componentDatatype: .float32, sizeInBytes: texCoords.sizeInBytes)
                     )
                 }
                 
@@ -302,9 +302,9 @@ struct BoxGeometry {
                         1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 // -y face
                     ]
                     attributes.tangent = GeometryAttribute(
-                        componentDatatype : .Float32,
+                        componentDatatype : .float32,
                         componentsPerAttribute : 3,
-                        values : Buffer(device: context.device, array: tangents, componentDatatype: .Float32, sizeInBytes: tangents.sizeInBytes)
+                        values : Buffer(device: context.device, array: tangents, componentDatatype: .float32, sizeInBytes: tangents.sizeInBytes)
                     )
                 }
                 
@@ -319,9 +319,9 @@ struct BoxGeometry {
                     ]
                     
                     attributes.binormal = GeometryAttribute(
-                        componentDatatype : .Float32,
+                        componentDatatype : .float32,
                         componentsPerAttribute : 3,
-                        values : Buffer(device: context.device, array: binormals, componentDatatype: .Float32, sizeInBytes: binormals.sizeInBytes)
+                        values : Buffer(device: context.device, array: binormals, componentDatatype: .float32, sizeInBytes: binormals.sizeInBytes)
                     )
                 }
                 
@@ -348,9 +348,9 @@ struct BoxGeometry {
             ]
             
             attributes.position = GeometryAttribute(
-                componentDatatype : .Float64,
+                componentDatatype : .float64,
                 componentsPerAttribute : 3,
-                values : Buffer(device: context.device, array: positions, componentDatatype: .Float64, sizeInBytes: positions.sizeInBytes)
+                values : Buffer(device: context.device, array: positions, componentDatatype: .float64, sizeInBytes: positions.sizeInBytes)
             )
             
             // 12 triangles:  6 faces, 2 triangles each.
@@ -370,7 +370,7 @@ struct BoxGeometry {
         return Geometry(
             attributes: attributes,
             indices: indices,
-            primitiveType: .Triangle,
+            primitiveType: .triangle,
             boundingSphere: BoundingSphere(center: Cartesian3.zero, radius: radius)
         )
     }

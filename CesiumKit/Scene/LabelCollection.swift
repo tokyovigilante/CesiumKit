@@ -429,17 +429,17 @@ public class LabelCollection: Primitive {
      * });
      */
     public func add (
-        show: Bool = true,
+        _ show: Bool = true,
         position: Cartesian3 = Cartesian3.zero,
         text: String = "",
         font: String = "HelveticaNeue",
         fillColor: Color = Color.White,
         outlineColor: Color = Color.Black,
-        style: LabelStyle = .Fill,
+        style: LabelStyle = .fill,
         pixelOffset: Cartesian2 = Cartesian2.zero,
         eyeOffset: Cartesian3 = Cartesian3.zero,
-        horizontalOrigin: HorizontalOrigin = .Left,
-        verticalOrigin : VerticalOrigin = .Bottom,
+        horizontalOrigin: HorizontalOrigin = .left,
+        verticalOrigin : VerticalOrigin = .bottom,
         scale: Double = 1.0) -> Label
     {
         let label = Label(
@@ -485,7 +485,7 @@ public class LabelCollection: Primitive {
      * var l = labels.add(...);
      * labels.remove(l);  // Returns true
      */
-    func remove (label: Label) -> Bool {
+    func remove (_ label: Label) -> Bool {
         /*if (defined(label) && label._labelCollection === this) {
          var index = this._labels.indexOf(label);
          if (index !== -1) {
@@ -575,7 +575,7 @@ public class LabelCollection: Primitive {
      /**
      * @private
      */
-    func update (frameState: FrameState) {
+    func update (_ frameState: FrameState) {
         /*var billboardCollection = this._billboardCollection;
         
         billboardCollection.modelMatrix = this.modelMatrix;

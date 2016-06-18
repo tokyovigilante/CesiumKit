@@ -7,14 +7,14 @@
 //
 
 enum ImageryState {
-    case Unloaded,
-    Transitioning,
-    Received,
-    TextureLoaded,
-    Reprojected,
-    Ready,
-    Failed,
-    Invalid,
-    PlaceHolder
+    case unloaded,
+    transitioning,
+    received,
+    textureLoaded,
+    reprojected,
+    ready,
+    failed,
+    invalid,
+    placeHolder
 }
 

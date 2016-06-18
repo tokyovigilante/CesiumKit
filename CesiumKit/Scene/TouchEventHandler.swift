@@ -95,8 +95,8 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
     }
     
     func addRecognizers () {
-        _view.userInteractionEnabled = true
-        _view.multipleTouchEnabled = true
+        _view.isUserInteractionEnabled = true
+        _view.isMultipleTouchEnabled = true
         
         //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
         _panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
@@ -108,9 +108,9 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _view.addGestureRecognizer(_pinchRecognizer)
     }
     
-    func handlePanGesture(recognizer: UIPanGestureRecognizer) {
-        let location = recognizer.locationInView(_view)
-        let offset = recognizer.translationInView(_view)
+    func handlePanGesture(_ recognizer: UIPanGestureRecognizer) {
+        let location = recognizer.location(in: _view)
+        let offset = recognizer.translation(in: _view)
         
         var event: TouchEvent? = nil
         switch recognizer.state {
@@ -119,7 +119,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
             /*event = PanStartEvent(
             tapCount: recognizer.numberOfTouches(),
             startPosition: [Cartesian2(x: Double(location.x), y: Double(location.y))])*/
-        case .Changed:
+        case .changed:
             //println("panchanged, x: \(location.x) - \(offset.x), y: \(location.y) - \(offset.y), fingers: \(recognizer.numberOfTouches())")
             
             var movement = MouseMovement()
@@ -144,21 +144,21 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         default:
             return
         }
-        recognizer.setTranslation(CGPointZero, inView: _view)
+        recognizer.setTranslation(CGPoint.zero, in: _view)
         /*if let touchHandler = globe?.eventAggregator as? TouchEventAggregator {
         touchHander.addEvent(event)
         }*/
     }
     
-    func handlePinchGesture(recognizer: UIPinchGestureRecognizer) {
-        let fingerOne = recognizer.locationOfTouch(0, inView: _view)
+    func handlePinchGesture(_ recognizer: UIPinchGestureRecognizer) {
+        let fingerOne = recognizer.location(ofTouch: 0, in: _view)
         /*let fingerTwo = recognizer.locationOfTouch(1, inView: view)
         let diff = Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.x)).distance(Cartesian2(x: Double(fingerTwo.x), y: Double(fingerTwo.x)))*/
         switch recognizer.state {
         //case .Began:
             //println("pinchstart, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
             //globe?.eventHandler.handlePanStart(Cartesian2(x: Double(location.x), y: Double(location.y)))
-        case .Changed:
+        case .changed:
             //println("pinchchanged, x: \(location.x), y: \(location.y), fingers: \(recognizer.numberOfTouches())")
             //let view = _view as! MetalView
             let scale = Double(recognizer.scale)
@@ -177,7 +177,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         }
     }
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == _panRecognizer && otherGestureRecognizer == _pinchRecognizer {
             return true
         }
@@ -186,7 +186,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
 
     // MARK: Zoom
     
-    func zoomToPosition (position: Cartesian2, scale: Double) {
+    func zoomToPosition (_ position: Cartesian2, scale: Double) {
         
         let ray = _scene.camera.getPickRay(position)
         
@@ -245,7 +245,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
 
     }
 
-    func appendEvent(event: TouchEvent) {
+    func appendEvent(_ event: TouchEvent) {
         //_events.append(event)
     }
     

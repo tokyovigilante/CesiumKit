@@ -78,7 +78,7 @@ class HeightmapTessellator {
     * });
     */
     class func computeVertices (
-        heightmap heightmap: [UInt16],
+        heightmap: [UInt16],
                   height: Int,
                   width: Int,
                   skirtHeight: Double,
@@ -227,7 +227,7 @@ class HeightmapTessellator {
                             heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                         }
                     } else {
-                        for elementOffset in (elementsPerHeight - 1).stride(through: 0, by: -1) {
+                        for elementOffset in stride(from: (elementsPerHeight - 1), through: 0, by: -1) {
                             heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                         }
                     }

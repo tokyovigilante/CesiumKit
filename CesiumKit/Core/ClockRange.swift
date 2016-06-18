@@ -26,7 +26,7 @@ public enum ClockRange {
     * @type {Number}
     * @constant
     */
-    case Unbounded
+    case unbounded
     
     /**
     * When {@link Clock#startTime} or {@link Clock#stopTime} is reached,
@@ -35,7 +35,7 @@ public enum ClockRange {
     * @type {Number}
     * @constant
     */
-    case Clamped
+    case clamped
     
     /**
     * When {@link Clock#stopTime} is reached, {@link Clock#tick} will advance
@@ -46,5 +46,5 @@ public enum ClockRange {
     * @type {Number}
     * @constant
     */
-    case LoopStop
+    case loopStop
 }

@@ -21,7 +21,7 @@ enum BlendEquation: UInt {
     * @type {Number}
     * @constant
     */
-    case Add // WebGL: FUNC_ADD
+    case add // WebGL: FUNC_ADD
     
     /**
     * 0x800A.  Pixel values are subtracted componentwise (source - destination).  This is used in alpha blending for translucency.
@@ -29,7 +29,7 @@ enum BlendEquation: UInt {
     * @type {Number}
     * @constant
     */
-    case Subtract // WebGL: FUNC_SUBTRACT
+    case subtract // WebGL: FUNC_SUBTRACT
     
     /**
     * 0x800B.  Pixel values are subtracted componentwise (destination - source).
@@ -37,10 +37,10 @@ enum BlendEquation: UInt {
     * @type {Number}
     * @constant
     */
-    case ReverseSubtract // WebGL: FUNC_REVERSE_SUBTRACT
+    case reverseSubtract // WebGL: FUNC_REVERSE_SUBTRACT
     
-    case Min
-    case Max
+    case min
+    case max
     
     // No min and max like in ColladaFX GLES2 profile
     

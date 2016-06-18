@@ -445,7 +445,7 @@ public struct Matrix2 {
     * @param {MatrixType} other The second matrix.
     * @returns {MatrixType} The modified result parameter.
     */
-    func multiply(other: Matrix2) -> Matrix2 {
+    func multiply(_ other: Matrix2) -> Matrix2 {
         return Matrix2(fromSIMD: simdType * other.simdType)
     }
     
@@ -460,7 +460,7 @@ public struct Matrix2 {
     * @param {MatrixType} [right] The right hand side matrix.
     * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
     */
-    func equals(other: Matrix2) -> Bool {
+    func equals(_ other: Matrix2) -> Bool {
         return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
         //return matrix_equal(simdType, other.simdType)
     }
@@ -475,7 +475,7 @@ public struct Matrix2 {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Matrix2, epsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Matrix2, epsilon: Double) -> Bool {
         return matrix_almost_equal_elements(simdType.cmatrix, other.simdType.cmatrix, epsilon)
     }
 /*

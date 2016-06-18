@@ -21,7 +21,7 @@ class ComputeEngine {
         self.context = context
     }
 
-    private func createViewportQuadPipeline(fragmentShaderSource: ShaderSource) -> RenderPipeline? {
+    private func createViewportQuadPipeline(_ fragmentShaderSource: ShaderSource) -> RenderPipeline? {
         
         let attributes = [
             // attribute vec4 position;
@@ -29,7 +29,7 @@ class ComputeEngine {
                 buffer: nil,
                 bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 0,
-                format: .Float2,
+                format: .float2,
                 offset: 0,
                 size: 8,
                 normalize: false),
@@ -38,7 +38,7 @@ class ComputeEngine {
                 buffer: nil,
                 bufferIndex: VertexDescriptorFirstBufferOffset,
                 index: 1,
-                format: .Float2,
+                format: .float2,
                 offset: 8,
                 size: 8,
                 normalize: false)
@@ -53,7 +53,7 @@ class ComputeEngine {
             depthStencil: false)
     }
     
-    func execute (computeCommand: ComputeCommand) {
+    func execute (_ computeCommand: ComputeCommand) {
         
         // This may modify the command's resources, so do error checking afterwards
         if let preExecute = computeCommand.preExecute {

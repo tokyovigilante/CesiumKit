@@ -113,7 +113,7 @@ class Simon1994PlanetaryPositions {
     init () {
         // configure static variables
         
-        epoch = JulianDate(julianDayNumber: 2451545, secondsOfDay: 0, timeStandard: .TAI) //Actually TDB (not TAI)
+        epoch = JulianDate(julianDayNumber: 2451545, secondsOfDay: 0, timeStandard: .tai) //Actually TDB (not TAI)
         
         GravitationalParameterOfEarth = 3.98600435e14
         GravitationalParameterOfSun = GravitationalParameterOfEarth * (1.0 + 0.012300034) * 328900.56
@@ -189,12 +189,12 @@ class Simon1994PlanetaryPositions {
         _factor = _moonEarthMassRatio / (_moonEarthMassRatio + 1.0) * -1
     }
     
-    func computeTdbMinusTtSpice(daysSinceJ2000InTerrestrialTime: Double) -> Double {
+    func computeTdbMinusTtSpice(_ daysSinceJ2000InTerrestrialTime: Double) -> Double {
         let g = 6.239996 + (0.0172019696544) * daysSinceJ2000InTerrestrialTime
         return 1.657e-3 * sin(g + 1.671e-2 * sin(g))
     }
     
-    private func taiToTdb(date: JulianDate) -> JulianDate {
+    private func taiToTdb(_ date: JulianDate) -> JulianDate {
         //Converts TAI to TT
         var result = date.addSeconds(TdtMinusTai)
         
@@ -205,7 +205,7 @@ class Simon1994PlanetaryPositions {
         return result
     }
 
-    private func elementsToCartesian(semimajorAxis semimajorAxis: Double, eccentricity: Double, inclination: Double, longitudeOfPerigee: Double, longitudeOfNode: Double, meanLongitude: Double, gravitationalParameter: Double) -> Cartesian3 {
+    private func elementsToCartesian(semimajorAxis: Double, eccentricity: Double, inclination: Double, longitudeOfPerigee: Double, longitudeOfNode: Double, meanLongitude: Double, gravitationalParameter: Double) -> Cartesian3 {
         
         var inclination = inclination
         var longitudeOfNode = longitudeOfNode
@@ -222,7 +222,7 @@ class Simon1994PlanetaryPositions {
         let rightAscensionOfAscendingNode = longitudeOfNode
         let trueAnomaly = meanAnomalyToTrueAnomaly(meanLongitude - longitudeOfPerigee, eccentricity: eccentricity)
         let type = OrbitType.fromEccentricity(eccentricity, tolerance: 0.0)
-        assert(type != .Hyperbolic || abs(Math.negativePiToPi(trueAnomaly)) < acos(-1.0 / eccentricity), "The true anomaly of the hyperbolic orbit lies outside of the bounds of the hyperbola.")
+        assert(type != .hyperbolic || abs(Math.negativePiToPi(trueAnomaly)) < acos(-1.0 / eccentricity), "The true anomaly of the hyperbolic orbit lies outside of the bounds of the hyperbola.")
         
         let perifocalToEquatorial = perifocalToCartesianMatrix(argumentOfPeriapsis, inclination: inclination, rightAscension: rightAscensionOfAscendingNode)
         let semilatus = radiusOfPeriapsis * (1.0 + eccentricity)
@@ -237,7 +237,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the true anomaly given the mean anomaly and the eccentricity.
-    private func meanAnomalyToTrueAnomaly(meanAnomaly: Double, eccentricity: Double) -> Double {
+    private func meanAnomalyToTrueAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         let eccentricAnomaly = meanAnomalyToEccentricAnomaly(meanAnomaly, eccentricity: eccentricity)
@@ -245,7 +245,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the eccentric anomaly given the mean anomaly and the eccentricity.
-    private func meanAnomalyToEccentricAnomaly(meanAnomaly: Double, eccentricity: Double) -> Double {
+    private func meanAnomalyToEccentricAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         let revs = floor(meanAnomaly / Math.TwoPi)
@@ -278,7 +278,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the true anomaly given the eccentric anomaly and the eccentricity.
-    private func eccentricAnomalyToTrueAnomaly(eccentricAnomaly: Double, eccentricity: Double) -> Double {
+    private func eccentricAnomalyToTrueAnomaly(_ eccentricAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         // Calculate the number of previous revolutions
@@ -310,7 +310,7 @@ class Simon1994PlanetaryPositions {
     /** Calculates the transformation matrix to convert from the perifocal (PQW) coordinate
      system to inertial cartesian coordinates.
     */
-    private func perifocalToCartesianMatrix(argumentOfPeriapsis: Double, inclination: Double, rightAscension: Double) -> Matrix3 {
+    private func perifocalToCartesianMatrix(_ argumentOfPeriapsis: Double, inclination: Double, rightAscension: Double) -> Matrix3 {
         assert(inclination >= 0.0 && inclination < 1.0, "eccentricity out of range")
         
         let cosap = cos(argumentOfPeriapsis)
@@ -340,7 +340,7 @@ class Simon1994PlanetaryPositions {
      * Gets a point describing the motion of the Earth-Moon barycenter according to the equations
      * described in section 6.
      */
-    func computeSimonEarthMoonBarycenter(date: JulianDate) -> Cartesian3 {
+    func computeSimonEarthMoonBarycenter(_ date: JulianDate) -> Cartesian3 {
         // t is thousands of years from J2000 TDB
         let tdbDate = taiToTdb(date)
         let x = Double(tdbDate.dayNumber - epoch.dayNumber) + ((tdbDate.secondsOfDay - epoch.secondsOfDay) / TimeConstants.SecondsPerDay)
@@ -389,7 +389,7 @@ class Simon1994PlanetaryPositions {
     /**
      * Gets a point describing the position of the moon according to the equations described in section 4.
      */
-    func computeSimonMoon(date: JulianDate) -> Cartesian3 {
+    func computeSimonMoon(_ date: JulianDate) -> Cartesian3 {
         let tdbDate = taiToTdb(date)
         let x = Double(tdbDate.dayNumber - epoch.dayNumber) + ((tdbDate.secondsOfDay - epoch.secondsOfDay) / TimeConstants.SecondsPerDay)
         let t: Double = x / TimeConstants.DaysPerJulianCentury
@@ -523,7 +523,7 @@ class Simon1994PlanetaryPositions {
      * the 1992 mu value (ratio between Moon and Earth masses) in Table 2 of the paper in order
      * to determine the position of the Earth relative to the Earth-Moon barycenter.
      */
-    func computeSimonEarth (date: JulianDate) -> Cartesian3 {
+    func computeSimonEarth (_ date: JulianDate) -> Cartesian3 {
         let result = computeSimonMoon(date)
         return result.multiplyByScalar(_factor)
     }
@@ -543,7 +543,7 @@ class Simon1994PlanetaryPositions {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} Calculated sun position
      */
-    func computeSunPositionInEarthInertialFrame (date: JulianDate = JulianDate.now()) -> Cartesian3 {
+    func computeSunPositionInEarthInertialFrame (_ date: JulianDate = JulianDate.now()) -> Cartesian3 {
         
         //first forward transformation
         var translation = computeSimonEarthMoonBarycenter(date)
@@ -563,7 +563,7 @@ class Simon1994PlanetaryPositions {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} Calculated moon position
      */
-    func computeMoonPositionInEarthInertialFrame (date: JulianDate = JulianDate.now()) -> Cartesian3 {
+    func computeMoonPositionInEarthInertialFrame (_ date: JulianDate = JulianDate.now()) -> Cartesian3 {
         return _axesTransformation.multiplyByVector(computeSimonMoon(date))
     }
     

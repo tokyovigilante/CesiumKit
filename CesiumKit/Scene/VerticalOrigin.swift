@@ -26,7 +26,7 @@ public enum VerticalOrigin {
      * @type {Number}
      * @constant
      */
-    case Center
+    case center
     
     /**
      * The origin is at the bottom of the object.
@@ -34,7 +34,7 @@ public enum VerticalOrigin {
      * @type {Number}
      * @constant
      */
-    case Bottom
+    case bottom
     
     /**
      * The origin is at the top of the object.
@@ -42,5 +42,5 @@ public enum VerticalOrigin {
      * @type {Number}
      * @constant
      */
-    case Top
+    case top
 }

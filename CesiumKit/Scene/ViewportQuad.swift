@@ -75,7 +75,7 @@ public class ViewportQuad: Primitive {
     * @exception {DeveloperError} this.material must be defined.
     * @exception {DeveloperError} this.rectangle must be defined.
     */
-    override func update (inout frameState: FrameState) {
+    override func update (_ frameState: inout FrameState) {
         if !show {
             return
         }
@@ -83,7 +83,7 @@ public class ViewportQuad: Primitive {
 
         if _rs == nil || _rs.viewport! != rectangle {
             _rs = RenderState(
-                device: context.device,
+                device: (context?.device)!,
                 viewport : rectangle
             )
             if let overlayCommand = _overlayCommand {
@@ -102,18 +102,18 @@ public class ViewportQuad: Primitive {
             let fs = ShaderSource(
                 sources: [_material.shaderSource, Shaders["ViewportQuadFS"]].flatMap { $0 }
             )
-            _overlayCommand = context.createViewportQuadCommand(
+            _overlayCommand = context?.createViewportQuadCommand(
                 fragmentShaderSource: fs,
                 overrides: ViewportQuadOverrides(
                     renderState: _rs,
                     uniformMap: _material.uniformMap,
                     owner: self
                 ),
-                depthStencil: context.depthTexture,
+                depthStencil: (context?.depthTexture)!,
                 blendingState: BlendingState.AlphaBlend()
             )
             
-            _overlayCommand.pass = .Overlay
+            _overlayCommand.pass = .overlay
             
             if let map = _overlayCommand.uniformMap {
                 map.uniformBufferProvider = _overlayCommand.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)

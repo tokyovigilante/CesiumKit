@@ -35,12 +35,12 @@ struct BlendingState: Equatable, CustomStringConvertible {
     */
     static func Disabled() -> BlendingState {
         return BlendingState(enabled: false,
-            equationRgb: .Add,
-            equationAlpha: .Add,
-            functionSourceRgb: .Zero,
-            functionSourceAlpha: .Zero,
-            functionDestinationRgb: .Zero,
-            functionDestinationAlpha: .Zero,
+            equationRgb: .add,
+            equationAlpha: .add,
+            functionSourceRgb: .zero,
+            functionSourceAlpha: .zero,
+            functionDestinationRgb: .zero,
+            functionDestinationAlpha: .zero,
             color: nil)
     }
     
@@ -52,23 +52,23 @@ struct BlendingState: Equatable, CustomStringConvertible {
     */
     static func AlphaBlend() -> BlendingState {
         return BlendingState(enabled: true,
-            equationRgb : .Add,
-            equationAlpha : .Add,
-            functionSourceRgb : .SourceAlpha,
-            functionSourceAlpha : .SourceAlpha,
-            functionDestinationRgb : .OneMinusSourceAlpha,
-            functionDestinationAlpha : .OneMinusSourceAlpha,
+            equationRgb : .add,
+            equationAlpha : .add,
+            functionSourceRgb : .sourceAlpha,
+            functionSourceAlpha : .sourceAlpha,
+            functionDestinationRgb : .oneMinusSourceAlpha,
+            functionDestinationAlpha : .oneMinusSourceAlpha,
             color: nil)
     }
     
-    static func AlphaBlend(color: Cartesian4) -> BlendingState {
+    static func AlphaBlend(_ color: Cartesian4) -> BlendingState {
         return BlendingState(enabled: true,
-            equationRgb : .Add,
-            equationAlpha : .Add,
-            functionSourceRgb : .SourceAlpha,
-            functionSourceAlpha : .SourceAlpha,
-            functionDestinationRgb : .OneMinusSourceAlpha,
-            functionDestinationAlpha : .OneMinusSourceAlpha,
+            equationRgb : .add,
+            equationAlpha : .add,
+            functionSourceRgb : .sourceAlpha,
+            functionSourceAlpha : .sourceAlpha,
+            functionDestinationRgb : .oneMinusSourceAlpha,
+            functionDestinationAlpha : .oneMinusSourceAlpha,
             color: color)
     }
     
@@ -78,14 +78,14 @@ struct BlendingState: Equatable, CustomStringConvertible {
     * @type {Object}
     * @constant
     */
-    static func PremultipliedAlphaBlend(color: Cartesian4) -> BlendingState {
+    static func PremultipliedAlphaBlend(_ color: Cartesian4) -> BlendingState {
         return BlendingState(enabled : true,
-            equationRgb : .Add,
-            equationAlpha : .Add,
-            functionSourceRgb : .One,
-            functionSourceAlpha : .One,
-            functionDestinationRgb : .OneMinusSourceAlpha,
-            functionDestinationAlpha : .OneMinusSourceAlpha,
+            equationRgb : .add,
+            equationAlpha : .add,
+            functionSourceRgb : .one,
+            functionSourceAlpha : .one,
+            functionDestinationRgb : .oneMinusSourceAlpha,
+            functionDestinationAlpha : .oneMinusSourceAlpha,
             color: color)
     }
     
@@ -95,14 +95,14 @@ struct BlendingState: Equatable, CustomStringConvertible {
     * @type {Object}
     * @constant
     */
-    static func AdditiveBlend(color: Cartesian4) -> BlendingState {
+    static func AdditiveBlend(_ color: Cartesian4) -> BlendingState {
         return BlendingState(enabled : true,
-            equationRgb : .Add,
-            equationAlpha : .Add,
-            functionSourceRgb : .SourceAlpha,
-            functionSourceAlpha : .SourceAlpha,
-            functionDestinationRgb : .One,
-            functionDestinationAlpha : .One,
+            equationRgb : .add,
+            equationAlpha : .add,
+            functionSourceRgb : .sourceAlpha,
+            functionSourceAlpha : .sourceAlpha,
+            functionDestinationRgb : .one,
+            functionDestinationAlpha : .one,
             color: color)
     }
     

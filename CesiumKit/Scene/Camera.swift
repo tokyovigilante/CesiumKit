@@ -163,7 +163,7 @@ public class Camera: DRU {
      * @readonly
      */
     var heading: Double {
-        if _mode != .Morphing {
+        if _mode != .morphing {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
@@ -174,7 +174,7 @@ public class Camera: DRU {
             
             return heading;
         }
-        return Double.NaN
+        return Double.nan
     }
     
     
@@ -186,7 +186,7 @@ public class Camera: DRU {
      * @readonly
      */
     var pitch: Double {
-        if _mode != .Morphing {
+        if _mode != .morphing {
             
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
@@ -199,7 +199,7 @@ public class Camera: DRU {
             return pitch
         }
         
-        return Double.NaN
+        return Double.nan
     }
     
     
@@ -211,7 +211,7 @@ public class Camera: DRU {
      * @readonly
      */
     var roll: Double {
-        if _mode != .Morphing {
+        if _mode != .morphing {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
@@ -223,7 +223,7 @@ public class Camera: DRU {
             return roll
         }
         
-        return Double.NaN
+        return Double.nan
     }
     
     
@@ -383,7 +383,7 @@ public class Camera: DRU {
      */
     var maximumZoomFactor = 2.5
     
-    private var _mode: SceneMode = .Scene3D
+    private var _mode: SceneMode = .scene3D
     
     private var _modeChanged = true
     
@@ -601,7 +601,7 @@ public class Camera: DRU {
         
         var heightChanged = false
         var height = 0.0
-        if _mode == .Scene2D {
+        if _mode == .scene2D {
             height = frustum.right - frustum.left;
             heightChanged = height != _positionCartographic.height
         }
@@ -635,10 +635,10 @@ public class Camera: DRU {
         if transformChanged {
             _invTransform = _transform.inverse
             
-            if _mode == .ColumbusView || _mode == .Scene2D {
+            if _mode == .columbusView || _mode == .scene2D {
                 if _transform.equals(Matrix4.identity) {
                     _actualTransform = transform2D
-                } else if _mode == .ColumbusView {
+                } else if _mode == .columbusView {
                     assert(false, "unimplemented")
                     /*convertTransformForColumbusView(camera);
                     } else {
@@ -655,7 +655,7 @@ public class Camera: DRU {
             _positionWC = _actualTransform.multiplyByPoint(_position)
             
             // Compute the Cartographic position of the camera.
-            if _mode == .Scene3D || _mode == .Morphing {
+            if _mode == .scene3D || _mode == .morphing {
                 if let positionCartographic = _projection.ellipsoid.cartesianToCartographic(_positionWC) {
                     _positionCartographic = positionCartographic
                 }
@@ -667,7 +667,7 @@ public class Camera: DRU {
                 
                 // In 2D, the camera height is always 12.7 million meters.
                 // The apparent height is equal to half the frustum width.
-                if _mode == .Scene2D {
+                if _mode == .scene2D {
                     positionENU.z = height
                 }
                 _positionCartographic = _projection.unproject(positionENU)
@@ -705,7 +705,7 @@ public class Camera: DRU {
         }
     }
     
-    func getHeading (direction direction: Cartesian3, up: Cartesian3) -> Double {
+    func getHeading (direction: Cartesian3, up: Cartesian3) -> Double {
         let heading: Double
         if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
             heading = atan2(direction.y, direction.x) - M_PI_2
@@ -715,11 +715,11 @@ public class Camera: DRU {
         return M_2_PI - Math.zeroToTwoPi(heading)
     }
     
-    func getPitch(direction direction: Cartesian3) -> Double {
+    func getPitch(direction: Cartesian3) -> Double {
         return M_PI_2 - Math.acosClamped(direction.z)
     }
     
-    func getRoll (direction direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
+    func getRoll (direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
         var roll = 0.0
         if Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
             roll = Math.zeroToTwoPi(atan2(-right.z, up.z) + M_2_PI)
@@ -732,13 +732,13 @@ public class Camera: DRU {
     /**
     * @private
     */
-    func update (mode: SceneMode) {
+    func update (_ mode: SceneMode) {
         var updateFrustum = false
         
         if mode != _mode {
             _mode = mode
-            _modeChanged = mode != .Morphing
-            updateFrustum = _mode == .Scene2D
+            _modeChanged = mode != .morphing
+            updateFrustum = _mode == .scene2D
         }
         
         if updateFrustum {
@@ -765,7 +765,7 @@ public class Camera: DRU {
         }
     }
     
-    func _setTransform (transform: Matrix4) {
+    func _setTransform (_ transform: Matrix4) {
         let position = positionWC
         let up = upWC
         let direction = directionWC
@@ -781,7 +781,7 @@ public class Camera: DRU {
         updateMembers()
     }
     
-    private func setView3D (position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
+    private func setView3D (_ position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
         
         let currentTransform = transform
         let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
@@ -799,7 +799,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    public func setView3D (location: Cartographic, rotation: Matrix3) {
+    public func setView3D (_ location: Cartographic, rotation: Matrix3) {
         
         let position = _projection.ellipsoid.cartographicToCartesian(location)
         let currentTransform = transform
@@ -815,7 +815,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func setViewCV(position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
+    private func setViewCV(_ position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
         
         let currentTransform = transform
         _setTransform(Matrix4.identity)
@@ -839,7 +839,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func setView2D(position: Cartesian3, convert: Bool) {
+    private func setView2D(_ position: Cartesian3, convert: Bool) {
         let currentTransform = transform
         _setTransform(Matrix4.identity)
         
@@ -865,7 +865,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func directionUpToHeadingPitchRoll(position: Cartesian3, orientation: Orientation) -> Orientation {
+    private func directionUpToHeadingPitchRoll(_ position: Cartesian3, orientation: Orientation) -> Orientation {
         
         var direction: Cartesian3
         var up: Cartesian3
@@ -876,7 +876,7 @@ public class Camera: DRU {
             return orientation
         }
         
-        if _mode == .Scene3D {
+        if _mode == .scene3D {
             let transform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
             let invTransform = transform.inverse
             
@@ -943,8 +943,8 @@ public class Camera: DRU {
      *     }
      * });
      */
-    public func setView (orientation orientation: Orientation? = nil, destination: Destination? = nil, endTransform: Matrix4? = nil) {
-        if _mode == .Morphing {
+    public func setView (orientation: Orientation? = nil, destination: Destination? = nil, endTransform: Matrix4? = nil) {
+        if _mode == .morphing {
             return
         }
         
@@ -978,9 +978,9 @@ public class Camera: DRU {
             }
         }
 
-        if _mode == .Scene3D {
+        if _mode == .scene3D {
             setView3D(destination.cartesian!, heading: heading, pitch: pitch, roll: roll)
-        } else if _mode == SceneMode.Scene2D {
+        } else if _mode == SceneMode.scene2D {
             setView2D(destination.cartesian!, convert: convert)
         } else {
             setViewCV(destination.cartesian!, heading: heading, pitch: pitch, roll: roll, convert: convert)
@@ -1048,7 +1048,7 @@ public class Camera: DRU {
      *
      * @returns {Cartesian4} The transformed vector or point.
      */
-    func worldToCameraCoordinates(cartesian: Cartesian4) -> Cartesian4 {
+    func worldToCameraCoordinates(_ cartesian: Cartesian4) -> Cartesian4 {
         updateMembers()
         return _actualInvTransform.multiplyByVector(cartesian)
     }
@@ -1187,9 +1187,9 @@ public class Camera: DRU {
     * @see Camera#moveUp
     * @see Camera#moveDown
     */
-    public func move (direction: Cartesian3, amount: Double) {
+    public func move (_ direction: Cartesian3, amount: Double) {
         position = position.add(direction.multiplyByScalar(amount))
-        if _mode == SceneMode.Scene2D {
+        if _mode == SceneMode.scene2D {
             assertionFailure("unimplemented")
             //clampMove2D(this, cameraPosition);
         }
@@ -1204,7 +1204,7 @@ public class Camera: DRU {
      *
      * @see Camera#moveBackward
      */
-    public func moveForward (amount: Double? = nil) {
+    public func moveForward (_ amount: Double? = nil) {
         let amount = amount ?? defaultMoveAmount
         move(direction, amount: amount)
     }
@@ -1321,7 +1321,7 @@ public class Camera: DRU {
      *
      * @see Camera#lookDown
      */
-    public func lookUp (amount: Double?) {
+    public func lookUp (_ amount: Double?) {
         look(axis: right, angle: -(amount ?? defaultLookAmount))
     }
     /*
@@ -1354,7 +1354,7 @@ public class Camera: DRU {
     * @see Camera#lookLeft
     * @see Camera#lookRight
     */
-    public func look (axis axis: Cartesian3, angle: Double? = nil) {
+    public func look (axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultLookAmount
         let quaternion = Quaternion(axis: axis, angle: -turnAngle)
@@ -1413,7 +1413,7 @@ public class Camera: DRU {
     * var center = ellipsoid.cartographicToCartesian(cartographic);
     * camera.rotate(axis, angle);
     */
-    func rotate (axis: Cartesian3, angle: Double? = nil) {
+    func rotate (_ axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultRotateAmount
         let quaternion = Quaternion(axis: axis, angle: -turnAngle)
@@ -1451,12 +1451,12 @@ public class Camera: DRU {
     * @see Camera#rotateDown
     * @see Camera#rotate
     */
-    func rotateUp (angle: Double?) {
+    func rotateUp (_ angle: Double?) {
         let rotateAngle = angle ?? defaultRotateAmount
         rotateVertical(-rotateAngle)
     }
     
-    func rotateVertical(angle: Double) {
+    func rotateVertical(_ angle: Double) {
         
         var angle = angle
         let p = position.normalize()
@@ -1499,7 +1499,7 @@ public class Camera: DRU {
      * @see Camera#rotateLeft
      * @see Camera#rotate
      */
-    func rotateRight (angle: Double) {
+    func rotateRight (_ angle: Double) {
         rotateHorizontal(-angle)
     }
     /*
@@ -1519,7 +1519,7 @@ public class Camera: DRU {
     };
     */
     
-    func rotateHorizontal(angle: Double) {
+    func rotateHorizontal(_ angle: Double) {
         if constrainedAxis != nil {
             rotate(constrainedAxis!, angle: angle)
         } else {
@@ -1527,7 +1527,7 @@ public class Camera: DRU {
         }
     }
     
-    func zoom2D(amount: Double) {
+    func zoom2D(_ amount: Double) {
         assertionFailure("unimplemented")
         /*var frustum = camera.frustum;
         
@@ -1559,7 +1559,7 @@ public class Camera: DRU {
         frustum.bottom = -frustum.top;*/
     }
     
-    func zoom3D(amount: Double) {
+    func zoom3D(_ amount: Double) {
         move(direction, amount: amount)
     }
     
@@ -1572,9 +1572,9 @@ public class Camera: DRU {
      *
      * @see Camera#zoomOut
      */
-    public func zoomIn (amount: Double? = nil) {
+    public func zoomIn (_ amount: Double? = nil) {
         let amount = amount ?? defaultZoomAmount
-        if _mode == .Scene2D {
+        if _mode == .scene2D {
             zoom2D(amount)
         } else {
             zoom3D(amount)
@@ -1609,11 +1609,11 @@ public class Camera: DRU {
      * @returns {Number} The magnitude of the position.
      */
     func getMagnitude() -> Double {
-        if _mode == .Scene3D {
+        if _mode == .scene3D {
             return position.magnitude
-        } else if _mode == .ColumbusView {
+        } else if _mode == .columbusView {
             return abs(position.z)
-        } else if _mode == SceneMode.Scene2D {
+        } else if _mode == SceneMode.scene2D {
             return  max(frustum.right - frustum.left, frustum.top - frustum.bottom)
         }
         return 0.0
@@ -1648,7 +1648,7 @@ public class Camera: DRU {
      * var range = 5000.0;
      * viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
-    public func lookAt (target: Cartesian3, offset: Offset) {
+    public func lookAt (_ target: Cartesian3, offset: Offset) {
         
         let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
         lookAtTransform(transform, offset: offset.offset)
@@ -1689,15 +1689,15 @@ public class Camera: DRU {
      * viewer.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
     
-    public func lookAtTransform (transform: Matrix4, offset: Offset) {
+    public func lookAtTransform (_ transform: Matrix4, offset: Offset) {
         
-        assert(_mode != .Morphing, "lookAtTransform is not supported while morphing.")
+        assert(_mode != .morphing, "lookAtTransform is not supported while morphing.")
         
         let actualOffset = offset.offset
 
         _setTransform(transform)
 
-        if _mode == .Scene2D {
+        if _mode == .scene2D {
             position.x = 0.0
             position.y = 0.0
             
@@ -1752,7 +1752,7 @@ public class Camera: DRU {
         var up = Cartesian3()
     }
     
-    func rectangleCameraPosition3D (rectangle: Rectangle, updateCamera: Bool) -> Cartesian3 {
+    func rectangleCameraPosition3D (_ rectangle: Rectangle, updateCamera: Bool) -> Cartesian3 {
         
         let ellipsoid = _projection.ellipsoid
         
@@ -1787,13 +1787,13 @@ public class Camera: DRU {
             var southCartographic = Cartographic(longitude: longitude, latitude: south, height: 0.0)
             
             var ellipsoidGeodesic = viewRectangle3DEllipsoidGeodesic
-            if ellipsoidGeodesic == nil || ellipsoidGeodesic.ellipsoid != ellipsoid {
+            if ellipsoidGeodesic == nil || ellipsoidGeodesic?.ellipsoid != ellipsoid {
                 ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: ellipsoid)
                 viewRectangle3DEllipsoidGeodesic = ellipsoidGeodesic
             }
             
-            ellipsoidGeodesic.setEndPoints(start: northCartographic, end: southCartographic)
-            latitude = ellipsoidGeodesic.interpolateUsingFraction(0.5).latitude
+            ellipsoidGeodesic?.setEndPoints(start: northCartographic, end: southCartographic)
+            latitude = ellipsoidGeodesic?.interpolateUsingFraction(0.5).latitude
         }
         
         let centerCartographic = Cartographic(longitude: longitude, latitude: latitude)
@@ -1831,7 +1831,7 @@ public class Camera: DRU {
         var tanPhi = tan(frustum.fovy * 0.5)
         var tanTheta = frustum.aspectRatio * tanPhi
         
-        func computeD(direction: Cartesian3, upOrRight: Cartesian3, corner: Cartesian3, tanThetaOrPhi: Double) -> Double {
+        func computeD(_ direction: Cartesian3, upOrRight: Cartesian3, corner: Cartesian3, tanThetaOrPhi: Double) -> Double {
             let opposite = abs(upOrRight.dot(corner))
             return opposite / tanThetaOrPhi - direction.dot(corner)
         }
@@ -1986,10 +1986,10 @@ public class Camera: DRU {
     *
     * @returns {Cartesian3} The camera position needed to view the rectangle
     */
-    private func getRectangleCameraCoordinates (rectangle: Rectangle) -> Cartesian3 {
+    private func getRectangleCameraCoordinates (_ rectangle: Rectangle) -> Cartesian3 {
     
         switch _mode {
-        case .Scene3D:
+        case .scene3D:
             return rectangleCameraPosition3D(rectangle, updateCamera: false)
         /*case .ColumbusView:
             return rectangleCameraPositionColumbusView(this, rectangle, this._projection, result, true)
@@ -2000,7 +2000,7 @@ public class Camera: DRU {
         }
     }
 
-    func pickEllipsoid3D(windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func pickEllipsoid3D(_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
         
         let ray = getPickRay(windowPosition)
         let intersection = IntersectionTests.rayEllipsoid(ray, ellipsoid: ellipsoid)
@@ -2053,21 +2053,21 @@ public class Camera: DRU {
     * @returns {Cartesian3} If the ellipsoid or map was picked, returns the point on the surface of the ellipsoid or map
     * in world coordinates. If the ellipsoid or map was not picked, returns undefined.
     */
-    func pickEllipsoid (windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func pickEllipsoid (_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
         
-        if _mode == .Scene3D {
+        if _mode == .scene3D {
             return pickEllipsoid3D(windowPosition, ellipsoid: ellipsoid)
-        } else if _mode == .Scene2D {
+        } else if _mode == .scene2D {
             assertionFailure("Unimplemented")
             //result = pickMap2D(this, windowPosition, this._projection, result);
-        } else if _mode == .ColumbusView {
+        } else if _mode == .columbusView {
             assertionFailure("Unimplemented")
             //result = pickMapColumbusView(this, windowPosition, this._projection, result);
         }
         return nil
     }
     
-    func getPickRayPerspective(windowPosition: Cartesian2) -> Ray {
+    func getPickRayPerspective(_ windowPosition: Cartesian2) -> Ray {
         
         let width = Double(scene!.context.width)
         let height = Double(scene!.context.height)
@@ -2126,9 +2126,9 @@ public class Camera: DRU {
     *
     * @returns {Ray} Returns the {@link Cartesian3} position and direction of the ray.
     */
-    func getPickRay (windowPosition: Cartesian2) -> Ray {
+    func getPickRay (_ windowPosition: Cartesian2) -> Ray {
         
-        if frustum.aspectRatio != Double.NaN && frustum.fovy != Double.NaN && frustum.near != Double.NaN {
+        if frustum.aspectRatio != Double.nan && frustum.fovy != Double.nan && frustum.near != Double.nan {
             return getPickRayPerspective(windowPosition)
         }
         assertionFailure("unimplemented")
@@ -2142,7 +2142,7 @@ public class Camera: DRU {
      * @param {BoundingSphere} boundingSphere The bounding sphere in world coordinates.
      * @returns {Number} The distance to the bounding sphere.
      */
-    func distanceToBoundingSphere (boundingSphere: BoundingSphere) -> Double {
+    func distanceToBoundingSphere (_ boundingSphere: BoundingSphere) -> Double {
         let toCenter = positionWC.subtract(boundingSphere.center)
         let proj = directionWC.multiplyByScalar(toCenter.dot(directionWC))
         return max(0.0, proj.magnitude - boundingSphere.radius)
@@ -2156,7 +2156,7 @@ public class Camera: DRU {
      * @param {Number} drawingBufferHeight The drawing buffer height.
      * @returns {Number} The pixel size in meters.
      */
-    func getPixelSize (boundingSphere: BoundingSphere, drawingBufferWidth: Int, drawingBufferHeight: Int) -> Double {
+    func getPixelSize (_ boundingSphere: BoundingSphere, drawingBufferWidth: Int, drawingBufferHeight: Int) -> Double {
         let distance = distanceToBoundingSphere(boundingSphere)
         let pixelSize = frustum.pixelDimensions(drawingBufferWidth: drawingBufferWidth, drawingBufferHeight: drawingBufferHeight, distance: distance)
         return max(pixelSize.x, pixelSize.y)

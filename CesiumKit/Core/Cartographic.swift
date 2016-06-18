@@ -57,7 +57,7 @@ public struct Cartographic {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if one was not provided.
     */
-    static func fromRadians(longitude longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
+    static func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
         
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
     }
@@ -73,7 +73,7 @@ public struct Cartographic {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if one was not provided.
     */
-    static func fromDegreees(longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
+    static func fromDegreees(_ longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
         
@@ -154,7 +154,7 @@ public struct Cartographic {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartographic, epsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Cartographic, epsilon: Double) -> Bool {
         return (abs(self.longitude - other.longitude) <= epsilon) &&
             (abs(self.latitude - other.latitude) <= epsilon) &&
             (abs(self.height - other.height) <= epsilon)

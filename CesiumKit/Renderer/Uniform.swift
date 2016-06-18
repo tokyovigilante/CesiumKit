@@ -12,72 +12,72 @@ import simd
 
 public enum UniformDataType: UInt {
     
-    case FloatVec1 = 5126, // GLenum(GL_FLOAT)
-    FloatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
-    FloatVec3 = 35665, // GLenum(GL_FLOAT_VEC3)
-    FloatVec4 = 35666, // GLenum(GL_FLOAT_VEC4)
-    IntVec1 = 5124, // GLenum(GL_INT)
-    IntVec2 = 35667, // GLenum(GL_INT_VEC2)
-    IntVec3 = 35668, // GLenum(GL_INT_VEC3)
-    IntVec4 = 35669, // GLenum(GL_INT_VEC4)
-    BoolVec1 = 35670, // GLenum(GL_BOOL)
-    BoolVec2 = 35671, // GLenum(GL_BOOL_VEC2)
-    BoolVec3 = 35672, // GLenum(GL_BOOL_VEC3)
-    BoolVec4 = 35673, // GLenum(GL_BOOL_VEC4)
-    FloatMatrix2 = 35674, // GLenum(GL_FLOAT_MAT2)
-    FloatMatrix3 = 35675, // GLenum(GL_FLOAT_MAT3)
-    FloatMatrix4 = 35676, // GLenum(GL_FLOAT_MAT4)
-    Sampler2D = 35678, // GLenum(GL_SAMPLER_2D)
-    SamplerCube = 35680 // GLenum(GL_SAMPLER_CUBE)
+    case floatVec1 = 5126, // GLenum(GL_FLOAT)
+    floatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
+    floatVec3 = 35665, // GLenum(GL_FLOAT_VEC3)
+    floatVec4 = 35666, // GLenum(GL_FLOAT_VEC4)
+    intVec1 = 5124, // GLenum(GL_INT)
+    intVec2 = 35667, // GLenum(GL_INT_VEC2)
+    intVec3 = 35668, // GLenum(GL_INT_VEC3)
+    intVec4 = 35669, // GLenum(GL_INT_VEC4)
+    boolVec1 = 35670, // GLenum(GL_BOOL)
+    boolVec2 = 35671, // GLenum(GL_BOOL_VEC2)
+    boolVec3 = 35672, // GLenum(GL_BOOL_VEC3)
+    boolVec4 = 35673, // GLenum(GL_BOOL_VEC4)
+    floatMatrix2 = 35674, // GLenum(GL_FLOAT_MAT2)
+    floatMatrix3 = 35675, // GLenum(GL_FLOAT_MAT3)
+    floatMatrix4 = 35676, // GLenum(GL_FLOAT_MAT4)
+    sampler2D = 35678, // GLenum(GL_SAMPLER_2D)
+    samplerCube = 35680 // GLenum(GL_SAMPLER_CUBE)
     
     var declarationString: String {
         switch self {
-        case .FloatVec1:
+        case .floatVec1:
             return "float"
-        case .FloatVec2:
+        case .floatVec2:
             return "vec2"
-        case .FloatVec3:
+        case .floatVec3:
             return "vec3"
-        case .FloatVec4:
+        case .floatVec4:
             return "vec4"
-        case .IntVec1:
+        case .intVec1:
             return "int"
-        case .IntVec2:
+        case .intVec2:
             return "ivec2"
-        case .IntVec3:
+        case .intVec3:
             return "ivec3"
-        case .IntVec4:
+        case .intVec4:
             return "ivec4"
-        case .BoolVec1:
+        case .boolVec1:
             return "bool"
-        case .BoolVec2:
+        case .boolVec2:
             return "bvec2"
-        case .BoolVec3:
+        case .boolVec3:
             return "bvec3"
-        case .BoolVec4:
+        case .boolVec4:
             return "bvec4"
-        case .FloatMatrix2:
+        case .floatMatrix2:
             return "mat2"
-        case .FloatMatrix3:
+        case .floatMatrix3:
             return "mat3"
-        case .FloatMatrix4:
+        case .floatMatrix4:
             return "mat4"
-        case .Sampler2D:
+        case .sampler2D:
             return "sampler2D"
-        case .SamplerCube:
+        case .samplerCube:
             return "samplerCube"
         }
     }
     
     var metalDeclaration: String {
         switch self {
-        case .FloatVec1:
+        case .floatVec1:
             return "float"
-        case .FloatVec2:
+        case .floatVec2:
             return "float2"
-        case .FloatVec3:
+        case .floatVec3:
             return "float3"
-        case .FloatVec4:
+        case .floatVec4:
             return "float4"
         /*case .IntVec1:
             return "int"
@@ -95,13 +95,13 @@ public enum UniformDataType: UInt {
             return "bvec3"
         case .BoolVec4:
             return "bvec4"*/
-        case .FloatMatrix2:
+        case .floatMatrix2:
             return "float2x2"
-        case .FloatMatrix3:
+        case .floatMatrix3:
             return "float3x3"
-        case .FloatMatrix4:
+        case .floatMatrix4:
             return "float4x4"
-        case .Sampler2D:
+        case .sampler2D:
             return "sampler"
         default:
             assertionFailure("unimplemented")
@@ -111,74 +111,74 @@ public enum UniformDataType: UInt {
     
     var elementCount: Int {
         switch self {
-        case .FloatVec1:
+        case .floatVec1:
             return 1
-        case .FloatVec2:
+        case .floatVec2:
             return 2
-        case .FloatVec3:
+        case .floatVec3:
             return 3
-        case .FloatVec4:
+        case .floatVec4:
             return 4
-        case .IntVec1:
+        case .intVec1:
             return 1
-        case .IntVec2:
+        case .intVec2:
             return 2
-        case .IntVec3:
+        case .intVec3:
             return 3
-        case .IntVec4:
+        case .intVec4:
             return 4
-        case .BoolVec1:
+        case .boolVec1:
             return 1
-        case .BoolVec2:
+        case .boolVec2:
             return 2
-        case .BoolVec3:
+        case .boolVec3:
             return 3
-        case .BoolVec4:
+        case .boolVec4:
             return 4
-        case .FloatMatrix2:
+        case .floatMatrix2:
             return 4
-        case .FloatMatrix3:
+        case .floatMatrix3:
             return 9
-        case .FloatMatrix4:
+        case .floatMatrix4:
             return 16
-        case .Sampler2D:
+        case .sampler2D:
             return 1
-        case .SamplerCube:
+        case .samplerCube:
             return 1
         }
     }
 
     var alignment: Int {
         switch self {
-        case .FloatVec1:
+        case .floatVec1:
             return 4
-        case .FloatVec2:
+        case .floatVec2:
             return 8
-        case .FloatVec3:
+        case .floatVec3:
             return 16
-        case .FloatVec4:
+        case .floatVec4:
             return 16
-        case .IntVec1:
+        case .intVec1:
             return 4
-        case .IntVec2:
+        case .intVec2:
             return 8
-        case .IntVec3:
+        case .intVec3:
             return 16
-        case .IntVec4:
+        case .intVec4:
             return 16
-        case .BoolVec1:
+        case .boolVec1:
             return 1
-        case .BoolVec2:
+        case .boolVec2:
             return 2
-        case .BoolVec3:
+        case .boolVec3:
             return 4
-        case .BoolVec4:
+        case .boolVec4:
             return 4
-        case .FloatMatrix2:
+        case .floatMatrix2:
             return 8
-        case .FloatMatrix3:
+        case .floatMatrix3:
             return 16
-        case .FloatMatrix4:
+        case .floatMatrix4:
             return 16
         default:
             assertionFailure("not valid uniform type")
@@ -188,27 +188,27 @@ public enum UniformDataType: UInt {
     
     var elementStride: Int {
         switch self {
-        case .FloatVec1:
+        case .floatVec1:
             return strideof(Float)
-        case .FloatVec2:
+        case .floatVec2:
             return strideof(float2)
-        case .FloatVec3:
+        case .floatVec3:
             return strideof(float4)
-        case .FloatVec4:
+        case .floatVec4:
             return strideof(float4)
-        case .IntVec1:
+        case .intVec1:
             return strideof(Int32)
-        case .IntVec2:
+        case .intVec2:
             return strideof(int2)
-        case .IntVec3:
+        case .intVec3:
             return strideof(int4)
-        case .IntVec4:
+        case .intVec4:
             return strideof(int4)
-        case .FloatMatrix2:
+        case .floatMatrix2:
             return strideof(float2)
-        case .FloatMatrix3:
+        case .floatMatrix3:
             return strideof(float4)
-        case .FloatMatrix4:
+        case .floatMatrix4:
             return strideof(float4)
         default:
             assertionFailure("invalid element")
@@ -224,7 +224,7 @@ struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
     
-    func declaration (name: String) -> String {
+    func declaration (_ name: String) -> String {
         var declaration = "uniform \(datatype.declarationString) \(name)"
         
         if size == 1 {
@@ -238,10 +238,10 @@ struct AutomaticUniform {
 }
 
 enum UniformType {
-    case Automatic, // czm_a
-    Frustum, // czm_f
-    Manual, // u_
-    Sampler
+    case automatic, // czm_a
+    frustum, // czm_f
+    manual, // u_
+    sampler
 }
 
 public class Uniform {
@@ -285,7 +285,7 @@ public class Uniform {
         self.dataType = dataType
     }
     
-    static func create(desc desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+    static func create(desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
         
         switch desc.type {
         case .Float:
@@ -307,7 +307,7 @@ public class Uniform {
         }
     }
     
-    static func inferDataTypeFromGLSLDescription (desc: GLSLShaderVariableDescription) -> UniformDataType {
+    static func inferDataTypeFromGLSLDescription (_ desc: GLSLShaderVariableDescription) -> UniformDataType {
         
         if desc.matSize == 1 { //vector
             switch desc.vecSize {
@@ -441,7 +441,7 @@ public class UniformSampler: Uniform {
     
     private (set) var textureUnitIndex: Int = 0
         
-    func setSampler (textureUnitIndex: Int) {
+    func setSampler (_ textureUnitIndex: Int) {
         self.textureUnitIndex = textureUnitIndex
     }
     

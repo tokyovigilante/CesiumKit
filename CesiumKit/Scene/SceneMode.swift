@@ -20,7 +20,7 @@ public enum SceneMode: Int {
     * @type {Number}
     * @constant
     */
-    case Scene2D,
+    case scene2D,
 
     /**
     * Columbus View mode.  A 2.5D perspective view where the map is laid out
@@ -29,7 +29,7 @@ public enum SceneMode: Int {
     * @type {Number}
     * @constant
     */
-    ColumbusView,
+    columbusView,
     
     /**
     * 3D mode.  A traditional 3D perspective view of the globe.
@@ -37,7 +37,7 @@ public enum SceneMode: Int {
     * @type {Number}
     * @constant
     */
-    Scene3D,
+    scene3D,
     
     /**
     * Morphing between mode, e.g., 3D to 2D.
@@ -45,7 +45,7 @@ public enum SceneMode: Int {
     * @type {Number}
     * @constant
     */
-    Morphing
+    morphing
     
     /**
     * Returns the morph time for the given scene mode
@@ -54,9 +54,9 @@ public enum SceneMode: Int {
     */
     var morphTime: Double? {
         switch self {
-        case .Scene3D:
+        case .scene3D:
             return 1.0
-        case .Morphing:
+        case .morphing:
             return nil
         default:
             return 0.0

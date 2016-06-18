@@ -35,8 +35,8 @@ class PerspectiveFrustum: Frustum {
     * @type {Number}
     * @default undefined
     */
-    var fov = Double.NaN
-    private var _fov: Double = Double.NaN
+    var fov = Double.nan
+    private var _fov: Double = Double.nan
     
     /**
     * Gets the angle of the vertical field of view, in radians.
@@ -53,22 +53,22 @@ class PerspectiveFrustum: Frustum {
             _fovy = newFovy
         }
     }
-    private var _fovy: Double = Double.NaN
+    private var _fovy: Double = Double.nan
     
-    private var _sseDenominator: Double = Double.NaN
+    private var _sseDenominator: Double = Double.nan
     
     /**
     * The aspect ratio of the frustum's width to it's height.
     * @type {Number}
     * @default undefined
     */
-    var aspectRatio = Double.NaN
-    private var _aspectRatio = Double.NaN
+    var aspectRatio = Double.nan
+    private var _aspectRatio = Double.nan
     
-    var left = Double.NaN
-    var right = Double.NaN
-    var top = Double.NaN
-    var bottom = Double.NaN
+    var left = Double.nan
+    var right = Double.nan
+    var top = Double.nan
+    var bottom = Double.nan
     
     /**
     * The distance of the near plane.
@@ -77,7 +77,7 @@ class PerspectiveFrustum: Frustum {
     */
     var near = 1.0
     
-    private var _near = Double.NaN
+    private var _near = Double.nan
     
     /**
     * The distance of the far plane.
@@ -85,7 +85,7 @@ class PerspectiveFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
-    private var _far = Double.NaN
+    private var _far = Double.nan
     
     /**
      * Offsets the frustum in the x direction.
@@ -93,7 +93,7 @@ class PerspectiveFrustum: Frustum {
      * @default 0.0
      */
     var xOffset = 0.0;
-    private var _xOffset = Double.NaN
+    private var _xOffset = Double.nan
     
     /**
      * Offsets the frustum in the y direction.
@@ -101,12 +101,12 @@ class PerspectiveFrustum: Frustum {
      * @default 0.0
      */
     var yOffset = 0.0;
-    private var _yOffset = Double.NaN
+    private var _yOffset = Double.nan
         
     var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
     func update() {
-        assert(fov != Double.NaN && aspectRatio != Double.NaN && near != Double.NaN && far != Double.NaN, "fov, aspectRatio, near, or far parameters are not set")
+        assert(fov != Double.nan && aspectRatio != Double.nan && near != Double.nan && far != Double.nan, "fov, aspectRatio, near, or far parameters are not set")
         if (fov != _fov ||
             aspectRatio != _aspectRatio ||
             near != _near ||
@@ -179,7 +179,7 @@ class PerspectiveFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         update()
         return _offCenterFrustum.computeCullingVolume(position: position, direction: direction, up: up)
     }
@@ -225,7 +225,7 @@ class PerspectiveFrustum: Frustum {
     * @param {PerspectiveFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    func clone (target: Frustum?) -> Frustum {
+    func clone (_ target: Frustum?) -> Frustum {
         
         var result = target ?? PerspectiveFrustum()
         

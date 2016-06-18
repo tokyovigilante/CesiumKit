@@ -41,7 +41,7 @@ class Globe {
     */
     var terrainProvider: TerrainProvider
     
-    private var _mode = SceneMode.Scene3D
+    private var _mode = SceneMode.scene3D
     
     /**
     * Determines if the globe will be shown.
@@ -164,8 +164,8 @@ class Globe {
         
     }
     
-    func createComparePickTileFunction(rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
-        func comparePickTileFunction(a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
+    func createComparePickTileFunction(_ rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
+        func comparePickTileFunction(_ a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
             let aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
             let bDist = b.pickBoundingSphere.distanceSquaredTo(rayOrigin)
             return aDist < bDist
@@ -186,7 +186,7 @@ class Globe {
     * var ray = viewer.camera.getPickRay(windowCoordinates);
     * var intersection = globe.pick(ray, scene);
     */
-    func pick(ray: Ray, scene: Scene) -> Cartesian3? {
+    func pick(_ ray: Ray, scene: Scene) -> Cartesian3? {
         let mode = scene.mode
         //let projection = scene.mapProjection
         
@@ -202,7 +202,7 @@ class Globe {
             let tileData = tile.data!
             
             var boundingVolume = tileData.pickBoundingSphere
-            if mode != .Scene3D {
+            if mode != .scene3D {
                 assertionFailure("unimplemented")
                 /*BoundingSphere.fromRectangleWithHeights2D(tile.rectangle, projection, tileData.minimumHeight, tileData.maximumHeight, boundingVolume);
                 Cartesian3.fromElements(boundingVolume.center.z, boundingVolume.center.x, boundingVolume.center.y, boundingVolume.center);*/
@@ -215,7 +215,7 @@ class Globe {
             }
         }
         
-        sphereIntersections.sortInPlace(createComparePickTileFunction(ray.origin))
+        sphereIntersections.sort(isOrderedBefore: createComparePickTileFunction(ray.origin))
         
         for sphereIntersection in sphereIntersections {
             if let intersection = sphereIntersection.pick(ray, mode: scene.mode, projection: scene.mapProjection, cullBackFaces: true) {
@@ -232,7 +232,7 @@ class Globe {
     * @param {Cartographic} cartographic The cartographic for which to find the height.
     * @returns {Number|undefined} The height of the cartographic or undefined if it could not be found.
     */
-    func getHeight(cartographic: Cartographic) -> Double? {
+    func getHeight(_ cartographic: Cartographic) -> Double? {
         //FIXME: Unimplemented
         /*
         var scratchGetHeightCartesian = new Cartesian3();
@@ -303,7 +303,7 @@ class Globe {
 /**
 * @private
 */
-    func beginFrame(inout frameState: FrameState) {
+    func beginFrame(_ frameState: inout FrameState) {
         if !show {
             return
         }
@@ -330,8 +330,8 @@ class Globe {
         
         let context = frameState.context
         
-        let width = context.width
-        let height = context.height
+        let width = context?.width
+        let height = context?.height
         
         if (width == 0 || height == 0) {
             return
@@ -358,13 +358,13 @@ class Globe {
                     let oceanNormalMap = Texture(
                         context: context,
                         options: TextureOptions(
-                            source: TextureSource.Image(oceanNormalMapImage),
-                            pixelFormat: .RGBA8Unorm,
+                            source: TextureSource.image(oceanNormalMapImage),
+                            pixelFormat: .rgba8Unorm,
                             flipY: true,
                             usage: .ShaderRead
                         )
                     )
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self._oceanNormalMap = oceanNormalMap
                     })
                 }
@@ -378,7 +378,7 @@ class Globe {
         if (frameState.passes.render) {
             
             // Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
-            if mode == .Scene3D {
+            if mode == .scene3D {
                 _zoomedOutOceanSpecularIntensity = 0.5
             } else {
                 _zoomedOutOceanSpecularIntensity = 0.0
@@ -406,7 +406,7 @@ class Globe {
     /**
      * @private
      */
-    func update (inout frameState: FrameState) {
+    func update (_ frameState: inout FrameState) {
         if !show {
             return
         }
@@ -420,7 +420,7 @@ class Globe {
         }
     }
     
-    func endFrame (inout frameState: FrameState) {
+    func endFrame (_ frameState: inout FrameState) {
         if !show {
             return
         }

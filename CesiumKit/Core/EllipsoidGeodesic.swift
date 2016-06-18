@@ -103,11 +103,11 @@ class EllipsoidGeodesic {
      * @param {Cartographic} start The initial planetodetic point on the path.
      * @param {Cartographic} end The final planetodetic point on the path.
      */
-    func setEndPoints (start start: Cartographic, end: Cartographic) {
+    func setEndPoints (start: Cartographic, end: Cartographic) {
         computeProperties(start: start, end: end)
     }
     
-    private func computeProperties(start start: Cartographic, end: Cartographic) {
+    private func computeProperties(start: Cartographic, end: Cartographic) {
         let firstCartesian = ellipsoid.cartographicToCartesian(start).normalize()
         let lastCartesian = ellipsoid.cartographicToCartesian(end).normalize()
         
@@ -126,7 +126,7 @@ class EllipsoidGeodesic {
         setConstants()
     }
     
-    private func vincentyInverseFormula(major major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
+    private func vincentyInverseFormula(major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
         let eff = (major - minor) / major
         let l = secondLongitude - firstLongitude
         
@@ -268,14 +268,14 @@ class EllipsoidGeodesic {
         _constants.distanceRatio = distanceRatio
     }
     
-    private func computeDeltaLambda(f f: Double, sineAlpha: Double, cosineSquaredAlpha: Double, sigma: Double, sineSigma: Double, cosineSigma: Double, cosineTwiceSigmaMidpoint: Double) -> Double {
+    private func computeDeltaLambda(f: Double, sineAlpha: Double, cosineSquaredAlpha: Double, sigma: Double, sineSigma: Double, cosineSigma: Double, cosineTwiceSigmaMidpoint: Double) -> Double {
         let C = computeC(f: f, cosineSquaredAlpha: cosineSquaredAlpha)
         
         return (1.0 - C) * f * sineAlpha * (sigma + C * sineSigma * (cosineTwiceSigmaMidpoint +
             C * cosineSigma * (2.0 * cosineTwiceSigmaMidpoint * cosineTwiceSigmaMidpoint - 1.0)))
     }
     
-    private func computeC(f f: Double, cosineSquaredAlpha: Double) -> Double {
+    private func computeC(f: Double, cosineSquaredAlpha: Double) -> Double {
         return f * cosineSquaredAlpha * (4.0 + f * (4.0 - 3.0 * cosineSquaredAlpha)) / 16.0
     }
     
@@ -285,7 +285,7 @@ class EllipsoidGeodesic {
      * @param {Number} fraction The portion of the distance between the initial and final points.
      * @returns {Cartographic} The location of the point along the geodesic.
      */
-    func interpolateUsingFraction (fraction: Double) -> Cartographic {
+    func interpolateUsingFraction (_ fraction: Double) -> Cartographic {
         assert(fraction >= 0.0 && fraction <= 1.0, "fraction out of bounds")
         assert(_distance != nil, "start and end must be set before calling funciton interpolateUsingSurfaceDistance")
         return interpolateUsingSurfaceDistance(_distance! * fraction)
@@ -299,7 +299,7 @@ class EllipsoidGeodesic {
      *
      * @exception {DeveloperError} start and end must be set before calling funciton interpolateUsingSurfaceDistance
      */
-    func interpolateUsingSurfaceDistance (distance: Double) -> Cartographic {
+    func interpolateUsingSurfaceDistance (_ distance: Double) -> Cartographic {
         assert(_distance != nil, "start and end must be set before calling funciton interpolateUsingSurfaceDistance")
         
         let constants = _constants
@@ -355,27 +355,27 @@ class EllipsoidGeodesic {
     }
     
     private struct EllipsoidGeodesicConstants {
-        var a = Double.NaN
-        var b = Double.NaN
-        var f = Double.NaN
-        var cosineHeading = Double.NaN
-        var sineHeading = Double.NaN
-        var tanU = Double.NaN
-        var cosineU = Double.NaN
-        var sineU = Double.NaN
-        var sigma = Double.NaN
-        var sineAlpha = Double.NaN
-        var sineSquaredAlpha = Double.NaN
-        var cosineSquaredAlpha = Double.NaN
-        var cosineAlpha = Double.NaN
-        var u2Over4 = Double.NaN
-        var u4Over16 = Double.NaN
-        var u6Over64 = Double.NaN
-        var u8Over256 = Double.NaN
-        var a0 = Double.NaN
-        var a1 = Double.NaN
-        var a2 = Double.NaN
-        var a3 = Double.NaN
-        var distanceRatio = Double.NaN
+        var a = Double.nan
+        var b = Double.nan
+        var f = Double.nan
+        var cosineHeading = Double.nan
+        var sineHeading = Double.nan
+        var tanU = Double.nan
+        var cosineU = Double.nan
+        var sineU = Double.nan
+        var sigma = Double.nan
+        var sineAlpha = Double.nan
+        var sineSquaredAlpha = Double.nan
+        var cosineSquaredAlpha = Double.nan
+        var cosineAlpha = Double.nan
+        var u2Over4 = Double.nan
+        var u4Over16 = Double.nan
+        var u6Over64 = Double.nan
+        var u8Over256 = Double.nan
+        var a0 = Double.nan
+        var a1 = Double.nan
+        var a2 = Double.nan
+        var a3 = Double.nan
+        var distanceRatio = Double.nan
     }
 }

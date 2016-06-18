@@ -25,7 +25,7 @@ class IntersectionTests {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The intersection point or undefined if there is no intersections.
      */
-    static func rayPlane (ray: Ray, plane: Plane) -> Cartesian3? {
+    static func rayPlane (_ ray: Ray, plane: Plane) -> Cartesian3? {
         
         let origin = ray.origin
         let direction = ray.direction
@@ -44,7 +44,7 @@ class IntersectionTests {
         return origin.add(direction.multiplyByScalar(t))
     }
     
-    static private func _rayTriangle (ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
+    static private func _rayTriangle (_ ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
         
         let origin = ray.origin
         let direction = ray.direction
@@ -117,7 +117,7 @@ class IntersectionTests {
      * @param {Cartesian3} [result] The <code>Cartesian3</code> onto which to store the result.
      * @returns {Cartesian3} The intersection point or undefined if there is no intersections.
      */
-    static func rayTriangle (ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Cartesian3? {
+    static func rayTriangle (_ ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Cartesian3? {
         let t = _rayTriangle(ray, p0: p0, p1: p1, p2: p2, cullBackFaces: cullBackFaces)
         if t == nil || t < 0.0 {
             return nil
@@ -170,7 +170,7 @@ class IntersectionTests {
      return Cartesian3.add(ray.origin, result, result);
      };
      */
-    private static func solveQuadratic(a a: Double, b: Double, c: Double)  -> Interval? {
+    private static func solveQuadratic(a: Double, b: Double, c: Double)  -> Interval? {
         let det = b * b - 4.0 * a * c
         if det < 0.0 {
             return nil
@@ -194,7 +194,7 @@ class IntersectionTests {
         return Interval(start: root, stop: root)
     }
     
-    private static func _raySphere(ray: Ray, sphere: BoundingSphere) -> Interval? {
+    private static func _raySphere(_ ray: Ray, sphere: BoundingSphere) -> Interval? {
         
         let origin = ray.origin
         let direction = ray.direction
@@ -220,7 +220,7 @@ class IntersectionTests {
      * @param {Object} [result] The result onto which to store the result.
      * @returns {Object} An object with the first (<code>start</code>) and the second (<code>stop</code>) intersection scalars for points along the ray or undefined if there are no intersections.
      */
-    static func raySphere (ray: Ray, sphere: BoundingSphere) -> Interval? {
+    static func raySphere (_ ray: Ray, sphere: BoundingSphere) -> Interval? {
         
         var result = _raySphere(ray, sphere: sphere)
         
@@ -283,7 +283,7 @@ class IntersectionTests {
      * @param {Ellipsoid} ellipsoid The ellipsoid.
      * @returns {Object} An object with the first (<code>start</code>) and the second (<code>stop</code>) intersection scalars for points along the ray or undefined if there are no intersections.
      */
-    static func rayEllipsoid (ray: Ray, ellipsoid: Ellipsoid) -> Interval? {
+    static func rayEllipsoid (_ ray: Ray, ellipsoid: Ellipsoid) -> Interval? {
         
         let inverseRadii = ellipsoid.oneOverRadii
         let q = inverseRadii.multiplyComponents(ray.origin)
@@ -347,7 +347,7 @@ class IntersectionTests {
     }
     
     
-    func addWithCancellationCheck(left: Double, _ right: Double, tolerance: Double) -> Double {
+    func addWithCancellationCheck(_ left: Double, _ right: Double, tolerance: Double) -> Double {
         let difference = left + right
         if (Math.sign(left) != Math.sign(right)) &&
             abs(difference / max(abs(left), abs(right))) < tolerance {
@@ -356,7 +356,7 @@ class IntersectionTests {
         return difference
     }
     
-    func quadraticVectorExpression(A: Matrix3, b: Cartesian3, c: Double, x: Double, w: Double) -> [Double] {
+    func quadraticVectorExpression(_ A: Matrix3, b: Cartesian3, c: Double, x: Double, w: Double) -> [Double] {
         let xSquared = x * x
         let wSquared = w * w
         return [Double]()
@@ -471,7 +471,7 @@ class IntersectionTests {
      * @param {Ellipsoid} ellipsoid The ellipsoid.
      * @returns {Cartesian} The nearest planetodetic point on the ray.
      */
-    static func grazingAltitudeLocation (ray: Ray, ellipsoid: Ellipsoid) -> Cartesian3? {
+    static func grazingAltitudeLocation (_ ray: Ray, ellipsoid: Ellipsoid) -> Cartesian3? {
         
         let position = ray.origin
         let direction = ray.direction

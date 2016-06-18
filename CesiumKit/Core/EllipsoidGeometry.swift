@@ -75,7 +75,7 @@ struct EllipsoidGeometry {
     * @param {Number[]} array The array to pack into.
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
-    func pack (inout array: [Float], startingIndex: Int = 0) {
+    func pack (_ array: inout [Float], startingIndex: Int = 0) {
     /*
     startingIndex = defaultValue(startingIndex, 0);
     
@@ -106,7 +106,7 @@ struct EllipsoidGeometry {
     * @param {EllipsoidGeometry} ellipsoidGeometry A description of the ellipsoid.
     * @returns {Geometry} The computed vertices and indices.
     */
-    func createGeometry (context: Context) -> Geometry {
+    func createGeometry (_ context: Context) -> Geometry {
         
         let ellipsoid = Ellipsoid(radii: _radii)
         
@@ -173,9 +173,9 @@ struct EllipsoidGeometry {
         
         if _vertexFormat.position {
             attributes.position = GeometryAttribute(
-                componentDatatype: .Float64,
+                componentDatatype: .float64,
                 componentsPerAttribute: 3,
-                values: Buffer(device: context.device, array: positions, componentDatatype: .Float64, sizeInBytes: positions.sizeInBytes)
+                values: Buffer(device: context.device, array: positions, componentDatatype: .float64, sizeInBytes: positions.sizeInBytes)
             )
         }
         
@@ -236,33 +236,33 @@ struct EllipsoidGeometry {
             
             if _vertexFormat.st {
                 attributes.st = GeometryAttribute(
-                    componentDatatype: .Float32,
+                    componentDatatype: .float32,
                     componentsPerAttribute: 2,
-                    values : Buffer(device: context.device, array: st!, componentDatatype: .Float32, sizeInBytes: st!.sizeInBytes)
+                    values : Buffer(device: context.device, array: st!, componentDatatype: .float32, sizeInBytes: st!.sizeInBytes)
                 )
             }
             
             if _vertexFormat.normal {
                 attributes.normal = GeometryAttribute(
-                    componentDatatype : .Float32,
+                    componentDatatype : .float32,
                     componentsPerAttribute : 3,
-                    values : Buffer(device: context.device, array: normals!, componentDatatype: .Float32, sizeInBytes: normals!.sizeInBytes)
+                    values : Buffer(device: context.device, array: normals!, componentDatatype: .float32, sizeInBytes: normals!.sizeInBytes)
                 )
             }
             
             if _vertexFormat.tangent {
                 attributes.tangent = GeometryAttribute(
-                    componentDatatype: ComponentDatatype.Float32,
+                    componentDatatype: ComponentDatatype.float32,
                     componentsPerAttribute: 3,
-                    values: Buffer(device: context.device, array: tangents!, componentDatatype: .Float64, sizeInBytes: tangents!.sizeInBytes)
+                    values: Buffer(device: context.device, array: tangents!, componentDatatype: .float64, sizeInBytes: tangents!.sizeInBytes)
                 )
             }
             
             if _vertexFormat.binormal {
                 attributes.binormal = GeometryAttribute(
-                    componentDatatype : ComponentDatatype.Float32,
+                    componentDatatype : ComponentDatatype.float32,
                     componentsPerAttribute : 3,
-                    values : Buffer(device: context.device, array: binormals!, componentDatatype: .Float64, sizeInBytes: binormals!.sizeInBytes)
+                    values : Buffer(device: context.device, array: binormals!, componentDatatype: .float64, sizeInBytes: binormals!.sizeInBytes)
                 )
             }
         }
@@ -333,8 +333,8 @@ extension EllipsoidGeometry: Packable {
         index += 1
         let slicePartitions = array[index]
         
-        _stackPartitions = stackPartitions == Double.NaN ? 64 : Int(stackPartitions)
-        _slicePartitions = slicePartitions == Double.NaN ? 64 : Int(slicePartitions)
+        _stackPartitions = stackPartitions == Double.nan ? 64 : Int(stackPartitions)
+        _slicePartitions = slicePartitions == Double.nan ? 64 : Int(slicePartitions)
     }
 
 }

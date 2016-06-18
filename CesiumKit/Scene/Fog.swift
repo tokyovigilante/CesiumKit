@@ -69,7 +69,7 @@ class Fog {
         }
     }
     
-    private func findInterval (height: Double) -> Int {
+    private func findInterval (_ height: Double) -> Int {
 
         let length = heightsTable.count
         
@@ -107,7 +107,7 @@ class Fog {
         return tableLastIndex
     }
     
-    func update (inout frameState: FrameState) {
+    func update (_ frameState: inout FrameState) {
         frameState.fog.enabled = enabled
         if !enabled {
             return
@@ -117,7 +117,7 @@ class Fog {
         let positionCartographic = camera.positionCartographic
         
         // Turn off fog in space.
-        if positionCartographic.height > 800000.0 || frameState.mode != .Scene3D {
+        if positionCartographic.height > 800000.0 || frameState.mode != .scene3D {
             frameState.fog.enabled = false
             return
         }

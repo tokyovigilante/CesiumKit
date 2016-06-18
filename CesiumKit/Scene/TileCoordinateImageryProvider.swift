@@ -237,7 +237,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
         return [credit].flatMap { $0 }
     }
     
@@ -263,30 +263,30 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImageRef? -> Void)) {
+    public func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
     
         let bytesPerPixel: Int = 4
         let bytesPerRow = bytesPerPixel * tileWidth
         let bitsPerComponent = 8
         
-        let alphaInfo = CGImageAlphaInfo.PremultipliedLast
+        let alphaInfo = CGImageAlphaInfo.premultipliedLast
         
-        let bitmapInfo: CGBitmapInfo = [.ByteOrder32Big]
+        let bitmapInfo: CGBitmapInfo = [.byteOrder32Big]
         
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
-        let contextRef = CGBitmapContextCreate(nil, tileWidth, tileHeight, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue | alphaInfo.rawValue)
+        let contextRef = CGContext(data: nil, width: tileWidth, height: tileHeight, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue | alphaInfo.rawValue)
         
         assert(contextRef != nil, "contextRef == nil")
         
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
-        let drawColor = CGColorCreate(rgbSpace, _colorArray)
+        let drawColor = CGColor(colorSpace: rgbSpace, components: _colorArray)
         
-        CGContextSetStrokeColorWithColor(contextRef, drawColor)
+        contextRef?.setStrokeColor(drawColor!)
         
-        let borderRect = CGRectMake(1.0, 1.0, CGFloat(tileWidth-2), CGFloat(tileHeight-2))
-        CGContextClearRect(contextRef, borderRect)
-        CGContextStrokeRectWithWidth(contextRef, borderRect, 2.0)
+        let borderRect = CGRect(x: 1.0, y: 1.0, width: CGFloat(tileWidth-2), height: CGFloat(tileHeight-2))
+        contextRef?.clear(borderRect)
+        contextRef?.stroke(borderRect, width: 2.0)
         
         let tileString = "L\(level)X\(x)Y\(y)"
         
@@ -296,27 +296,27 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
-        CGContextSetFillColorWithColor(contextRef, drawColor)
+        contextRef?.setFillColor(drawColor!)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorFromContextAttributeName, kCFBooleanTrue)
         
-        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+        let framesetter = CTFramesetterCreateWithAttributedString(attrString!)
         var fitRange = CFRangeMake(0, 0)
         let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, borderRect.size, &fitRange)
         
         let pathZeroX = borderRect.size.width / 2 - textSize.width / 2
         let pathZeroY = borderRect.size.height / 2 - textSize.height / 2
-        let pathRect = CGRectMake(pathZeroX, pathZeroY, textSize.width, textSize.height)
+        let pathRect = CGRect(x: pathZeroX, y: pathZeroY, width: textSize.width, height: textSize.height)
         
-        let path = CGPathCreateMutable()
-        CGPathAddRect(path, nil, pathRect)
+        let path = CGMutablePath()
+        path.addRect(nil, rect: pathRect)
         
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         CTFrameDraw(frame, contextRef!)
         
         let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
-        CGContextConcatCTM(contextRef, flipVertical)
+        contextRef?.concatCTM(flipVertical)
     
-        completionBlock(CGBitmapContextCreateImage(contextRef))
+        completionBlock(contextRef?.makeImage())
 
     }
     

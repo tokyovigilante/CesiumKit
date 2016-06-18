@@ -51,7 +51,7 @@ class PipelineCache {
     *     this._shaderProgram, vs, fs, attributeLocations);
     */
     func replaceRenderPipeline (
-        pipeline: RenderPipeline?,
+        _ pipeline: RenderPipeline?,
         vertexShaderSource vss: ShaderSource,
         fragmentShaderSource fss: ShaderSource,
         vertexDescriptor: VertexDescriptor?,
@@ -102,22 +102,22 @@ class PipelineCache {
         pipelineDescriptor.vertexFunction = shader.metalVertexFunction
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
-        color.pixelFormat = context.view.colorPixelFormat
-        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.All
-        color.writeMask = colorWriteMask
+        color?.pixelFormat = context.view.colorPixelFormat
+        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.all
+        color?.writeMask = colorWriteMask
         
-        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
-        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
         
         if let blendingState = blendingState {
-            color.blendingEnabled = true
-            color.rgbBlendOperation = blendingState.equationRgb.toMetal()
-            color.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
-            color.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
+            color?.isBlendingEnabled = true
+            color?.rgbBlendOperation = blendingState.equationRgb.toMetal()
+            color?.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
+            color?.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
 
-            color.alphaBlendOperation = blendingState.equationAlpha.toMetal()
-            color.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
-            color.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
+            color?.alphaBlendOperation = blendingState.equationAlpha.toMetal()
+            color?.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
+            color?.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
         }
         
         
@@ -133,7 +133,7 @@ class PipelineCache {
         return pipeline
     }
     
-    func getRenderPipeline (shaderSourceName shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+    func getRenderPipeline (shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
@@ -157,22 +157,22 @@ class PipelineCache {
         pipelineDescriptor.vertexFunction = shader.metalVertexFunction
         pipelineDescriptor.fragmentFunction = shader.metalFragmentFunction
         
-        color.pixelFormat = context.view.colorPixelFormat
-        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.All
-        color.writeMask = colorWriteMask
+        color?.pixelFormat = context.view.colorPixelFormat
+        let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.all
+        color?.writeMask = colorWriteMask
         
-        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
-        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .Depth32Float_Stencil8 : .Invalid
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
         
         if let blendingState = blendingState {
-            color.blendingEnabled = true
-            color.rgbBlendOperation = blendingState.equationRgb.toMetal()
-            color.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
-            color.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
+            color?.isBlendingEnabled = true
+            color?.rgbBlendOperation = blendingState.equationRgb.toMetal()
+            color?.sourceRGBBlendFactor = blendingState.functionSourceRgb.toMetal()
+            color?.destinationRGBBlendFactor = blendingState.functionDestinationRgb.toMetal()
             
-            color.alphaBlendOperation = blendingState.equationAlpha.toMetal()
-            color.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
-            color.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
+            color?.alphaBlendOperation = blendingState.equationAlpha.toMetal()
+            color?.sourceAlphaBlendFactor = blendingState.functionSourceAlpha.toMetal()
+            color?.destinationAlphaBlendFactor = blendingState.functionDestinationAlpha.toMetal()
         }
         
         
@@ -197,10 +197,10 @@ class PipelineCache {
     *
     * @param {ShaderProgram} shader The shader to decrement
     */
-    func releasePipeline(pipeline: RenderPipeline) {
+    func releasePipeline(_ pipeline: RenderPipeline) {
         pipeline.count -= 1
         if pipeline.count < 1 {
-            _pipelines.removeValueForKey(pipeline.keyword)
+            _pipelines.removeValue(forKey: pipeline.keyword)
         }
     }
 

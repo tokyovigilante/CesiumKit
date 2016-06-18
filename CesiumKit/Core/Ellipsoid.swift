@@ -107,7 +107,7 @@ public struct Ellipsoid: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
-    func geocentricSurfaceNormal(cartesian: Cartesian3) -> Cartesian3 {
+    func geocentricSurfaceNormal(_ cartesian: Cartesian3) -> Cartesian3 {
         return cartesian.normalize()
     }
     
@@ -118,7 +118,7 @@ public struct Ellipsoid: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
-    func geodeticSurfaceNormalCartographic(cartographic: Cartographic) -> Cartesian3 {
+    func geodeticSurfaceNormalCartographic(_ cartographic: Cartographic) -> Cartesian3 {
         let longitude = cartographic.longitude
         let latitude = cartographic.latitude
         let cosLatitude = cos(latitude)
@@ -137,7 +137,7 @@ public struct Ellipsoid: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
-    func geodeticSurfaceNormal(cartesian: Cartesian3) -> Cartesian3 {
+    func geodeticSurfaceNormal(_ cartesian: Cartesian3) -> Cartesian3 {
         return cartesian.multiplyComponents(oneOverRadiiSquared).normalize()
     }
     
@@ -153,7 +153,7 @@ public struct Ellipsoid: Equatable {
     * var position = new Cesium.Cartographic(Cesium.Math.toRadians(21), Cesium.Math.toRadians(78), 5000);
     * var cartesianPosition = Cesium.Ellipsoid.WGS84.cartographicToCartesian(position);
     */
-    public func cartographicToCartesian(cartographic: Cartographic) -> Cartesian3 {
+    public func cartographicToCartesian(_ cartographic: Cartographic) -> Cartesian3 {
         var n = geodeticSurfaceNormalCartographic(cartographic)
         var k = radiiSquared.multiplyComponents(n)
         
@@ -178,7 +178,7 @@ public struct Ellipsoid: Equatable {
     *                  new Cesium.Cartographic(Cesium.Math.toRadians(21.645), Cesium.Math.toRadians(78.456), 250)];
     * var cartesianPositions = Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(positions);
     */
-    func cartographicArrayToCartesianArray(cartographics: [Cartographic]) -> [Cartesian3] {
+    func cartographicArrayToCartesianArray(_ cartographics: [Cartographic]) -> [Cartesian3] {
         return cartographics.map({ cartographicToCartesian($0) })
     }
     
@@ -196,7 +196,7 @@ public struct Ellipsoid: Equatable {
     * var cartographicPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
     */
     
-    public func cartesianToCartographic(cartesian: Cartesian3) -> Cartographic? {
+    public func cartesianToCartographic(_ cartesian: Cartesian3) -> Cartographic? {
         
         let p = scaleToGeodeticSurface(cartesian)
         if p == nil {
@@ -229,7 +229,7 @@ public struct Ellipsoid: Equatable {
     *                  new Cesium.Cartesian3(17832.14, 83234.54, 952313.73)]
     * var cartographicPositions = Cesium.Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
     */
-    func cartesianArrayToCartographicArray(cartesians: [Cartesian3]) -> [Cartographic] {
+    func cartesianArrayToCartographicArray(_ cartesians: [Cartesian3]) -> [Cartographic] {
         return cartesians.flatMap({ cartesianToCartographic($0) })
     }
     
@@ -242,7 +242,7 @@ public struct Ellipsoid: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter, a new Cartesian3 instance if none was provided, or undefined if the position is at the center.
     */
-    func scaleToGeodeticSurface(cartesian: Cartesian3) -> Cartesian3? {
+    func scaleToGeodeticSurface(_ cartesian: Cartesian3) -> Cartesian3? {
         
         let positionX = cartesian.x
         let positionY = cartesian.y
@@ -332,7 +332,7 @@ public struct Ellipsoid: Equatable {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if none was provided.
     */
-    func scaleToGeocentricSurface(cartesian: Cartesian3) ->Cartesian3 {
+    func scaleToGeocentricSurface(_ cartesian: Cartesian3) ->Cartesian3 {
         
         let positionX = cartesian.x
         let positionY = cartesian.y
@@ -356,7 +356,7 @@ public struct Ellipsoid: Equatable {
     * @returns {Cartesian3} The position expressed in the scaled space.  The returned instance is the
     *          one passed as the result parameter if it is not undefined, or a new instance of it is.
     */
-    func transformPositionToScaledSpace(position: Cartesian3) -> Cartesian3 {
+    func transformPositionToScaledSpace(_ position: Cartesian3) -> Cartesian3 {
         return position.multiplyComponents(oneOverRadii)
     }
     
@@ -370,7 +370,7 @@ public struct Ellipsoid: Equatable {
     * @returns {Cartesian3} The position expressed in the unscaled space.  The returned instance is the
     *          one passed as the result parameter if it is not undefined, or a new instance of it is.
     */
-    func transformPositionFromScaledSpace(position: Cartesian3) -> Cartesian3 {
+    func transformPositionFromScaledSpace(_ position: Cartesian3) -> Cartesian3 {
         return position.multiplyComponents(radii)
     }
     
@@ -412,7 +412,7 @@ extension Ellipsoid: Packable {
      * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
      */
     
-    func pack (inout array: [Float], startingIndex: Int = 0) {
+    func pack (_ array: inout [Float], startingIndex: Int = 0) {
         radii.pack(&array, startingIndex: startingIndex)
     }
 

@@ -9,18 +9,18 @@
 import Metal
 
 enum CullFace {
-    case None
-    case Front
-    case Back
+    case none
+    case front
+    case back
     
     func toMetal() -> MTLCullMode {
         switch self {
-        case .None:
-            return .None
-        case .Front:
-            return .Front
-        case .Back:
-            return .Back
+        case .none:
+            return .none
+        case .front:
+            return .front
+        case .back:
+            return .back
         }
     }
 }

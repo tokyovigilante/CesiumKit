@@ -109,7 +109,7 @@ public struct Quaternion {
         else {
             // |w| <= 1/2
             var next = [1, 2, 0]
-            var quat = Array(count: 3, repeatedValue: 0.0)
+            var quat = Array(repeating: 0.0, count: 3)
             
             var i = 0
             if (m11 > m00) {
@@ -491,7 +491,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    func multiply (other: Quaternion) -> Quaternion {
+    func multiply (_ other: Quaternion) -> Quaternion {
         
         let selfX = self.x
         let selfY = self.y
@@ -520,7 +520,7 @@ public struct Quaternion {
     * @param {Quaternion} [result] The object onto which to store the result.
     * @returns {Quaternion} The modified result parameter or a new Quaternion instance if one was not provided.
     */
-    func multiplyByScalar (scalar: Double) -> Quaternion {
+    func multiplyByScalar (_ scalar: Double) -> Quaternion {
         return Quaternion(x: x * scalar, y: y * scalar, z: z * scalar, w: w * scalar)
     }
     

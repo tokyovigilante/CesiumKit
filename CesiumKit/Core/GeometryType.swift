@@ -7,8 +7,8 @@
 //
 
 enum GeometryType {
-    case None,
-    Triangles,
-    Lines,
-    Polylines
+    case none,
+    triangles,
+    lines,
+    polylines
 }

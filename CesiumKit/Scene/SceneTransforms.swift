@@ -66,12 +66,12 @@ struct SceneTransforms {
     *     console.log(Cesium.SceneTransforms.wgs84ToWindowCoordinates(scene, position));
     * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     */
-    static func wgs84ToWindowCoordinates (scene: Scene, position: Cartesian3) -> Cartesian2? {
+    static func wgs84ToWindowCoordinates (_ scene: Scene, position: Cartesian3) -> Cartesian2? {
         return SceneTransforms.wgs84WithEyeOffsetToWindowCoordinates(scene, position: position, eyeOffset: Cartesian3.zero)
     }
     
     
-    private static func worldToClip(position: Cartesian3, eyeOffset: Cartesian3, camera: Camera) -> Cartesian4 {
+    private static func worldToClip(_ position: Cartesian3, eyeOffset: Cartesian3, camera: Camera) -> Cartesian4 {
         let viewMatrix = camera.viewMatrix
         
         var positionEC = viewMatrix.multiplyByVector(Cartesian4(x: position.x, y: position.y, z: position.z, w: 1.0))
@@ -84,7 +84,7 @@ struct SceneTransforms {
         return camera.frustum.projectionMatrix.multiplyByVector(positionEC)
     }
     
-    static func wgs84WithEyeOffsetToWindowCoordinates (scene: Scene, position: Cartesian3, eyeOffset: Cartesian3) -> Cartesian2? {
+    static func wgs84WithEyeOffsetToWindowCoordinates (_ scene: Scene, position: Cartesian3, eyeOffset: Cartesian3) -> Cartesian2? {
         // Transform for 3D, 2D, or Columbus view
         let frameState = scene.frameState
         guard let actualPosition = SceneTransforms.computeActualWgs84Position(frameState, position: position) else {
@@ -103,7 +103,7 @@ struct SceneTransforms {
         var windowCoord0 = Cartesian2()
         var windowCoord1 = Cartesian2()
         
-        if frameState.mode == .Scene2D {
+        if frameState.mode == .scene2D {
             let projection = scene.mapProjection
             let maxCartographic = Cartographic(longitude: M_PI, latitude: M_PI_2)
             let maxCoord = projection.project(maxCartographic)
@@ -167,10 +167,10 @@ struct SceneTransforms {
                 }
             }
         }
-        if frameState.mode != SceneMode.Scene3D || cameraCentered {
+        if frameState.mode != SceneMode.scene3D || cameraCentered {
             // View-projection matrix to transform from world coordinates to clip coordinates
             positionCC = worldToClip(actualPosition, eyeOffset: eyeOffset, camera: camera)
-            if positionCC.z < 0 && frameState.mode != .Scene2D {
+            if positionCC.z < 0 && frameState.mode != .scene2D {
                 return nil
             }
             
@@ -213,11 +213,11 @@ struct SceneTransforms {
     /**
     * @private
     */
-    private static func computeActualWgs84Position (frameState: FrameState, position: Cartesian3) -> Cartesian3? {
+    private static func computeActualWgs84Position (_ frameState: FrameState, position: Cartesian3) -> Cartesian3? {
         
         let mode = frameState.mode
         
-        if mode == .Scene3D {
+        if mode == .scene3D {
             return position
         }
         
@@ -228,11 +228,11 @@ struct SceneTransforms {
         
         let projectedPosition = projection.project(cartographic)
         
-        if mode == .ColumbusView {
+        if mode == .columbusView {
             return Cartesian3(x: projectedPosition.z, y: projectedPosition.x, z: projectedPosition.y)
         }
         
-        if mode == .Scene2D {
+        if mode == .scene2D {
             return Cartesian3(x: 0.0, y: projectedPosition.x, z: projectedPosition.y)
         }
         
@@ -253,7 +253,7 @@ struct SceneTransforms {
     /**
     * @private
     */
-    private static func clipToGLWindowCoordinates (viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
+    private static func clipToGLWindowCoordinates (_ viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
         
         // Perspective divide to transform from clip coordinates to normalized device coordinates
         let positionNDC = position.divideByScalar(position.w)

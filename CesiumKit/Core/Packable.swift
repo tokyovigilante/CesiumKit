@@ -34,7 +34,7 @@ protocol Packable {
     * @param {Object} value The value to pack.
     * @param {Number[]} array The array to pack into.
     */
-    func pack (inout array: [Float], startingIndex: Int)
+    func pack (_ array: inout [Float], startingIndex: Int)
     
     func toArray () -> [Double]
    
@@ -46,9 +46,9 @@ protocol Packable {
     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
     * @param {Object} [result] The object into which to store the result.
     */
-    static func unpack(array: [Float], startingIndex: Int) -> Self
+    static func unpack(_ array: [Float], startingIndex: Int) -> Self
     
-    func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool
+    func checkPackedArrayLength(_ array: [Double], startingIndex: Int) -> Bool
 }
 
 extension Packable {
@@ -60,7 +60,7 @@ extension Packable {
      * @param {Number[]} array The array to pack into.
      * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
      */
-    func pack(inout array: [Float], startingIndex: Int = 0) {
+    func pack(_ array: inout [Float], startingIndex: Int = 0) {
         
         let doubleArray = self.toArray()
         
@@ -98,7 +98,7 @@ extension Packable {
      */
     func toArray() -> [Double] {
         let packedLength = Self.packedLength()
-        var grid = [Double](count: packedLength, repeatedValue: 0.0)
+        var grid = [Double](repeating: 0.0, count: packedLength)
         memcpy(&grid, [self], packedLength * strideof(Double))
         /*grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
             memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
@@ -113,11 +113,11 @@ extension Packable {
      * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
      * @param {Matrix3} [result] The object into which to store the result.
      */
-    static func unpack(array: [Float], startingIndex: Int = 0) -> Self {
+    static func unpack(_ array: [Float], startingIndex: Int = 0) -> Self {
         return Self(array: array.map { Double($0) }, startingIndex: startingIndex)
     }
     
-    func checkPackedArrayLength(array: [Double], startingIndex: Int) -> Bool {
+    func checkPackedArrayLength(_ array: [Double], startingIndex: Int) -> Bool {
         return array.count - startingIndex >= Self.packedLength()
     }
     

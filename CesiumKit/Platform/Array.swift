@@ -8,7 +8,7 @@
 
 import Foundation
 
-public func deleteDuplicates<S:RangeReplaceableCollectionType where S.Generator.Element: Equatable>(seq:S)-> S {
+public func deleteDuplicates<S:RangeReplaceableCollection where S.Iterator.Element: Equatable>(_ seq:S)-> S {
     let s = seq.reduce(S()){
         ac, x in ac.contains(x) ? ac : ac + [x]
     }
@@ -42,7 +42,7 @@ extension Array {
     * var numbers = [0, 2, 4, 6, 8];
     * var index = Cesium.binarySearch(numbers, 6, comparator); // 3
     */
-    func binarySearch (itemToFind: Element, comparator: BinarySearchComparator) -> Int {
+    func binarySearch (_ itemToFind: Element, comparator: BinarySearchComparator) -> Int {
         var low = 0
         var high = self.count - 1
         var i: Int

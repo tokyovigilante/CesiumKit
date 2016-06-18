@@ -198,7 +198,7 @@ public protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func tileCredits (x x: Int, y: Int, level: Int) -> [Credit]
+    func tileCredits (x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -222,7 +222,7 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImage? -> Void))
+    func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void))
     
     /**
      * Asynchronously determines what features, if any, are located at a given longitude and latitude within
@@ -241,11 +241,11 @@ public protocol ImageryProvider {
      *                   instances.  The array may be empty if no features are found at the given location.
      *                   It may also be undefined if picking is not supported.
      */
-    func pickFeatures (x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]?
+    func pickFeatures (_ x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]?
 }
 
 extension ImageryProvider {
-    public func pickFeatures (x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]? {
+    public func pickFeatures (_ x: Int, y: Int, level: Int, longitude: Double, latitude: Double) -> [ImageryLayerFeatureInfo]? {
         return nil
     }
 }

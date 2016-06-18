@@ -52,13 +52,13 @@ class TileImagery {
     * @param {FrameState} frameState The frameState.
     * @returns {Boolean} True if this instance is done loading; otherwise, false.
     */
-    func processStateMachine (tile: QuadtreeTile, inout frameState: FrameState) -> Bool {
+    func processStateMachine (_ tile: QuadtreeTile, frameState: inout FrameState) -> Bool {
         
         let imageryLayer = loadingImagery!.imageryLayer
         
         loadingImagery!.processStateMachine(frameState: &frameState)
         
-        if loadingImagery!.state == .Ready {
+        if loadingImagery!.state == .ready {
             if readyImagery != nil {
                 readyImagery!.releaseReference()
             }
@@ -71,8 +71,8 @@ class TileImagery {
         // Find some ancestor imagery we can use while this imagery is still loading.
         var ancestor = loadingImagery!.parent
         var closestAncestorThatNeedsLoading: Imagery?
-        while ancestor != nil && ancestor!.state != ImageryState.Ready {
-            if ancestor!.state != ImageryState.Failed && ancestor!.state != ImageryState.Invalid {
+        while ancestor != nil && ancestor!.state != ImageryState.ready {
+            if ancestor!.state != ImageryState.failed && ancestor!.state != ImageryState.invalid {
                 // ancestor is still loading
                 closestAncestorThatNeedsLoading = closestAncestorThatNeedsLoading ?? ancestor!
             }
@@ -92,7 +92,7 @@ class TileImagery {
                 }
         }
         
-        if loadingImagery!.state == .Failed || loadingImagery!.state == .Invalid {
+        if loadingImagery!.state == .failed || loadingImagery!.state == .invalid {
             if let closestAncestorThatNeedsLoading = closestAncestorThatNeedsLoading {
                 // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery
                 // tiles may not be attached directly to a terrain tile.  Such tiles will never load if

@@ -24,7 +24,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1400
     */
-    case Byte,
+    case byte,
     
     /**
     * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
@@ -34,7 +34,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1401
     */
-    UnsignedByte,
+    unsignedByte,
     
     /**
     * 16-bit signed short corresponding to <code>SHORT</code> and the type
@@ -44,7 +44,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1402
     */
-    Short,
+    short,
     
     /**
     * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
@@ -54,9 +54,9 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1403
     */
-    UnsignedShort,
+    unsignedShort,
     
-    UnsignedInt,
+    unsignedInt,
     
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
@@ -66,7 +66,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x1406
     */
-    Float32,
+    float32,
     
     /**
     * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
@@ -79,7 +79,7 @@ enum ComponentDatatype {
     * @constant
     * @default 0x140A
     */
-    Float64
+    float64
     
     /**
     * Returns the size, in bytes, of the corresponding datatype.
@@ -95,54 +95,54 @@ enum ComponentDatatype {
     */
     var elementSize: Int {
         switch (self) {
-        case .Byte:
+        case .byte:
             return sizeof(Int8)
-        case .UnsignedByte:
+        case .unsignedByte:
             return sizeof(UInt8)
-        case .Short:
+        case .short:
             return sizeof(Int16)
-        case .UnsignedShort:
+        case .unsignedShort:
             return sizeof(UInt16)
-        case .UnsignedInt:
+        case .unsignedInt:
             return sizeof(UInt32)
-        case .Float32:
+        case .float32:
             return sizeof(Float)
-        case .Float64:
+        case .float64:
             return sizeof(Double)
         }
     }
     
-    func toVertexType (attributeCount: Int) -> VertexType {
+    func toVertexType (_ attributeCount: Int) -> VertexType {
         var metalIndex: UInt = 0
         let attributeCount: UInt = UInt(attributeCount)
         switch (self) {
-        case .Byte:
-            metalIndex = VertexType.Char2.rawValue + attributeCount > 2 ? UInt(attributeCount-2) : 0
-        case .UnsignedByte:
-            metalIndex = VertexType.UChar2.rawValue  + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
-        case .Short:
-            metalIndex = VertexType.Short2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
-        case .UnsignedShort:
-            metalIndex = VertexType.UShort2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
-        case .UnsignedInt:
-            metalIndex = VertexType.UInt.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
-        case .Float32:
-            metalIndex = VertexType.Float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
-        case .Float64:
-            metalIndex = VertexType.Float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        case .byte:
+            metalIndex = VertexType.char2.rawValue + attributeCount > 2 ? UInt(attributeCount-2) : 0
+        case .unsignedByte:
+            metalIndex = VertexType.uChar2.rawValue  + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .short:
+            metalIndex = VertexType.short2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .unsignedShort:
+            metalIndex = VertexType.uShort2.rawValue + (attributeCount > 2 ? UInt(attributeCount-2) : 0)
+        case .unsignedInt:
+            metalIndex = VertexType.uInt.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        case .float32:
+            metalIndex = VertexType.float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
+        case .float64:
+            metalIndex = VertexType.float.rawValue + (attributeCount > 1 ? UInt(attributeCount-1) : 0)
         }
-        return VertexType(rawValue: metalIndex) ?? .Invalid
+        return VertexType(rawValue: metalIndex) ?? .invalid
     }
     
     func toMTLIndexType () -> MTLIndexType {
         switch (self) {
-        case .UnsignedShort:
-            return .UInt16
-        case .UnsignedInt:
-            return .UInt32
+        case .unsignedShort:
+            return .uInt16
+        case .unsignedInt:
+            return .uInt32
         default:
             assertionFailure("invalid type for indices")
-            return .UInt16
+            return .uInt16
         }
     }
     

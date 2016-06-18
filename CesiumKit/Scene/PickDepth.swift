@@ -144,7 +144,7 @@ class PickDepth {
     executeDebugPickDepth(this, context, passState);
     };
     */
-    func update (context: Context, depthTexture: Texture) {
+    func update (_ context: Context, depthTexture: Texture) {
         /*updateFramebuffers(this, context, depthTexture);
         updateCopyCommands(this, context, depthTexture);*/
     }

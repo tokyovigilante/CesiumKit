@@ -1338,7 +1338,7 @@ public class Primitive {
      * @exception {DeveloperError} Appearance and material have a uniform with the same name.
      * @exception {DeveloperError} Primitive.modelMatrix is only supported in 3D mode.
      */
-    func update (inout frameState: FrameState) {
+    func update (_ frameState: inout FrameState) {
      /*if (((!defined(this.geometryInstances)) && (this._va.length === 0)) ||
      (defined(this.geometryInstances) && isArray(this.geometryInstances) && this.geometryInstances.length === 0) ||
      (!defined(this.appearance)) ||

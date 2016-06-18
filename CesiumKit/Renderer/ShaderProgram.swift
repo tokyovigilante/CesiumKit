@@ -118,28 +118,28 @@ class ShaderProgram {
 
     init? (device: MTLDevice, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
 
-        guard let bundle = NSBundle(identifier: "com.testtoast.CesiumKit") else {
+        guard let bundle = Bundle(identifier: "com.testtoast.CesiumKit") else {
             print("Could not find CesiumKit bundle in executable")
             return nil
         }
-        guard let libraryPath = bundle.URLForResource("default", withExtension: "metallib")?.path else {
+        guard let libraryPath = bundle.urlForResource("default", withExtension: "metallib")?.path else {
             print("Could not find shader source from bundle")
             return nil
         }
         let shaderLibrary: MTLLibrary
         do {
-            shaderLibrary = try device.newLibraryWithFile(libraryPath)
+            shaderLibrary = try device.newLibrary(withFile: libraryPath)
         } catch let error as NSError {
             print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
             return nil
         }
         
-        guard let metalVertexFunction = shaderLibrary.newFunctionWithName(vertex) else {
+        guard let metalVertexFunction = shaderLibrary.newFunction(withName: vertex) else {
             print("No vertex function found for \(vertex)")
             return nil
         }
         self.metalVertexFunction = metalVertexFunction
-        guard let metalFragmentFunction = shaderLibrary.newFunctionWithName(fragment) else {
+        guard let metalFragmentFunction = shaderLibrary.newFunction(withName: fragment) else {
             print("No fragment function found for \(fragment)")
             return nil
         }
@@ -157,7 +157,7 @@ class ShaderProgram {
         self.keyword = keyword
     }
     
-    private func initialize(device: MTLDevice, optimizer: GLSLOptimizer) {
+    private func initialize(_ device: MTLDevice, optimizer: GLSLOptimizer) {
 
         createMetalProgram(optimizer)
         compileMetalProgram(device)
@@ -174,7 +174,7 @@ class ShaderProgram {
        /* maximumTextureUnitIndex = Int(setSamplerUniforms(uniforms.samplerUniforms))*/
     }
     
-    private func createMetalProgram(optimizer: GLSLOptimizer) {
+    private func createMetalProgram(_ optimizer: GLSLOptimizer) {
         
         _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
         assert(_vertexShader.status(), _vertexShader.log())
@@ -185,11 +185,11 @@ class ShaderProgram {
         _metalFragmentShaderSource = _fragmentShader.output()
     }
     
-    private func compileMetalProgram(device: MTLDevice) {
+    private func compileMetalProgram(_ device: MTLDevice) {
         
         do {
-            _vertexLibrary = try device.newLibraryWithSource(_metalVertexShaderSource, options: nil)
-            metalVertexFunction = _vertexLibrary.newFunctionWithName("xlatMtlMain")
+            _vertexLibrary = try device.newLibrary(withSource: _metalVertexShaderSource, options: nil)
+            metalVertexFunction = _vertexLibrary.newFunction(withName: "xlatMtlMain")
         } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
@@ -198,8 +198,8 @@ class ShaderProgram {
         }
         
         do {
-            _fragmentLibrary = try device.newLibraryWithSource(_metalFragmentShaderSource, options: nil)
-            metalFragmentFunction = _fragmentLibrary.newFunctionWithName("xlatMtlMain")
+            _fragmentLibrary = try device.newLibrary(withSource: _metalFragmentShaderSource, options: nil)
+            metalFragmentFunction = _fragmentLibrary.newFunction(withName: "xlatMtlMain")
         } catch let error as NSError {
             print(_fragmentShaderText)
             print(_metalFragmentShaderSource)
@@ -219,7 +219,7 @@ class ShaderProgram {
         }
     }
     
-    private func uniformType (desc: GLSLShaderVariableDescription) -> UniformType {
+    private func uniformType (_ desc: GLSLShaderVariableDescription) -> UniformType {
         if desc.name.hasPrefix("czm_a_") {
             return .Automatic
         }
@@ -277,11 +277,11 @@ class ShaderProgram {
         _uniformBufferAlignment = maxAlignment
     }
     
-    private func elementStrideForUniform (uniform: Uniform) -> Int {
+    private func elementStrideForUniform (_ uniform: Uniform) -> Int {
         return uniform.alignedSize
     }
     
-    private func paddingRequredForUniform (uniform: Uniform, lastOffset: Int) -> Int {
+    private func paddingRequredForUniform (_ uniform: Uniform, lastOffset: Int) -> Int {
         
         let currentAlignment = lastOffset % _uniformBufferAlignment
         let requiredAlignment = uniform.dataType.alignment
@@ -319,14 +319,14 @@ class ShaderProgram {
         fragmentUniformSize = offset - vertexUniformSize
     }
 
-    func createUniformBufferProvider(device: MTLDevice, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
+    func createUniformBufferProvider(_ device: MTLDevice, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
         let provider = UniformBufferProvider(device: device, bufferSize: max(uniformBufferSize, 256), deallocationBlock: deallocationBlock)
         return provider
     }
     
     //MARK:- Set uniforms
     
-    func setUniforms (command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
+    func setUniforms (_ command: DrawCommand, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
     {
         guard let map = command.uniformMap else {
             return (0, true, [Texture]())
@@ -343,7 +343,7 @@ class ShaderProgram {
         return (0, false, [Texture]())
     }
     
-    private func setNativeUniforms (map: NativeUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
+    private func setNativeUniforms (_ map: NativeUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture])
     {
         guard let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) else {
             return (0, false, [Texture]())
@@ -354,7 +354,7 @@ class ShaderProgram {
         return (fragmentOffset: 0, texturesValid: true, textures: textures)
     }
     
-    func setLegacyUniforms (map: LegacyUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
+    func setLegacyUniforms (_ map: LegacyUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {
         
         guard let buffer = map.uniformBufferProvider?.currentBuffer(uniformState.frameState.context.bufferSyncState) else {
             return (0, false, [Texture]())
@@ -386,7 +386,7 @@ class ShaderProgram {
         
     }    
     
-    func setUniform (uniform: Uniform, buffer: Buffer, map: LegacyUniformMap, uniformState: UniformState) {
+    func setUniform (_ uniform: Uniform, buffer: Buffer, map: LegacyUniformMap, uniformState: UniformState) {
         
         // "...each column of a matrix has the alignment of its vector component." https://developer.apple.com/library/ios/documentation/Metal/Reference/MetalShadingLanguageGuide/data-types/data-types.html#//apple_ref/doc/uid/TP40014364-CH2-SW15
         
@@ -394,13 +394,13 @@ class ShaderProgram {
         
         switch uniform.type {
             
-        case .Automatic:
+        case .automatic:
             assertionFailure("should not be setting automatic uniforms here")
             return
-        case .Frustum:
+        case .frustum:
             assertionFailure("should not be setting frustum uniforms here")
             return
-        case .Manual:
+        case .manual:
             guard let index = uniform.mapIndex else {
                 guard let index = map.indexForUniform(uniform.name) else {
                     assertionFailure("uniform not found for \(uniform.name)")
@@ -414,7 +414,7 @@ class ShaderProgram {
             let uniformFunc = map.uniform(index)
             uniformFunc(map: map, buffer: buffer, offset: uniform.offset)
             
-        case .Sampler:
+        case .sampler:
             assertionFailure("Sampler not valid for setUniform")
             return
         }
@@ -460,7 +460,7 @@ class ShaderProgram {
     * @private
     */
     
-    class func createShaderSource(defines defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
+    class func createShaderSource(defines: [String], sources: [String], pickColorQualifier: String? = nil) -> String {
         
         assert(pickColorQualifier == nil || pickColorQualifier == "uniform" || pickColorQualifier == "varying", "options.pickColorQualifier must be 'uniform' or 'varying'")
         

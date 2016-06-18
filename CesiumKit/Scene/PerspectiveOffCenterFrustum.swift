@@ -30,42 +30,42 @@
 // FIXME: Struct
 class PerspectiveOffCenterFrustum: Frustum {
     
-    var fov = Double.NaN
-    var fovy = Double.NaN
+    var fov = Double.nan
+    var fovy = Double.nan
 
-    var aspectRatio = Double.NaN
+    var aspectRatio = Double.nan
 
     /**
     * Defines the left clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var left = Double.NaN
-    private var _left = Double.NaN
+    var left = Double.nan
+    private var _left = Double.nan
     
     /**
     * Defines the right clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var right = Double.NaN
-    private var _right = Double.NaN
+    var right = Double.nan
+    private var _right = Double.nan
     
     /**
     * Defines the top clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var top = Double.NaN
-    private var _top = Double.NaN
+    var top = Double.nan
+    private var _top = Double.nan
     
     /**
     * Defines the bottom clipping plane.
     * @type {Number}
     * @default undefined
     */
-    var bottom = Double.NaN
-    private var _bottom = Double.NaN
+    var bottom = Double.nan
+    private var _bottom = Double.nan
     
     /**
     * The distance of the near plane.
@@ -74,7 +74,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var near = 1.0
     
-    private var _near = Double.NaN
+    private var _near = Double.nan
     
     /**
     * The distance of the far plane.
@@ -83,7 +83,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var far = 500000000.0
     
-    private var _far = Double.NaN
+    private var _far = Double.nan
     
     private var _cullingVolume = CullingVolume()
 
@@ -149,7 +149,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
         let right2 = direction.cross(up)
         
@@ -236,7 +236,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @param {PerspectiveOffCenterFrustum} [result] The object onto which to store the result.
     * @returns {PerspectiveOffCenterFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
-    func clone(target: Frustum?) -> Frustum {
+    func clone(_ target: Frustum?) -> Frustum {
 
         var result = target ?? PerspectiveOffCenterFrustum()
         

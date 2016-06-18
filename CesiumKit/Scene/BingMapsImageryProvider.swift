@@ -84,7 +84,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     
     public struct Options {
         
-        public let queue: dispatch_queue_t? = nil
+        public let queue: DispatchQueue? = nil
         
         public let url: String
         
@@ -162,7 +162,7 @@ public class BingMapsImageryProvider: ImageryProvider {
      */
     public let defaultGamma: Float
     
-    public let queue: dispatch_queue_t? = nil
+    public let queue: DispatchQueue? = nil
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
@@ -391,7 +391,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         
         //var metadataError;
         
-        let metadataSuccess = { (data: NSData) -> () in
+        let metadataSuccess = { (data: Data) -> () in
             
             do {
                 let metadata = try JSON.decode(data, strict: true)
@@ -462,7 +462,7 @@ public class BingMapsImageryProvider: ImageryProvider {
                     
                 }
 
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self._ready = true
                 })
                  //TileProviderError.handleSuccess(metadataError);*/
@@ -489,7 +489,7 @@ public class BingMapsImageryProvider: ImageryProvider {
 
         let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders, parameters: metadataParameters)
         metadataOperation.completionBlock = {
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 if let error = metadataOperation.error {
                     metadataFailure("An error occurred while accessing \(metadataUrl): \(error)")
                     return
@@ -522,7 +522,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x x: Int, y: Int, level: Int, completionBlock: (CGImage? -> Void)) {
+    public func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         let url = buildImageUrl(x: x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
@@ -540,7 +540,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (url: String, completionBlock: (CGImage? -> Void)) {
+    public func loadImage (_ url: String, completionBlock: ((CGImage?) -> Void)) {
         
         let imageryOperation = NetworkOperation(url: url)
         imageryOperation.completionBlock = {
@@ -549,11 +549,11 @@ public class BingMapsImageryProvider: ImageryProvider {
                 return
             }
             #if os(iOS)
-                let image = UIImage(data: imageryOperation.data)?.CGImage
+                let image = UIImage(data: imageryOperation.data)?.cgImage
             #elseif os(OSX)
                 let image = NSImage(data: imageryOperation.data)?.cgImage
             #endif
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 completionBlock(image)
             })
         }
@@ -598,7 +598,7 @@ public class BingMapsImageryProvider: ImageryProvider {
      *
      * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
      */
-    public func tileCredits (x x: Int, y: Int, level: Int) -> [Credit] {
+    public func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
         assert(ready, "getTileCredits must not be called before the imagery provider is ready")
         
         let rectangle = _tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -619,11 +619,11 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @see {@link http://msdn.microsoft.com/en-us/library/bb259689.aspx|Bing Maps Tile System}
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
-    func tileXYToQuadKey (x x: Int, y: Int, level: Int) -> String {
+    func tileXYToQuadKey (x: Int, y: Int, level: Int) -> String {
         
         var quadkey = ""
         
-        for i in level.stride(through: 0, by: -1) {
+        for i in stride(from: level, through: 0, by: -1) {
             let bitmask = 1 << i
             var digit = 0
             
@@ -672,7 +672,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     };
     */
-    func buildImageUrl(x x: Int, y: Int, level: Int) -> String {
+    func buildImageUrl(x: Int, y: Int, level: Int) -> String {
         var imageUrl = _imageUrlTemplate! // _ready already checked
         
         let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
@@ -690,7 +690,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         return imageUrl
     }
     
-    func getRectangleAttribution(level: Int, rectangle: Rectangle) -> [Credit] {
+    func getRectangleAttribution(_ level: Int, rectangle: Rectangle) -> [Credit] {
         // Bing levels start at 1, while ours start at 0.
         let level = level + 1
         

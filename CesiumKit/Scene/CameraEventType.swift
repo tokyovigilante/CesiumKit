@@ -19,7 +19,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    case LeftDrag = 0,
+    case leftDrag = 0,
     
     /**
     *  A right mouse button press followed by moving the mouse and releasing the button.
@@ -27,7 +27,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    RightDrag,
+    rightDrag,
     
     /**
     *  A middle mouse button press followed by moving the mouse and releasing the button.
@@ -35,7 +35,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    MiddleDrag,
+    middleDrag,
     
     /**
     * Scrolling the middle mouse button.
@@ -43,7 +43,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    Wheel,
+    wheel,
     
     /**
     * A possibly (multi)-finger drag on a touch surface
@@ -51,7 +51,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    Pan,
+    pan,
     
     /**
     * A two-finger touch on a touch surface.
@@ -59,7 +59,7 @@ enum CameraEventType: Int {
     * @type {Number}
     * @constant
     */
-    Pinch,
+    pinch,
     
-    COUNT
+    count
 }

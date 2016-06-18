@@ -35,5 +35,5 @@ public protocol TileDiscardPolicy {
     * @param {Image} image An image to test.
     * @returns {Boolean} True if the image should be discarded; otherwise, false.
     */
-    func shouldDiscardImage (image: CGImage) -> Bool
+    func shouldDiscardImage (_ image: CGImage) -> Bool
 }

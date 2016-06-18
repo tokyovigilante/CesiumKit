@@ -111,7 +111,7 @@ class Occluder {
     * var point = new Cesium.Cartesian3(0, 0, -3);
     * occluder.isPointVisible(point); //returns true
     */
-    func isPointVisible(occludee: Cartesian3) -> Bool {
+    func isPointVisible(_ occludee: Cartesian3) -> Bool {
         if horizonDistance < Double.infinity {
             var tempVec = occludee.subtract(occluderPosition)
             var temp = tempVec.magnitudeSquared - (occluderRadius * occluderRadius)
@@ -141,7 +141,7 @@ class Occluder {
     * var bigSphere = new Cesium.BoundingSphere(new Cesium.Cartesian3(0, 0, -3), 1);
     * occluder.isBoundingSphereVisible(bigSphere); //returns true
     */
-    func isBoundingSphereVisible(occludee: BoundingSphere) -> Bool {
+    func isBoundingSphereVisible(_ occludee: BoundingSphere) -> Bool {
         let occludeePosition = occludee.center
         let occludeeRadius = occludee.radius
         
@@ -198,7 +198,7 @@ class Occluder {
     * var occluder = new Cesium.Occluder(sphere1, cameraPosition);
     * occluder.getVisibility(sphere2); //returns Visibility.NONE
     */
-    func getVisibility(occludeeBS: BoundingSphere) -> Visibility {
+    func getVisibility(_ occludeeBS: BoundingSphere) -> Visibility {
     
         // If the occludee radius is larger than the occluders, this will return that
         // the entire ocludee is visible, even though that may not be the case, though this should
@@ -207,7 +207,7 @@ class Occluder {
         let occludeeRadius = occludeeBS.radius
         
         if (occludeeRadius > occluderRadius) {
-            return Visibility.Full
+            return Visibility.full
         }
         
         if (self.horizonDistance < Double.infinity) {
@@ -223,7 +223,7 @@ class Occluder {
                 tempVec = occludeePosition.subtract(cameraPosition)
                 let cameraToOccludeeDistSqrd = tempVec.magnitudeSquared
                 if (((temp * temp) + (occludeeRadius * occludeeRadius)) < cameraToOccludeeDistSqrd) {
-                    return Visibility.None
+                    return Visibility.none
                 }
                 
                 // Check to see whether the occluder is fully or partially visible
@@ -233,16 +233,16 @@ class Occluder {
                 if (temp > 0.0) {
                     // The occludee does not intersect the occluder.
                     temp = sqrt(temp) + horizonDistance
-                    return (cameraToOccludeeDistSqrd < ((temp * temp)) + (occludeeRadius * occludeeRadius)) ? Visibility.Full : Visibility.Partial
+                    return (cameraToOccludeeDistSqrd < ((temp * temp)) + (occludeeRadius * occludeeRadius)) ? Visibility.full : Visibility.partial
                 }
                 
                 //Check to see if the occluder is fully or partially visible when the occludee DOES
                 //intersect the occluder
                 tempVec = occludeePosition.subtract(horizonPlanePosition)
-                return (tempVec.dot(horizonPlaneNormal) > -occludeeRadius) ? Visibility.Partial : Visibility.Full
+                return (tempVec.dot(horizonPlaneNormal) > -occludeeRadius) ? Visibility.partial : Visibility.full
             }
         }
-        return Visibility.None
+        return Visibility.none
     };
 
     /**
@@ -271,7 +271,7 @@ class Occluder {
      * var occludeePosition = tileOccluderSphere.center;
      * var occludeePt = occluder.getOccludeePoint(occluderBoundingSphere, occludeePosition, positions);
      */
-    func computeOccludeePoint (occluderBoundingSphere: BoundingSphere, occludeePosition: Cartesian3, positions: [Cartesian3]) -> Cartesian3? {
+    func computeOccludeePoint (_ occluderBoundingSphere: BoundingSphere, occludeePosition: Cartesian3, positions: [Cartesian3]) -> Cartesian3? {
         assert(!positions.isEmpty, "positions must contain at least one element")
         
         let occluderPosition = occluderBoundingSphere.center
@@ -333,7 +333,7 @@ class Occluder {
 * @returns {Object} An object containing two attributes: <code>occludeePoint</code> and <code>valid</code>
 * which is a boolean value.
 */
-    func computeOccludeePointFromRectangle (rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func computeOccludeePointFromRectangle (_ rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
         
         let positions = rectangle.subsample(ellipsoid, surfaceHeight: 0.0)
         let bs = BoundingSphere(fromPoints: positions)
@@ -352,7 +352,7 @@ class Occluder {
         return nil
     }
 
-    private func anyRotationVector (occluderPosition occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double) -> Cartesian3 {
+    private func anyRotationVector (occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double) -> Cartesian3 {
         var tempVec0 = occluderPlaneNormal.absolute()
         var majorAxis = tempVec0.x > tempVec0.y ? 0 : 1
         if (majorAxis == 0 && tempVec0.z > tempVec0.x) || (majorAxis == 1 && tempVec0.z > tempVec0.y) {
@@ -382,7 +382,7 @@ class Occluder {
             .normalize()
     }
 
-    func rotationVector (occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, position: Cartesian3, anyRotationVector: Cartesian3) -> Cartesian3 {
+    func rotationVector (_ occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, position: Cartesian3, anyRotationVector: Cartesian3) -> Cartesian3 {
         //Determine the angle between the occluder plane normal and the position direction
         let positionDirection = position.subtract(occluderPosition).normalize()
         if occluderPlaneNormal.dot(positionDirection) < 0.99999998476912904932780850903444 {
@@ -398,7 +398,7 @@ class Occluder {
     }
 
 
-    private func horizonToPlaneNormalDotProduct (occluderBS occluderBS: BoundingSphere, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, anyRotationVector: Cartesian3, position: Cartesian3) -> Double? {
+    private func horizonToPlaneNormalDotProduct (occluderBS: BoundingSphere, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, anyRotationVector: Cartesian3, position: Cartesian3) -> Double? {
 
         let occluderPosition = occluderBS.center
         let occluderRadius = occluderBS.radius

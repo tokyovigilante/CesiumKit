@@ -33,9 +33,9 @@ public struct JulianDate {
      * Gets or sets the number of seconds into the current day.
      * @type {Number}
      */
-    public private (set) var secondsOfDay: Double = Double.NaN
+    public private (set) var secondsOfDay: Double = Double.nan
     
-    public init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .UTC) {
+    public init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .utc) {
 
         //If julianDayNumber is fractional, make it an integer and add the number of seconds the fraction represented.
         let wholeDays = julianDayNumber.wholeComponent
@@ -43,14 +43,14 @@ public struct JulianDate {
         
         setComponents(wholeDays: Int(wholeDays), secondsOfDay: secondsOfDay)
         
-        if timeStandard == .UTC {
+        if timeStandard == .utc {
             convertUtcToTai()
         }
     }
     
-    public init (fromNSDate date: NSDate) {
+    public init (fromNSDate date: Date) {
         let components = date.computeJulianDateComponents()
-        self.init(julianDayNumber: Double(components.dayNumber), secondsOfDay: components.secondsOfDay, timeStandard: .UTC)
+        self.init(julianDayNumber: Double(components.dayNumber), secondsOfDay: components.secondsOfDay, timeStandard: .utc)
     }
 
     /*
@@ -58,7 +58,7 @@ public struct JulianDate {
     var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var daysInLeapFeburary = 29;
     */
-    private func compareLeapSecondDates (leapSecond: LeapSecond, dateToFind: LeapSecond) -> Int {
+    private func compareLeapSecondDates (_ leapSecond: LeapSecond, dateToFind: LeapSecond) -> Int {
         return Int(leapSecond.julianDate.compare(dateToFind.julianDate))
     }
     
@@ -132,7 +132,7 @@ public struct JulianDate {
     return JulianDate.addSeconds(julianDate, -leapSeconds[--index].offset, result);
     }
     */
-    mutating func setComponents(wholeDays wholeDays: Int, secondsOfDay: Double) {
+    mutating func setComponents(wholeDays: Int, secondsOfDay: Double) {
         
         let extraDays = Int(trunc(secondsOfDay / TimeConstants.SecondsPerDay))
         
@@ -463,7 +463,7 @@ public struct JulianDate {
     * @returns {JulianDate} The modified result parameter or a new instance if none was provided.
     */
     static func now () -> JulianDate {
-        return JulianDate(fromNSDate: NSDate())
+        return JulianDate(fromNSDate: Date())
     }
     /*
     var toGregorianDateScratch = new JulianDate(0, 0, TimeStandard.TAI);
@@ -629,7 +629,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Number} A negative value if left is less than right, a positive value if left is greater than right, or zero if left and right are equal.
     */
-    func compare (other: JulianDate) -> Int {
+    func compare (_ other: JulianDate) -> Int {
         
         let julianDayNumberDifference = self.dayNumber - other.dayNumber
         if (julianDayNumberDifference != 0) {
@@ -694,7 +694,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Number} The difference, in seconds, when subtracting <code>right</code> from <code>left</code>.
     */
-    func secondsDifference (other: JulianDate) -> Double {
+    func secondsDifference (_ other: JulianDate) -> Double {
         let dayDifference = Double(self.dayNumber - other.dayNumber) * TimeConstants.SecondsPerDay
         return dayDifference + (self.secondsOfDay - other.secondsOfDay)
     }
@@ -749,8 +749,8 @@ public struct JulianDate {
     * @param {JulianDate} result An existing instance to use for the result.
     * @returns {JulianDate} The modified result parameter.
     */
-    func addSeconds (seconds: Double) -> JulianDate {
-        return JulianDate(julianDayNumber: Double(self.dayNumber), secondsOfDay: secondsOfDay + seconds, timeStandard: .TAI)
+    func addSeconds (_ seconds: Double) -> JulianDate {
+        return JulianDate(julianDayNumber: Double(self.dayNumber), secondsOfDay: secondsOfDay + seconds, timeStandard: .tai)
     }
     /*
     /**
@@ -811,7 +811,7 @@ public struct JulianDate {
     * @param {JulianDate} result An existing instance to use for the result.
     * @returns {JulianDate} The modified result parameter.
     */
-    func addDays (days: Double) -> JulianDate {
+    func addDays (_ days: Double) -> JulianDate {
         return JulianDate(julianDayNumber: Double(self.dayNumber) + days, secondsOfDay: self.secondsOfDay)
     }
     
@@ -822,7 +822,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is earlier than <code>right</code>, <code>false</code> otherwise.
     */
-    func lessThan (other: JulianDate) -> Bool {
+    func lessThan (_ other: JulianDate) -> Bool {
         return self.compare(other) < 0
     }
     
@@ -833,7 +833,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is earlier than or equal to <code>right</code>, <code>false</code> otherwise.
     */
-    func lessThanOrEquals (other: JulianDate) -> Bool {
+    func lessThanOrEquals (_ other: JulianDate) -> Bool {
         return self.compare(other) <= 0
     }
     
@@ -844,7 +844,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is later than <code>right</code>, <code>false</code> otherwise.
     */
-    func greaterThan (other: JulianDate) -> Bool {
+    func greaterThan (_ other: JulianDate) -> Bool {
         return self.compare(other) > 0
     }
     
@@ -855,7 +855,7 @@ public struct JulianDate {
     * @param {JulianDate} right The second instance.
     * @returns {Boolean} <code>true</code> if <code>left</code> is later than or equal to <code>right</code>, <code>false</code> otherwise.
     */
-    func greaterThanOrEquals (other: JulianDate) -> Bool {
+    func greaterThanOrEquals (_ other: JulianDate) -> Bool {
         return self.compare(other) >= 0
     }
     /*
@@ -898,33 +898,33 @@ public struct JulianDate {
     * @type {LeapSecond[]}
     */
     static private let _leapSeconds = [
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441317, secondsOfDay: 43210.0, timeStandard: .TAI), offset: 10), // January 1, 1972 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441499, secondsOfDay: 43211.0, timeStandard: .TAI), offset: 11), // July 1, 1972 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441683, secondsOfDay: 43212.0, timeStandard: .TAI), offset: 12), // January 1, 1973 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442048, secondsOfDay: 43213.0, timeStandard: .TAI), offset: 13), // January 1, 1974 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442413, secondsOfDay: 43214.0, timeStandard: .TAI), offset: 14), // January 1, 1975 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442778, secondsOfDay: 43215.0, timeStandard: .TAI), offset: 15), // January 1, 1976 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443144, secondsOfDay: 43216.0, timeStandard: .TAI), offset: 16), // January 1, 1977 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443509, secondsOfDay: 43217.0, timeStandard: .TAI), offset: 17), // January 1, 1978 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443874, secondsOfDay: 43218.0, timeStandard: .TAI), offset: 18), // January 1, 1979 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2444239, secondsOfDay: 43219.0, timeStandard: .TAI), offset: 19), // January 1, 1980 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2444786, secondsOfDay: 43220.0, timeStandard: .TAI), offset: 20), // July 1, 1981 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2445151, secondsOfDay: 43221.0, timeStandard: .TAI), offset: 21), // July 1, 1982 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2445516, secondsOfDay: 43222.0, timeStandard: .TAI), offset: 22), // July 1, 1983 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2446247, secondsOfDay: 43223.0, timeStandard: .TAI), offset: 23), // July 1, 1985 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2447161, secondsOfDay: 43224.0, timeStandard: .TAI), offset: 24), // January 1, 1988 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2447892, secondsOfDay: 43225.0, timeStandard: .TAI), offset: 25), // January 1, 1990 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2448257, secondsOfDay: 43226.0, timeStandard: .TAI), offset: 26), // January 1, 1991 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2448804, secondsOfDay: 43227.0, timeStandard: .TAI), offset: 27), // July 1, 1992 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2449169, secondsOfDay: 43228.0, timeStandard: .TAI), offset: 28), // July 1, 1993 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2449534, secondsOfDay: 43229.0, timeStandard: .TAI), offset: 29), // July 1, 1994 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2450083, secondsOfDay: 43230.0, timeStandard: .TAI), offset: 30), // January 1, 1996 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2450630, secondsOfDay: 43231.0, timeStandard: .TAI), offset: 31), // July 1, 1997 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2451179, secondsOfDay: 43232.0, timeStandard: .TAI), offset: 32), // January 1, 1999 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2453736, secondsOfDay: 43233.0, timeStandard: .TAI), offset: 33), // January 1, 2006 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2454832, secondsOfDay: 43234.0, timeStandard: .TAI), offset: 34), // January 1, 2009 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2456109, secondsOfDay: 43235.0, timeStandard: .TAI), offset: 35), // July 1, 2012 00:00:00 UTC
-        LeapSecond(julianDate: JulianDate(julianDayNumber: 2457204, secondsOfDay: 43236.0, timeStandard: .TAI), offset: 36)  // July 1, 2015 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441317, secondsOfDay: 43210.0, timeStandard: .tai), offset: 10), // January 1, 1972 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441499, secondsOfDay: 43211.0, timeStandard: .tai), offset: 11), // July 1, 1972 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2441683, secondsOfDay: 43212.0, timeStandard: .tai), offset: 12), // January 1, 1973 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442048, secondsOfDay: 43213.0, timeStandard: .tai), offset: 13), // January 1, 1974 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442413, secondsOfDay: 43214.0, timeStandard: .tai), offset: 14), // January 1, 1975 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2442778, secondsOfDay: 43215.0, timeStandard: .tai), offset: 15), // January 1, 1976 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443144, secondsOfDay: 43216.0, timeStandard: .tai), offset: 16), // January 1, 1977 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443509, secondsOfDay: 43217.0, timeStandard: .tai), offset: 17), // January 1, 1978 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2443874, secondsOfDay: 43218.0, timeStandard: .tai), offset: 18), // January 1, 1979 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2444239, secondsOfDay: 43219.0, timeStandard: .tai), offset: 19), // January 1, 1980 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2444786, secondsOfDay: 43220.0, timeStandard: .tai), offset: 20), // July 1, 1981 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2445151, secondsOfDay: 43221.0, timeStandard: .tai), offset: 21), // July 1, 1982 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2445516, secondsOfDay: 43222.0, timeStandard: .tai), offset: 22), // July 1, 1983 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2446247, secondsOfDay: 43223.0, timeStandard: .tai), offset: 23), // July 1, 1985 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2447161, secondsOfDay: 43224.0, timeStandard: .tai), offset: 24), // January 1, 1988 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2447892, secondsOfDay: 43225.0, timeStandard: .tai), offset: 25), // January 1, 1990 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2448257, secondsOfDay: 43226.0, timeStandard: .tai), offset: 26), // January 1, 1991 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2448804, secondsOfDay: 43227.0, timeStandard: .tai), offset: 27), // July 1, 1992 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2449169, secondsOfDay: 43228.0, timeStandard: .tai), offset: 28), // July 1, 1993 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2449534, secondsOfDay: 43229.0, timeStandard: .tai), offset: 29), // July 1, 1994 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2450083, secondsOfDay: 43230.0, timeStandard: .tai), offset: 30), // January 1, 1996 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2450630, secondsOfDay: 43231.0, timeStandard: .tai), offset: 31), // July 1, 1997 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2451179, secondsOfDay: 43232.0, timeStandard: .tai), offset: 32), // January 1, 1999 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2453736, secondsOfDay: 43233.0, timeStandard: .tai), offset: 33), // January 1, 2006 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2454832, secondsOfDay: 43234.0, timeStandard: .tai), offset: 34), // January 1, 2009 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2456109, secondsOfDay: 43235.0, timeStandard: .tai), offset: 35), // July 1, 2012 00:00:00 UTC
+        LeapSecond(julianDate: JulianDate(julianDayNumber: 2457204, secondsOfDay: 43236.0, timeStandard: .tai), offset: 36)  // July 1, 2015 00:00:00 UTC
     ]
 
 }

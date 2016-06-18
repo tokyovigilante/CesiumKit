@@ -106,7 +106,7 @@ struct ClearCommand {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil)
     }
 
-    func execute(context: Context, passState: PassState?) {
+    func execute(_ context: Context, passState: PassState?) {
         context.clear(self, passState: passState)
     }
     

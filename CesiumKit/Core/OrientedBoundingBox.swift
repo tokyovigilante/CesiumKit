@@ -279,7 +279,7 @@ struct OrientedBoundingBox: BoundingVolume {
     *                      on the opposite side, and {@link Intersect.INTERSECTING} if the box
     *                      intersects the plane.
     */
-    func intersectPlane(plane: Plane) -> Intersect {
+    func intersectPlane(_ plane: Plane) -> Intersect {
         
         let normal = plane.normal
         let normalX = normal.x, normalY = normal.y, normalZ = normal.z
@@ -293,12 +293,12 @@ struct OrientedBoundingBox: BoundingVolume {
         
         if distanceToPlane <= -radEffective {
             // The entire box is on the negative side of the plane normal
-            return .Outside
+            return .outside
         } else if distanceToPlane >= radEffective {
             // The entire box is on the positive side of the plane normal
-            return .Inside
+            return .inside
         }
-        return .Intersecting
+        return .intersecting
     }
     /*
     var scratchCartesianU = new Cartesian3();
@@ -319,7 +319,7 @@ struct OrientedBoundingBox: BoundingVolume {
     *     return Cesium.OrientedBoundingBox.distanceSquaredTo(b, camera.positionWC) - Cesium.OrientedBoundingBox.distanceSquaredTo(a, camera.positionWC);
     * });
     */
-    func distanceSquaredTo (cartesian: Cartesian3) -> Double {
+    func distanceSquaredTo (_ cartesian: Cartesian3) -> Double {
         assertionFailure("not implemented")
         let distanceSquared = 0.0
     // See Geometric Tools for Computer Graphics 10.4.2
@@ -399,7 +399,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @param {Interval} [result] A Interval to store the nearest and farthest distances.
     * @returns {Interval} The nearest and farthest distances on the bounding box from position in direction.
     */
-    func computePlaneDistances (position: Cartesian3, direction: Cartesian3) -> Interval {
+    func computePlaneDistances (_ position: Cartesian3, direction: Cartesian3) -> Interval {
     
     let minDist = Double.infinity
     let maxDist = Double.infinity * -1.0
@@ -509,7 +509,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @param {Occluder} occluder The occluder.
     * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
     */
-    func isOccluded (occluder: Occluder) -> Bool {
+    func isOccluded (_ occluder: Occluder) -> Bool {
 
         let uHalf = halfAxes.column(0).magnitude
         let vHalf = halfAxes.column(1).magnitude

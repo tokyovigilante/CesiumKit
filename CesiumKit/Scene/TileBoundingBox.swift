@@ -148,7 +148,7 @@ struct TileBoundingBox {
      *
      * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
      */
-    func distanceToCamera (frameState: FrameState) -> Double {
+    func distanceToCamera (_ frameState: FrameState) -> Double {
         let camera = frameState.camera!
         let cameraCartesianPosition = camera.positionWC
         let cameraCartographicPosition = camera.positionCartographic
@@ -162,7 +162,7 @@ struct TileBoundingBox {
             var eastNormal = self.eastNormal
             var northNormal = self.northNormal
             
-            if frameState.mode != .Scene3D {
+            if frameState.mode != .scene3D {
                 southwestCornerCartesian = frameState.mapProjection.project(rectangle.southwest)
                 southwestCornerCartesian.z = southwestCornerCartesian.y
                 southwestCornerCartesian.y = southwestCornerCartesian.x
@@ -199,13 +199,13 @@ struct TileBoundingBox {
         }
         
         let cameraHeight: Double
-        if frameState.mode == SceneMode.Scene3D {
+        if frameState.mode == SceneMode.scene3D {
             cameraHeight = cameraCartographicPosition.height
         } else {
             cameraHeight = cameraCartesianPosition.x
         }
         
-        let maximumHeight = frameState.mode == SceneMode.Scene3D ? self.maximumHeight : 0.0
+        let maximumHeight = frameState.mode == SceneMode.scene3D ? self.maximumHeight : 0.0
         let distanceFromTop = cameraHeight - maximumHeight
         if distanceFromTop > 0.0 {
             result += distanceFromTop * distanceFromTop

@@ -21,7 +21,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    case Never,
+    case never,
     
     /**
     * 0x201.  The depth test passes if the incoming depth is less than the stored depth.
@@ -29,7 +29,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    Less,
+    less,
     
     /**
     * 0x202.  The depth test passes if the incoming depth is equal to the stored depth.
@@ -37,7 +37,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    Equal,
+    equal,
     
     /**
     * 0x203.  The depth test passes if the incoming depth is less than or equal to the stored depth.
@@ -45,7 +45,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    LessOrEqual, // LEQUAL
+    lessOrEqual, // LEQUAL
     
     /**
     * 0x204.  The depth test passes if the incoming depth is greater than the stored depth.
@@ -53,7 +53,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    Greater,
+    greater,
     
     /**
     * 0x0205.  The depth test passes if the incoming depth is not equal to the stored depth.
@@ -61,7 +61,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    NotEqual, // NOTEQUAL
+    notEqual, // NOTEQUAL
     
     /**
     * 0x206.  The depth test passes if the incoming depth is greater than or equal to the stored depth.
@@ -69,7 +69,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    GreaterOrEqual, // GEQUAL
+    greaterOrEqual, // GEQUAL
     
     /**
     * 0x207.  The depth test always passes.
@@ -77,7 +77,7 @@ enum DepthFunction: UInt {
     * @type {Number}
     * @constant
     */
-    Always
+    always
     
     func toMetal() -> MTLCompareFunction {
         return MTLCompareFunction(rawValue: self.rawValue)!

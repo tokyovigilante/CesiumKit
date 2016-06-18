@@ -21,20 +21,20 @@ enum HeightReference {
     * @type {Number}
     * @constant
     */
-    case None
+    case none
     
     /**
     * The position is clamped to the terrain.
     * @type {Number}
     * @constant
     */
-    case ClampToGround
+    case clampToGround
     
     /**
     * The position height is the height above the terrain.
     * @type {Number}
     * @constant
     */
-    case RelativeToGround
+    case relativeToGround
     
 }

@@ -53,7 +53,7 @@ struct Ray {
     * var intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
     * var point = Ray.getPoint(ray, intersection.start);
     */
-    func getPoint(t: Double) -> Cartesian3 {
+    func getPoint(_ t: Double) -> Cartesian3 {
         return direction.multiplyByScalar(t).add(origin)
     }
     

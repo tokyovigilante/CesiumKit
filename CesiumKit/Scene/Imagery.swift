@@ -32,7 +32,7 @@ class Imagery {
     
     var imageUrl: String? = nil
     
-    var state: ImageryState = .Unloaded
+    var state: ImageryState = .unloaded
     
     var texture: Texture? = nil
     
@@ -64,10 +64,10 @@ class Imagery {
         }
     }
 
-    class func createPlaceholder(imageryLayer: ImageryLayer) -> Imagery {
+    class func createPlaceholder(_ imageryLayer: ImageryLayer) -> Imagery {
         let result = Imagery(imageryLayer: imageryLayer, level: 0, x: 0, y: 0)
         result.addReference()
-        result.state = .PlaceHolder
+        result.state = .placeHolder
         return result
     }
     
@@ -89,21 +89,21 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (inout frameState frameState: FrameState) {
-        if (state == .Unloaded) {
-            state = .Transitioning
+    func processStateMachine (frameState: inout FrameState) {
+        if (state == .unloaded) {
+            state = .transitioning
             imageryLayer.requestImagery(self)
         }
-        if (state == .Received) {
-            state = .Transitioning
+        if (state == .received) {
+            state = .transitioning
             imageryLayer.createTexture(frameState: frameState, imagery: self)
         }
-        if (state == .TextureLoaded) {
-            state = .Transitioning
+        if (state == .textureLoaded) {
+            state = .transitioning
             imageryLayer.reprojectTexture(frameState: &frameState, imagery: self)
         }
-        if (state == .Reprojected) {
-            state = .Transitioning
+        if (state == .reprojected) {
+            state = .transitioning
             imageryLayer.generateMipmaps(frameState: &frameState, imagery: self)
         }
     }

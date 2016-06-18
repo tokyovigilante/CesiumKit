@@ -186,7 +186,7 @@ public struct Math {
     * @param {Number} value The value to return the sign of.
     * @returns {Number} The sign of value.
     */
-    static func sign (value: Double) -> Int {
+    static func sign (_ value: Double) -> Int {
         if value > 0.0 {
             return 1
         }
@@ -203,7 +203,7 @@ public struct Math {
      * @param {Number} value The value to return the sign of.
      * @returns {Number} The sign of value.
      */
-    static func signNotZero (value: Double) -> Int {
+    static func signNotZero (_ value: Double) -> Int {
         return value < 0.0 ? -1 : 1
     }
     
@@ -214,7 +214,7 @@ public struct Math {
      *
      * @see CesiumMath.fromSNorm
      */
-    static func toSNorm (value: Double) -> UInt8 {
+    static func toSNorm (_ value: Double) -> UInt8 {
         return UInt8(round((Math.clamp(value, min: -1.0, max: 1.0) * 0.5 + 0.5) * 255.0))
     }
     
@@ -225,7 +225,7 @@ public struct Math {
      *
      * @see CesiumMath.toSNorm
      */
-    static func fromSNorm (value: UInt8) -> Double {
+    static func fromSNorm (_ value: UInt8) -> Double {
         return Math.clamp(Double(value), min: 0.0, max: 255.0) / 255.0 * 2.0 - 1.0
     }
 
@@ -296,7 +296,7 @@ public struct Math {
     * @example
     * var n = Cesium.Math.lerp(0.0, 2.0, 0.5); // returns 1.0
     */
-    static public func lerp (p p: Double, q: Double, time: Double) -> Double {
+    static public func lerp (p: Double, q: Double, time: Double) -> Double {
         return (1.0 - time) * p + time * q
     }
     /*
@@ -404,7 +404,7 @@ public struct Math {
     * @param {Number} degrees The angle to convert in degrees.
     * @returns {Number} The corresponding angle in radians.
     */
-    public static func toRadians(degrees: Double) -> Double {
+    public static func toRadians(_ degrees: Double) -> Double {
         return degrees * RadiansPerDegree
     }
 
@@ -413,7 +413,7 @@ public struct Math {
     * @param {Number} radians The angle to convert in radians.
     * @returns {Number} The corresponding angle in degrees.
     */
-    public static func toDegrees(radians: Double) -> Double {
+    public static func toDegrees(_ radians: Double) -> Double {
         return radians * DegreesPerRadian
     }
 /*
@@ -453,7 +453,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
     * @param {Number} angle in radians
     * @returns {Number} The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
     */
-    static func negativePiToPi (x: Double) -> Double {
+    static func negativePiToPi (_ x: Double) -> Double {
         return Math.zeroToTwoPi(x + M_PI) - M_PI
     }
 
@@ -463,7 +463,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
     * @param {Number} angle in radians
     * @returns {Number} The angle in the range [0, <code>CesiumMath.TWO_PI</code>].
     */
-    static func zeroToTwoPi (x: Double) -> Double {
+    static func zeroToTwoPi (_ x: Double) -> Double {
         let mod = Math.mod(x, Math.TwoPi)
         if (abs(mod) < Math.Epsilon14 && abs(x) > Math.Epsilon14) {
             return Math.TwoPi
@@ -478,7 +478,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
     * @param {Number} n The divisor.
     * @returns {Number} The remainder.
     */
-    static func mod (m: Double, _ n: Double) -> Double {
+    static func mod (_ m: Double, _ n: Double) -> Double {
         return fmod(fmod(m, n) + n, n)
     }
 
@@ -500,7 +500,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
 * var c = Cesium.Math.equalsEpsilon(3699175.1634344, 3699175.2, Cesium.Math.EPSILON7); // true
 * var d = Cesium.Math.equalsEpsilon(3699175.1634344, 3699175.2, Cesium.Math.EPSILON9); // false
 */
-    static func equalsEpsilon(left: Double, _ right: Double, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
+    static func equalsEpsilon(_ left: Double, _ right: Double, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         let epsilon = absoluteEpsilon ?? relativeEpsilon
         let absDiff = abs(left - right)
         return absDiff <= epsilon || absDiff <= relativeEpsilon * max(abs(left), abs(right))
@@ -553,7 +553,7 @@ CesiumMath.factorial = function(n) {
 * var n = Cesium.Math.incrementWrap(5, 10, 0); // returns 6
 * var n = Cesium.Math.incrementWrap(10, 10, 0); // returns 0
 */
-    static func incrementWrap (n: Int, maximumValue: Int, minimumValue: Int) -> Int {
+    static func incrementWrap (_ n: Int, maximumValue: Int, minimumValue: Int) -> Int {
         
         var result = n
         assert(maximumValue > minimumValue, "maximumValue must be greater than minimumValue")
@@ -576,7 +576,7 @@ CesiumMath.factorial = function(n) {
 * var t = Cesium.Math.isPowerOfTwo(16); // true
 * var f = Cesium.Math.isPowerOfTwo(20); // false
 */
-    static func isPowerOfTwo(n: Int) -> Bool {
+    static func isPowerOfTwo(_ n: Int) -> Bool {
         return n > 0 && n & (n - 1) == 0
 }
 /*
@@ -619,7 +619,7 @@ CesiumMath.nextPowerOfTwo = function(n) {
     * @param {Number} max The maximum value.
     * @returns {Number} The value clamped so that min <= value <= max.
     */
-    static public func clamp (value: Double, min: Double, max: Double) -> Double {
+    static public func clamp (_ value: Double, min: Double, max: Double) -> Double {
         return value < min ? min : value > max ? max : value
     }
 /*
@@ -661,7 +661,7 @@ CesiumMath.nextRandomNumber = function() {
     * @param {Number} value The value for which to compute acos.
     * @returns {Number} The acos of the value if the value is in the range [-1.0, 1.0], or the acos of -1.0 or 1.0,
     */
-    static func acosClamped(value: Double) -> Double {
+    static func acosClamped(_ value: Double) -> Double {
         return acos(clamp(value, min: -1.0, max: 1.0))
     }
 
@@ -672,7 +672,7 @@ CesiumMath.nextRandomNumber = function() {
     * @param {Number} value The value for which to compute asin.
     * @returns {Number} The asin of the value if the value is in the range [-1.0, 1.0], or the asin of -1.0 or 1.0,
     */
-    static func asinClamped (value: Double) -> Double {
+    static func asinClamped (_ value: Double) -> Double {
         return asin(clamp(value, min: -1.0, max: 1.0))
     }
     
@@ -703,14 +703,14 @@ return 2.0 * radius * Math.sin(angle * 0.5);
      * @param {Number} base The base.
      * @returns {Number} The result.
      */
-    static func logBase (number: Double, base: Double) -> Double {
+    static func logBase (_ number: Double, base: Double) -> Double {
         return log(number) / log(base)
     }
     
     /**
      * @private
      */
-    static func fog (distanceToCamera: Double, density: Double) -> Double {
+    static func fog (_ distanceToCamera: Double, density: Double) -> Double {
         let scalar = distanceToCamera * density
         return 1.0 - exp(-(scalar * scalar))
     }
@@ -720,34 +720,34 @@ return 2.0 * radius * Math.sin(angle * 0.5);
 public extension Double {
     
     var wholeComponent: Double {
-        return self - (self % 1.0)
+        return self - (self.truncatingRemainder(dividingBy: 1.0))
     }
     
     var fractionalComponent: Double {
-        return self % 1.0
+        return self.truncatingRemainder(dividingBy: 1.0)
     }
     
     // Given a value to round and a factor to round to,
     // round the value to the nearest multiple of that factor.
-    func roundTo(nearest: Double) -> Double {
+    func roundTo(_ nearest: Double) -> Double {
         return round(self / nearest) * nearest
     }
     
     // Given a value to round and a factor to round to,
     // round the value DOWN to the largest previous multiple
     // of that factor.
-    func roundDown(nearest: Double) -> Double {
+    func roundDown(_ nearest: Double) -> Double {
         return floor(self / nearest) * nearest
     }
     
     // Given a value to round and a factor to round to,
     // round the value DOWN to the largest previous multiple
     // of that factor.
-    func roundUp(nearest: Double) -> Double {
+    func roundUp(_ nearest: Double) -> Double {
         return ceil(self / nearest) * nearest
     }
     
-    func roundToPlaces(decimalPlaces: Int) -> Double {
+    func roundToPlaces(_ decimalPlaces: Int) -> Double {
         let divisor = pow(10.0, Double(decimalPlaces))
         return round(self * divisor) / divisor
     }

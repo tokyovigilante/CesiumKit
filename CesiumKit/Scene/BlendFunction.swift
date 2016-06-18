@@ -13,21 +13,21 @@ import Metal
 */
 
 enum BlendFunction: UInt {
-    case Zero
-    case One
-    case SourceColor
-    case OneMinusSourceColor
-    case SourceAlpha
-    case OneMinusSourceAlpha
-    case DestinationColor
-    case OneMinusDestinationColor
-    case DestinationAlpha
-    case OneMinusDestinationAlpha
-    case SourceAlphaSaturated
-    case BlendColor
-    case OneMinusBlendColor
-    case BlendAlpha
-    case OneMinusBlendAlpha
+    case zero
+    case one
+    case sourceColor
+    case oneMinusSourceColor
+    case sourceAlpha
+    case oneMinusSourceAlpha
+    case destinationColor
+    case oneMinusDestinationColor
+    case destinationAlpha
+    case oneMinusDestinationAlpha
+    case sourceAlphaSaturated
+    case blendColor
+    case oneMinusBlendColor
+    case blendAlpha
+    case oneMinusBlendAlpha
     
     func toMetal() -> MTLBlendFactor {
         return MTLBlendFactor(rawValue: self.rawValue)!

@@ -137,7 +137,7 @@ public class ScreenSpaceCameraController {
     * @type {CameraEventType|Array|undefined}
     * @default {@link CameraEventType.LEFT_DRAG}
     */
-    var translateEventTypes = CameraEventType.LeftDrag
+    var translateEventTypes = CameraEventType.leftDrag
     
     /**
     * The input that allows the user to zoom in/out.
@@ -150,9 +150,9 @@ public class ScreenSpaceCameraController {
     * @default [{@link CameraEventType.RIGHT_DRAG}, {@link CameraEventType.WHEEL}, {@link CameraEventType.PINCH}]
     */
     var zoomEventTypes: [CameraEvent] = [
-        CameraEvent(type: .RightDrag, modifier: nil),
-        CameraEvent(type: .Wheel, modifier: nil),
-        CameraEvent(type: .Pinch, modifier: nil)]
+        CameraEvent(type: .rightDrag, modifier: nil),
+        CameraEvent(type: .wheel, modifier: nil),
+        CameraEvent(type: .pinch, modifier: nil)]
     
     /**
     * The input that allows the user to rotate around the globe or another object. This only applies in 3D and Columbus view modes.
@@ -164,7 +164,7 @@ public class ScreenSpaceCameraController {
     * @type {CameraEventType|Array|undefined}
     * @default {@link CameraEventType.LEFT_DRAG}
     */
-    var rotateEventTypes: [CameraEvent] = [CameraEvent(type: .LeftDrag, modifier: nil)]
+    var rotateEventTypes: [CameraEvent] = [CameraEvent(type: .leftDrag, modifier: nil)]
     
     /**
     * The input that allows the user to tilt in 3D and Columbus view or twist in 2D.
@@ -184,10 +184,10 @@ public class ScreenSpaceCameraController {
     * }]
     */
     var tiltEventTypes: [CameraEvent] = [
-        CameraEvent(type: .MiddleDrag, modifier: nil),
-        CameraEvent(type: .Pinch, modifier: nil),
-        CameraEvent(type: .LeftDrag, modifier: .Ctrl),
-        CameraEvent(type: .RightDrag, modifier: .Ctrl)
+        CameraEvent(type: .middleDrag, modifier: nil),
+        CameraEvent(type: .pinch, modifier: nil),
+        CameraEvent(type: .leftDrag, modifier: .ctrl),
+        CameraEvent(type: .rightDrag, modifier: .ctrl)
     ]
     /**
     * The input that allows the user to change the direction the camera is viewing. This only applies in 3D and Columbus view modes.
@@ -200,7 +200,7 @@ public class ScreenSpaceCameraController {
     * @default { eventType : {@link CameraEventType.LEFT_DRAG}, modifier : {@link KeyboardEventModifier.SHIFT} }
     */
     var lookEventTypes: [CameraEvent] = [
-        CameraEvent(type: .LeftDrag, modifier: .Shift)
+        CameraEvent(type: .leftDrag, modifier: .shift)
     ]
     
     /**
@@ -291,7 +291,7 @@ public class ScreenSpaceCameraController {
         _aggregator = CameraEventAggregator(/*layer: _scene.context.layer*/)
     }
     
-    func decay(time: Double, coefficient: Double) -> Double {
+    func decay(_ time: Double, coefficient: Double) -> Double {
         if (time < 0) {
             return 0.0
         }
@@ -300,7 +300,7 @@ public class ScreenSpaceCameraController {
         return exp(-tau * time)
     }
     
-    func sameMousePosition(movement: StartEndPosition) -> Bool {
+    func sameMousePosition(_ movement: StartEndPosition) -> Bool {
         return movement.startPosition.equalsEpsilon(movement.endPosition, relativeEpsilon: Math.Epsilon14)
     }
     
@@ -310,7 +310,7 @@ public class ScreenSpaceCameraController {
     // hardware. Should be investigated further.
     var inertiaMaxClickTimeThreshold = 0.4
     
-    func maintainInertia(type type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
+    func maintainInertia(type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
         
         var state = _intertiaMovementStates[lastMovementName]
         if state == nil {
@@ -324,7 +324,7 @@ public class ScreenSpaceCameraController {
         
         if let ts = ts, tr = tr {
             let threshold = tr.timeIntervalSinceReferenceDate - ts.timeIntervalSinceReferenceDate
-            let now = NSDate()
+            let now = Date()
             let fromNow = now.timeIntervalSinceReferenceDate - tr.timeIntervalSinceReferenceDate
             
             if threshold < inertiaMaxClickTimeThreshold {
@@ -352,7 +352,7 @@ public class ScreenSpaceCameraController {
                 
                 // If value from the decreasing exponential function is close to zero,
                 // the end coordinates may be NaN.
-                if (movementState.endPosition.x == Double.NaN || movementState.endPosition.y == Double.NaN) || sameMousePosition(movementState) {
+                if (movementState.endPosition.x == Double.nan || movementState.endPosition.y == Double.nan) || sameMousePosition(movementState) {
                     movementState.active = false
                     return
                 }
@@ -378,7 +378,7 @@ public class ScreenSpaceCameraController {
         
     }
         
-    func reactToInput(enabled: Bool, eventTypes: [CameraEvent], action: (startPosition: Cartesian2, movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
+    func reactToInput(_ enabled: Bool, eventTypes: [CameraEvent], action: (startPosition: Cartesian2, movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
 
         var movement: MouseMovement? = nil
         
@@ -412,7 +412,7 @@ public class ScreenSpaceCameraController {
     var scratchZoomAxis = new Cartesian3();
     var scratchCameraPositionNormal = new Cartesian3();*/
     
-    func handleZoom(startPosition: Cartesian2, movement: MouseMovement, zoomFactor: Double, distanceMeasure: Double, unitPositionDotDirection: Double? = nil) {
+    func handleZoom(_ startPosition: Cartesian2, movement: MouseMovement, zoomFactor: Double, distanceMeasure: Double, unitPositionDotDirection: Double? = nil) {
         var percentage = 1.0
         if let unitPositionDotDirection = unitPositionDotDirection {
             percentage = Math.clamp(abs(unitPositionDotDirection), min: 0.25, max: 1.0)
@@ -448,7 +448,7 @@ public class ScreenSpaceCameraController {
         
         let pickedPosition: Cartesian3?
         if _globe != nil {
-            pickedPosition = mode != .Scene2D ? pickGlobe(startPosition) : camera.getPickRay(startPosition).origin
+            pickedPosition = mode != .scene2D ? pickGlobe(startPosition) : camera.getPickRay(startPosition).origin
         } else {
             pickedPosition = nil
         }
@@ -470,10 +470,10 @@ public class ScreenSpaceCameraController {
             rotatingZoom = _rotatingZoom == false
         }
         
-        var zoomOnVector = mode == .ColumbusView
+        var zoomOnVector = mode == .columbusView
         
         if !sameStartPosition || rotatingZoom {
-            if mode == SceneMode.Scene2D {
+            if mode == SceneMode.scene2D {
                 let worldPosition = _zoomWorldPosition
                 let endPosition = camera.position
                 // FIXME: Object
@@ -489,7 +489,7 @@ public class ScreenSpaceCameraController {
                         object._zoomWorldPosition = Cartesian3.clone(pickedPosition, object._zoomWorldPosition);
                     }*/
                 }
-            } else if mode == .Scene3D {
+            } else if mode == .scene3D {
                 let cameraPositionNormal = camera.position.normalize()
                 if camera.positionCartographic.height < 3000.0 && abs(camera.direction.dot(cameraPositionNormal)) < 0.6 {
                     zoomOnVector = true
@@ -523,14 +523,14 @@ public class ScreenSpaceCameraController {
 
             let zoomMouseStart = SceneTransforms.wgs84ToWindowCoordinates(_scene, position: _zoomWorldPosition)
             let ray: Ray
-            if mode != .ColumbusView && startPosition == _zoomMouseStart && zoomMouseStart != nil {
+            if mode != .columbusView && startPosition == _zoomMouseStart && zoomMouseStart != nil {
                 ray = camera.getPickRay(zoomMouseStart!)
             } else {
                 ray = camera.getPickRay(startPosition)
             }
             
             var rayDirection = ray.direction
-            if mode == .ColumbusView {
+            if mode == .columbusView {
                 rayDirection = Cartesian3(x: rayDirection.y, y: rayDirection.z, z: rayDirection.x)
             }
             
@@ -585,7 +585,7 @@ public class ScreenSpaceCameraController {
     tweens.update();*/
     }
 
-    func pickGlobe(mousePosition: Cartesian2) -> Cartesian3? {
+    func pickGlobe(_ mousePosition: Cartesian2) -> Cartesian3? {
 
         let camera = _scene.camera
         
@@ -1024,7 +1024,7 @@ public class ScreenSpaceCameraController {
     var scratchStrafeIntersection = new Cartesian3();
     var scratchStrafeDirection = new Cartesian3();
     */
-    func strafe (startPosition: Cartesian2, movement: MouseMovement) {
+    func strafe (_ startPosition: Cartesian2, movement: MouseMovement) {
         let camera = _scene.camera
         
         guard let mouseStartPosition = pickGlobe(movement.startPosition) else {
@@ -1035,7 +1035,7 @@ public class ScreenSpaceCameraController {
         let ray = camera.getPickRay(mousePosition)
         
         var direction = camera.direction
-        if _scene.mode == .ColumbusView {
+        if _scene.mode == .columbusView {
             direction = Cartesian3(x: direction.z, y: direction.x, z: direction.y)
         }
         
@@ -1045,13 +1045,13 @@ public class ScreenSpaceCameraController {
         }
         
         direction = mouseStartPosition.subtract(intersection)
-        if _scene.mode == SceneMode.ColumbusView {
+        if _scene.mode == SceneMode.columbusView {
             direction = Cartesian3(x: direction.y, y: direction.z, z: direction.x)
         }
         camera.position = camera.position.add(direction)
     }
 
-    func spin3D(startPosition: Cartesian2, movement: MouseMovement) {
+    func spin3D(_ startPosition: Cartesian2, movement: MouseMovement) {
         let camera = _scene.camera
         
         if camera.transform != Matrix4.identity {
@@ -1131,7 +1131,7 @@ public class ScreenSpaceCameraController {
         _rotateMousePosition = startPosition
     }
     
-    func rotate3D(startPosition: Cartesian2, movement: MouseMovement, constrainedAxis: Cartesian3? = nil, rotateOnlyVertical: Bool = false, rotateOnlyHorizontal: Bool = false) {
+    func rotate3D(_ startPosition: Cartesian2, movement: MouseMovement, constrainedAxis: Cartesian3? = nil, rotateOnlyVertical: Bool = false, rotateOnlyHorizontal: Bool = false) {
     
         let camera = _scene.camera
     
@@ -1169,7 +1169,7 @@ public class ScreenSpaceCameraController {
         camera.constrainedAxis = oldAxis
     }
 
-    func pan3D(startPosition: Cartesian2, movement: MouseMovement, ellipsoid: Ellipsoid) {
+    func pan3D(_ startPosition: Cartesian2, movement: MouseMovement, ellipsoid: Ellipsoid) {
         
         let camera = _scene.camera
         
@@ -1256,7 +1256,7 @@ public class ScreenSpaceCameraController {
         }
     }
     
-    func zoom3D(startPosition: Cartesian2, movement: MouseMovement) {
+    func zoom3D(_ startPosition: Cartesian2, movement: MouseMovement) {
         
         let camera = _scene.camera
         
@@ -1294,7 +1294,7 @@ public class ScreenSpaceCameraController {
     var tilt3DCart = new Cartographic();
     var tilt3DLookUp = new Cartesian3();
     */
-    func tilt3D(startPosition: Cartesian2, movement: MouseMovement) {
+    func tilt3D(_ startPosition: Cartesian2, movement: MouseMovement) {
 
         let camera = _scene.camera
     
@@ -1329,7 +1329,7 @@ public class ScreenSpaceCameraController {
         }
     }
     
-    func tilt3DOnEllipsoid(startPosition: Cartesian2, movement: MouseMovement) {
+    func tilt3DOnEllipsoid(_ startPosition: Cartesian2, movement: MouseMovement) {
         
         /*let camera = _scene.camera
         let minHeight = minimumZoomDistance * 0.25
@@ -1383,7 +1383,7 @@ public class ScreenSpaceCameraController {
         controller._rotateRateRangeAdjustment = radius;*/
     }
     
-    func tilt3DOnTerrain(startPosition: Cartesian2, movement: MouseMovement) {
+    func tilt3DOnTerrain(_ startPosition: Cartesian2, movement: MouseMovement) {
         /*var ellipsoid = controller._ellipsoid;
         var scene = controller._scene;
         var camera = scene.camera;
@@ -1532,7 +1532,7 @@ public class ScreenSpaceCameraController {
     var look3DNegativeRot = new Cartesian3();
     var look3DTan = new Cartesian3();
     */
-    func look3D(startPosition: Cartesian2, movement: MouseMovement, rotationAxis: Cartesian3) {
+    func look3D(_ startPosition: Cartesian2, movement: MouseMovement, rotationAxis: Cartesian3) {
     /*var scene = controller._scene;
     var camera = scene.camera;
     
@@ -1618,7 +1618,7 @@ public class ScreenSpaceCameraController {
         
         let mode = _scene.mode
         
-        if _globe == nil || mode == .Scene2D || mode == .Morphing {
+        if _globe == nil || mode == .scene2D || mode == .morphing {
             return
         }
         
@@ -1635,8 +1635,8 @@ public class ScreenSpaceCameraController {
         }
         
         var cartographic: Cartographic
-        if mode == SceneMode.Scene3D {
-            cartographic = ellipsoid.cartesianToCartographic(camera.position)!
+        if mode == SceneMode.scene3D {
+            cartographic = ellipsoid?.cartesianToCartographic(camera.position)!
         } else {
             cartographic = projection.unproject(camera.position)
         }
@@ -1648,8 +1648,8 @@ public class ScreenSpaceCameraController {
                 height += minimumZoomDistance
                 if cartographic.height < height {
                     cartographic.height = height
-                    if mode == .Scene3D {
-                        camera.position = ellipsoid.cartographicToCartesian(cartographic)
+                    if mode == .scene3D {
+                        camera.position = ellipsoid!.cartographicToCartesian(cartographic)
                     } else {
                         camera.position = projection.project(cartographic)
                     }
@@ -1689,12 +1689,12 @@ public class ScreenSpaceCameraController {
         _rotateRateRangeAdjustment = radius
         
         let mode = _scene.mode
-        if mode == .Scene2D {
+        if mode == .scene2D {
             update2D()
-        } else if mode == .ColumbusView {
+        } else if mode == .columbusView {
             _horizontalRotationAxis = Cartesian3.unitZ
             updateCV()
-        } else if mode == .Scene3D {
+        } else if mode == .scene3D {
             _horizontalRotationAxis = nil
             update3D()
         }

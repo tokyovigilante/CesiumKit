@@ -110,7 +110,7 @@ class TileUniformMap: NativeUniformMap {
     
     var dayTextureTranslationAndScale: [float4] {
         get {
-            var floatArray = [float4](count: MaximumMetalTextureCount, repeatedValue: float4())
+            var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
             memcpy(&floatArray, &_uniformStruct.dayTextureTranslationAndScale, sizeof(float4) * MaximumMetalTextureCount)
             return floatArray
         }
@@ -121,7 +121,7 @@ class TileUniformMap: NativeUniformMap {
     
     var dayTextureTexCoordsRectangle: [float4] {
         get {
-            var floatArray = [float4](count: MaximumMetalTextureCount, repeatedValue: float4())
+            var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
             memcpy(&floatArray, &_uniformStruct.dayTextureTexCoordsRectangle, sizeof(float4) * MaximumMetalTextureCount)
             return floatArray
         }
@@ -189,25 +189,25 @@ class TileUniformMap: NativeUniformMap {
     private var _uniformStruct = TileUniformStruct()
     
     let uniformDescriptors: [UniformDescriptor] = [
-        UniformDescriptor(name:  "u_dayTextureTexCoordsRectangle", type: .FloatVec4, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureTranslationAndScale", type: .FloatVec4, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureAlpha", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureBrightness", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureContrast", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureHue", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureSaturation", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_dayTextureOneOverGamma", type: .FloatVec1, count: MaximumMetalTextureCount),
-        UniformDescriptor(name:  "u_minMaxHeight", type: .FloatVec2, count: 1),
-        UniformDescriptor(name:  "u_scaleAndBias", type: .FloatMatrix4, count: 1),
-        UniformDescriptor(name:  "u_waterMaskTranslationAndScale", type: .FloatVec4, count: 1),
-        UniformDescriptor(name:  "u_initialColor", type: .FloatVec4, count: 1),
-        UniformDescriptor(name:  "u_tileRectangle", type: .FloatVec4, count: 1),
-        UniformDescriptor(name:  "u_modifiedModelView", type: .FloatMatrix4, count: 1),
-        UniformDescriptor(name:  "u_center3D", type: .FloatVec3, count: 1),
-        UniformDescriptor(name:  "u_southMercatorYAndOneOverHeight", type: .FloatVec2, count: 1),
-        UniformDescriptor(name:  "u_southAndNorthLatitude", type: .FloatVec2, count: 1),
-        UniformDescriptor(name:  "u_lightingFadeDistance", type: .FloatVec2, count: 1),
-        UniformDescriptor(name:  "u_zoomedOutOceanSpecularIntensity", type: .FloatVec1, count: 1)
+        UniformDescriptor(name:  "u_dayTextureTexCoordsRectangle", type: .floatVec4, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureTranslationAndScale", type: .floatVec4, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureAlpha", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureBrightness", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureContrast", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureHue", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureSaturation", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_dayTextureOneOverGamma", type: .floatVec1, count: MaximumMetalTextureCount),
+        UniformDescriptor(name:  "u_minMaxHeight", type: .floatVec2, count: 1),
+        UniformDescriptor(name:  "u_scaleAndBias", type: .floatMatrix4, count: 1),
+        UniformDescriptor(name:  "u_waterMaskTranslationAndScale", type: .floatVec4, count: 1),
+        UniformDescriptor(name:  "u_initialColor", type: .floatVec4, count: 1),
+        UniformDescriptor(name:  "u_tileRectangle", type: .floatVec4, count: 1),
+        UniformDescriptor(name:  "u_modifiedModelView", type: .floatMatrix4, count: 1),
+        UniformDescriptor(name:  "u_center3D", type: .floatVec3, count: 1),
+        UniformDescriptor(name:  "u_southMercatorYAndOneOverHeight", type: .floatVec2, count: 1),
+        UniformDescriptor(name:  "u_southAndNorthLatitude", type: .floatVec2, count: 1),
+        UniformDescriptor(name:  "u_lightingFadeDistance", type: .floatVec2, count: 1),
+        UniformDescriptor(name:  "u_zoomedOutOceanSpecularIntensity", type: .floatVec1, count: 1)
     ]
     
     var uniformBufferProvider: UniformBufferProvider! = nil
@@ -240,7 +240,7 @@ class TileUniformMap: NativeUniformMap {
         }
     }
     
-    func textureForUniform (uniform: UniformSampler) -> Texture? {
+    func textureForUniform (_ uniform: UniformSampler) -> Texture? {
         let dayTextureCount = dayTextures.count
         if uniform.textureUnitIndex == dayTextureCount {
             return waterMask

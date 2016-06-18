@@ -51,17 +51,17 @@ public class OffscreenQuadPrimitive: Primitive {
         _passState.framebuffer = framebuffer
     }
     
-    public func addString (string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4) -> Int {
+    public func addString (_ string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4) -> Int {
         let text = TextRenderer(string: string, fontName: fontName, color: color, pointSize: pointSize, viewportRect: rectangle, offscreenTarget: true)
         _text.append(text)
         return _text.count-1
     }
 
-    public func updateString (index: Int, newText: String) {
+    public func updateString (_ index: Int, newText: String) {
         
     }
     
-    public func addRectangle (bounds: Cartesian4, material: Material) -> Int {
+    public func addRectangle (_ bounds: Cartesian4, material: Material) -> Int {
         
         let rs = RenderState(
             device: _context.device,
@@ -88,7 +88,7 @@ public class OffscreenQuadPrimitive: Primitive {
     }
 
     
-    override func update (inout frameState: FrameState) {
+    override func update (_ frameState: inout FrameState) {
         
         _textCommands.removeAll()
         
@@ -105,7 +105,7 @@ public class OffscreenQuadPrimitive: Primitive {
      * @param {RenderState} [renderState] The render state that will override the render state of the command.
      * @param {RenderPipeline} [renderPipeline] The render pipeline that will override the shader program of the command.
      */
-    func execute(context: Context) {
+    func execute(_ context: Context) {
         
         let renderPass = context.createRenderPass(_passState)
         _clearCommand.execute(context, passState: _passState)

@@ -25,11 +25,11 @@ public enum TimeStandard {
     * seconds which have been introduced as of the time in TAI.
     *
     */
-    case UTC
+    case utc
     
     /**
     * Represents the International Atomic Time (TAI) time standard.
     * TAI is the principal time standard to which the other time standards are related.
     */
-    case TAI
+    case tai
 }

@@ -28,11 +28,11 @@ class Context {
     }
     }*/
 
-    private let _inflight_semaphore: dispatch_semaphore_t
+    private let _inflight_semaphore: DispatchSemaphore
     
     private (set) var bufferSyncState: BufferSyncState = .zero
     
-    private var _lastFrameDrawCommands = Array<[DrawCommand]>(count: 3, repeatedValue: [DrawCommand]())
+    private var _lastFrameDrawCommands = Array<[DrawCommand]>(repeating: [DrawCommand](), count: 3)
     
     let view: MTKView
     
@@ -175,14 +175,14 @@ class Context {
         _commandQueue = device.newCommandQueue()
         
         pipelineCache = PipelineCache(device: device)
-        id = NSUUID().UUIDString
+        id = UUID().uuidString
         
-        _inflight_semaphore = dispatch_semaphore_create(3)//kInFlightCommandBuffers)
+        _inflight_semaphore = DispatchSemaphore(value: 3)//kInFlightCommandBuffers)
         
         //antialias = true
         
         pickObjects = Array<AnyObject>()
-        nextPickColor = Array<UInt32>(count: 1, repeatedValue: 0)
+        nextPickColor = Array<UInt32>(repeating: 0, count: 1)
         
         _debug = (0, 0)
         
@@ -225,20 +225,20 @@ class Context {
     /**
     * Creates a compiled MTLSamplerState from a MTLSamplerDescriptor. These should generally be cached.
     */
-    func createSamplerState (descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
-        return device.newSamplerStateWithDescriptor(descriptor)
+    func createSamplerState (_ descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
+        return device.newSamplerState(with: descriptor)
     }
     
     func updateDrawable () -> Bool {
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
         // signifying the CPU can go ahead and prepare another frame.
-        dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER)
+        _inflight_semaphore.wait(timeout: DispatchTime.distantFuture)
         assert(_drawable == nil, "drawable != nil")
         _drawable = view.currentDrawable
         if _drawable == nil {
             print("drawable == nil")
-            dispatch_semaphore_signal(_inflight_semaphore)
+            _inflight_semaphore.signal()
             return false
         }
         defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
@@ -252,7 +252,7 @@ class Context {
         
         _commandBuffer.addCompletedHandler { buffer in
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
-            dispatch_semaphore_signal(self._inflight_semaphore)
+            self._inflight_semaphore.signal()
         }
         
         let automaticUniformBuffer = _automaticUniformBufferProvider.currentBuffer(bufferSyncState)
@@ -262,28 +262,28 @@ class Context {
         //updateDrawable()
     }
     
-    func createRenderPass(passState: PassState? = nil) -> RenderPass {
+    func createRenderPass(_ passState: PassState? = nil) -> RenderPass {
         let passState = passState ?? _defaultPassState
         let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: defaultFramebuffer)
         return pass
     }
     
-    func completeRenderPass(pass: RenderPass) {
+    func completeRenderPass(_ pass: RenderPass) {
         pass.complete()
     }
     
-    func applyRenderState(pass: RenderPass, renderState: RenderState, passState: PassState) {
+    func applyRenderState(_ pass: RenderPass, renderState: RenderState, passState: PassState) {
         pass.applyRenderState(renderState)
     }
     
-    func createBlitCommandEncoder (completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder {
+    func createBlitCommandEncoder (_ completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder {
         if let completionHandler = completionHandler {
             _commandBuffer.addCompletedHandler(completionHandler)
         }
         return _commandBuffer.blitCommandEncoder()
     }
     
-    func completeBlitPass (encoder: MTLBlitCommandEncoder) {
+    func completeBlitPass (_ encoder: MTLBlitCommandEncoder) {
         encoder.endEncoding()
     }
     
@@ -297,10 +297,10 @@ class Context {
         return _frustumUniformBufferProviderPool.removeLast()
     }
     
-    func returnFrustumUniformBufferProvider (provider: UniformBufferProvider) {
+    func returnFrustumUniformBufferProvider (_ provider: UniformBufferProvider) {
     }
     
-    func clear(clearCommand: ClearCommand, passState: PassState? = nil) {
+    func clear(_ clearCommand: ClearCommand, passState: PassState? = nil) {
         
         let framebuffer = clearCommand.framebuffer ?? passState?.framebuffer ?? defaultFramebuffer
 
@@ -312,43 +312,43 @@ class Context {
         
         let colorAttachment = passDescriptor.colorAttachments[0]
         if let c = c {
-            colorAttachment.loadAction = .Clear
-            colorAttachment.storeAction = .Store
-            colorAttachment.clearColor = MTLClearColorMake(c.red, c.green, c.blue, c.alpha)
+            colorAttachment?.loadAction = .clear
+            colorAttachment?.storeAction = .store
+            colorAttachment?.clearColor = MTLClearColorMake(c.red, c.green, c.blue, c.alpha)
         } else {
-            colorAttachment.loadAction = .Load
-            colorAttachment.storeAction = .Store
+            colorAttachment?.loadAction = .load
+            colorAttachment?.storeAction = .store
         }
         
         let depthAttachment = passDescriptor.depthAttachment
         if let d = d {
-            depthAttachment.loadAction = .Clear
-            depthAttachment.storeAction = .DontCare
-            depthAttachment.clearDepth = d
+            depthAttachment?.loadAction = .clear
+            depthAttachment?.storeAction = .dontCare
+            depthAttachment?.clearDepth = d
         } else {
-            depthAttachment.loadAction = .DontCare
-            depthAttachment.storeAction = .DontCare
+            depthAttachment?.loadAction = .dontCare
+            depthAttachment?.storeAction = .dontCare
         }
         
         let stencilAttachment = passDescriptor.stencilAttachment
         if let s = s {
-            stencilAttachment.loadAction = .Clear
-            stencilAttachment.storeAction = .Store
-            stencilAttachment.clearStencil = s
+            stencilAttachment?.loadAction = .clear
+            stencilAttachment?.storeAction = .store
+            stencilAttachment?.clearStencil = s
         } else {
-            stencilAttachment.loadAction = .DontCare
-            stencilAttachment.storeAction = .DontCare
+            stencilAttachment?.loadAction = .dontCare
+            stencilAttachment?.storeAction = .dontCare
             
         }
     }
 
-    func draw(command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
+    func draw(_ command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         _lastFrameDrawCommands[bufferSyncState.rawValue].append(command)
         beginDraw(command, renderPass: renderPass)
         continueDraw(command, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
     }
     
-    func beginDraw(command: DrawCommand, renderPass: RenderPass) {
+    func beginDraw(_ command: DrawCommand, renderPass: RenderPass) {
         let rs = command.renderState ?? _defaultRenderState
 
         let commandEncoder = renderPass.commandEncoder
@@ -363,7 +363,7 @@ class Context {
         applyRenderState(renderPass, renderState: rs, passState: renderPass.passState)
     }
     
-    func continueDraw(command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
+    func continueDraw(_ command: DrawCommand, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         let primitiveType = command.primitiveType
         
         assert(command.vertexArray != nil, "drawCommand.vertexArray is required")
@@ -399,36 +399,36 @@ class Context {
             }
             
             // automatic uniforms
-            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, at: 0)
 
             // frustum uniforms
-            commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
+            commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, at: 1)
 
             // manual uniforms
             if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
-                commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, atIndex: 2)
+                commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, at: 2)
             }
             
             for attribute in va.attributes {
                 if let buffer = attribute.buffer {
-                    commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, atIndex: attribute.bufferIndex)
+                    commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, at: attribute.bufferIndex)
                 }
             }
             
             // automatic uniforms
-            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, at: 0)
             
             // frustum uniforms
-            commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, atIndex: 1)
+            commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, at: 1)
             
             // manual uniforms
             if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
-                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, atIndex: 2)
+                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, at: 2)
             }
             
-            for (index, texture) in bufferParams.textures.enumerate() {
-                commandEncoder.setFragmentTexture(texture.metalTexture, atIndex: index)
-                commandEncoder.setFragmentSamplerState(texture.sampler.state, atIndex: index)
+            for (index, texture) in bufferParams.textures.enumerated() {
+                commandEncoder.setFragmentTexture(texture.metalTexture, at: index)
+                commandEncoder.setFragmentSamplerState(texture.sampler.state, at: index)
             }
             
             commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
@@ -441,7 +441,7 @@ class Context {
     }
     
     func endFrame () {
-        _commandBuffer.presentDrawable(_drawable)
+        _commandBuffer.present(_drawable)
         _commandBuffer.commit()
         
         _drawable = nil
@@ -504,7 +504,7 @@ class Context {
         let geometry = Geometry(
             attributes: GeometryAttributes(
                 position: GeometryAttribute(
-                    componentDatatype: .Float32,
+                    componentDatatype: .float32,
                     componentsPerAttribute: 2,
                     values: Buffer(
                         device: device,
@@ -514,12 +514,12 @@ class Context {
                             1.0, 1.0,
                             -1.0, 1.0
                         ].map({ Float($0)}),
-                        componentDatatype: .Float32,
+                        componentDatatype: .float32,
                         sizeInBytes: 8 * strideof(Float)
                     )
                 ), // position
                 st: GeometryAttribute(
-                    componentDatatype: .Float32,
+                    componentDatatype: .float32,
                     componentsPerAttribute: 2,
                     values: Buffer(
                         device: device,
@@ -528,7 +528,7 @@ class Context {
                             1.0, 1.0,
                             1.0, 0.0,
                             0.0, 0.0].map({ Float($0)}),
-                        componentDatatype: .Float32,
+                        componentDatatype: .float32,
                         sizeInBytes: 8 * strideof(Float)
                     )
                 )

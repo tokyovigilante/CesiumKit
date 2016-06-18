@@ -17,7 +17,7 @@ enum TileLoadState: CustomStringConvertible {
     * @constant
     * @default 0
     */
-    case Start,
+    case start,
     
     /**
     * Loading is in progress.
@@ -25,12 +25,12 @@ enum TileLoadState: CustomStringConvertible {
     * @constant
     * @default 1
     */
-    Loading,
+    loading,
     
     /**
     * Draw commands are being generated
     */
-    GeneratingCommands,
+    generatingCommands,
     
     /**
     * Loading is complete.
@@ -38,7 +38,7 @@ enum TileLoadState: CustomStringConvertible {
     * @constant
     * @default 2
     */
-    Done,
+    done,
     
     /**
     * The tile has failed to load.
@@ -46,20 +46,20 @@ enum TileLoadState: CustomStringConvertible {
     * @constant
     * @default 3
     */
-    Failed
+    failed
     
     var description: String {
         get {
             switch self {
-            case .Start:
+            case .start:
                 return "Start"
-            case .Loading:
+            case .loading:
                 return "Loading"
-            case .Done:
+            case .done:
                 return "Done"
-            case .GeneratingCommands:
+            case .generatingCommands:
                 return "GeneratingCommands"
-            case .Failed:
+            case .failed:
                 return "Failed"
             }
         }

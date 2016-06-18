@@ -21,7 +21,7 @@ public enum KeyboardEventModifier: Int  {
     * @type {Number}
     * @constant
     */
-    case Shift = 0,
+    case shift = 0,
     
     /**
     * Represents the control key being held down.
@@ -29,7 +29,7 @@ public enum KeyboardEventModifier: Int  {
     * @type {Number}
     * @constant
     */
-    Ctrl,
+    ctrl,
     
     /**
     * Represents the alt key being held down.
@@ -37,5 +37,5 @@ public enum KeyboardEventModifier: Int  {
     * @type {Number}
     * @constant
     */
-    Alt
+    alt
 }

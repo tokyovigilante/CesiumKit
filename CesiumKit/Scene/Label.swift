@@ -51,11 +51,11 @@ public class Label {
         font: String = "HelveticaNeue",
         fillColor: Color = Color.White,
         outlineColor: Color = Color.Black,
-        style: LabelStyle = .Fill,
+        style: LabelStyle = .fill,
         pixelOffset: Cartesian2 = Cartesian2.zero,
         eyeOffset: Cartesian3 = Cartesian3.zero,
-        horizontalOrigin: HorizontalOrigin = .Left,
-        verticalOrigin : VerticalOrigin = .Bottom,
+        horizontalOrigin: HorizontalOrigin = .left,
+        verticalOrigin : VerticalOrigin = .bottom,
         scale: Double = 1.0,
         collection: LabelCollection
     ) {

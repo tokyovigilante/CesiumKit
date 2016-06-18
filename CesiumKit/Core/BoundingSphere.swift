@@ -284,7 +284,7 @@ struct BoundingSphere: BoundingVolume {
     var fromPointsMaxBoxPt = new Cartesian3();
     var fromPointsNaiveCenterScratch = new Cartesian3();*/
     
-    static func fromVertices(positions: [Float], center: Cartesian3 = Cartesian3.zero, stride: Int = 3) -> BoundingSphere {
+    static func fromVertices(_ positions: [Float], center: Cartesian3 = Cartesian3.zero, stride: Int = 3) -> BoundingSphere {
         
         var result = BoundingSphere()
         if (positions.count == 0) {
@@ -617,7 +617,7 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    func union(other: BoundingSphere) -> BoundingSphere {
+    func union(_ other: BoundingSphere) -> BoundingSphere {
         
         let leftCenter = self.center
         let leftRadius = self.radius
@@ -683,18 +683,18 @@ BoundingSphere.expand = function(sphere, point, result) {
     *                      on the opposite side, and {@link Intersect.INTERSECTING} if the sphere
     *                      intersects the plane.
     */
-    func intersectPlane(plane: Plane) -> Intersect {
+    func intersectPlane(_ plane: Plane) -> Intersect {
 
         let distanceToPlane = plane.normal.dot(center) + plane.distance
         
         if distanceToPlane < -radius {
             // The center point is negative side of the plane normal
-            return Intersect.Outside
+            return Intersect.outside
         } else if distanceToPlane < radius {
             // The center point is positive side of the plane, but radius extends beyond it; partial overlap
-            return Intersect.Intersecting
+            return Intersect.intersecting
         }
-        return Intersect.Inside
+        return Intersect.inside
     }
 /*
 /**
@@ -740,7 +740,7 @@ BoundingSphere.transform = function(sphere, transform, result) {
 *     return BoundingSphere.distanceSquaredTo(b, camera.positionWC) - BoundingSphere.distanceSquaredTo(a, camera.positionWC);
 * });
 */
-    func distanceSquaredTo(cartesian: Cartesian3) -> Double {
+    func distanceSquaredTo(_ cartesian: Cartesian3) -> Double {
         let diff = center.subtract(cartesian)
         return diff.magnitudeSquared - radius * radius
     }
@@ -793,7 +793,7 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     * @param {Cartesian3} direction The direction from position.
     * @returns {Interval} The nearest and farthest distances on the bounding sphere from position in direction.
     */
-    func computePlaneDistances(position: Cartesian3, direction: Cartesian3) -> Interval {
+    func computePlaneDistances(_ position: Cartesian3, direction: Cartesian3) -> Interval {
         
         let toCenter = center.subtract(position)
         let proj = direction.multiplyByScalar(direction.dot(toCenter))
@@ -951,7 +951,7 @@ BoundingSphere.prototype.intersect = function(plane) {
     * @param {Occluder} occluder The occluder.
     * @returns {Boolean} <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
     */
-    func isOccluded (occluder: Occluder) -> Bool {
+    func isOccluded (_ occluder: Occluder) -> Bool {
         return !occluder.isBoundingSphereVisible(self)
     }
     /*

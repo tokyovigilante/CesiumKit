@@ -28,7 +28,7 @@ public protocol MapProjection {
     *        new instance should be created.
     * @returns {Cartesian3} The equivalent web mercator X, Y, Z coordinates, in meters.
     */
-    func project(cartographic: Cartographic) -> Cartesian3
+    func project(_ cartographic: Cartographic) -> Cartesian3
     
     /**
     * Converts X, Y coordinates, expressed in meters, to a {@link Cartographic}
@@ -42,6 +42,6 @@ public protocol MapProjection {
     *        new instance should be created.
     * @returns {Cartographic} The equivalent cartographic coordinates.
     */
-    func unproject(cartesian: Cartesian3) -> Cartographic
+    func unproject(_ cartesian: Cartesian3) -> Cartographic
 
 }

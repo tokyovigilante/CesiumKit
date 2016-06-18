@@ -26,7 +26,7 @@ public enum HorizontalOrigin {
      * @type {Number}
      * @constant
      */
-    case Center
+    case center
     
     /**
      * The origin is on the left side of the object.
@@ -34,12 +34,12 @@ public enum HorizontalOrigin {
      * @type {Number}
      * @constant
      */
-    case Left
+    case left
     /**
      * The origin is on the right side of the object.
      *
      * @type {Number}
      * @constant
      */
-    case Right
+    case right
 }

@@ -41,7 +41,7 @@ public struct ImageryLayerFeatureInfo {
      * number of formats, such as GeoJSON, KML, etc.
      * @type {Object}
      */
-    var data: NSData
+    var data: Data
     
     /**
      * Configures the name of this feature by selecting an appropriate property.  The name will be obtained from
@@ -51,7 +51,7 @@ public struct ImageryLayerFeatureInfo {
      *
      * @param {Object} properties An object literal containing the properties of the feature.
      */
-    func configureNameFromProperties (properties: [String]) {
+    func configureNameFromProperties (_ properties: [String]) {
         /*
         var namePropertyPrecedence = 10;
         var nameProperty;
@@ -86,7 +86,7 @@ public struct ImageryLayerFeatureInfo {
      *
      * @param {Object} properties An object literal containing the properties of the feature.
      */
-    func configureDescriptionFromProperties (properties: [String]) {
+    func configureDescriptionFromProperties (_ properties: [String]) {
         /*function describe(properties) {
         var html = '<table class="cesium-infoBox-defaultTable">';
         for (var key in properties) {

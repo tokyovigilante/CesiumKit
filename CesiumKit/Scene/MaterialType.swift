@@ -83,7 +83,7 @@ class ColorFabricUniformMap: LegacyUniformMap {
     ]
     
     let uniformDescriptors = [
-        UniformDescriptor(name: "u_color", type: .FloatVec4, count: 1)
+        UniformDescriptor(name: "u_color", type: .floatVec4, count: 1)
     ]
 }
 

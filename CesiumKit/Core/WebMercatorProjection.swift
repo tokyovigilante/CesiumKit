@@ -55,7 +55,7 @@ struct WebMercatorProjection: MapProjection {
     * @param {Number} mercatorAngle The angle to convert.
     * @returns {Number} The geodetic latitude in radians.
     */
-    static func mercatorAngleToGeodeticLatitude(mercatorAngle: Double) -> Double {
+    static func mercatorAngleToGeodeticLatitude(_ mercatorAngle: Double) -> Double {
         return M_PI_2 - (2.0 * atan(exp(-mercatorAngle)))
     }
     
@@ -66,7 +66,7 @@ struct WebMercatorProjection: MapProjection {
     * @param {Number} latitude The geodetic latitude in radians.
     * @returns {Number} The Mercator angle.
     */
-    static func geodeticLatitudeToMercatorAngle(latitude: Double) -> Double {
+    static func geodeticLatitudeToMercatorAngle(_ latitude: Double) -> Double {
         // Clamp the latitude coordinate to the valid Mercator bounds.
         var clampedLat = latitude
         if (clampedLat > WebMercatorProjection.maximumLatitude) {
@@ -88,7 +88,7 @@ struct WebMercatorProjection: MapProjection {
     *        new instance should be created.
     * @returns {Cartesian3} The equivalent web mercator X, Y, Z coordinates, in meters.
     */
-    func project(cartographic: Cartographic) -> Cartesian3 {
+    func project(_ cartographic: Cartographic) -> Cartesian3 {
         return Cartesian3(x: cartographic.longitude * semimajorAxis,
             y: WebMercatorProjection.geodeticLatitudeToMercatorAngle(cartographic.latitude) * semimajorAxis,
             z: cartographic.height)
@@ -104,7 +104,7 @@ struct WebMercatorProjection: MapProjection {
     *        new instance should be created.
     * @returns {Cartographic} The equivalent cartographic coordinates.
     */
-    func unproject(cartesian: Cartesian3) -> Cartographic  {
+    func unproject(_ cartesian: Cartesian3) -> Cartographic  {
         return Cartographic(longitude: cartesian.x * oneOverSemimajorAxis,
             latitude: WebMercatorProjection.mercatorAngleToGeodeticLatitude(cartesian.y * oneOverSemimajorAxis),
             height: cartesian.z)

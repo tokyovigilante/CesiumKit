@@ -34,7 +34,7 @@ class NeverTileDiscardPolicy: TileDiscardPolicy {
     * @param {Image|Promise} image An image, or a promise that will resolve to an image.
     * @returns A promise that will resolve to true if the tile should be discarded.
     */
-    func shouldDiscardImage (image: CGImage) -> Bool {
+    func shouldDiscardImage (_ image: CGImage) -> Bool {
         return false
     }
 }

@@ -190,7 +190,7 @@ struct EllipsoidTangentPlane {
     * @param {Cartesian2} [result] The object onto which to store the result.
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
-    func projectPointToNearestOnPlane (cartesian: Cartesian3) -> Cartesian2 {
+    func projectPointToNearestOnPlane (_ cartesian: Cartesian3) -> Cartesian2 {
         
         var ray = Ray(origin: cartesian, direction: plane.normal)
         
@@ -215,7 +215,7 @@ struct EllipsoidTangentPlane {
     * @param {Cartesian2[]} [result] The array of Cartesian2 instances onto which to store results.
     * @returns {Cartesian2[]} The modified result parameter or a new array of Cartesian2 instances if none was provided. This will have the same length as <code>cartesians</code>.
     */
-    func projectPointsToNearestOnPlane (cartesians: [Cartesian3]) -> [Cartesian2] {
+    func projectPointsToNearestOnPlane (_ cartesians: [Cartesian3]) -> [Cartesian2] {
         return cartesians.map({ projectPointToNearestOnPlane($0) })
     }
     /*

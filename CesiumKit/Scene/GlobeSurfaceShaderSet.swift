@@ -38,7 +38,7 @@ class GlobeSurfaceShaderSet {
             self.baseFragmentShaderSource = baseFragmentShaderSource
     }
     
-    private func getPositionMode(sceneMode: SceneMode) -> String {
+    private func getPositionMode(_ sceneMode: SceneMode) -> String {
         let getPosition3DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition3DMode(position, height, textureCoordinates); }"
         let getPosition2DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition2DMode(position, height, textureCoordinates); }"
         let getPositionColumbusViewMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPositionColumbusViewMode(position, height, textureCoordinates); }"
@@ -47,20 +47,20 @@ class GlobeSurfaceShaderSet {
         let positionMode: String
         
         switch sceneMode {
-        case SceneMode.Scene3D:
+        case SceneMode.scene3D:
             positionMode = getPosition3DMode
-        case SceneMode.Scene2D:
+        case SceneMode.scene2D:
             positionMode = getPosition2DMode
-        case SceneMode.ColumbusView:
+        case SceneMode.columbusView:
             positionMode = getPositionColumbusViewMode
-        case SceneMode.Morphing:
+        case SceneMode.morphing:
             positionMode = getPositionMorphingMode
         }
         
         return positionMode
     }
     
-    func get2DYPositionFraction(useWebMercatorProjection: Bool) -> String {
+    func get2DYPositionFraction(_ useWebMercatorProjection: Bool) -> String {
         let get2DYPositionFractionGeographicProjection = "float get2DYPositionFraction(vec2 textureCoordinates) { return get2DGeographicYPositionFraction(textureCoordinates); }"
         let get2DYPositionFractionMercatorProjection = "float get2DYPositionFraction(vec2 textureCoordinates) { return get2DMercatorYPositionFraction(textureCoordinates); }"
         return useWebMercatorProjection ? get2DYPositionFractionMercatorProjection : get2DYPositionFractionGeographicProjection
@@ -69,7 +69,7 @@ class GlobeSurfaceShaderSet {
     private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_scaleAndBias;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
     
     func getRenderPipeline (
-        frameState frameState: FrameState,
+        frameState: FrameState,
         surfaceTile: GlobeSurfaceTile,
         numberOfDayTextures: Int,
         applyBrightness: Bool,
@@ -93,7 +93,7 @@ class GlobeSurfaceShaderSet {
         let quantization = quantizationMode.enabled
         let quantizationDefine = quantizationMode.define
         
-        var sceneMode = frameState.mode
+        let sceneMode = frameState.mode
         
         let flags: Int = Int(sceneMode.rawValue) |
             (Int(applyBrightness) << 2) |
@@ -139,7 +139,7 @@ class GlobeSurfaceShaderSet {
                 }
                 textureArrayDefines += "uniform vec4 u_dayTextureTranslationAndScale[TEXTURE_UNITS];\nuniform float u_dayTextureAlpha[TEXTURE_UNITS];\nuniform float u_dayTextureBrightness[TEXTURE_UNITS];\nuniform float u_dayTextureContrast[TEXTURE_UNITS];\nuniform float u_dayTextureHue[TEXTURE_UNITS];\nuniform float u_dayTextureSaturation[TEXTURE_UNITS];\nuniform float u_dayTextureOneOverGamma[TEXTURE_UNITS];\nuniform vec4 u_dayTextureTexCoordsRectangle[TEXTURE_UNITS];\n"
                 
-                fs.sources.insert(textureArrayDefines, atIndex: 0)
+                fs.sources.insert(textureArrayDefines, at: 0)
             }
             
             if applyBrightness {
@@ -235,7 +235,7 @@ class GlobeSurfaceShaderSet {
         return surfacePipeline!.pipeline
     }
     
-    func getPickRenderPipeline(frameState frameState: FrameState, surfaceTile: GlobeSurfaceTile, useWebMercatorProjection: Bool) -> RenderPipeline {
+    func getPickRenderPipeline(frameState: FrameState, surfaceTile: GlobeSurfaceTile, useWebMercatorProjection: Bool) -> RenderPipeline {
         
         let terrainEncoding = surfaceTile.pickTerrain!.mesh!.encoding
         let quantizationMode = terrainEncoding.quantization

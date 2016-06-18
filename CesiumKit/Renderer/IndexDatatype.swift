@@ -16,8 +16,8 @@ import Metal
 * @alias IndexDatatype
 */
 enum IndexDatatype: UInt {
-    case UnsignedShort
-    case UnsignedInt
+    case unsignedShort
+    case unsignedInt
 
     var metalIndexType: MTLIndexType {
         return MTLIndexType(rawValue: self.rawValue)!
@@ -35,14 +35,14 @@ enum IndexDatatype: UInt {
     */
     var elementSize: Int {
         switch (self) {
-        case .UnsignedShort:
+        case .unsignedShort:
             return sizeof(UInt16)
-        case .UnsignedInt:
+        case .unsignedInt:
             return sizeof(UInt32)
         }
     }
     
-    static func createIntegerIndexArrayFromData (data: NSData, numberOfVertices: Int, byteOffset: Int, length: Int) -> [Int] {
+    static func createIntegerIndexArrayFromData (_ data: Data, numberOfVertices: Int, byteOffset: Int, length: Int) -> [Int] {
         if numberOfVertices > Math.SixtyFourKilobytes {
             return data.getUInt32Array(byteOffset, elementCount: length).map { Int($0) }
         } else {

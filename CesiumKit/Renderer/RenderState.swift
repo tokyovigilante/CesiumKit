@@ -151,7 +151,7 @@ struct RenderState/*: Printable*/ {
     
     struct DepthTest {
         var enabled: Bool = false
-        var function: DepthFunction = .Less  // function, because func is a Swift keyword ;)
+        var function: DepthFunction = .less  // function, because func is a Swift keyword ;)
     }
     let depthTest: DepthTest// = DepthTest()
     
@@ -167,16 +167,16 @@ struct RenderState/*: Printable*/ {
         var mask: Int = 0
         
         struct FrontOperation {
-            var fail: MTLStencilOperation = .Keep
-            var zFail: MTLStencilOperation = .Keep
-            var zPass: MTLStencilOperation = .Keep
+            var fail: MTLStencilOperation = .keep
+            var zFail: MTLStencilOperation = .keep
+            var zPass: MTLStencilOperation = .keep
         }
         let frontOperation = FrontOperation()
         
         struct BackOperation {
-            var fail: MTLStencilOperation = .Keep
-            var zFail: MTLStencilOperation = .Keep
-            var zPass: MTLStencilOperation = .Keep
+            var fail: MTLStencilOperation = .keep
+            var zFail: MTLStencilOperation = .keep
+            var zPass: MTLStencilOperation = .keep
         }
         let backOperation = BackOperation()
     }
@@ -197,8 +197,8 @@ struct RenderState/*: Printable*/ {
     
     init(
         device: MTLDevice,
-        windingOrder: WindingOrder = WindingOrder.CounterClockwise,
-        cullFace: CullFace = .None, // default cull disabled
+        windingOrder: WindingOrder = WindingOrder.counterClockwise,
+        cullFace: CullFace = .none, // default cull disabled
         polygonOffset: PolygonOffset = PolygonOffset(),
         lineWidth: Double = 1.0,
         scissorTest: ScissorTest = ScissorTest(),
@@ -286,9 +286,9 @@ struct RenderState/*: Printable*/ {
 
             if self.depthTest.enabled {
                 depthStencilDescriptor.depthCompareFunction = depthTest.function.toMetal()
-                depthStencilDescriptor.depthWriteEnabled = true
+                depthStencilDescriptor.isDepthWriteEnabled = true
             }
-            _depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
+            _depthStencilState = device.newDepthStencilState(with: depthStencilDescriptor)
     }
     
     /*func validate() {
@@ -404,11 +404,11 @@ struct RenderState/*: Printable*/ {
         }
     }*/
     
-    func applyWindingOrder(encoder: MTLRenderCommandEncoder) {
-        encoder.setFrontFacingWinding(windingOrder.toMetal())
+    func applyWindingOrder(_ encoder: MTLRenderCommandEncoder) {
+        encoder.setFrontFacing(windingOrder.toMetal())
     }
     
-    func applyCullFace(encoder: MTLRenderCommandEncoder) {
+    func applyCullFace(_ encoder: MTLRenderCommandEncoder) {
         encoder.setCullMode(cullFace.toMetal())
     }
     /*
@@ -440,7 +440,7 @@ struct RenderState/*: Printable*/ {
         glDepthRangef(GLclampf(depthRange.near), GLclampf(depthRange.far))
     }
     */
-    func applyDepthTest(encoder: MTLRenderCommandEncoder) {
+    func applyDepthTest(_ encoder: MTLRenderCommandEncoder) {
         
         if depthTest.enabled {
             encoder.setDepthStencilState(_depthStencilState)
@@ -504,7 +504,7 @@ struct RenderState/*: Printable*/ {
     }
     */
     
-    func applyViewport(encoder: MTLRenderCommandEncoder, passState: PassState) {
+    func applyViewport(_ encoder: MTLRenderCommandEncoder, passState: PassState) {
         
         var actualViewport = Cartesian4()
         let context = passState.context!
@@ -520,15 +520,15 @@ struct RenderState/*: Printable*/ {
         encoder.setViewport(MTLViewport(originX: actualViewport.x, originY: actualViewport.y, width: actualViewport.width, height: actualViewport.height, znear: 0.0, zfar: 1.0))
     }
     
-    func applyWireFrame(encoder: MTLRenderCommandEncoder) {
+    func applyWireFrame(_ encoder: MTLRenderCommandEncoder) {
         if wireFrame {
-            encoder.setTriangleFillMode(.Lines)
+            encoder.setTriangleFillMode(.lines)
         } else {
-            encoder.setTriangleFillMode(.Fill)
+            encoder.setTriangleFillMode(.fill)
         }
     }
     
-    func apply(encoder: MTLRenderCommandEncoder, passState: PassState) {
+    func apply(_ encoder: MTLRenderCommandEncoder, passState: PassState) {
         applyWindingOrder(encoder)
         applyCullFace(encoder)
         /*applyLineWidth()

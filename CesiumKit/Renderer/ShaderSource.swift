@@ -108,12 +108,12 @@ struct ShaderSource {
         return combineShader(true)
     }
 
-    func combineShader(isFragmentShader: Bool) -> String {
+    func combineShader(_ isFragmentShader: Bool) -> String {
         
         // Combine shader sources, generally for pseudo-polymorphism, e.g., czm_getMaterial.
         var combinedSources = ""
         
-        for (i, source) in sources.enumerate() {
+        for (i, source) in sources.enumerated() {
                 // #line needs to be on its own line.
                 combinedSources += "\n#line 0\n" + sources[i];
         }
@@ -125,7 +125,7 @@ struct ShaderSource {
         // Extract existing shader version from sources
         let versionRange = combinedSources[_versionRegex].range()
         if versionRange.location != NSNotFound {
-            version = (combinedSources as NSString).substringWithRange(versionRange)
+            version = (combinedSources as NSString).substring(with: versionRange)
             combinedSources.replace(version!, "\n")
         }
         
@@ -175,7 +175,7 @@ struct ShaderSource {
         return result
     }
 
-    private func removeComments (source: String) -> String {
+    private func removeComments (_ source: String) -> String {
         // strip doc comments so we don't accidentally try to determine a dependency for something found
         // in a comment
         var newSource = source
@@ -196,7 +196,7 @@ struct ShaderSource {
         return newSource
     }
 
-    private func getBuiltinsAndAutomaticUniforms(shaderSource: String) -> String {
+    private func getBuiltinsAndAutomaticUniforms(_ shaderSource: String) -> String {
         // generate a dependency graph for builtin functions
         
         var dependencyNodes = [DependencyNode]()
@@ -206,12 +206,12 @@ struct ShaderSource {
         
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
-        return Array(dependencyNodes.reverse())
+        return Array(dependencyNodes.reversed())
             .reduce("", combine: { $0 + $1.glslSource + "\n" })
             .replace(root.glslSource, "")
     }
     
-    private func getDependencyNode(name: String, glslSource: String, inout nodes: [DependencyNode]) -> DependencyNode {
+    private func getDependencyNode(_ name: String, glslSource: String, nodes: inout [DependencyNode]) -> DependencyNode {
         
         var dependencyNode: DependencyNode?
         
@@ -234,7 +234,7 @@ struct ShaderSource {
         return dependencyNode!
     }
     
-    private func generateDependencies(currentNode: DependencyNode, inout dependencyNodes: [DependencyNode]) {
+    private func generateDependencies(_ currentNode: DependencyNode, dependencyNodes: inout [DependencyNode]) {
         
         if currentNode.evaluated {
             return
@@ -266,7 +266,7 @@ struct ShaderSource {
         }
     }
     
-    private func sortDependencies(inout dependencyNodes: [DependencyNode]) {
+    private func sortDependencies(_ dependencyNodes: inout [DependencyNode]) {
         
         var nodesWithoutIncomingEdges = [DependencyNode]()
         var allNodes = [DependencyNode]()
@@ -281,15 +281,15 @@ struct ShaderSource {
         }
         
         while nodesWithoutIncomingEdges.count > 0 {
-            let currentNode = nodesWithoutIncomingEdges.removeAtIndex(0)
+            let currentNode = nodesWithoutIncomingEdges.remove(at: 0)
             
             dependencyNodes.append(currentNode)
-            for (var i = 0; i < currentNode.dependsOn.count; i += 1) {
+            for (i in 0 ..< currentNode.dependsOn.count) {
                 // remove the edge from the graph
                 let referencedNode = currentNode.dependsOn[i]
-                let index = referencedNode.requiredBy.indexOf(currentNode)
+                let index = referencedNode.requiredBy.index(of: currentNode)
                 if (index != nil) {
-                    referencedNode.requiredBy.removeAtIndex(index!)
+                    referencedNode.requiredBy.remove(at: index!)
                 }
                 
                 // if referenced node has no more incoming edges, add to list

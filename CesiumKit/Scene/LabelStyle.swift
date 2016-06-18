@@ -23,7 +23,7 @@ public enum LabelStyle {
      * @type {Number}
      * @constant
      */
-    case Fill
+    case fill
     
     /**
      * Outline the text of the label, but do not fill.
@@ -31,7 +31,7 @@ public enum LabelStyle {
      * @type {Number}
      * @constant
      */
-    case Outline
+    case outline
     
     /**
      * Fill and outline the text of the label.
@@ -39,5 +39,5 @@ public enum LabelStyle {
      * @type {Number}
      * @constant
      */
-    case FillAndOutline
+    case fillAndOutline
 }

@@ -524,7 +524,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeOrthographicOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double = 0.0, far: Double = 1.0) -> Matrix4 {
+    static func computeOrthographicOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double = 0.0, far: Double = 1.0) -> Matrix4 {
         
         // Converted to Metal NDC coordinates - z: [0-1]
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205348(v=vs.85).aspx
@@ -556,7 +556,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         // Converted to Metal NDC coordinates - z: [0-1]
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205354(v=vs.85).aspx
         
@@ -585,7 +585,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeInfinitePerspectiveOffCenter (left left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+    static func computeInfinitePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
         //assertionFailure("not updated for metal NDC")
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
@@ -624,7 +624,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * // Example 2.  Create viewport transformation using the context's viewport.
     * var m = Cesium.Matrix4.computeViewportTransformation(context.getViewport());
     */
-    internal static func computeViewportTransformation (viewport: Cartesian4, nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
+    internal static func computeViewportTransformation (_ viewport: Cartesian4, nearDepthRange: Double = 0.0, farDepthRange: Double = 1.0) -> Matrix4 {
         
         let x = viewport.x
         let y = viewport.y
@@ -707,7 +707,7 @@ Matrix4.getElementIndex = function(column, row) {
     *
     * // a.x = 12.0; a.y = 16.0; a.z = 20.0; a.w = 24.0;
     */
-    func getColumn (index: Int) -> Cartesian4 {
+    func getColumn (_ index: Int) -> Cartesian4 {
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         return Cartesian4(simd: simdType[index])
         
@@ -738,7 +738,7 @@ Matrix4.getElementIndex = function(column, row) {
      * //     [18.0, 19.0, 97.0, 21.0]
      * //     [22.0, 23.0, 96.0, 25.0]
      */
-    func setColumn (index: Int, cartesian: Cartesian4) -> Matrix4 {
+    func setColumn (_ index: Int, cartesian: Cartesian4) -> Matrix4 {
         
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         var result = simdType
@@ -755,7 +755,7 @@ Matrix4.getElementIndex = function(column, row) {
     * @param {Cartesian4} result The object onto which to store the result.
     * @returns {Matrix4} The modified result parameter.
     */
-    func setTranslation (translation: Cartesian3) -> Matrix4 {
+    func setTranslation (_ translation: Cartesian3) -> Matrix4 {
         var result = simdType
         result[3] = double4(translation.x, translation.y, translation.z, simdType[3].w)
         return Matrix4(simd: result)
@@ -788,7 +788,7 @@ Matrix4.getElementIndex = function(column, row) {
     *
     * // a.x = 18.0; a.y = 19.0; a.z = 20.0; a.w = 21.0;
     */
-    func row (index: Int) -> Cartesian4 {
+    func row (_ index: Int) -> Cartesian4 {
         assert(index >= 0 && index <= 3, "index must be 0, 1, 2, or 3.")
         return Cartesian4(
             x: self[0, index],
@@ -805,7 +805,7 @@ Matrix4.getElementIndex = function(column, row) {
      * @param {MatrixType} other The second matrix.
      * @returns {MatrixType} The modified result parameter.
      */
-    func multiply(other: Matrix4) -> Matrix4 {
+    func multiply(_ other: Matrix4) -> Matrix4 {
         return Matrix4(simd: simdType * other.simdType)
     }
     
@@ -824,7 +824,7 @@ Matrix4.getElementIndex = function(column, row) {
      * @param {MatrixType} [right] The right hand side matrix.
      * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
      */
-    func equals(other: Matrix4) -> Bool {
+    func equals(_ other: Matrix4) -> Bool {
         return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
     }
     
@@ -838,7 +838,7 @@ Matrix4.getElementIndex = function(column, row) {
      * @param {Number} epsilon The epsilon to use for equality testing.
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
-    func equalsEpsilon(other: Matrix4, epsilon: Double) -> Bool {
+    func equalsEpsilon(_ other: Matrix4, epsilon: Double) -> Bool {
         return matrix_almost_equal_elements(self.simdType.cmatrix, other.simdType.cmatrix, epsilon)
     }
     
@@ -1243,7 +1243,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    func multiplyByVector(cartesian: Cartesian4) -> Cartesian4 {
+    func multiplyByVector(_ cartesian: Cartesian4) -> Cartesian4 {
         return Cartesian4(simd: self.simdType * cartesian.simdType)
     }
 
@@ -1263,7 +1263,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     * //   Cartesian3 p = ...
     * //   Cesium.Matrix4.multiplyByVector(matrix, new Cesium.Cartesian4(p.x, p.y, p.z, 0.0), result);
     */
-    func multiplyByPointAsVector (cartesian: Cartesian3) -> Cartesian3 {
+    func multiplyByPointAsVector (_ cartesian: Cartesian3) -> Cartesian3 {
         let vector = simdType * double4(cartesian.x, cartesian.y, cartesian.z, 0.0)
         return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
     }
@@ -1281,7 +1281,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
      * var p = new Cesium.Cartesian3(1.0, 2.0, 3.0);
      * Cesium.Matrix4.multiplyByPoint(matrix, p, result);
      */
-    func multiplyByPoint (cartesian: Cartesian3) -> Cartesian3 {
+    func multiplyByPoint (_ cartesian: Cartesian3) -> Cartesian3 {
         let vector = simdType * double4(cartesian.x, cartesian.y, cartesian.z, 1.0)
         return Cartesian3(x: vector.x, y: vector.y, z: vector.z)
     }
@@ -1470,7 +1470,7 @@ Matrix4.abs = function(matrix, result) {
     /**
     * @private
     */
-    func equalsArray (array: [Float], offset: Int) -> Bool {
+    func equalsArray (_ array: [Float], offset: Int) -> Bool {
         let other = Matrix4.unpack(array, startingIndex: offset)
         return self == other
     }

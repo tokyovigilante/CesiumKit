@@ -89,7 +89,7 @@ class ComputeCommand: Command {
     * @type {Pass}
     * @default Pass.COMPUTE;
     */
-    let pass: Pass = .Compute
+    let pass: Pass = .compute
     
     /**
     * The object who created this command.  This is useful for debugging command
@@ -130,7 +130,7 @@ class ComputeCommand: Command {
     *
     * @param {Context} context The context that processes the compute command.
     */
-    func execute (computeEngine: ComputeEngine) {
+    func execute (_ computeEngine: ComputeEngine) {
         computeEngine.execute(self)
     }
     

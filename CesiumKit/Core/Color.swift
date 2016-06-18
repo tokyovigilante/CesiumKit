@@ -402,7 +402,7 @@ public extension Color {
      * @param {Number} number The number to be converted.
      * @returns {Number} The converted number.
      */
-    static func ByteToDouble (number: Int) -> Double {
+    static func ByteToDouble (_ number: Int) -> Double {
         return Double(number) / 255.0
     }
      
@@ -413,7 +413,7 @@ public extension Color {
      * @param {Number} number The number to be converted.
      * @returns {Number} The converted number.
      */
-    static func DoubleToByte (number: Double) -> Int {
+    static func DoubleToByte (_ number: Double) -> Int {
         return number == 1.0 ? 255 : Int(number * 256.0) | 0
     }
      /*

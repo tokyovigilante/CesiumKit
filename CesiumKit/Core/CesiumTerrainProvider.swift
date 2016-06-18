@@ -182,7 +182,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }*/
         var metadataError: NSError? = nil
         
-        let metadataSuccess = { (data: NSData) in
+        let metadataSuccess = { (data: Data) in
             
             do {
                 let metadata = try JSON.decode(data, strict: true)
@@ -219,10 +219,10 @@ class CesiumTerrainProvider: TerrainProvider {
                 }
                 let version = try metadata.getString("version")
                 
-                let baseURL: NSURLComponents = NSURLComponents(string: self.url)!
+                let baseURL: URLComponents = URLComponents(string: self.url)!
                 self._tileUrlTemplates = tiles.map {
                     var templateString = $0.string!
-                    let template = NSURLComponents(string: templateString)
+                    let template = URLComponents(string: templateString)
                     if template?.host != nil && baseURL.host == nil {
                         baseURL.host = template!.host
                         baseURL.user = template!.user
@@ -232,7 +232,7 @@ class CesiumTerrainProvider: TerrainProvider {
                     if let string = template?.string {
                         templateString = string
                     }
-                    let url = baseURL.URL!
+                    let url = baseURL.url!
                     
                     let path = templateString.replace("{version}", version)
                     return url.absoluteString + "/" + path
@@ -261,7 +261,7 @@ class CesiumTerrainProvider: TerrainProvider {
                         self._hasWaterMask = true
                     }
                 }
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.ready = true
                 })
                 //that._readyPromise.resolve(true);
@@ -271,7 +271,7 @@ class CesiumTerrainProvider: TerrainProvider {
             }
         }
      
-        let metadataFailure = { (data: NSData) in
+        let metadataFailure = { (data: Data) in
             // If the metadata is not found, assume this is a pre-metadata heightmap tileset.
             /*if (defined(data) && data.statusCode === 404) {
                 metadataSuccess({
@@ -320,7 +320,7 @@ class CesiumTerrainProvider: TerrainProvider {
     * @constant
     * @default 1
     */
-    case OctVertexNormals = 1
+    case octVertexNormals = 1
     /**
     * A watermask is included as an extension to the tile mesh
     *
@@ -328,14 +328,14 @@ class CesiumTerrainProvider: TerrainProvider {
     * @constant
     * @default 2
     */
-    case WaterMask
+    case waterMask
 }
     
-    private func getRequestHeader(extensionsList: [String]?) -> [String: String] {
+    private func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
             return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
         } else {
-            let extensions = extensionsList!.joinWithSeparator("-")
+            let extensions = extensionsList!.joined(separator: "-")
             return ["Accept" : "application/vnd.quantized-mesh;extensions=" + extensions + ",application/octet-stream;q=0.9,*/*;q=0.01"]
         }
     }
@@ -354,7 +354,7 @@ class CesiumTerrainProvider: TerrainProvider {
      }
      */
     
-    func createQuantizedMeshTerrainData(data: NSData, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (data: TerrainData) -> ()) {
+    func createQuantizedMeshTerrainData(_ data: Data, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (data: TerrainData) -> ()) {
         var pos = 0
         let cartesian3Elements = 3
         let boundingSphereElements = cartesian3Elements + 1
@@ -406,7 +406,7 @@ class CesiumTerrainProvider: TerrainProvider {
             triangleLength = bytesPerIndex * triangleElements
         }
         
-        func zigZagDecode(value: UInt16) -> Int16 {
+        func zigZagDecode(_ value: UInt16) -> Int16 {
             let int32Value = Int32(value)
             return Int16((int32Value >> 1) ^ (-(int32Value & 1)))
         }
@@ -476,15 +476,15 @@ class CesiumTerrainProvider: TerrainProvider {
         
         var encodedNormalBuffer: [UInt8]? = nil
         var waterMaskBuffer: [UInt8]? = nil
-        while pos < data.length {
+        while pos < data.count {
             let extensionId = QuantizedMeshExtensionIds(rawValue: data.getUInt8(pos))
             pos += strideof(UInt8)
             let extensionLength = Int(data.getUInt32(pos, littleEndian: _littleEndianExtensionSize))
             pos += strideof(UInt32)
             
-            if extensionId == .OctVertexNormals && requestVertexNormals {
+            if extensionId == .octVertexNormals && requestVertexNormals {
                 encodedNormalBuffer = data.getUInt8Array(pos, elementCount: vertexCount * 2)
-            } else if extensionId == .WaterMask && _requestWaterMask {
+            } else if extensionId == .waterMask && _requestWaterMask {
                 waterMaskBuffer = data.getUInt8Array(pos, elementCount: extensionLength)
             }
             pos += extensionLength
@@ -554,7 +554,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
      *            returns true.
      */
-    func requestTileGeometry(x x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
         assert(ready, "requestTileGeometry must not be called before the terrain provider is ready.")
         
         if _tileUrlTemplates.isEmpty {
@@ -587,7 +587,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 print(error.localizedDescription)
                 return
             }
-            dispatch_async(QueueManager.sharedInstance.processorQueue) {
+            QueueManager.sharedInstance.processorQueue.async {
                 var terrainData: TerrainData? = nil
                 if self._heightmapStructure != nil {
                     terrainData = nil
@@ -595,7 +595,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 } else {
                     self.createQuantizedMeshTerrainData(tileLoader.data, level: level, x: x, y: y, tmsY: tmsY, completionBlock: { data in terrainData = data })
                 }
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     completionBlock(terrainData)
                 }
             }
@@ -699,7 +699,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @param {Number} level The tile level for which to get the maximum geometric error.
      * @returns {Number} The maximum geometric error.
      */
-    func levelMaximumGeometricError (level: Int) -> Double {
+    func levelMaximumGeometricError (_ level: Int) -> Double {
         return _levelZeroMaximumGeometricError / Double(1 << level)
     }
     
@@ -733,7 +733,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }
     }
     
-    func getChildMaskForTile(level: Int, x: Int, y: Int) -> Int {
+    func getChildMaskForTile(_ level: Int, x: Int, y: Int) -> Int {
         guard let availableTiles = _availableTiles else {
             return 15
         }
@@ -760,7 +760,7 @@ class CesiumTerrainProvider: TerrainProvider {
         return mask
     }
     
-    func isTileInRange(levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
+    func isTileInRange(_ levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
         for range in levelAvailable {
             do {
                 let startX = try range.getInt("startX")
@@ -809,7 +809,7 @@ class CesiumTerrainProvider: TerrainProvider {
 
     */
     static func estimatedLevelZeroGeometricErrorForAHeightmap(
-        ellipsoid ellipsoid: Ellipsoid,
+        ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)

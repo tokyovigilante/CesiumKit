@@ -79,7 +79,7 @@ class QuantizedMeshUpsampler {
         var vertexCount = 0
         let hasVertexNormals = parentNormalBuffer != nil
         
-        for (i, (parentU, parentV)) in zip(parentUBuffer, parentVBuffer).enumerate() {
+        for (i, (parentU, parentV)) in zip(parentUBuffer, parentVBuffer).enumerated() {
             let u = Int(parentU)
             let v = Int(parentV)
             if (isEastChild && u >= halfMaxShort || !isEastChild && u <= halfMaxShort) &&
@@ -237,7 +237,7 @@ class QuantizedMeshUpsampler {
                     height: height
                 )
             )
-            cartesianVertices.appendContentsOf((0..<3).map { cartesian.floatRepresentation[$0] })
+            cartesianVertices.append(contentsOf: (0..<3).map { cartesian.floatRepresentation[$0] })
         }
         
         let boundingSphere = BoundingSphere.fromVertices(cartesianVertices, center: Cartesian3.zero, stride: 3)
@@ -249,8 +249,8 @@ class QuantizedMeshUpsampler {
         let heightRange = maximumHeight - minimumHeight
 
         var vertices = uBuffer.map { UInt16 ($0) }
-        vertices.appendContentsOf(vBuffer.map { UInt16($0) })
-        vertices.appendContentsOf(heightBuffer.map { UInt16(Double(maxShort) * ($0 - minimumHeight) / heightRange) } )
+        vertices.append(contentsOf: vBuffer.map { UInt16($0) })
+        vertices.append(contentsOf: heightBuffer.map { UInt16(Double(maxShort) * ($0 - minimumHeight) / heightRange) } )
 
         return (
             vertices: vertices,
@@ -269,12 +269,12 @@ class QuantizedMeshUpsampler {
     }
     
     private class func addClippedPolygon (
-        inout uBuffer uBuffer: [Int],
-        inout vBuffer: [Int],
-        inout heightBuffer: [Double],
-        inout normalBuffer: [UInt8],
-        inout indices: [Int],
-        inout vertexMap: [String: Int],
+        uBuffer: inout [Int],
+        vBuffer: inout [Int],
+        heightBuffer: inout [Double],
+        normalBuffer: inout [UInt8],
+        indices: inout [Int],
+        vertexMap: inout [String: Int],
         clipped: [Double],
         triangleVertices: [Vertex],
         hasVertexNormals: Bool)
@@ -354,7 +354,7 @@ private class Vertex {
     var second: Vertex? = nil
     var ratio: Double? = nil
  
-    func clone (result: Vertex?) -> Vertex {
+    func clone (_ result: Vertex?) -> Vertex {
         
         let result = result ?? Vertex()
 
@@ -370,7 +370,7 @@ private class Vertex {
         return result
     }
 
-    func initializeIndexed (uBuffer uBuffer: [Int], vBuffer: [Int], heightBuffer: [Double], normalBuffer: [UInt8]?, index: Int) {
+    func initializeIndexed (uBuffer: [Int], vBuffer: [Int], heightBuffer: [Double], normalBuffer: [UInt8]?, index: Int) {
         self.uBuffer = uBuffer
         self.vBuffer = vBuffer
         self.heightBuffer = heightBuffer
@@ -390,7 +390,7 @@ private class Vertex {
  this.ratio = ratio;
  };
      */
-    func initializeFromClipResult (clipResult clipResult: [Double], index: Int, vertices: [Vertex]) -> Int {
+    func initializeFromClipResult (clipResult: [Double], index: Int, vertices: [Vertex]) -> Int {
         var nextIndex = index + 1
         
         if (clipResult[index] != -1) {
@@ -448,7 +448,7 @@ private class Vertex {
     private var cartesianScratch1 = [Cartesian3(), Cartesian3()]
     private var cartesianScratch2 = [Cartesian3(), Cartesian3()]
     
-    func lerpOctEncodedNormal(vertex: Vertex) -> Cartesian2 {
+    func lerpOctEncodedNormal(_ vertex: Vertex) -> Cartesian2 {
         depth += 1
         // what about scratch variables
         var first = cartesianScratch1[depth]

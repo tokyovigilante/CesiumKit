@@ -44,8 +44,8 @@ class ImageryLayerUniformMap: NativeUniformMap {
     var uniformBufferProvider: UniformBufferProvider! = nil
 
     let uniformDescriptors: [UniformDescriptor] = [
-        UniformDescriptor(name: "u_viewportOrthographic", type: .FloatMatrix4, count: 1),
-        UniformDescriptor(name: "u_textureDimensions", type: .FloatVec2, count: 1)
+        UniformDescriptor(name: "u_viewportOrthographic", type: .floatMatrix4, count: 1),
+        UniformDescriptor(name: "u_textureDimensions", type: .floatVec2, count: 1)
     ]
     
     private var _uniformStruct = ImageryLayerUniformStruct()

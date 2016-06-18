@@ -53,7 +53,7 @@ protocol TerrainData: class {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(rectangle rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
+    func interpolateHeight(rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
     
     /**
     * Determines if a given child tile is available, based on the
@@ -68,7 +68,7 @@ protocol TerrainData: class {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
+    func isChildAvailable(_ thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
     
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
@@ -83,7 +83,7 @@ protocol TerrainData: class {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(tilingScheme tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ()) -> Bool
+    func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ()) -> Bool
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -100,7 +100,7 @@ protocol TerrainData: class {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(tilingScheme tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool
+    func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool
 }
 
 extension TerrainData {
@@ -118,7 +118,7 @@ extension TerrainData {
     * @param {Number} childY The tile Y coordinate of the child tile to check for availability.
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
-    func isChildAvailable(thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
+    func isChildAvailable(_ thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool {
         var bitNumber = 2 // northwest child
         if childX != thisX * 2 {
             bitNumber += 1 // east child

@@ -750,7 +750,7 @@ public class Material {
     /**
      * @private
      */
-    internal func update (context: Context) {
+    internal func update (_ context: Context) {
         /*var i;
          var uniformId;
          
@@ -819,7 +819,7 @@ public class Material {
     }
     
     
-    func initializeMaterial(strict: Bool = false) {
+    func initializeMaterial(_ strict: Bool = false) {
         _strict = strict
         /*result._count = defaultValue(options.count, 0);*/
         _template = type
@@ -941,7 +941,7 @@ public class Material {
      'mat4' : Matrix4
      };*/
     
-    func createTexture2DUpdateFunction(uniformId: String) {
+    func createTexture2DUpdateFunction(_ uniformId: String) {
         /*return function(material, context) {
          var uniforms = material.uniforms;
          var uniformValue = uniforms[uniformId];
@@ -1067,7 +1067,7 @@ public class Material {
     
     // Writes uniform declarations to the shader file and connects uniform values with
     // corresponding material properties through the returnUniforms function.
-    func createUniform (descriptor: UniformDescriptor) {
+    func createUniform (_ descriptor: UniformDescriptor) {
 
         /*if (uniformType === 'channels') {
          if (replaceToken(material, uniformId, uniformValue, false) === 0 && strict) {
@@ -1108,7 +1108,7 @@ public class Material {
         // Set uniform value
         /*material.uniforms[uniformId] = uniformValue;
          */
-        if descriptor.type == .Sampler2D {
+        if descriptor.type == .sampler2D {
             /*material._uniforms[newUniformId] = function() {
              return material._textures[uniformId];
              };
@@ -1165,8 +1165,8 @@ public class Material {
     // Used for searching or replacing a token in a material's shader source with something else.
     // If excludePeriod is true, do not accept tokens that are preceded by periods.
     // http://stackoverflow.com/questions/641407/javascript-negative-lookbehind-equivalent
-    func replaceToken(token: String, newToken: String, excludePeriod: Bool = true) -> Int {
-        var count = 0
+    func replaceToken(_ token: String, newToken: String, excludePeriod: Bool = true) -> Int {
+        let count = 0
         let suffixChars = "([\\w])?"
         let prefixChars = "([\\w' + (excludePeriod ? '.' : '') + '])?"
         /*var regExp = new RegExp(prefixChars + token + suffixChars, 'g');

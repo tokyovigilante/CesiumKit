@@ -129,7 +129,7 @@ public struct BoundingRectangle: Equatable {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    func union(other: BoundingRectangle) -> BoundingRectangle {
+    func union(_ other: BoundingRectangle) -> BoundingRectangle {
         
         let lowerLeftX = min(x, other.x);
         let lowerLeftY = min(y, other.y);
@@ -151,7 +151,7 @@ public struct BoundingRectangle: Equatable {
     * @param {BoundingRectangle} [result] The object onto which to store the result.
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
-    func expand(point: Cartesian2) -> BoundingRectangle {
+    func expand(_ point: Cartesian2) -> BoundingRectangle {
         var result = self
         let width = point.x - result.x
         let height = point.y - result.y
@@ -179,14 +179,14 @@ public struct BoundingRectangle: Equatable {
     * @param {BoundingRectangle} right The other rectangle to check for intersection.
     * @returns {Intersect} <code>Intersect.INTESECTING</code> if the rectangles intersect, <code>Intersect.OUTSIDE</code> otherwise.
     */
-    func intersect(other: BoundingRectangle) -> Intersect {
+    func intersect(_ other: BoundingRectangle) -> Intersect {
         if !(x > other.x + other.width ||
             x + width < other.x ||
             y + height < other.y ||
             y > other.y + other.height) {
-                return Intersect.Intersecting
+                return Intersect.intersecting
         }
-        return Intersect.Outside;
+        return Intersect.outside;
     }
     
 }

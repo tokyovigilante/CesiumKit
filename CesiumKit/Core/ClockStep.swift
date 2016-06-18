@@ -27,7 +27,7 @@ public enum ClockStep {
     * @type {Number}
     * @constant
     */
-    case TickDependent
+    case tickDependent
     
     /**
     * {@link Clock#tick} advances the current time by the amount of system
@@ -36,7 +36,7 @@ public enum ClockStep {
     * @type {Number}
     * @constant
     */
-    case SystemClockMultiplier
+    case systemClockMultiplier
     
     /**
     * {@link Clock#tick} sets the clock to the current system time;
@@ -45,5 +45,5 @@ public enum ClockStep {
     * @type {Number}
     * @constant
     */
-    case SystemClock
+    case systemClock
 }

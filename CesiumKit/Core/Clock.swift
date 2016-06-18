@@ -112,14 +112,14 @@ public class Clock {
      */
     private (set) var isUTC: Bool
     
-    private var _lastSystemTime: NSDate
+    private var _lastSystemTime: Date
     
     public init(
         startTime: JulianDate? = nil,
         currentTime: JulianDate? = nil,
         stopTime: JulianDate? = nil,
-        clockRange: ClockRange = .Unbounded,
-        clockStep: ClockStep = .SystemClockMultiplier,
+        clockRange: ClockRange = .unbounded,
+        clockStep: ClockStep = .systemClockMultiplier,
         multiplier: Double = 1.0,
         canAnimate: Bool = true,
         shouldAnimate: Bool = true,
@@ -170,10 +170,10 @@ public class Clock {
             self.shouldAnimate = shouldAnimate
             
             if isUTC {
-                _lastSystemTime = NSDate()
+                _lastSystemTime = Date()
 
             } else {
-                _lastSystemTime = NSDate.taiDate()
+                _lastSystemTime = Date.taiDate()
             }
             
             self.isUTC = isUTC
@@ -188,25 +188,25 @@ public class Clock {
      */
     func tick() -> JulianDate {
         
-        let currentSystemTime = NSDate()
+        let currentSystemTime = Date()
         var currentTime = self.currentTime
         
         if canAnimate && shouldAnimate {
-            if clockStep == .SystemClock {
+            if clockStep == .systemClock {
                 currentTime = JulianDate.now()
             } else {
-                if clockStep == .TickDependent {
+                if clockStep == .tickDependent {
                     currentTime = currentTime.addSeconds(multiplier)
                 } else {
-                    currentTime = currentTime.addSeconds(multiplier * currentSystemTime.timeIntervalSinceDate(_lastSystemTime))
+                    currentTime = currentTime.addSeconds(multiplier * currentSystemTime.timeIntervalSince(_lastSystemTime))
                 }
-                if clockRange == .Clamped {
+                if clockRange == .clamped {
                     if currentTime.lessThan(startTime) {
                         currentTime = startTime
                     } else if currentTime.greaterThan(stopTime) {
                         currentTime = stopTime
                     }
-                } else if clockRange == .LoopStop {
+                } else if clockRange == .loopStop {
                     if currentTime.lessThan(startTime) {
                         currentTime = startTime
                     }

@@ -68,7 +68,7 @@ class DrawCommand: Command {
     * @type {PrimitiveType}
     * @default PrimitiveType.TRIANGLES
     */
-    var primitiveType: MTLPrimitiveType = .Triangle
+    var primitiveType: MTLPrimitiveType = .triangle
     
     /**
     * The vertex array.
@@ -125,7 +125,7 @@ class DrawCommand: Command {
     * @type {Pass}
     * @default undefined
     */
-    var pass: Pass = .Globe
+    var pass: Pass = .globe
     
     /**
     * Specifies if this command is only to be executed in the frustum closest
@@ -180,14 +180,14 @@ class DrawCommand: Command {
         orientedBoundingBox: OrientedBoundingBox? = nil,
         cull: Bool = true,
         modelMatrix: Matrix4? = nil,
-        primitiveType: MTLPrimitiveType = .Triangle,
+        primitiveType: MTLPrimitiveType = .triangle,
         vertexArray: VertexArray? = nil,
         count: Int? = nil,
         offset: Int = 0,
         uniformMap: UniformMap? = nil,
         renderState: RenderState? = nil,
         renderPipeline: RenderPipeline? = nil,
-        pass: Pass = .Globe,
+        pass: Pass = .globe,
         executeInClosestFrustum: Bool = false,
         owner: AnyObject? = nil,
         debugShowBoundingVolume: Bool = false,
@@ -217,7 +217,7 @@ class DrawCommand: Command {
     * @param {RenderState} [renderState] The render state that will override the render state of the command.
     * @param {RenderPipeline} [renderPipeline] The render pipeline that will override the shader program of the command.
     */
-    func execute(context: Context, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
+    func execute(_ context: Context, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         context.draw(self, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
     }
     

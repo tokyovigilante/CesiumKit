@@ -76,7 +76,7 @@ public class ImageryLayerCollection {
     *
     * @exception {DeveloperError} index, if supplied, must be greater than or equal to zero and less than or equal to the number of the layers.
     */
-    func add (layer: ImageryLayer, index: Int? = nil) {
+    func add (_ layer: ImageryLayer, index: Int? = nil) {
         //FIXME: Unimplemented
         let hasIndex = index != nil
         
@@ -86,7 +86,7 @@ public class ImageryLayerCollection {
             insertIndex = index!
             assert(index! >= 0, "index must be greater than or equal to zero")
             assert(index <= _layers.count, "index must be less than or equal to the number of layers")
-            _layers.insert(layer, atIndex: insertIndex)
+            _layers.insert(layer, at: insertIndex)
         } else {
             insertIndex = _layers.count
             _layers.append(layer)
@@ -106,7 +106,7 @@ public class ImageryLayerCollection {
     * @returns {ImageryLayer} The newly created layer.
     */
     // FIXME: ImageryProvider
-    public func addImageryProvider(imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
+    public func addImageryProvider(_ imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
         
         let layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)
@@ -433,7 +433,7 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
      *
      * @param {FrameState} frameState The frameState.
      */
-    func queueReprojectionCommands (inout frameState: FrameState) {
+    func queueReprojectionCommands (_ frameState: inout FrameState) {
         for layer in _layers {
             layer.queueReprojectionCommands(&frameState)
         }
@@ -494,7 +494,7 @@ ImageryLayerCollection.prototype.destroy = function() {
         var layersShownOrHidden = [ImageryLayer]()
         var layer: ImageryLayer
         
-        for (index, layer) in _layers.enumerate() {
+        for (index, layer) in _layers.enumerated() {
             layer.layerIndex = index
             
             if (layer.show) {
@@ -511,7 +511,7 @@ ImageryLayerCollection.prototype.destroy = function() {
                 layer._show = layer.show
             }
         }
-        for (index, layer) in layersShownOrHidden.enumerate() {
+        for (index, layer) in layersShownOrHidden.enumerated() {
             //FIXME: RaiseEvent
             layerShownOrHidden.raiseEvent()//layer, layer._layerIndex, layer.show)
         }

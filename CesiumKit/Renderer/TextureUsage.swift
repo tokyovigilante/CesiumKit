@@ -10,7 +10,7 @@ import Foundation
 
 import Metal
 
-public struct TextureUsage: OptionSetType {
+public struct TextureUsage: OptionSet {
     
     public let rawValue: UInt
     public init(rawValue: UInt) { self.rawValue = rawValue }

@@ -9,7 +9,7 @@
 import CoreGraphics
 import Metal
 
-private let _colorSpace = CGColorSpaceCreateDeviceRGB()!
+private let _colorSpace = CGColorSpaceCreateDeviceRGB()
 
 private var _defaultSampler: Sampler! = nil
 
@@ -17,19 +17,19 @@ private var _mipmapSampler: Sampler! = nil
 
 
 enum TextureSource {
-    case Image(CGImage)
-    case Buffer(Imagebuffer)
-    case CubeMap(CubeMapSources)
+    case image(CGImage)
+    case buffer(Imagebuffer)
+    case cubeMap(CubeMapSources)
     
     var width: Int {
         get {
             switch self {
-            case .Image(let image):
-                return CGImageGetWidth(image)
-            case .Buffer(let imagebuffer):
+            case .image(let image):
+                return image.width
+            case .buffer(let imagebuffer):
                 return imagebuffer.width
-            case .CubeMap(let sources):
-                return CGImageGetWidth(sources.negativeX)
+            case .cubeMap(let sources):
+                return sources.negativeX.width
             }
         }
     }
@@ -37,12 +37,12 @@ enum TextureSource {
     var height: Int {
         get {
             switch self {
-            case .Image(let image):
-                return Int(CGImageGetHeight(image))
-            case .Buffer(let imagebuffer):
+            case .image(let image):
+                return Int(image.height)
+            case .buffer(let imagebuffer):
                 return imagebuffer.height
-            case .CubeMap(let sources):
-                return CGImageGetHeight(sources.negativeX)
+            case .cubeMap(let sources):
+                return sources.negativeX.height
             }
         }
     }
@@ -70,7 +70,7 @@ struct TextureOptions {
     
     let sampler: Sampler?
     
-    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .BGRA8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, mipmapped: Bool = false, sampler: Sampler? = nil) {
+    init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .bgra8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, mipmapped: Bool = false, sampler: Sampler? = nil) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
          
         self.source = source
@@ -138,7 +138,7 @@ public class Texture {
         
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20*/
-        premultiplyAlpha = options.premultiplyAlpha || options.pixelFormat == .RGBA8Unorm || options.pixelFormat == .BGRA8Unorm || options.pixelFormat == .R8Unorm
+        premultiplyAlpha = options.premultiplyAlpha || options.pixelFormat == .rgba8Unorm || options.pixelFormat == .bgra8Unorm || options.pixelFormat == .r8Unorm
         
         usage = options.usage
 
@@ -149,11 +149,11 @@ public class Texture {
         }
         
         if _mipmapSampler == nil {
-            _mipmapSampler = Sampler(context: context, mipMagFilter: .Linear)
+            _mipmapSampler = Sampler(context: context, mipMagFilter: .linear)
         }
         
         let sampler = (mipmapped ? _mipmapSampler : _defaultSampler)
-        self.sampler = options.sampler ?? sampler
+        self.sampler = options.sampler ?? sampler!
         
         assert(mipmapped == false || Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height), "Cannot use mipmapping for NPOT textures")
 
@@ -183,30 +183,30 @@ public class Texture {
         
         let textureDescriptor: MTLTextureDescriptor
         if cubeMap {
-            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptorWithPixelFormat(pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
+            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(with: pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
         } else {
-            textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(pixelFormat.toMetal(),
+            textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(with: pixelFormat.toMetal(),
                 width: width, height: height, mipmapped: mipmapped)
         }
         textureDescriptor.usage = usage.toMetal()
         
-        if pixelFormat == .Depth32Float || pixelFormat == .Depth32FloatStencil8 || pixelFormat == .Stencil8 || textureDescriptor.sampleCount > 1 {
-            textureDescriptor.storageMode = .Private
+        if pixelFormat == .depth32Float || pixelFormat == .depth32FloatStencil8 || pixelFormat == .stencil8 || textureDescriptor.sampleCount > 1 {
+            textureDescriptor.storageMode = .private
         }
         #if os(OSX)
             if pixelFormat == .Depth32FloatStencil8 {
                 textureDescriptor.storageMode = .Private
             }
         #endif
-        metalTexture = context.device.newTextureWithDescriptor(textureDescriptor)
+        metalTexture = context.device.newTexture(with: textureDescriptor)
         
          if let source = source {
             switch source {
-            case .Buffer(let imagebuffer):
+            case .buffer(let imagebuffer):
                 // Source: UInt8 array
                 let region = MTLRegionMake2D(0, 0, imagebuffer.width, imagebuffer.height)
-                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
-            case .Image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
+                metalTexture.replace(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
+            case .image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 let textureData = imageRef.renderToPixelArray(
                     colorSpace: _colorSpace,
@@ -215,8 +215,8 @@ public class Texture {
                 )
                 // Copy to texture
                 let region = MTLRegionMake2D(0, 0, width, height)
-                metalTexture.replaceRegion(region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
-            case .CubeMap(let sources):
+                metalTexture.replace(region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
+            case .cubeMap(let sources):
 
                 let region = MTLRegionMake2D(0, 0, width, height)
 
@@ -227,7 +227,7 @@ public class Texture {
                         flipY: flipY
                     )
                     // Copy to texture
-                    metalTexture.replaceRegion(
+                    metalTexture.replace(
                         region,
                         mipmapLevel: 0,
                         slice: slice,
@@ -248,8 +248,8 @@ public class Texture {
         self.metalTexture = metalTexture
         self.width = metalTexture.width
         self.height = metalTexture.height
-        self.cubeMap = metalTexture.textureType == .TypeCube
-        self.pixelFormat = PixelFormat(rawValue: metalTexture.pixelFormat.rawValue) ?? .Invalid
+        self.cubeMap = metalTexture.textureType == .typeCube
+        self.pixelFormat = PixelFormat(rawValue: metalTexture.pixelFormat.rawValue) ?? .invalid
         self.textureFilterAnisotropic = true
         self.usage = TextureUsage(rawValue: metalTexture.usage.rawValue)
         self.mipmapped = metalTexture.mipmapLevelCount > 1
@@ -260,7 +260,7 @@ public class Texture {
         }
         
         if _mipmapSampler == nil {
-            _mipmapSampler = Sampler(context: context, mipMagFilter: .Linear)
+            _mipmapSampler = Sampler(context: context, mipMagFilter: .linear)
         }
         
         let defaultSampler: Sampler = mipmapped ? _mipmapSampler : _defaultSampler
@@ -427,10 +427,10 @@ public class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    func generateMipmaps (context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
+    func generateMipmaps (_ context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
         assert(mipmapped, "mipmapping must be enabled during texture creation")
         let blitEncoder = context.createBlitCommandEncoder(completionBlock)
-        blitEncoder.generateMipmapsForTexture(metalTexture)
+        blitEncoder.generateMipmaps(for: metalTexture)
         context.completeBlitPass(blitEncoder)
     }
 

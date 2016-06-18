@@ -21,7 +21,7 @@ class Queue<T: Equatable> {
     *
     * @param {Object} item The item to enqueue.
     */
-    func enqueue(item: T) {
+    func enqueue(_ item: T) {
         _array.append(item)
     }
     
@@ -32,7 +32,7 @@ class Queue<T: Equatable> {
         if _array.count == 0 {
             return nil
         }
-        return _array.removeAtIndex(0)
+        return _array.remove(at: 0)
     }
     
     var head: T? {
@@ -61,7 +61,7 @@ class Queue<T: Equatable> {
     *
     * @param {Object} item the item to search for.
     */
-    func contains(item: T) -> Bool {
+    func contains(_ item: T) -> Bool {
         for object in _array {
             if object == item {
                 return true

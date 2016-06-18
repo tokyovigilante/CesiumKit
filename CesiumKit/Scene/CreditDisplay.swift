@@ -78,7 +78,7 @@ class CreditDisplay {
         )
     }
     
-    func update(inout frameState: FrameState) {
+    func update(_ frameState: inout FrameState) {
         //_creditRenderer.update(&frameState)
         let context = frameState.context
         var meshSize = _creditRenderer.computeSize(Double(context.width - 80))
@@ -92,7 +92,7 @@ class CreditDisplay {
         _creditRenderer.update(&frameState)
     }
     
-    private func contains(credit: Credit, inCredits credits: [Credit]) -> Bool {
+    private func contains(_ credit: Credit, inCredits credits: [Credit]) -> Bool {
         for existingCredit in credits {
             if credit == existingCredit {
                 return true
@@ -106,7 +106,7 @@ class CreditDisplay {
      *
      * @param {Credit} credit The credit to display
      */
-    func addCredit (credit: Credit) {
+    func addCredit (_ credit: Credit) {
         if false/*credit.hasImage*/ {
             if !contains(credit, inCredits: _defaultImageCredits) {
                 _currentFrameCredits.imageCredits[credit.id] = credit
@@ -123,7 +123,7 @@ class CreditDisplay {
      *
      * @param {Credit} credit The credit to added to defaults
      */
-    func addDefaultCredit (credit: Credit) {
+    func addDefaultCredit (_ credit: Credit) {
         
         if false/*credit.hasImage*/ {
             if !contains(credit, inCredits: _defaultImageCredits) {
@@ -142,7 +142,7 @@ class CreditDisplay {
      *
      * @param {Credit} credit The credit to be removed from defaults
      */
-    func removeDefaultCredit (credit: Credit) {
+    func removeDefaultCredit (_ credit: Credit) {
         /*
         var index;
         if false/*credit.hasImage*/ {

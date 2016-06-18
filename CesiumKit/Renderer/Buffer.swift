@@ -27,7 +27,7 @@ class Buffer {
      Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
      copied to the buffer and can be released (or automatically released via ARC). 
     */
-    init (device: MTLDevice, array: UnsafePointer<Void> = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
+    init (device: MTLDevice, array: UnsafePointer<Void>? = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         length = sizeInBytes
@@ -38,13 +38,13 @@ class Buffer {
             #if os(OSX)
                 metalBuffer = device.newBufferWithBytes(array, length: length, options: .StorageModeManaged)
             #elseif os(iOS)
-                metalBuffer = device.newBufferWithBytes(array, length: length, options: .StorageModeShared)
+                metalBuffer = device.newBuffer(withBytes: array!, length: length, options: MTLResourceOptions())
             #endif
         } else {
             #if os(OSX)
                 metalBuffer = device.newBufferWithLength(length, options: .StorageModeManaged)
             #elseif os(iOS)
-                metalBuffer = device.newBufferWithLength(length, options: .StorageModeShared)
+                metalBuffer = device.newBuffer(withLength: length, options: MTLResourceOptions())
             #endif
         }
         if let label = label {
@@ -68,7 +68,7 @@ class Buffer {
         memcpy(metalBuffer.contents()+targetOffset, other.metalBuffer.contents()+sourceOffset, copyLength)
     }
     
-    func signalWriteComplete (range: NSRange? = nil) {
+    func signalWriteComplete (_ range: NSRange? = nil) {
         #if os(OSX)
             metalBuffer.didModifyRange(range ?? _entireRange)
         #endif

@@ -17,6 +17,6 @@ import Foundation
 * @exports Intersect
 */
 enum Intersect: Int {
-    case Outside = -1, Intersecting, Inside
+    case outside = -1, intersecting, inside
 }
 

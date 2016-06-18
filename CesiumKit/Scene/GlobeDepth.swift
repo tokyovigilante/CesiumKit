@@ -69,27 +69,27 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
         _globeDepthTexture = nil
     }
 
-    func createTextures(context: Context, width: Int, height: Int) {
+    func createTextures(_ context: Context, width: Int, height: Int) {
         _colorTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
-            pixelFormat: .BGRA8Unorm)
+            pixelFormat: .bgra8Unorm)
         )
         
         _depthStencilTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
-            pixelFormat : .Depth32FloatStencil8)
+            pixelFormat : .depth32FloatStencil8)
         )
         
         _globeDepthTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
-            pixelFormat : .RGBA8Unorm)
+            pixelFormat : .rgba8Unorm)
         )
     }
 
-    func updateFramebuffers(context: Context) {
+    func updateFramebuffers(_ context: Context) {
         let width = Int(context.width)
         let height = Int(context.height)
         
@@ -140,37 +140,37 @@ GlobeDepth.prototype.executeDebugGlobeDepth = function(context, passState) {
 executeDebugGlobeDepth(this, context, passState);
 };*/
 
-    func update (context: Context) {
+    func update (_ context: Context) {
 
         updateFramebuffers(context)
         //updateCopyCommands(this, context);
     }
 
-    func executeCopyDepth (context: Context, passState: PassState) {
+    func executeCopyDepth (_ context: Context, passState: PassState) {
         /*if (defined(this._copyDepthCommand)) {
             this._copyDepthCommand.execute(context, passState);
             context.uniformState.globeDepthTexture = this._globeDepthTexture;
         }*/
     }
 
-    func executeCopyColor (context: Context, passState: PassState) {
+    func executeCopyColor (_ context: Context, passState: PassState) {
 
         let origin = MTLOriginMake(0, 0, 0)
         let size = MTLSizeMake(_colorTexture.width, _colorTexture.height, 1)
         let blitEncoder = context.createBlitCommandEncoder()
-        blitEncoder.copyFromTexture(framebuffer.colorTextures![0].metalTexture,
+        blitEncoder.copy(from: framebuffer.colorTextures![0].metalTexture,
             sourceSlice: 0,
             sourceLevel: 0,
             sourceOrigin: origin,
             sourceSize: size,
-            toTexture: passState.framebuffer.colorTextures![0].metalTexture,
+            to: passState.framebuffer.colorTextures![0].metalTexture,
             destinationSlice: 0,
             destinationLevel: 0,
             destinationOrigin: origin)
         context.completeBlitPass(blitEncoder)
     }
     
-    func clear (context: Context, passState: PassState, clearColor: Cartesian4) {
+    func clear (_ context: Context, passState: PassState, clearColor: Cartesian4) {
         _clearColorCommand.color = clearColor
         _clearColorCommand.execute(context, passState: passState)
     }

@@ -53,7 +53,7 @@ public protocol TilingScheme {
     * @param {Number} level The level-of-detail.
     * @returns {Number} The number of tiles in the X direction at the given level.
     */
-    func numberOfXTilesAtLevel(level: Int) -> Int
+    func numberOfXTilesAtLevel(_ level: Int) -> Int
     
     /**
     * Gets the total number of tiles in the Y direction at a specified level-of-detail.
@@ -62,7 +62,7 @@ public protocol TilingScheme {
     * @param {Number} level The level-of-detail.
     * @returns {Number} The number of tiles in the Y direction at the given level.
     */
-    func numberOfYTilesAtLevel(level: Int) -> Int
+    func numberOfYTilesAtLevel(_ level: Int) -> Int
     
     /**
     * Transforms an rectangle specified in geodetic radians to the native coordinate system
@@ -75,7 +75,7 @@ public protocol TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the native rectangle if 'result'
     *          is undefined.
     */
-    func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle
+    func rectangleToNativeRectangle(_ rectangle: Rectangle) -> Rectangle
     
     /**
     * Converts tile x, y coordinates and level to an rectangle expressed in the native coordinates
@@ -90,7 +90,7 @@ public protocol TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToNativeRectangle(x x: Int, y: Int, level: Int) -> Rectangle
+    func tileXYToNativeRectangle(x: Int, y: Int, level: Int) -> Rectangle
     
     /**
     * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
@@ -104,7 +104,7 @@ public protocol TilingScheme {
     * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
     *          if 'result' is undefined.
     */
-    func tileXYToRectangle(x x: Int, y: Int, level: Int) -> Rectangle
+    func tileXYToRectangle(x: Int, y: Int, level: Int) -> Rectangle
     /**
     * Calculates the tile x, y coordinates of the tile containing
     * a given cartographic position.
@@ -117,6 +117,6 @@ public protocol TilingScheme {
     * @returns {Cartesian2} The specified 'result', or a new object containing the tile x, y coordinates
     *          if 'result' is undefined.
     */
-    func positionToTileXY(position position: Cartographic, level: Int) -> (x: Int, y: Int)?
+    func positionToTileXY(position: Cartographic, level: Int) -> (x: Int, y: Int)?
     
 }

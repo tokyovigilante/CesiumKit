@@ -99,7 +99,7 @@ struct Plane {
     * @param {Cartesian3} point The point.
     * @returns {Number} The signed shortest distance of the point to the plane.
     */
-    func getPointDistance (point: Cartesian3) -> Double {
+    func getPointDistance (_ point: Cartesian3) -> Double {
         return normal.dot(point) + distance
     }
     

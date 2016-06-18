@@ -130,7 +130,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object into which to store the result.
     * @returns {Cartesian3} A cartesian with the minimum components.
     */
-    func minimumByComponent(other: Cartesian3) -> Cartesian3 {
+    func minimumByComponent(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: vector_min(simdType, other.simdType))
     }
     
@@ -142,7 +142,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object into which to store the result.
     * @returns {Cartesian3} A cartesian with the maximum components.
     */
-    func maximumByComponent(other: Cartesian3) -> Cartesian3 {
+    func maximumByComponent(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: vector_max(simdType, other.simdType))
     }
     
@@ -177,7 +177,7 @@ public struct Cartesian3 {
     * // Returns 1.0
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(2.0, 0.0, 0.0));
     */
-    func distance(other: Cartesian3) -> Double {
+    func distance(_ other: Cartesian3) -> Double {
         return simd.distance(simdType, other.simdType)
     }
     
@@ -193,7 +193,7 @@ public struct Cartesian3 {
     * // Returns 4.0, not 2.0
     * var d = Cesium.Cartesian3.distance(new Cesium.Cartesian3(1.0, 0.0, 0.0), new Cesium.Cartesian3(3.0, 0.0, 0.0));
     */
-    func distanceSquared(other: Cartesian3) -> Double {
+    func distanceSquared(_ other: Cartesian3) -> Double {
         return distance_squared(simdType, other.simdType)
     }
 
@@ -215,11 +215,11 @@ public struct Cartesian3 {
     * @param {Cartesian3} right The second Cartesian.
     * @returns {Number} The dot product.
     */
-    public func dot(other: Cartesian3) -> Double {
+    public func dot(_ other: Cartesian3) -> Double {
         return simd.dot(simdType, other.simdType)
     }
     
-    public func multiplyComponents(other: Cartesian3) -> Cartesian3 {
+    public func multiplyComponents(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simdType * other.simdType)
     }
     
@@ -231,7 +231,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func add(other: Cartesian3) -> Cartesian3 {
+    public func add(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simdType + other.simdType)
     }
     
@@ -243,7 +243,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func subtract(other: Cartesian3) -> Cartesian3 {
+    public func subtract(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simdType - other.simdType)
     }
     
@@ -255,7 +255,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func multiplyByScalar (scalar: Double) -> Cartesian3 {
+    public func multiplyByScalar (_ scalar: Double) -> Cartesian3 {
         return Cartesian3(simd: simdType * scalar)
     }
     
@@ -267,7 +267,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func divideByScalar (scalar: Double) -> Cartesian3 {
+    public func divideByScalar (_ scalar: Double) -> Cartesian3 {
         return Cartesian3(simd: simdType * (1/scalar))
     }
     
@@ -302,7 +302,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
     */
-    func lerp(end: Cartesian3, t: Double) -> Cartesian3 {
+    func lerp(_ end: Cartesian3, t: Double) -> Cartesian3 {
         return Cartesian3(simd: mix(simdType, end.simdType, t: t))
     }
     
@@ -313,7 +313,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} right The second Cartesian.
     * @returns {Number} The angle between the Cartesians.
     */
-    func angleBetween(other: Cartesian3) -> Double {
+    func angleBetween(_ other: Cartesian3) -> Double {
         let cosine = self.normalize().dot(other.normalize())
         let sine = self.normalize().cross(other.normalize()).magnitude
         return atan2(sine, cosine)
@@ -348,7 +348,7 @@ public struct Cartesian3 {
         return result;
     }
     
-    func equalsArray (array: [Float], offset: Int) -> Bool {
+    func equalsArray (_ array: [Float], offset: Int) -> Bool {
         return Float(x) == array[offset] &&
             Float(y) == array[offset + 1] &&
             Float(z) == array[offset + 2]
@@ -366,7 +366,7 @@ public struct Cartesian3 {
     * @param {Number} epsilon The epsilon to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
-    func equalsEpsilon(other: Cartesian3, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
+    func equalsEpsilon(_ other: Cartesian3, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
         return self == other ||
             (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
                 Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
@@ -381,7 +381,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} [result] The object onto which to store the result.
     * @returns {Cartesian3} The cross product.
     */
-    public func cross(other: Cartesian3) -> Cartesian3 {
+    public func cross(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simd.cross(simdType, other.simdType))
     }
     
@@ -398,7 +398,7 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    public static func fromDegrees(longitude longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    public static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
@@ -418,7 +418,7 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    static func fromRadians(longitude longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    static func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let cosLatitude = cos(latitude);
         let n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
@@ -439,7 +439,7 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
     */
-    static func fromDegreesArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromDegreesArray(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
         for coordinate in coordinates {
@@ -460,7 +460,7 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
     */
-    static func fromRadiansArray(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArray(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
@@ -482,7 +482,7 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromDegreesArrayHeights([-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]);
     */
-    static func fromDegreesArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromDegreesArrayHeights(_ coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
         for i in 0.stride(to: coordinates.count, by: 3) {
@@ -505,7 +505,7 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
     */
-    static func fromRadiansArrayHeights(coordinates coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         

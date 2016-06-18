@@ -7,7 +7,7 @@
     
 class BingMapsAPI {
     
-    class func getKey(key: String?) -> String {
+    class func getKey(_ key: String?) -> String {
         if key != nil {
             return key!
         }

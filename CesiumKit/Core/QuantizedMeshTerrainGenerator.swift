@@ -22,7 +22,7 @@ private let nIndex = 6
 class QuantizedMeshTerrainGenerator {
     
     class func computeMesh (
-        minimumHeight minimumHeight: Double,
+        minimumHeight: Double,
         maximumHeight: Double,
         quantizedVertices: [UInt16],
         octEncodedNormals: [UInt8]?,
@@ -178,7 +178,7 @@ class QuantizedMeshTerrainGenerator {
         )
     }
     
-    class func addSkirt(inout vertexBuffer: [Float32], inout indexBuffer: [Int], edgeVertices: [Int], encoding: TerrainEncoding, heights: [Double], uvs: [Cartesian2], octEncodedNormals: [UInt8]?, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, exaggeration: Double) {
+    class func addSkirt(_ vertexBuffer: inout [Float32], indexBuffer: inout [Int], edgeVertices: [Int], encoding: TerrainEncoding, heights: [Double], uvs: [Cartesian2], octEncodedNormals: [UInt8]?, ellipsoid: Ellipsoid, rectangle: Rectangle, skirtLength: Double, isWestOrNorthEdge: Bool, exaggeration: Double) {
         
         let start, end, increment: Int
         if isWestOrNorthEdge {
@@ -259,7 +259,7 @@ class QuantizedMeshTerrainGenerator {
         }
     }
     
-    class func findMinMaxSkirts(edgeIndices: [Int], edgeHeight: Double, heights: [Double], uvs: [Cartesian2], rectangle: Rectangle, ellipsoid: Ellipsoid, toENU: Matrix4, inout minimum: Cartesian3, inout maximum: Cartesian3) -> Double {
+    class func findMinMaxSkirts(_ edgeIndices: [Int], edgeHeight: Double, heights: [Double], uvs: [Cartesian2], rectangle: Rectangle, ellipsoid: Ellipsoid, toENU: Matrix4, minimum: inout Cartesian3, maximum: inout Cartesian3) -> Double {
         var hMin = Double.infinity
         
         let north = rectangle.north
