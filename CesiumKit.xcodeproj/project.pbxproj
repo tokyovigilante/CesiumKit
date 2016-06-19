@@ -415,6 +415,10 @@
 		946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D129D1C2CBF40001A40C8 /* NSDate+TAI.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		9470E1561C04A2C10095A86F /* GLSLOptimizer.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9404C86E1BBE9FF8001A40C8 /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		947748711D14D1130041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748701D14D1130041F512 /* CesiumError.swift */; };
+		947748721D14D1130041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748701D14D1130041F512 /* CesiumError.swift */; };
+		947748741D1526230041F512 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748731D1526230041F512 /* DebugLog.swift */; };
+		947748751D1526230041F512 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748731D1526230041F512 /* DebugLog.swift */; };
 		947820E51B5A2C0E0095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
 		947821031B5A2D7B0095A86F /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94697DA11A25CA0E00FFAD81 /* Array.swift */; };
 		947821041B5A2D7B0095A86F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
@@ -957,6 +961,8 @@
 		946D25A919592BFD0080379D /* Ray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
 		946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BoundingSphereTests.swift; path = Core/BoundingSphereTests.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
+		947748701D14D1130041F512 /* CesiumError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumError.swift; sourceTree = "<group>"; };
+		947748731D1526230041F512 /* DebugLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DebugLog.swift; path = Platform/DebugLog.swift; sourceTree = "<group>"; };
 		947820DB1B5A2C0E0095A86F /* CesiumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CesiumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CesiumKit OSXTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9478218E1B5A3D310095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -1681,6 +1687,8 @@
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9488A1481CBE4ACE0095A86F /* String+HMAC.swift */,
 				9488A14B1CBE4BFC0095A86F /* Crypto.swift */,
+				947748701D14D1130041F512 /* CesiumError.swift */,
+				947748731D1526230041F512 /* DebugLog.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2006,11 +2014,14 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Test Toast";
 				TargetAttributes = {
 					940A5AE91B6D54400095A86F = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 7AS9FJBK47;
+						DevelopmentTeamName = "Ryan Walklin";
+						ProvisioningStyle = Automatic;
 					};
 					9413B7831A37B8D900FFAD81 = {
 						CreatedOnToolsVersion = 6.2;
@@ -2019,16 +2030,29 @@
 					};
 					947820DA1B5A2C0E0095A86F = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 7AS9FJBK47;
+						DevelopmentTeamName = "Ryan Walklin";
+						ProvisioningStyle = Automatic;
 					};
 					947820E31B5A2C0E0095A86F = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 7AS9FJBK47;
+						DevelopmentTeamName = "Ryan Walklin";
+						ProvisioningStyle = Automatic;
 					};
 					9488A1521CBE4D540095A86F = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 7AS9FJBK47;
+						DevelopmentTeamName = "Ryan Walklin";
+						ProvisioningStyle = Automatic;
 					};
 					94985A641A38444C00FFAD81 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = 7AS9FJBK47;
+					};
+					94DC79311918425300012DC4 = {
+						DevelopmentTeam = 7AS9FJBK47;
+						DevelopmentTeamName = "Ryan Walklin";
 					};
 				};
 			};
@@ -2437,6 +2461,7 @@
 				9413B7EC1A37B93D00FFAD81 /* ShaderProgram.swift in Sources */,
 				94EFB0551C84D7CD0095A86F /* JSON.swift in Sources */,
 				9413B8181A37B94500FFAD81 /* TerrainState.swift in Sources */,
+				947748741D1526230041F512 /* DebugLog.swift in Sources */,
 				9413B80D1A37B94500FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */,
 				94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */,
@@ -2448,6 +2473,7 @@
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
 				9413B8121A37B94500FFAD81 /* Scene.swift in Sources */,
 				9413B7AD1A37B93100FFAD81 /* EncodedCartesian3.swift in Sources */,
+				947748711D14D1130041F512 /* CesiumError.swift in Sources */,
 				94F493391D0C26050041F512 /* CreditDisplay.swift in Sources */,
 				94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */,
 				9413780A1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
@@ -2608,6 +2634,7 @@
 				94ACB2D61C364B7F001A40C8 /* QueueManager.swift in Sources */,
 				94EFB04E1C84D7CD0095A86F /* DecimalNumber.swift in Sources */,
 				9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
+				947748751D1526230041F512 /* DebugLog.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,
 				94B119941C13038A0095A86F /* ColorMask.swift in Sources */,
@@ -2666,6 +2693,7 @@
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */,
+				947748721D14D1130041F512 /* CesiumError.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
 				940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */,
 				947821891B5A2D7C0095A86F /* TileReplacementQueue.swift in Sources */,
@@ -2906,7 +2934,7 @@
 		940A5AF71B6D54400095A86F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = x86_64;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2914,8 +2942,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2936,7 +2964,7 @@
 		940A5AF81B6D54400095A86F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = x86_64;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2944,9 +2972,9 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -3022,13 +3050,13 @@
 		947820EC1B5A2C0E0095A86F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3066,13 +3094,13 @@
 		947820ED1B5A2C0E0095A86F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -3116,6 +3144,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3143,6 +3172,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -3295,21 +3325,32 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -3328,13 +3369,24 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
