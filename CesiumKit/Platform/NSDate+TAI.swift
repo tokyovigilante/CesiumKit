@@ -63,7 +63,7 @@ extension Date {
     init (julianDayNumber: Int, secondsOfDay: Double) {
         let timeInterval = Double(julianDayNumber) + secondsOfDay / TimeConstants.SecondsPerDay
         let macReferenceOffset = TimeConstants.JulianEpochToMacEpochDifference - timeInterval
-        (self as NSDate).dynamicType.init(timeIntervalSinceReferenceDate: macReferenceOffset)
+        self.init(timeIntervalSinceReferenceDate: macReferenceOffset)
     }
     
     func computeJulianDateComponents() -> (dayNumber: Int, secondsOfDay: Double) {
@@ -75,7 +75,11 @@ extension Date {
         
         let a = ((dateComponents.month! - 14) / 12) | 0
         let b = dateComponents.year! + 4800 + a
-        var dayNumber = (((1461 * b) / 4) | 0) + (((367 * (dateComponents.month - 2 - 12 * a)) / 12) | 0) - (((3 * (((b + 100) / 100) | 0)) / 4) | 0) + dateComponents.day - 32075
+        var dayNumber: Int = ((1461 * b) / 4) | 0
+        dayNumber += ((367 * (dateComponents.month ?? 0 - 2 - 12 * a)) / 12) | 0
+        dayNumber -= ((3 * (((b + 100) / 100) | 0)) / 4) | 0
+        dayNumber += dateComponents.day!
+        dayNumber -= 32075
         
         // JulianDates are noon-based
         var hour = dateComponents.hour! - 12

@@ -18,28 +18,30 @@ public struct HMAC {
         return ""
     }
     
-    private static func digest(_ input : Data, algo: HMACAlgo) -> [UInt8] {
+    private static func digest(_ input: Data, algo: HMACAlgo) -> [UInt8] {
         let digestLength = algo.digestLength()
         var hash = [UInt8](repeating: 0, count: digestLength)
-        switch algo {
-        case .md5:
-            CC_MD5(input.bytes, UInt32(input.length), &hash)
-            break
-        case .sha1:
-            CC_SHA1(input.bytes, UInt32(input.length), &hash)
-            break
-        case .sha224:
-            CC_SHA224(input.bytes, UInt32(input.length), &hash)
-            break
-        case .sha256:
-            CC_SHA256(input.bytes, UInt32(input.length), &hash)
-            break
-        case .sha384:
-            CC_SHA384(input.bytes, UInt32(input.length), &hash)
-            break
-        case .sha512:
-            CC_SHA512(input.bytes, UInt32(input.length), &hash)
-            break
+        input.withUnsafeBytes { (pointer: UnsafePointer<UInt8>) in
+            switch algo {
+            case .md5:
+                CC_MD5(pointer, UInt32(input.count), &hash)
+                break
+            case .sha1:
+                CC_SHA1(pointer, UInt32(input.count), &hash)
+                break
+            case .sha224:
+                CC_SHA224(pointer, UInt32(input.count), &hash)
+                break
+            case .sha256:
+                CC_SHA256(pointer, UInt32(input.count), &hash)
+                break
+            case .sha384:
+                CC_SHA384(pointer, UInt32(input.count), &hash)
+                break
+            case .sha512:
+                CC_SHA512(pointer, UInt32(input.count), &hash)
+                break
+            }
         }
         return hash
     }

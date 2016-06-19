@@ -68,7 +68,7 @@ extension String {
         }
         do {
             let data = try Data(contentsOf: sourceURL, options: [])
-            return CGImage.fromData(data)
+            return CGImage.from(data: data)
         } catch {
             return nil
         }

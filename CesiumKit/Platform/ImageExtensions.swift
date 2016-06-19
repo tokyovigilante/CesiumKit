@@ -37,26 +37,26 @@ extension CGImage {
             if let error = imageOperation.error {
                 completionBlock(nil, error)
             }
-            completionBlock(CGImage.fromData(imageOperation.data), nil)
+            completionBlock(CGImage.from(data: imageOperation.data), nil)
         }
         imageOperation.enqueue()
     }
     
-    class func fromData(data: NSData) -> CGImage? {
+    class func from(data: Data) -> CGImage? {
         #if os(OSX)
             let nsImage = NSImage(data: data)
             return nsImage?.cgImage
         #elseif os(iOS)
             let uiImage = UIImage(data: data)
-            return uiImage?.CGImage
+            return uiImage?.cgImage
         #endif
     }
     
-    func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int) {
+    func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int)? {
 
-        let width = CGImageGetWidth(self)
-        let height = CGImageGetHeight(self)
-        let bitsPerComponent = CGImageGetBitsPerComponent(self)
+        let width = self.width
+        let height = self.height
+        let bitsPerComponent = self.bitsPerComponent
         let numberOfComponents = 4
 
         let bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8
@@ -66,27 +66,29 @@ extension CGImage {
         let alphaInfo: CGImageAlphaInfo
         if bytesPerPixel == 1 {
             // no alpha info in single byte pixel array
-            alphaInfo = .None
+            alphaInfo = .none
         } else if premultiplyAlpha {
-            alphaInfo = .PremultipliedLast
+            alphaInfo = .premultipliedLast
         } else {
-            alphaInfo = .Last
+            alphaInfo = .last
         }
         
-        let bitmapInfo: CGBitmapInfo = [.ByteOrderDefault, CGBitmapInfo(rawValue: alphaInfo.rawValue)]
+        let bitmapInfo: CGBitmapInfo = [CGBitmapInfo(rawValue: alphaInfo.rawValue)]
 
-        let pixelBuffer = [UInt8](count: bytesPerRow * height, repeatedValue: 0) // if 4 components per pixel (RGBA)
+        let pixelBuffer = [UInt8](repeating: 0, count: bytesPerRow * height) // if 4 components per pixel (RGBA)
         
-        let bitmapContext = CGBitmapContextCreate(UnsafeMutablePointer<Void>(pixelBuffer), width, height, bitsPerComponent, bytesPerRow, cs, bitmapInfo.rawValue)
-        assert(bitmapContext != nil, "bitmapContext == nil")
+        guard let bitmapContext = CGContext(data: UnsafeMutablePointer<Void>(pixelBuffer), width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: cs, bitmapInfo: bitmapInfo.rawValue) else {
+                assertionFailure("bitmapContext == nil")
+                return nil
+        }
         
-        let imageRect = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(width), CGFloat(height))
+        let imageRect = CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height))
         
         if flipY {
-            let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(height))
-            CGContextConcatCTM(bitmapContext, flipVertical)
+            let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: CGFloat(height))
+            bitmapContext.concatCTM(flipVertical)
         }
-        CGContextDrawImage(bitmapContext, imageRect, self)
+        bitmapContext.draw(in: imageRect, image: self)
         return (pixelBuffer, bytesPerRow)
     }
 }

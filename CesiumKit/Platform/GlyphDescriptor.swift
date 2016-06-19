@@ -28,9 +28,9 @@ struct GlyphDescriptor: JSONEncodable {
     }
     
     init (fromJSON json: JSON) throws {
-        self.glyphIndex = try UInt16(json.getInt(GlyphIndexKey))
-        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(TopLeftTexCoordKey)))
-        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(BottomRightTexCoordKey)))
+        self.glyphIndex = try UInt16(json.getInt(key: GlyphIndexKey))
+        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(key: TopLeftTexCoordKey)))
+        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(key: BottomRightTexCoordKey)))
     }
     
     func toJSON() -> JSON {
@@ -47,8 +47,8 @@ struct GlyphDescriptor: JSONEncodable {
 extension CGPoint: JSONEncodable {
     
     init (fromJSON json: JSON) throws {
-        self.x = try CGFloat(json.getDouble("x"))
-        self.y = try CGFloat(json.getDouble("y"))
+        self.x = try CGFloat(json.getDouble(key: "x"))
+        self.y = try CGFloat(json.getDouble(key: "y"))
     }
     
     func toJSON() -> JSON {

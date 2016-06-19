@@ -42,7 +42,7 @@ enum FontAtlasError: ErrorProtocol, CustomStringConvertible {
     
     var description: String {
         switch self {
-            case let .invalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json))"
+            case let .invalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json: json))"
             case let .invalidTextureDataError(path, message): return "Invalid texture data - \(message): path \(path)"
         }
     }
@@ -101,9 +101,9 @@ final class FontAtlas: JSONEncodable {
     }
     
     internal init(fromJSON json: JSON) throws {
-        let fontName = try json.getString(FontNameKey)
-        _fontPointSize = try json.getInt(PointSizeKey)
-        _spread = try json.getDouble(FontSpreadKey)
+        let fontName = try json.getString(key: FontNameKey)
+        _fontPointSize = try json.getInt(key: PointSizeKey)
+        _spread = try json.getDouble(key: FontSpreadKey)
         
         if _fontPointSize <= 0 || fontName == "" {
             throw FontAtlasError.invalidJSONError(json: json, message: "Invalid persisted font (invalid font name or size)")
@@ -111,7 +111,7 @@ final class FontAtlas: JSONEncodable {
         parentFont = CTFontCreateWithName(fontName, CGFloat(_fontPointSize), nil)
         
         glyphDescriptors = try json
-            .getArray(GlyphDescriptorsKey)
+            .getArray(key: GlyphDescriptorsKey)
             .map { try GlyphDescriptor(fromJSON: $0) }
             .sorted { $0.glyphIndex < $1.glyphIndex }
         
@@ -119,15 +119,15 @@ final class FontAtlas: JSONEncodable {
             throw FontAtlasError.invalidJSONError(json: json, message: "Encountered invalid persisted font (no glyph metrics).")
         }
         
-        _textureSize = try json.getInt(TextureSizeKey)
+        _textureSize = try json.getInt(key: TextureSizeKey)
                
-        let textureDataURL = try! try! try! LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
+        let textureDataURL = try LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
             .appendingPathComponent(fontName)
             .appendingPathExtension("textureData")
 
         let textureData = try Data(contentsOf: textureDataURL, options: [.dataReadingMappedIfSafe])
         if textureData.count <= 0 {
-            throw FontAtlasError.invalidTextureDataError(path: textureDataURL.absoluteString, message: "Texture data too short.")
+            throw FontAtlasError.invalidTextureDataError(path: textureDataURL.absoluteString ?? "", message: "Texture data too short.")
         }
         _textureData = textureData.getUInt8Array()
     }
@@ -269,7 +269,7 @@ final class FontAtlas: JSONEncodable {
             let glyphOriginX = origin.x - boundingRect.origin.x + (glyphMargin * 0.5)
             let glyphOriginY = origin.y + (glyphMargin * 0.5)
             
-            var glyphTransform = CGAffineTransformMake(1, 0, 0, -1, glyphOriginX, glyphOriginY)
+            var glyphTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: glyphOriginX, ty: glyphOriginY)
             
             let path = CTFontCreatePathForGlyph(parentFont, glyph, &glyphTransform)
             context?.addPath(path!)
@@ -420,9 +420,9 @@ final class FontAtlas: JSONEncodable {
         let scaledHeight = height / scaleFactor
         var outData = [Float](repeating: 0.0, count: scaledWidth * scaledHeight)
         
-        for y in 0.stride(to: height, by: scaleFactor) {
+        for y in stride(from: 0, to: height, by: scaleFactor) {
             
-            for x in 0.stride(to: width, by: scaleFactor) {
+            for x in stride(from: 0, to: width, by: scaleFactor) {
                 var accum: Float = 0.0
                 for ky in 0..<scaleFactor {
                     
@@ -518,60 +518,62 @@ final class FontAtlas: JSONEncodable {
         if let atlas = _cache[fontName] {
             return atlas
         }
-        // try to decode from JSON
-        let atlasFolderURL = try! LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
-        
-        let jsonURL = try! try! atlasFolderURL?
-            .appendingPathComponent(fontName)
-            .appendingPathExtension("json")
-        if let atlasJSONData = try? Data(contentsOf: jsonURL) {
-            do {
-                let atlasJSON = try JSON.decode(atlasJSONData)
-                let atlas = try FontAtlas(fromJSON: atlasJSON, context: context)
-                _cache[fontName] = atlas
-                return atlas
-            } catch let error as NSError {
-                print("cannot create font atlas from cache: \(error.description)")
-            }
+        do {
+            // try to decode from JSON
+            let atlasFolderURL = try LocalStorage.sharedInstance
+                .getAppSupportURL()
+                .appendingPathComponent("FontAtlases")
+            
+            let jsonURL = try atlasFolderURL
+                .appendingPathComponent(fontName)
+                .appendingPathExtension("json")
+            let atlasJSONString = try String(contentsOf: jsonURL)
+            let atlasJSON = try JSON.decode(string: atlasJSONString)
+            let atlas = try FontAtlas(fromJSON: atlasJSON, context: context)
+            _cache[fontName] = atlas
+            return atlas
+        } catch let error as NSError {
+            print("cannot create font atlas from cache: \(error.description)")
+        }  catch {
+            print("cannot create font atlas from cache")
         }
         // build from scratch
         let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
-
-        // add to cache 
+        
+        // add to cache
         _cache[fontName] = atlas
-
+        
         return atlas
     }
     
     class func writeToFile (_ atlas: FontAtlas) {
-        // encode and save
-        let atlasFolderURL = try! LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
-        let fontName = CTFontCopyPostScriptName(atlas.parentFont) as String
-        let jsonURL = try! try! atlasFolderURL?
-            .appendingPathComponent(fontName)
-            .appendingPathExtension("json")
-        
         do {
-            try FileManager.default().createDirectory(at: atlasFolderURL!, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            print("cannot create directory at URL: \(atlasFolderURL): \(error.localizedDescription)")
-        }
-        
-        let atlasJSON = atlas.toJSON().object!
-        
-        let textureDataURL = try! try! atlasFolderURL?
-            .appendingPathComponent(fontName)
-            .appendingPathExtension("textureData")
-        
-        do {
+            let atlasFolderURL = try LocalStorage.sharedInstance
+                .getAppSupportURL()
+                .appendingPathComponent("FontAtlases")
+            
+            let fontName = CTFontCopyPostScriptName(atlas.parentFont) as String
+            let jsonURL = try atlasFolderURL
+                .appendingPathComponent(fontName)
+                .appendingPathExtension("json")
+            
+            try FileManager.default().createDirectory(at: atlasFolderURL, withIntermediateDirectories: true, attributes: nil)
+            
+            let atlasJSON = atlas.toJSON().object!
+            
+            let textureDataURL = try! atlasFolderURL
+                .appendingPathComponent(fontName)
+                .appendingPathExtension("textureData")
+            
             try JSON
-                .encodeAsString(JSON.Object(atlasJSON))
+                .encodeAsString(json: JSON.Object(atlasJSON))
                 .write(to: jsonURL, atomically: true, encoding: String.Encoding.utf8)
-            try Data
-                .fromUInt8Array(atlas._textureData)
+            try Data(bytes: atlas._textureData)
                 .write(to: textureDataURL, options: [])
         } catch let error as NSError {
             print("Atlas cache write failed: \(error.localizedDescription)")
+        } catch {
+            print("texture data write failed")
         }
     }
     
