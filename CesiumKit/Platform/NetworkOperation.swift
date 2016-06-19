@@ -174,7 +174,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
     }
     
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: NSError?) {
-        print("invalid")
+        logPrint(level: .warning, "session invalid")
     }
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
@@ -200,7 +200,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
                 operation._incomingData = Data(capacity: capacity)
             }
         }
-        print(data.count)
+        logPrint(level: .debug, "Received \(data.count) bytes from " + (dataTask.originalRequest?.url?.absoluteString ?? "unknown"))
         //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
         data.enumerateBytes { (buffer, byteIndex, stop) in
             operation._incomingData?.append(buffer.baseAddress!, count: buffer.count)

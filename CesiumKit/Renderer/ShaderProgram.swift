@@ -119,28 +119,28 @@ class ShaderProgram {
     init? (device: MTLDevice, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
 
         guard let bundle = Bundle(identifier: "com.testtoast.CesiumKit") else {
-            print("Could not find CesiumKit bundle in executable")
+            logPrint(level: .error, "Could not find CesiumKit bundle in executable")
             return nil
         }
         guard let libraryPath = bundle.urlForResource("default", withExtension: "metallib")?.path else {
-            print("Could not find shader source from bundle")
+            logPrint(level: .error, "Could not find shader source from bundle")
             return nil
         }
         let shaderLibrary: MTLLibrary
         do {
             shaderLibrary = try device.newLibrary(withFile: libraryPath)
         } catch let error as NSError {
-            print("Could not generate library from compiled shader lib: \(error.localizedDescription)")
+            logPrint(level: .error, "Could not generate library from compiled shader lib: \(error.localizedDescription)")
             return nil
         }
         
         guard let metalVertexFunction = shaderLibrary.newFunction(withName: vertex) else {
-            print("No vertex function found for \(vertex)")
+            logPrint(level: .error, "No vertex function found for \(vertex)")
             return nil
         }
         self.metalVertexFunction = metalVertexFunction
         guard let metalFragmentFunction = shaderLibrary.newFunction(withName: fragment) else {
-            print("No fragment function found for \(fragment)")
+            logPrint(level: .error, "No fragment function found for \(fragment)")
             return nil
         }
         self.metalFragmentFunction = metalFragmentFunction
@@ -191,9 +191,9 @@ class ShaderProgram {
             _vertexLibrary = try device.newLibrary(withSource: _metalVertexShaderSource, options: nil)
             metalVertexFunction = _vertexLibrary.newFunction(withName: "xlatMtlMain")
         } catch let error as NSError {
-            print(_fragmentShaderText)
-            print(_metalFragmentShaderSource)
-            print(error.localizedDescription)
+            logPrint(level: .debug, _fragmentShaderText)
+            logPrint(level: .debug, _metalFragmentShaderSource)
+            logPrint(level: .error, error.localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }
         
@@ -201,10 +201,10 @@ class ShaderProgram {
             _fragmentLibrary = try device.newLibrary(withSource: _metalFragmentShaderSource, options: nil)
             metalFragmentFunction = _fragmentLibrary.newFunction(withName: "xlatMtlMain")
         } catch let error as NSError {
-            print(_fragmentShaderText)
-            print(_metalFragmentShaderSource)
-            print(error.localizedDescription)
-            assertionFailure("_library == nil")
+            logPrint(level: .debug, _fragmentShaderText)
+            logPrint(level: .debug, _metalFragmentShaderSource)
+            logPrint(level: .error, error.localizedDescription)
+            assertionFailure("_fragmentLibrary == nil")
         }
     }
     

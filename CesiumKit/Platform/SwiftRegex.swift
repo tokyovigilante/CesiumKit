@@ -38,7 +38,7 @@ public class SwiftRegex: NSObject, Boolean {
     }
     
     class func failure(_ message: String) {
-        print("SwiftRegex: "+message)
+        logPrint(level: .error, "SwiftRegex: "+message)
         //assert(false,"SwiftRegex: failed")
     }
     

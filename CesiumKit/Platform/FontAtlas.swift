@@ -533,9 +533,9 @@ final class FontAtlas: JSONEncodable {
             _cache[fontName] = atlas
             return atlas
         } catch let error as NSError {
-            print("cannot create font atlas from cache: \(error.description)")
+            logPrint(level: .error, "cannot create font atlas from cache: \(error.description)")
         }  catch {
-            print("cannot create font atlas from cache")
+            logPrint(level: .error, "cannot create font atlas from cache")
         }
         // build from scratch
         let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
@@ -571,9 +571,9 @@ final class FontAtlas: JSONEncodable {
             try Data(bytes: atlas._textureData)
                 .write(to: textureDataURL, options: [])
         } catch let error as NSError {
-            print("Atlas cache write failed: \(error.localizedDescription)")
+            logPrint(level: .error, "Atlas cache write failed: \(error.localizedDescription)")
         } catch {
-            print("texture data write failed")
+            logPrint(level: .error, "texture data write failed")
         }
     }
     

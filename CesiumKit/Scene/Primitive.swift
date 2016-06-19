@@ -250,7 +250,7 @@ public class Primitive {
      *
      * @default true
      */
-    var show: Bool = true
+    public var show: Bool = true
      /*
      this._vertexCacheOptimize = defaultValue(options.vertexCacheOptimize, false);
      this._interleave = defaultValue(options.interleave, false);

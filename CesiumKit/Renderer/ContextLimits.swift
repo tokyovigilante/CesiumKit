@@ -25,7 +25,7 @@ class ContextLimits {
     var maximumCombinedTextureImageUnits: Int {
         #if os(OSX)
             switch(_highestSupportedFeatureSet) {
-            case .OSX_GPUFamily1_v1:
+            case .osx_GPUFamily1_v1:
                 return 128
             default:
                 fatalError("Unknown Metal GPU feature set")
@@ -106,7 +106,7 @@ class ContextLimits {
     var maximumTextureSize: Int {
         #if os(OSX)
             switch(_highestSupportedFeatureSet) {
-            case .OSX_GPUFamily1_v1:
+            case .osx_GPUFamily1_v1:
                 return 16384
             default:
                 fatalError("Unknown Metal GPU feature set")
@@ -267,7 +267,7 @@ class ContextLimits {
     var maximumColorAttachments: Int {
         #if os(OSX)
             switch(_highestSupportedFeatureSet) {
-            case .OSX_GPUFamily1_v1:
+            case .osx_GPUFamily1_v1:
                 return 8
             default:
                 fatalError("Unknown Metal GPU feature set")
@@ -313,8 +313,8 @@ class ContextLimits {
         
         var highestSupportedFeatureSet: MTLFeatureSet
         #if os(OSX)
-            let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.OSX_GPUFamily1_v1
-            highestSupportedFeatureSet = .OSX_GPUFamily1_v1
+            let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.osx_GPUFamily1_v1
+            highestSupportedFeatureSet = .osx_GPUFamily1_v1
             
             #elseif os(iOS)
             let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.iOS_GPUFamily1_v1

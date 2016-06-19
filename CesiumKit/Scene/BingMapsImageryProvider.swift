@@ -398,12 +398,12 @@ public class BingMapsImageryProvider: ImageryProvider {
                 
                 guard let resourceSet = try metadata.getArray(key: "resourceSets").first else {
                     let error = try metadata.getArray(key: "errorDetails")
-                    print("metadata error: ")// + error.first?)
+                    logPrint(level: .error, "metadata error: ")// + error.first?)
                     return
                 }
                 guard let resource = try resourceSet.getArray(key: "resources").first else {
                     let error = try metadata.getString(key: "errorDetails")
-                    print("metadata error: " + error)
+                    logPrint(level: .error, "metadata error: " + error)
                     return
                 }
                 self._tileWidth = try resource.getInt(key: "imageWidth")
@@ -467,13 +467,13 @@ public class BingMapsImageryProvider: ImageryProvider {
                 })
                  //TileProviderError.handleSuccess(metadataError);*/
             } catch {
-                print("Bing metadata decode failed - invalid JSON")
+                logPrint(level: .error, "Bing metadata decode failed - invalid JSON")
                 return
             }
         }
         
         let metadataFailure = { (error: String) -> () in
-            print(error)
+            logPrint(level: .error, error)
             /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
@@ -545,7 +545,7 @@ public class BingMapsImageryProvider: ImageryProvider {
         let imageryOperation = NetworkOperation(url: url)
         imageryOperation.completionBlock = {
             if let error = imageryOperation.error {
-                print("error: \(error.localizedDescription)")
+                logPrint(level: .error, "error: \(error.localizedDescription)")
                 return
             }
             #if os(iOS)

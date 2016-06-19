@@ -34,15 +34,15 @@ class Buffer {
         self.componentDatatype = componentDatatype
         _entireRange = NSMakeRange(0, length)
         
-        if array != nil {
+        if let array = array {
             #if os(OSX)
-                metalBuffer = device.newBufferWithBytes(array, length: length, options: .StorageModeManaged)
+                metalBuffer = device.newBuffer(withBytes: array, length: length, options: .storageModeManaged)
             #elseif os(iOS)
-                metalBuffer = device.newBuffer(withBytes: array!, length: length, options: MTLResourceOptions())
+                metalBuffer = device.newBuffer(withBytes: array, length: length, options: MTLResourceOptions())
             #endif
         } else {
             #if os(OSX)
-                metalBuffer = device.newBufferWithLength(length, options: .StorageModeManaged)
+                metalBuffer = device.newBuffer(withLength: length, options: .storageModeManaged)
             #elseif os(iOS)
                 metalBuffer = device.newBuffer(withLength: length, options: MTLResourceOptions())
             #endif

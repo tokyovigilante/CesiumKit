@@ -16,7 +16,7 @@ public enum LogLevel: UInt {
     critical
 }
 
-private var _loglevel: LogLevel = .warning
+private var _loglevel: LogLevel = .debug
 
 public func logPrint(level: LogLevel, _ logString: String) {
     if level.rawValue >= _loglevel.rawValue {

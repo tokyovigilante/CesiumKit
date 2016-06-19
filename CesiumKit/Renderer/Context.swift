@@ -166,10 +166,10 @@ class Context {
         device = view.device!
         limits = ContextLimits(device: device)
         
-        print("Metal device: " + (device.name ?? "Unknown"))
+        logPrint(level: .info, "Metal device: " + (device.name ?? "Unknown"))
         #if os(OSX)
-            print("- Low power: " + (device.lowPower ? "Yes" : "No"))
-            print("- Headless: " + (device.headless ? "Yes" : "No"))
+            logPrint(level: .info, "- Low power: " + (device.isLowPower ? "Yes" : "No"))
+            logPrint(level: .info, "- Headless: " + (device.isHeadless ? "Yes" : "No"))
         #endif
         
         _commandQueue = device.newCommandQueue()
@@ -237,7 +237,7 @@ class Context {
         assert(_drawable == nil, "drawable != nil")
         _drawable = view.currentDrawable
         if _drawable == nil {
-            print("drawable == nil")
+            logPrint(level: .error, "drawable == nil")
             _inflight_semaphore.signal()
             return false
         }
@@ -385,7 +385,7 @@ class Context {
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
-            print("invalid textures")
+            logPrint(level: .error, "invalid textures")
             return
         }
         let commandEncoder = renderPass.commandEncoder

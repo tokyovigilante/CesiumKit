@@ -14,7 +14,7 @@ import Foundation
     extension NSImage {
         var cgImage: CGImage? {
             get {
-                guard let imageData = self.TIFFRepresentation else {
+                guard let imageData = tiffRepresentation else {
                     return nil
                 }
                 guard let source = CGImageSourceCreateWithData(imageData, nil) else {

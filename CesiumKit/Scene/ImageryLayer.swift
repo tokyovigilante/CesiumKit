@@ -491,7 +491,7 @@ public class ImageryLayer {
                     imagery.state = .failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    print(message)
+                    logPrint(level: .error, message)
                 })
             }
             

@@ -16,7 +16,12 @@ class LocalStorage {
     
     func getAppSupportURL () -> URL {
         #if os(OSX)
-            return NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0].URLByAppendingPathComponent(getExecutableName())
+            do {
+                return try FileManager.default().urlsForDirectory(.applicationSupportDirectory, inDomains: .userDomainMask)[0].appendingPathComponent(getExecutableName())
+            } catch {
+                return URL(fileURLWithPath: NSTemporaryDirectory())
+            }
+
         #elseif os(iOS)
             return FileManager.default().urlsForDirectory(.applicationSupportDirectory, inDomains: .userDomainMask)[0]
         #endif

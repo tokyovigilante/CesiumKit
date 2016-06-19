@@ -194,8 +194,8 @@ public class Texture {
             textureDescriptor.storageMode = .private
         }
         #if os(OSX)
-            if pixelFormat == .Depth32FloatStencil8 {
-                textureDescriptor.storageMode = .Private
+            if pixelFormat == .depth32FloatStencil8 {
+                textureDescriptor.storageMode = .private
             }
         #endif
         metalTexture = context.device.newTexture(with: textureDescriptor)

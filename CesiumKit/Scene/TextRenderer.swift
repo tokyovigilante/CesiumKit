@@ -232,7 +232,7 @@ public class TextRenderer: Primitive {
         frameState.commandList.append(_command)
     }
 
-    func computeSize (_ constraintWidth: Double? = nil) -> CGSize {
+    public func computeSize (_ constraintWidth: Double? = nil) -> CGSize {
         
         let constrainedWidth = constraintWidth ?? viewportRect.width
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
@@ -271,7 +271,7 @@ public class TextRenderer: Primitive {
         
         let glyphEnumeratorBlock = { (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) in
             if Int(glyph) >= fontAtlas.glyphDescriptors.count {
-                print("Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
+                logPrint(level: .debug, "Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
                 return
             }
             let glyphInfo = fontAtlas.glyphDescriptors[Int(glyph)]

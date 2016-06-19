@@ -251,7 +251,7 @@ struct ShaderSource {
                 } else if let uniform = AutomaticUniforms[match] {
                     elementSource = uniform.declaration(match)
                 } else {
-                    print("uniform \(match) not found")
+                    logPrint(level: .warning, "uniform \(match) not found")
                 }
                 if elementSource != nil {
                     let referencedNode = getDependencyNode(match, glslSource: elementSource!, nodes: &dependencyNodes)

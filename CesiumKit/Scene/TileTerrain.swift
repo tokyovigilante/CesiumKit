@@ -123,7 +123,7 @@ class TileTerrain {
                 self.state = TerrainState.failed
                 
                 let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
-                print(message)
+                logPrint(level: .error, message)
             }
         })
     }
@@ -181,7 +181,7 @@ class TileTerrain {
         guard let data = data else {
             self.state = .failed
             let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - data missing"
-            print(message)
+            logPrint(level: .error, message)
             return
         }
                 
@@ -197,7 +197,7 @@ class TileTerrain {
                     DispatchQueue.main.async(execute: {
                         self.state = .failed
                         let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
-                        print(message)
+                        logPrint(level: .error, message)
                     })
                 }
             })

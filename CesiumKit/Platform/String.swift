@@ -50,7 +50,7 @@ extension String {
         case .bundleResource:
             let bundle = Bundle(identifier: "com.testtoast.CesiumKit") ?? Bundle.main()
             #if os(OSX)
-                return bundle.URLForImageResource(self)
+                return bundle.urlForImageResource(self)
             #elseif os(iOS)
                 return bundle.urlForResource((self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
             #endif
