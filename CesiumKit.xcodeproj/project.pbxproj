@@ -554,8 +554,6 @@
 		947B55551D1618E30041F512 /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55531D1618E30041F512 /* NetworkOperation.swift */; };
 		947B55591D1619140041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55561D1619140041F512 /* CesiumError.swift */; };
 		947B555A1D1619140041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55561D1619140041F512 /* CesiumError.swift */; };
-		947B555B1D1619140041F512 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55571D1619140041F512 /* Crypto.swift */; };
-		947B555C1D1619140041F512 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55571D1619140041F512 /* Crypto.swift */; };
 		947B555D1D1619140041F512 /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55581D1619140041F512 /* JSONEncodable.swift */; };
 		947B555E1D1619140041F512 /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55581D1619140041F512 /* JSONEncodable.swift */; };
 		947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; };
@@ -974,7 +972,6 @@
 		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
 		947B55531D1618E30041F512 /* NetworkOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkOperation.swift; path = Platform/NetworkOperation.swift; sourceTree = "<group>"; };
 		947B55561D1619140041F512 /* CesiumError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumError.swift; path = CesiumKit/Platform/CesiumError.swift; sourceTree = SOURCE_ROOT; };
-		947B55571D1619140041F512 /* Crypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Crypto.swift; path = CesiumKit/Platform/Crypto.swift; sourceTree = SOURCE_ROOT; };
 		947B55581D1619140041F512 /* JSONEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONEncodable.swift; path = CesiumKit/Platform/JSONEncodable.swift; sourceTree = SOURCE_ROOT; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		947E32311BC0D485001A40C8 /* AttributeCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeCompression.swift; sourceTree = "<group>"; };
@@ -1678,7 +1675,7 @@
 				94EFB03F1C84D7CD0095A86F /* PMJSON */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
 				947B55561D1619140041F512 /* CesiumError.swift */,
-				947B55571D1619140041F512 /* Crypto.swift */,
+				9488A14B1CBE4BFC0095A86F /* Crypto.swift */,
 				947748731D1526230041F512 /* DebugLog.swift */,
 				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
 				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
@@ -1692,7 +1689,6 @@
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
 				9488A1481CBE4ACE0095A86F /* String+HMAC.swift */,
 				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
-				9488A14B1CBE4BFC0095A86F /* Crypto.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2341,7 +2337,6 @@
 				9413B79F1A37B92900FFAD81 /* Array.swift in Sources */,
 				9438E0E31CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */,
 				94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */,
-				947B555B1D1619140041F512 /* Crypto.swift in Sources */,
 				9413B7D41A37B93100FFAD81 /* WebMercatorProjection.swift in Sources */,
 				9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */,
 				9413B7A31A37B93100FFAD81 /* Cartesian2.swift in Sources */,
@@ -2633,7 +2628,6 @@
 				947821631B5A2D7C0095A86F /* CameraEventAggregator.swift in Sources */,
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
 				94AC517E1CD21D030041F512 /* Orientation.swift in Sources */,
-				947B555C1D1619140041F512 /* Crypto.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
 				9413780B1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
