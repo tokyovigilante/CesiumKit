@@ -184,7 +184,8 @@ public class ScreenSpaceCameraController {
     * }]
     */
     var tiltEventTypes: [CameraEvent] = [
-        CameraEvent(type: .middleDrag, modifier: nil),
+        //FIXME: middleDrag
+        //CameraEvent(type: .middleDrag, modifier: nil),
         CameraEvent(type: .pinch, modifier: nil),
         CameraEvent(type: .leftDrag, modifier: .ctrl),
         CameraEvent(type: .rightDrag, modifier: .ctrl)
@@ -1052,6 +1053,7 @@ public class ScreenSpaceCameraController {
     }
 
     func spin3D(_ startPosition: Cartesian2, movement: MouseMovement) {
+        
         let camera = _scene.camera
         
         if camera.transform != Matrix4.identity {
@@ -1059,15 +1061,16 @@ public class ScreenSpaceCameraController {
             return
         }
         var magnitude: Double = 0.0
-        var ellipsoid: Ellipsoid
         
         let up = _ellipsoid.geodeticSurfaceNormal(camera.position)
         
-        let height = _ellipsoid.cartesianToCartographic(camera.positionWC)?.height
+        guard let height = _ellipsoid.cartesianToCartographic(camera.positionWC)?.height else {
+            return
+        }
         
         var mousePos: Cartesian3? = nil
         var tangentPick = false
-        if _globe != nil && height != nil && height! < minimumPickingTerrainHeight {
+        if _globe != nil && height < minimumPickingTerrainHeight {
             mousePos = pickGlobe(movement.startPosition)
             if let mousePos = mousePos {
                 let ray = camera.getPickRay(movement.startPosition)
@@ -1091,7 +1094,7 @@ public class ScreenSpaceCameraController {
                 strafe(startPosition, movement: movement)
             } else {
                 magnitude = _rotateStartPosition.magnitude
-                ellipsoid = Ellipsoid(x: magnitude, y: magnitude, z: magnitude)
+                let ellipsoid = Ellipsoid(x: magnitude, y: magnitude, z: magnitude)
                 pan3D(startPosition, movement: movement, ellipsoid: ellipsoid)
             }
             return
@@ -1110,7 +1113,7 @@ public class ScreenSpaceCameraController {
                 } else {
                     magnitude = mousePos!.magnitude
                     let radii = Cartesian3(x: magnitude, y: magnitude, z: magnitude)
-                    ellipsoid = Ellipsoid(radii: radii)
+                    let ellipsoid = Ellipsoid(radii: radii)
                     pan3D(startPosition, movement: movement, ellipsoid: ellipsoid)
                     _rotateStartPosition = mousePos!
                 }
@@ -1258,16 +1261,24 @@ public class ScreenSpaceCameraController {
     
     func zoom3D(_ startPosition: Cartesian2, movement: MouseMovement) {
         
+        //FIXME: movement.distance
+        /*if (defined(movement.distance)) {
+            movement = movement.distance;
+        }*/
+        
         let camera = _scene.camera
         
-        var windowPosition = Cartesian2()
-        windowPosition.x = Double(_scene.drawableWidth) / 2.0
-        windowPosition.y = Double(_scene.drawableHeight) / 2.0
+        let windowPosition = Cartesian2(
+            x: Double(_scene.drawableWidth) / 2.0,
+            y: Double(_scene.drawableHeight) / 2.0
+        )
         let ray = _scene.camera.getPickRay(windowPosition)
         
+        guard let height = _ellipsoid.cartesianToCartographic(camera.position)?.height else {
+            return
+        }
         var intersection: Cartesian3? = nil
-        let height = _ellipsoid.cartesianToCartographic(camera.position)?.height
-        if _globe != nil && height != nil && height! < minimumPickingTerrainHeight {
+        if _globe != nil && height < minimumPickingTerrainHeight {
             intersection = pickGlobe(windowPosition)
         }
         
@@ -1275,7 +1286,7 @@ public class ScreenSpaceCameraController {
         if intersection != nil {
             distance = ray.origin.distance(intersection!)
         } else {
-            distance = height!
+            distance = height
         }
         let unitPosition = camera.position.normalize()
         handleZoom(startPosition, movement: movement, zoomFactor: _zoomFactor, distanceMeasure: distance, unitPositionDotDirection: unitPosition.dot(camera.direction))
@@ -1623,7 +1634,9 @@ public class ScreenSpaceCameraController {
         }
         
         let camera = _scene.camera
-        let ellipsoid = _ellipsoid
+        guard let ellipsoid = _ellipsoid else {
+            return
+        }
         let projection = _scene.mapProjection
         
         var transform: Matrix4? = nil
@@ -1636,7 +1649,7 @@ public class ScreenSpaceCameraController {
         
         var cartographic: Cartographic
         if mode == SceneMode.scene3D {
-            cartographic = ellipsoid?.cartesianToCartographic(camera.position)!
+            cartographic = ellipsoid.cartesianToCartographic(camera.position)!
         } else {
             cartographic = projection.unproject(camera.position)
         }
@@ -1649,7 +1662,7 @@ public class ScreenSpaceCameraController {
                 if cartographic.height < height {
                     cartographic.height = height
                     if mode == .scene3D {
-                        camera.position = ellipsoid!.cartographicToCartesian(cartographic)
+                        camera.position = ellipsoid.cartographicToCartesian(cartographic)
                     } else {
                         camera.position = projection.project(cartographic)
                     }

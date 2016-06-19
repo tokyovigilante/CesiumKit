@@ -37,5 +37,7 @@ public enum KeyboardEventModifier: Int  {
     * @type {Number}
     * @constant
     */
-    alt
+    alt,
+    
+    COUNT
 }

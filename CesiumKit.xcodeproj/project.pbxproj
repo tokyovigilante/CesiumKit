@@ -392,8 +392,6 @@
 		9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
 		9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
 		9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */; };
-		945643341CB145DB0095A86F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945643321CB1447D0095A86F /* NetworkOperation.swift */; };
-		945643351CB145DC0095A86F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945643321CB1447D0095A86F /* NetworkOperation.swift */; };
 		9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */; };
 		9458E0711A9FDD6D00FFAD81 /* UniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */; };
@@ -415,8 +413,6 @@
 		946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D129D1C2CBF40001A40C8 /* NSDate+TAI.swift */; };
 		946EDFBB19FE5AFA00FFAD81 /* BoundingSphereTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */; };
 		9470E1561C04A2C10095A86F /* GLSLOptimizer.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 9404C86E1BBE9FF8001A40C8 /* GLSLOptimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		947748711D14D1130041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748701D14D1130041F512 /* CesiumError.swift */; };
-		947748721D14D1130041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748701D14D1130041F512 /* CesiumError.swift */; };
 		947748741D1526230041F512 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748731D1526230041F512 /* DebugLog.swift */; };
 		947748751D1526230041F512 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947748731D1526230041F512 /* DebugLog.swift */; };
 		947820E51B5A2C0E0095A86F /* CesiumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947820DB1B5A2C0E0095A86F /* CesiumKit.framework */; };
@@ -554,6 +550,14 @@
 		9478218D1B5A2D7C0095A86F /* Shaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E049E919DC0BB000FFAD81 /* Shaders.swift */; };
 		9478218F1B5A3D310095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9478218E1B5A3D310095A86F /* QuartzCore.framework */; };
 		947821911B5A3D370095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947821901B5A3D370095A86F /* Metal.framework */; };
+		947B55541D1618E30041F512 /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55531D1618E30041F512 /* NetworkOperation.swift */; };
+		947B55551D1618E30041F512 /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55531D1618E30041F512 /* NetworkOperation.swift */; };
+		947B55591D1619140041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55561D1619140041F512 /* CesiumError.swift */; };
+		947B555A1D1619140041F512 /* CesiumError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55561D1619140041F512 /* CesiumError.swift */; };
+		947B555B1D1619140041F512 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55571D1619140041F512 /* Crypto.swift */; };
+		947B555C1D1619140041F512 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55571D1619140041F512 /* Crypto.swift */; };
+		947B555D1D1619140041F512 /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55581D1619140041F512 /* JSONEncodable.swift */; };
+		947B555E1D1619140041F512 /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B55581D1619140041F512 /* JSONEncodable.swift */; };
 		947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; };
 		947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32311BC0D485001A40C8 /* AttributeCompression.swift */; };
 		947E32351BC0D85E001A40C8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E32341BC0D85E001A40C8 /* Plane.swift */; };
@@ -666,8 +670,6 @@
 		94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0491C84D7CD0095A86F /* Parser.swift */; };
 		94EFB05F1C84D7CD0095A86F /* PMJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 94EFB04A1C84D7CD0095A86F /* PMJSON.h */; };
 		94EFB0601C84D7CD0095A86F /* PMJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 94EFB04A1C84D7CD0095A86F /* PMJSON.h */; };
-		94EFB0621C84DBEC0095A86F /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */; };
-		94EFB0631C84DBEC0095A86F /* JSONEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */; };
 		94EFB0681C85C9690095A86F /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0671C85C9690095A86F /* LocalStorage.swift */; };
 		94EFB0691C85C9690095A86F /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFB0671C85C9690095A86F /* LocalStorage.swift */; };
 		94EFD1501ACFFA5A0095A86F /* TouchEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */; };
@@ -932,7 +934,6 @@
 		9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsStyle.swift; sourceTree = "<group>"; };
 		9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BingMapsAPI.swift; sourceTree = "<group>"; };
 		9455EB821A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverTileDiscardPolicy.swift; sourceTree = "<group>"; };
-		945643321CB1447D0095A86F /* NetworkOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkOperation.swift; sourceTree = "<group>"; };
 		9457D3F91C3CFB14001A40C8 /* CesiumKitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumKitController.swift; path = CesiumKitRunner/CesiumKitController.swift; sourceTree = "<group>"; };
 		9458E0701A9FDD6D00FFAD81 /* UniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UniformMap.swift; path = CesiumKit/Renderer/UniformMap.swift; sourceTree = SOURCE_ROOT; };
 		945B6A991C2577730095A86F /* JulianDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianDate.swift; sourceTree = "<group>"; };
@@ -961,7 +962,6 @@
 		946D25A919592BFD0080379D /* Ray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
 		946EDFBA19FE5AFA00FFAD81 /* BoundingSphereTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BoundingSphereTests.swift; path = Core/BoundingSphereTests.swift; sourceTree = "<group>"; };
 		947540E019483BD5005251CC /* WebMercatorProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebMercatorProjection.swift; sourceTree = "<group>"; };
-		947748701D14D1130041F512 /* CesiumError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CesiumError.swift; sourceTree = "<group>"; };
 		947748731D1526230041F512 /* DebugLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DebugLog.swift; path = Platform/DebugLog.swift; sourceTree = "<group>"; };
 		947820DB1B5A2C0E0095A86F /* CesiumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CesiumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		947820E41B5A2C0E0095A86F /* CesiumKit OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CesiumKit OSXTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -972,6 +972,10 @@
 		947A240E19C9919D0040042F /* CullFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CullFace.swift; sourceTree = "<group>"; };
 		947A241019C99C860040042F /* WindingOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindingOrder.swift; sourceTree = "<group>"; };
 		947A241219C99DDB0040042F /* DepthTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthTest.swift; sourceTree = "<group>"; };
+		947B55531D1618E30041F512 /* NetworkOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkOperation.swift; path = Platform/NetworkOperation.swift; sourceTree = "<group>"; };
+		947B55561D1619140041F512 /* CesiumError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CesiumError.swift; path = CesiumKit/Platform/CesiumError.swift; sourceTree = SOURCE_ROOT; };
+		947B55571D1619140041F512 /* Crypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Crypto.swift; path = CesiumKit/Platform/Crypto.swift; sourceTree = SOURCE_ROOT; };
+		947B55581D1619140041F512 /* JSONEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONEncodable.swift; path = CesiumKit/Platform/JSONEncodable.swift; sourceTree = SOURCE_ROOT; };
 		947BD5A8199DB1D80042D9BF /* PrimitiveCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimitiveCollection.swift; sourceTree = "<group>"; };
 		947E32311BC0D485001A40C8 /* AttributeCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeCompression.swift; sourceTree = "<group>"; };
 		947E32341BC0D85E001A40C8 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
@@ -1102,7 +1106,6 @@
 		94EFB0481C84D7CD0095A86F /* ObjectiveC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
 		94EFB0491C84D7CD0095A86F /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		94EFB04A1C84D7CD0095A86F /* PMJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMJSON.h; sourceTree = "<group>"; };
-		94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONEncodable.swift; sourceTree = "<group>"; };
 		94EFB0671C85C9690095A86F /* LocalStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocalStorage.swift; path = Platform/LocalStorage.swift; sourceTree = "<group>"; };
 		94EFD14F1ACFFA5A0095A86F /* TouchEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchEventHandler.swift; sourceTree = "<group>"; };
 		94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OrientedBoundingBox.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -1674,21 +1677,22 @@
 				94A05DAC1CF1BA300041F512 /* Extensions */,
 				94EFB03F1C84D7CD0095A86F /* PMJSON */,
 				94697DA11A25CA0E00FFAD81 /* Array.swift */,
+				947B55561D1619140041F512 /* CesiumError.swift */,
+				947B55571D1619140041F512 /* Crypto.swift */,
+				947748731D1526230041F512 /* DebugLog.swift */,
 				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
 				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
 				946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */,
-				94EFB0611C84DBEC0095A86F /* JSONEncodable.swift */,
+				947B55581D1619140041F512 /* JSONEncodable.swift */,
 				94EFB0671C85C9690095A86F /* LocalStorage.swift */,
-				945643321CB1447D0095A86F /* NetworkOperation.swift */,
+				947B55531D1618E30041F512 /* NetworkOperation.swift */,
 				94EB4DA21C2E6664001A40C8 /* NSData+ArrayView.swift */,
 				946D129D1C2CBF40001A40C8 /* NSDate+TAI.swift */,
 				94ACB2CE1C364900001A40C8 /* QueueManager.swift */,
 				94F3ECA41A283ADB00FFAD81 /* String.swift */,
-				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9488A1481CBE4ACE0095A86F /* String+HMAC.swift */,
+				94A833161A80C81800FFAD81 /* SwiftRegex.swift */,
 				9488A14B1CBE4BFC0095A86F /* Crypto.swift */,
-				947748701D14D1130041F512 /* CesiumError.swift */,
-				947748731D1526230041F512 /* DebugLog.swift */,
 			);
 			name = Platform;
 			sourceTree = "<group>";
@@ -2293,6 +2297,7 @@
 				94BD6B231CD601580041F512 /* EnvironmentState.swift in Sources */,
 				94B119931C13038A0095A86F /* ColorMask.swift in Sources */,
 				9413B7FE1A37B94500FFAD81 /* Globe.swift in Sources */,
+				947B555D1D1619140041F512 /* JSONEncodable.swift in Sources */,
 				9488A1491CBE4ACE0095A86F /* String+HMAC.swift in Sources */,
 				9413B7B31A37B93100FFAD81 /* GeometryAttributes.swift in Sources */,
 				9413B80B1A37B94500FFAD81 /* PerspectiveOffCenterFrustum.swift in Sources */,
@@ -2336,10 +2341,12 @@
 				9413B79F1A37B92900FFAD81 /* Array.swift in Sources */,
 				9438E0E31CCD765D0095A86F /* AxisAlignedBoundingBox.swift in Sources */,
 				94D6531A1C26ACAE001A40C8 /* OrbitType.swift in Sources */,
+				947B555B1D1619140041F512 /* Crypto.swift in Sources */,
 				9413B7D41A37B93100FFAD81 /* WebMercatorProjection.swift in Sources */,
 				9413B7C21A37B93100FFAD81 /* Packable.swift in Sources */,
 				9413B7A31A37B93100FFAD81 /* Cartesian2.swift in Sources */,
 				9413B79D1A37B91C00FFAD81 /* CesiumKit.swift in Sources */,
+				947B55541D1618E30041F512 /* NetworkOperation.swift in Sources */,
 				9413B7AF1A37B93100FFAD81 /* GeographicProjection.swift in Sources */,
 				9438E0DD1CCCF4350095A86F /* TerrainEncoding.swift in Sources */,
 				9413B7BC1A37B93100FFAD81 /* Math.swift in Sources */,
@@ -2365,7 +2372,6 @@
 				945E45041B17387E0095A86F /* VertexType.swift in Sources */,
 				9403AC931C19A610001A40C8 /* TimeConstants.swift in Sources */,
 				9413B7FB1A37B94500FFAD81 /* FrameState.swift in Sources */,
-				94EFB0621C84DBEC0095A86F /* JSONEncodable.swift in Sources */,
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
 				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
@@ -2438,7 +2444,6 @@
 				94889B881B2857430095A86F /* PipelineCache.swift in Sources */,
 				9413B7AB1A37B93100FFAD81 /* EllipsoidalOccluder.swift in Sources */,
 				94EFB04F1C84D7CD0095A86F /* Decoder.swift in Sources */,
-				945643341CB145DB0095A86F /* NetworkOperation.swift in Sources */,
 				9488A14C1CBE4BFC0095A86F /* Crypto.swift in Sources */,
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
@@ -2464,6 +2469,7 @@
 				947748741D1526230041F512 /* DebugLog.swift in Sources */,
 				9413B80D1A37B94500FFAD81 /* QuadtreeOccluders.swift in Sources */,
 				9413B81A1A37B94500FFAD81 /* TileImagery.swift in Sources */,
+				947B55591D1619140041F512 /* CesiumError.swift in Sources */,
 				94B9DB5C1AC6212A0095A86F /* CameraEventAggregator.swift in Sources */,
 				9413B7AA1A37B93100FFAD81 /* Ellipsoid.swift in Sources */,
 				9430A9521C8100BC0095A86F /* TextRenderer.metal in Sources */,
@@ -2473,7 +2479,6 @@
 				9413B81C1A37B94500FFAD81 /* TileTerrain.swift in Sources */,
 				9413B8121A37B94500FFAD81 /* Scene.swift in Sources */,
 				9413B7AD1A37B93100FFAD81 /* EncodedCartesian3.swift in Sources */,
-				947748711D14D1130041F512 /* CesiumError.swift in Sources */,
 				94F493391D0C26050041F512 /* CreditDisplay.swift in Sources */,
 				94DD011E1AADAF2500FFAD81 /* Matrix2.swift in Sources */,
 				9413780A1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
@@ -2501,7 +2506,6 @@
 				9485CC371CA7BA930041F512 /* UniformStructs.metal in Sources */,
 				9478210C1B5A2D7B0095A86F /* Cartographic.swift in Sources */,
 				9478210D1B5A2D7B0095A86F /* Clock.swift in Sources */,
-				945643351CB145DC0095A86F /* NetworkOperation.swift in Sources */,
 				9478210E1B5A2D7B0095A86F /* ComponentDatatype.swift in Sources */,
 				9478210F1B5A2D7B0095A86F /* Credit.swift in Sources */,
 				947821101B5A2D7B0095A86F /* Ellipsoid.swift in Sources */,
@@ -2517,11 +2521,13 @@
 				947821191B5A2D7B0095A86F /* GeometryAttributes.swift in Sources */,
 				941EE9A81BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */,
 				9478211A1B5A2D7B0095A86F /* GeometryPipeline.swift in Sources */,
+				947B55551D1618E30041F512 /* NetworkOperation.swift in Sources */,
 				941CE3791C7BA9380095A86F /* GlyphDescriptor.swift in Sources */,
 				9478211B1B5A2D7B0095A86F /* GeometryType.swift in Sources */,
 				9478211C1B5A2D7B0095A86F /* HeightmapTerrainData.swift in Sources */,
 				9478211D1B5A2D7B0095A86F /* HeightmapTessellator.swift in Sources */,
 				9478211E1B5A2D7B0095A86F /* Intersect.swift in Sources */,
+				947B555A1D1619140041F512 /* CesiumError.swift in Sources */,
 				9478211F1B5A2D7B0095A86F /* Intersectable.swift in Sources */,
 				947821201B5A2D7B0095A86F /* IntersectionTests.swift in Sources */,
 				947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
@@ -2580,6 +2586,7 @@
 				947821451B5A2D7C0095A86F /* DrawCommand.swift in Sources */,
 				9469077D1C2DFD970095A86F /* HeightmapStructure.swift in Sources */,
 				946D12A11C2CBF40001A40C8 /* NSDate+TAI.swift in Sources */,
+				947B555E1D1619140041F512 /* JSONEncodable.swift in Sources */,
 				947821461B5A2D7C0095A86F /* Framebuffer.swift in Sources */,
 				942F56B51C5D6CA90095A86F /* HorizontalOrigin.swift in Sources */,
 				947821471B5A2D7C0095A86F /* Imagebuffer.swift in Sources */,
@@ -2597,7 +2604,6 @@
 				947821501B5A2D7C0095A86F /* ShaderProgram.swift in Sources */,
 				947821511B5A2D7C0095A86F /* ShaderSource.swift in Sources */,
 				9430A94B1C80665A0095A86F /* TextRenderer.swift in Sources */,
-				94EFB0631C84DBEC0095A86F /* JSONEncodable.swift in Sources */,
 				949E09F61BE6C17C0095A86F /* EllipsoidGeodesic.swift in Sources */,
 				947821521B5A2D7C0095A86F /* Texture.swift in Sources */,
 				942A70441BF9DA17001A40C8 /* GlobeDepth.swift in Sources */,
@@ -2627,6 +2633,7 @@
 				947821631B5A2D7C0095A86F /* CameraEventAggregator.swift in Sources */,
 				947821641B5A2D7C0095A86F /* CameraEventType.swift in Sources */,
 				94AC517E1CD21D030041F512 /* Orientation.swift in Sources */,
+				947B555C1D1619140041F512 /* Crypto.swift in Sources */,
 				947821651B5A2D7C0095A86F /* CullingVolume.swift in Sources */,
 				9413780B1C3AA2C90095A86F /* TextureUsage.swift in Sources */,
 				94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */,
@@ -2693,7 +2700,6 @@
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
 				94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */,
-				947748721D14D1130041F512 /* CesiumError.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
 				940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */,
 				947821891B5A2D7C0095A86F /* TileReplacementQueue.swift in Sources */,

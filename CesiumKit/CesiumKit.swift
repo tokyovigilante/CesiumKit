@@ -283,7 +283,7 @@ public class CesiumGlobe {
         scene.moon = new Moon();*/
 
         if options.imageryProvider != nil {
-            scene.imageryLayers.addImageryProvider(options.imageryProvider!, index: nil)
+            _ = scene.imageryLayers.addImageryProvider(options.imageryProvider!, index: nil)
         }
         
         //Set the terrain provider

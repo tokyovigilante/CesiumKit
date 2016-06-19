@@ -1763,9 +1763,7 @@ function callAfterRenderFunctions(frameState) {
         
         //tweens.update()
         camera.update(mode)
-        #if os(OSX)
         screenSpaceCameraController.update()
-        #endif
     }
 
     

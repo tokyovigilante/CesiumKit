@@ -99,11 +99,11 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _view.isMultipleTouchEnabled = true
         
         //var tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        _panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        _panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(TouchEventHandler.handlePanGesture(_:)))
         _panRecognizer.delegate = self
         _view.addGestureRecognizer(_panRecognizer)
         
-        _pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePinchGesture:")
+        _pinchRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(TouchEventHandler.handlePinchGesture(_:)))
         _pinchRecognizer.delegate = self
         _view.addGestureRecognizer(_pinchRecognizer)
     }
