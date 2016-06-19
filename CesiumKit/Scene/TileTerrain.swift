@@ -206,7 +206,9 @@ class TileTerrain {
     
     func createResources(frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         
         self.state = .buffering
         var terrainMesh = self.mesh!

@@ -394,25 +394,25 @@ public class BingMapsImageryProvider: ImageryProvider {
         let metadataSuccess = { (data: Data) -> () in
             
             do {
-                let metadata = try JSON.decode(data, strict: true)
+                let metadata = try JSON.decode(string: String(data: data, encoding: .utf8)!, strict: true)
                 
-                guard let resourceSet = try metadata.getArray("resourceSets").first else {
-                    let error = try metadata.getArray("errorDetails")
+                guard let resourceSet = try metadata.getArray(key: "resourceSets").first else {
+                    let error = try metadata.getArray(key: "errorDetails")
                     print("metadata error: ")// + error.first?)
                     return
                 }
-                guard let resource = try resourceSet.getArray("resources").first else {
-                    let error = try metadata.getString("errorDetails")
+                guard let resource = try resourceSet.getArray(key: "resources").first else {
+                    let error = try metadata.getString(key: "errorDetails")
                     print("metadata error: " + error)
                     return
                 }
-                self._tileWidth = try resource.getInt("imageWidth")
-                self._tileHeight = try resource.getInt("imageHeight")
-                self._maximumLevel = try resource.getInt("zoomMax") - 1
-                self._imageUrlSubdomains = try resource.getArray("imageUrlSubdomains")
+                self._tileWidth = try resource.getInt(key: "imageWidth")
+                self._tileHeight = try resource.getInt(key: "imageHeight")
+                self._maximumLevel = try resource.getInt(key: "zoomMax") - 1
+                self._imageUrlSubdomains = try resource.getArray(key: "imageUrlSubdomains")
                 
                  let imageUrlTemplate = try resource
-                    .getString("imageUrl")
+                    .getString(key: "imageUrl")
                     .replace("{culture}", self.culture)
                  
                  // Force HTTPS
@@ -429,21 +429,21 @@ public class BingMapsImageryProvider: ImageryProvider {
                  });
                  }*/
                 
-                if let attributionList = try resource.getArrayOrNil("imageryProviders") {
+                if let attributionList = try resource.getArrayOrNil(key: "imageryProviders") {
                     
                     for jsonAttribution in attributionList {
                         
                         var attribution = Attribution(
-                            attribution: Credit(text: try jsonAttribution.getString("attribution")),
+                            attribution: Credit(text: try jsonAttribution.getString(key: "attribution")),
                             areas: [AttributionArea]()
                         )
                         
-                        let coverageAreas = try jsonAttribution.getArray("coverageAreas")
+                        let coverageAreas = try jsonAttribution.getArray(key: "coverageAreas")
                         
                         for area in coverageAreas {
-                            let bbox = try area.getArray("bbox")
-                            let zoomMin = try area.getInt("zoomMin")
-                            let zoomMax = try area.getInt("zoomMax")
+                            let bbox = try area.getArray(key: "bbox")
+                            let zoomMin = try area.getInt(key: "zoomMin")
+                            let zoomMax = try area.getInt(key: "zoomMax")
                             attribution.areas.append(
                                 AttributionArea(
                                     zoomMin: zoomMin,

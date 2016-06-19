@@ -387,8 +387,14 @@ public class Camera: DRU {
     
     private var _modeChanged = true
     
-    private var _projection: MapProjection
+    private var _projection: MapProjection {
+        didSet {
+            ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
+        }
+    }
     
+    var ellipsoidGeodesic: EllipsoidGeodesic
+
     private var _maxCoord = Cartesian3()
     
     private var _max2Dfrustum: Frustum? = nil
@@ -417,6 +423,8 @@ public class Camera: DRU {
         _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
         _mode = mode
         
+        ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
+        
         transform2DInverse = transform2D.inverse
         
         frustum = PerspectiveFrustum()
@@ -443,7 +451,8 @@ public class Camera: DRU {
             
             _projection = fakeScene.mapProjection
             _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
-            
+            ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
+
             transform2DInverse = transform2D.inverse
             
             frustum = PerspectiveFrustum()
@@ -1744,7 +1753,6 @@ public class Camera: DRU {
     var viewRectangle3DCenter = new Cartesian3();
     var viewRectangle3DEquator = new Cartesian3();
     var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new Cartesian3()};*/
-    var viewRectangle3DEllipsoidGeodesic: EllipsoidGeodesic! = nil
     
     private struct DefaultRF: DRU {
         var direction = Cartesian3()
@@ -1786,14 +1794,8 @@ public class Camera: DRU {
             var northCartographic = Cartographic(longitude: longitude, latitude: north, height: 0.0)
             var southCartographic = Cartographic(longitude: longitude, latitude: south, height: 0.0)
             
-            var ellipsoidGeodesic = viewRectangle3DEllipsoidGeodesic
-            if ellipsoidGeodesic == nil || ellipsoidGeodesic?.ellipsoid != ellipsoid {
-                ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: ellipsoid)
-                viewRectangle3DEllipsoidGeodesic = ellipsoidGeodesic
-            }
-            
-            ellipsoidGeodesic?.setEndPoints(start: northCartographic, end: southCartographic)
-            latitude = ellipsoidGeodesic?.interpolateUsingFraction(0.5).latitude
+            ellipsoidGeodesic.setEndPoints(start: northCartographic, end: southCartographic)
+            latitude = ellipsoidGeodesic.interpolateUsingFraction(0.5).latitude
         }
         
         let centerCartographic = Cartographic(longitude: longitude, latitude: latitude)

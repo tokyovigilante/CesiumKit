@@ -82,7 +82,9 @@ class SkyAtmosphere {
             return nil
         }
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return nil
+        }
     
         if _command.vertexArray == nil {
             let geometry = EllipsoidGeometry(
@@ -98,14 +100,14 @@ class SkyAtmosphere {
                 attributeLocations: GeometryPipeline.createAttributeLocations(geometry)
             )
             _command.renderState = RenderState(
-                device: context!.device,
+                device: context.device,
                 cullFace: .front
             )
             
             let metalStruct = (_command.uniformMap as! NativeUniformMap).generateMetalUniformStruct()
             
             _rpSkyFromSpace = RenderPipeline.fromCache(
-                context : context!,
+                context : context,
                 vertexShaderSource : ShaderSource(
                     defines: ["SKY_FROM_SPACE"],
                     sources: [Shaders["SkyAtmosphereVS"]!]
@@ -114,14 +116,14 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: (context?.depthTexture)!,
+                depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
                 uniformStructSize: strideof(SkyAtmosphereUniformStruct)
             )
                         
             _rpSkyFromAtmosphere = RenderPipeline.fromCache(
-                context : context!,
+                context : context,
                 vertexShaderSource : ShaderSource(
                     defines: ["SKY_FROM_ATMOSPHERE"],
                     sources: [Shaders["SkyAtmosphereVS"]!]
@@ -130,7 +132,7 @@ class SkyAtmosphere {
                     sources: [Shaders["SkyAtmosphereFS"]!]
                 ),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: (context?.depthTexture)!,
+                depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
                 uniformStructSize: strideof(SkyAtmosphereUniformStruct)

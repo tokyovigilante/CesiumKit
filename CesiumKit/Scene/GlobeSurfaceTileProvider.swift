@@ -528,7 +528,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         if !tile._cachedCommands.isEmpty {
             updateRTCPosition(forTile: tile, frameState: frameState)
             frameState.commandList.append(contentsOf: tile._cachedCommands.map { $0 as Command })
-            tile._cachedCredits.map { frameState.creditDisplay.addCredit($0) }
+            _ = tile._cachedCredits.map { frameState.creditDisplay.addCredit($0) }
             return
         }
         
@@ -622,9 +622,11 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             //debugDestroyPrimitive()
         }
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         
-        var maxTextures = context?.limits.maximumTextureImageUnits
+        var maxTextures = context.limits.maximumTextureImageUnits
         
         if showReflectiveOcean {
             maxTextures -= 1
@@ -641,7 +643,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             command.boundingVolume = BoundingSphere()
             command.orientedBoundingBox = nil
             
-            let uniformMap = createTileUniformMap(maxTextures!)
+            let uniformMap = createTileUniformMap(maxTextures)
             
             _usedDrawCommands += 1
             
@@ -768,7 +770,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             
-            command.uniformMap!.uniformBufferProvider = getManualUniformBufferProvider(context!, size: strideof(TileUniformStruct), deallocationBlock: { provider in
+            command.uniformMap!.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct), deallocationBlock: { provider in
                     self.returnManualUniformBufferProvider(provider)
                 }
             )

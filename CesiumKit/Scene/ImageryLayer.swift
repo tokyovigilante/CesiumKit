@@ -509,7 +509,9 @@ public class ImageryLayer {
      */
     func createTexture (frameState: FrameState, imagery: Imagery) {
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         
         QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
             
@@ -647,7 +649,9 @@ public class ImageryLayer {
     
     func generateMipmaps (frameState: inout FrameState, imagery: Imagery) {
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         // Use mipmaps if this texture has power-of-two dimensions.
         QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
             let texture = imagery.texture!
@@ -780,7 +784,7 @@ public class ImageryLayer {
         // doing a slightly less accurate reprojection than we were before, but we can't see the difference
         // so it's worth the 4x speedup.
         
-        var reproject = context.cache["imageryLayer_reproject"] as! Reproject!
+        var reproject: Reproject! = context.cache["imageryLayer_reproject"] as! Reproject!
         
         if reproject == nil {
             
@@ -883,10 +887,10 @@ public class ImageryLayer {
         }
         let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .float32, sizeInBytes: webMercatorT.sizeInBytes)
         
-        var attributes = reproject?.vertexAttributes
+        var attributes = reproject!.vertexAttributes
         attributes[1].buffer = webMercatorTBuffer
         
-        let vertexArray = VertexArray(attributes: attributes!, vertexCount: 128, indexBuffer: reproject?.indexBuffer, indexCount: reproject?.indexCount)
+        let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject!.indexBuffer, indexCount: reproject?.indexCount)
         
         let textureUsage: TextureUsage = [.RenderTarget, .ShaderRead]
         

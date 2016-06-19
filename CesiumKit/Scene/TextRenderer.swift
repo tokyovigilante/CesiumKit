@@ -170,7 +170,9 @@ public class TextRenderer: Primitive {
     
     override func update (_ frameState: inout FrameState) {
        
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
 
         if _fontAtlas == nil {
             _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
@@ -208,14 +210,14 @@ public class TextRenderer: Primitive {
             meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
             
             _rs = RenderState(
-                device: (context?.device)!,
+                device: context.device,
                 viewport: viewportRect
             )
             
             _command.renderState = _rs
 
             let meshRect = CGRect(x: 0, y: 0, width: meshCGSize.width, height: meshCGSize.height)
-            _command.vertexArray = buildMesh(context!, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(pointSize)))
+            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(pointSize)))
             
             _updateMesh = false
         }
@@ -358,7 +360,7 @@ public class TextRenderer: Primitive {
                     
                     let boundsTransX = frameBoundingRect.origin.x + lineOrigin.x
                     let boundsTransY = frameBoundingRect.origin.y + lineOrigin.y + glyphOrigin.y
-                    let pathTransform = CGAffineTransformMake(1, 0, 0, 1, boundsTransX, boundsTransY)
+                    let pathTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: 1, tx: boundsTransX, ty: boundsTransY)
                     
                     glyphRect = glyphRect.apply(transform: pathTransform)
                     

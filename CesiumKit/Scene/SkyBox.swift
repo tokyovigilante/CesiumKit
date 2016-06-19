@@ -88,7 +88,9 @@ class SkyBox {
             return nil
         }
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return nil
+        }
         
         if frameState.mode != .scene3D && frameState.mode != SceneMode.morphing {
             return nil
@@ -102,7 +104,7 @@ class SkyBox {
         if _sourcesUpdated {
             let width = Int(sources.positiveX.width)
             _cubemap = Texture(
-                context: context!,
+                context: context,
                 options: TextureOptions(
                     source: .cubeMap(sources),
                     width: width,
@@ -135,17 +137,17 @@ class SkyBox {
             )
             
             _command.pipeline = RenderPipeline.fromCache(
-                context: context!,
+                context: context,
                 vertexShaderSource: ShaderSource(sources: [Shaders["SkyBoxVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["SkyBoxFS"]!]),
                 vertexDescriptor: VertexDescriptor(attributes: _command.vertexArray!.attributes),
-                depthStencil: (context?.depthTexture)!,
+                depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend()
             )
             _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             
             _command.renderState = RenderState(
-                device: (context?.device)!
+                device: context.device
             )
         }
         if _cubemap == nil {

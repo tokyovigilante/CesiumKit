@@ -328,12 +328,14 @@ class Globe {
             )
         }
         
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         
-        let width = context?.width
-        let height = context?.height
+        let width = context.width
+        let height = context.height
         
-        if (width == 0 || height == 0) {
+        if width == 0 || height == 0 {
             return
         }
         
@@ -351,7 +353,7 @@ class Globe {
                         // url changed while we were loading
                         return
                     }
-                    guard let oceanNormalMapImage = CGImage.fromData(oceanMapOperation.data) else {
+                    guard let oceanNormalMapImage = CGImage.from(data: oceanMapOperation.data) else {
                         self._oceanNormalMap = nil
                         return
                     }

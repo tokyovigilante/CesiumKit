@@ -79,10 +79,13 @@ class CreditDisplay {
     }
     
     func update(_ frameState: inout FrameState) {
-        //_creditRenderer.update(&frameState)
-        let context = frameState.context
-        var meshSize = _creditRenderer.computeSize(Double(context.width - 80))
-        var viewPortRect = Cartesian4(
+        
+        guard let context = frameState.context else {
+            return
+        }
+        
+        let meshSize = _creditRenderer.computeSize(Double(context.width - 80))
+        let viewPortRect = Cartesian4(
             x: 40,
             y: Double(context.height - 40) - Double(meshSize.height),
             width: min(Double(meshSize.width), Double(context.width - 80)),
@@ -126,9 +129,9 @@ class CreditDisplay {
     func addDefaultCredit (_ credit: Credit) {
         
         if false/*credit.hasImage*/ {
-            if !contains(credit, inCredits: _defaultImageCredits) {
+            /*if !contains(credit, inCredits: _defaultImageCredits) {
                 _defaultImageCredits.append(credit)
-            }
+            }*/
         } else {
             if !contains(credit, inCredits: _defaultTextCredits) {
                 _defaultTextCredits.append(credit)

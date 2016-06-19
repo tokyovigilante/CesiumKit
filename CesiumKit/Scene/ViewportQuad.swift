@@ -79,11 +79,13 @@ public class ViewportQuad: Primitive {
         if !show {
             return
         }
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
 
         if _rs == nil || _rs.viewport! != rectangle {
             _rs = RenderState(
-                device: (context?.device)!,
+                device: context.device,
                 viewport : rectangle
             )
             if let overlayCommand = _overlayCommand {
@@ -102,14 +104,14 @@ public class ViewportQuad: Primitive {
             let fs = ShaderSource(
                 sources: [_material.shaderSource, Shaders["ViewportQuadFS"]].flatMap { $0 }
             )
-            _overlayCommand = context?.createViewportQuadCommand(
+            _overlayCommand = context.createViewportQuadCommand(
                 fragmentShaderSource: fs,
                 overrides: ViewportQuadOverrides(
                     renderState: _rs,
                     uniformMap: _material.uniformMap,
                     owner: self
                 ),
-                depthStencil: (context?.depthTexture)!,
+                depthStencil: context.depthTexture,
                 blendingState: BlendingState.AlphaBlend()
             )
             

@@ -275,18 +275,19 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
-        let contextRef = CGContext(data: nil, width: tileWidth, height: tileHeight, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue | alphaInfo.rawValue)
-        
-        assert(contextRef != nil, "contextRef == nil")
-        
+        guard let contextRef = CGContext(data: nil, width: tileWidth, height: tileHeight, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue | alphaInfo.rawValue) else {
+            assertionFailure("contextRef == nil")
+            return
+        }
+                
         let rgbSpace = CGColorSpaceCreateDeviceRGB()
         let drawColor = CGColor(colorSpace: rgbSpace, components: _colorArray)
         
-        contextRef?.setStrokeColor(drawColor!)
+        contextRef.setStrokeColor(drawColor!)
         
         let borderRect = CGRect(x: 1.0, y: 1.0, width: CGFloat(tileWidth-2), height: CGFloat(tileHeight-2))
-        contextRef?.clear(borderRect)
-        contextRef?.stroke(borderRect, width: 2.0)
+        contextRef.clear(borderRect)
+        contextRef.stroke(borderRect, width: 2.0)
         
         let tileString = "L\(level)X\(x)Y\(y)"
         
@@ -296,7 +297,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
-        contextRef?.setFillColor(drawColor!)
+        contextRef.setFillColor(drawColor!)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorFromContextAttributeName, kCFBooleanTrue)
         
         let framesetter = CTFramesetterCreateWithAttributedString(attrString!)
@@ -311,12 +312,12 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         path.addRect(nil, rect: pathRect)
         
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
-        CTFrameDraw(frame, contextRef!)
+        CTFrameDraw(frame, contextRef)
         
-        let flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, CGFloat(tileHeight))
-        contextRef?.concatCTM(flipVertical)
+        let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: CGFloat(tileHeight))
+        contextRef.concatCTM(flipVertical)
     
-        completionBlock(contextRef?.makeImage())
+        completionBlock(contextRef.makeImage())
 
     }
     

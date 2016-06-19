@@ -76,11 +76,13 @@ class DepthPlane {
         }
         
         let ellipsoid = frameState.mapProjection.ellipsoid
-        let context = frameState.context
+        guard let context = frameState.context else {
+            return
+        }
         
         if _command == nil {
             _rs = RenderState( // Write depth, not color
-                device: context!.device,
+                device: context.device,
                 cullFace: .back,
                 depthTest: RenderState.DepthTest(
                     enabled: true,
@@ -98,7 +100,7 @@ class DepthPlane {
                 normalize: false
                 )]
             _pipeline = RenderPipeline.fromCache(
-                context: context!,
+                context: context,
                 vertexShaderSource: ShaderSource(sources: [Shaders["DepthPlaneVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["DepthPlaneFS"]!]),
                 vertexDescriptor: VertexDescriptor(attributes: _attributes!),
@@ -108,7 +110,7 @@ class DepthPlane {
                     blue: false,
                     alpha: false
                 ),
-                depthStencil: (context?.depthTexture)!
+                depthStencil: context.depthTexture
             )
             _command = DrawCommand(
                 boundingVolume: BoundingSphere(
