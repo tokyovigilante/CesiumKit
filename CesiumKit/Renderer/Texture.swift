@@ -208,11 +208,13 @@ public class Texture {
                 metalTexture.replace(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
             case .image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
-                let textureData = imageRef.renderToPixelArray(
+                guard let textureData = imageRef.renderToPixelArray(
                     colorSpace: _colorSpace,
                     premultiplyAlpha: premultiplyAlpha,
                     flipY: flipY
-                )
+                    ) else {
+                        break
+                }
                 // Copy to texture
                 let region = MTLRegionMake2D(0, 0, width, height)
                 metalTexture.replace(region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
@@ -221,11 +223,13 @@ public class Texture {
                 let region = MTLRegionMake2D(0, 0, width, height)
 
                 for slice in 0..<6 {
-                    let textureData = sources.sources[slice].renderToPixelArray(
+                    guard let textureData = sources.sources[slice].renderToPixelArray(
                         colorSpace: _colorSpace,
                         premultiplyAlpha: premultiplyAlpha,
                         flipY: flipY
-                    )
+                        ) else {
+                            break
+                    }
                     // Copy to texture
                     metalTexture.replace(
                         region,

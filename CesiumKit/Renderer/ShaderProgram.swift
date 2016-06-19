@@ -176,12 +176,12 @@ class ShaderProgram {
     
     private func createMetalProgram(_ optimizer: GLSLOptimizer) {
         
-        _vertexShader = optimizer.optimize(.Vertex, shaderSource: _vertexShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
-        assert(_vertexShader.status(), _vertexShader.log())
+        _vertexShader = optimizer.optimize(.vertex, shaderSource: _vertexShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
+        assert(_vertexShader.status(), _vertexShader.log() ?? "shader compile failed")
         _metalVertexShaderSource = _vertexShader.output()
         
-        _fragmentShader = optimizer.optimize(.Fragment, shaderSource: _fragmentShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
-        assert(_fragmentShader.status(), _fragmentShader.log())
+        _fragmentShader = optimizer.optimize(.fragment, shaderSource: _fragmentShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
+        assert(_fragmentShader.status(), _fragmentShader.log() ?? "shader compile failed")
         _metalFragmentShaderSource = _fragmentShader.output()
     }
     
@@ -221,12 +221,12 @@ class ShaderProgram {
     
     private func uniformType (_ desc: GLSLShaderVariableDescription) -> UniformType {
         if desc.name.hasPrefix("czm_a_") {
-            return .Automatic
+            return .automatic
         }
         if desc.name.hasPrefix("czm_f_") {
-            return .Frustum
+            return .frustum
         }
-        return .Manual
+        return .manual
     }
 
     
@@ -237,7 +237,7 @@ class ShaderProgram {
             let desc =  _vertexShader.uniformDescription(i)
             let type = uniformType(desc)
             
-            if type != .Manual {
+            if type != .manual {
                 continue
             }
             _vertexUniforms.append(Uniform.create(desc: desc, type: type))
@@ -249,7 +249,7 @@ class ShaderProgram {
             let desc =  _fragmentShader.uniformDescription(i)
             
             let type = uniformType(desc)
-            if type != .Manual {
+            if type != .manual {
                 continue
             }
             _fragmentUniforms.append(Uniform.create(desc: desc, type: type))
@@ -259,7 +259,7 @@ class ShaderProgram {
         let samplerUniformCount = _fragmentShader.textureCount()
         for i in 0..<samplerUniformCount {
             let desc =  _fragmentShader.textureDescription(i)
-            let samplerUniform = Uniform.create(desc: desc, type: .Sampler) as! UniformSampler
+            let samplerUniform = Uniform.create(desc: desc, type: .sampler) as! UniformSampler
             samplerUniform.setSampler(Int(i))
             _samplerUniforms.append(samplerUniform)
         }

@@ -27,7 +27,7 @@ class PipelineCache {
     
     init (device: MTLDevice) {
         self.device = device
-        _optimizer = GLSLOptimizer(.Metal)
+        _optimizer = GLSLOptimizer(.metal)
     }
         
     /**

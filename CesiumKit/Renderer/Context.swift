@@ -233,7 +233,7 @@ class Context {
         // Allow the renderer to preflight 3 frames on the CPU (using a semaphore as a guard) and commit them to the GPU.
         // This semaphore will get signaled once the GPU completes a frame's work via addCompletedHandler callback below,
         // signifying the CPU can go ahead and prepare another frame.
-        _inflight_semaphore.wait(timeout: DispatchTime.distantFuture)
+        _ = _inflight_semaphore.wait(timeout: DispatchTime.distantFuture)
         assert(_drawable == nil, "drawable != nil")
         _drawable = view.currentDrawable
         if _drawable == nil {

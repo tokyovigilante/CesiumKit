@@ -156,7 +156,7 @@ class VertexArray {
                         let geometryArraySize = geometryAttribute.vertexArraySize
                         
                         doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
-                            values.read(into: pointer.baseAddress, length: geometryArraySize)
+                            values.read(into: pointer.baseAddress!, length: geometryArraySize)
                         })
                         geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
                     }
@@ -232,7 +232,7 @@ class VertexArray {
                     var doubleArray = [Double](repeating: 0.0, count: geometryAttribute.vertexCount)
                     let geometryArraySize = geometryAttribute.vertexArraySize
                     doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
-                        geometryAttribute.values?.read(into: pointer.baseAddress, length: geometryArraySize)
+                        geometryAttribute.values?.read(into: pointer.baseAddress!, length: geometryArraySize)
                     })
                     geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
                 }

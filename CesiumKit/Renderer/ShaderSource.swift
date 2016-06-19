@@ -284,7 +284,7 @@ struct ShaderSource {
             let currentNode = nodesWithoutIncomingEdges.remove(at: 0)
             
             dependencyNodes.append(currentNode)
-            for (i in 0 ..< currentNode.dependsOn.count) {
+            for i in 0..<currentNode.dependsOn.count {
                 // remove the edge from the graph
                 let referencedNode = currentNode.dependsOn[i]
                 let index = referencedNode.requiredBy.index(of: currentNode)

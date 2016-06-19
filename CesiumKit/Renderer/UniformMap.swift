@@ -71,15 +71,15 @@ protocol LegacyUniformMap: class, UniformMap {
 
 extension LegacyUniformMap {
     
-    public func indexForUniform(_ name: String) -> UniformIndex? {
+    func indexForUniform(_ name: String) -> UniformIndex? {
         return uniforms.index(forKey: name)
     }
     
-    public func uniform(_ index: UniformIndex) -> UniformFunc {
+    func uniform(_ index: UniformIndex) -> UniformFunc {
         return uniforms[index].1
     }
     
-    public func textureForUniform (_ uniform: UniformSampler) -> Texture? {
+    func textureForUniform (_ uniform: UniformSampler) -> Texture? {
         return nil
     }
     
