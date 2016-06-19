@@ -69,7 +69,7 @@ class NetworkOperation: Operation {
         return Data()
     }
     
-    private var _incomingData: NSMutableData? = nil
+    private var _incomingData: Data? = nil
     
     var error: NSError?
     
@@ -99,7 +99,7 @@ class NetworkOperation: Operation {
         
         let completeURL: URL
         if let parameters = parameters {
-            guard let urlComponents = URLComponents(string: self.url) else {
+            guard var urlComponents = URLComponents(string: self.url) else {
                 isFinished = true
                 //setError
                 return
@@ -110,13 +110,12 @@ class NetworkOperation: Operation {
             completeURL = URL(string: self.url)!
         }
         
-        let request = NSMutableURLRequest(url: completeURL)
-        
+        var request = URLRequest(url: completeURL)
+
         _ = headers?.map { request.setValue($1, forHTTPHeaderField: $0) }
         
         let dataTask = session.dataTask(with: request)
         dataTask.networkOperation = self
-        //NSURLProtocol.setProperty(self, forKey: ResponseDelegateKey, inRequest: request)
         
         dataTask.resume()
     }
@@ -138,28 +137,37 @@ extension URLSessionTask {
         }
         
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.networkOperation, newValue, .objc_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.networkOperation, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
     }
 }
 
 class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
     
-    /*func urlSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (URLSession.ResponseDisposition) -> Void) {
         guard let request = dataTask.originalRequest else {
             return
         }
-        guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
+        guard let operation = dataTask.networkOperation else {
             return
         }
-        if operation.cancelled {
-            completionHandler(.Cancel)
-            operation.finished = true
+        if operation.isCancelled {
+            completionHandler(.cancel)
+            operation.isFinished = true
             return
         }
         //Check the response code and react appropriately
-        completionHandler(.Allow)
-    }*/
+        if let httpResponse = response as? HTTPURLResponse {
+            switch httpResponse.statusCode {
+            case 404:
+                logPrint(level: .error, "404 not found: \(request.url!)")
+                operation.isFinished = true
+                dataTask.cancel()
+            default:
+                completionHandler(.allow)
+            }
+        }
+    }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: (Foundation.URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.performDefaultHandling, nil)
@@ -172,7 +180,6 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         
         guard let operation = dataTask.networkOperation else {
-        //guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
         if operation.isCancelled {
@@ -188,14 +195,15 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
                 capacity = Int(response.expectedContentLength)
             }
             if capacity == -1 {
-                operation._incomingData = NSMutableData()
+                operation._incomingData = Data()
             } else {
-                operation._incomingData = NSMutableData(capacity: capacity)
+                operation._incomingData = Data(capacity: capacity)
             }
         }
+        print(data.count)
         //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
-        data.enumerateBytes { pointer, range, stop in
-            operation._incomingData!.append(pointer, length: range.length)
+        data.enumerateBytes { (buffer, byteIndex, stop) in
+            operation._incomingData?.append(buffer.baseAddress!, count: buffer.count)
         }
     }
     
