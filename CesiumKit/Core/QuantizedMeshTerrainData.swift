@@ -397,7 +397,7 @@ class QuantizedMeshTerrainData: TerrainData {
         let encoding = mesh.encoding
         let indices = mesh.indices
         
-        for i in 0.stride(to: indices.count, by: 3) {
+        for i in stride(from: 0, to: indices.count, by: 3) {
             let i0 = indices[i]
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
@@ -420,7 +420,7 @@ class QuantizedMeshTerrainData: TerrainData {
     
     private func interpolateHeight (u: Double, v: Double) -> Double? {
 
-        for i in 0.stride(to: _indices.count, by: 3) {
+        for i in stride(from: 0, to: _indices.count, by: 3) {
             let i0 = _indices[i]
             let i1 = _indices[i + 1]
             let i2 = _indices[i + 2]

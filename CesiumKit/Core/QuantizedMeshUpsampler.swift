@@ -101,7 +101,7 @@ class QuantizedMeshUpsampler {
         
         var clippedTriangleVertices = [Vertex(), Vertex(), Vertex()]
         
-        for i in 0.stride(to: parentIndices.count, by: 3) {
+        for i in stride(from: 0, to: parentIndices.count, by: 3) {
             let i0 = parentIndices[i]
             let i1 = parentIndices[i + 1]
             let i2 = parentIndices[i + 2]

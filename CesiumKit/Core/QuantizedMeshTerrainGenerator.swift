@@ -205,7 +205,7 @@ class QuantizedMeshTerrainGenerator {
             east += Math.TwoPi
         }
         
-        for i in start.stride(to: end, by: increment) {
+        for i in stride(from: start, to: end, by: increment) {
             let index = edgeVertices[i]
             let h = heights[index]
             var uv = uvs[index]

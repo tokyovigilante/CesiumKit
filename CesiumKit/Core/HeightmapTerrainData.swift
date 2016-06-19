@@ -385,8 +385,8 @@ class HeightmapTerrainData: TerrainData, Equatable {
         return southwestHeight + (dX * (northeastHeight - northwestHeight)) + (dY * (northwestHeight - southwestHeight))
     }
     
-    private func getHeight(heights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride: Int, isBigEndian: Bool, index: Int) -> Double {
-        let trueIndex = index * stride
+    private func getHeight(heights: [UInt16], elementsPerHeight: Int, elementMultiplier: Double, stride increment: Int, isBigEndian: Bool, index: Int) -> Double {
+        let trueIndex = index * increment
         
         var height = 0.0
         
@@ -403,9 +403,9 @@ class HeightmapTerrainData: TerrainData, Equatable {
         return height
     }
     
-    private func setHeight(heights: inout [UInt16], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride: Int, isBigEndian: Bool, index: Int, height: Double) {
+    private func setHeight(heights: inout [UInt16], elementsPerHeight: Int, elementMultiplier: Double, divisor: Double, stride increment: Int, isBigEndian: Bool, index: Int, height: Double) {
         
-        let index = index * stride
+        let index = index * increment
         
         var height = height
         var divisor = divisor

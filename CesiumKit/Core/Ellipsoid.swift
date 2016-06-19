@@ -198,13 +198,13 @@ public struct Ellipsoid: Equatable {
     
     public func cartesianToCartographic(_ cartesian: Cartesian3) -> Cartographic? {
         
-        let p = scaleToGeodeticSurface(cartesian)
-        if p == nil {
+        guard let p = scaleToGeodeticSurface(cartesian) else {
+            //logPrint(level: .warning, "Invalid cartesian provided for projection: \(cartesian.description)")
             return nil
         }
         
-        let n = geodeticSurfaceNormal(p!)
-        let h = cartesian.subtract(p!)
+        let n = geodeticSurfaceNormal(p)
+        let h = cartesian.subtract(p)
         
         let longitude = atan2(n.y, n.x)
         let latitude = asin(n.z)

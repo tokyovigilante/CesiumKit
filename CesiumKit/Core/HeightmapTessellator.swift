@@ -135,7 +135,7 @@ class HeightmapTessellator {
         let heightScale = structure.heightScale
         let heightOffset = structure.heightOffset
         let elementsPerHeight = structure.elementsPerHeight
-        let stride = structure.stride
+        let increment = structure.stride
         let elementMultiplier = structure.elementMultiplier
         let isBigEndian = structure.isBigEndian
         
@@ -214,7 +214,7 @@ class HeightmapTessellator {
                     longitude = Math.toRadians(longitude)
                 }
                 
-                let terrainOffset = row * (width * stride) + col * stride
+                let terrainOffset = row * (width * increment) + col * increment
                 
                 var heightSample: Double
                 if elementsPerHeight == 1 {
@@ -223,7 +223,7 @@ class HeightmapTessellator {
                     heightSample = 0
                     
                     if isBigEndian {
-                        for elementOffset in 0.stride(to: elementsPerHeight, by: 1) {
+                        for elementOffset in stride(from: 0, to: elementsPerHeight, by: 1) {
                             heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
                         }
                     } else {

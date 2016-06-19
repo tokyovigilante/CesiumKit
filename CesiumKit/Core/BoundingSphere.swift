@@ -284,14 +284,14 @@ struct BoundingSphere: BoundingVolume {
     var fromPointsMaxBoxPt = new Cartesian3();
     var fromPointsNaiveCenterScratch = new Cartesian3();*/
     
-    static func fromVertices(_ positions: [Float], center: Cartesian3 = Cartesian3.zero, stride: Int = 3) -> BoundingSphere {
+    static func fromVertices(_ positions: [Float], center: Cartesian3 = Cartesian3.zero, stride increment: Int = 3) -> BoundingSphere {
         
         var result = BoundingSphere()
         if (positions.count == 0) {
             return result
         }
         
-        assert(stride >= 3, "stride must be 3 or greater")
+        assert(increment >= 3, "stride must be 3 or greater")
         
         var currentPos = Cartesian3(x: Double(positions[0]) + center.x, y: Double(positions[1]) + center.y, z: Double(positions[2]) + center.z)
         
@@ -304,7 +304,7 @@ struct BoundingSphere: BoundingVolume {
         var zMax = currentPos
         
         let numElements = positions.count
-        for i in 0.stride(to: numElements, by: stride) {
+        for i in stride(from: 0, to: numElements, by: increment) {
             let x = Double(positions[i]) + center.x
             let y = Double(positions[i + 1]) + center.y
             let z = Double(positions[i + 2]) + center.z
@@ -385,7 +385,7 @@ struct BoundingSphere: BoundingVolume {
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
-        for i in 0.stride(to: numElements, by: stride) {
+        for i in stride(from: 0, to: numElements, by: increment) {
             currentPos.x = Double(positions[i]) + center.x
             currentPos.y = Double(positions[i + 1]) + center.y
             currentPos.z = Double(positions[i + 2]) + center.z

@@ -185,18 +185,16 @@ class CesiumTerrainProvider: TerrainProvider {
         let metadataSuccess = { (data: Data) in
             
             do {
-                let metadata = try JSON.decode(data, strict: true)
+                let metadata = try JSON.decode(string: String(data: data, encoding: .utf8)!, strict: true)
                 
-                var message: String? = nil
-                
-                guard let tiles = try metadata.getArrayOrNil("tiles") else {
-                    message = "The layer.json file does not specify any tile URL templates."
+                guard let tiles = try metadata.getArrayOrNil(key: "tiles") else {
+                    logPrint(level: .error, "The layer.json file does not specify any tile URL templates.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
 
-                guard let format = try metadata.getStringOrNil("format") else {
-                    message = "The tile format is not specified in the layer.json file."
+                guard let format = try metadata.getStringOrNil(key: "format") else {
+                    logPrint(level: .error, "The tile format is not specified in the layer.json file.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
@@ -213,13 +211,13 @@ class CesiumTerrainProvider: TerrainProvider {
                     self._hasWaterMask = true
                     self._requestWaterMask = true
                 } else if !format.hasPrefix("quantized-mesh-1.") {
-                    message = "The tile format '" + format + "' is invalid or not supported."
+                    logPrint(level: .warning, "The tile format '" + format + "' is invalid or not supported.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
-                let version = try metadata.getString("version")
+                let version = try metadata.getString(key: "version")
                 
-                let baseURL: URLComponents = URLComponents(string: self.url)!
+                var baseURL: URLComponents = URLComponents(string: self.url)!
                 self._tileUrlTemplates = tiles.map {
                     var templateString = $0.string!
                     let template = URLComponents(string: templateString)
@@ -232,15 +230,17 @@ class CesiumTerrainProvider: TerrainProvider {
                     if let string = template?.string {
                         templateString = string
                     }
-                    let url = baseURL.url!
+                    guard let url = baseURL.url?.absoluteString else {
+                        return ""
+                    }
                     
                     let path = templateString.replace("{version}", version)
-                    return url.absoluteString + "/" + path
+                    return url + "/" + path
                 }
                 
-                self._availableTiles = try metadata.getArray("available").map { $0 }
+                self._availableTiles = try metadata.getArray(key: "available").map { $0 }
                 
-                if let attribution = try metadata.getStringOrNil("attribution") {
+                if let attribution = try metadata.getStringOrNil(key: "attribution") {
                     self.credit = Credit(text: attribution)
                 }
                 
@@ -250,7 +250,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
                 // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
                 // over 'vertexnormals' if both extensions are supported by the server.
-                if let extensions = try metadata.getArrayOrNil("extensions") {
+                if let extensions = try metadata.getArrayOrNil(key: "extensions") {
                     if extensions.contains("octvertexnormals") {
                         self._hasVertexNormals = true
                     } else if extensions.contains("vertexnormals") {
@@ -266,7 +266,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 })
                 //that._readyPromise.resolve(true);
             } catch {
-                print("invalid JSON from terrain provider")
+                logPrint(level: .error, "invalid JSON from terrain provider")
                 return
             }
         }
@@ -358,51 +358,51 @@ class CesiumTerrainProvider: TerrainProvider {
         var pos = 0
         let cartesian3Elements = 3
         let boundingSphereElements = cartesian3Elements + 1
-        let cartesian3Length = strideof(Double) * cartesian3Elements
-        let boundingSphereLength = strideof(Double) * boundingSphereElements
+        let cartesian3Length = sizeof(Double) * cartesian3Elements
+        let boundingSphereLength = sizeof(Double) * boundingSphereElements
         let encodedVertexElements = 3
-        let encodedVertexLength = strideof(UInt16) * encodedVertexElements
+        let encodedVertexLength = sizeof(UInt16) * encodedVertexElements
         let triangleElements = 3
-        var bytesPerIndex = strideof(UInt16)
+        var bytesPerIndex = sizeof(UInt16)
         var triangleLength = bytesPerIndex * triangleElements
         
         let center = Cartesian3(
-            x: data.getFloat64(pos),
-            y: data.getFloat64(pos + 8),
-            z: data.getFloat64(pos + 16)
+            x: data.getFloat64(pos: pos),
+            y: data.getFloat64(pos: pos + 8),
+            z: data.getFloat64(pos: pos + 16)
         )
         pos += cartesian3Length
         
-        let minimumHeight = Double(data.getFloat32(pos))
-        pos += strideof(Float)
-        let maximumHeight = Double(data.getFloat32(pos))
-        pos += strideof(Float)
+        let minimumHeight = Double(data.getFloat32(pos: pos))
+        pos += sizeof(Float)
+        let maximumHeight = Double(data.getFloat32(pos: pos))
+        pos += sizeof(Float)
         
         let boundingSphere = BoundingSphere(
             center: Cartesian3(
-                x: data.getFloat64(pos),
-                y: data.getFloat64(pos + 8),
-                z: data.getFloat64(pos + 16)),
-            radius: data.getFloat64(pos + cartesian3Length)
+                x: data.getFloat64(pos: pos),
+                y: data.getFloat64(pos: pos + 8),
+                z: data.getFloat64(pos: pos + 16)),
+            radius: data.getFloat64(pos: pos + cartesian3Length)
         )
         pos += boundingSphereLength
         
         let horizonOcclusionPoint = Cartesian3(
-            x: data.getFloat64(pos),
-            y: data.getFloat64(pos + 8),
-            z: data.getFloat64(pos + 16)
+            x: data.getFloat64(pos: pos),
+            y: data.getFloat64(pos: pos + 8),
+            z: data.getFloat64(pos: pos + 16)
         )
         pos += cartesian3Length
         
-        let vertexCount = Int(data.getUInt32(pos))
-        pos += strideof(UInt32)
+        let vertexCount = Int(data.getUInt32(pos: pos))
+        pos += sizeof(UInt32)
         
-        var encodedVertexBuffer = data.getUInt16Array(pos, elementCount: vertexCount * encodedVertexElements)
+        var encodedVertexBuffer = data.getUInt16Array(pos: pos, elementCount: vertexCount * encodedVertexElements)
         pos += vertexCount * encodedVertexLength
         
         if vertexCount > Math.SixtyFourKilobytes {
             // More than 64k vertices, so indices are 32-bit.
-            bytesPerIndex = strideof(UInt32)
+            bytesPerIndex = sizeof(UInt32)
             triangleLength = bytesPerIndex * triangleElements
         }
         
@@ -434,7 +434,7 @@ class CesiumTerrainProvider: TerrainProvider {
             pos += (bytesPerIndex - (pos % bytesPerIndex))
         }
         
-        let triangleCount = Int(data.getUInt32(pos))
+        let triangleCount = Int(data.getUInt32(pos: pos))
         pos += strideof(UInt32)
         
         // High water mark decoding based on decompressIndices_ in webgl-loader's loader.js.
@@ -454,38 +454,38 @@ class CesiumTerrainProvider: TerrainProvider {
         
         pos += triangleCount * triangleLength
                 
-        let westVertexCount = Int(data.getUInt32(pos))
-        pos += strideof(UInt32)
+        let westVertexCount = Int(data.getUInt32(pos: pos))
+        pos += sizeof(UInt32)
         let westIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: westVertexCount)
         pos += westVertexCount * bytesPerIndex
         
-        let southVertexCount = Int(data.getUInt32(pos))
-        pos += strideof(UInt32)
+        let southVertexCount = Int(data.getUInt32(pos: pos))
+        pos += sizeof(UInt32)
         let southIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: southVertexCount)
         pos += southVertexCount * bytesPerIndex
         
-        let eastVertexCount = Int(data.getUInt32(pos))
-        pos += strideof(UInt32)
+        let eastVertexCount = Int(data.getUInt32(pos: pos))
+        pos += sizeof(UInt32)
         let eastIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: eastVertexCount)
         pos += eastVertexCount * bytesPerIndex
         
-        let northVertexCount = Int(data.getUInt32(pos))
-        pos += strideof(UInt32)
+        let northVertexCount = Int(data.getUInt32(pos: pos))
+        pos += sizeof(UInt32)
         let northIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: northVertexCount)
         pos += northVertexCount * bytesPerIndex
         
         var encodedNormalBuffer: [UInt8]? = nil
         var waterMaskBuffer: [UInt8]? = nil
         while pos < data.count {
-            let extensionId = QuantizedMeshExtensionIds(rawValue: data.getUInt8(pos))
-            pos += strideof(UInt8)
-            let extensionLength = Int(data.getUInt32(pos, littleEndian: _littleEndianExtensionSize))
-            pos += strideof(UInt32)
+            let extensionId = QuantizedMeshExtensionIds(rawValue: data.getUInt8(pos: pos))
+            pos += sizeof(UInt8)
+            let extensionLength = Int(data.getUInt32(pos: pos, littleEndian: _littleEndianExtensionSize))
+            pos += sizeof(UInt32)
             
             if extensionId == .octVertexNormals && requestVertexNormals {
-                encodedNormalBuffer = data.getUInt8Array(pos, elementCount: vertexCount * 2)
+                encodedNormalBuffer = data.getUInt8Array(pos: pos, elementCount: vertexCount * 2)
             } else if extensionId == .waterMask && _requestWaterMask {
-                waterMaskBuffer = data.getUInt8Array(pos, elementCount: extensionLength)
+                waterMaskBuffer = data.getUInt8Array(pos: pos, elementCount: extensionLength)
             }
             pos += extensionLength
         }
@@ -714,10 +714,10 @@ class CesiumTerrainProvider: TerrainProvider {
                 guard let tileArray = availableTiles[i].array else { continue }
                 do {
                     for tileBlock in tileArray {
-                        let blockStartX = try tileBlock.getInt("startX")
-                        let blockStartY = try tileBlock.getInt("startY")
-                        let blockEndX = try tileBlock.getInt("endX")
-                        let blockEndY = try tileBlock.getInt("endY")
+                        let blockStartX = try tileBlock.getInt(key: "startX")
+                        let blockStartY = try tileBlock.getInt(key: "startY")
+                        let blockEndX = try tileBlock.getInt(key: "endX")
+                        let blockEndY = try tileBlock.getInt(key: "endY")
                         let blockWidth = blockEndX - blockStartX + 1
                         let blockHeight = blockEndY - blockStartY + 1
                         let blockCount = blockWidth * blockHeight
@@ -763,10 +763,10 @@ class CesiumTerrainProvider: TerrainProvider {
     func isTileInRange(_ levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
         for range in levelAvailable {
             do {
-                let startX = try range.getInt("startX")
-                let endX = try range.getInt("endX")
-                let startY = try range.getInt("startY")
-                let endY = try range.getInt("endY")
+                let startX = try range.getInt(key: "startX")
+                let endX = try range.getInt(key: "endX")
+                let startY = try range.getInt(key: "startY")
+                let endY = try range.getInt(key: "endY")
                 
                 if x >= startX && x <= endX && y >= startY && y <= endY {
                     return true

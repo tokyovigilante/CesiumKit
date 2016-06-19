@@ -106,7 +106,7 @@ class EllipsoidalOccluder {
         let vtDotVc = -vt.dot(_cameraPositionInScaledSpace)
         // If vhMagnitudeSquared < 0 then we are below the surface of the ellipsoid and
         // in this case, set the culling plane to be on V.
-        var isOccluded = _distanceToLimbInScaledSpaceSquared < 0 ? vtDotVc > 0 : (vtDotVc > _distanceToLimbInScaledSpaceSquared &&
+        let isOccluded = _distanceToLimbInScaledSpaceSquared < 0 ? vtDotVc > 0 : (vtDotVc > _distanceToLimbInScaledSpaceSquared &&
             vtDotVc * vtDotVc / vt.magnitudeSquared > _distanceToLimbInScaledSpaceSquared)
         return !isOccluded
     }
@@ -159,7 +159,7 @@ class EllipsoidalOccluder {
     func computeHorizonCullingPointFromVertices(
         _ directionToPoint: Cartesian3,
         vertices: [Float],
-        stride: Int,
+        stride increment: Int,
         center: Cartesian3 = Cartesian3.zero
         ) -> Cartesian3? {
             
@@ -168,7 +168,7 @@ class EllipsoidalOccluder {
         var resultMagnitude = 0.0
         
         var positionScratch: Cartesian3
-        for i in 0.stride(to: vertices.count, by: stride) {
+        for i in stride(from: 0, to: vertices.count, by: increment) {
             positionScratch = Cartesian3(
                 x: Double(vertices[i]) + center.x,
                 y: Double(vertices[i + 1]) + center.y,

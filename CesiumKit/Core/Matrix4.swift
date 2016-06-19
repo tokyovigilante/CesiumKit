@@ -1490,7 +1490,7 @@ extension Matrix4: Packable {
     init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
-        array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
+        _ = array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
             memcpy(&self, pointer.baseAddress, Matrix4.packedLength() * strideof(Double))
         }
     }

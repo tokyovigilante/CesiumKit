@@ -465,7 +465,7 @@ public struct Cartesian3 {
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
         var cartesians = [Cartesian3]()
-        for i in 0.stride(to: coordinates.count, by: 2) {
+        for i in stride(from: 0, to: coordinates.count, by: 2) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
         }
         return cartesians
@@ -485,7 +485,7 @@ public struct Cartesian3 {
     static func fromDegreesArrayHeights(_ coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
-        for i in 0.stride(to: coordinates.count, by: 3) {
+        for i in stride(from: 0, to: coordinates.count, by: 3) {
             pos.append(Math.toRadians(coordinates[i]))
             pos.append(Math.toRadians(coordinates[i+1]))
             pos.append((coordinates[i+2]))
@@ -510,7 +510,7 @@ public struct Cartesian3 {
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         
         var cartesians = [Cartesian3]()
-        for i in 0.stride(to: coordinates.count, by: 3) {
+        for i in stride(from: 0, to: coordinates.count, by: 3) {
             cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
         }
         return cartesians
@@ -573,6 +573,12 @@ extension Cartesian3: Packable {
     
     func toArray() -> [Double] {
         return [self.x, self.y, self.z]
+    }
+}
+
+extension Cartesian3: CustomStringConvertible {
+    public var description: String {
+        return String(simdType)
     }
 }
 
