@@ -112,7 +112,7 @@ public class TextRenderer: Primitive {
     
     let fontName: String
     
-    private var _rs: RenderState! = nil
+    //private var _rs: RenderState! = nil
     
     private let _offscreenTarget: Bool
     
@@ -202,20 +202,13 @@ public class TextRenderer: Primitive {
             map.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
         
-        if _rs == nil || _updateMesh {
+        if _command.renderState == nil || _updateMesh {
             
             _updateMetrics = true
                         
             let meshCGSize = computeSize()
             meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
             
-            _rs = RenderState(
-                device: context.device,
-                viewport: viewportRect
-            )
-            
-            _command.renderState = _rs
-
             let meshRect = CGRect(x: 0, y: 0, width: meshCGSize.width, height: meshCGSize.height)
             _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(pointSize)))
             
@@ -224,6 +217,11 @@ public class TextRenderer: Primitive {
         
         if _updateMetrics {
             map.viewProjectionMatrix = Matrix4.computeOrthographicOffCenter(left: 0, right: viewportRect.width, bottom: 0, top: viewportRect.height)
+            
+            _command.renderState = RenderState(
+                device: context.device,
+                viewport: viewportRect
+            )
             _updateMetrics = false
         }
         
@@ -232,9 +230,9 @@ public class TextRenderer: Primitive {
         frameState.commandList.append(_command)
     }
 
-    public func computeSize (_ constraintWidth: Double? = nil) -> CGSize {
+    public func computeSize (constrainingTo width: Double? = nil) -> CGSize {
         
-        let constrainedWidth = constraintWidth ?? viewportRect.width
+        let constrainedWidth = width ?? viewportRect.width
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string)
         let font = CTFontCreateWithName(fontName, CGFloat(pointSize), nil)
