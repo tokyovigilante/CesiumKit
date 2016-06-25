@@ -84,7 +84,7 @@ class CreditDisplay {
             return
         }
         
-        let meshSize = _creditRenderer.computeSize(Double(context.width - 80))
+        let meshSize = _creditRenderer.computeSize(constrainingTo: Double(context.width - 80))
         let viewPortRect = Cartesian4(
             x: 40,
             y: Double(context.height - 40) - Double(meshSize.height),

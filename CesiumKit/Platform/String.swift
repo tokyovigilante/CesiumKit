@@ -25,7 +25,7 @@ extension String {
     }
     
     func replace(_ existingString: String, _ newString: String) -> String {
-        return self.replacingOccurrences(of: existingString, with: newString, options: NSString.CompareOptions.literalSearch, range: nil)
+        return self.replacingOccurrences(of: existingString, with: newString, options: .literalSearch, range: nil)
     }
     
     func indexOf(_ findStr:String, startIndex: String.Index? = nil) -> String.Index? {
