@@ -23,7 +23,7 @@ import simd
 * @see Cartesian3
 * @see Packable
 */
-public struct Cartesian4: Equatable {
+public struct Cartesian4 {
     
     private (set) internal var simdType: double4
     
@@ -457,6 +457,15 @@ extension Cartesian4: Packable {
         }*/
     }
 }
+
+extension Cartesian4: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return "x: \(x), y: \(y), z: \(z), w: \(w)"
+    }
+}
+
+extension Cartesian4: Equatable {}
 
 /**
 * Compares the provided Cartesians componentwise and returns
