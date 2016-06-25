@@ -147,7 +147,8 @@ class SkyBox {
             _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             
             _command.renderState = RenderState(
-                device: context.device
+                device: context.device,
+                cullFace: .front
             )
         }
         if _cubemap == nil {

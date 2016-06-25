@@ -198,7 +198,7 @@ struct RenderState/*: Printable*/ {
     init(
         device: MTLDevice,
         windingOrder: WindingOrder = WindingOrder.counterClockwise,
-        cullFace: CullFace = .none, // default cull disabled
+        cullFace: CullFace = .back, // default cull back
         polygonOffset: PolygonOffset = PolygonOffset(),
         lineWidth: Double = 1.0,
         scissorTest: ScissorTest = ScissorTest(),
