@@ -8,7 +8,7 @@
 
 import Foundation
 
-public func deleteDuplicates<S:RangeReplaceableCollection where S.Iterator.Element: Equatable>(_ seq:S)-> S {
+public func deleteDuplicates<S:RangeReplaceableCollection>(_ seq:S)-> S where S.Iterator.Element: Equatable {
     let s = seq.reduce(S()){
         ac, x in ac.contains(x) ? ac : ac + [x]
     }
@@ -17,7 +17,7 @@ public func deleteDuplicates<S:RangeReplaceableCollection where S.Iterator.Eleme
 
 extension Array {
     var sizeInBytes: Int {
-        return count == 0 ? 0 : count * strideofValue(self[0])
+        return count == 0 ? 0 : count * MemoryLayout.stride(ofValue: self[0])
     }
     
     /**
@@ -50,7 +50,7 @@ extension Array {
         
         while low <= high {
             i = Int(trunc(Double(low + high) / 2.0))
-            comparison = comparator(a: self[i], b: itemToFind)
+            comparison = comparator(self[i], itemToFind)
             if comparison < 0 {
                 low = i + 1
                 continue
@@ -79,7 +79,7 @@ extension Array {
     *     return a - b;
     * }
     */
-    typealias BinarySearchComparator = (a: Element, b: Element) -> Int
+    typealias BinarySearchComparator = (_ a: Element, _ b: Element) -> Int
 
 }
 

@@ -22,9 +22,9 @@ class TileReplacementQueue {
     
     var count = 0
     
-    private var _lastBeforeStartOfFrame: QuadtreeTile? = nil
+    fileprivate var _lastBeforeStartOfFrame: QuadtreeTile? = nil
     
-    private var _tileProvider: GlobeSurfaceTileProvider
+    fileprivate var _tileProvider: GlobeSurfaceTileProvider
     
     init (tileProvider: GlobeSurfaceTileProvider) {
         _tileProvider = tileProvider

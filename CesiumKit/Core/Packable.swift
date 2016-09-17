@@ -99,7 +99,7 @@ extension Packable {
     func toArray() -> [Double] {
         let packedLength = Self.packedLength()
         var grid = [Double](repeating: 0.0, count: packedLength)
-        memcpy(&grid, [self], packedLength * strideof(Double))
+        memcpy(&grid, [self], packedLength * MemoryLayout<Double>.stride)
         /*grid.withUnsafeMutableBufferPointer { (inout pointer: UnsafeMutableBufferPointer<Double>) in
             memcpy(pointer.baseAddress, [self], packedLength * strideof(Double))
         }*/

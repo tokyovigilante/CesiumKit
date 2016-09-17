@@ -90,7 +90,7 @@ class GlobeSurfaceTile: QuadTreeTileData {
     }
     
     
-    func getPosition(encoding: TerrainEncoding, mode: SceneMode? = nil, projection: MapProjection, vertices: [Float], index: Int) -> Cartesian3 {
+    func getPosition(_ encoding: TerrainEncoding, mode: SceneMode? = nil, projection: MapProjection, vertices: [Float], index: Int) -> Cartesian3 {
         
         var result = encoding.decodePosition(vertices, index: index)
         
@@ -118,9 +118,9 @@ class GlobeSurfaceTile: QuadTreeTileData {
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
             
-            let v0 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i0)
-            let v1 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i1)
-            let v2 = getPosition(encoding: encoding, mode: mode, projection: projection, vertices: vertices, index: i2)
+            let v0 = getPosition(encoding, mode: mode, projection: projection, vertices: vertices, index: i0)
+            let v1 = getPosition(encoding, mode: mode, projection: projection, vertices: vertices, index: i1)
+            let v2 = getPosition(encoding, mode: mode, projection: projection, vertices: vertices, index: i2)
             
             let intersection = IntersectionTests.rayTriangle(ray, p0: v0, p1: v1, p2: v2, cullBackFaces: cullBackFaces)
             if intersection != nil {
@@ -452,12 +452,12 @@ class GlobeSurfaceTile: QuadTreeTileData {
         
         if data == nil {
             let allWaterTexture = Texture(context: context, options: TextureOptions(
-                pixelFormat: PixelFormat.r8Unorm,
                 source: .buffer(Imagebuffer(
                     array: [255],
                     width: 1,
                     height: 1)
-                )
+                ),
+                pixelFormat: PixelFormat.r8Unorm
             ))
             let sampler = Sampler(
                 context: context,

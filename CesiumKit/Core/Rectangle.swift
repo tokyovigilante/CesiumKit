@@ -485,7 +485,7 @@ extension Rectangle: Packable {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         _ = array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
-            memcpy(&self, pointer.baseAddress, Rectangle.packedLength() * strideof(Double))
+            memcpy(&self, pointer.baseAddress, Rectangle.packedLength() * MemoryLayout<Double>.stride)
         }
     }
     

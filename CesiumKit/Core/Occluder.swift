@@ -7,6 +7,17 @@
 //
 
 import Foundation
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 /**
 * Creates an Occluder derived from an object's position and radius, as well as the camera position.
@@ -285,10 +296,10 @@ class Occluder {
         
         //For each position, determine the horizon intersection. Choose the position and intersection
         //that results in the greatest angle with the occcluder plane.
-        let aRotationVector = anyRotationVector(occluderPosition: occluderPosition, occluderPlaneNormal: occluderPlaneNormal, occluderPlaneD: occluderPlaneD)
+        let aRotationVector = anyRotationVector(occluderPosition, occluderPlaneNormal: occluderPlaneNormal, occluderPlaneD: occluderPlaneD)
         
         var dot: Double! = horizonToPlaneNormalDotProduct(
-            occluderBS: occluderBoundingSphere,
+            occluderBoundingSphere,
             occluderPlaneNormal: occluderPlaneNormal,
             occluderPlaneD: occluderPlaneD,
             anyRotationVector: aRotationVector,
@@ -301,7 +312,7 @@ class Occluder {
         var tempDot: Double?
         for position in positions {
             tempDot = horizonToPlaneNormalDotProduct(
-                occluderBS: occluderBoundingSphere,
+                occluderBoundingSphere,
                 occluderPlaneNormal: occluderPlaneNormal,
                 occluderPlaneD: occluderPlaneD,
                 anyRotationVector: aRotationVector,
@@ -352,7 +363,7 @@ class Occluder {
         return nil
     }
 
-    private func anyRotationVector (occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double) -> Cartesian3 {
+    fileprivate func anyRotationVector (_ occluderPosition: Cartesian3, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double) -> Cartesian3 {
         var tempVec0 = occluderPlaneNormal.absolute()
         var majorAxis = tempVec0.x > tempVec0.y ? 0 : 1
         if (majorAxis == 0 && tempVec0.z > tempVec0.x) || (majorAxis == 1 && tempVec0.z > tempVec0.y) {
@@ -398,7 +409,7 @@ class Occluder {
     }
 
 
-    private func horizonToPlaneNormalDotProduct (occluderBS: BoundingSphere, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, anyRotationVector: Cartesian3, position: Cartesian3) -> Double? {
+    fileprivate func horizonToPlaneNormalDotProduct (_ occluderBS: BoundingSphere, occluderPlaneNormal: Cartesian3, occluderPlaneD: Double, anyRotationVector: Cartesian3, position: Cartesian3) -> Double? {
 
         let occluderPosition = occluderBS.center
         let occluderRadius = occluderBS.radius

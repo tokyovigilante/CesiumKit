@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Primitive {
+open class Primitive {
     /*
      /*global define*/
      define([
@@ -250,7 +250,7 @@ public class Primitive {
      *
      * @default true
      */
-    public var show: Bool = true
+    open var show: Bool = true
      /*
      this._vertexCacheOptimize = defaultValue(options.vertexCacheOptimize, false);
      this._interleave = defaultValue(options.interleave, false);

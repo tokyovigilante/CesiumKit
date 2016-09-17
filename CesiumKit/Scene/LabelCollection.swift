@@ -299,7 +299,7 @@ import Foundation
  *   text : 'Another label'
  * });
  */
-public class LabelCollection: Primitive {
+open class LabelCollection: Primitive {
     
     /**
      * The 4x4 transformation matrix that transforms each label in this collection from model to world coordinates.
@@ -346,11 +346,11 @@ public class LabelCollection: Primitive {
      */
     var debugShowBoundingVolume: Bool
     
-    private var _textureAtlas: FontAtlas? = nil
+    fileprivate var _textureAtlas: FontAtlas? = nil
     
-    private var _labels = [Label]()
+    fileprivate var _labels = [Label]()
     
-    private var _labelsToUpdate = [Label]()
+    fileprivate var _labelsToUpdate = [Label]()
     
     /**
      * Returns the number of labels in this collection.  This is commonly used with
@@ -428,7 +428,7 @@ public class LabelCollection: Primitive {
      *   font : '24px Helvetica',
      * });
      */
-    public func add (
+    open func add (
         _ show: Bool = true,
         position: Cartesian3 = Cartesian3.zero,
         text: String = "",

@@ -46,7 +46,7 @@ class VertexDescriptor {
         }
     }
     
-    private func addAttribute(_ attribute: VertexAttributes) {
+    fileprivate func addAttribute(_ attribute: VertexAttributes) {
         let index = attribute.index
         metalDescriptor.attributes[index].bufferIndex = attribute.bufferIndex
         metalDescriptor.attributes[index].format = attribute.format.metalVertexFormat

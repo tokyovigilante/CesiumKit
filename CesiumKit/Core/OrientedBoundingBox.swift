@@ -36,13 +36,13 @@ struct OrientedBoundingBox: BoundingVolume {
     * @type {Cartesian3}
     * @default {@link Cartesian3.ZERO}
     */
-    private (set) var center = Cartesian3.zero
+    fileprivate (set) var center = Cartesian3.zero
     /**
     * The transformation matrix, to rotate the box to the right position.
     * @type {Matrix3}
     * @default {@link Matrix3.IDENTITY}
     */
-    private (set) var halfAxes = Matrix3.zero
+    fileprivate (set) var halfAxes = Matrix3.zero
     
     /**
     * Computes an instance of an OrientedBoundingBox of the given positions.

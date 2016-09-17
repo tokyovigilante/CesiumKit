@@ -57,7 +57,7 @@ public struct Cartographic {
     * @param {Cartographic} [result] The object onto which to store the result.
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if one was not provided.
     */
-    static func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
+    static func fromRadians(_ longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
         
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
     }
@@ -77,7 +77,7 @@ public struct Cartographic {
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
         
-        return Cartographic.fromRadians(longitude: lon, latitude: lat, height: height);
+        return Cartographic.fromRadians(lon, latitude: lat, height: height);
     }
     
     /*

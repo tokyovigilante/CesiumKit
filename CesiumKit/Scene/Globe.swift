@@ -23,9 +23,9 @@ class Globe {
     
     var imageryLayers: ImageryLayerCollection
     
-    private var _surfaceShaderSet: GlobeSurfaceShaderSet!
+    fileprivate var _surfaceShaderSet: GlobeSurfaceShaderSet!
         
-    private var _surface: QuadtreePrimitive!
+    fileprivate var _surface: QuadtreePrimitive!
     
     var surfaceTilesToRenderCount: Int {
         return _surface.tilesToRender.count
@@ -41,7 +41,7 @@ class Globe {
     */
     var terrainProvider: TerrainProvider
     
-    private var _mode = SceneMode.scene3D
+    fileprivate var _mode = SceneMode.scene3D
     
     /**
     * Determines if the globe will be shown.
@@ -58,12 +58,12 @@ class Globe {
     * @type {String}
     * @default buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')
     */
-    private var _oceanNormalMap: Texture? = nil
+    fileprivate var _oceanNormalMap: Texture? = nil
 
     var oceanNormalMapUrl: String? = /*buildModuleUrl("Assets/Textures*/"waterNormalsSmall.jpg"
 
-    private var _oceanNormalMapUrl: String? = nil
-    private var _oceanNormalMapChanged = false
+    fileprivate var _oceanNormalMapUrl: String? = nil
+    fileprivate var _oceanNormalMapChanged = false
     
     /**
     * The maximum screen-space error used to drive level-of-detail refinement.  Higher
@@ -116,7 +116,7 @@ class Globe {
      */
     var depthTestAgainstTerrain = false
     
-    private var _zoomedOutOceanSpecularIntensity: Float = 0.5
+    fileprivate var _zoomedOutOceanSpecularIntensity: Float = 0.5
     
     /**
     * Gets or sets the color of the globe when no imagery is available.
@@ -215,7 +215,7 @@ class Globe {
             }
         }
         
-        sphereIntersections.sort(isOrderedBefore: createComparePickTileFunction(ray.origin))
+        sphereIntersections.sort(by: createComparePickTileFunction(ray.origin))
         
         for sphereIntersection in sphereIntersections {
             if let intersection = sphereIntersection.pick(ray, mode: scene.mode, projection: scene.mapProjection, cullBackFaces: true) {

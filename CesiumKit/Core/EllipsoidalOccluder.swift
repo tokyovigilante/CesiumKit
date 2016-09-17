@@ -42,8 +42,8 @@ class EllipsoidalOccluder {
         }
     }
     
-    private var _cameraPositionInScaledSpace: Cartesian3
-    private var _distanceToLimbInScaledSpaceSquared: Double
+    fileprivate var _cameraPositionInScaledSpace: Cartesian3
+    fileprivate var _distanceToLimbInScaledSpaceSquared: Double
     
     init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3? = nil) {
         self.ellipsoid = ellipsoid
@@ -197,7 +197,7 @@ class EllipsoidalOccluder {
      * @param {Cartesian3} [result] The instance on which to store the result instead of allocating a new instance.
      * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
      */
-    func computeHorizonCullingPointFromPoints (directionToPoint: Cartesian3, points: [Cartesian3]) -> Cartesian3 {
+    func computeHorizonCullingPointFromPoints (_ directionToPoint: Cartesian3, points: [Cartesian3]) -> Cartesian3 {
         
         let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
         var resultMagnitude = 0.0

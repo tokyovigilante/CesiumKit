@@ -19,9 +19,9 @@ class PipelineCache {
     
     weak var device: MTLDevice!
     
-    private var _optimizer: GLSLOptimizer
+    fileprivate var _optimizer: GLSLOptimizer
     
-    private var _pipelines = [String: RenderPipeline]()
+    fileprivate var _pipelines = [String: RenderPipeline]()
     
     var nextRenderPipelineId = 0
     
@@ -133,7 +133,7 @@ class PipelineCache {
         return pipeline
     }
     
-    func getRenderPipeline (shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+    func getRenderPipeline (_ shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         

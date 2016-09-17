@@ -18,9 +18,9 @@
 */
 class GeometryAttributes {
     
-    private var _maxAttributes = 6
+    fileprivate var _maxAttributes = 6
     
-    private var _attributes = [String: GeometryAttribute]()
+    fileprivate var _attributes = [String: GeometryAttribute]()
     
     /**
     * The 3D position attribute.

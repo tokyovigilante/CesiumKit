@@ -7,6 +7,17 @@
 //
 
 import Metal
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 class VertexArray {
     
@@ -158,7 +169,7 @@ class VertexArray {
                         doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
                             values.read(into: pointer.baseAddress!, length: geometryArraySize)
                         })
-                        geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
+                        geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * MemoryLayout<Float>.stride)
                     }
 
                 }
@@ -234,7 +245,7 @@ class VertexArray {
                     doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
                         geometryAttribute.values?.read(into: pointer.baseAddress!, length: geometryArraySize)
                     })
-                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * strideof(Float))
+                    geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * MemoryLayout<Float>.stride)
                 }
             }
             

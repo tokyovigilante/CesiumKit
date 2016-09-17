@@ -111,21 +111,21 @@ class QuantizedMeshUpsampler {
             let u2 = Int(parentUBuffer[i2])
             
             triangleVertices[0].initializeIndexed(
-                uBuffer: parentUBuffer,
+                parentUBuffer,
                 vBuffer: parentVBuffer,
                 heightBuffer: parentHeightBuffer,
                 normalBuffer: parentNormalBuffer,
                 index: i0
             )
             triangleVertices[1].initializeIndexed(
-                uBuffer: parentUBuffer,
+                parentUBuffer,
                 vBuffer: parentVBuffer,
                 heightBuffer: parentHeightBuffer,
                 normalBuffer: parentNormalBuffer,
                 index: i1
             )
             triangleVertices[2].initializeIndexed(
-                uBuffer: parentUBuffer,
+                parentUBuffer,
                 vBuffer: parentVBuffer,
                 heightBuffer: parentHeightBuffer,
                 normalBuffer: parentNormalBuffer,
@@ -141,31 +141,31 @@ class QuantizedMeshUpsampler {
             if clippedIndex >= clipped.count {
                 continue
             }
-            clippedIndex = clippedTriangleVertices[0].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+            clippedIndex = clippedTriangleVertices[0].initializeFromClipResult(clipped, index: clippedIndex, vertices: triangleVertices)
             
             if clippedIndex >= clipped.count {
                 continue
             }
-            clippedIndex = clippedTriangleVertices[1].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+            clippedIndex = clippedTriangleVertices[1].initializeFromClipResult(clipped, index: clippedIndex, vertices: triangleVertices)
             
             if clippedIndex >= clipped.count {
                 continue
             }
-            clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+            clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(clipped, index: clippedIndex, vertices: triangleVertices)
             
             // Clip the triangle against the North-south boundary.
             var clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
             
-            addClippedPolygon(uBuffer: &uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
+            addClippedPolygon(&uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
             
             // If there's another vertex in the original clipped result,
             // it forms a second triangle.  Clip it as well.
             if clippedIndex < clipped.count {
                 clippedTriangleVertices[2].clone(clippedTriangleVertices[1])
-                clippedTriangleVertices[2].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+                clippedTriangleVertices[2].initializeFromClipResult(clipped, index: clippedIndex, vertices: triangleVertices)
                 
                 clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(threshold: halfMaxShort, keepAbove: isNorthChild, u0: clippedTriangleVertices[0].getV(), u1: clippedTriangleVertices[1].getV(), u2: clippedTriangleVertices[2].getV())
-                addClippedPolygon(uBuffer: &uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
+                addClippedPolygon(&uBuffer, vBuffer: &vBuffer, heightBuffer: &heightBuffer, normalBuffer: &normalBuffer, indices: &indices, vertexMap: &vertexMap, clipped: clipped2, triangleVertices: clippedTriangleVertices, hasVertexNormals: hasVertexNormals)
             }
         }
         
@@ -268,8 +268,8 @@ class QuantizedMeshUpsampler {
         )
     }
     
-    private class func addClippedPolygon (
-        uBuffer: inout [Int],
+    fileprivate class func addClippedPolygon (
+        _ uBuffer: inout [Int],
         vBuffer: inout [Int],
         heightBuffer: inout [Double],
         normalBuffer: inout [UInt8],
@@ -288,7 +288,7 @@ class QuantizedMeshUpsampler {
         var numVertices = 0
         var clippedIndex = 0
         while clippedIndex < clipped.count {
-            clippedIndex = polygonVertices[numVertices].initializeFromClipResult(clipResult: clipped, index: clippedIndex, vertices: triangleVertices)
+            clippedIndex = polygonVertices[numVertices].initializeFromClipResult(clipped, index: clippedIndex, vertices: triangleVertices)
             numVertices += 1
         }
         
@@ -370,7 +370,7 @@ private class Vertex {
         return result
     }
 
-    func initializeIndexed (uBuffer: [Int], vBuffer: [Int], heightBuffer: [Double], normalBuffer: [UInt8]?, index: Int) {
+    func initializeIndexed (_ uBuffer: [Int], vBuffer: [Int], heightBuffer: [Double], normalBuffer: [UInt8]?, index: Int) {
         self.uBuffer = uBuffer
         self.vBuffer = vBuffer
         self.heightBuffer = heightBuffer
@@ -390,7 +390,7 @@ private class Vertex {
  this.ratio = ratio;
  };
      */
-    func initializeFromClipResult (clipResult: [Double], index: Int, vertices: [Vertex]) -> Int {
+    func initializeFromClipResult (_ clipResult: [Double], index: Int, vertices: [Vertex]) -> Int {
         var nextIndex = index + 1
         
         if (clipResult[index] != -1) {
@@ -441,12 +441,12 @@ private class Vertex {
         return Int(Math.lerp(p: Double(first!.getV()), q: Double(second!.getV()), time: Double(ratio!)))
     }
  
-    private var encodedScratch = Cartesian2()
+    fileprivate var encodedScratch = Cartesian2()
     // An upsampled triangle may be clipped twice before it is assigned an index
     // In this case, we need a buffer to handle the recursion of getNormalX() and getNormalY().
-    private var depth = -1
-    private var cartesianScratch1 = [Cartesian3(), Cartesian3()]
-    private var cartesianScratch2 = [Cartesian3(), Cartesian3()]
+    fileprivate var depth = -1
+    fileprivate var cartesianScratch1 = [Cartesian3(), Cartesian3()]
+    fileprivate var cartesianScratch2 = [Cartesian3(), Cartesian3()]
     
     func lerpOctEncodedNormal(_ vertex: Vertex) -> Cartesian2 {
         depth += 1

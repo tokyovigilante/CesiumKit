@@ -25,7 +25,7 @@ import simd
 
 public struct Cartesian3 {
 
-    private (set) var simdType: double3
+    fileprivate (set) var simdType: double3
     
     var floatRepresentation: float3 {
         return vector_float(simdType)
@@ -398,11 +398,11 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    public static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    public static func fromDegrees(_ longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
-        return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
+        return Cartesian3.fromRadians(lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
     
     /**
@@ -418,7 +418,7 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    static func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    static func fromRadians(_ longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let cosLatitude = cos(latitude);
         let n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
@@ -439,14 +439,14 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromDegreesArray([-115.0, 37.0, -107.0, 33.0]);
     */
-    static func fromDegreesArray(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromDegreesArray(_ coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         var pos = [Double]()
         for coordinate in coordinates {
             pos.append(Math.toRadians(coordinate))
         }
         
-        return Cartesian3.fromRadiansArray(coordinates: pos, ellipsoid: ellipsoid)
+        return Cartesian3.fromRadiansArray(pos, ellipsoid: ellipsoid)
     }
     
     /**
@@ -460,13 +460,13 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromRadiansArray([-2.007, 0.645, -1.867, .575]);
     */
-    static func fromRadiansArray(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArray(_ coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 2 && coordinates.count % 2 == 0, "must have even number of positions")
         
         var cartesians = [Cartesian3]()
         for i in stride(from: 0, to: coordinates.count, by: 2) {
-            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
+            cartesians.append(Cartesian3.fromRadians(coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
         }
         return cartesians
     }
@@ -491,7 +491,7 @@ public struct Cartesian3 {
             pos.append((coordinates[i+2]))
         }
         
-        return Cartesian3.fromRadiansArrayHeights(coordinates: pos, ellipsoid: ellipsoid)
+        return Cartesian3.fromRadiansArrayHeights(pos, ellipsoid: ellipsoid)
     }
     
     /**
@@ -505,13 +505,13 @@ public struct Cartesian3 {
     * @example
     * var positions = Cartesian3.fromradiansArrayHeights([-2.007, 0.645, 100000.0, -1.867, .575, 150000.0]);
     */
-    static func fromRadiansArrayHeights(coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
+    static func fromRadiansArrayHeights(_ coordinates: [Double], ellipsoid: Ellipsoid) -> [Cartesian3] {
         
         assert(coordinates.count <= 3 && coordinates.count % 3 == 0, "must have %3=0 number of positions")
         
         var cartesians = [Cartesian3]()
         for i in stride(from: 0, to: coordinates.count, by: 3) {
-            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
+            cartesians.append(Cartesian3.fromRadians(coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
         }
         return cartesians
     }
@@ -578,7 +578,7 @@ extension Cartesian3: Packable {
 
 extension Cartesian3: CustomStringConvertible {
     public var description: String {
-        return String(simdType)
+        return String(describing: simdType)
     }
 }
 

@@ -11,16 +11,16 @@ import Metal
 
 class GlobeDepth {
 
-    private var _colorTexture: Texture! = nil
-    private var _depthStencilTexture: Texture! = nil
-    private var _globeDepthTexture: Texture! = nil
+    fileprivate var _colorTexture: Texture! = nil
+    fileprivate var _depthStencilTexture: Texture! = nil
+    fileprivate var _globeDepthTexture: Texture! = nil
 
     let framebuffer = Framebuffer(maximumColorAttachments: 1)
-    private let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
+    fileprivate let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
     
-    private var _clearColorCommand: ClearCommand
-    private var _copyColorCommand: ClearCommand? = nil
-    private var _copyDepthCommand: ClearCommand? = nil
+    fileprivate var _clearColorCommand: ClearCommand
+    fileprivate var _copyColorCommand: ClearCommand? = nil
+    fileprivate var _copyDepthCommand: ClearCommand? = nil
         
     init () {
         _clearColorCommand = ClearCommand(

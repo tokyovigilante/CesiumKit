@@ -8,6 +8,17 @@
 
 import Foundation
 import simd
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 /**
  * Functions for computing the intersection between geometries such as rays, planes, triangles, and ellipsoids.
@@ -44,7 +55,7 @@ class IntersectionTests {
         return origin.add(direction.multiplyByScalar(t))
     }
     
-    static private func _rayTriangle (_ ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
+    static fileprivate func _rayTriangle (_ ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
         
         let origin = ray.origin
         let direction = ray.direction
@@ -170,7 +181,7 @@ class IntersectionTests {
      return Cartesian3.add(ray.origin, result, result);
      };
      */
-    private static func solveQuadratic(a: Double, b: Double, c: Double)  -> Interval? {
+    fileprivate static func solveQuadratic(_ a: Double, b: Double, c: Double)  -> Interval? {
         let det = b * b - 4.0 * a * c
         if det < 0.0 {
             return nil
@@ -194,7 +205,7 @@ class IntersectionTests {
         return Interval(start: root, stop: root)
     }
     
-    private static func _raySphere(_ ray: Ray, sphere: BoundingSphere) -> Interval? {
+    fileprivate static func _raySphere(_ ray: Ray, sphere: BoundingSphere) -> Interval? {
         
         let origin = ray.origin
         let direction = ray.direction
@@ -208,7 +219,7 @@ class IntersectionTests {
         let b = 2.0 * direction.dot(diff)
         let c = diff.magnitudeSquared - radiusSquared
         
-        return solveQuadratic(a: a, b: b, c: c)
+        return solveQuadratic(a, b: b, c: c)
     }
     
     /**

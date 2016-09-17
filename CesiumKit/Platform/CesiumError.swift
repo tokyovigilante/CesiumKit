@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum CesiumError: ErrorProtocol, CustomDebugStringConvertible {
+enum CesiumError: Error, CustomDebugStringConvertible {
     
     case invalidProjectionInput
     

@@ -15,11 +15,11 @@ class Framebuffer {
     
     let maximumColorAttachments: Int
     
-    private (set) var colorTextures: [Texture]?
+    fileprivate (set) var colorTextures: [Texture]?
     
-    private (set) var depthTexture: Texture?
+    fileprivate (set) var depthTexture: Texture?
     
-    private (set) var stencilTexture: Texture?
+    fileprivate (set) var stencilTexture: Texture?
     
     var depthStencilTexture: Texture? {
         return depthTexture === stencilTexture ? depthTexture : nil
@@ -29,7 +29,7 @@ class Framebuffer {
         return _rpd
     }
     
-    private var _rpd = MTLRenderPassDescriptor()
+    fileprivate var _rpd = MTLRenderPassDescriptor()
     
     var numberOfColorAttachments: Int {
         return colorTextures?.count ?? 0
@@ -69,14 +69,14 @@ class Framebuffer {
         updateRenderPassDescriptor()
     }
     
-    func update (colorTextures: [Texture]?, depthTexture: Texture?, stencilTexture: Texture?) {
+    func update (_ colorTextures: [Texture]?, depthTexture: Texture?, stencilTexture: Texture?) {
         self.colorTextures = colorTextures
         self.depthTexture = depthTexture
         self.stencilTexture = stencilTexture
         updateRenderPassDescriptor()
     }
     
-    private func updateRenderPassDescriptor () {
+    fileprivate func updateRenderPassDescriptor () {
         if let colorTextures = self.colorTextures {
             for (i, colorTexture) in colorTextures.enumerated() {
                 _rpd.colorAttachments[i].texture = colorTexture.metalTexture

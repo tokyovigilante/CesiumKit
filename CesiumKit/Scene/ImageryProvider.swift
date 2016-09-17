@@ -198,7 +198,7 @@ public protocol ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    func tileCredits (x: Int, y: Int, level: Int) -> [Credit]
+    func tileCredits (_ x: Int, y: Int, level: Int) -> [Credit]
     
     /**
     * Requests the image for a given tile.  This function should
@@ -222,7 +222,7 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void))
+    func requestImage(_ x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void))
     
     /**
      * Asynchronously determines what features, if any, are located at a given longitude and latitude within

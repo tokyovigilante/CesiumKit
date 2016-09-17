@@ -82,9 +82,9 @@ class TileTerrain {
         surfaceTile.orientedBoundingBox = mesh.orientedBoundingBox
         surfaceTile.tileBoundingBox = TileBoundingBox(
             rectangle: tile.rectangle,
+            ellipsoid: tile.tilingScheme.ellipsoid,
             minimumHeight: mesh.minimumHeight,
-            maximumHeight: mesh.maximumHeight,
-            ellipsoid: tile.tilingScheme.ellipsoid
+            maximumHeight: mesh.maximumHeight
         )
         
         tile.data!.occludeePointInScaledSpace = mesh.occludeePointInScaledSpace
@@ -100,13 +100,13 @@ class TileTerrain {
         tile.invalidateCommandCache = true
     }
     
-    func processLoadStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processLoadStateMachine (_ frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .unloaded {
             requestTileGeometry(terrainProvider, x: x, y: y, level: level)
         } else if state == .received {
-            transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            transform(frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         } else if state == .transformed {
-            createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            createResources(frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
     }
     
@@ -128,7 +128,7 @@ class TileTerrain {
         })
     }
     
-    func processUpsampleStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func processUpsampleStateMachine (_ frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state != .unloaded {
             return
         }
@@ -167,15 +167,15 @@ class TileTerrain {
 
 
         if state == .received {
-            transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            transform(frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
          }
          
          if state == .transformed {
-            createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
+            createResources(frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
          }
     }
 
-    func transform(frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func transform(_ frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         state = .transforming
 
         guard let data = data else {
@@ -204,7 +204,7 @@ class TileTerrain {
         })
     }
     
-    func createResources(frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
+    func createResources(_ frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         
         guard let context = frameState.context else {
             return

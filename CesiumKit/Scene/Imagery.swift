@@ -40,7 +40,7 @@ class Imagery {
     
     var credits = [Credit]()
     
-    private var _referenceCount: Int = 0
+    fileprivate var _referenceCount: Int = 0
     
     init(imageryLayer: ImageryLayer, level: Int, x: Int, y: Int, rectangle: Rectangle? = nil) {
         
@@ -89,7 +89,7 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (frameState: inout FrameState) {
+    func processStateMachine (_ frameState: inout FrameState) {
         if (state == .unloaded) {
             state = .transitioning
             imageryLayer.requestImagery(self)

@@ -36,9 +36,9 @@ enum IndexDatatype: UInt {
     var elementSize: Int {
         switch (self) {
         case .unsignedShort:
-            return sizeof(UInt16)
+            return MemoryLayout<UInt16>.size
         case .unsignedInt:
-            return sizeof(UInt32)
+            return MemoryLayout<UInt32>.size
         }
     }
     

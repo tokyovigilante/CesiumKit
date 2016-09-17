@@ -74,27 +74,27 @@ struct WheelEvent: InputEvent {
 }
 
 
-typealias EventAction = (event: InputEvent) -> ()
+typealias EventAction = (_ event: InputEvent) -> ()
 
-public class ScreenSpaceEventHandler {
+open class ScreenSpaceEventHandler {
     
-    private var _inputEvents: [String: EventAction]
+    fileprivate var _inputEvents: [String: EventAction]
     var _buttonDown: MouseButton? = nil
-    private var _isPinching = false
-    private var _seenAnyTouchEvents = false
+    fileprivate var _isPinching = false
+    fileprivate var _seenAnyTouchEvents = false
     
-    private var _primaryStartPosition = Cartesian2()
-    private var _primaryPosition = Cartesian2()
-    private var _primaryPreviousPosition = Cartesian2()
+    fileprivate var _primaryStartPosition = Cartesian2()
+    fileprivate var _primaryPosition = Cartesian2()
+    fileprivate var _primaryPreviousPosition = Cartesian2()
     
-    private var _positions = [Int: Cartesian2]()
-    private var _previousPositions = [Int: Cartesian2]()
+    fileprivate var _positions = [Int: Cartesian2]()
+    fileprivate var _previousPositions = [Int: Cartesian2]()
     
     //this._removalFunctions = [];
     
     // TODO: Revisit when doing mobile development. May need to be configurable
     // or determined based on the platform?
-    private var _clickPixelTolerance = 5.0
+    fileprivate var _clickPixelTolerance = 5.0
     
     init(/*view: UIView, */_ something: Bool = false) {
         //self._view = view
@@ -206,7 +206,7 @@ public class ScreenSpaceEventHandler {
     //event.preventDefault()
     }*/
     
-    public func handleMouseDown (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    open func handleMouseDown (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         if _seenAnyTouchEvents {
             return
         }
@@ -229,12 +229,12 @@ public class ScreenSpaceEventHandler {
         if let action = getInputAction(screenSpaceEventType, modifier: modifier) {
             
             let mouseDownEvent = MouseDownEvent(position: position)
-            action(event: mouseDownEvent)
+            action(mouseDownEvent)
             
         }
     }
 
-    public func handleMouseUp (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    open func handleMouseUp (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         if _seenAnyTouchEvents {
             return
         }
@@ -258,7 +258,7 @@ public class ScreenSpaceEventHandler {
         
         if let action = getInputAction(screenSpaceEventType, modifier: modifier) {
             _primaryPosition = position
-            action(event: MouseUpEvent(position: position))
+            action(MouseUpEvent(position: position))
         }
         
         if let clickAction = getInputAction(clickScreenSpaceEventType, modifier: modifier) {
@@ -269,12 +269,12 @@ public class ScreenSpaceEventHandler {
             let totalPixels = sqrt(xDiff * xDiff + yDiff * yDiff)
             
             if totalPixels < _clickPixelTolerance {
-                clickAction(event: MouseClickEvent(position: position))
+                clickAction(MouseClickEvent(position: position))
             }
         }
     }
    
-    public func handleMouseMove (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    open func handleMouseMove (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         if _seenAnyTouchEvents {
             return
         }
@@ -284,7 +284,7 @@ public class ScreenSpaceEventHandler {
         
         if let action = getInputAction(.mouseMove, modifier: modifier) {
             let mouseMoveEvent = MouseMoveEvent(startPosition: previousPosition, endPosition: position)
-            action(event: mouseMoveEvent)
+            action(mouseMoveEvent)
         }
         _primaryPreviousPosition = position
     }
@@ -318,7 +318,7 @@ public class ScreenSpaceEventHandler {
     }
     }
      */
-    public func handleWheel (_ deltaX: Double, deltaY: Double) {
+    open func handleWheel (_ deltaX: Double, deltaY: Double) {
         
         // standard wheel event uses deltaY.  sign is opposite wheelDelta.
         // deltaMode indicates what unit it is in.
@@ -341,11 +341,11 @@ public class ScreenSpaceEventHandler {
         }*/
         
         if let action = getInputAction(.wheel, modifier: nil) {
-            action(event: WheelEvent(deltaX: deltaX, deltaY: deltaY))
+            action(WheelEvent(deltaX: deltaX, deltaY: deltaY))
         }
     }
     
-    public func handleTouchStart(_ touches: Set<NSObject>, screenScaleFactor: Double) {
+    open func handleTouchStart(_ touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
         /*for (i, touch) in enumerate(touches) {
@@ -367,7 +367,7 @@ public class ScreenSpaceEventHandler {
         }*/
     }
     
-    public func handleTouchMove(_ touches: Set<NSObject>, screenScaleFactor: Double) {
+    open func handleTouchMove(_ touches: Set<NSObject>, screenScaleFactor: Double) {
         _seenAnyTouchEvents = true
         
         /*for (i, touch) in enumerate(touches) {
@@ -389,7 +389,7 @@ public class ScreenSpaceEventHandler {
         }*/
     }
     
-    public func handleTouchEnd(_ touches: Set<NSObject>) {
+    open func handleTouchEnd(_ touches: Set<NSObject>) {
         _seenAnyTouchEvents = true
         
         _positions.removeAll()
@@ -429,7 +429,7 @@ public class ScreenSpaceEventHandler {
             action = getInputAction(.leftUp, modifier: modifier)
             
             if action != nil {
-                action!(event: TouchEndEvent(position: _primaryPosition))
+                action!(TouchEndEvent(position: _primaryPosition))
             }
             
             if numberOfTouches == 0 {
@@ -459,7 +459,7 @@ public class ScreenSpaceEventHandler {
             _isPinching = false
             
             if let action = getInputAction(.pinchEnd, modifier: modifier) {
-                action(event: TouchEndEvent(position: _primaryPosition))
+                action(TouchEndEvent(position: _primaryPosition))
             }
         }
         
@@ -475,7 +475,7 @@ public class ScreenSpaceEventHandler {
                 action = getInputAction(ScreenSpaceEventType.leftDown, modifier: modifier)
                 
                 if action != nil {
-                    action!(event: TouchStartEvent(position: position))
+                    action!(TouchStartEvent(position: position))
                 }
             }
         }
@@ -487,7 +487,7 @@ public class ScreenSpaceEventHandler {
             action = getInputAction(.pinchStart, modifier: modifier)
             
             if action != nil {
-                action!(event: Touch2StartEvent(position1: _positions[0]!, position2: _positions[1]!))
+                action!(Touch2StartEvent(position1: _positions[0]!, position2: _positions[1]!))
             }
         }
     }
@@ -510,7 +510,7 @@ public class ScreenSpaceEventHandler {
                 action = getInputAction(.mouseMove, modifier: modifier)
                 
                 if action != nil {
-                    action!(event: TouchMoveEvent(
+                    action!(TouchMoveEvent(
                         startPosition: previousPosition,
                         endPosition: position)
                     )
@@ -549,7 +549,7 @@ public class ScreenSpaceEventHandler {
                     (startPosition: Cartesian2(x: prevAngle, y: prevCY),
                         endPosition: Cartesian2(x: angle, y: cY))
                 )
-                action!(event: touchPinchMovementEvent)
+                action!(touchPinchMovementEvent)
             }
         }
     }
@@ -601,7 +601,7 @@ public class ScreenSpaceEventHandler {
     * @see ScreenSpaceEventHandler#getInputAction
     * @see ScreenSpaceEventHandler#removeInputAction
     */
-    func  setInputAction (_ type: ScreenSpaceEventType, modifier: KeyboardEventModifier?, action: EventAction) {
+    func  setInputAction (_ type: ScreenSpaceEventType, modifier: KeyboardEventModifier?, action: @escaping EventAction) {
         let key = getInputEventKey(type, modifier: modifier)
         _inputEvents[key] = action
     }

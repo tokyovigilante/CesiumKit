@@ -35,7 +35,7 @@ import simd
 */
 public struct Matrix3 {
     
-    private (set) internal var simdType: double3x3
+    fileprivate (set) internal var simdType: double3x3
     
     var floatRepresentation: float3x3 {
         return float3x3([

@@ -17,7 +17,7 @@ import Foundation
                 guard let imageData = tiffRepresentation else {
                     return nil
                 }
-                guard let source = CGImageSourceCreateWithData(imageData, nil) else {
+                guard let source = CGImageSourceCreateWithData(imageData as CFData, nil) else {
                     return nil
                 }
                 let maskRef = CGImageSourceCreateImageAtIndex(source, 0, nil)
@@ -30,19 +30,19 @@ import Foundation
 #endif
 
 extension CGImage {
-    class func loadFromURL (url: String, completionBlock: (CGImage?, NSError?) -> ()) {
+    class func loadFromURL (_ url: String, completionBlock: @escaping (CGImage?, NSError?) -> ()) {
         
         let imageOperation = NetworkOperation(url: url)
         imageOperation.completionBlock = {
             if let error = imageOperation.error {
                 completionBlock(nil, error)
             }
-            completionBlock(CGImage.from(data: imageOperation.data), nil)
+            completionBlock(CGImage.from(imageOperation.data), nil)
         }
         imageOperation.enqueue()
     }
     
-    class func from(data: Data) -> CGImage? {
+    class func from(_ data: Data) -> CGImage? {
         #if os(OSX)
             let nsImage = NSImage(data: data)
             return nsImage?.cgImage
@@ -77,7 +77,7 @@ extension CGImage {
 
         let pixelBuffer = [UInt8](repeating: 0, count: bytesPerRow * height) // if 4 components per pixel (RGBA)
         
-        guard let bitmapContext = CGContext(data: UnsafeMutablePointer<Void>(pixelBuffer), width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: cs, bitmapInfo: bitmapInfo.rawValue) else {
+        guard let bitmapContext = CGContext(data: UnsafeMutableRawPointer(mutating: pixelBuffer), width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: cs, bitmapInfo: bitmapInfo.rawValue) else {
                 assertionFailure("bitmapContext == nil")
                 return nil
         }
@@ -86,9 +86,9 @@ extension CGImage {
         
         if flipY {
             let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: CGFloat(height))
-            bitmapContext.concatCTM(flipVertical)
+            bitmapContext.concatenate(flipVertical)
         }
-        bitmapContext.draw(in: imageRect, image: self)
+        bitmapContext.draw(self, in: imageRect)
         return (pixelBuffer, bytesPerRow)
     }
 }

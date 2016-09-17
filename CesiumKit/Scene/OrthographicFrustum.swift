@@ -41,7 +41,7 @@ struct OrthographicFrustum: Frustum {
             return _orthographicMatrix
         }
     }
-    private var _orthographicMatrix = Matrix4()
+    fileprivate var _orthographicMatrix = Matrix4()
 
     /**
     * Defines the left clipping plane.
@@ -49,7 +49,7 @@ struct OrthographicFrustum: Frustum {
     * @default undefined
     */
     var left = Double.nan
-    private var _left = Double.nan
+    fileprivate var _left = Double.nan
     
     /**
     * Defines the right clipping plane.
@@ -57,7 +57,7 @@ struct OrthographicFrustum: Frustum {
     * @default undefined
     */
     var right = Double.nan
-    private var _right = Double.nan
+    fileprivate var _right = Double.nan
     
     /**
     * Defines the top clipping plane.
@@ -65,7 +65,7 @@ struct OrthographicFrustum: Frustum {
     * @default undefined
     */
     var top = Double.nan
-    private var _top = Double.nan
+    fileprivate var _top = Double.nan
     
     /**
     * Defines the bottom clipping plane.
@@ -73,7 +73,7 @@ struct OrthographicFrustum: Frustum {
     * @default undefined
     */
     var bottom = Double.nan
-    private var _bottom = Double.nan
+    fileprivate var _bottom = Double.nan
     
     /**
     * The distance of the near plane.
@@ -81,7 +81,7 @@ struct OrthographicFrustum: Frustum {
     * @default 1.0
     */
     var near = 1.0
-    private var _near = 1.0
+    fileprivate var _near = 1.0
     
     /**
     * The distance of the far plane.
@@ -89,9 +89,9 @@ struct OrthographicFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
-    private var _far = 500000000.0
+    fileprivate var _far = 500000000.0
     
-    private var _cullingVolume = CullingVolume()
+    fileprivate var _cullingVolume = CullingVolume()
     
     // FIXME: OrthographicFrustum
     /*
@@ -162,7 +162,7 @@ struct OrthographicFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume  {
+    func computeCullingVolume (_ position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume  {
         /*if (!defined(position)) {
     throw new DeveloperError('position is required.');
     }

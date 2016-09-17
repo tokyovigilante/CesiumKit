@@ -22,7 +22,7 @@ private let nIndex = 6
 class QuantizedMeshTerrainGenerator {
     
     class func computeMesh (
-        minimumHeight: Double,
+        _ minimumHeight: Double,
         maximumHeight: Double,
         quantizedVertices: [UInt16],
         octEncodedNormals: [UInt8]?,

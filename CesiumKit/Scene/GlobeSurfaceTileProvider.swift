@@ -70,7 +70,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     /**
     * Stores Metal renderer pipeline. Updated if/when shaders changed (add/remove tile provider etc)
     */
-    private var _pipeline: RenderPipeline!
+    fileprivate var _pipeline: RenderPipeline!
     
     /**
     * Gets an event that is raised when the geometry provider encounters an asynchronous error.  By subscribing
@@ -107,27 +107,27 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     
     var enableLighting = false
     
-    private var _renderState: RenderState? = nil
+    fileprivate var _renderState: RenderState? = nil
     
-    private var _blendRenderState: RenderState? = nil
+    fileprivate var _blendRenderState: RenderState? = nil
     
-    private var _pickRenderState: RenderState? = nil
+    fileprivate var _pickRenderState: RenderState? = nil
     
-    private var _layerOrderChanged = false
+    fileprivate var _layerOrderChanged = false
     
-    private var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
+    fileprivate var _tilesToRenderByTextureCount = [Int: Array<QuadtreeTile>]() // Dictionary of arrays of QuadtreeTiles
 
-    private var _drawCommands = [DrawCommand]()
+    fileprivate var _drawCommands = [DrawCommand]()
     
-    private var _manualUniformBufferProviderPool = [UniformBufferProvider]()
+    fileprivate var _manualUniformBufferProviderPool = [UniformBufferProvider]()
     
-    private var _pickCommands = [DrawCommand]()
+    fileprivate var _pickCommands = [DrawCommand]()
     
-    private var _usedDrawCommands = 0
+    fileprivate var _usedDrawCommands = 0
     
-    private var _usedPickCommands = 0
+    fileprivate var _usedPickCommands = 0
     
-    private var _debug: (wireframe: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
+    fileprivate var _debug: (wireframe: Bool, boundingSphereTile: QuadtreeTile?, tilesRendered : Int, texturesRendered: Int) = (false, nil, 0, 0)
     
     var baseColor: Cartesian4 {
         get {
@@ -139,9 +139,9 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         }
     }
     
-    private var _baseColor: Cartesian4
+    fileprivate var _baseColor: Cartesian4
     
-    private var _firstPassInitialColor: Cartesian4
+    fileprivate var _firstPassInitialColor: Cartesian4
     
     required init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet) {
         
@@ -169,7 +169,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
     }
     
-    private func sortTileImageryByLayerIndex (_ a: TileImagery, b: TileImagery) -> Bool {
+    fileprivate func sortTileImageryByLayerIndex (_ a: TileImagery, b: TileImagery) -> Bool {
         let aImagery = a.loadingImagery ?? a.readyImagery!
         let bImagery = b.loadingImagery ?? b.readyImagery!
         
@@ -191,7 +191,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         if _layerOrderChanged {
             _layerOrderChanged = false
             quadtree?.forEachLoadedTile({ (tile) -> () in
-                tile.data?.imagery.sort(isOrderedBefore: self.sortTileImageryByLayerIndex)
+                tile.data?.imagery.sort(by: self.sortTileImageryByLayerIndex)
             })
         }
         
@@ -199,12 +199,12 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
         // FIXME: Credits
         let creditDisplay = frameState.creditDisplay
         
-        if let credit = terrainProvider.credit where terrainProvider.ready {
+        if let credit = terrainProvider.credit , terrainProvider.ready {
             creditDisplay.addCredit(credit)
         }
         for i in 0..<imageryLayers.count {
             if let imageryProvider = imageryLayers[i]?.imageryProvider {
-                if let credit = imageryProvider.credit where imageryProvider.ready {
+                if let credit = imageryProvider.credit , imageryProvider.ready {
                     creditDisplay.addCredit(credit)
                 }
             }
@@ -265,7 +265,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
          * @param {DrawCommand[]} commandList An array of rendering commands.  This method may push
          *        commands into this array.
          */
-    func updateForPick (context: Context, frameState: FrameState, commandList: inout [Command]) {
+    func updateForPick (_ context: Context, frameState: FrameState, commandList: inout [Command]) {
         if _pickRenderState == nil {
             _pickRenderState = RenderState(
                 device: context.device,
@@ -486,13 +486,13 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     };
     */
     
-    private func createTileUniformMap(_ maxTextureCount: Int) -> TileUniformMap {
+    fileprivate func createTileUniformMap(_ maxTextureCount: Int) -> TileUniformMap {
         
         return TileUniformMap(maxTextureCount: maxTextureCount)
     }
     
     
-    private func getManualUniformBufferProvider (_ context: Context, size: Int, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
+    fileprivate func getManualUniformBufferProvider (_ context: Context, size: Int, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
         if _manualUniformBufferProviderPool.count < 10 {
             QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
                 let newProviders = (0..<10).map { _ in return UniformBufferProvider(device: context.device, bufferSize: size, deallocationBlock: deallocationBlock)
@@ -513,8 +513,8 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     
-    private var _dayTextureTranslationAndScale = [float4](repeating: float4(), count: 31)
-    private var _dayTextureTexCoordsRectangle = [float4](repeating: float4(), count: 31)
+    fileprivate var _dayTextureTranslationAndScale = [float4](repeating: float4(), count: 31)
+    fileprivate var _dayTextureTexCoordsRectangle = [float4](repeating: float4(), count: 31)
     
     func addDrawCommandsForTile(_ tile: QuadtreeTile, frameState: inout FrameState) {
         
@@ -674,12 +674,12 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             // For performance, use fog in the shader only when the tile is in fog.
             let applyFog = enableFog && Math.fog(tile.distance, density: frameState.fog.density) > Math.Epsilon3
 
-            var applyBrightness = false
-            var applyContrast = false
-            var applyHue = false
-            var applySaturation = false
-            var applyGamma = false
-            var applyAlpha = false
+            let applyBrightness = false
+            let applyContrast = false
+            let applyHue = false
+            let applySaturation = false
+            let applyGamma = false
+            let applyAlpha = false
             
             uniformMap.dayTextures.removeAll()
             
@@ -770,7 +770,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
             command.vertexArray = surfaceTile.vertexArray
             command.uniformMap = uniformMap
             
-            command.uniformMap!.uniformBufferProvider = getManualUniformBufferProvider(context, size: strideof(TileUniformStruct), deallocationBlock: { provider in
+            command.uniformMap!.uniformBufferProvider = getManualUniformBufferProvider(context, size: MemoryLayout<TileUniformStruct>.stride, deallocationBlock: { provider in
                     self.returnManualUniformBufferProvider(provider)
                 }
             )

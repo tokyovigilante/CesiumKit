@@ -213,7 +213,7 @@ class Intersections2D {
      * var result = Cesium.Intersections2D.computeBarycentricCoordinates(0.0, 0.0, 0.0, 1.0, -1, -0.5, 1, -0.5);
      * // result === new Cesium.Cartesian3(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0);
      */
-    static func computeBarycentricCoordinates (x: Double, y: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Cartesian3 {
+    static func computeBarycentricCoordinates (_ x: Double, y: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Cartesian3 {
         
         let x1mx3 = x1 - x3
         let x3mx2 = x3 - x2

@@ -41,7 +41,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default undefined
     */
     var left = Double.nan
-    private var _left = Double.nan
+    fileprivate var _left = Double.nan
     
     /**
     * Defines the right clipping plane.
@@ -49,7 +49,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default undefined
     */
     var right = Double.nan
-    private var _right = Double.nan
+    fileprivate var _right = Double.nan
     
     /**
     * Defines the top clipping plane.
@@ -57,7 +57,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default undefined
     */
     var top = Double.nan
-    private var _top = Double.nan
+    fileprivate var _top = Double.nan
     
     /**
     * Defines the bottom clipping plane.
@@ -65,7 +65,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * @default undefined
     */
     var bottom = Double.nan
-    private var _bottom = Double.nan
+    fileprivate var _bottom = Double.nan
     
     /**
     * The distance of the near plane.
@@ -74,7 +74,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var near = 1.0
     
-    private var _near = Double.nan
+    fileprivate var _near = Double.nan
     
     /**
     * The distance of the far plane.
@@ -83,13 +83,13 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var far = 500000000.0
     
-    private var _far = Double.nan
+    fileprivate var _far = Double.nan
     
-    private var _cullingVolume = CullingVolume()
+    fileprivate var _cullingVolume = CullingVolume()
 
-    private var _perspectiveMatrix = Matrix4()
+    fileprivate var _perspectiveMatrix = Matrix4()
 
-    private var _infinitePerspective = Matrix4()
+    fileprivate var _infinitePerspective = Matrix4()
 
     func update () {
         
@@ -149,7 +149,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (_ position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         
         let right2 = direction.cross(up)
         

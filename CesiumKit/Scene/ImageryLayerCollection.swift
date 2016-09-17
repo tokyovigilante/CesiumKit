@@ -7,6 +7,26 @@
 //
 
 import Foundation
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
 
 /**
 * An ordered collection of imagery layers.
@@ -17,9 +37,9 @@ import Foundation
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Adjustment.html|Cesium Sandcastle Imagery Adjustment Demo}
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
-public class ImageryLayerCollection {
+open class ImageryLayerCollection {
     
-    private var _layers = [ImageryLayer]()
+    fileprivate var _layers = [ImageryLayer]()
     
     /**
     * An event that is raised when a layer is added to the collection.  Event handlers are passed the layer that
@@ -106,7 +126,7 @@ public class ImageryLayerCollection {
     * @returns {ImageryLayer} The newly created layer.
     */
     // FIXME: ImageryProvider
-    public func addImageryProvider(_ imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
+    open func addImageryProvider(_ imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
         
         let layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)

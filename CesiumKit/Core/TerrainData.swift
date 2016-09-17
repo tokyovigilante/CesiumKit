@@ -53,7 +53,7 @@ protocol TerrainData: class {
     *          is outside the rectangle, this method will extrapolate the height, which is likely to be wildly
     *          incorrect for positions far outside the rectangle.
     */
-    func interpolateHeight(rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
+    func interpolateHeight(_ rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
     
     /**
     * Determines if a given child tile is available, based on the
@@ -83,7 +83,7 @@ protocol TerrainData: class {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ()) -> Bool
+    func createMesh(_ tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ()) -> Bool
     
     /**
     * Upsamples this terrain data for use by a descendant tile.
@@ -100,7 +100,7 @@ protocol TerrainData: class {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool
+    func upsample(_ tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool
 }
 
 extension TerrainData {

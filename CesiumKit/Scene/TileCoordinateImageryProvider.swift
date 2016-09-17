@@ -27,7 +27,7 @@ import Foundation
 * @param {Number} [options.tileWidth=256] The width of the tile for level-of-detail selection purposes.
 * @param {Number} [options.tileHeight=256] The height of the tile for level-of-detail selection purposes.
 */
-public class TileCoordinateImageryProvider: ImageryProvider {
+open class TileCoordinateImageryProvider: ImageryProvider {
     
     public struct Options {
         
@@ -53,7 +53,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         }
     }
 
-    private var _colorArray: [CGFloat]!
+    fileprivate var _colorArray: [CGFloat]!
 
     /**
     * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -62,7 +62,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultAlpha: Float = 1.0
+    open let defaultAlpha: Float = 1.0
     
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
@@ -71,7 +71,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultBrightness: Float = 1.0
+    open let defaultBrightness: Float = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -80,7 +80,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultContrast: Float = 1.0
+    open let defaultContrast: Float = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -88,7 +88,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultHue: Float = 1.0
+    open let defaultHue: Float = 1.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -97,7 +97,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultSaturation: Float = 1.0
+    open let defaultSaturation: Float = 1.0
     
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
@@ -105,14 +105,14 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultGamma: Float = 1.0
+    open let defaultGamma: Float = 1.0
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    public let ready: Bool = true
+    open let ready: Bool = true
     
     /**
     * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
@@ -120,7 +120,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Rectangle}
     */
-    public var rectangle: Rectangle {
+    open var rectangle: Rectangle {
         get {
             return tilingScheme.rectangle
         }
@@ -132,7 +132,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof TileCoordinatesImageryProvider.prototype
     * @type {Number}
     */
-    public let tileWidth: Int
+    open let tileWidth: Int
     
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
@@ -140,7 +140,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof TileCoordinatesImageryProvider.prototype
     * @type {Number}
     */
-    public let tileHeight: Int
+    open let tileHeight: Int
     
     
     /**
@@ -149,7 +149,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public let maximumLevel = Int.max
+    open let maximumLevel = Int.max
     
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
@@ -161,7 +161,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public let minimumLevel: Int? = nil
+    open let minimumLevel: Int? = nil
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -169,7 +169,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-    public let tilingScheme: TilingScheme
+    open let tilingScheme: TilingScheme
     
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
@@ -179,7 +179,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {TileDiscardPolicy}
     */
-    public let tileDiscardPolicy: TileDiscardPolicy? = nil
+    open let tileDiscardPolicy: TileDiscardPolicy? = nil
     
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -188,7 +188,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    public var errorEvent = Event()
+    open var errorEvent = Event()
     
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
@@ -197,7 +197,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Credit}
     */
-    public var credit: Credit? = nil
+    open var credit: Credit? = nil
     
     /**
     * Gets the proxy used by this provider.
@@ -216,7 +216,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    public let hasAlphaChannel: Bool = true
+    open let hasAlphaChannel: Bool = true
     
     public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
         
@@ -237,7 +237,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    public func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
+    open func tileCredits (_ x: Int, y: Int, level: Int) -> [Credit] {
         return [credit].flatMap { $0 }
     }
     
@@ -263,7 +263,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
+    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
     
         let bytesPerPixel: Int = 4
         let bytesPerRow = bytesPerPixel * tileWidth
@@ -292,9 +292,9 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let tileString = "L\(level)X\(x)Y\(y)"
         
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
-        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), tileString)
+        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), tileString as CFString!)
         
-        let font = CTFontCreateWithName("HelveticaNeue", 36, nil)
+        let font = CTFontCreateWithName("HelveticaNeue" as CFString?, 36, nil)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
         contextRef.setFillColor(drawColor!)
@@ -309,7 +309,7 @@ public class TileCoordinateImageryProvider: ImageryProvider {
         let pathRect = CGRect(x: pathZeroX, y: pathZeroY, width: textSize.width, height: textSize.height)
         
         let path = CGMutablePath()
-        path.addRect(nil, rect: pathRect)
+        path.addRect(nil, transform: pathRect)
         
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         CTFrameDraw(frame, contextRef)

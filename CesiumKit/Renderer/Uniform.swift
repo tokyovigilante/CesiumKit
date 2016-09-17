@@ -189,27 +189,27 @@ public enum UniformDataType: UInt {
     var elementStride: Int {
         switch self {
         case .floatVec1:
-            return strideof(Float)
+            return MemoryLayout<Float>.stride
         case .floatVec2:
-            return strideof(float2)
+            return MemoryLayout<float2>.stride
         case .floatVec3:
-            return strideof(float4)
+            return MemoryLayout<float4>.stride
         case .floatVec4:
-            return strideof(float4)
+            return MemoryLayout<float4>.stride
         case .intVec1:
-            return strideof(Int32)
+            return MemoryLayout<Int32>.stride
         case .intVec2:
-            return strideof(int2)
+            return MemoryLayout<int2>.stride
         case .intVec3:
-            return strideof(int4)
+            return MemoryLayout<int4>.stride
         case .intVec4:
-            return strideof(int4)
+            return MemoryLayout<int4>.stride
         case .floatMatrix2:
-            return strideof(float2)
+            return MemoryLayout<float2>.stride
         case .floatMatrix3:
-            return strideof(float4)
+            return MemoryLayout<float4>.stride
         case .floatMatrix4:
-            return strideof(float4)
+            return MemoryLayout<float4>.stride
         default:
             assertionFailure("invalid element")
             return 0
@@ -218,7 +218,7 @@ public enum UniformDataType: UInt {
     
 }
 
-typealias UniformFunc = (map: LegacyUniformMap, buffer: Buffer, offset: Int) -> ()
+typealias UniformFunc = (_ map: LegacyUniformMap, _ buffer: Buffer, _ offset: Int) -> ()
 
 struct AutomaticUniform {
     let size: Int
@@ -244,9 +244,9 @@ enum UniformType {
     sampler
 }
 
-public class Uniform {
+open class Uniform {
     
-    private let _desc: GLSLShaderVariableDescription
+    fileprivate let _desc: GLSLShaderVariableDescription
     
     let dataType: UniformDataType
 
@@ -285,7 +285,7 @@ public class Uniform {
         self.dataType = dataType
     }
     
-    static func create(desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+    static func create(_ desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
         
         switch desc.type {
         case .float:
@@ -437,9 +437,9 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 }*/
 
 
-public class UniformSampler: Uniform {
+open class UniformSampler: Uniform {
     
-    private (set) var textureUnitIndex: Int = 0
+    fileprivate (set) var textureUnitIndex: Int = 0
         
     func setSampler (_ textureUnitIndex: Int) {
         self.textureUnitIndex = textureUnitIndex

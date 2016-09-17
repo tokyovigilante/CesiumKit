@@ -40,16 +40,16 @@ public struct ColorMaterialType: MaterialType {
     }
 }
 
-public class FabricDescription {
+open class FabricDescription {
     var uniformMap: LegacyUniformMap! {
         assertionFailure("invalid base class")
         return nil
     }
 }
 
-public class ColorFabricDescription: FabricDescription {
+open class ColorFabricDescription: FabricDescription {
     
-    public var color: Color {
+    open var color: Color {
         get {
             return _uniformMap.color
         }
@@ -62,7 +62,7 @@ public class ColorFabricDescription: FabricDescription {
         return _uniformMap
     }
     
-    private let _uniformMap = ColorFabricUniformMap()
+    fileprivate let _uniformMap = ColorFabricUniformMap()
     
     public override init () {
         
@@ -78,7 +78,7 @@ class ColorFabricUniformMap: LegacyUniformMap {
     let uniforms: [String: UniformFunc] = [
         "u_color": { map, buffer, offset in
             let simd = (map as! ColorFabricUniformMap).color.floatRepresentation
-            buffer.write(from: [simd], length: sizeofValue(simd))
+            buffer.write(from: [simd], length: MemoryLayout.size(ofValue: simd))
         }
     ]
     
@@ -91,7 +91,7 @@ class ColorFabricUniformMap: LegacyUniformMap {
 
 
 
-public class ImageFabricDescription: FabricDescription {
+open class ImageFabricDescription: FabricDescription {
     
     //var uniformMap: UniformMap = NullUniformMap()
 

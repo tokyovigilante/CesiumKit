@@ -80,7 +80,7 @@ import AppKit.NSImage
 *     mapStyle : Cesium.BingMapsStyle.AERIAL
 * });
 */
-public class BingMapsImageryProvider: ImageryProvider {
+open class BingMapsImageryProvider: ImageryProvider {
     
     public struct Options {
         
@@ -115,7 +115,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultAlpha: Float = 1.0
+    open let defaultAlpha: Float = 1.0
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -123,7 +123,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultBrightness: Float = 1.0
+    open let defaultBrightness: Float = 1.0
     
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
@@ -132,7 +132,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultContrast: Float = 1.0
+    open let defaultContrast: Float = 1.0
     
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
@@ -140,7 +140,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultHue: Float = 0.0
+    open let defaultHue: Float = 0.0
     
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
@@ -149,7 +149,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {Number}
     * @default undefined
     */
-    public let defaultSaturation: Float = 1.0
+    open let defaultSaturation: Float = 1.0
     
     /**
      * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
@@ -160,21 +160,21 @@ public class BingMapsImageryProvider: ImageryProvider {
      * @type {Number}
      * @default 1.0
      */
-    public let defaultGamma: Float
+    open let defaultGamma: Float
     
-    public let queue: DispatchQueue? = nil
+    open let queue: DispatchQueue? = nil
     
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
-    public var ready: Bool {
+    open var ready: Bool {
         get {
             return _ready
         }
     }
-    private var _ready: Bool = false
+    fileprivate var _ready: Bool = false
     
     /**
     * Gets the rectangle, in radians, of the imagery provided by this instance.  This function should
@@ -182,7 +182,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof BingMapsImageryProvider.prototype
     * @type {Rectangle}
     */
-    public var rectangle: Rectangle {
+    open var rectangle: Rectangle {
         get  {
             //>>includeStart('debug', pragmas.debug);
             assert(_ready, "rectangle must not be called before the imagery provider is ready")
@@ -196,14 +196,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public var tileWidth: Int {
+    open var tileWidth: Int {
         get {
             assert(_ready, "tileWidth must not be called before the imagery provider is ready.")
             return _tileWidth
         }
     }
     
-    private var _tileWidth = 0
+    fileprivate var _tileWidth = 0
     
     /**
     * Gets the height of each tile, in pixels.  This function should
@@ -211,14 +211,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public var tileHeight: Int {
+    open var tileHeight: Int {
         get {
             assert(_ready, "tileHeight must not be called before the imagery provider is ready.")
             return _tileHeight
         }
     }
     
-    private var _tileHeight = 0
+    fileprivate var _tileHeight = 0
     
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
@@ -226,13 +226,13 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-    public var maximumLevel: Int {
+    open var maximumLevel: Int {
         get {
             assert(_ready, "maximumLevel must not be called before the imagery provider is ready.")
             return _maximumLevel
         }
     }
-    private var _maximumLevel = 0
+    fileprivate var _maximumLevel = 0
     
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
@@ -244,13 +244,13 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Number}
     */
-     public var minimumLevel: Int? {
+     open var minimumLevel: Int? {
         get {
             assert(_ready, "minimumLevel must not be called before the imagery provider is ready.")
             return _minimumLevel
         }
     }
-    private var _minimumLevel: Int? = nil
+    fileprivate var _minimumLevel: Int? = nil
     
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -259,14 +259,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @type {TilingScheme}
     */
     
-    public var tilingScheme: TilingScheme {
+    open var tilingScheme: TilingScheme {
         get {
             assert(_ready, "tilingScheme must not be called before the imagery provider is ready.")
             return _tilingScheme
         }
     }
     
-    private var _tilingScheme: TilingScheme
+    fileprivate var _tilingScheme: TilingScheme
     
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
@@ -276,14 +276,14 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof BingMapsImageryProvider.prototype
     * @type {TileDiscardPolicy}
     */
-    public var tileDiscardPolicy: TileDiscardPolicy? {
+    open var tileDiscardPolicy: TileDiscardPolicy? {
         get {
             assert(_ready, "tileDiscardPolicy must not be called before the imagery provider is ready.")
             return _tileDiscardPolicy
         }
     }
     
-    private var _tileDiscardPolicy: TileDiscardPolicy?
+    fileprivate var _tileDiscardPolicy: TileDiscardPolicy?
     
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
@@ -292,7 +292,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof ImageryProvider.prototype
     * @type {Event}
     */
-    public private (set) var errorEvent = Event()
+    open fileprivate (set) var errorEvent = Event()
     
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
@@ -300,9 +300,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof BingMapsImageryProvider.prototype
     * @type {Credit}
     */
-    public let credit: Credit?
+    open let credit: Credit?
     
-    private var _attributionList = [Attribution]()
+    fileprivate var _attributionList = [Attribution]()
     
     /**
     * Gets the proxy used by this provider.
@@ -320,37 +320,37 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @memberof BingMapsImageryProvider.prototype
     * @type {Boolean}
     */
-    public let hasAlphaChannel: Bool = false
+    open let hasAlphaChannel: Bool = false
     
     /**
     * Gets the Bing Maps key.
     * @memberof BingMapsImageryProvider.prototype
     * @type {String}
     */
-    public var key: String {
+    open var key: String {
         get {
             return _key
         }
     }
     
-    private let _key: String
+    fileprivate let _key: String
     
-    private let _url: String
+    fileprivate let _url: String
     
-    private let _tileProtocol: String
+    fileprivate let _tileProtocol: String
     
     /**
     * Gets the type of Bing Maps imagery to load.
     * @memberof BingMapsImageryProvider.prototype
     * @type {BingMapsStyle}
     */
-    public var mapStyle: BingMapsStyle
+    open var mapStyle: BingMapsStyle
     
-    public let culture: String
+    open let culture: String
     
-    private var _imageUrlTemplate: String? = nil
+    fileprivate var _imageUrlTemplate: String? = nil
     
-    private var _imageUrlSubdomains: JSONArray? = nil
+    fileprivate var _imageUrlSubdomains: JSONArray? = nil
     
     public init(key: String? = nil, options: Options = Options()) {
 
@@ -378,9 +378,9 @@ public class BingMapsImageryProvider: ImageryProvider {
         )
         
         _tilingScheme = WebMercatorTilingScheme(
+            ellipsoid: options.ellipsoid,
             numberOfLevelZeroTilesX : 2,
-            numberOfLevelZeroTilesY : 2,
-            ellipsoid: options.ellipsoid
+            numberOfLevelZeroTilesY : 2
         )
         
         
@@ -522,9 +522,9 @@ public class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    public func requestImage(x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
+    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
-        let url = buildImageUrl(x: x, y: y, level: level)
+        let url = buildImageUrl(x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
         
     }
@@ -540,7 +540,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     *          should be retried later.  The resolved image may be either an
     *          Image or a Canvas DOM object.
     */
-    public func loadImage (_ url: String, completionBlock: ((CGImage?) -> Void)) {
+    open func loadImage (_ url: String, completionBlock: @escaping ((CGImage?) -> Void)) {
         
         let imageryOperation = NetworkOperation(url: url)
         imageryOperation.completionBlock = {
@@ -598,7 +598,7 @@ public class BingMapsImageryProvider: ImageryProvider {
      *
      * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
      */
-    public func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
+    open func tileCredits (_ x: Int, y: Int, level: Int) -> [Credit] {
         assert(ready, "getTileCredits must not be called before the imagery provider is ready")
         
         let rectangle = _tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -619,7 +619,7 @@ public class BingMapsImageryProvider: ImageryProvider {
     * @see {@link http://msdn.microsoft.com/en-us/library/bb259689.aspx|Bing Maps Tile System}
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
-    func tileXYToQuadKey (x: Int, y: Int, level: Int) -> String {
+    func tileXYToQuadKey (_ x: Int, y: Int, level: Int) -> String {
         
         var quadkey = ""
         
@@ -672,10 +672,10 @@ public class BingMapsImageryProvider: ImageryProvider {
     };
     };
     */
-    func buildImageUrl(x: Int, y: Int, level: Int) -> String {
+    func buildImageUrl(_ x: Int, y: Int, level: Int) -> String {
         var imageUrl = _imageUrlTemplate! // _ready already checked
         
-        let quadkey = tileXYToQuadKey(x: x, y: y, level: level)
+        let quadkey = tileXYToQuadKey(x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
         let subdomainIndex = (x + y + level) % _imageUrlSubdomains!.count

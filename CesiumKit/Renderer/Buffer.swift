@@ -17,7 +17,7 @@ class Buffer {
     // bytes
     let length: Int
     
-    private let _entireRange: NSRange
+    fileprivate let _entireRange: NSRange
     
     var count: Int {
         return length / componentDatatype.elementSize
@@ -27,7 +27,7 @@ class Buffer {
      Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
      copied to the buffer and can be released (or automatically released via ARC). 
     */
-    init (device: MTLDevice, array: UnsafePointer<Void>? = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
+    init (device: MTLDevice, array: UnsafeRawPointer? = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         length = sizeInBytes
@@ -52,12 +52,12 @@ class Buffer {
         }
     }
     
-    func read (into data: UnsafeMutablePointer<Void>, length readLength: Int, offset: Int = 0) {
+    func read (into data: UnsafeMutableRawPointer, length readLength: Int, offset: Int = 0) {
         assert(offset + readLength <= length, "This buffer is not large enough")
         memcpy(data, metalBuffer.contents()+offset, readLength)
     }
     
-    func write (from data: UnsafePointer<Void>, length writeLength: Int, offset: Int = 0) {
+    func write (from data: UnsafeRawPointer, length writeLength: Int, offset: Int = 0) {
         assert(offset + writeLength <= length, "This buffer is not large enough")
         memcpy(metalBuffer.contents()+offset, data, writeLength)
     }

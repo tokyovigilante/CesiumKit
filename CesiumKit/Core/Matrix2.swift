@@ -29,7 +29,7 @@ import simd
  */
 public struct Matrix2 {
     
-    private (set) internal var simdType: double2x2
+    fileprivate (set) internal var simdType: double2x2
     
     var floatRepresentation: float2x2 {
         return float2x2([

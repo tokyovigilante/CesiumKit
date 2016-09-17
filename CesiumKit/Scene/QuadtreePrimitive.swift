@@ -34,7 +34,7 @@ class QuadtreePrimitive {
     
     let tileProvider: GlobeSurfaceTileProvider//QuadtreeTileProvider
     
-    private var _debug = (
+    fileprivate var _debug = (
         enableDebugOutput : true,
         
         maxDepth: 0,
@@ -58,24 +58,24 @@ class QuadtreePrimitive {
         }
     }
     
-    private var _tilesToRender = [QuadtreeTile]()
+    fileprivate var _tilesToRender = [QuadtreeTile]()
     
-    private var _tileTraversalQueue = Queue<QuadtreeTile>()
+    fileprivate var _tileTraversalQueue = Queue<QuadtreeTile>()
     
-    private var _tileLoadQueue = [QuadtreeTile]()
+    fileprivate var _tileLoadQueue = [QuadtreeTile]()
     
-    private var _tileReplacementQueue: TileReplacementQueue
+    fileprivate var _tileReplacementQueue: TileReplacementQueue
     
-    private var _levelZeroTiles = [QuadtreeTile]()
-    private var _levelZeroTilesReady = false
-    private var _loadQueueTimeSlice = 0.05 // 5ms
+    fileprivate var _levelZeroTiles = [QuadtreeTile]()
+    fileprivate var _levelZeroTilesReady = false
+    fileprivate var _loadQueueTimeSlice = 0.05 // 5ms
     
-    private var _addHeightCallbacks = [CallbackObject]()
-    private var _removeHeightCallbacks = [CallbackObject]()
+    fileprivate var _addHeightCallbacks = [CallbackObject]()
+    fileprivate var _removeHeightCallbacks = [CallbackObject]()
     
-    private var _tilesToUpdateHeights = [QuadtreeTile]()
-    private var _lastTileIndex = 0
-    private var _updateHeightsTimeSlice = 0.02
+    fileprivate var _tilesToUpdateHeights = [QuadtreeTile]()
+    fileprivate var _lastTileIndex = 0
+    fileprivate var _updateHeightsTimeSlice = 0.02
 
     
     /**
@@ -97,11 +97,11 @@ class QuadtreePrimitive {
     */
     var tileCacheSize: Int
     
-    private var _occluders: QuadtreeOccluders
+    fileprivate var _occluders: QuadtreeOccluders
     
     let tileLoadProgressEvent = Event()
     
-    private var _lastTileLoadQueueLength = 0
+    fileprivate var _lastTileLoadQueueLength = 0
 
     init (tileProvider: /*QuadtreeTileProvider*/GlobeSurfaceTileProvider, maximumScreenSpaceError: Double = 2.0, tileCacheSize: Int = 100) {
         
@@ -182,14 +182,14 @@ class QuadtreePrimitive {
     }
     }*/
      
-    private class CallbackObject {
+    fileprivate class CallbackObject {
         var position: Cartesian3? = nil
         var positionCartographic: Cartographic = Cartographic()
         var level: Int = -1
         var callback: () -> ()
         var removeFunc: () -> () = {}
         
-        init (callback: () -> ()) {
+        init (callback: @escaping () -> ()) {
             self.callback = callback
         }
     }
@@ -202,7 +202,7 @@ class QuadtreePrimitive {
      * @param {Function} callback The function to be called when a new tile is loaded containing cartographic.
      * @returns {Function} The function to remove this callback from the quadtree.
      */
-    func updateHeight (_ cartographic: Cartographic, callback: () -> ()) -> (() -> ()) {
+    func updateHeight (_ cartographic: Cartographic, callback: @escaping () -> ()) -> (() -> ()) {
         let object = CallbackObject(callback: callback)
         
         object.removeFunc = {
@@ -256,7 +256,7 @@ class QuadtreePrimitive {
         }
     }
     
-    private (set) var debugDisplayString: String? = nil
+    fileprivate (set) var debugDisplayString: String? = nil
     
     func endFrame (_ frameState: inout FrameState) {
         if !frameState.passes.render {
@@ -580,7 +580,7 @@ class QuadtreePrimitive {
         func tileDistanceSortFunction(_ a: QuadtreeTile, b: QuadtreeTile) -> Bool {
             return a.distance < b.distance
         }
-        _tilesToRender.sort(isOrderedBefore: tileDistanceSortFunction)
+        _tilesToRender.sort(by: tileDistanceSortFunction)
         
         for tile in _tilesToRender {
             tileProvider.showTileThisFrame(tile, frameState: &frameState)

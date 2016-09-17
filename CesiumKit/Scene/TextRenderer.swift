@@ -57,18 +57,18 @@ class TextUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    private var _fontAtlasTexture: Texture! = nil
+    fileprivate var _fontAtlasTexture: Texture! = nil
 
-    private var _uniformStruct = TextUniformStruct()
+    fileprivate var _uniformStruct = TextUniformStruct()
     
     // compiled shader doesn't need to generate struct at runtime
     let uniformDescriptors: [UniformDescriptor] = []
     
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     init () {
         uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: sizeof(TextUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: MemoryLayout<TextUniformStruct>.size)
             return [self._fontAtlasTexture!]
         }
     }
@@ -79,46 +79,46 @@ class TextUniformMap: NativeUniformMap {
  * Generates a DrawCommand and VerteArray for the required glyphs of the provided String using
  * a FontAtlas. Based on Objective-C code from [Moore (2015)](http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/).
  */
-public class TextRenderer: Primitive {
+open class TextRenderer: Primitive {
    
-    public var color: Color
+    open var color: Color
 
-    public var string: String {
+    open var string: String {
         didSet {
             _updateMesh = true
         }
     }
     
-    public var viewportRect: Cartesian4 {
+    open var viewportRect: Cartesian4 {
         didSet {
             _updateMetrics = true
         }
     }
     
-    public var pointSize: Int {
+    open var pointSize: Int {
         didSet {
             _updateMesh = true
         }
     }
     
-    private var _updateMesh: Bool = true
-    private var _updateMetrics: Bool = false
+    fileprivate var _updateMesh: Bool = true
+    fileprivate var _updateMetrics: Bool = false
     
-    public private (set) var meshSize: Cartesian2 = Cartesian2()
+    open fileprivate (set) var meshSize: Cartesian2 = Cartesian2()
 
-    private let _command = DrawCommand()
+    fileprivate let _command = DrawCommand()
     
-    private var _fontAtlas: FontAtlas! = nil
+    fileprivate var _fontAtlas: FontAtlas! = nil
     
     let fontName: String
     
     //private var _rs: RenderState! = nil
     
-    private let _offscreenTarget: Bool
+    fileprivate let _offscreenTarget: Bool
     
-    private let _blendingState: BlendingState
+    fileprivate let _blendingState: BlendingState
     
-    private let _attributes = [
+    fileprivate let _attributes = [
         // attribute vec4 position;
         VertexAttributes(
             buffer: nil,
@@ -194,7 +194,7 @@ public class TextRenderer: Primitive {
                 shaderSourceName: "TextRenderer",
                 compiledMetalVertexName: "text_vertex_shade",
                 compiledMetalFragmentName: "text_fragment_shade",
-                uniformStructSize: strideof(TextUniformStruct),
+                uniformStructSize: MemoryLayout<TextUniformStruct>.stride,
                 vertexDescriptor: VertexDescriptor(attributes: _attributes),
                 depthStencil: _offscreenTarget ? false : context.depthTexture,
                 blendingState: _blendingState
@@ -230,12 +230,12 @@ public class TextRenderer: Primitive {
         frameState.commandList.append(_command)
     }
 
-    public func computeSize (constrainingTo width: Double? = nil) -> CGSize {
+    open func computeSize (constrainingTo width: Double? = nil) -> CGSize {
         
         let constrainedWidth = width ?? viewportRect.width
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
-        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string)
-        let font = CTFontCreateWithName(fontName, CGFloat(pointSize), nil)
+        CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string as CFString!)
+        let font = CTFontCreateWithName(fontName as CFString?, CGFloat(pointSize), nil)
         let stringRange = CFRangeMake(0, CFAttributedStringGetLength(attrString))
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
         
@@ -247,7 +247,7 @@ public class TextRenderer: Primitive {
         return textSize
     }
     
-    private func buildMesh (_ context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
+    fileprivate func buildMesh (_ context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
     {
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
@@ -260,7 +260,7 @@ public class TextRenderer: Primitive {
         let framesetter = CTFramesetterCreateWithAttributedString(attrString)
         let frame = CTFramesetterCreateFrame(framesetter, stringRange, rectPath, nil)
         
-        let frameGlyphCount: CFIndex = ((CTFrameGetLines(frame) as NSArray) as! [CTLine]).reduce(0, combine: { $0 + CTLineGetGlyphCount($1) })
+        let frameGlyphCount: CFIndex = ((CTFrameGetLines(frame) as NSArray) as! [CTLine]).reduce(0, { $0 + CTLineGetGlyphCount($1) })
         
         let vertexCount = frameGlyphCount * 4
 
@@ -321,7 +321,7 @@ public class TextRenderer: Primitive {
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indices.count)
     }
     
-    private func enumerateGlyphsInFrame (_ frame: CTFrame, usingBlock block: (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> ()) {
+    fileprivate func enumerateGlyphsInFrame (_ frame: CTFrame, usingBlock block: (_ glyph: CGGlyph, _ glyphIndex: Int, _ glyphBounds: CGRect) -> ()) {
         
         let entire = CFRangeMake(0, 0)
         
@@ -362,7 +362,7 @@ public class TextRenderer: Primitive {
                     
                     glyphRect = glyphRect.apply(transform: pathTransform)
                     
-                    block(glyph: glyph, glyphIndex: glyphIndexInFrame, glyphBounds: glyphRect)
+                    block(glyph, glyphIndexInFrame, glyphRect)
                     
                     glyphIndexInFrame += 1
                 }

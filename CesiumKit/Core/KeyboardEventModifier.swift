@@ -39,5 +39,5 @@ public enum KeyboardEventModifier: Int  {
     */
     alt,
     
-    COUNT
+    count
 }

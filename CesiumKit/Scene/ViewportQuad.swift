@@ -21,7 +21,7 @@ import Foundation
 * var viewportQuad = new Cesium.ViewportQuad(new Cesium.BoundingRectangle(0, 0, 80, 40));
 * viewportQuad.material.uniforms.color = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
 */
-public class ViewportQuad: Primitive {
+open class ViewportQuad: Primitive {
         
     /**
      * The BoundingRectangle defining the quad's position within the viewport.
@@ -31,7 +31,7 @@ public class ViewportQuad: Primitive {
      * @example
      * viewportQuad.rectangle = new Cesium.BoundingRectangle(0, 0, 80, 40);
      */
-    public var rectangle: Cartesian4
+    open var rectangle: Cartesian4
     
     /**
      * The surface appearance of the viewport quad.  This can be one of several built-in {@link Material} objects or a custom material, scripted with
@@ -53,11 +53,11 @@ public class ViewportQuad: Primitive {
      */
     var material: Material
     
-    private var _material: Material! = nil
+    fileprivate var _material: Material! = nil
     
-    private var _overlayCommand: DrawCommand! = nil
+    fileprivate var _overlayCommand: DrawCommand! = nil
     
-    private var _rs: RenderState! = nil
+    fileprivate var _rs: RenderState! = nil
     
     public init (rectangle: Cartesian4, material: Material = Material(fromType: ColorMaterialType(fabric: ColorFabricDescription(), source: nil))) {
         self.rectangle = rectangle

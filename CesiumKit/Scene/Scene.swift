@@ -73,11 +73,11 @@ private let OpaqueFrustumNearOffset = 0.99
 * });
 */
 
-public class Scene {
+open class Scene {
     
     let context: Context
     
-    private let _computeEngine: ComputeEngine
+    fileprivate let _computeEngine: ComputeEngine
     
     /*
     if (!defined(creditContainer)) {
@@ -103,7 +103,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {PrimitiveCollection}
     */
-    public let primitives = PrimitiveCollection()
+    open let primitives = PrimitiveCollection()
 
     /**
      * Gets the collection of ground primitives.
@@ -112,9 +112,9 @@ public class Scene {
      * @type {PrimitiveCollection}
      * @readonly
      */
-    public let groundPrimitives = PrimitiveCollection()
+    open let groundPrimitives = PrimitiveCollection()
     
-    public var offscreenPrimitives = [OffscreenQuadPrimitive]()
+    open var offscreenPrimitives = [OffscreenQuadPrimitive]()
     
     //var pickFramebuffer: Framebuffer? = nil
     
@@ -127,8 +127,8 @@ public class Scene {
     * @type {Camera}
     */
     // TODO: setCamera
-    public var camera: Camera
-    public var cameraClone: Camera
+    open var camera: Camera
+    open var cameraClone: Camera
 
     #if os(iOS)
     var touchEventHandler: TouchEventHandler!
@@ -138,11 +138,11 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {ScreenSpaceCameraController}
     */
-    lazy public var screenSpaceCameraController: ScreenSpaceCameraController = {
+    lazy open var screenSpaceCameraController: ScreenSpaceCameraController = {
         ScreenSpaceCameraController(scene: self)
         }()
     
-    private var _environmentState = EnvironmentState()
+    fileprivate var _environmentState = EnvironmentState()
     
     /**
      * When <code>true</code>, splits the scene into two viewports with steroscopic views for the left and right eyes.
@@ -176,9 +176,9 @@ public class Scene {
         }
     }
     
-    private var _useWebVR = false;
-    private var _cameraVR: Camera? = nil
-    private var _aspectRatioVR: Double? = nil
+    fileprivate var _useWebVR = false;
+    fileprivate var _cameraVR: Camera? = nil
+    fileprivate var _aspectRatioVR: Double? = nil
     
     /**
      * Get the map projection to use in 2D and Columbus View modes.
@@ -189,7 +189,7 @@ public class Scene {
      *
      * @default new GeographicProjection()
      */
-    private(set) var mapProjection: MapProjection
+    fileprivate(set) var mapProjection: MapProjection
     
     /**
     * Gets state information about the current scene. If called outside of a primitive's <code>update</code>
@@ -197,9 +197,9 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {FrameState}
     */
-    private (set) var frameState: FrameState
+    fileprivate (set) var frameState: FrameState
     
-    private var _passState: PassState
+    fileprivate var _passState: PassState
 
     /**
     * Gets the collection of animations taking place in the scene.
@@ -214,24 +214,24 @@ public class Scene {
     
     //this._sunPostProcess = undefined;
     
-    private var _computeCommandList = [ComputeCommand]()
-    private var _frustumCommandsList = [FrustumCommands]()
-    private var _overlayCommandList = [DrawCommand]()
-    private var _overlayTextCommandList = [DrawCommand]()
+    fileprivate var _computeCommandList = [ComputeCommand]()
+    fileprivate var _frustumCommandsList = [FrustumCommands]()
+    fileprivate var _overlayCommandList = [DrawCommand]()
+    fileprivate var _overlayTextCommandList = [DrawCommand]()
 
     
     // TODO: OIT
     
-    private var _globeDepth: GlobeDepth? = nil
-    private var _depthPlane = DepthPlane()
-    private var _oit: OIT? = nil
-    private var _executeOITFunction: ((
-        scene: Scene,
-        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
-        passState: PassState,
-        commands: [DrawCommand]) -> ())? = nil
+    fileprivate var _globeDepth: GlobeDepth? = nil
+    fileprivate var _depthPlane = DepthPlane()
+    fileprivate var _oit: OIT? = nil
+    fileprivate var _executeOITFunction: ((
+        _ scene: Scene,
+        _ executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
+        _ passState: PassState,
+        _ commands: [DrawCommand]) -> ())? = nil
     
-    private let _fxaa = FXAA()
+    fileprivate let _fxaa = FXAA()
     
     
     var _clearColorCommand = ClearCommand(color: Cartesian4.zero/*, owner: self*/)
@@ -242,8 +242,8 @@ public class Scene {
     
     lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self, projection: self.mapProjection) }()
     
-    private var _pickDepths = [Int: PickDepth]()
-    private var _debugGlobeDepths = [Int: GlobeDepth]()
+    fileprivate var _pickDepths = [Int: PickDepth]()
+    fileprivate var _debugGlobeDepths = [Int: GlobeDepth]()
     
     /**
     * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
@@ -271,8 +271,8 @@ public class Scene {
     */
     var postRender = Event()
     
-    private var _cameraStartFired = false
-    private var _cameraMovedTime: Double? = nil
+    fileprivate var _cameraStartFired = false
+    fileprivate var _cameraMovedTime: Double? = nil
     
     /*
     /**
@@ -447,7 +447,7 @@ public class Scene {
     *
     * @default false
     */
-    public var debugShowCommands = false
+    open var debugShowCommands = false
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -484,7 +484,7 @@ public class Scene {
     *
     * @default undefined
     */
-    private var _debugFrustumStatistics: (totalCommands: Int, commandsInFrustums: [Int]) = (0, [Int]())
+    fileprivate var _debugFrustumStatistics: (totalCommands: Int, commandsInFrustums: [Int]) = (0, [Int]())
     
     /**
     * This property is for debugging only; it is not for production use.
@@ -495,7 +495,7 @@ public class Scene {
     * @type TextRenderer
     *
     */
-    private (set) var framerateDisplay: TextRenderer
+    fileprivate (set) var framerateDisplay: TextRenderer
     
     /**
     * Gets whether or not the scene is optimized for 3D only viewing.
@@ -578,10 +578,10 @@ public class Scene {
      */
     let fog = Fog()
     
-    private var _terrainExaggeration = 1.0
+    fileprivate var _terrainExaggeration = 1.0
     
     //this._performanceDisplay = undefined;
-    private var _debugVolume: BoundingVolume? = nil
+    fileprivate var _debugVolume: BoundingVolume? = nil
     
 
     
@@ -621,7 +621,7 @@ public class Scene {
     * @type {Number}
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
-    public var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
+    open var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
     
     /**
      * The maximum length in pixels of a texture, supported by this Metal implementation.  It will be at least 16.
@@ -631,7 +631,7 @@ public class Scene {
      * @readonly
      *
      */
-    public var maximumTextureSize: Int { return context.limits.maximumTextureSize }
+    open var maximumTextureSize: Int { return context.limits.maximumTextureSize }
     
     /**
      * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
@@ -641,7 +641,7 @@ public class Scene {
      * @readonly
      *
      */
-    public var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
+    open var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
     
     /**
      * Returns true if the pickPosition function is supported.
@@ -656,7 +656,7 @@ public class Scene {
     * @memberof Scene.prototype
     * @type {ImageryLayerCollection}
     */
-    public var imageryLayers: ImageryLayerCollection { return globe.imageryLayers }
+    open var imageryLayers: ImageryLayerCollection { return globe.imageryLayers }
 
     /**
     * The terrain provider providing surface geometry for the globe.
@@ -754,14 +754,14 @@ public class Scene {
         let near = camera.frustum.near
         let far = camera.frustum.far
         let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
-        updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
+        updateFrustums(near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
         
         // give frameState, camera, and screen space camera controller initial state before rendering
         updateFrameState(0, time: JulianDate.now())
         initializeFrame()
     }
 
-    func maxComponent(a: Cartesian3, b: Cartesian3) -> Double {
+    func maxComponent(_ a: Cartesian3, b: Cartesian3) -> Double {
         return max(
             abs(a.x), abs(b.x),
             abs(a.y), abs(b.y),
@@ -770,7 +770,7 @@ public class Scene {
     }
 
     func cameraEqual(_ camera0: Camera, camera1: Camera, epsilon: Double) -> Bool {
-        let scalar = 1 / max(1, maxComponent(a: camera0.position, b: camera1.position))
+        let scalar = 1 / max(1, maxComponent(camera0.position, b: camera1.position))
         let position0 = camera0.position.multiplyByScalar(scalar)
         let position1 = camera1.position.multiplyByScalar(scalar)
         return position0.equalsEpsilon(position1, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
@@ -814,7 +814,7 @@ public class Scene {
         clearPasses(&frameState.passes)
     }
     
-    func updateFrustums(near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
+    func updateFrustums(_ near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
         
         for m in 0..<numFrustums {
             let curNear = max(near, pow(farToNearRatio, Double(m)) * near)
@@ -985,7 +985,7 @@ public class Scene {
                     (near < (_frustumCommandsList.first! as FrustumCommands).near || far > (_frustumCommandsList.last! as FrustumCommands).far)
                 )
             ) {
-                updateFrustums(near: near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
+                updateFrustums(near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
                 createPotentiallyVisibleSet()
         }
     }
@@ -1258,10 +1258,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
         // Determine how translucent surfaces will be handled.
         let executeTranslucentCommands: ((
-        scene: Scene,
-        executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
-        passState: PassState,
-        commands: [DrawCommand]) -> ())
+        _ scene: Scene,
+        _ executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
+        _ passState: PassState,
+        _ commands: [DrawCommand]) -> ())
         
         if _environmentState.useOIT {
             if _executeOITFunction == nil {
@@ -1377,7 +1377,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             transparentUniformBuffer.signalWriteComplete()
             
             let commands = frustumCommands.commands[Pass.translucent.rawValue]
-            executeTranslucentCommands(scene: self, executeFunction: executeCommand, passState: passState, commands: commands)
+            executeTranslucentCommands(self, executeCommand, passState, commands)
             
             // FIXME: Pickdepth
             /*if globeDepth != nil && useGlobeDepthFramebuffer {
@@ -2281,7 +2281,7 @@ Scene.prototype.isDestroyed = function() {
     }
     
     // FIXME: move to primitivecollection
-    public func addOffscreenQuad(width: Int, height: Int) -> OffscreenQuadPrimitive {
+    open func addOffscreenQuad(_ width: Int, height: Int) -> OffscreenQuadPrimitive {
         let quad = OffscreenQuadPrimitive(context: context, width: width, height: height)
         offscreenPrimitives.append(quad)
         return quad

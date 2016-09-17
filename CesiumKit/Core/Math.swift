@@ -296,7 +296,7 @@ public struct Math {
     * @example
     * var n = Cesium.Math.lerp(0.0, 2.0, 0.5); // returns 1.0
     */
-    static public func lerp (p: Double, q: Double, time: Double) -> Double {
+    static public func lerp (_ p: Double, q: Double, time: Double) -> Double {
         return (1.0 - time) * p + time * q
     }
     /*

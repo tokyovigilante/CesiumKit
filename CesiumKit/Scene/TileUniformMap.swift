@@ -111,22 +111,22 @@ class TileUniformMap: NativeUniformMap {
     var dayTextureTranslationAndScale: [float4] {
         get {
             var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
-            memcpy(&floatArray, &_uniformStruct.dayTextureTranslationAndScale, sizeof(float4) * MaximumMetalTextureCount)
+            memcpy(&floatArray, &_uniformStruct.dayTextureTranslationAndScale, MemoryLayout<float4>.size * MaximumMetalTextureCount)
             return floatArray
         }
         set {
-            memcpy(&_uniformStruct.dayTextureTranslationAndScale, newValue, sizeof(float4) * MaximumMetalTextureCount)
+            memcpy(&_uniformStruct.dayTextureTranslationAndScale, newValue, MemoryLayout<float4>.size * MaximumMetalTextureCount)
         }
     }
     
     var dayTextureTexCoordsRectangle: [float4] {
         get {
             var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
-            memcpy(&floatArray, &_uniformStruct.dayTextureTexCoordsRectangle, sizeof(float4) * MaximumMetalTextureCount)
+            memcpy(&floatArray, &_uniformStruct.dayTextureTexCoordsRectangle, MemoryLayout<float4>.size * MaximumMetalTextureCount)
             return floatArray
         }
         set {
-            memcpy(&_uniformStruct.dayTextureTexCoordsRectangle, newValue, sizeof(float4) * MaximumMetalTextureCount)
+            memcpy(&_uniformStruct.dayTextureTexCoordsRectangle, newValue, MemoryLayout<float4>.size * MaximumMetalTextureCount)
         }
     }
     
@@ -186,7 +186,7 @@ class TileUniformMap: NativeUniformMap {
         }
     }
     
-    private var _uniformStruct = TileUniformStruct()
+    fileprivate var _uniformStruct = TileUniformStruct()
     
     let uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name:  "u_dayTextureTexCoordsRectangle", type: .floatVec4, count: MaximumMetalTextureCount),
@@ -212,7 +212,7 @@ class TileUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
         
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     init (maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
@@ -228,7 +228,7 @@ class TileUniformMap: NativeUniformMap {
         dayTextureOneOverGamma = [Float]()
         
          uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: sizeof(TileUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: MemoryLayout<TileUniformStruct>.size)
             var textures = self.dayTextures
             if let waterMask = self.waterMask {
                 textures.append(waterMask)

@@ -96,19 +96,19 @@ enum ComponentDatatype {
     var elementSize: Int {
         switch (self) {
         case .byte:
-            return sizeof(Int8)
+            return MemoryLayout<Int8>.size
         case .unsignedByte:
-            return sizeof(UInt8)
+            return MemoryLayout<UInt8>.size
         case .short:
-            return sizeof(Int16)
+            return MemoryLayout<Int16>.size
         case .unsignedShort:
-            return sizeof(UInt16)
+            return MemoryLayout<UInt16>.size
         case .unsignedInt:
-            return sizeof(UInt32)
+            return MemoryLayout<UInt32>.size
         case .float32:
-            return sizeof(Float)
+            return MemoryLayout<Float>.size
         case .float64:
-            return sizeof(Double)
+            return MemoryLayout<Double>.size
         }
     }
     
@@ -137,12 +137,12 @@ enum ComponentDatatype {
     func toMTLIndexType () -> MTLIndexType {
         switch (self) {
         case .unsignedShort:
-            return .uInt16
+            return .uint16
         case .unsignedInt:
-            return .uInt32
+            return .uint32
         default:
             assertionFailure("invalid type for indices")
-            return .uInt16
+            return .uint16
         }
     }
     

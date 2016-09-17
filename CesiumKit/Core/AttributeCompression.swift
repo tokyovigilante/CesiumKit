@@ -71,7 +71,7 @@ class AttributeCompression {
      *
      * @see AttributeCompression.octEncode
      */
-    class func octDecode (x: UInt8, y: UInt8) -> Cartesian3 {
+    class func octDecode (_ x: UInt8, y: UInt8) -> Cartesian3 {
         
         assert(x >= 0 && x <= 255 && y >= 0 && y <= 255, "x and y must be a signed normalized integer between 0 and 255")
         

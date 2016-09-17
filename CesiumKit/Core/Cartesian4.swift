@@ -25,7 +25,7 @@ import simd
 */
 public struct Cartesian4 {
     
-    private (set) internal var simdType: double4
+    fileprivate (set) internal var simdType: double4
     
     var floatRepresentation: float4 {
         return vector_float(simdType)

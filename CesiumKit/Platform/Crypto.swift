@@ -18,7 +18,7 @@ public struct HMAC {
         return ""
     }
     
-    private static func digest(_ input: Data, algo: HMACAlgo) -> [UInt8] {
+    fileprivate static func digest(_ input: Data, algo: HMACAlgo) -> [UInt8] {
         let digestLength = algo.digestLength()
         var hash = [UInt8](repeating: 0, count: digestLength)
         input.withUnsafeBytes { (pointer: UnsafePointer<UInt8>) in
@@ -46,7 +46,7 @@ public struct HMAC {
         return hash
     }
     
-    private static func hexStringFromBuffer(_ input: [UInt8]) -> String {
+    fileprivate static func hexStringFromBuffer(_ input: [UInt8]) -> String {
         return input.reduce("") { $0 + String(format:"%02x", $1) }
     }
 }

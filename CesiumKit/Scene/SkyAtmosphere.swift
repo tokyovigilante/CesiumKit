@@ -43,15 +43,15 @@ class SkyAtmosphere {
      * @type {Ellipsoid}
      * @readonly
      */
-    private (set) var ellipsoid: Ellipsoid
+    fileprivate (set) var ellipsoid: Ellipsoid
     
-    private let _command = DrawCommand()
+    fileprivate let _command = DrawCommand()
     
-    private let _rayleighScaleDepth: Float = 0.25
+    fileprivate let _rayleighScaleDepth: Float = 0.25
     
-    private var _rpSkyFromSpace: RenderPipeline? = nil
+    fileprivate var _rpSkyFromSpace: RenderPipeline? = nil
     
-    private var _rpSkyFromAtmosphere: RenderPipeline? = nil
+    fileprivate var _rpSkyFromAtmosphere: RenderPipeline? = nil
     
     init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         self.ellipsoid = ellipsoid
@@ -89,8 +89,8 @@ class SkyAtmosphere {
         if _command.vertexArray == nil {
             let geometry = EllipsoidGeometry(
                 radii : ellipsoid.radii.multiplyByScalar(1.025),
-                slicePartitions : 256,
                 stackPartitions : 256,
+                slicePartitions : 256,
                 vertexFormat : VertexFormat.PositionOnly()
             ).createGeometry(context)
             
@@ -109,8 +109,8 @@ class SkyAtmosphere {
             _rpSkyFromSpace = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
-                    defines: ["SKY_FROM_SPACE"],
-                    sources: [Shaders["SkyAtmosphereVS"]!]
+                    sources: [Shaders["SkyAtmosphereVS"]!],
+                    defines: ["SKY_FROM_SPACE"]
                 ),
                 fragmentShaderSource : ShaderSource(
                     sources: [Shaders["SkyAtmosphereFS"]!]
@@ -119,14 +119,14 @@ class SkyAtmosphere {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
-                uniformStructSize: strideof(SkyAtmosphereUniformStruct)
+                uniformStructSize: MemoryLayout<SkyAtmosphereUniformStruct>.stride
             )
                         
             _rpSkyFromAtmosphere = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
-                    defines: ["SKY_FROM_ATMOSPHERE"],
-                    sources: [Shaders["SkyAtmosphereVS"]!]
+                    sources: [Shaders["SkyAtmosphereVS"]!],
+                    defines: ["SKY_FROM_ATMOSPHERE"]
                 ),
                 fragmentShaderSource : ShaderSource(
                     sources: [Shaders["SkyAtmosphereFS"]!]
@@ -135,7 +135,7 @@ class SkyAtmosphere {
                 depthStencil: context.depthTexture,
                 blendingState: .AlphaBlend(),
                 manualUniformStruct: metalStruct,
-                uniformStructSize: strideof(SkyAtmosphereUniformStruct)
+                uniformStructSize: MemoryLayout<SkyAtmosphereUniformStruct>.stride
             )
             
             _command.uniformMap?.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
@@ -245,9 +245,9 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
-    private var _uniformStruct = SkyAtmosphereUniformStruct()
+    fileprivate var _uniformStruct = SkyAtmosphereUniformStruct()
     
     let uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name: "u_cameraHeight", type: .floatVec1, count: 1),
@@ -262,7 +262,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
     
     init () {
         uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: sizeof(SkyAtmosphereUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: MemoryLayout<SkyAtmosphereUniformStruct>.size)
             return []
         }
     }

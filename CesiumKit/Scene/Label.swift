@@ -42,7 +42,7 @@ import Foundation
  * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Labels.html|Cesium Sandcastle Labels Demo}
  */
 
-public class Label {
+open class Label {
     
     init (
         show: Bool = true,

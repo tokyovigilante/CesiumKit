@@ -71,7 +71,7 @@ class QuadtreeTile: Equatable {
      */
     var customData = [CustomData]()
     
-    private (set) var frameUpdated = Int.max
+    fileprivate (set) var frameUpdated = Int.max
     var frameRendered = Int.max
     
     /**
@@ -190,7 +190,7 @@ class QuadtreeTile: Equatable {
         return result
     }
     
-    private func updateCustomData (_ frameNumber: Int, added: [CustomData]? = nil, removed: [CustomData]? = nil) {
+    fileprivate func updateCustomData (_ frameNumber: Int, added: [CustomData]? = nil, removed: [CustomData]? = nil) {
         
         
         if added != nil && removed != nil {

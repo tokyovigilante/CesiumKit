@@ -123,9 +123,9 @@ public struct CesiumOptions {
 *     mapProjection : new Cesium.WebMercatorProjection()
 * });
 */
-public class CesiumGlobe {
+open class CesiumGlobe {
 
-    private var _canRender = false
+    fileprivate var _canRender = false
     
     var renderLoopRunning = false
     var showRenderLoopErrors = false
@@ -138,9 +138,9 @@ public class CesiumGlobe {
     *
     * @type {Scene}
     */
-    public let scene: Scene
+    open let scene: Scene
     
-    public let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+    open let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
 
     var globe: Globe
     
@@ -164,7 +164,7 @@ public class CesiumGlobe {
     *
     * @type {ScreenSpaceEventHandler}
     */
-    public var eventHandler: ScreenSpaceEventHandler {
+    open var eventHandler: ScreenSpaceEventHandler {
         get {
             return scene.screenSpaceCameraController._aggregator.eventHandler
         }
@@ -217,7 +217,7 @@ public class CesiumGlobe {
     *
     * @type {Clock}
     */
-    public let clock: Clock
+    open let clock: Clock
     
     var showFramerate: Bool {
         get {
@@ -366,7 +366,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * @param {String} message A helpful, user-facing message to display prior to the detailed error information.  This string is interpreted as HTML.
     * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
     */
-    public func showErrorPanel(_ title: String, message: String, error: String) {
+    open func showErrorPanel(_ title: String, message: String, error: String) {
         print(title, terminator: "")
         print(message, terminator: "")
         print(error, terminator: "")   /*
@@ -466,7 +466,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * Renders the scene.  This function is called automatically
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
-    public func render(_ size: CGSize) {
+    open func render(_ size: CGSize) {
         
         updateFramerate()
         resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
@@ -477,9 +477,9 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         }
     }
     
-    private var _lastRenderTime = Date()
-    private var _lastUpdateTime = Date()
-    private var _avgFPS = 0.0
+    fileprivate var _lastRenderTime = Date()
+    fileprivate var _lastUpdateTime = Date()
+    fileprivate var _avgFPS = 0.0
     
     func updateFramerate () {
         let currentTime = Date()

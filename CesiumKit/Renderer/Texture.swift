@@ -86,7 +86,7 @@ struct TextureOptions {
     }
 }
 
-public class Texture {
+open class Texture {
     
     let width: Int
     
@@ -183,9 +183,9 @@ public class Texture {
         
         let textureDescriptor: MTLTextureDescriptor
         if cubeMap {
-            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(with: pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
+            textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(pixelFormat: pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
         } else {
-            textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(with: pixelFormat.toMetal(),
+            textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: pixelFormat.toMetal(),
                 width: width, height: height, mipmapped: mipmapped)
         }
         textureDescriptor.usage = usage.toMetal()

@@ -2032,6 +2032,7 @@
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 7AS9FJBK47;
 						DevelopmentTeamName = "Ryan Walklin";
+						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
 					947820E31B5A2C0E0095A86F = {
@@ -3085,6 +3086,7 @@
 				PRODUCT_NAME = CesiumKit;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -3129,6 +3131,7 @@
 				PRODUCT_NAME = CesiumKit;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

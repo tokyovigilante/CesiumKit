@@ -75,10 +75,10 @@ struct ShaderSource {
     var pickColorQualifier: String?
     
     let includeBuiltIns: Bool
-    private let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
-    private let _versionRegex = "/#version\\s+(.*?)\n"
-    private let _lineRegex = "\\n"
-    private let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
+    fileprivate let _commentRegex = "/\\*\\*[\\s\\S]*?\\*/"
+    fileprivate let _versionRegex = "/#version\\s+(.*?)\n"
+    fileprivate let _lineRegex = "\\n"
+    fileprivate let _czmRegex = "\\bczm_[a-zA-Z0-9_]*"
 
     init (sources: [String] = [String](), defines: [String] = [String](), pickColorQualifier: String? = nil, includeBuiltIns: Bool = true) {
         
@@ -175,7 +175,7 @@ struct ShaderSource {
         return result
     }
 
-    private func removeComments (_ source: String) -> String {
+    fileprivate func removeComments (_ source: String) -> String {
         // strip doc comments so we don't accidentally try to determine a dependency for something found
         // in a comment
         var newSource = source
@@ -196,7 +196,7 @@ struct ShaderSource {
         return newSource
     }
 
-    private func getBuiltinsAndAutomaticUniforms(_ shaderSource: String) -> String {
+    fileprivate func getBuiltinsAndAutomaticUniforms(_ shaderSource: String) -> String {
         // generate a dependency graph for builtin functions
         
         var dependencyNodes = [DependencyNode]()
@@ -207,11 +207,11 @@ struct ShaderSource {
         // Concatenate the source code for the function dependencies.
         // Iterate in reverse so that dependent items are declared before they are used.
         return Array(dependencyNodes.reversed())
-            .reduce("", combine: { $0 + $1.glslSource + "\n" })
+            .reduce("", { $0 + $1.glslSource + "\n" })
             .replace(root.glslSource, "")
     }
     
-    private func getDependencyNode(_ name: String, glslSource: String, nodes: inout [DependencyNode]) -> DependencyNode {
+    fileprivate func getDependencyNode(_ name: String, glslSource: String, nodes: inout [DependencyNode]) -> DependencyNode {
         
         var dependencyNode: DependencyNode?
         
@@ -234,7 +234,7 @@ struct ShaderSource {
         return dependencyNode!
     }
     
-    private func generateDependencies(_ currentNode: DependencyNode, dependencyNodes: inout [DependencyNode]) {
+    fileprivate func generateDependencies(_ currentNode: DependencyNode, dependencyNodes: inout [DependencyNode]) {
         
         if currentNode.evaluated {
             return
@@ -266,7 +266,7 @@ struct ShaderSource {
         }
     }
     
-    private func sortDependencies(_ dependencyNodes: inout [DependencyNode]) {
+    fileprivate func sortDependencies(_ dependencyNodes: inout [DependencyNode]) {
         
         var nodesWithoutIncomingEdges = [DependencyNode]()
         var allNodes = [DependencyNode]()

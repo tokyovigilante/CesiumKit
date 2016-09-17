@@ -147,7 +147,7 @@ struct RenderState/*: Printable*/ {
     
     let depthRange: DepthRange// = DepthRange()
     
-    private let _depthStencilState: MTLDepthStencilState?
+    fileprivate let _depthStencilState: MTLDepthStencilState?
     
     struct DepthTest {
         var enabled: Bool = false

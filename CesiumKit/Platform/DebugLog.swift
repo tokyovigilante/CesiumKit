@@ -18,7 +18,7 @@ public enum LogLevel: UInt {
 
 private var _loglevel: LogLevel = .debug
 
-public func logPrint(level: LogLevel, _ logString: String) {
+public func logPrint(_ level: LogLevel, _ logString: String) {
     if level.rawValue >= _loglevel.rawValue {
         print(logString)
     }

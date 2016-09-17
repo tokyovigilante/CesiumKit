@@ -51,7 +51,7 @@ import simd
 */
 public struct Matrix4 {
     
-    private (set) internal var simdType: double4x4
+    fileprivate (set) internal var simdType: double4x4
     
     var floatRepresentation: float4x4 {
         return float4x4([
@@ -524,7 +524,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeOrthographicOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double = 0.0, far: Double = 1.0) -> Matrix4 {
+    static func computeOrthographicOffCenter (_ left: Double, right: Double, bottom: Double, top: Double, near: Double = 0.0, far: Double = 1.0) -> Matrix4 {
         
         // Converted to Metal NDC coordinates - z: [0-1]
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205348(v=vs.85).aspx
@@ -556,7 +556,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
+    static func computePerspectiveOffCenter (_ left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double) -> Matrix4 {
         // Converted to Metal NDC coordinates - z: [0-1]
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205354(v=vs.85).aspx
         
@@ -585,7 +585,7 @@ Matrix4.computePerspectiveFieldOfView = function(fovY, aspectRatio, near, far, r
     * @param {Matrix4} result The object in which the result will be stored.
     * @returns The modified result parameter.
     */
-    static func computeInfinitePerspectiveOffCenter (left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
+    static func computeInfinitePerspectiveOffCenter (_ left: Double, right: Double, bottom: Double, top: Double, near: Double) -> Matrix4 {
         //assertionFailure("not updated for metal NDC")
         let column0Row0 = 2.0 * near / (right - left)
         let column1Row1 = 2.0 * near / (top - bottom)
@@ -1491,7 +1491,7 @@ extension Matrix4: Packable {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         _ = array.withUnsafeBufferPointer { (pointer: UnsafeBufferPointer<Double>) in
-            memcpy(&self, pointer.baseAddress, Matrix4.packedLength() * strideof(Double))
+            memcpy(&self, pointer.baseAddress, Matrix4.packedLength() * MemoryLayout<Double>.stride)
         }
     }
     

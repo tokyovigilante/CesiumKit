@@ -12,7 +12,7 @@ import Metal
 // see https://developer.apple.com/library/mac/documentation/Miscellaneous/Conceptual/MetalProgrammingGuide/MetalFeatureSetTables/MetalFeatureSetTables.html
 class ContextLimits {
     
-    private let _highestSupportedFeatureSet: MTLFeatureSet
+    fileprivate let _highestSupportedFeatureSet: MTLFeatureSet
     
     /**
     * The maximum number of texture units that can be used from the vertex and fragment

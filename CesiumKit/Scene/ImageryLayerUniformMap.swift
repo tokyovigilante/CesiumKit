@@ -48,13 +48,13 @@ class ImageryLayerUniformMap: NativeUniformMap {
         UniformDescriptor(name: "u_textureDimensions", type: .floatVec2, count: 1)
     ]
     
-    private var _uniformStruct = ImageryLayerUniformStruct()
+    fileprivate var _uniformStruct = ImageryLayerUniformStruct()
     
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
 
     init () {
         uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: sizeof(ImageryLayerUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: MemoryLayout<ImageryLayerUniformStruct>.size)
             return [self.texture!]
         }
     }

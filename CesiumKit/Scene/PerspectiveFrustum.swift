@@ -36,7 +36,7 @@ class PerspectiveFrustum: Frustum {
     * @default undefined
     */
     var fov = Double.nan
-    private var _fov: Double = Double.nan
+    fileprivate var _fov: Double = Double.nan
     
     /**
     * Gets the angle of the vertical field of view, in radians.
@@ -53,9 +53,9 @@ class PerspectiveFrustum: Frustum {
             _fovy = newFovy
         }
     }
-    private var _fovy: Double = Double.nan
+    fileprivate var _fovy: Double = Double.nan
     
-    private var _sseDenominator: Double = Double.nan
+    fileprivate var _sseDenominator: Double = Double.nan
     
     /**
     * The aspect ratio of the frustum's width to it's height.
@@ -63,7 +63,7 @@ class PerspectiveFrustum: Frustum {
     * @default undefined
     */
     var aspectRatio = Double.nan
-    private var _aspectRatio = Double.nan
+    fileprivate var _aspectRatio = Double.nan
     
     var left = Double.nan
     var right = Double.nan
@@ -77,7 +77,7 @@ class PerspectiveFrustum: Frustum {
     */
     var near = 1.0
     
-    private var _near = Double.nan
+    fileprivate var _near = Double.nan
     
     /**
     * The distance of the far plane.
@@ -85,7 +85,7 @@ class PerspectiveFrustum: Frustum {
     * @default 500000000.0
     */
     var far = 500000000.0
-    private var _far = Double.nan
+    fileprivate var _far = Double.nan
     
     /**
      * Offsets the frustum in the x direction.
@@ -93,7 +93,7 @@ class PerspectiveFrustum: Frustum {
      * @default 0.0
      */
     var xOffset = 0.0;
-    private var _xOffset = Double.nan
+    fileprivate var _xOffset = Double.nan
     
     /**
      * Offsets the frustum in the y direction.
@@ -101,7 +101,7 @@ class PerspectiveFrustum: Frustum {
      * @default 0.0
      */
     var yOffset = 0.0;
-    private var _yOffset = Double.nan
+    fileprivate var _yOffset = Double.nan
         
     var _offCenterFrustum = PerspectiveOffCenterFrustum()
     
@@ -179,7 +179,7 @@ class PerspectiveFrustum: Frustum {
     * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
-    func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
+    func computeCullingVolume (_ position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
         update()
         return _offCenterFrustum.computeCullingVolume(position: position, direction: direction, up: up)
     }

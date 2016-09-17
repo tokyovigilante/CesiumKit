@@ -13,14 +13,14 @@ class DepthPlane {
     /**
     * @private
     */
-    private var _rs: RenderState? = nil
-    private var _attributes: [VertexAttributes]? = nil
-    private var _pipeline: RenderPipeline? = nil
-    private var _va: VertexArray? = nil
-    private var _command: DrawCommand? = nil
-    private var _mode: SceneMode = .scene3D
+    fileprivate var _rs: RenderState? = nil
+    fileprivate var _attributes: [VertexAttributes]? = nil
+    fileprivate var _pipeline: RenderPipeline? = nil
+    fileprivate var _va: VertexArray? = nil
+    fileprivate var _command: DrawCommand? = nil
+    fileprivate var _mode: SceneMode = .scene3D
     
-    private func computeDepthQuad(_ ellipsoid: Ellipsoid, frameState: FrameState) -> [Float] {
+    fileprivate func computeDepthQuad(_ ellipsoid: Ellipsoid, frameState: FrameState) -> [Float] {
         let radii = ellipsoid.radii
         let p = frameState.camera!.positionWC
         
@@ -96,7 +96,7 @@ class DepthPlane {
                 index: 0,
                 format: .float3,
                 offset: 0,
-                size: strideof(Float) * 3,
+                size: MemoryLayout<Float>.stride * 3,
                 normalize: false
                 )]
             _pipeline = RenderPipeline.fromCache(

@@ -71,7 +71,7 @@ class CameraEventAggregator {
         //listenTouchEvents()
         
         // FIXME: Modifiers disabled
-        for i in 0..<KeyboardEventModifier.COUNT.rawValue {
+        for i in 0..<KeyboardEventModifier.count.rawValue {
             let modifier = KeyboardEventModifier(rawValue: i)!
             //listenToWheel(modifier: modifier)
             listenToPinch(modifier: modifier)
@@ -83,7 +83,7 @@ class CameraEventAggregator {
         //listenTouchPanStart()
     }
     
-    func getKey(type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> String {
+    func getKey(_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> String {
         return "\(type.rawValue)" + (modifier != nil ? "\(modifier!.rawValue)" : "")
     }
     /*
@@ -95,8 +95,8 @@ class CameraEventAggregator {
     Cartesian2.clone(pinchMovement.angleAndHeight.endPosition, result.angleAndHeight.endPosition);
     }
     */
-    func listenToPinch(modifier: KeyboardEventModifier? = nil) {
-        let key = getKey(type: .pinch, modifier: modifier)
+    func listenToPinch(_ modifier: KeyboardEventModifier? = nil) {
+        let key = getKey(.pinch, modifier: modifier)
         
         _update[key] = true
         _isDown[key] = false
@@ -157,7 +157,7 @@ class CameraEventAggregator {
     }
     
     func listenToWheel() {
-        let key = getKey(type: .wheel, modifier: nil)
+        let key = getKey(.wheel, modifier: nil)
         
         _update[key] = true
         
@@ -187,7 +187,7 @@ class CameraEventAggregator {
     }
     
     func listenMouseButtonDownUp(_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         
         _isDown[key] = false
         _eventStartPosition[key] = Cartesian2()
@@ -233,14 +233,14 @@ class CameraEventAggregator {
         })
     }
     
-    func listenMouseMove(modifier: KeyboardEventModifier? = nil) {
+    func listenMouseMove(_ modifier: KeyboardEventModifier? = nil) {
         //var update = aggregator._update;
         //var movement = aggregator._movement;
         //var lastMovement = aggregator._lastMovement;
         //var isDown = aggregator._isDown;
         
         for i in 0..<CameraEventType.count.rawValue {
-            let key = getKey(type: CameraEventType(rawValue: i)!, modifier: modifier)
+            let key = getKey(CameraEventType(rawValue: i)!, modifier: modifier)
             _update[key] = true
         
             if _lastMovement[key] == nil {
@@ -267,7 +267,7 @@ class CameraEventAggregator {
         eventHandler.setInputAction(.mouseMove, modifier: modifier, action: { (geometry: InputEvent) in
             for i in 0..<CameraEventType.count.rawValue {
                 let type = CameraEventType(rawValue: i)!
-                let key = self.getKey(type: type, modifier: modifier)
+                let key = self.getKey(type, modifier: modifier)
                 if self._isDown[key] != nil && self._isDown[key]! {
                     if !(self._update[key]!) {
                         var movement = self._movement[key]!
@@ -329,7 +329,7 @@ class CameraEventAggregator {
     * @returns {Boolean} Returns <code>true</code> if a mouse button down or touch has started and has been moved; otherwise, <code>false</code>
     */
     func isMoving (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Bool {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return !_update[key]!
     }
     
@@ -341,7 +341,7 @@ class CameraEventAggregator {
     * @returns {Object} An object with two {@link Cartesian2} properties: <code>startPosition</code> and <code>endPosition</code>.
     */
     func getMovement (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> MouseMovement {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _movement[key]!
     }
     
@@ -353,7 +353,7 @@ class CameraEventAggregator {
     * @returns {Object|undefined} An object with two {@link Cartesian2} properties: <code>startPosition</code> and <code>endPosition</code> or <code>undefined</code>.
     */
     func getLastMovement (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> MouseMovement? {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         let lastMovement = _lastMovement[key]
         if lastMovement != nil && lastMovement!.valid {
             return lastMovement!
@@ -370,7 +370,7 @@ class CameraEventAggregator {
     * @returns {Boolean} Whether the mouse button is down or a touch has started.
     */
     func isButtonDown (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Bool {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _isDown[key]!
     }
     
@@ -387,7 +387,7 @@ class CameraEventAggregator {
             return _currentMousePosition
         }
         
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _eventStartPosition[key]!
     }
     
@@ -399,7 +399,7 @@ class CameraEventAggregator {
     * @returns {Date} The time the button was pressed or the touch was started.
     */
     func getButtonPressTime (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Date? {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _pressTime[key]
     }
     
@@ -411,7 +411,7 @@ class CameraEventAggregator {
     * @returns {Date} The time the button was released or the touch was ended.
     */
     func getButtonReleaseTime (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Date? {
-        let key = getKey(type: type, modifier: modifier)
+        let key = getKey(type, modifier: modifier)
         return _releaseTime[key]
     }
     

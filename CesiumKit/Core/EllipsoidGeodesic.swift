@@ -34,7 +34,7 @@ class EllipsoidGeodesic {
      * @type {Cartographic?}
      * @readonly
      */
-    private (set) var start: Cartographic? = nil
+    fileprivate (set) var start: Cartographic? = nil
     
     /**
      * Gets the final planetodetic point on the path.
@@ -42,7 +42,7 @@ class EllipsoidGeodesic {
      * @type {Cartographic?}
      * @readonly
      */
-    private (set) var end: Cartographic? = nil
+    fileprivate (set) var end: Cartographic? = nil
     
     /**
      * Gets the heading at the initial point.
@@ -55,7 +55,7 @@ class EllipsoidGeodesic {
         return _startHeading!
     }
     
-    private var _startHeading: Double? = nil
+    fileprivate var _startHeading: Double? = nil
     
     /**
      * Gets the heading at the final point.
@@ -68,7 +68,7 @@ class EllipsoidGeodesic {
         return _endHeading!
     }
     
-    private var _endHeading: Double? = nil
+    fileprivate var _endHeading: Double? = nil
     
     /**
      * Gets the surface distance between the start and end point
@@ -81,18 +81,18 @@ class EllipsoidGeodesic {
         return _distance!
     }
     
-    private var _distance: Double? = nil
+    fileprivate var _distance: Double? = nil
     
-    private var _uSquared: Double? = nil
+    fileprivate var _uSquared: Double? = nil
     
-    private var _constants = EllipsoidGeodesicConstants()
+    fileprivate var _constants = EllipsoidGeodesicConstants()
     
     init (start: Cartographic? = nil, end: Cartographic? = nil, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         
         self.ellipsoid = ellipsoid
         
         if start != nil && end != nil {
-            computeProperties(start: start!, end: end!)
+            computeProperties(start!, end: end!)
         }
     }
     
@@ -103,17 +103,17 @@ class EllipsoidGeodesic {
      * @param {Cartographic} start The initial planetodetic point on the path.
      * @param {Cartographic} end The final planetodetic point on the path.
      */
-    func setEndPoints (start: Cartographic, end: Cartographic) {
-        computeProperties(start: start, end: end)
+    func setEndPoints (_ start: Cartographic, end: Cartographic) {
+        computeProperties(start, end: end)
     }
     
-    private func computeProperties(start: Cartographic, end: Cartographic) {
+    fileprivate func computeProperties(_ start: Cartographic, end: Cartographic) {
         let firstCartesian = ellipsoid.cartographicToCartesian(start).normalize()
         let lastCartesian = ellipsoid.cartographicToCartesian(end).normalize()
         
         assert(abs(abs(firstCartesian.angleBetween(lastCartesian)) - M_PI) >= 0.0125, "geodesic position is not unique")
         
-        vincentyInverseFormula(major: ellipsoid.maximumRadius, minor: ellipsoid.minimumRadius,
+        vincentyInverseFormula(ellipsoid.maximumRadius, minor: ellipsoid.minimumRadius,
             firstLongitude: start.longitude, firstLatitude: start.latitude, secondLongitude: end.longitude, secondLatitude: end.latitude)
         
         var surfaceStart = start
@@ -126,7 +126,7 @@ class EllipsoidGeodesic {
         setConstants()
     }
     
-    private func vincentyInverseFormula(major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
+    fileprivate func vincentyInverseFormula(_ major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
         let eff = (major - minor) / major
         let l = secondLongitude - firstLongitude
         
@@ -183,7 +183,7 @@ class EllipsoidGeodesic {
                 cosineTwiceSigmaMidpoint = 0.0
             }
             
-            lambda = l + computeDeltaLambda(f: eff, sineAlpha: sineAlpha, cosineSquaredAlpha: cosineSquaredAlpha,
+            lambda = l + computeDeltaLambda(eff, sineAlpha: sineAlpha, cosineSquaredAlpha: cosineSquaredAlpha,
                 sigma: sigma, sineSigma: sineSigma, cosineSigma: cosineSigma, cosineTwiceSigmaMidpoint: cosineTwiceSigmaMidpoint)
         } while (abs(lambda - lambdaDot) > Math.Epsilon12)
         
@@ -204,7 +204,7 @@ class EllipsoidGeodesic {
         _uSquared = uSquared
     }
     
-    private func setConstants() {
+    fileprivate func setConstants() {
         let a = ellipsoid.maximumRadius
         let b = ellipsoid.minimumRadius
         let f = (a - b) / a
@@ -268,14 +268,14 @@ class EllipsoidGeodesic {
         _constants.distanceRatio = distanceRatio
     }
     
-    private func computeDeltaLambda(f: Double, sineAlpha: Double, cosineSquaredAlpha: Double, sigma: Double, sineSigma: Double, cosineSigma: Double, cosineTwiceSigmaMidpoint: Double) -> Double {
-        let C = computeC(f: f, cosineSquaredAlpha: cosineSquaredAlpha)
+    fileprivate func computeDeltaLambda(_ f: Double, sineAlpha: Double, cosineSquaredAlpha: Double, sigma: Double, sineSigma: Double, cosineSigma: Double, cosineTwiceSigmaMidpoint: Double) -> Double {
+        let C = computeC(f, cosineSquaredAlpha: cosineSquaredAlpha)
         
         return (1.0 - C) * f * sineAlpha * (sigma + C * sineSigma * (cosineTwiceSigmaMidpoint +
             C * cosineSigma * (2.0 * cosineTwiceSigmaMidpoint * cosineTwiceSigmaMidpoint - 1.0)))
     }
     
-    private func computeC(f: Double, cosineSquaredAlpha: Double) -> Double {
+    fileprivate func computeC(_ f: Double, cosineSquaredAlpha: Double) -> Double {
         return f * cosineSquaredAlpha * (4.0 + f * (4.0 - 3.0 * cosineSquaredAlpha)) / 16.0
     }
     
@@ -348,13 +348,13 @@ class EllipsoidGeodesic {
         
         let lambda = atan2(sineSigma * constants.sineHeading, cc - ss * constants.cosineHeading)
         
-        let l = lambda - computeDeltaLambda(f: constants.f, sineAlpha: constants.sineAlpha, cosineSquaredAlpha: constants.cosineSquaredAlpha,
+        let l = lambda - computeDeltaLambda(constants.f, sineAlpha: constants.sineAlpha, cosineSquaredAlpha: constants.cosineSquaredAlpha,
             sigma: sigma, sineSigma: sineSigma, cosineSigma: cosineSigma, cosineTwiceSigmaMidpoint: cosineTwiceSigmaMidpoint)
         
         return Cartographic(longitude: start!.longitude + l, latitude: latitude, height: 0.0)
     }
     
-    private struct EllipsoidGeodesicConstants {
+    fileprivate struct EllipsoidGeodesicConstants {
         var a = Double.nan
         var b = Double.nan
         var f = Double.nan

@@ -45,7 +45,7 @@ class SkyBox {
             _sourcesUpdated = true
         }
     }
-    private var _sourcesUpdated: Bool = true
+    fileprivate var _sourcesUpdated: Bool = true
     
     /**
      * Determines if the sky box will be shown.
@@ -55,9 +55,9 @@ class SkyBox {
      */
     var show: Bool = true
     
-    private var _command: DrawCommand
+    fileprivate var _command: DrawCommand
     
-    private var _cubemap: Texture? = nil
+    fileprivate var _cubemap: Texture? = nil
     
     convenience init (sources: [String]) {
         self.init(sources: CubeMap.loadImagesForSources(sources))
@@ -171,7 +171,7 @@ private class SkyBoxUniformMap: NativeUniformMap {
     
     var uniformDescriptors: [UniformDescriptor] = []
     
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     init () {
         uniformUpdateBlock = { buffer in

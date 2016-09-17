@@ -9,8 +9,8 @@
 import Foundation
 
 private let _gregorianGMTCalendar: Calendar = {
-    let calendar = Calendar(calendarIdentifier: Calendar.Identifier.gregorian)!
-    calendar.timeZone = TimeZone(forSecondsFromGMT: 0)
+    var calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+    calendar.timeZone = TimeZone(secondsFromGMT: 0)!
     return calendar
 }()
 
@@ -71,7 +71,7 @@ extension Date {
         // Astronomical Almanac (Seidelmann 1992).
         
         let calendar = _gregorianGMTCalendar
-        let dateComponents = calendar.components([.year, .month, .day, .hour, .minute, .second, .nanosecond], from: self)
+        let dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second, .nanosecond], from: self)
         
         let a = ((dateComponents.month! - 14) / 12) | 0
         let b = dateComponents.year! + 4800 + a
@@ -107,7 +107,7 @@ extension Date {
         return _iso8601Formatter.date(from: isoDate)
     }
     
-    private static let _leapSeconds: [(date: Date, offset: Int)] = [
+    fileprivate static let _leapSeconds: [(date: Date, offset: Int)] = [
         (Date.fromUTCISO8601String("1972-01-01T00:00:00Z")!, 10), // January 1, 1972 00:00:00 UTC
         (Date.fromUTCISO8601String("1972-07-01T00:00:00Z")!, 11), // July 1, 1972 00:00:00 UTC
         (Date.fromUTCISO8601String("1973-01-01T00:00:00Z")!, 12), // January 1, 1973 00:00:00 UTC
@@ -142,7 +142,7 @@ extension Date {
 private var _iso8601Formatter: DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-    formatter.locale = Locale(localeIdentifier: "en_US_POSIX")
+    formatter.locale = Locale(identifier: "en_US_POSIX")
     return formatter
 }
 

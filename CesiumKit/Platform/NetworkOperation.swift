@@ -20,7 +20,7 @@ extension URLSessionConfiguration {
     /// newly created session configuration object, customised
     /// from the default to your requirements.
     class func resourceSessionConfiguration() -> URLSessionConfiguration {
-        let config = `default`()
+        let config = `default`
         // Eg we think 60s is too long a timeout time.
         config.timeoutIntervalForRequest = 20
         config.httpMaximumConnectionsPerHost = 2
@@ -50,7 +50,7 @@ private let ResponseDelegateKey = "responseDelegateObject"
 
 class NetworkOperation: Operation {
     
-    private var _privateFinished: Bool = false
+    fileprivate var _privateFinished: Bool = false
     override var isFinished: Bool {
         get {
             return _privateFinished
@@ -69,15 +69,15 @@ class NetworkOperation: Operation {
         return Data()
     }
     
-    private var _incomingData: Data? = nil
+    fileprivate var _incomingData: Data? = nil
     
     var error: NSError?
     
-    private let headers: [String: String]?
+    fileprivate let headers: [String: String]?
     
-    private let parameters: [String: String]?
+    fileprivate let parameters: [String: String]?
     
-    private let url: String
+    fileprivate let url: String
     
     init(url: String, headers: [String: String]? = nil, parameters: [String: String]? = nil) {
         self.url = url
@@ -120,14 +120,14 @@ class NetworkOperation: Operation {
         dataTask.resume()
     }
     
-    private func encodeParameters (_ parameters: [String: String]) -> String {
+    fileprivate func encodeParameters (_ parameters: [String: String]) -> String {
         return (parameters.map { "\($0)=\($1)" }).joined(separator: "&")
     }
 }
 
 extension URLSessionTask {
     
-    private struct AssociatedKeys {
+    fileprivate struct AssociatedKeys {
         static var networkOperation = "networkOperationKey"
     }
     
@@ -160,7 +160,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
         if let httpResponse = response as? HTTPURLResponse {
             switch httpResponse.statusCode {
             case 404:
-                logPrint(level: .error, "404 not found: \(request.url!)")
+                logPrint(.error, "404 not found: \(request.url!)")
                 operation.isFinished = true
                 dataTask.cancel()
             default:
@@ -174,7 +174,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
     }
     
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: NSError?) {
-        logPrint(level: .warning, "session invalid")
+        logPrint(.warning, "session invalid")
     }
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
@@ -200,7 +200,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
                 operation._incomingData = Data(capacity: capacity)
             }
         }
-        logPrint(level: .debug, "Received \(data.count) bytes from " + (dataTask.originalRequest?.url?.absoluteString ?? "unknown"))
+        logPrint(.debug, "Received \(data.count) bytes from " + (dataTask.originalRequest?.url?.absoluteString ?? "unknown"))
         //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
         data.enumerateBytes { (buffer, byteIndex, stop) in
             operation._incomingData?.append(buffer.baseAddress!, count: buffer.count)

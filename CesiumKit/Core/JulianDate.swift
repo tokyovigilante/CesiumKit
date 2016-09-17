@@ -27,13 +27,13 @@ public struct JulianDate {
      * Gets or sets the number of whole days.
      * @type {Number}
      */
-    public private (set) var dayNumber: Int = -1
+    public fileprivate (set) var dayNumber: Int = -1
     
     /**
      * Gets or sets the number of seconds into the current day.
      * @type {Number}
      */
-    public private (set) var secondsOfDay: Double = Double.nan
+    public fileprivate (set) var secondsOfDay: Double = Double.nan
     
     public init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .utc) {
 
@@ -41,7 +41,7 @@ public struct JulianDate {
         let wholeDays = julianDayNumber.wholeComponent
         let secondsOfDay = secondsOfDay + (julianDayNumber - wholeDays) * TimeConstants.SecondsPerDay
         
-        setComponents(wholeDays: Int(wholeDays), secondsOfDay: secondsOfDay)
+        setComponents(Int(wholeDays), secondsOfDay: secondsOfDay)
         
         if timeStandard == .utc {
             convertUtcToTai()
@@ -58,7 +58,7 @@ public struct JulianDate {
     var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var daysInLeapFeburary = 29;
     */
-    private func compareLeapSecondDates (_ leapSecond: LeapSecond, dateToFind: LeapSecond) -> Int {
+    fileprivate func compareLeapSecondDates (_ leapSecond: LeapSecond, dateToFind: LeapSecond) -> Int {
         return Int(leapSecond.julianDate.compare(dateToFind.julianDate))
     }
     
@@ -132,7 +132,7 @@ public struct JulianDate {
     return JulianDate.addSeconds(julianDate, -leapSeconds[--index].offset, result);
     }
     */
-    mutating func setComponents(wholeDays: Int, secondsOfDay: Double) {
+    mutating func setComponents(_ wholeDays: Int, secondsOfDay: Double) {
         
         let extraDays = Int(trunc(secondsOfDay / TimeConstants.SecondsPerDay))
         
@@ -897,7 +897,7 @@ public struct JulianDate {
     * @memberof JulianDate
     * @type {LeapSecond[]}
     */
-    static private let _leapSeconds = [
+    static fileprivate let _leapSeconds = [
         LeapSecond(julianDate: JulianDate(julianDayNumber: 2441317, secondsOfDay: 43210.0, timeStandard: .tai), offset: 10), // January 1, 1972 00:00:00 UTC
         LeapSecond(julianDate: JulianDate(julianDayNumber: 2441499, secondsOfDay: 43211.0, timeStandard: .tai), offset: 11), // July 1, 1972 00:00:00 UTC
         LeapSecond(julianDate: JulianDate(julianDayNumber: 2441683, secondsOfDay: 43212.0, timeStandard: .tai), offset: 12), // January 1, 1973 00:00:00 UTC

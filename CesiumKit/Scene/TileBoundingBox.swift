@@ -25,7 +25,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var southwestCornerCartesian = Cartesian3()
+    fileprivate (set) var southwestCornerCartesian = Cartesian3()
     
     /**
      * The world coordinates of the northeast corner of the tile's rectangle.
@@ -33,7 +33,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var northeastCornerCartesian = Cartesian3()
+    fileprivate (set) var northeastCornerCartesian = Cartesian3()
     
     /**
      * A normal that, along with southwestCornerCartesian, defines a plane at the western edge of
@@ -42,7 +42,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var westNormal = Cartesian3()
+    fileprivate (set) var westNormal = Cartesian3()
     
     /**
      * A normal that, along with southwestCornerCartesian, defines a plane at the southern edge of
@@ -53,7 +53,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var southNormal = Cartesian3()
+    fileprivate (set) var southNormal = Cartesian3()
     
     /**
      * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
@@ -62,7 +62,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var eastNormal = Cartesian3()
+    fileprivate (set) var eastNormal = Cartesian3()
     
     /**
      * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
@@ -73,7 +73,7 @@ struct TileBoundingBox {
      * @type {Cartesian3}
      * @default Cartesian3()
      */
-    private (set) var northNormal = Cartesian3()
+    fileprivate (set) var northNormal = Cartesian3()
     
     let rectangle: Rectangle
     
@@ -92,7 +92,7 @@ struct TileBoundingBox {
         computeBox()
     }
     
-    private mutating func computeBox() {
+    fileprivate mutating func computeBox() {
         southwestCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.southwest)
         northeastCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.northeast)
         
@@ -138,8 +138,8 @@ struct TileBoundingBox {
             .normalize()
     }
     
-    private let negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
-    private let negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
+    fileprivate let negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
+    fileprivate let negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
     
     /**
      * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.

@@ -71,7 +71,7 @@ struct SceneTransforms {
     }
     
     
-    private static func worldToClip(_ position: Cartesian3, eyeOffset: Cartesian3, camera: Camera) -> Cartesian4 {
+    fileprivate static func worldToClip(_ position: Cartesian3, eyeOffset: Cartesian3, camera: Camera) -> Cartesian4 {
         let viewMatrix = camera.viewMatrix
         
         var positionEC = viewMatrix.multiplyByVector(Cartesian4(x: position.x, y: position.y, z: position.z, w: 1.0))
@@ -133,7 +133,7 @@ struct SceneTransforms {
                     
                     camera.position.x = -camera.position.x
                 
-                    var right = camera.frustum.right
+                    let right = camera.frustum.right
                     camera.frustum.right = -camera.frustum.left
                     camera.frustum.left = -right
                     
@@ -213,7 +213,7 @@ struct SceneTransforms {
     /**
     * @private
     */
-    private static func computeActualWgs84Position (_ frameState: FrameState, position: Cartesian3) -> Cartesian3? {
+    fileprivate static func computeActualWgs84Position (_ frameState: FrameState, position: Cartesian3) -> Cartesian3? {
         
         let mode = frameState.mode
         
@@ -253,7 +253,7 @@ struct SceneTransforms {
     /**
     * @private
     */
-    private static func clipToGLWindowCoordinates (_ viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
+    fileprivate static func clipToGLWindowCoordinates (_ viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
         
         // Perspective divide to transform from clip coordinates to normalized device coordinates
         let positionNDC = position.divideByScalar(position.w)

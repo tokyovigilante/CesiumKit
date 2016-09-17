@@ -117,8 +117,8 @@ class GeographicTilingScheme: TilingScheme {
      * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    func tileXYToNativeRectangle(x: Int, y: Int, level: Int) -> Rectangle {
-        var rectangleRadians = tileXYToRectangle(x: x, y: y, level: level)
+    func tileXYToNativeRectangle(_ x: Int, y: Int, level: Int) -> Rectangle {
+        var rectangleRadians = tileXYToRectangle(x, y: y, level: level)
         rectangleRadians.west = Math.toDegrees(rectangleRadians.west)
         rectangleRadians.south = Math.toDegrees(rectangleRadians.south)
         rectangleRadians.east = Math.toDegrees(rectangleRadians.east)
@@ -137,7 +137,7 @@ class GeographicTilingScheme: TilingScheme {
      * @returns {Rectangle} The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    func tileXYToRectangle(x: Int, y: Int, level: Int) -> Rectangle {
+    func tileXYToRectangle(_ x: Int, y: Int, level: Int) -> Rectangle {
 
         let xTiles = numberOfXTilesAtLevel(level)
         let yTiles = numberOfYTilesAtLevel(level)
@@ -163,7 +163,7 @@ class GeographicTilingScheme: TilingScheme {
      * @returns {(Int: Int)} The specified 'result', or a new object containing the tile x, y coordinates
      *          if 'result' is undefined.
      */
-    func positionToTileXY(position: Cartographic, level: Int) -> (x: Int, y: Int)? {
+    func positionToTileXY(_ position: Cartographic, level: Int) -> (x: Int, y: Int)? {
         if !rectangle.contains(position) {
             // outside the bounds of the tiling scheme
             return nil

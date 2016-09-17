@@ -25,7 +25,7 @@ extension String {
     }
     
     func replace(_ existingString: String, _ newString: String) -> String {
-        return self.replacingOccurrences(of: existingString, with: newString, options: .literalSearch, range: nil)
+        return self.replacingOccurrences(of: existingString, with: newString, options: .literal, range: nil)
     }
     
     func indexOf(_ findStr:String, startIndex: String.Index? = nil) -> String.Index? {
@@ -48,7 +48,7 @@ extension String {
     func urlForSource () -> URL? {
         switch self.referenceType {
         case .bundleResource:
-            let bundle = Bundle(identifier: "com.testtoast.CesiumKit") ?? Bundle.main()
+            let bundle = Bundle(identifier: "com.testtoast.CesiumKit") ?? Bundle.main
             #if os(OSX)
                 return bundle.urlForImageResource(self)
             #elseif os(iOS)
@@ -68,7 +68,7 @@ extension String {
         }
         do {
             let data = try Data(contentsOf: sourceURL, options: [])
-            return CGImage.from(data: data)
+            return CGImage.from(data)
         } catch {
             return nil
         }

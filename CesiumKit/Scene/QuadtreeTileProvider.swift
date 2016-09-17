@@ -105,7 +105,7 @@ protocol QuadtreeTileProvider {
     *
     * @param {FrameState} frameState The frame state.
     */
-    func beginUpdate (frameState: inout FrameState)
+    func beginUpdate (_ frameState: inout FrameState)
     
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
@@ -115,7 +115,7 @@ protocol QuadtreeTileProvider {
     *
     * @param {FrameState} frameState The frame state.
     */
-    func endUpdate (frameState: inout FrameState)
+    func endUpdate (_ frameState: inout FrameState)
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be

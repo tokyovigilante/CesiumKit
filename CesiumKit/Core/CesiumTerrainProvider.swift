@@ -86,26 +86,26 @@ class CesiumTerrainProvider: TerrainProvider {
      * @memberof TerrainProvider.prototype
      * @type {Credit}
      */
-    private (set) var credit: Credit? = nil
+    fileprivate (set) var credit: Credit? = nil
     
     /**
      * Gets a value indicating whether or not the provider is ready for use.
      * @memberof TerrainProvider.prototype
      * @type {Boolean}
      */
-    private (set) var ready = false
+    fileprivate (set) var ready = false
     
-    private let _levelZeroMaximumGeometricError: Double
+    fileprivate let _levelZeroMaximumGeometricError: Double
     
     var heightmapTerrainQuality = 0.25
     
-    private let _heightmapWidth = 65
+    fileprivate let _heightmapWidth = 65
     
-    private var _heightmapStructure: HeightmapStructure? = nil
+    fileprivate var _heightmapStructure: HeightmapStructure? = nil
     
-    private var _tileUrlTemplates = [String]()
+    fileprivate var _tileUrlTemplates = [String]()
     
-    private var _availableTiles: [JSON]? = nil
+    fileprivate var _availableTiles: [JSON]? = nil
     
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
@@ -126,7 +126,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @default false
      * @private
      */
-    private var _hasVertexNormals = false
+    fileprivate var _hasVertexNormals = false
 
     /**
      * Boolean flag that indicates if the client should request vertex normals from the server.
@@ -135,7 +135,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @memberof CesiumTerrainProvider.prototype
      * @type {Boolean}
      */
-    private (set) var requestVertexNormals: Bool
+    fileprivate (set) var requestVertexNormals: Bool
     
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
@@ -151,7 +151,7 @@ class CesiumTerrainProvider: TerrainProvider {
         return _hasWaterMask && _requestWaterMask
     }
     
-    private var _hasWaterMask = false
+    fileprivate var _hasWaterMask = false
     
     /**
      * Boolean flag that indicates if the client should request tile watermasks from the server.
@@ -159,9 +159,9 @@ class CesiumTerrainProvider: TerrainProvider {
      * @default false
      * @private
      */
-    private var _requestWaterMask: Bool
+    fileprivate var _requestWaterMask: Bool
     
-    private var _littleEndianExtensionSize = true
+    fileprivate var _littleEndianExtensionSize = true
     
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
         
@@ -331,7 +331,7 @@ class CesiumTerrainProvider: TerrainProvider {
     case waterMask
 }
     
-    private func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
+    fileprivate func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
             return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
         } else {
@@ -354,16 +354,16 @@ class CesiumTerrainProvider: TerrainProvider {
      }
      */
     
-    func createQuantizedMeshTerrainData(_ data: Data, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (data: TerrainData) -> ()) {
+    func createQuantizedMeshTerrainData(_ data: Data, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (_ data: TerrainData) -> ()) {
         var pos = 0
         let cartesian3Elements = 3
         let boundingSphereElements = cartesian3Elements + 1
-        let cartesian3Length = sizeof(Double) * cartesian3Elements
-        let boundingSphereLength = sizeof(Double) * boundingSphereElements
+        let cartesian3Length = MemoryLayout<Double>.size * cartesian3Elements
+        let boundingSphereLength = MemoryLayout<Double>.size * boundingSphereElements
         let encodedVertexElements = 3
-        let encodedVertexLength = sizeof(UInt16) * encodedVertexElements
+        let encodedVertexLength = MemoryLayout<UInt16>.size * encodedVertexElements
         let triangleElements = 3
-        var bytesPerIndex = sizeof(UInt16)
+        var bytesPerIndex = MemoryLayout<UInt16>.size
         var triangleLength = bytesPerIndex * triangleElements
         
         let center = Cartesian3(
@@ -374,9 +374,9 @@ class CesiumTerrainProvider: TerrainProvider {
         pos += cartesian3Length
         
         let minimumHeight = Double(data.getFloat32(pos: pos))
-        pos += sizeof(Float)
+        pos += MemoryLayout<Float>.size
         let maximumHeight = Double(data.getFloat32(pos: pos))
-        pos += sizeof(Float)
+        pos += MemoryLayout<Float>.size
         
         let boundingSphere = BoundingSphere(
             center: Cartesian3(
@@ -395,14 +395,14 @@ class CesiumTerrainProvider: TerrainProvider {
         pos += cartesian3Length
         
         let vertexCount = Int(data.getUInt32(pos: pos))
-        pos += sizeof(UInt32)
+        pos += MemoryLayout<UInt32>.size
         
         var encodedVertexBuffer = data.getUInt16Array(pos: pos, elementCount: vertexCount * encodedVertexElements)
         pos += vertexCount * encodedVertexLength
         
         if vertexCount > Math.SixtyFourKilobytes {
             // More than 64k vertices, so indices are 32-bit.
-            bytesPerIndex = sizeof(UInt32)
+            bytesPerIndex = MemoryLayout<UInt32>.size
             triangleLength = bytesPerIndex * triangleElements
         }
         
@@ -435,7 +435,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }
         
         let triangleCount = Int(data.getUInt32(pos: pos))
-        pos += strideof(UInt32)
+        pos += MemoryLayout<UInt32>.stride
         
         // High water mark decoding based on decompressIndices_ in webgl-loader's loader.js.
         // https://code.google.com/p/webgl-loader/source/browse/trunk/samples/loader.js?r=99#55
@@ -455,22 +455,22 @@ class CesiumTerrainProvider: TerrainProvider {
         pos += triangleCount * triangleLength
                 
         let westVertexCount = Int(data.getUInt32(pos: pos))
-        pos += sizeof(UInt32)
+        pos += MemoryLayout<UInt32>.size
         let westIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: westVertexCount)
         pos += westVertexCount * bytesPerIndex
         
         let southVertexCount = Int(data.getUInt32(pos: pos))
-        pos += sizeof(UInt32)
+        pos += MemoryLayout<UInt32>.size
         let southIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: southVertexCount)
         pos += southVertexCount * bytesPerIndex
         
         let eastVertexCount = Int(data.getUInt32(pos: pos))
-        pos += sizeof(UInt32)
+        pos += MemoryLayout<UInt32>.size
         let eastIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: eastVertexCount)
         pos += eastVertexCount * bytesPerIndex
         
         let northVertexCount = Int(data.getUInt32(pos: pos))
-        pos += sizeof(UInt32)
+        pos += MemoryLayout<UInt32>.size
         let northIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: northVertexCount)
         pos += northVertexCount * bytesPerIndex
         
@@ -478,9 +478,9 @@ class CesiumTerrainProvider: TerrainProvider {
         var waterMaskBuffer: [UInt8]? = nil
         while pos < data.count {
             let extensionId = QuantizedMeshExtensionIds(rawValue: data.getUInt8(pos: pos))
-            pos += sizeof(UInt8)
+            pos += MemoryLayout<UInt8>.size
             let extensionLength = Int(data.getUInt32(pos: pos, littleEndian: _littleEndianExtensionSize))
-            pos += sizeof(UInt32)
+            pos += MemoryLayout<UInt32>.size
             
             if extensionId == .octVertexNormals && requestVertexNormals {
                 encodedNormalBuffer = data.getUInt8Array(pos: pos, elementCount: vertexCount * 2)
@@ -532,7 +532,7 @@ class CesiumTerrainProvider: TerrainProvider {
             childTileMask: getChildMaskForTile(level, x: x, y: tmsY),
             waterMask: waterMaskBuffer
         )
-        completionBlock(data: terrainData)
+        completionBlock(terrainData)
     }
  
     
@@ -554,7 +554,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
      *            returns true.
      */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: (TerrainData?) -> ()) {
+    func requestTileGeometry(_ x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: @escaping (TerrainData?) -> ()) {
         assert(ready, "requestTileGeometry must not be called before the terrain provider is ready.")
         
         if _tileUrlTemplates.isEmpty {
@@ -809,7 +809,7 @@ class CesiumTerrainProvider: TerrainProvider {
 
     */
     static func estimatedLevelZeroGeometricErrorForAHeightmap(
-        ellipsoid: Ellipsoid,
+        _ ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)

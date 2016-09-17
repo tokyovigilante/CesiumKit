@@ -11,21 +11,21 @@ import Foundation
 /** A render-to-texture primitive allowing multiple draw commands.
  Most useful for creating HUDs and other UI.
  */
-public class OffscreenQuadPrimitive: Primitive {
+open class OffscreenQuadPrimitive: Primitive {
     
     let height, width: Int
     
-    private weak var _context: Context!
+    fileprivate weak var _context: Context!
     
-    private var _text = [TextRenderer]()
+    fileprivate var _text = [TextRenderer]()
     
-    private var _textCommands = [DrawCommand]()
+    fileprivate var _textCommands = [DrawCommand]()
     
-    private var _rectangles = [DrawCommand]()
+    fileprivate var _rectangles = [DrawCommand]()
     
-    private let _passState: PassState
+    fileprivate let _passState: PassState
     
-    private let _clearCommand = ClearCommand(
+    fileprivate let _clearCommand = ClearCommand(
         color: Color(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
     )
     
@@ -51,17 +51,17 @@ public class OffscreenQuadPrimitive: Primitive {
         _passState.framebuffer = framebuffer
     }
     
-    public func addString (_ string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4) -> Int {
+    open func addString (_ string: String, fontName: String, color: Color, pointSize: Int, rectangle: Cartesian4) -> Int {
         let text = TextRenderer(string: string, fontName: fontName, color: color, pointSize: pointSize, viewportRect: rectangle, offscreenTarget: true)
         _text.append(text)
         return _text.count-1
     }
 
-    public func updateString (_ index: Int, newText: String) {
+    open func updateString (_ index: Int, newText: String) {
         
     }
     
-    public func addRectangle (_ bounds: Cartesian4, material: Material) -> Int {
+    open func addRectangle (_ bounds: Cartesian4, material: Material) -> Int {
         
         let rs = RenderState(
             device: _context.device,

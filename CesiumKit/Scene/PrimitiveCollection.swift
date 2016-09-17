@@ -31,11 +31,11 @@ import Foundation
  * scene.primitives.add(labels);      // Add regular primitive
  */
 
-public class PrimitiveCollection: Primitive {
+open class PrimitiveCollection: Primitive {
     
     let guid: String
     
-    private var _primitives = [Primitive]()
+    fileprivate var _primitives = [Primitive]()
     
     override init () {
         guid = UUID().uuidString
@@ -107,7 +107,7 @@ return this._primitives.length;
 * @example
 * var billboards = scene.primitives.add(new Cesium.BillboardCollection());
 */
-    public func add (_ primitive: Primitive) -> Primitive {
+    open func add (_ primitive: Primitive) -> Primitive {
         /*
          var external = (primitive._external = primitive._external || {});
          var composites = (external._composites = external._composites || {});
@@ -162,7 +162,7 @@ return false;
 *
 * @see PrimitiveCollection#destroyPrimitives
 */
-    public func removeAll () {
+    open func removeAll () {
         _primitives.removeAll()
     }
 /*

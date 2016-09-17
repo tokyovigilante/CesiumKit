@@ -44,7 +44,7 @@ import Foundation
  * camera.frustum.near = 1.0;
  * camera.frustum.far = 2.0;
  */
-public class Camera: DRU {
+open class Camera: DRU {
     
     var isUpdated = false
     
@@ -59,8 +59,8 @@ public class Camera: DRU {
      */
     
     var position = Cartesian3()
-    private var _position = Cartesian3()
-    private var _positionWC = Cartesian3()
+    fileprivate var _position = Cartesian3()
+    fileprivate var _positionWC = Cartesian3()
     
     /**
      * Gets the position of the camera in world coordinates.
@@ -91,7 +91,7 @@ public class Camera: DRU {
             return _positionCartographic
         }
     }
-    private var _positionCartographic = Cartographic()
+    fileprivate var _positionCartographic = Cartographic()
     
     /**
      * The view direction of the camera.
@@ -99,8 +99,8 @@ public class Camera: DRU {
      * @type {Cartesian3}
      */
     var direction = Cartesian3()
-    private var _direction = Cartesian3()
-    private var _directionWC = Cartesian3()
+    fileprivate var _direction = Cartesian3()
+    fileprivate var _directionWC = Cartesian3()
     
     var directionWC: Cartesian3 {
         get {
@@ -116,7 +116,7 @@ public class Camera: DRU {
      */
     var up = Cartesian3()
     var _up = Cartesian3()
-    private var _upWC = Cartesian3()
+    fileprivate var _upWC = Cartesian3()
     
     /**
      * Gets the up direction of the camera in world coordinates.
@@ -138,8 +138,8 @@ public class Camera: DRU {
      * @type {Cartesian3}
      */
     var right = Cartesian3()
-    private var _right = Cartesian3()
-    private var _rightWC = Cartesian3()
+    fileprivate var _right = Cartesian3()
+    fileprivate var _rightWC = Cartesian3()
     
     /**
      * Gets the right direction of the camera in world coordinates.
@@ -168,7 +168,7 @@ public class Camera: DRU {
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
             
-            let heading = getHeading(direction: direction, up: up)
+            let heading = getHeading(direction, up: up)
             
             _setTransform(oldTransform);
             
@@ -192,7 +192,7 @@ public class Camera: DRU {
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
             
-            let pitch = getPitch(direction: direction)
+            let pitch = getPitch(direction)
             
             _setTransform(oldTransform)
             
@@ -216,7 +216,7 @@ public class Camera: DRU {
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
             
-            let roll = getRoll(direction: direction, up: up, right: right)
+            let roll = getRoll(direction, up: up, right: right)
             
             _setTransform(oldTransform)
             
@@ -233,7 +233,7 @@ public class Camera: DRU {
      * @type {Event}
      * @readonly
      */
-    private (set) var moveStart = Event()
+    fileprivate (set) var moveStart = Event()
     
     /**
      * Gets the event that will be raised at when the camera has stopped moving.
@@ -241,7 +241,7 @@ public class Camera: DRU {
      * @type {Event}
      * @readonly
      */
-    private (set) var moveEnd = Event()
+    fileprivate (set) var moveEnd = Event()
     
     /**
      * Gets the camera's reference frame. The inverse of this transformation is appended to the view matrix.
@@ -256,11 +256,11 @@ public class Camera: DRU {
         return _transform
     }
     
-    private var _transform = Matrix4.identity
-    private var _invTransform = Matrix4.identity
-    private var _actualTransform = Matrix4.identity
-    private var _actualInvTransform = Matrix4.identity
-    private var _transformChanged = false
+    fileprivate var _transform = Matrix4.identity
+    fileprivate var _invTransform = Matrix4.identity
+    fileprivate var _actualTransform = Matrix4.identity
+    fileprivate var _actualInvTransform = Matrix4.identity
+    fileprivate var _transformChanged = false
     
     
     /**
@@ -298,7 +298,7 @@ public class Camera: DRU {
         }
     }
     
-    private var _viewMatrix = Matrix4()
+    fileprivate var _viewMatrix = Matrix4()
     
     /**
      * Gets the inverse view matrix.
@@ -316,7 +316,7 @@ public class Camera: DRU {
         }
     }
     
-    private var _invViewMatrix = Matrix4()
+    fileprivate var _invViewMatrix = Matrix4()
     
     /**
      * The region of space in view.
@@ -367,7 +367,7 @@ public class Camera: DRU {
      * @type {Cartesian3}
      * @default undefined
      */
-    public var constrainedAxis: Cartesian3? = nil
+    open var constrainedAxis: Cartesian3? = nil
     /**
      * The factor multiplied by the the map size used to determine where to clamp the camera position
      * when translating across the surface. The default is 1.5. Only valid for 2D and Columbus view.
@@ -383,11 +383,11 @@ public class Camera: DRU {
      */
     var maximumZoomFactor = 2.5
     
-    private var _mode: SceneMode = .scene3D
+    fileprivate var _mode: SceneMode = .scene3D
     
-    private var _modeChanged = true
+    fileprivate var _modeChanged = true
     
-    private var _projection: MapProjection {
+    fileprivate var _projection: MapProjection {
         didSet {
             ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
         }
@@ -395,9 +395,9 @@ public class Camera: DRU {
     
     var ellipsoidGeodesic: EllipsoidGeodesic
 
-    private var _maxCoord = Cartesian3()
+    fileprivate var _maxCoord = Cartesian3()
     
-    private var _max2Dfrustum: Frustum? = nil
+    fileprivate var _max2Dfrustum: Frustum? = nil
     
     var transform2D = Matrix4(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)
     
@@ -714,7 +714,7 @@ public class Camera: DRU {
         }
     }
     
-    func getHeading (direction: Cartesian3, up: Cartesian3) -> Double {
+    func getHeading (_ direction: Cartesian3, up: Cartesian3) -> Double {
         let heading: Double
         if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
             heading = atan2(direction.y, direction.x) - M_PI_2
@@ -724,11 +724,11 @@ public class Camera: DRU {
         return M_2_PI - Math.zeroToTwoPi(heading)
     }
     
-    func getPitch(direction: Cartesian3) -> Double {
+    func getPitch(_ direction: Cartesian3) -> Double {
         return M_PI_2 - Math.acosClamped(direction.z)
     }
     
-    func getRoll (direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
+    func getRoll (_ direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
         var roll = 0.0
         if Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
             roll = Math.zeroToTwoPi(atan2(-right.z, up.z) + M_2_PI)
@@ -790,7 +790,7 @@ public class Camera: DRU {
         updateMembers()
     }
     
-    private func setView3D (_ position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
+    fileprivate func setView3D (_ position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
         
         let currentTransform = transform
         let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
@@ -808,7 +808,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    public func setView3D (_ location: Cartographic, rotation: Matrix3) {
+    open func setView3D (_ location: Cartographic, rotation: Matrix3) {
         
         let position = _projection.ellipsoid.cartographicToCartesian(location)
         let currentTransform = transform
@@ -824,7 +824,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func setViewCV(_ position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
+    fileprivate func setViewCV(_ position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
         
         let currentTransform = transform
         _setTransform(Matrix4.identity)
@@ -848,7 +848,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func setView2D(_ position: Cartesian3, convert: Bool) {
+    fileprivate func setView2D(_ position: Cartesian3, convert: Bool) {
         let currentTransform = transform
         _setTransform(Matrix4.identity)
         
@@ -874,7 +874,7 @@ public class Camera: DRU {
         _setTransform(currentTransform)
     }
     
-    private func directionUpToHeadingPitchRoll(_ position: Cartesian3, orientation: Orientation) -> Orientation {
+    fileprivate func directionUpToHeadingPitchRoll(_ position: Cartesian3, orientation: Orientation) -> Orientation {
         
         var direction: Cartesian3
         var up: Cartesian3
@@ -896,9 +896,9 @@ public class Camera: DRU {
         let right = direction.cross(up)
         
         return Orientation.headingPitchRoll(
-            heading: getHeading(direction: direction, up: up),
-            pitch: getPitch(direction: direction),
-            roll: getRoll(direction: direction, up: up, right: right)
+            heading: getHeading(direction, up: up),
+            pitch: getPitch(direction),
+            roll: getRoll(direction, up: up, right: right)
         )
     }
     
@@ -952,7 +952,7 @@ public class Camera: DRU {
      *     }
      * });
      */
-    public func setView (orientation: Orientation? = nil, destination: Destination? = nil, endTransform: Matrix4? = nil) {
+    open func setView (_ orientation: Orientation? = nil, destination: Destination? = nil, endTransform: Matrix4? = nil) {
         if _mode == .morphing {
             return
         }
@@ -1196,7 +1196,7 @@ public class Camera: DRU {
     * @see Camera#moveUp
     * @see Camera#moveDown
     */
-    public func move (_ direction: Cartesian3, amount: Double) {
+    open func move (_ direction: Cartesian3, amount: Double) {
         position = position.add(direction.multiplyByScalar(amount))
         if _mode == SceneMode.scene2D {
             assertionFailure("unimplemented")
@@ -1213,7 +1213,7 @@ public class Camera: DRU {
      *
      * @see Camera#moveBackward
      */
-    public func moveForward (_ amount: Double? = nil) {
+    open func moveForward (_ amount: Double? = nil) {
         let amount = amount ?? defaultMoveAmount
         move(direction, amount: amount)
     }
@@ -1330,8 +1330,8 @@ public class Camera: DRU {
      *
      * @see Camera#lookDown
      */
-    public func lookUp (_ amount: Double?) {
-        look(axis: right, angle: -(amount ?? defaultLookAmount))
+    open func lookUp (_ amount: Double?) {
+        look(right, angle: -(amount ?? defaultLookAmount))
     }
     /*
     /**
@@ -1363,7 +1363,7 @@ public class Camera: DRU {
     * @see Camera#lookLeft
     * @see Camera#lookRight
     */
-    public func look (axis: Cartesian3, angle: Double? = nil) {
+    open func look (_ axis: Cartesian3, angle: Double? = nil) {
         
         let turnAngle = angle ?? defaultLookAmount
         let quaternion = Quaternion(axis: axis, angle: -turnAngle)
@@ -1581,7 +1581,7 @@ public class Camera: DRU {
      *
      * @see Camera#zoomOut
      */
-    public func zoomIn (_ amount: Double? = nil) {
+    open func zoomIn (_ amount: Double? = nil) {
         let amount = amount ?? defaultZoomAmount
         if _mode == .scene2D {
             zoom2D(amount)
@@ -1657,7 +1657,7 @@ public class Camera: DRU {
      * var range = 5000.0;
      * viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
-    public func lookAt (_ target: Cartesian3, offset: Offset) {
+    open func lookAt (_ target: Cartesian3, offset: Offset) {
         
         let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
         lookAtTransform(transform, offset: offset.offset)
@@ -1698,7 +1698,7 @@ public class Camera: DRU {
      * viewer.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
     
-    public func lookAtTransform (_ transform: Matrix4, offset: Offset) {
+    open func lookAtTransform (_ transform: Matrix4, offset: Offset) {
         
         assert(_mode != .morphing, "lookAtTransform is not supported while morphing.")
         
@@ -1754,7 +1754,7 @@ public class Camera: DRU {
     var viewRectangle3DEquator = new Cartesian3();
     var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new Cartesian3()};*/
     
-    private struct DefaultRF: DRU {
+    fileprivate struct DefaultRF: DRU {
         var direction = Cartesian3()
         var right = Cartesian3()
         var up = Cartesian3()
@@ -1988,7 +1988,7 @@ public class Camera: DRU {
     *
     * @returns {Cartesian3} The camera position needed to view the rectangle
     */
-    private func getRectangleCameraCoordinates (_ rectangle: Rectangle) -> Cartesian3 {
+    fileprivate func getRectangleCameraCoordinates (_ rectangle: Rectangle) -> Cartesian3 {
     
         switch _mode {
         case .scene3D:

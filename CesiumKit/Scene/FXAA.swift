@@ -13,13 +13,13 @@ class FXAA {
     /**
     * @private
     */
-    private var _texture: Texture? = nil
-    private var _depthTexture: Texture? = nil
+    fileprivate var _texture: Texture? = nil
+    fileprivate var _depthTexture: Texture? = nil
     
-    private var _fbo: Framebuffer? = nil
-    private var _command: DrawCommand? = nil
+    fileprivate var _fbo: Framebuffer? = nil
+    fileprivate var _command: DrawCommand? = nil
     
-    private var _clearCommand: ClearCommand
+    fileprivate var _clearCommand: ClearCommand
     
     init () {
         _clearCommand = ClearCommand(
@@ -125,17 +125,17 @@ class FXAAUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    private var _uniformStruct = FXAAUniformStruct()
+    fileprivate var _uniformStruct = FXAAUniformStruct()
     
     var uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name: "u_step", type: .floatVec2, count: 1)
     ]
     
-    private (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
     
     init () {
         uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: sizeof(FXAAUniformStruct))
+            buffer.write(from: &self._uniformStruct, length: MemoryLayout<FXAAUniformStruct>.size)
             return [self.texture!]
         }
     }

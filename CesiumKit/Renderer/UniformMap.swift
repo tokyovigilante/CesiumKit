@@ -10,7 +10,7 @@ protocol UniformStruct {
 
 }
 
-typealias UniformUpdateBlock = ((buffer: Buffer) -> [Texture])
+typealias UniformUpdateBlock = ((_ buffer: Buffer) -> [Texture])
 
 typealias UniformMapDeallocBlock = (UniformBufferProvider) -> Void
 

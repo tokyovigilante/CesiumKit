@@ -21,7 +21,7 @@ class ComputeEngine {
         self.context = context
     }
 
-    private func createViewportQuadPipeline(_ fragmentShaderSource: ShaderSource) -> RenderPipeline? {
+    fileprivate func createViewportQuadPipeline(_ fragmentShaderSource: ShaderSource) -> RenderPipeline? {
         
         let attributes = [
             // attribute vec4 position;

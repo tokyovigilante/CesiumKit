@@ -41,74 +41,74 @@ class Simon1994PlanetaryPositions {
      http://www.cv.nrao.edu/~rfisher/Ephemerides/times.html#TDB
      ftp://ssd.jpl.nasa.gov/pub/eph/planets/ioms/ExplSupplChap8.pdf
      */
-    private let epoch: JulianDate
-    private let GravitationalParameterOfEarth: Double
-    private let GravitationalParameterOfSun: Double
-    private let MetersPerKilometer: Double
-    private let RadiansPerDegree: Double
-    private let RadiansPerArcSecond: Double
-    private let MetersPerAstronomicalUnit: Double
+    fileprivate let epoch: JulianDate
+    fileprivate let GravitationalParameterOfEarth: Double
+    fileprivate let GravitationalParameterOfSun: Double
+    fileprivate let MetersPerKilometer: Double
+    fileprivate let RadiansPerDegree: Double
+    fileprivate let RadiansPerArcSecond: Double
+    fileprivate let MetersPerAstronomicalUnit: Double
     
-    private let semiMajorAxis0: Double
-    private let meanLongitude0: Double
-    private let meanLongitude1: Double
-    private let p1u: Double
-    private let p2u: Double
-    private let p3u: Double
-    private let p4u: Double
-    private let p5u: Double
-    private let p6u: Double
-    private let p7u: Double
-    private let p8u: Double
-    private let Ca1: Double
-    private let Ca2: Double
-    private let Ca3: Double
-    private let Ca4: Double
-    private let Ca5: Double
-    private let Ca6: Double
-    private let Ca7: Double
-    private let Ca8: Double
-    private let Sa1: Double
-    private let Sa2: Double
-    private let Sa3: Double
-    private let Sa4: Double
-    private let Sa5: Double
-    private let Sa6: Double
-    private let Sa7: Double
-    private let Sa8: Double
-    private let q1u: Double
-    private let q2u: Double
-    private let q3u: Double
-    private let q4u: Double
-    private let q5u: Double
-    private let q6u: Double
-    private let q7u: Double
-    private let q8u: Double
-    private let Cl1: Double
-    private let Cl2: Double
-    private let Cl3: Double
-    private let Cl4: Double
-    private let Cl5: Double
-    private let Cl6: Double
-    private let Cl7: Double
-    private let Cl8: Double
-    private let Sl1: Double
-    private let Sl2: Double
-    private let Sl3: Double
-    private let Sl4: Double
-    private let Sl5: Double
-    private let Sl6: Double
-    private let Sl7: Double
-    private let Sl8: Double
+    fileprivate let semiMajorAxis0: Double
+    fileprivate let meanLongitude0: Double
+    fileprivate let meanLongitude1: Double
+    fileprivate let p1u: Double
+    fileprivate let p2u: Double
+    fileprivate let p3u: Double
+    fileprivate let p4u: Double
+    fileprivate let p5u: Double
+    fileprivate let p6u: Double
+    fileprivate let p7u: Double
+    fileprivate let p8u: Double
+    fileprivate let Ca1: Double
+    fileprivate let Ca2: Double
+    fileprivate let Ca3: Double
+    fileprivate let Ca4: Double
+    fileprivate let Ca5: Double
+    fileprivate let Ca6: Double
+    fileprivate let Ca7: Double
+    fileprivate let Ca8: Double
+    fileprivate let Sa1: Double
+    fileprivate let Sa2: Double
+    fileprivate let Sa3: Double
+    fileprivate let Sa4: Double
+    fileprivate let Sa5: Double
+    fileprivate let Sa6: Double
+    fileprivate let Sa7: Double
+    fileprivate let Sa8: Double
+    fileprivate let q1u: Double
+    fileprivate let q2u: Double
+    fileprivate let q3u: Double
+    fileprivate let q4u: Double
+    fileprivate let q5u: Double
+    fileprivate let q6u: Double
+    fileprivate let q7u: Double
+    fileprivate let q8u: Double
+    fileprivate let Cl1: Double
+    fileprivate let Cl2: Double
+    fileprivate let Cl3: Double
+    fileprivate let Cl4: Double
+    fileprivate let Cl5: Double
+    fileprivate let Cl6: Double
+    fileprivate let Cl7: Double
+    fileprivate let Cl8: Double
+    fileprivate let Sl1: Double
+    fileprivate let Sl2: Double
+    fileprivate let Sl3: Double
+    fileprivate let Sl4: Double
+    fileprivate let Sl5: Double
+    fileprivate let Sl6: Double
+    fileprivate let Sl7: Double
+    fileprivate let Sl8: Double
     
-    private let TdtMinusTai: Double
-    private let J2000d: Double
+    fileprivate let TdtMinusTai: Double
+    fileprivate let J2000d: Double
     
-    private let maxIterationCount = 50
-    private let keplerEqConvergence = Math.Epsilon8
+    fileprivate let maxIterationCount = 50
+    fileprivate let keplerEqConvergence = Math.Epsilon8
     
-    private let _moonEarthMassRatio: Double
-    private let _factor: Double
+    fileprivate let _moonEarthMassRatio: Double
+    fileprivate let _factor: Double
     
     init () {
         // configure static variables
@@ -194,7 +194,7 @@ class Simon1994PlanetaryPositions {
         return 1.657e-3 * sin(g + 1.671e-2 * sin(g))
     }
     
-    private func taiToTdb(_ date: JulianDate) -> JulianDate {
+    fileprivate func taiToTdb(_ date: JulianDate) -> JulianDate {
         //Converts TAI to TT
         var result = date.addSeconds(TdtMinusTai)
         
@@ -205,7 +205,7 @@ class Simon1994PlanetaryPositions {
         return result
     }
 
-    private func elementsToCartesian(semimajorAxis: Double, eccentricity: Double, inclination: Double, longitudeOfPerigee: Double, longitudeOfNode: Double, meanLongitude: Double, gravitationalParameter: Double) -> Cartesian3 {
+    fileprivate func elementsToCartesian(_ semimajorAxis: Double, eccentricity: Double, inclination: Double, longitudeOfPerigee: Double, longitudeOfNode: Double, meanLongitude: Double, gravitationalParameter: Double) -> Cartesian3 {
         
         var inclination = inclination
         var longitudeOfNode = longitudeOfNode
@@ -237,7 +237,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the true anomaly given the mean anomaly and the eccentricity.
-    private func meanAnomalyToTrueAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
+    fileprivate func meanAnomalyToTrueAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         let eccentricAnomaly = meanAnomalyToEccentricAnomaly(meanAnomaly, eccentricity: eccentricity)
@@ -245,7 +245,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the eccentric anomaly given the mean anomaly and the eccentricity.
-    private func meanAnomalyToEccentricAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
+    fileprivate func meanAnomalyToEccentricAnomaly(_ meanAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         let revs = floor(meanAnomaly / Math.TwoPi)
@@ -278,7 +278,7 @@ class Simon1994PlanetaryPositions {
     }
     
     // Calculates the true anomaly given the eccentric anomaly and the eccentricity.
-    private func eccentricAnomalyToTrueAnomaly(_ eccentricAnomaly: Double, eccentricity: Double) -> Double {
+    fileprivate func eccentricAnomalyToTrueAnomaly(_ eccentricAnomaly: Double, eccentricity: Double) -> Double {
         assert(eccentricity >= 0.0 && eccentricity < 1.0, "eccentricity out of range")
         
         // Calculate the number of previous revolutions
@@ -310,7 +310,7 @@ class Simon1994PlanetaryPositions {
     /** Calculates the transformation matrix to convert from the perifocal (PQW) coordinate
      system to inertial cartesian coordinates.
     */
-    private func perifocalToCartesianMatrix(_ argumentOfPeriapsis: Double, inclination: Double, rightAscension: Double) -> Matrix3 {
+    fileprivate func perifocalToCartesianMatrix(_ argumentOfPeriapsis: Double, inclination: Double, rightAscension: Double) -> Matrix3 {
         assert(inclination >= 0.0 && inclination < 1.0, "eccentricity out of range")
         
         let cosap = cos(argumentOfPeriapsis)
@@ -376,7 +376,7 @@ class Simon1994PlanetaryPositions {
         let longitudeOfNode = 174.87317577 * RadiansPerDegree - 8679.27034 * RadiansPerArcSecond * t
         
         return elementsToCartesian(
-            semimajorAxis: semimajorAxis,
+            semimajorAxis,
             eccentricity: eccentricity,
             inclination: inclination,
             longitudeOfPerigee: longitudeOfPerigee,
@@ -508,7 +508,7 @@ class Simon1994PlanetaryPositions {
         let longitudeOfNode: Double = longitudeOfNodeConstant + longitudeOfNodeSecPart * RadiansPerArcSecond
         
         return elementsToCartesian(
-            semimajorAxis: semimajorAxis,
+            semimajorAxis,
             eccentricity: eccentricity,
             inclination: inclination,
             longitudeOfPerigee: longitudeOfPerigee,
@@ -530,7 +530,7 @@ class Simon1994PlanetaryPositions {
  
     // Values for the <code>axesTransformation</code> needed for the rotation were found using the STK Components
     // GreographicTransformer on the position of the sun center of mass point and the earth J2000 frame.
-    private let _axesTransformation = Matrix3(
+    fileprivate let _axesTransformation = Matrix3(
         1.0000000000000002, 5.619723173785822e-16, 4.690511510146299e-19,
         -5.154129427414611e-16, 0.9174820620691819, -0.39777715593191376,
         -2.23970096136568e-16, 0.39777715593191376, 0.9174820620691819

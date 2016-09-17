@@ -15,7 +15,7 @@ import Foundation
 *
 * @param {Scene} scene The scene.
 */
-public class ScreenSpaceCameraController {
+open class ScreenSpaceCameraController {
     
     /**
     * If true, inputs are allowed conditionally with the flags enableTranslate, enableZoom,
@@ -233,9 +233,9 @@ public class ScreenSpaceCameraController {
     */
     var enableCollisionDetection = true
     
-    weak private var _scene: Scene!
-    weak private var _globe: Globe? = nil
-    private var _ellipsoid: Ellipsoid!
+    weak fileprivate var _scene: Scene!
+    weak fileprivate var _globe: Globe? = nil
+    fileprivate var _ellipsoid: Ellipsoid!
     
     
     let _aggregator: CameraEventAggregator
@@ -248,43 +248,43 @@ public class ScreenSpaceCameraController {
         var active = false
     }
     
-    private var _intertiaMovementStates = [String: MovementState]()
+    fileprivate var _intertiaMovementStates = [String: MovementState]()
     
     /*
     this._tweens = new TweenCollection();
     this._tween = undefined;
     */
-    private var _horizontalRotationAxis: Cartesian3? = nil
+    fileprivate var _horizontalRotationAxis: Cartesian3? = nil
     
-    private var _tiltCenterMousePosition = Cartesian2(x: -1.0, y: -1.0)
-    private var _tiltCenter = Cartesian3()
-    private var _rotateMousePosition = Cartesian2(x: -1.0, y: -1.0)
-    private var _rotateStartPosition = Cartesian3()
-    private var _strafeStartPosition = Cartesian3()
-    private var _zoomMouseStart = Cartesian2()
-    private var _zoomWorldPosition = Cartesian3()
-    private var _tiltCVOffMap = false
-    private var _tiltOnEllipsoid = false
-    private var _looking = false
-    private var _rotating = false
-    private var _strafing = false
-    private var _zoomingOnVector = false
-    private var _rotatingZoom = false
+    fileprivate var _tiltCenterMousePosition = Cartesian2(x: -1.0, y: -1.0)
+    fileprivate var _tiltCenter = Cartesian3()
+    fileprivate var _rotateMousePosition = Cartesian2(x: -1.0, y: -1.0)
+    fileprivate var _rotateStartPosition = Cartesian3()
+    fileprivate var _strafeStartPosition = Cartesian3()
+    fileprivate var _zoomMouseStart = Cartesian2()
+    fileprivate var _zoomWorldPosition = Cartesian3()
+    fileprivate var _tiltCVOffMap = false
+    fileprivate var _tiltOnEllipsoid = false
+    fileprivate var _looking = false
+    fileprivate var _rotating = false
+    fileprivate var _strafing = false
+    fileprivate var _zoomingOnVector = false
+    fileprivate var _rotatingZoom = false
     
     var projection: MapProjection {
         return _scene.mapProjection
     }
     
-    private var _maxCoord: Cartesian3
+    fileprivate var _maxCoord: Cartesian3
     
     // Constants, Make any of these public?*/
-    private var _zoomFactor = 5.0
-    private var _rotateFactor = 0.0
-    private var _rotateRateRangeAdjustment = 0.0
-    private var _maximumRotateRate = 1.77
-    private var _minimumRotateRate = 1.0 / 5000.0
-    private var _minimumZoomRate = 20.0
-    private var _maximumZoomRate = 5906376272000.0  // distance from the Sun to Pluto in meters.
+    fileprivate var _zoomFactor = 5.0
+    fileprivate var _rotateFactor = 0.0
+    fileprivate var _rotateRateRangeAdjustment = 0.0
+    fileprivate var _maximumRotateRate = 1.77
+    fileprivate var _minimumRotateRate = 1.0 / 5000.0
+    fileprivate var _minimumZoomRate = 20.0
+    fileprivate var _maximumZoomRate = 5906376272000.0  // distance from the Sun to Pluto in meters.
     
     init(scene: Scene) {
         _scene = scene
@@ -311,7 +311,7 @@ public class ScreenSpaceCameraController {
     // hardware. Should be investigated further.
     var inertiaMaxClickTimeThreshold = 0.4
     
-    func maintainInertia(type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (startPosition: Cartesian2, movement: MouseMovement) -> (), lastMovementName: String) {
+    func maintainInertia(_ type: CameraEventType, modifier: KeyboardEventModifier? = nil, decayCoef: Double, action: (_ startPosition: Cartesian2, _ movement: MouseMovement) -> (), lastMovementName: String) {
         
         var state = _intertiaMovementStates[lastMovementName]
         if state == nil {
@@ -323,7 +323,7 @@ public class ScreenSpaceCameraController {
         let ts = _aggregator.getButtonPressTime(type, modifier: modifier)
         let tr = _aggregator.getButtonReleaseTime(type, modifier: modifier)
         
-        if let ts = ts, tr = tr {
+        if let ts = ts, let tr = tr {
             let threshold = tr.timeIntervalSinceReferenceDate - ts.timeIntervalSinceReferenceDate
             let now = Date()
             let fromNow = now.timeIntervalSinceReferenceDate - tr.timeIntervalSinceReferenceDate
@@ -361,8 +361,8 @@ public class ScreenSpaceCameraController {
                 if !_aggregator.isButtonDown(type, modifier: modifier) {
                     let startPosition = _aggregator.getStartMousePosition(type, modifier: modifier)
                     action(
-                        startPosition: startPosition,
-                        movement: MouseMovement(
+                        startPosition,
+                        MouseMovement(
                             startPosition: movementState.startPosition,
                             endPosition: movementState.endPosition,
                             angleStartPosition: Cartesian2(),
@@ -379,7 +379,7 @@ public class ScreenSpaceCameraController {
         
     }
         
-    func reactToInput(_ enabled: Bool, eventTypes: [CameraEvent], action: (startPosition: Cartesian2, movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
+    func reactToInput(_ enabled: Bool, eventTypes: [CameraEvent], action: (_ startPosition: Cartesian2, _ movement: MouseMovement) -> (), inertiaConstant: Double, inertiaStateName: String? = nil) {
 
         var movement: MouseMovement? = nil
         
@@ -394,9 +394,9 @@ public class ScreenSpaceCameraController {
             
             if enableInputs && enabled {
                 if movement != nil {
-                    action(startPosition: startPosition, movement: movement!)
+                    action(startPosition, movement!)
                 } else if inertiaConstant < 1.0 && inertiaStateName != nil {
-                    maintainInertia(type: type, modifier: modifier, decayCoef: inertiaConstant, action: action, lastMovementName: inertiaStateName!)
+                    maintainInertia(type, modifier: modifier, decayCoef: inertiaConstant, action: action, lastMovementName: inertiaStateName!)
                 }
             }
         }

@@ -204,7 +204,7 @@ import Foundation
  * });
  */
 
-public class Material {
+open class Material {
     
     /**
      * The material type. Can be an existing type or a new type. If no type is specified in fabric, type is a GUID.
@@ -233,7 +233,7 @@ public class Material {
      * @default undefined
      */
     var uniformMap: LegacyUniformMap? = nil
-    private (set) var uniforms = [String: UniformFunc]()
+    fileprivate (set) var uniforms = [String: UniformFunc]()
     
     /**
      * When <code>true</code> or a function that returns <code>true</code>,
@@ -243,13 +243,13 @@ public class Material {
      */
     var translucent: () -> Bool = { return false }
     
-    private var _translucentFunctions = Array<()->Bool>()
+    fileprivate var _translucentFunctions = Array<()->Bool>()
     
-    private var _strict = false
+    fileprivate var _strict = false
     
-    private var _template: MaterialType? = nil
+    fileprivate var _template: MaterialType? = nil
     
-    private var _count = 0
+    fileprivate var _count = 0
     /*
      this._texturePaths = {};
      this._loadedImages = [];
@@ -729,7 +729,7 @@ public class Material {
             return true
         }*/
 
-        return _translucentFunctions.reduce(translucent(), combine: { $0 && $1() })
+        return _translucentFunctions.reduce(translucent(), { $0 && $1() })
         /*var funcs = _translucentFunctions
          var length = funcs.length;
          for (var i = 0; i < length; ++i) {
@@ -890,8 +890,8 @@ public class Material {
      throw new DeveloperError(errorString);
      }
      */
-    private let templateProperties = ["type", "materials", "uniforms", "components", "source"]
-    private let componentProperties = ["diffuse", "specular", "shininess", "normal", "emission", "alpha"]
+    fileprivate let templateProperties = ["type", "materials", "uniforms", "components", "source"]
+    fileprivate let componentProperties = ["diffuse", "specular", "shininess", "normal", "emission", "alpha"]
     
     func checkForTemplateErrors () {
         /*var template = material._template;

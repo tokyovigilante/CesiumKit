@@ -78,7 +78,7 @@ class HeightmapTessellator {
     * });
     */
     class func computeVertices (
-        heightmap: [UInt16],
+        _ heightmap: [UInt16],
                   height: Int,
                   width: Int,
                   skirtHeight: Double,
@@ -294,7 +294,7 @@ class HeightmapTessellator {
 
         if let center = relativeToCenter {
             let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
-            occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromPoints(directionToPoint: center, points: positions)
+            occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromPoints(center, points: positions)
         }
         
         let aaBox = AxisAlignedBoundingBox(minimum: minimum, maximum: maximum, center: relativeToCenter)

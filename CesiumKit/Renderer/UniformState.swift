@@ -48,20 +48,20 @@ class UniformState {
     /**
     * @private
     */
-    private var _viewport = Cartesian4()
-    private var _viewportDirty = false
-    private var _viewportOrthographicMatrix = Matrix4.identity
-    private var _viewportTransformation = Matrix4.identity
+    fileprivate var _viewport = Cartesian4()
+    fileprivate var _viewportDirty = false
+    fileprivate var _viewportOrthographicMatrix = Matrix4.identity
+    fileprivate var _viewportTransformation = Matrix4.identity
     
-    private var _model = Matrix4.identity
-    private var _view = Matrix4.identity
-    private var _inverseView = Matrix4.identity
-    private var _projection = Matrix4.identity
-    private var _infiniteProjection = Matrix4.identity
+    fileprivate var _model = Matrix4.identity
+    fileprivate var _view = Matrix4.identity
+    fileprivate var _inverseView = Matrix4.identity
+    fileprivate var _projection = Matrix4.identity
+    fileprivate var _infiniteProjection = Matrix4.identity
     
-    private var _entireFrustum = Cartesian2()
-    private var _currentFrustum = Cartesian2()
-    private var _frustumPlanes = Cartesian4()
+    fileprivate var _entireFrustum = Cartesian2()
+    fileprivate var _currentFrustum = Cartesian2()
+    fileprivate var _frustumPlanes = Cartesian4()
     
     /**
     * @memberof UniformState.prototype
@@ -70,99 +70,99 @@ class UniformState {
     */
     var frameState: FrameState! = nil
     
-    private var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity)
+    fileprivate var _temeToPseudoFixed = Matrix3(fromMatrix4: Matrix4.identity)
     
     // Derived members
-    private var _view3DDirty = true
-    private var _view3D = Matrix4()
+    fileprivate var _view3DDirty = true
+    fileprivate var _view3D = Matrix4()
     
-    private var _inverseView3DDirty = true
-    private var _inverseView3D = Matrix4()
+    fileprivate var _inverseView3DDirty = true
+    fileprivate var _inverseView3D = Matrix4()
     
-    private var _inverseModelDirty = true
-    private var _inverseModel = Matrix4()
+    fileprivate var _inverseModelDirty = true
+    fileprivate var _inverseModel = Matrix4()
     
-    private var _inverseTransposeModelDirty = true
-    private var _inverseTransposeModel = Matrix3()
+    fileprivate var _inverseTransposeModelDirty = true
+    fileprivate var _inverseTransposeModel = Matrix3()
     
-    private var _viewRotation = Matrix3()
-    private var _inverseViewRotation = Matrix3()
+    fileprivate var _viewRotation = Matrix3()
+    fileprivate var _inverseViewRotation = Matrix3()
     
-    private var _viewRotation3D = Matrix3()
-    private var _inverseViewRotation3D = Matrix3()
+    fileprivate var _viewRotation3D = Matrix3()
+    fileprivate var _inverseViewRotation3D = Matrix3()
     
-    private var _inverseProjectionDirty = true
-    private var _inverseProjection = Matrix4()
+    fileprivate var _inverseProjectionDirty = true
+    fileprivate var _inverseProjection = Matrix4()
     
-    private var _inverseProjectionOITDirty = true
-    private var _inverseProjectionOIT = Matrix4()
+    fileprivate var _inverseProjectionOITDirty = true
+    fileprivate var _inverseProjectionOIT = Matrix4()
     
-    private var _modelViewDirty = true
-    private var _modelView = Matrix4()
+    fileprivate var _modelViewDirty = true
+    fileprivate var _modelView = Matrix4()
     
-    private var _modelView3DDirty = true
-    private var _modelView3D = Matrix4()
+    fileprivate var _modelView3DDirty = true
+    fileprivate var _modelView3D = Matrix4()
     
-    private var _modelViewRelativeToEyeDirty = true
-    private var _modelViewRelativeToEye = Matrix4()
+    fileprivate var _modelViewRelativeToEyeDirty = true
+    fileprivate var _modelViewRelativeToEye = Matrix4()
     
-    private var _inverseModelViewDirty = true
-    private var _inverseModelView = Matrix4()
+    fileprivate var _inverseModelViewDirty = true
+    fileprivate var _inverseModelView = Matrix4()
     
-    private var _inverseModelView3DDirty = true
-    private var _inverseModelView3D = Matrix4()
+    fileprivate var _inverseModelView3DDirty = true
+    fileprivate var _inverseModelView3D = Matrix4()
     
-    private var _viewProjectionDirty = true
-    private var _viewProjection = Matrix4()
+    fileprivate var _viewProjectionDirty = true
+    fileprivate var _viewProjection = Matrix4()
     
-    private var _inverseViewProjectionDirty = true
-    private var _inverseViewProjection = Matrix4()
+    fileprivate var _inverseViewProjectionDirty = true
+    fileprivate var _inverseViewProjection = Matrix4()
     
-    private var _modelViewProjectionDirty = true
-    private var _modelViewProjection = Matrix4()
+    fileprivate var _modelViewProjectionDirty = true
+    fileprivate var _modelViewProjection = Matrix4()
     
-    private var _inverseModelViewProjectionDirty = true
-    private var _inverseModelViewProjection = Matrix4()
+    fileprivate var _inverseModelViewProjectionDirty = true
+    fileprivate var _inverseModelViewProjection = Matrix4()
     
-    private var _modelViewProjectionRelativeToEyeDirty = true
-    private var _modelViewProjectionRelativeToEye = Matrix4()
+    fileprivate var _modelViewProjectionRelativeToEyeDirty = true
+    fileprivate var _modelViewProjectionRelativeToEye = Matrix4()
     
-    private var _modelViewInfiniteProjectionDirty = true
-    private var _modelViewInfiniteProjection = Matrix4()
+    fileprivate var _modelViewInfiniteProjectionDirty = true
+    fileprivate var _modelViewInfiniteProjection = Matrix4()
     
-    private var _normalDirty = true
-    private var _normal = Matrix3()
+    fileprivate var _normalDirty = true
+    fileprivate var _normal = Matrix3()
     
-    private var _normal3DDirty = true
-    private var _normal3D = Matrix3()
+    fileprivate var _normal3DDirty = true
+    fileprivate var _normal3D = Matrix3()
     
-    private var _inverseNormalDirty = true
-    private var _inverseNormal = Matrix3()
+    fileprivate var _inverseNormalDirty = true
+    fileprivate var _inverseNormal = Matrix3()
     
-    private var _inverseNormal3DDirty = true
-    private var _inverseNormal3D = Matrix3()
+    fileprivate var _inverseNormal3DDirty = true
+    fileprivate var _inverseNormal3D = Matrix3()
     
-    private var _encodedCameraPositionMCDirty = true
-    private var _encodedCameraPositionMC = EncodedCartesian3()
-    private var _cameraPosition = Cartesian3()
+    fileprivate var _encodedCameraPositionMCDirty = true
+    fileprivate var _encodedCameraPositionMC = EncodedCartesian3()
+    fileprivate var _cameraPosition = Cartesian3()
     
-    private var _sunPositionWC = Cartesian3()
-    private var _sunPositionColumbusView = Cartesian3()
-    private var _sunDirectionWC = Cartesian3()
-    private var _sunDirectionEC = Cartesian3()
-    private var _moonDirectionEC = Cartesian3()
+    fileprivate var _sunPositionWC = Cartesian3()
+    fileprivate var _sunPositionColumbusView = Cartesian3()
+    fileprivate var _sunDirectionWC = Cartesian3()
+    fileprivate var _sunDirectionEC = Cartesian3()
+    fileprivate var _moonDirectionEC = Cartesian3()
     
-    private var _mode: SceneMode? = nil
-    private var _mapProjection: MapProjection? = nil
-    private var _cameraDirection = Cartesian3()
-    private var _cameraRight = Cartesian3()
-    private var _cameraUp = Cartesian3()
-    private var _frustum2DWidth = 0.0
-    private var _eyeHeight2D = Cartesian2()
+    fileprivate var _mode: SceneMode? = nil
+    fileprivate var _mapProjection: MapProjection? = nil
+    fileprivate var _cameraDirection = Cartesian3()
+    fileprivate var _cameraRight = Cartesian3()
+    fileprivate var _cameraUp = Cartesian3()
+    fileprivate var _frustum2DWidth = 0.0
+    fileprivate var _eyeHeight2D = Cartesian2()
     
-    private var _fogDensity: Float = 1.0
+    fileprivate var _fogDensity: Float = 1.0
     
-    private var _pass: Pass = .compute
+    fileprivate var _pass: Pass = .compute
     
     /**
     * @memberof UniformState.prototype
@@ -885,7 +885,7 @@ class UniformState {
         layout.czm_a_frameNumber = Float(frameState.frameNumber)
         layout.czm_a_pass = pass
         
-        buffer.write(from: &layout, length: sizeof(AutomaticUniformBufferLayout))
+        buffer.write(from: &layout, length: MemoryLayout<AutomaticUniformBufferLayout>.size)
     }
     
     func setFrustumUniforms (_ buffer: Buffer) {
@@ -906,7 +906,7 @@ class UniformState {
         layout.czm_f_normal3D = normal3D.floatRepresentation
         layout.czm_f_entireFrustum = entireFrustum.floatRepresentation
         
-        buffer.write(from: &layout, length: sizeof(FrustumUniformBufferLayout))
+        buffer.write(from: &layout, length: MemoryLayout<FrustumUniformBufferLayout>.size)
     }
     
     func cleanViewport() {
@@ -1129,7 +1129,7 @@ class UniformState {
             -r.dot(position3D), -u.dot(position3D), d.dot(position3D), 1.0)
     }
     
-    private func updateView3D () {
+    fileprivate func updateView3D () {
         if _view3DDirty {
             if _mode == .scene3D {
                 _view3D = _view
@@ -1141,7 +1141,7 @@ class UniformState {
         }
     }
     
-    private func updateInverseView3D () {
+    fileprivate func updateInverseView3D () {
         if _inverseView3DDirty {
             _inverseView3D = view3D.inverse
             _inverseViewRotation3D = _inverseView3D.rotation

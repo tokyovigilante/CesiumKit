@@ -8,6 +8,26 @@
 
 import Foundation
 import Metal
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 /**
  * An imagery layer that displays tiled image data from a single imagery provider
@@ -18,7 +38,7 @@ import Metal
  *
  * @param {ImageryProvider} imageryProvider The imagery provider to use.
  */
-public class ImageryLayer {
+open class ImageryLayer {
     
     /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
@@ -66,7 +86,7 @@ public class ImageryLayer {
      * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
      *        can limit the visible portion of the imagery provider.
      */
-    private let _rectangle: Rectangle
+    fileprivate let _rectangle: Rectangle
     
     /**
      * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
@@ -156,24 +176,24 @@ public class ImageryLayer {
     * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
     *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
     */
-    private let _minimumTerrainLevel: Int?
+    fileprivate let _minimumTerrainLevel: Int?
     
     /**
      * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
      *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
      */
-    private let _maximumTerrainLevel: Int?
+    fileprivate let _maximumTerrainLevel: Int?
     
     
-    private var _imageryCache = [String: Imagery]()
+    fileprivate var _imageryCache = [String: Imagery]()
     
-    lazy private var _skeletonPlaceholder: TileImagery = TileImagery(imagery: Imagery.createPlaceholder(self))
+    lazy fileprivate var _skeletonPlaceholder: TileImagery = TileImagery(imagery: Imagery.createPlaceholder(self))
     
     // The index of this layer in the ImageryLayerCollection.
     var layerIndex = -1
     
     //private var _requestImageError = undefined;
-    private var _reprojectComputeCommands = [Command]()
+    fileprivate var _reprojectComputeCommands = [Command]()
     
     /**
     * Gets a value indicating whether this layer is the base layer in the
@@ -189,12 +209,12 @@ public class ImageryLayer {
     init (
         imageryProvider: ImageryProvider,
         rectangle: Rectangle = Rectangle.maxValue(),
-        alpha: (() -> Float) = { return 1.0 },
-        brightness: (() -> Float) = { return 1.0 },
-        contrast: (() -> Float) = { return 1.0 },
-        hue: (() -> Float) = { return 0.0 },
-        saturation: (() -> Float) = { return 1.0 },
-        gamma: (() -> Float) = { return 1.0 },
+        alpha: @escaping (() -> Float) = { return 1.0 },
+        brightness: @escaping (() -> Float) = { return 1.0 },
+        contrast: @escaping (() -> Float) = { return 1.0 },
+        hue: @escaping (() -> Float) = { return 0.0 },
+        saturation: @escaping (() -> Float) = { return 1.0 },
+        gamma: @escaping (() -> Float) = { return 1.0 },
         show: Bool = true,
         minimumTerrainLevel: Int? = nil,
         maximumTerrainLevel: Int? = nil,
@@ -327,7 +347,7 @@ public class ImageryLayer {
         // images attached to a terrain tile than there are available texture units.  So that's for the future.
         let errorRatio = 1.0
         let targetGeometricError = errorRatio * terrainProvider.levelMaximumGeometricError(tile.level)
-        var imageryLevel = levelWithMaximumTexelSpacing(texelSpacing: targetGeometricError, latitudeClosestToEquator: latitudeClosestToEquator)
+        var imageryLevel = levelWithMaximumTexelSpacing(targetGeometricError, latitudeClosestToEquator: latitudeClosestToEquator)
         imageryLevel = max(0, imageryLevel)
         let maximumLevel = imageryProvider.maximumLevel
         if (imageryLevel > maximumLevel) {
@@ -430,7 +450,7 @@ public class ImageryLayer {
                 }
                 
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
-                let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
+                let imagery = getImageryFromCache(imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
                 surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), at: insertionPoint!)
                 insertionPoint! += 1
             }
@@ -507,7 +527,7 @@ public class ImageryLayer {
      * @param {Context} context The rendered context to use to create textures.
      * @param {Imagery} imagery The imagery for which to create a texture.
      */
-    func createTexture (frameState: FrameState, imagery: Imagery) {
+    func createTexture (_ frameState: FrameState, imagery: Imagery) {
         
         guard let context = frameState.context else {
             return
@@ -563,7 +583,7 @@ public class ImageryLayer {
      * @param {FrameState} frameState The frameState.
      * @param {Imagery} imagery The imagery instance to reproject.
      */
-    func reprojectTexture (frameState: inout FrameState, imagery: Imagery) {
+    func reprojectTexture (_ frameState: inout FrameState, imagery: Imagery) {
         
         let texture = imagery.texture!
         let rectangle = imagery.rectangle!
@@ -647,7 +667,7 @@ public class ImageryLayer {
         })
     }
     
-    func generateMipmaps (frameState: inout FrameState, imagery: Imagery) {
+    func generateMipmaps (_ frameState: inout FrameState, imagery: Imagery) {
         
         guard let context = frameState.context else {
             return
@@ -698,8 +718,8 @@ public class ImageryLayer {
         _reprojectComputeCommands.removeAll()
     }
         
-    func getImageryFromCache (level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
-        let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
+    func getImageryFromCache (_ level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+        let cacheKey = getImageryCacheKey(level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
         if imagery == nil {
@@ -712,11 +732,11 @@ public class ImageryLayer {
     }
     
     func removeImageryFromCache (_ imagery: Imagery) {
-        let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
+        let cacheKey = getImageryCacheKey(imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValue(forKey: cacheKey)
     }
     
-    private func getImageryCacheKey(level: Int, x: Int, y: Int) -> String {
+    fileprivate func getImageryCacheKey(_ level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
@@ -814,7 +834,7 @@ public class ImageryLayer {
                     index: 0,
                     format: .float2,
                     offset: 0,
-                    size: sizeof(Float) * 2,
+                    size: MemoryLayout<Float>.size * 2,
                     normalize: false
                 ),
                 // webMercatorT
@@ -824,7 +844,7 @@ public class ImageryLayer {
                     index: 1,
                     format: .float,
                     offset: 0,
-                    size: sizeof(Float),
+                    size: MemoryLayout<Float>.size,
                     normalize: false
                 )
             ]
@@ -919,7 +939,7 @@ public class ImageryLayer {
      * @param {Number} latitudeClosestToEquator The latitude closest to the equator that we're concerned with.
      * @returns {Number} The level with the specified texel spacing or less.
      */
-    func levelWithMaximumTexelSpacing(texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
+    func levelWithMaximumTexelSpacing(_ texelSpacing: Double, latitudeClosestToEquator: Double) -> Int {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0

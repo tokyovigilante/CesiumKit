@@ -15,7 +15,7 @@ import Foundation
 
 var swiftRegexCache = Dictionary<String,RegularExpression>()
 
-public class SwiftRegex: NSObject, Boolean {
+open class SwiftRegex: NSObject, DarwinBoolean {
     
     var target: NSString
     var regex: RegularExpression
@@ -54,19 +54,19 @@ public class SwiftRegex: NSObject, Boolean {
         }
     }
     
-    public func doesMatch(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> Bool {
+    open func doesMatch(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> Bool {
         return range(options).location != NSNotFound
     }
     
-    public func range(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> NSRange {
+    open func range(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> NSRange {
         return regex.rangeOfFirstMatch(in: target as String, options: [], range: targetRange)
     }
     
-    public func match(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> String! {
+    open func match(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> String! {
         return substring(range(options)) as String
     }
     
-    public func groups(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [String]! {
+    open func groups(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [String]! {
         return groupsForMatch( regex.firstMatch(in: target as String, options: options, range: targetRange) )
     }
     
@@ -86,7 +86,7 @@ public class SwiftRegex: NSObject, Boolean {
         }
     }
     
-    public subscript(groupno: Int) -> String! {
+    open subscript(groupno: Int) -> String! {
         get {
             return groups()[groupno]
         }
@@ -107,19 +107,19 @@ public class SwiftRegex: NSObject, Boolean {
         return regex.matches(in: target as String, options: options, range: targetRange)
     }
     
-    public func ranges(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [NSRange] {
+    open func ranges(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [NSRange] {
         return matchResults(options).map { $0.range }
     }
     
-    public func matches(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [String] {
+    open func matches(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [String] {
         return matchResults(options).map { self.substring($0.range) }
     }
     
-    public func allGroups(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [[String]] {
+    open func allGroups(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> [[String]] {
         return matchResults(options).map { self.groupsForMatch($0 as! TextCheckingResult) }
     }
     
-    public func dictionary(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> Dictionary<String,String> {
+    open func dictionary(_ options: RegularExpression.MatchingOptions = RegularExpression.MatchingOptions()) -> Dictionary<String,String> {
         var out = Dictionary<String,String>()
         for match in matchResults(options) {
             out[substring(match.range(at: 1)) as String] =
@@ -146,7 +146,7 @@ public class SwiftRegex: NSObject, Boolean {
             return out
     }
     
-    public var boolValue: Bool {
+    open var boolValue: Bool {
         return doesMatch()
     }
 }

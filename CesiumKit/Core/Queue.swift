@@ -14,7 +14,7 @@
 * @constructor
 */
 class Queue<T: Equatable> {
-    private var _array = [T]()
+    fileprivate var _array = [T]()
     
     /**
     * Enqueues the specified item.

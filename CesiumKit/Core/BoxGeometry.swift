@@ -36,11 +36,11 @@ import Foundation
 
 struct BoxGeometry {
     
-    private var _minimum: Cartesian3
+    fileprivate var _minimum: Cartesian3
     
-    private var _maximum: Cartesian3
+    fileprivate var _maximum: Cartesian3
     
-    private var _vertexFormat: VertexFormat
+    fileprivate var _vertexFormat: VertexFormat
     
     init (minimum min: Cartesian3, maximum max: Cartesian3, vertexFormat vf: VertexFormat = .Default()) {
         _minimum = min

@@ -17,7 +17,7 @@ import QuartzCore.CAMetalLayer
 
 class Context {
         
-    private var _debug: (
+    fileprivate var _debug: (
     renderCountThisFrame: Int,
     renderCount: Int
     )
@@ -28,24 +28,24 @@ class Context {
     }
     }*/
 
-    private let _inflight_semaphore: DispatchSemaphore
+    fileprivate let _inflight_semaphore: DispatchSemaphore
     
-    private (set) var bufferSyncState: BufferSyncState = .zero
+    fileprivate (set) var bufferSyncState: BufferSyncState = .zero
     
-    private var _lastFrameDrawCommands = Array<[DrawCommand]>(repeating: [DrawCommand](), count: 3)
+    fileprivate var _lastFrameDrawCommands = Array<[DrawCommand]>(repeating: [DrawCommand](), count: 3)
     
     let view: MTKView
     
     internal let device: MTLDevice!
     
-    private let _commandQueue: MTLCommandQueue
+    fileprivate let _commandQueue: MTLCommandQueue
     
-    private var _drawable: CAMetalDrawable! = nil
-    private var _commandBuffer: MTLCommandBuffer! = nil
+    fileprivate var _drawable: CAMetalDrawable! = nil
+    fileprivate var _commandBuffer: MTLCommandBuffer! = nil
     
     var limits: ContextLimits
         
-    private (set) var depthTexture: Bool = true
+    fileprivate (set) var depthTexture: Bool = true
     
     var allowTextureFilterAnisotropic: Bool = true
     
@@ -65,25 +65,25 @@ class Context {
     
     let pipelineCache: PipelineCache!
     
-    private var _clearColor: MTLClearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
+    fileprivate var _clearColor: MTLClearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
     
-    private var _clearDepth: Double = 0.0
-    private var _clearStencil: UInt32 = 0
+    fileprivate var _clearDepth: Double = 0.0
+    fileprivate var _clearStencil: UInt32 = 0
     
-    private var _currentRenderState: RenderState
-    private let _defaultRenderState: RenderState
+    fileprivate var _currentRenderState: RenderState
+    fileprivate let _defaultRenderState: RenderState
     
-    private var _currentPassState: PassState? = nil
-    private let _defaultPassState: PassState
+    fileprivate var _currentPassState: PassState? = nil
+    fileprivate let _defaultPassState: PassState
     
-    private var _passStates = [Pass: PassState]()
+    fileprivate var _passStates = [Pass: PassState]()
     
     var uniformState: UniformState
-    private let _automaticUniformBufferProvider: UniformBufferProvider
+    fileprivate let _automaticUniformBufferProvider: UniformBufferProvider
     
-    private var _frustumUniformBufferProviderPool = [UniformBufferProvider]()
-    private (set) var wholeFrustumUniformBufferProvider: UniformBufferProvider! = nil
-    private (set) var frontFrustumUniformBufferProvider: UniformBufferProvider! = nil
+    fileprivate var _frustumUniformBufferProviderPool = [UniformBufferProvider]()
+    fileprivate (set) var wholeFrustumUniformBufferProvider: UniformBufferProvider! = nil
+    fileprivate (set) var frontFrustumUniformBufferProvider: UniformBufferProvider! = nil
 
     /**
     * A 1x1 RGBA texture initialized to [255, 255, 255, 255].  This can
@@ -146,7 +146,7 @@ class Context {
     
     var cachedState: RenderState? = nil
     
-    private var _maxFrameTextureUnitIndex = 0
+    fileprivate var _maxFrameTextureUnitIndex = 0
     
     var pickObjects: [AnyObject]
     
@@ -172,7 +172,7 @@ class Context {
             logPrint(level: .info, "- Headless: " + (device.isHeadless ? "Yes" : "No"))
         #endif
         
-        _commandQueue = device.newCommandQueue()
+        _commandQueue = device.makeCommandQueue()
         
         pipelineCache = PipelineCache(device: device)
         id = UUID().uuidString
@@ -191,7 +191,7 @@ class Context {
         
         _defaultRenderState = rs
         uniformState = us
-        _automaticUniformBufferProvider = UniformBufferProvider(device: device, bufferSize: strideof(AutomaticUniformBufferLayout), deallocationBlock: nil)
+        _automaticUniformBufferProvider = UniformBufferProvider(device: device, bufferSize: MemoryLayout<AutomaticUniformBufferLayout>.stride, deallocationBlock: nil)
         _currentRenderState = rs
         defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
@@ -248,7 +248,7 @@ class Context {
     func beginFrame() {
         self._lastFrameDrawCommands[bufferSyncState.rawValue].removeAll()
 
-        _commandBuffer = _commandQueue.commandBuffer()
+        _commandBuffer = _commandQueue.makeCommandBuffer()
         
         _commandBuffer.addCompletedHandler { buffer in
             // Signal the semaphore and allow the CPU to proceed and construct the next frame.
@@ -280,7 +280,7 @@ class Context {
         if let completionHandler = completionHandler {
             _commandBuffer.addCompletedHandler(completionHandler)
         }
-        return _commandBuffer.blitCommandEncoder()
+        return _commandBuffer.makeBlitCommandEncoder()
     }
     
     func completeBlitPass (_ encoder: MTLBlitCommandEncoder) {
@@ -289,7 +289,7 @@ class Context {
     
     func getFrustumUniformBufferProvider () -> UniformBufferProvider {
         if _frustumUniformBufferProviderPool.isEmpty {
-            return UniformBufferProvider(device: device, bufferSize: strideof(FrustumUniformBufferLayout), deallocationBlock: { provider in
+            return UniformBufferProvider(device: device, bufferSize: MemoryLayout<FrustumUniformBufferLayout>.stride, deallocationBlock: { provider in
                     self._frustumUniformBufferProviderPool.append(provider)
                 }
             )
@@ -431,7 +431,7 @@ class Context {
                 commandEncoder.setFragmentSamplerState(texture.sampler.state, at: index)
             }
             
-            commandEncoder.drawIndexedPrimitives(primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
+            commandEncoder.drawIndexedPrimitives(type: primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)
         } else {
             count = count ?? va.vertexCount
             /*va!._bind()
@@ -489,7 +489,7 @@ class Context {
     return pixels;
     };*/
     
-    private let viewportQuadAttributeLocations = [
+    fileprivate let viewportQuadAttributeLocations = [
         "position" : 0,
         "textureCoordinates": 1
     ]
@@ -515,7 +515,7 @@ class Context {
                             -1.0, 1.0
                         ].map({ Float($0)}),
                         componentDatatype: .float32,
-                        sizeInBytes: 8 * strideof(Float)
+                        sizeInBytes: 8 * MemoryLayout<Float>.stride
                     )
                 ), // position
                 st: GeometryAttribute(
@@ -529,7 +529,7 @@ class Context {
                             1.0, 0.0,
                             0.0, 0.0].map({ Float($0)}),
                         componentDatatype: .float32,
-                        sizeInBytes: 8 * strideof(Float)
+                        sizeInBytes: 8 * MemoryLayout<Float>.stride
                     )
                 )
             ), // textureCoordinates

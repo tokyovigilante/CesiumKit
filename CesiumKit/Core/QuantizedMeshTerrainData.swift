@@ -87,39 +87,39 @@ private let maxShort = Double(Int16.max)
  */
 class QuantizedMeshTerrainData: TerrainData {
     
-    private var _quantizedVertices: [UInt16]!
+    fileprivate var _quantizedVertices: [UInt16]!
     
-    private var _uValues: ArraySlice<UInt16>!
+    fileprivate var _uValues: ArraySlice<UInt16>!
     
-    private var _vValues: ArraySlice<UInt16>!
+    fileprivate var _vValues: ArraySlice<UInt16>!
     
-    private var _heightValues: ArraySlice<UInt16>!
+    fileprivate var _heightValues: ArraySlice<UInt16>!
     
-    private var _encodedNormals: [UInt8]?
+    fileprivate var _encodedNormals: [UInt8]?
     
-    private var _indices: [Int]!
+    fileprivate var _indices: [Int]!
     
-    private let _minimumHeight: Double
+    fileprivate let _minimumHeight: Double
     
-    private let _maximumHeight: Double
+    fileprivate let _maximumHeight: Double
     
-    private let _boundingSphere: BoundingSphere
+    fileprivate let _boundingSphere: BoundingSphere
     
-    private let _orientedBoundingBox: OrientedBoundingBox?
+    fileprivate let _orientedBoundingBox: OrientedBoundingBox?
     
-    private let _horizonOcclusionPoint: Cartesian3
+    fileprivate let _horizonOcclusionPoint: Cartesian3
     
-    private var _westIndices: [Int]! = nil
-    private var _southIndices: [Int]! = nil
-    private var _eastIndices: [Int]! = nil
-    private var _northIndices: [Int]! = nil
+    fileprivate var _westIndices: [Int]! = nil
+    fileprivate var _southIndices: [Int]! = nil
+    fileprivate var _eastIndices: [Int]! = nil
+    fileprivate var _northIndices: [Int]! = nil
     
-    private let _westSkirtHeight: Double
-    private let _southSkirtHeight: Double
-    private let _eastSkirtHeight: Double
-    private let _northSkirtHeight: Double
+    fileprivate let _westSkirtHeight: Double
+    fileprivate let _southSkirtHeight: Double
+    fileprivate let _eastSkirtHeight: Double
+    fileprivate let _northSkirtHeight: Double
     
-    private var _mesh: TerrainMesh? = nil
+    fileprivate var _mesh: TerrainMesh? = nil
     
     /**
      * The water mask included in this terrain data, if any.  A water mask is a rectangular
@@ -204,11 +204,11 @@ class QuantizedMeshTerrainData: TerrainData {
         _northIndices = sortIndicesIfNecessary(northIndices, sortFunction: sortByU, vertexCount: vertexCount)
     }
     
-    func sortIndicesIfNecessary(_ indices: [Int], sortFunction: (a: Int, b: Int) -> Bool, vertexCount: Int) -> [Int] {
+    func sortIndicesIfNecessary(_ indices: [Int], sortFunction: (_ a: Int, _ b: Int) -> Bool, vertexCount: Int) -> [Int] {
 
         var needsSort = false
         for (i, index) in indices.enumerated() {
-            needsSort = needsSort || (i > 0 && !sortFunction(a: indices[i - 1], b: index))
+            needsSort = needsSort || (i > 0 && !sortFunction(indices[i - 1], index))
             if needsSort {
                 break
             }
@@ -236,7 +236,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          asynchronous mesh creations are already in progress and the operation should
  *          be retried later.
  */
-    func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
+    func createMesh(_ tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
     {
         let result = QuantizedMeshTerrainGenerator.computeMesh(
             minimumHeight: _minimumHeight,
@@ -307,7 +307,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          or undefined if too many asynchronous upsample operations are in progress and the request has been
  *          deferred.
  */
-    func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
+    func upsample(_ tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
         
         let levelDifference = descendantLevel - thisLevel
         if levelDifference > 1 {
@@ -377,17 +377,17 @@ class QuantizedMeshTerrainData: TerrainData {
      * @returns {Number} The terrain height at the specified position.  The position is clamped to
      *          the rectangle, so expect incorrect results for positions far outside the rectangle.
      */
-    func interpolateHeight (rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
+    func interpolateHeight (_ rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
         let u = Math.clamp((longitude - rectangle.west) / rectangle.width, min: 0.0, max: 1.0) * maxShort
         let v = Math.clamp((latitude - rectangle.south) / rectangle.height, min: 0.0, max: 1.0) * maxShort
         
         if _mesh != nil {
-            return interpolateMeshHeight(u: u, v: v)
+            return interpolateMeshHeight(u, v: v)
         }
-        return interpolateHeight(u: u, v: v)
+        return interpolateHeight(u, v: v)
     }
     
-    private func interpolateMeshHeight (u: Double, v: Double) -> Double? {
+    fileprivate func interpolateMeshHeight (_ u: Double, v: Double) -> Double? {
 
         guard let mesh = _mesh else {
             assertionFailure("mesh should exist")
@@ -418,7 +418,7 @@ class QuantizedMeshTerrainData: TerrainData {
         return nil
     }
     
-    private func interpolateHeight (u: Double, v: Double) -> Double? {
+    fileprivate func interpolateHeight (_ u: Double, v: Double) -> Double? {
 
         for i in stride(from: 0, to: _indices.count, by: 3) {
             let i0 = _indices[i]

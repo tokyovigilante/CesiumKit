@@ -40,7 +40,7 @@ import Foundation
  *    clockStep : Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER
  * });
  */
-public class Clock {
+open class Clock {
     
     /**
     * The start time of the clock.
@@ -110,9 +110,9 @@ public class Clock {
      Indicates whether the clock keeps TAI or UTC time. Must be explicitly set for safety (for navigation etc.).
      Should always be set to false inside Cesium.
      */
-    private (set) var isUTC: Bool
+    fileprivate (set) var isUTC: Bool
     
-    private var _lastSystemTime: Date
+    fileprivate var _lastSystemTime: Date
     
     public init(
         startTime: JulianDate? = nil,

@@ -28,8 +28,8 @@ class GlobeSurfaceShaderSet {
     let baseVertexShaderSource: ShaderSource
     let baseFragmentShaderSource: ShaderSource
     
-    private var _pipelinesByTexturesFlags = [Int: [Int: GlobeSurfacePipeline]]()
-    private var _pickPipelines = [Int: RenderPipeline]()
+    fileprivate var _pipelinesByTexturesFlags = [Int: [Int: GlobeSurfacePipeline]]()
+    fileprivate var _pickPipelines = [Int: RenderPipeline]()
     
     init (
         baseVertexShaderSource: ShaderSource,
@@ -38,7 +38,7 @@ class GlobeSurfaceShaderSet {
             self.baseFragmentShaderSource = baseFragmentShaderSource
     }
     
-    private func getPositionMode(_ sceneMode: SceneMode) -> String {
+    fileprivate func getPositionMode(_ sceneMode: SceneMode) -> String {
         let getPosition3DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition3DMode(position, height, textureCoordinates); }"
         let getPosition2DMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPosition2DMode(position, height, textureCoordinates); }"
         let getPositionColumbusViewMode = "vec4 getPosition(vec3 position, float height, vec2 textureCoordinates) { return getPositionColumbusViewMode(position, height, textureCoordinates); }"
@@ -66,10 +66,10 @@ class GlobeSurfaceShaderSet {
         return useWebMercatorProjection ? get2DYPositionFractionMercatorProjection : get2DYPositionFractionGeographicProjection
     }
 
-    private let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_scaleAndBias;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
+    fileprivate let uniformStructString = "struct xlatMtlShaderUniform {\n    float4 u_dayTextureTexCoordsRectangle [31];\n    float4 u_dayTextureTranslationAndScale [31];\n    float u_dayTextureAlpha [31];\n    float u_dayTextureBrightness [31];\n    float u_dayTextureContrast [31];\n    float u_dayTextureHue [31];\n    float u_dayTextureSaturation [31];\n    float u_dayTextureOneOverGamma [31];\n    float2 u_minMaxHeight;\n    float4x4 u_scaleAndBias;\n    float4 u_waterMaskTranslationAndScale;\n    float4 u_initialColor;\n    float4 u_tileRectangle;\n    float4x4 u_modifiedModelView;\n    float3 u_center3D;\n    float2 u_southMercatorYAndOneOverHeight;\n    float2 u_southAndNorthLatitude;\n    float2 u_lightingFadeDistance;\n    float u_zoomedOutOceanSpecularIntensity;\n};\n"
     
     func getRenderPipeline (
-        frameState: FrameState,
+        _ frameState: FrameState,
         surfaceTile: GlobeSurfaceTile,
         numberOfDayTextures: Int,
         applyBrightness: Bool,
@@ -224,7 +224,7 @@ class GlobeSurfaceShaderSet {
                 colorMask: nil,
                 depthStencil: frameState.context.depthTexture,
                 manualUniformStruct: uniformStructString,
-                uniformStructSize: sizeof(TileUniformStruct)
+                uniformStructSize: MemoryLayout<TileUniformStruct>.size
             )
             pipelinesByFlags![flags] = GlobeSurfacePipeline(numberOfDayTextures: numberOfDayTextures, flags: flags, pipeline: pipeline)
 
@@ -235,7 +235,7 @@ class GlobeSurfaceShaderSet {
         return surfacePipeline!.pipeline
     }
     
-    func getPickRenderPipeline(frameState: FrameState, surfaceTile: GlobeSurfaceTile, useWebMercatorProjection: Bool) -> RenderPipeline {
+    func getPickRenderPipeline(_ frameState: FrameState, surfaceTile: GlobeSurfaceTile, useWebMercatorProjection: Bool) -> RenderPipeline {
         
         let terrainEncoding = surfaceTile.pickTerrain!.mesh!.encoding
         let quantizationMode = terrainEncoding.quantization

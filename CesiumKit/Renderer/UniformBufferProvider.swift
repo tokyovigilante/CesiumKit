@@ -9,11 +9,11 @@
 import Foundation
 import Metal
 
-public class UniformBufferProvider {
+open class UniformBufferProvider {
     
     let bufferSize: Int
     
-    private var _buffers = [Buffer]()
+    fileprivate var _buffers = [Buffer]()
     
     let deallocationBlock: UniformMapDeallocBlock?
     

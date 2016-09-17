@@ -22,7 +22,7 @@ import Foundation
  */
 class CreditDisplay {
     
-    private var _creditRenderer: TextRenderer
+    fileprivate var _creditRenderer: TextRenderer
     
     /*func displayImageCredits(creditDisplay, imageCredits) {
         var i;
@@ -51,17 +51,17 @@ class CreditDisplay {
     let delimiter: String
     
     
-    private var _defaultImageCredits = [Credit]()
-    private var _defaultTextCredits = [Credit]()
+    fileprivate var _defaultImageCredits = [Credit]()
+    fileprivate var _defaultTextCredits = [Credit]()
     
     
     
-    private var _displayedCredits = (
+    fileprivate var _displayedCredits = (
         imageCredits: [Credit](),
         textCredits: [Credit]()
     )
     
-    private var _currentFrameCredits = (
+    fileprivate var _currentFrameCredits = (
         imageCredits: [Int: Credit](),
         textCredits: [Int: Credit]()
     )
@@ -95,7 +95,7 @@ class CreditDisplay {
         _creditRenderer.update(&frameState)
     }
     
-    private func contains(_ credit: Credit, inCredits credits: [Credit]) -> Bool {
+    fileprivate func contains(_ credit: Credit, inCredits credits: [Credit]) -> Bool {
         for existingCredit in credits {
             if credit == existingCredit {
                 return true
