@@ -22,7 +22,7 @@ private let nIndex = 6
 class QuantizedMeshTerrainGenerator {
     
     class func computeMesh (
-        _ minimumHeight: Double,
+        minimumHeight: Double,
         maximumHeight: Double,
         quantizedVertices: [UInt16],
         octEncodedNormals: [UInt8]?,
@@ -104,7 +104,7 @@ class QuantizedMeshTerrainGenerator {
             orientedBoundingBox = OrientedBoundingBox(fromRectangle: rectangle, minimumHeight: minimumHeight, maximumHeight: maximumHeight, ellipsoid: ellipsoid)
             
             let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
-            occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromPoints(directionToPoint: center, points: positions);
+            occludeePointInScaledSpace = occluder.computeHorizonCullingPoint(directionToPoint: center, fromPoints: positions);
         }
         
         var hMin = minimumHeight

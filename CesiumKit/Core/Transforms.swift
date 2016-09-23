@@ -563,13 +563,16 @@ struct Transforms {
     */
     static func pointToWindowCoordinates(_ modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
-        var result = Transforms.pointToGLWindowCoordinates(modelViewProjectionMatrix, viewportTransformation: viewportTransformation, point: point)
+        var result = Transforms.pointToGLWindowCoordinates(
+            modelViewProjectionMatrix: modelViewProjectionMatrix,
+            viewportTransformation: viewportTransformation,
+            point: point)
         result.y = 2.0 * viewportTransformation[1,1] - result.y
         
         return result
     }
 
-    static func pointToGLWindowCoordinates (_ modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
+    static func pointToGLWindowCoordinates (modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
         coords = coords.multiplyByScalar(1.0 / coords.w)

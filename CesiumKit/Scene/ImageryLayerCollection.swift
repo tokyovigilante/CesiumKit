@@ -455,7 +455,7 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
      */
     func queueReprojectionCommands (_ frameState: inout FrameState) {
         for layer in _layers {
-            layer.queueReprojectionCommands(&frameState)
+            layer.queueReprojectionCommands(frameState: &frameState)
         }
     }
     

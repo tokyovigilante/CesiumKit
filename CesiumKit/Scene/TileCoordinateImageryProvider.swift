@@ -263,7 +263,7 @@ open class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void)) {
+    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
     
         let bytesPerPixel: Int = 4
         let bytesPerRow = bytesPerPixel * tileWidth
@@ -309,13 +309,13 @@ open class TileCoordinateImageryProvider: ImageryProvider {
         let pathRect = CGRect(x: pathZeroX, y: pathZeroY, width: textSize.width, height: textSize.height)
         
         let path = CGMutablePath()
-        path.addRect(nil, transform: pathRect)
+        path.addRect(pathRect)
         
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         CTFrameDraw(frame, contextRef)
         
         let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: CGFloat(tileHeight))
-        contextRef.concatCTM(flipVertical)
+        contextRef.concatenate(flipVertical)
     
         completionBlock(contextRef.makeImage())
 

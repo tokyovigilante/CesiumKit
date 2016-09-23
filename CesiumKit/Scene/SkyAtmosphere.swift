@@ -245,7 +245,10 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
     
-    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
+        buffer.write(from: &self._uniformStruct, length: MemoryLayout<SkyAtmosphereUniformStruct>.size)
+        return []
+    }
     
     fileprivate var _uniformStruct = SkyAtmosphereUniformStruct()
     
@@ -260,11 +263,5 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
         UniformDescriptor(name: "u_scaleOverScaleDepth", type: .floatVec1, count: 1)
     ]
     
-    init () {
-        uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: MemoryLayout<SkyAtmosphereUniformStruct>.size)
-            return []
-        }
-    }
 }
 

@@ -83,7 +83,7 @@ protocol TerrainProvider {
     * @returns {Uint16Array} The list of indices.
     */
         
-    static func getRegularGridIndices(_ width: Int, height: Int) -> [Int]
+    static func getRegularGridIndices(width: Int, height: Int) -> [Int]
     
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
@@ -93,7 +93,7 @@ protocol TerrainProvider {
     * @param {Number} numberOfTilesAtLevelZero The number of tiles in the horizontal direction at tile level zero.
     * @returns {Number} An estimated geometric error.
     */
-    static func estimatedLevelZeroGeometricErrorForAHeightmap(_ ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
+    static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
     
     /**
     * Requests the geometry for a given tile.  This function should not be called before
@@ -111,7 +111,7 @@ protocol TerrainProvider {
     *          returns undefined instead of a promise, it is an indication that too many requests are already
     *          pending and the request will be retried later.
     */
-    func requestTileGeometry(_ x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: (TerrainData?) -> () )
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> () )
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
@@ -132,7 +132,7 @@ protocol TerrainProvider {
     * @param {Number} level The level of the tile for which to request geometry.
     * @returns {Boolean} Undefined if not supported by the terrain provider, otherwise true or false.
     */
-    func getTileDataAvailable(_ x: Int, y: Int, level: Int) -> Bool?
+    func getTileDataAvailable(x: Int, y: Int, level: Int) -> Bool?
     
     /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
@@ -156,7 +156,7 @@ protocol TerrainProvider {
 
 extension TerrainProvider {
     
-    func getTileDataAvailable(_ x: Int, y: Int, level: Int) -> Bool? {
+    func getTileDataAvailable(x: Int, y: Int, level: Int) -> Bool? {
         if level > 10 {
             return false
         }
@@ -164,13 +164,13 @@ extension TerrainProvider {
     }
         
     static func estimatedLevelZeroGeometricErrorForAHeightmap(
-        _ ellipsoid: Ellipsoid,
+        ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
     
-    static func getRegularGridIndices(_ width: Int, height: Int) -> [Int] {
+    static func getRegularGridIndices(width: Int, height: Int) -> [Int] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
         
         var byWidth = regularGridIndexArrays[width]

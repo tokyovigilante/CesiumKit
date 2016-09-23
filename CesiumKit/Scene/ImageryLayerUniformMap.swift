@@ -50,13 +50,9 @@ class ImageryLayerUniformMap: NativeUniformMap {
     
     fileprivate var _uniformStruct = ImageryLayerUniformStruct()
     
-    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
-
-    init () {
-        uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: MemoryLayout<ImageryLayerUniformStruct>.size)
-            return [self.texture!]
-        }
+    lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
+        buffer.write(from: &self._uniformStruct, length: MemoryLayout<ImageryLayerUniformStruct>.size)
+        return [self.texture!]
     }
 
 }

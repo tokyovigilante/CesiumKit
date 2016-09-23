@@ -105,9 +105,8 @@ class PipelineCache {
         color?.pixelFormat = context.view.colorPixelFormat
         let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.all
         color?.writeMask = colorWriteMask
-        
-        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
-        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_stencil8 : .invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_stencil8 : .invalid
         
         if let blendingState = blendingState {
             color?.isBlendingEnabled = true
@@ -133,7 +132,7 @@ class PipelineCache {
         return pipeline
     }
     
-    func getRenderPipeline (_ shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
+    func getRenderPipeline (shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, vertexDescriptor descriptor: VertexDescriptor?, colorMask: ColorMask?, depthStencil: Bool, blendingState: BlendingState? = nil) -> RenderPipeline? {
         
         let keyword = "metal:v:" + vertex + ":f:" + fragment + (colorMask != nil ? colorMask!.description() : "xxxx") + (depthStencil ? "depth" : "nodepth") + (blendingState != nil ? blendingState!.description : "noblend")
         
@@ -161,8 +160,8 @@ class PipelineCache {
         let colorWriteMask: MTLColorWriteMask = colorMask != nil ? colorMask!.toMetal() : MTLColorWriteMask.all
         color?.writeMask = colorWriteMask
         
-        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
-        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_Stencil8 : .invalid
+        pipelineDescriptor.depthAttachmentPixelFormat = depthStencil ? .depth32Float_stencil8 : .invalid
+        pipelineDescriptor.stencilAttachmentPixelFormat = depthStencil ? .depth32Float_stencil8 : .invalid
         
         if let blendingState = blendingState {
             color?.isBlendingEnabled = true

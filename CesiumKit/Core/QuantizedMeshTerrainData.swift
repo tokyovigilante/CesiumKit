@@ -214,7 +214,7 @@ class QuantizedMeshTerrainData: TerrainData {
             }
         }
         if needsSort {
-            return indices.sorted(isOrderedBefore: sortFunction)
+            return indices.sorted(by: sortFunction)
         }
         return indices
     }
@@ -236,7 +236,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          asynchronous mesh creations are already in progress and the operation should
  *          be retried later.
  */
-    func createMesh(_ tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
+    func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool
     {
         let result = QuantizedMeshTerrainGenerator.computeMesh(
             minimumHeight: _minimumHeight,
@@ -307,7 +307,7 @@ class QuantizedMeshTerrainData: TerrainData {
  *          or undefined if too many asynchronous upsample operations are in progress and the request has been
  *          deferred.
  */
-    func upsample(_ tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
+    func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
         
         let levelDifference = descendantLevel - thisLevel
         if levelDifference > 1 {

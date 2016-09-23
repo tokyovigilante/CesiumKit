@@ -450,7 +450,7 @@ open class ImageryLayer {
                 }
                 
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
-                let imagery = getImageryFromCache(imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
+                let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
                 surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), at: insertionPoint!)
                 insertionPoint! += 1
             }
@@ -502,7 +502,7 @@ open class ImageryLayer {
             if let image = image {
                 DispatchQueue.main.async(execute: {
                     imagery.image = image
-                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
+                    imagery.credits = self.imageryProvider.tileCredits(imagery.x, y: imagery.y, level: imagery.level)
                     
                     imagery.state = .received
                 })
@@ -511,12 +511,12 @@ open class ImageryLayer {
                     imagery.state = .failed
                     
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
-                    logPrint(level: .error, message)
+                    logPrint(.error, message)
                 })
             }
             
         }
-        self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
+        self.imageryProvider.requestImage(imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
     }
     
     /**
@@ -527,7 +527,7 @@ open class ImageryLayer {
      * @param {Context} context The rendered context to use to create textures.
      * @param {Imagery} imagery The imagery for which to create a texture.
      */
-    func createTexture (_ frameState: FrameState, imagery: Imagery) {
+    func createTexture (frameState: FrameState, imagery: Imagery) {
         
         guard let context = frameState.context else {
             return
@@ -583,7 +583,7 @@ open class ImageryLayer {
      * @param {FrameState} frameState The frameState.
      * @param {Imagery} imagery The imagery instance to reproject.
      */
-    func reprojectTexture (_ frameState: inout FrameState, imagery: Imagery) {
+    func reprojectTexture (frameState: inout FrameState, imagery: Imagery) {
         
         let texture = imagery.texture!
         let rectangle = imagery.rectangle!
@@ -604,18 +604,18 @@ open class ImageryLayer {
                 },
                 postExecute: { outputTexture in
                     imagery.texture = outputTexture
-                    self.finalizeReprojectTexture(context!, imagery: imagery, texture: outputTexture)
+                    self.finalizeReprojectTexture(context: context!, imagery: imagery, texture: outputTexture)
                 },
                 persists: true,
                 owner : self
             )
             _reprojectComputeCommands.append(computeCommand)
         } else {
-            finalizeReprojectTexture(context!, imagery: imagery, texture: texture)
+            finalizeReprojectTexture(context: context!, imagery: imagery, texture: texture)
         }
         
     }
-    func finalizeReprojectTexture(_ context: Context, imagery: Imagery, texture: Texture) {
+    func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture) {
         /*
         // Use mipmaps if this texture has power-of-two dimensions.
         if (CesiumMath.isPowerOfTwo(texture.width) && CesiumMath.isPowerOfTwo(texture.height)) {
@@ -667,7 +667,7 @@ open class ImageryLayer {
         })
     }
     
-    func generateMipmaps (_ frameState: inout FrameState, imagery: Imagery) {
+    func generateMipmaps (frameState: inout FrameState, imagery: Imagery) {
         
         guard let context = frameState.context else {
             return
@@ -704,7 +704,7 @@ open class ImageryLayer {
      *
      * @param {FrameState} frameState The frameState.
      */
-    func queueReprojectionCommands (_ frameState: inout FrameState) {
+    func queueReprojectionCommands (frameState: inout FrameState) {
         frameState.commandList.append(contentsOf: _reprojectComputeCommands)
         _reprojectComputeCommands.removeAll()
     }
@@ -718,8 +718,8 @@ open class ImageryLayer {
         _reprojectComputeCommands.removeAll()
     }
         
-    func getImageryFromCache (_ level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
-        let cacheKey = getImageryCacheKey(level, x: x, y: y)
+    func getImageryFromCache (level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
+        let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
         
         if imagery == nil {
@@ -732,11 +732,11 @@ open class ImageryLayer {
     }
     
     func removeImageryFromCache (_ imagery: Imagery) {
-        let cacheKey = getImageryCacheKey(imagery.level, x: imagery.x, y: imagery.y)
+        let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValue(forKey: cacheKey)
     }
     
-    fileprivate func getImageryCacheKey(_ level: Int, x: Int, y: Int) -> String {
+    fileprivate func getImageryCacheKey(level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
     
@@ -944,7 +944,7 @@ open class ImageryLayer {
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0
         
-        let levelZeroMaximumTexelSpacing = tilingScheme.ellipsoid.maximumRadius * tilingScheme.rectangle.width * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAtLevel(0))
+        let levelZeroMaximumTexelSpacing = tilingScheme.ellipsoid.maximumRadius * tilingScheme.rectangle.width * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAt(level: 0))
         
         let twoToTheLevelPower = levelZeroMaximumTexelSpacing / texelSpacing;
         let level = log(twoToTheLevelPower) / log(2)

@@ -285,7 +285,7 @@ open class Uniform {
         self.dataType = dataType
     }
     
-    static func create(_ desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
+    static func create(desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
         
         switch desc.type {
         case .float:

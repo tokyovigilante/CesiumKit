@@ -177,8 +177,8 @@ class QuadtreeTile: Equatable {
     */
     class func createLevelZeroTiles (_ tilingScheme: TilingScheme) -> [QuadtreeTile] {
         
-        let numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAtLevel(0)
-        let numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAtLevel(0)
+        let numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAt(level: 0)
+        let numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAt(level: 0)
         
         var result = [QuadtreeTile]()
         

@@ -44,9 +44,9 @@ enum IndexDatatype: UInt {
     
     static func createIntegerIndexArrayFromData (_ data: Data, numberOfVertices: Int, byteOffset: Int, length: Int) -> [Int] {
         if numberOfVertices > Math.SixtyFourKilobytes {
-            return data.getUInt32Array(pos: byteOffset, elementCount: length).map { Int($0) }
+            return data.getUInt32Array(byteOffset, elementCount: length).map { Int($0) }
         } else {
-            return data.getUInt16Array(pos: byteOffset, elementCount: length).map { Int($0) }
+            return data.getUInt16Array(byteOffset, elementCount: length).map { Int($0) }
         }
     }
 }

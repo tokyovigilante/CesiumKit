@@ -60,7 +60,7 @@ class Framebuffer {
             updateRenderPassDescriptor()
     }
     
-    func updateFromDrawable (_ context: Context, drawable: CAMetalDrawable, depthStencil: MTLTexture?) {
+    func updateFromDrawable (context: Context, drawable: CAMetalDrawable, depthStencil: MTLTexture?) {
         
         colorTextures = [Texture(context: context, metalTexture: drawable.texture)]
         depthTexture = depthStencil == nil ? nil : Texture(context: context, metalTexture: depthStencil!)
@@ -69,7 +69,7 @@ class Framebuffer {
         updateRenderPassDescriptor()
     }
     
-    func update (_ colorTextures: [Texture]?, depthTexture: Texture?, stencilTexture: Texture?) {
+    func update (colorTextures: [Texture]?, depthTexture: Texture?, stencilTexture: Texture?) {
         self.colorTextures = colorTextures
         self.depthTexture = depthTexture
         self.stencilTexture = stencilTexture

@@ -288,7 +288,7 @@ struct RenderState/*: Printable*/ {
                 depthStencilDescriptor.depthCompareFunction = depthTest.function.toMetal()
                 depthStencilDescriptor.isDepthWriteEnabled = true
             }
-            _depthStencilState = device.newDepthStencilState(with: depthStencilDescriptor)
+            _depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }
     
     /*func validate() {

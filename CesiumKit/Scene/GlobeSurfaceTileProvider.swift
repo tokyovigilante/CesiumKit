@@ -166,7 +166,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     func computeDefaultLevelZeroMaximumGeometricError() -> Double {
-        return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAtLevel(0)))
+        return tilingScheme.ellipsoid.maximumRadius * Math.TwoPi * 0.25 / (65.0 * Double(tilingScheme.numberOfXTilesAt(level: 0)))
     }
     
     fileprivate func sortTileImageryByLayerIndex (_ a: TileImagery, b: TileImagery) -> Bool {
@@ -371,7 +371,7 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
                 return Visibility(rawValue: intersection.rawValue)!
             }
             
-            if occluders.ellipsoid.isScaledSpacePointVisible(occludeePointInScaledSpace!) {
+            if occluders.ellipsoid.isScaledSpacePointVisible(occludeeScaledSpacePosition: occludeePointInScaledSpace!) {
                 return Visibility(rawValue: intersection.rawValue)!
             }
             return Visibility.none

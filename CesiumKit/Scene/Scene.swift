@@ -686,7 +686,7 @@ open class Scene {
         
         if let name = context.device.name {
             if  name.hasPrefix("Apple") {
-                logPrint(level: .info, "FXAA disabled - Mobile")
+                logPrint(.info, "FXAA disabled - Mobile")
                 fxaa = false
             }
         }

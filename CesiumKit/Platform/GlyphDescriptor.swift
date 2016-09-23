@@ -29,12 +29,12 @@ struct GlyphDescriptor: JSONEncodable {
     
     init (fromJSON json: JSON) throws {
         self.glyphIndex = try UInt16(json.getInt(GlyphIndexKey))
-        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(TopLeftTexCoordKey)))
-        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.Object(json.getObject(BottomRightTexCoordKey)))
+        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.object(json.getObject(TopLeftTexCoordKey)))
+        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.object(json.getObject(BottomRightTexCoordKey)))
     }
     
     func toJSON() -> JSON {
-        let json = JSON.Object(JSONObject([
+        let json = JSON.object(JSONObject([
             GlyphIndexKey: JSON(integerLiteral: Int64(glyphIndex)),
             TopLeftTexCoordKey: topLeftTexCoord.toJSON(),
             BottomRightTexCoordKey: bottomRightTexCoord.toJSON()
@@ -52,7 +52,7 @@ extension CGPoint: JSONEncodable {
     }
     
     func toJSON() -> JSON {
-        let json = JSON.Object(JSONObject([
+        let json = JSON.object(JSONObject([
             "x": JSON(floatLiteral: Double(x)),
             "y": JSON(floatLiteral: Double(y))
             ]))

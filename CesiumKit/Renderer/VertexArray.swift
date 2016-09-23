@@ -263,7 +263,7 @@ class VertexArray {
             }
             
             // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
-            attributeNames.sort(isOrderedBefore: { a, b in
+            attributeNames.sort(by: { a, b in
                 return attributes[a]!.componentDatatype.elementSize > attributes[b]!.componentDatatype.elementSize
             })
             // Compute sizes and strides.

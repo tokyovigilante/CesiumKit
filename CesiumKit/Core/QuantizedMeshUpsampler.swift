@@ -244,7 +244,7 @@ class QuantizedMeshUpsampler {
         let orientedBoundingBox = OrientedBoundingBox(fromRectangle: childRectangle, minimumHeight: minimumHeight, maximumHeight: maximumHeight, ellipsoid: ellipsoid)
         
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
-        let horizonOcclusionPoint = occluder.computeHorizonCullingPointFromVertices(boundingSphere.center, vertices: cartesianVertices, stride: 3, center: boundingSphere.center)!
+        let horizonOcclusionPoint = occluder.computeHorizonCullingPointFromVertices(directionToPoint: boundingSphere.center, vertices: cartesianVertices, stride: 3, center: boundingSphere.center)!
         
         let heightRange = maximumHeight - minimumHeight
 

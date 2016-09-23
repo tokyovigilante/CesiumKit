@@ -166,10 +166,10 @@ class Context {
         device = view.device!
         limits = ContextLimits(device: device)
         
-        logPrint(level: .info, "Metal device: " + (device.name ?? "Unknown"))
+        logPrint(.info, "Metal device: " + (device.name ?? "Unknown"))
         #if os(OSX)
-            logPrint(level: .info, "- Low power: " + (device.isLowPower ? "Yes" : "No"))
-            logPrint(level: .info, "- Headless: " + (device.isHeadless ? "Yes" : "No"))
+            logPrint(.info, "- Low power: " + (device.isLowPower ? "Yes" : "No"))
+            logPrint(.info, "- Headless: " + (device.isHeadless ? "Yes" : "No"))
         #endif
         
         _commandQueue = device.makeCommandQueue()
@@ -226,7 +226,7 @@ class Context {
     * Creates a compiled MTLSamplerState from a MTLSamplerDescriptor. These should generally be cached.
     */
     func createSamplerState (_ descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
-        return device.newSamplerState(with: descriptor)
+        return device.makeSamplerState(descriptor: descriptor)
     }
     
     func updateDrawable () -> Bool {
@@ -237,11 +237,11 @@ class Context {
         assert(_drawable == nil, "drawable != nil")
         _drawable = view.currentDrawable
         if _drawable == nil {
-            logPrint(level: .error, "drawable == nil")
+            logPrint(.error, "drawable == nil")
             _inflight_semaphore.signal()
             return false
         }
-        defaultFramebuffer.updateFromDrawable(self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
+        defaultFramebuffer.updateFromDrawable(context: self, drawable: _drawable, depthStencil: depthTexture ? view.depthStencilTexture : nil)
         return true
     }
     
@@ -273,7 +273,7 @@ class Context {
     }
     
     func applyRenderState(_ pass: RenderPass, renderState: RenderState, passState: PassState) {
-        pass.applyRenderState(renderState)
+        pass.apply(renderState: renderState)
     }
     
     func createBlitCommandEncoder (_ completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder {
@@ -385,7 +385,7 @@ class Context {
         
         // Don't render unless any textures required are available
         if !bufferParams.texturesValid {
-            logPrint(level: .error, "invalid textures")
+            logPrint(.error, "invalid textures")
             return
         }
         let commandEncoder = renderPass.commandEncoder

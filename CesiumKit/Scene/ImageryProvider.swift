@@ -222,7 +222,7 @@ public protocol ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    func requestImage(_ x: Int, y: Int, level: Int, completionBlock: ((CGImage?) -> Void))
+    func requestImage(_ x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void))
     
     /**
      * Asynchronously determines what features, if any, are located at a given longitude and latitude within

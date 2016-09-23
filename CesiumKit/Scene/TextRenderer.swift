@@ -64,14 +64,11 @@ class TextUniformMap: NativeUniformMap {
     // compiled shader doesn't need to generate struct at runtime
     let uniformDescriptors: [UniformDescriptor] = []
     
-    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
-    
-    init () {
-        uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: MemoryLayout<TextUniformStruct>.size)
-            return [self._fontAtlasTexture!]
-        }
+    lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
+        buffer.write(from: &self._uniformStruct, length: MemoryLayout<TextUniformStruct>.size)
+        return [self._fontAtlasTexture!]
     }
+
 }
 
 
@@ -269,7 +266,7 @@ open class TextRenderer: Primitive {
         
         let glyphEnumeratorBlock = { (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) in
             if Int(glyph) >= fontAtlas.glyphDescriptors.count {
-                logPrint(level: .debug, "Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
+                logPrint(.debug, "Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
                 return
             }
             let glyphInfo = fontAtlas.glyphDescriptors[Int(glyph)]
@@ -360,7 +357,7 @@ open class TextRenderer: Primitive {
                     let boundsTransY = frameBoundingRect.origin.y + lineOrigin.y + glyphOrigin.y
                     let pathTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: 1, tx: boundsTransX, ty: boundsTransY)
                     
-                    glyphRect = glyphRect.apply(transform: pathTransform)
+                    glyphRect = glyphRect.applying(pathTransform)
                     
                     block(glyph, glyphIndexInFrame, glyphRect)
                     

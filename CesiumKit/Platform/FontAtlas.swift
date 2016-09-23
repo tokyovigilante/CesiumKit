@@ -42,7 +42,7 @@ enum FontAtlasError: Error, CustomStringConvertible {
     
     var description: String {
         switch self {
-            case let .invalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json: json))"
+            case let .invalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json))"
             case let .invalidTextureDataError(path, message): return "Invalid texture data - \(message): path \(path)"
         }
     }
@@ -101,9 +101,9 @@ final class FontAtlas: JSONEncodable {
     }
     
     internal init(fromJSON json: JSON) throws {
-        let fontName = try json.getString(key: FontNameKey)
-        _fontPointSize = try json.getInt(key: PointSizeKey)
-        _spread = try json.getDouble(key: FontSpreadKey)
+        let fontName = try json.getString(FontNameKey)
+        _fontPointSize = try json.getInt(PointSizeKey)
+        _spread = try json.getDouble(FontSpreadKey)
         
         if _fontPointSize <= 0 || fontName == "" {
             throw FontAtlasError.invalidJSONError(json: json, message: "Invalid persisted font (invalid font name or size)")
@@ -111,7 +111,7 @@ final class FontAtlas: JSONEncodable {
         parentFont = CTFontCreateWithName(fontName as CFString?, CGFloat(_fontPointSize), nil)
         
         glyphDescriptors = try json
-            .getArray(key: GlyphDescriptorsKey)
+            .getArray(GlyphDescriptorsKey)
             .map { try GlyphDescriptor(fromJSON: $0) }
             .sorted { $0.glyphIndex < $1.glyphIndex }
         
@@ -119,7 +119,7 @@ final class FontAtlas: JSONEncodable {
             throw FontAtlasError.invalidJSONError(json: json, message: "Encountered invalid persisted font (no glyph metrics).")
         }
         
-        _textureSize = try json.getInt(key: TextureSizeKey)
+        _textureSize = try json.getInt(TextureSizeKey)
                
         let textureDataURL = try LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
             .appendingPathComponent(fontName)
@@ -133,12 +133,12 @@ final class FontAtlas: JSONEncodable {
     }
 
     internal func toJSON() -> JSON {
-        let json = JSON.Object(JSONObject(
+        let json = JSON.object(JSONObject(
             [
                 FontNameKey: JSON(stringLiteral: (CTFontCopyPostScriptName(parentFont) as NSString) as String),
                 PointSizeKey: JSON(integerLiteral: Int64(_fontPointSize)),
                 FontSpreadKey: JSON(floatLiteral: _spread),
-                GlyphDescriptorsKey: JSON.Array(ContiguousArray<JSON>(glyphDescriptors.map { $0.toJSON() })),
+                GlyphDescriptorsKey: JSON.array(ContiguousArray<JSON>(glyphDescriptors.map { $0.toJSON() })),
                 TextureSizeKey: JSON(integerLiteral: Int64(_textureSize))
             ]))
         return json
@@ -223,8 +223,8 @@ final class FontAtlas: JSONEncodable {
         context?.setAllowsAntialiasing(false)
         
         // Flip context coordinate space so y increases downward
-        context?.translate(x: 0, y: CGFloat(height))
-        context?.scale(x: 1, y: -1)
+        context?.translateBy(x: 0, y: CGFloat(height))
+        context?.scaleBy(x: 1, y: -1)
         
         let fWidth = CGFloat(width)
         let fHeight = CGFloat(height)
@@ -528,14 +528,14 @@ final class FontAtlas: JSONEncodable {
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("json")
             let atlasJSONString = try String(contentsOf: jsonURL)
-            let atlasJSON = try JSON.decode(string: atlasJSONString)
+            let atlasJSON = try JSON.decode(atlasJSONString)
             let atlas = try FontAtlas(fromJSON: atlasJSON, context: context)
             _cache[fontName] = atlas
             return atlas
         } catch let error as NSError {
-            logPrint(level: .error, "cannot create font atlas from cache: \(error.description)")
+            logPrint(.error, "cannot create font atlas from cache: \(error.description)")
         }  catch {
-            logPrint(level: .error, "cannot create font atlas from cache")
+            logPrint(.error, "cannot create font atlas from cache")
         }
         // build from scratch
         let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
@@ -566,14 +566,14 @@ final class FontAtlas: JSONEncodable {
                 .appendingPathExtension("textureData")
             
             try JSON
-                .encodeAsString(json: JSON.Object(atlasJSON))
+                .encodeAsString(JSON.object(atlasJSON))
                 .write(to: jsonURL, atomically: true, encoding: String.Encoding.utf8)
             try Data(bytes: atlas._textureData)
                 .write(to: textureDataURL, options: [])
         } catch let error as NSError {
-            logPrint(level: .error, "Atlas cache write failed: \(error.localizedDescription)")
+            logPrint(.error, "Atlas cache write failed: \(error.localizedDescription)")
         } catch {
-            logPrint(level: .error, "texture data write failed")
+            logPrint(.error, "texture data write failed")
         }
     }
     
@@ -581,7 +581,7 @@ final class FontAtlas: JSONEncodable {
         for atlas in _cache.values {
             if atlas._waitingForMipmaps {
                 atlas._waitingForMipmaps = false
-                atlas._texture.generateMipmaps(context, completionBlock: { buffer in atlas.ready = true })
+                atlas._texture.generateMipmaps(context: context, completionBlock: { buffer in atlas.ready = true })
             }
         }
     }

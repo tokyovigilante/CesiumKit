@@ -133,7 +133,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          asynchronous mesh creations are already in progress and the operation should
     *          be retried later.
     */
-    func createMesh(_ tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool {
+    func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double = 1.0, completionBlock: (TerrainMesh?) -> ()) -> Bool {
         let ellipsoid = tilingScheme.ellipsoid
         let nativeRectangle = tilingScheme.tileXYToNativeRectangle(x: x, y: y, level: level)
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
@@ -144,7 +144,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         let levelZeroMaxError = EllipsoidTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(
             ellipsoid: ellipsoid,
             tileImageWidth: _width,
-            numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAtLevel(0))
+            numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAt(level: 0))
         let thisLevelMaxError = levelZeroMaxError / Double(1 << level)
         
         _skirtHeight = min(thisLevelMaxError * 4.0, 1000.0)
@@ -184,7 +184,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
         }
         
         let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
-        let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(center, vertices: result.vertices, stride: numberOfAttributes, center: center)
+        let occludeePointInScaledSpace = occluder.computeHorizonCullingPointFromVertices(directionToPoint: center, vertices: result.vertices, stride: numberOfAttributes, center: center)
         _mesh = TerrainMesh(
             center: center,
             vertices: result.vertices,
@@ -244,7 +244,7 @@ class HeightmapTerrainData: TerrainData, Equatable {
     *          or undefined if too many asynchronous upsample operations are in progress and the request has been
     *          deferred.
     */
-    func upsample(_ tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
+    func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
 
         let levelDifference = descendantLevel - thisLevel
         assert(levelDifference == 1, "Upsampling through more than one level at a time is not currently supported")
@@ -426,7 +426,5 @@ class HeightmapTerrainData: TerrainData, Equatable {
 }
 
 func ==(lhs: HeightmapTerrainData, rhs: HeightmapTerrainData) -> Bool {
-    let left = unsafeAddress(of: lhs)
-    let right = unsafeAddress(of: rhs)
-    return left == right
+    return lhs === rhs
 }

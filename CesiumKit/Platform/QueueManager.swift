@@ -25,10 +25,10 @@ class QueueManager {
     let fontAtlasQueue: DispatchQueue
     
     init () {
-        processorQueue = DispatchQueue(label: "com.testtoast.CesiumKit.processorQueue", attributes: DispatchQueueAttributes.serial)
-        upsampleQueue = DispatchQueue(label: "com.testtoast.CesiumKit.upsampleQueue", attributes: DispatchQueueAttributes.serial)
-        resourceLoadQueue = DispatchQueue(label: "com.testtoast.CesiumKit.textureLoadQueue", attributes: DispatchQueueAttributes.serial)
-        fontAtlasQueue = DispatchQueue(label: "com.testtoast.CesiumKit.fontAtlasQueue", attributes: DispatchQueueAttributes.serial)
+        processorQueue = DispatchQueue(label: "com.testtoast.CesiumKit.processorQueue")
+        upsampleQueue = DispatchQueue(label: "com.testtoast.CesiumKit.upsampleQueue")
+        resourceLoadQueue = DispatchQueue(label: "com.testtoast.CesiumKit.textureLoadQueue")
+        fontAtlasQueue = DispatchQueue(label: "com.testtoast.CesiumKit.fontAtlasQueue")
 
         networkQueue = OperationQueue()
         networkQueue.qualityOfService = .utility

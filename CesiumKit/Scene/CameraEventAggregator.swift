@@ -74,11 +74,11 @@ class CameraEventAggregator {
         for i in 0..<KeyboardEventModifier.count.rawValue {
             let modifier = KeyboardEventModifier(rawValue: i)!
             //listenToWheel(modifier: modifier)
-            listenToPinch(modifier: modifier)
+            listenToPinch(modifier)
             listenMouseButtonDownUp(CameraEventType.leftDrag, modifier: modifier)
             listenMouseButtonDownUp(CameraEventType.rightDrag, modifier: modifier)
             //listenMouseButtonDownUp(this, undefined, CameraEventType.MIDDLE_DRAG);
-            listenMouseMove(modifier: modifier)
+            listenMouseMove(modifier)
         }
         //listenTouchPanStart()
     }

@@ -353,7 +353,7 @@ class Globe {
                         // url changed while we were loading
                         return
                     }
-                    guard let oceanNormalMapImage = CGImage.from(data: oceanMapOperation.data) else {
+                    guard let oceanNormalMapImage = CGImage.from(oceanMapOperation.data) else {
                         self._oceanNormalMap = nil
                         return
                     }

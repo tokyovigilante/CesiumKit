@@ -198,14 +198,14 @@ open class Texture {
                 textureDescriptor.storageMode = .private
             }
         #endif
-        metalTexture = context.device.newTexture(with: textureDescriptor)
+        metalTexture = context.device.makeTexture(descriptor: textureDescriptor)
         
          if let source = source {
             switch source {
             case .buffer(let imagebuffer):
                 // Source: UInt8 array
                 let region = MTLRegionMake2D(0, 0, imagebuffer.width, imagebuffer.height)
-                metalTexture.replace(region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * strideofValue(imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
+                metalTexture.replace(region: region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * MemoryLayout.stride(ofValue: imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
             case .image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
                 
                 guard let textureData = imageRef.renderToPixelArray(
@@ -217,7 +217,7 @@ open class Texture {
                 }
                 // Copy to texture
                 let region = MTLRegionMake2D(0, 0, width, height)
-                metalTexture.replace(region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
+                metalTexture.replace(region: region, mipmapLevel: 0, withBytes: textureData.array, bytesPerRow: textureData.bytesPerRow)
             case .cubeMap(let sources):
 
                 let region = MTLRegionMake2D(0, 0, width, height)
@@ -232,7 +232,7 @@ open class Texture {
                     }
                     // Copy to texture
                     metalTexture.replace(
-                        region,
+                        region: region,
                         mipmapLevel: 0,
                         slice: slice,
                         withBytes: textureData.array,
@@ -431,7 +431,7 @@ open class Texture {
     * @exception {DeveloperError} This texture's height must be a power of two to call generateMipmap().
     * @exception {DeveloperError} This texture was destroyed, i.e., destroy() was called.
     */
-    func generateMipmaps (_ context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
+    func generateMipmaps (context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
         assert(mipmapped, "mipmapping must be enabled during texture creation")
         let blitEncoder = context.createBlitCommandEncoder(completionBlock)
         blitEncoder.generateMipmaps(for: metalTexture)

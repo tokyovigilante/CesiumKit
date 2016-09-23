@@ -212,7 +212,17 @@ class TileUniformMap: NativeUniformMap {
     
     var uniformBufferProvider: UniformBufferProvider! = nil
         
-    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
+    lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
+        buffer.write(from: &self._uniformStruct, length: MemoryLayout<TileUniformStruct>.size)
+        var textures = self.dayTextures
+        if let waterMask = self.waterMask {
+            textures.append(waterMask)
+        }
+        if let oceanNormalMap = self.oceanNormalMap {
+            textures.append(oceanNormalMap)
+        }
+        return textures
+    }
     
     init (maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
@@ -226,18 +236,6 @@ class TileUniformMap: NativeUniformMap {
         dayTextureHue = [Float]()
         dayTextureSaturation = [Float]()
         dayTextureOneOverGamma = [Float]()
-        
-         uniformUpdateBlock = { buffer in
-            buffer.write(from: &self._uniformStruct, length: MemoryLayout<TileUniformStruct>.size)
-            var textures = self.dayTextures
-            if let waterMask = self.waterMask {
-                textures.append(waterMask)
-            }
-            if let oceanNormalMap = self.oceanNormalMap {
-                textures.append(oceanNormalMap)
-            }
-            return textures
-        }
     }
     
     func textureForUniform (_ uniform: UniformSampler) -> Texture? {

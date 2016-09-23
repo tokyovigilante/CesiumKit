@@ -31,10 +31,10 @@ class RenderPass {
         _context = context
         self.passState = passState
         let passDescriptor = passState.framebuffer?.renderPassDescriptor ?? defaultFramebuffer.renderPassDescriptor
-        commandEncoder = buffer.renderCommandEncoder(with: passDescriptor)
+        commandEncoder = buffer.makeRenderCommandEncoder(descriptor: passDescriptor)
     }
     
-    func applyRenderState(_ renderState: RenderState) {
+    func apply(renderState: RenderState) {
         renderState.apply(commandEncoder, passState: passState)
     }
 

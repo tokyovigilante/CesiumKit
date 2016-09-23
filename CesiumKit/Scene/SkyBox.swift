@@ -171,12 +171,8 @@ private class SkyBoxUniformMap: NativeUniformMap {
     
     var uniformDescriptors: [UniformDescriptor] = []
     
-    fileprivate (set) var uniformUpdateBlock: UniformUpdateBlock! = nil
-    
-    init () {
-        uniformUpdateBlock = { buffer in
-            return [self.cubemap!]
-        }
+    lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
+        return [self.cubemap!]
     }
-    
+
 }

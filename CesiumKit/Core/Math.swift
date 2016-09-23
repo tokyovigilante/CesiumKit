@@ -296,7 +296,7 @@ public struct Math {
     * @example
     * var n = Cesium.Math.lerp(0.0, 2.0, 0.5); // returns 1.0
     */
-    static public func lerp (_ p: Double, q: Double, time: Double) -> Double {
+    static public func lerp (p: Double, q: Double, time: Double) -> Double {
         return (1.0 - time) * p + time * q
     }
     /*
@@ -730,7 +730,7 @@ public extension Double {
     // Given a value to round and a factor to round to,
     // round the value to the nearest multiple of that factor.
     func roundTo(_ nearest: Double) -> Double {
-        return round(self / nearest) * nearest
+        return (self / nearest).rounded() * nearest
     }
     
     // Given a value to round and a factor to round to,
@@ -749,7 +749,17 @@ public extension Double {
     
     func roundToPlaces(_ decimalPlaces: Int) -> Double {
         let divisor = pow(10.0, Double(decimalPlaces))
-        return round(self * divisor) / divisor
+        return (self * divisor).rounded() / divisor
+    }
+}
+
+extension Int {
+    init (_ bool: Bool) {
+        if bool {
+            self.init(1)
+        } else {
+            self.init(0)
+        }
     }
 }
 

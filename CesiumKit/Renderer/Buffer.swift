@@ -36,13 +36,13 @@ class Buffer {
         
         if let array = array {
             #if os(OSX)
-                metalBuffer = device.newBuffer(withBytes: array, length: length, options: .storageModeManaged)
+                metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeManaged)
             #elseif os(iOS)
                 metalBuffer = device.newBuffer(withBytes: array, length: length, options: MTLResourceOptions())
             #endif
         } else {
             #if os(OSX)
-                metalBuffer = device.newBuffer(withLength: length, options: .storageModeManaged)
+                metalBuffer = device.makeBuffer(length: length, options: .storageModeManaged)
             #elseif os(iOS)
                 metalBuffer = device.newBuffer(withLength: length, options: MTLResourceOptions())
             #endif

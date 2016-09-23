@@ -1795,7 +1795,7 @@ open class Camera: DRU {
             var southCartographic = Cartographic(longitude: longitude, latitude: south, height: 0.0)
             
             ellipsoidGeodesic.setEndPoints(start: northCartographic, end: southCartographic)
-            latitude = ellipsoidGeodesic.interpolateUsingFraction(0.5).latitude
+            latitude = ellipsoidGeodesic.interpolate(fraction: 0.5).latitude
         }
         
         let centerCartographic = Cartographic(longitude: longitude, latitude: latitude)

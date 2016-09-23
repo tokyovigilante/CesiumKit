@@ -89,7 +89,7 @@ class Imagery {
         return _referenceCount
     }
     
-    func processStateMachine (_ frameState: inout FrameState) {
+    func processStateMachine (frameState: inout FrameState) {
         if (state == .unloaded) {
             state = .transitioning
             imageryLayer.requestImagery(self)

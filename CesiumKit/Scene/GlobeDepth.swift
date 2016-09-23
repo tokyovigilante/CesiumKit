@@ -89,7 +89,7 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
         )
     }
 
-    func updateFramebuffers(_ context: Context) {
+    func updateFramebuffers(context: Context) {
         let width = Int(context.width)
         let height = Int(context.height)
         
@@ -142,7 +142,7 @@ executeDebugGlobeDepth(this, context, passState);
 
     func update (_ context: Context) {
 
-        updateFramebuffers(context)
+        updateFramebuffers(context: context)
         //updateCopyCommands(this, context);
     }
 

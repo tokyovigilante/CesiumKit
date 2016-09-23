@@ -394,25 +394,25 @@ open class BingMapsImageryProvider: ImageryProvider {
         let metadataSuccess = { (data: Data) -> () in
             
             do {
-                let metadata = try JSON.decode(string: String(data: data, encoding: .utf8)!, strict: true)
+                let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
                 
-                guard let resourceSet = try metadata.getArray(key: "resourceSets").first else {
-                    let error = try metadata.getArray(key: "errorDetails")
-                    logPrint(level: .error, "metadata error: ")// + error.first?)
+                guard let resourceSet = try metadata.getArray("resourceSets").first else {
+                    let error = try metadata.getArray("errorDetails")
+                    logPrint(.error, "metadata error: ")// + error.first?)
                     return
                 }
-                guard let resource = try resourceSet.getArray(key: "resources").first else {
-                    let error = try metadata.getString(key: "errorDetails")
-                    logPrint(level: .error, "metadata error: " + error)
+                guard let resource = try resourceSet.getArray("resources").first else {
+                    let error = try metadata.getString("errorDetails")
+                    logPrint(.error, "metadata error: " + error)
                     return
                 }
-                self._tileWidth = try resource.getInt(key: "imageWidth")
-                self._tileHeight = try resource.getInt(key: "imageHeight")
-                self._maximumLevel = try resource.getInt(key: "zoomMax") - 1
-                self._imageUrlSubdomains = try resource.getArray(key: "imageUrlSubdomains")
+                self._tileWidth = try resource.getInt("imageWidth")
+                self._tileHeight = try resource.getInt("imageHeight")
+                self._maximumLevel = try resource.getInt("zoomMax") - 1
+                self._imageUrlSubdomains = try resource.getArray("imageUrlSubdomains")
                 
                  let imageUrlTemplate = try resource
-                    .getString(key: "imageUrl")
+                    .getString("imageUrl")
                     .replace("{culture}", self.culture)
                  
                  // Force HTTPS
@@ -429,21 +429,21 @@ open class BingMapsImageryProvider: ImageryProvider {
                  });
                  }*/
                 
-                if let attributionList = try resource.getArrayOrNil(key: "imageryProviders") {
+                if let attributionList = try resource.getArrayOrNil("imageryProviders") {
                     
                     for jsonAttribution in attributionList {
                         
                         var attribution = Attribution(
-                            attribution: Credit(text: try jsonAttribution.getString(key: "attribution")),
+                            attribution: Credit(text: try jsonAttribution.getString("attribution")),
                             areas: [AttributionArea]()
                         )
                         
-                        let coverageAreas = try jsonAttribution.getArray(key: "coverageAreas")
+                        let coverageAreas = try jsonAttribution.getArray("coverageAreas")
                         
                         for area in coverageAreas {
-                            let bbox = try area.getArray(key: "bbox")
-                            let zoomMin = try area.getInt(key: "zoomMin")
-                            let zoomMax = try area.getInt(key: "zoomMax")
+                            let bbox = try area.getArray("bbox")
+                            let zoomMin = try area.getInt("zoomMin")
+                            let zoomMax = try area.getInt("zoomMax")
                             attribution.areas.append(
                                 AttributionArea(
                                     zoomMin: zoomMin,
@@ -467,13 +467,13 @@ open class BingMapsImageryProvider: ImageryProvider {
                 })
                  //TileProviderError.handleSuccess(metadataError);*/
             } catch {
-                logPrint(level: .error, "Bing metadata decode failed - invalid JSON")
+                logPrint(.error, "Bing metadata decode failed - invalid JSON")
                 return
             }
         }
         
         let metadataFailure = { (error: String) -> () in
-            logPrint(level: .error, error)
+            logPrint(.error, error)
             /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
@@ -545,7 +545,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         let imageryOperation = NetworkOperation(url: url)
         imageryOperation.completionBlock = {
             if let error = imageryOperation.error {
-                logPrint(level: .error, "error: \(error.localizedDescription)")
+                logPrint(.error, "error: \(error.localizedDescription)")
                 return
             }
             #if os(iOS)

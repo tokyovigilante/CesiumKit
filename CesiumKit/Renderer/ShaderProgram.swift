@@ -119,28 +119,28 @@ class ShaderProgram {
     init? (device: MTLDevice, shaderSourceName: String, compiledMetalVertexName vertex: String, compiledMetalFragmentName fragment: String, uniformStructSize: Int, keyword: String) {
 
         guard let bundle = Bundle(identifier: "com.testtoast.CesiumKit") else {
-            logPrint(level: .error, "Could not find CesiumKit bundle in executable")
+            logPrint(.error, "Could not find CesiumKit bundle in executable")
             return nil
         }
-        guard let libraryPath = bundle.urlForResource("default", withExtension: "metallib")?.path else {
-            logPrint(level: .error, "Could not find shader source from bundle")
+        guard let libraryPath = bundle.url(forResource: "default", withExtension: "metallib")?.path else {
+            logPrint(.error, "Could not find shader source from bundle")
             return nil
         }
         let shaderLibrary: MTLLibrary
         do {
-            shaderLibrary = try device.newLibrary(withFile: libraryPath)
+            shaderLibrary = try device.makeLibrary(filepath: libraryPath)
         } catch let error as NSError {
-            logPrint(level: .error, "Could not generate library from compiled shader lib: \(error.localizedDescription)")
+            logPrint(.error, "Could not generate library from compiled shader lib: \(error.localizedDescription)")
             return nil
         }
         
-        guard let metalVertexFunction = shaderLibrary.newFunction(withName: vertex) else {
-            logPrint(level: .error, "No vertex function found for \(vertex)")
+        guard let metalVertexFunction = shaderLibrary.makeFunction(name: vertex) else {
+            logPrint(.error, "No vertex function found for \(vertex)")
             return nil
         }
         self.metalVertexFunction = metalVertexFunction
-        guard let metalFragmentFunction = shaderLibrary.newFunction(withName: fragment) else {
-            logPrint(level: .error, "No fragment function found for \(fragment)")
+        guard let metalFragmentFunction = shaderLibrary.makeFunction(name: fragment) else {
+            logPrint(.error, "No fragment function found for \(fragment)")
             return nil
         }
         self.metalFragmentFunction = metalFragmentFunction
@@ -188,22 +188,22 @@ class ShaderProgram {
     fileprivate func compileMetalProgram(_ device: MTLDevice) {
         
         do {
-            _vertexLibrary = try device.newLibrary(withSource: _metalVertexShaderSource, options: nil)
-            metalVertexFunction = _vertexLibrary.newFunction(withName: "xlatMtlMain")
+            _vertexLibrary = try device.makeLibrary(source: _metalVertexShaderSource, options: MTLCompileOptions())
+            metalVertexFunction = _vertexLibrary.makeFunction(name: "xlatMtlMain")
         } catch let error as NSError {
-            logPrint(level: .debug, _fragmentShaderText)
-            logPrint(level: .debug, _metalFragmentShaderSource)
-            logPrint(level: .error, error.localizedDescription)
+            logPrint(.debug, _fragmentShaderText)
+            logPrint(.debug, _metalFragmentShaderSource)
+            logPrint(.error, error.localizedDescription)
             assertionFailure("_vertexLibrary == nil")
         }
         
         do {
-            _fragmentLibrary = try device.newLibrary(withSource: _metalFragmentShaderSource, options: nil)
-            metalFragmentFunction = _fragmentLibrary.newFunction(withName: "xlatMtlMain")
+            _fragmentLibrary = try device.makeLibrary(source: _metalFragmentShaderSource, options: nil)
+            metalFragmentFunction = _fragmentLibrary.makeFunction(name: "xlatMtlMain")
         } catch let error as NSError {
-            logPrint(level: .debug, _fragmentShaderText)
-            logPrint(level: .debug, _metalFragmentShaderSource)
-            logPrint(level: .error, error.localizedDescription)
+            logPrint(.debug, _fragmentShaderText)
+            logPrint(.debug, _metalFragmentShaderSource)
+            logPrint(.error, error.localizedDescription)
             assertionFailure("_fragmentLibrary == nil")
         }
     }
@@ -349,9 +349,9 @@ class ShaderProgram {
             return (0, false, [Texture]())
         }
         
-        let textures = map.uniformUpdateBlock(buffer: buffer)
+        let textures = map.uniformUpdateBlock(buffer)
         buffer.signalWriteComplete()
-        return (fragmentOffset: 0, texturesValid: true, textures: textures)
+        return (fragmentOffset: 0, texturesValid: true, textures: textures ?? [Texture]())
     }
     
     func setLegacyUniforms (_ map: LegacyUniformMap, uniformState: UniformState) -> (fragmentOffset: Int, texturesValid: Bool, textures: [Texture]) {

@@ -41,7 +41,7 @@ protocol UniformMap: class {
 
 protocol NativeUniformMap: class, UniformMap {
     
-    var uniformUpdateBlock: UniformUpdateBlock! { get }
+    var uniformUpdateBlock: UniformUpdateBlock { get }
     
     func generateMetalUniformStruct () -> String
 }

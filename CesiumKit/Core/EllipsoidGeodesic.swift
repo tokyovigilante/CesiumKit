@@ -92,7 +92,7 @@ class EllipsoidGeodesic {
         self.ellipsoid = ellipsoid
         
         if start != nil && end != nil {
-            computeProperties(start!, end: end!)
+            computeProperties(start: start!, end: end!)
         }
     }
     
@@ -103,17 +103,17 @@ class EllipsoidGeodesic {
      * @param {Cartographic} start The initial planetodetic point on the path.
      * @param {Cartographic} end The final planetodetic point on the path.
      */
-    func setEndPoints (_ start: Cartographic, end: Cartographic) {
-        computeProperties(start, end: end)
+    func setEndPoints (start: Cartographic, end: Cartographic) {
+        computeProperties(start: start, end: end)
     }
     
-    fileprivate func computeProperties(_ start: Cartographic, end: Cartographic) {
+    fileprivate func computeProperties(start: Cartographic, end: Cartographic) {
         let firstCartesian = ellipsoid.cartographicToCartesian(start).normalize()
         let lastCartesian = ellipsoid.cartographicToCartesian(end).normalize()
         
         assert(abs(abs(firstCartesian.angleBetween(lastCartesian)) - M_PI) >= 0.0125, "geodesic position is not unique")
         
-        vincentyInverseFormula(ellipsoid.maximumRadius, minor: ellipsoid.minimumRadius,
+        vincentyInverseFormula(major: ellipsoid.maximumRadius, minor: ellipsoid.minimumRadius,
             firstLongitude: start.longitude, firstLatitude: start.latitude, secondLongitude: end.longitude, secondLatitude: end.latitude)
         
         var surfaceStart = start
@@ -126,7 +126,7 @@ class EllipsoidGeodesic {
         setConstants()
     }
     
-    fileprivate func vincentyInverseFormula(_ major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
+    fileprivate func vincentyInverseFormula(major: Double, minor: Double, firstLongitude: Double, firstLatitude: Double, secondLongitude: Double, secondLatitude: Double) {
         let eff = (major - minor) / major
         let l = secondLongitude - firstLongitude
         
@@ -285,10 +285,10 @@ class EllipsoidGeodesic {
      * @param {Number} fraction The portion of the distance between the initial and final points.
      * @returns {Cartographic} The location of the point along the geodesic.
      */
-    func interpolateUsingFraction (_ fraction: Double) -> Cartographic {
+    func interpolate (fraction: Double) -> Cartographic {
         assert(fraction >= 0.0 && fraction <= 1.0, "fraction out of bounds")
         assert(_distance != nil, "start and end must be set before calling funciton interpolateUsingSurfaceDistance")
-        return interpolateUsingSurfaceDistance(_distance! * fraction)
+        return interpolate(surfaceDistance: _distance! * fraction)
     }
     
     /**
@@ -299,7 +299,7 @@ class EllipsoidGeodesic {
      *
      * @exception {DeveloperError} start and end must be set before calling funciton interpolateUsingSurfaceDistance
      */
-    func interpolateUsingSurfaceDistance (_ distance: Double) -> Cartographic {
+    func interpolate (surfaceDistance distance: Double) -> Cartographic {
         assert(_distance != nil, "start and end must be set before calling funciton interpolateUsingSurfaceDistance")
         
         let constants = _constants
