@@ -383,8 +383,6 @@ open class BingMapsImageryProvider: ImageryProvider {
             numberOfLevelZeroTilesY : 2
         )
         
-        
-        
         errorEvent = Event()
         
         _ready = false

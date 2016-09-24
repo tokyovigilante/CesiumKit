@@ -50,17 +50,52 @@ private let ResponseDelegateKey = "responseDelegateObject"
 
 class NetworkOperation: Operation {
     
+    fileprivate var _privateReady: Bool = false
+    override var isReady: Bool {
+    get {
+            return _privateReady
+        }
+        set (newAnswer) {
+            if newAnswer == _privateReady {
+                return
+            }
+            willChangeValue(forKey: "isReady")
+            _privateReady = newAnswer
+            didChangeValue(forKey: "isReady")
+        }
+    }
+    
+    fileprivate var _privateExecuting: Bool = false
+    override var isExecuting: Bool {
+        get {
+            return _privateExecuting
+        }
+        set (newAnswer) {
+            if newAnswer == _privateExecuting {
+                return
+            }
+            willChangeValue(forKey: "isExecuting")
+            _privateExecuting = newAnswer
+            didChangeValue(forKey: "isExecuting")
+        }
+    }
+    
     fileprivate var _privateFinished: Bool = false
     override var isFinished: Bool {
         get {
             return _privateFinished
         }
         set (newAnswer) {
+            if newAnswer == _privateFinished {
+                return
+            }
             willChangeValue(forKey: "isFinished")
             _privateFinished = newAnswer
             didChangeValue(forKey: "isFinished")
         }
     }
+    
+    override var isAsynchronous: Bool { return true }
     
     var data: Data {
         if let data = _incomingData {
@@ -84,6 +119,7 @@ class NetworkOperation: Operation {
         self.headers = headers
         self.parameters = parameters
         super.init()
+        isReady = true
     }
     
     func enqueue () {
@@ -95,6 +131,7 @@ class NetworkOperation: Operation {
             isFinished = true
             return
         }
+        isExecuting = true
         let session = URLSession.resourceSharedSession
         
         let completeURL: URL
@@ -144,7 +181,7 @@ extension URLSessionTask {
 
 class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
     
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (URLSession.ResponseDisposition) -> Void) {
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         guard let request = dataTask.originalRequest else {
             return
         }
@@ -168,12 +205,11 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
             }
         }
     }
-    
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: (Foundation.URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.performDefaultHandling, nil)
     }
     
-    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: NSError?) {
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
         logPrint(.warning, "session invalid")
     }
     
@@ -207,14 +243,13 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
         }
     }
     
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: NSError?) {
-
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let operation = task.networkOperation else {
-        //guard let operation = NSURLProtocol.propertyForKey(ResponseDelegateKey, inRequest: request) as? NetworkOperation else {
             return
         }
         task.networkOperation = nil
-        operation.error = error
+        operation.error = error as NSError?
         operation.isFinished = true
     }
+
 }
