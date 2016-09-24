@@ -15,7 +15,7 @@ Community contributions and feedback are welcome.
 
 Testing
 -------
-Requires Swift 2.0/Xcode 7.2 beta and an iOS 9 device with a minimum A7 processor, or OS X 10.11 with a compatible GPU.
+Requires Swift 3.0/Xcode 8.0 GM beta and an iOS 9 device with a minimum A7 processor, or OS X 10.11 with a compatible GPU.
 
 Run the getDependencies.sh script to pull down PMJSON, glsl-optimizer and Alamofire from Github. Then build and run either the iOS or OS X test runner target.
 At the moment the only external API are global object creation and render calls and minimal camera control. I'm hoping to keep things simple for implementation, but am looking into touch-based controls as a high priority now.
@@ -31,7 +31,6 @@ Credits
 CesiumKit is based on the [Cesium WebGL Virtual Globe and Map Engine](http://cesiumjs.org) by AGI.
 GLSL->Metal shader real-time translation performed by the [glsl-optimizer library](https://github.com/aras-p/glsl-optimizer) by Brian Paul, Aras Pranckevičius and Unity Technologies.
 JSON parsing performed using the [PMJSON library](https://github.com/postmates/PMJSON) by Postmates.
-Networking support from [Alamofire](https://github.com/Alamofire/Alamofire).
 
 Feedback
 --------
