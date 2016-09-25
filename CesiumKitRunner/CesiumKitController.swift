@@ -12,28 +12,28 @@ import CesiumKit
 
 class CesiumKitController: NSObject, MTKViewDelegate {
     
-    private let _globe: CesiumGlobe!
+    fileprivate let _globe: CesiumGlobe!
     
-    private let _view: MTKView
+    fileprivate let _view: MTKView
     
     //private let _viewportOverlay: ViewportQuad
     
-    private let _fontName = "HelveticaNeue"
-    private let _fontSize: Float = 36
+    fileprivate let _fontName = "HelveticaNeue"
+    fileprivate let _fontSize: Float = 36
     
     init (view: MTKView) {
         
         _view = view
         _view.device = MTLCreateSystemDefaultDevice()
-        _view.colorPixelFormat = PixelFormat.BGRA8Unorm.toMetal()
-        _view.depthStencilPixelFormat = PixelFormat.Depth32FloatStencil8.toMetal()
+        _view.colorPixelFormat = PixelFormat.bgra8Unorm.toMetal()
+        _view.depthStencilPixelFormat = PixelFormat.depth32FloatStencil8.toMetal()
         _view.framebufferOnly = false
         _view.preferredFramesPerSecond = 60
         _view.autoResizeDrawable = true
         
         let options = CesiumOptions(
             //clock: Clock(multiplier: 600),
-            clock: Clock(clockStep: .SystemClock, isUTC: false),
+            clock: Clock(clockStep: .systemClock, isUTC: false),
             imageryProvider: nil,
             terrain: true,
             lighting: true,
@@ -95,14 +95,14 @@ class CesiumKitController: NSObject, MTKViewDelegate {
     }
     
     func startRendering () {
-        _view.paused = false
+        _view.isPaused = false
     }
     
     func stopRendering () {
-        _view.paused = true
+        _view.isPaused = true
     }
     
-    func drawInMTKView(view: MTKView) {
+    func draw(in view: MTKView) {
         //_globe.scene.camera.moveForward(25.0)
         #if os(iOS)
             view.contentScaleFactor = 2.0
@@ -114,7 +114,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
             let viewBoundsSize = view.bounds.size
             let renderWidth = viewBoundsSize.width * scaleFactor
             let renderHeight = viewBoundsSize.height * scaleFactor
-            let renderSize = CGSizeMake(renderWidth, renderHeight)
+            let renderSize = CGSize(width: renderWidth, height: renderHeight)
         #if os(OSX)
             //view.autoResizeDrawable = false
             //view.drawableSize = renderSize
@@ -123,7 +123,7 @@ class CesiumKitController: NSObject, MTKViewDelegate {
         _globe.render(renderSize)
     }
     
-    func mtkView(view: MTKView, drawableSizeWillChange size: CGSize) {
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         //_viewportOverlay.rectangle = BoundingRectangle(x: 20, y: 20, width: 200, height: 200)
         /*let scale = self.v!.backingScaleFactor
          let layerSize = view.bounds.size
@@ -133,19 +133,19 @@ class CesiumKitController: NSObject, MTKViewDelegate {
          _metalView.metalLayer.drawableSize = CGSizeMake(layerSize.width * scale, layerSize.height * scale)*/
     }
     
-    func handleMouseDown (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    func handleMouseDown (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         _globe.eventHandler.handleMouseDown(button, position: position, modifier: modifier)
     }
     
-    func handleMouseMove (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    func handleMouseMove (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         _globe.eventHandler.handleMouseMove(button, position: position, modifier: modifier)
     }
     
-    func handleMouseUp (button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
+    func handleMouseUp (_ button: MouseButton, position: Cartesian2, modifier: KeyboardEventModifier?) {
         _globe.eventHandler.handleMouseMove(button, position: position, modifier: modifier)
     }
     
-    func handleWheel (deltaX: Double, deltaY: Double) {
+    func handleWheel (_ deltaX: Double, deltaY: Double) {
         _globe.eventHandler.handleWheel(deltaX, deltaY: deltaY)
     }
 

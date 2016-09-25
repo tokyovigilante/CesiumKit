@@ -12,14 +12,14 @@ import CesiumKit
 
 class CesiumViewController: NSViewController {
     
-    private var _cesiumKitController: CesiumKitController! = nil
+    fileprivate var _cesiumKitController: CesiumKitController! = nil
     
     @IBOutlet var _metalView: MTKView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.layer!.contentsScale = NSScreen.mainScreen()?.backingScaleFactor ?? 1.0
+        view.layer!.contentsScale = NSScreen.main()?.backingScaleFactor ?? 1.0
         _cesiumKitController = CesiumKitController(view: _metalView)
         _metalView.delegate = _cesiumKitController
         _cesiumKitController.startRendering()
@@ -29,69 +29,69 @@ class CesiumViewController: NSViewController {
         _metalView.window?.acceptsMouseMovedEvents = true
     }
     
-    override func mouseDown(event: NSEvent) {
+    override func mouseDown(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
-        let localPoint = _metalView.convertPoint(locationInWindow, fromView: nil)
+        let localPoint = _metalView.convert(locationInWindow, from: nil)
        
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
         
         let modifier: KeyboardEventModifier?
-        if event.modifierFlags.contains(.ControlKeyMask) {
-            modifier = .Ctrl
-        } else if event.modifierFlags.contains(.AlternateKeyMask) {
-            modifier  = .Alt
-        } else if event.modifierFlags.contains(.ShiftKeyMask) {
-            modifier = .Shift
+        if event.modifierFlags.contains(.control) {
+            modifier = .ctrl
+        } else if event.modifierFlags.contains(.option) {
+            modifier  = .alt
+        } else if event.modifierFlags.contains(.shift) {
+            modifier = .shift
         } else {
             modifier = nil
         }
-        _cesiumKitController.handleMouseDown(.Left, position: position, modifier: modifier)
+        _cesiumKitController.handleMouseDown(.left, position: position, modifier: modifier)
     }
     
-    override func mouseDragged(event: NSEvent) {
+    override func mouseDragged(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
-        let localPoint = _metalView.convertPoint(locationInWindow, fromView: nil)
+        let localPoint = _metalView.convert(locationInWindow, from: nil)
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
         
         let modifier: KeyboardEventModifier?
-        if event.modifierFlags.contains(.ControlKeyMask) {
-            modifier = .Ctrl
-        } else if event.modifierFlags.contains(.AlternateKeyMask) {
-            modifier  = .Alt
-        } else if event.modifierFlags.contains(.ShiftKeyMask) {
-            modifier = .Shift
+        if event.modifierFlags.contains(.control) {
+            modifier = .ctrl
+        } else if event.modifierFlags.contains(.option) {
+            modifier  = .alt
+        } else if event.modifierFlags.contains(.shift) {
+            modifier = .shift
         } else {
             modifier = nil
         }
-        _cesiumKitController.handleMouseMove(.Left, position: position, modifier: modifier)
+        _cesiumKitController.handleMouseMove(.left, position: position, modifier: modifier)
     }
     
-    override func mouseMoved(event: NSEvent) {
+    override func mouseMoved(with event: NSEvent) {
     
     }
     
-    override func mouseUp(event: NSEvent) {
+    override func mouseUp(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
-        let localPoint = _metalView.convertPoint(locationInWindow, fromView: nil)
+        let localPoint = _metalView.convert(locationInWindow, from: nil)
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
         
         let modifier: KeyboardEventModifier?
-        if event.modifierFlags.contains(.ControlKeyMask) {
-            modifier = .Ctrl
-        } else if event.modifierFlags.contains(.AlternateKeyMask) {
-            modifier  = .Alt
-        } else if event.modifierFlags.contains(.ShiftKeyMask) {
-            modifier = .Shift
+        if event.modifierFlags.contains(.control) {
+            modifier = .ctrl
+        } else if event.modifierFlags.contains(.option) {
+            modifier  = .alt
+        } else if event.modifierFlags.contains(.shift) {
+            modifier = .shift
         } else {
             modifier = nil
         }
-        _cesiumKitController.handleMouseUp(.Left, position: position, modifier: modifier)
+        _cesiumKitController.handleMouseUp(.left, position: position, modifier: modifier)
     }
     
-    override func scrollWheel(event: NSEvent) {
+    override func scrollWheel(with event: NSEvent) {
         _cesiumKitController.handleWheel(Double(event.deltaX), deltaY: Double(event.deltaY))
     }
     
