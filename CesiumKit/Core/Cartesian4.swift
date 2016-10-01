@@ -467,7 +467,7 @@ extension Cartesian4: CustomDebugStringConvertible {
 
 extension Cartesian4 {
     
-    func contains(_ point: Cartesian2) -> Bool {
+    public func contains(_ point: Cartesian2) -> Bool {
         if x < point.x &&
             x + width > point.x &&
             y < point.y &&
