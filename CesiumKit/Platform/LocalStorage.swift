@@ -23,7 +23,7 @@ class LocalStorage {
             }
 
         #elseif os(iOS)
-            return FileManager.default().urlsForDirectory(.applicationSupportDirectory, inDomains: .userDomainMask)[0]
+            return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         #endif
     }
     

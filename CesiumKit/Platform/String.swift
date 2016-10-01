@@ -52,7 +52,7 @@ extension String {
             #if os(OSX)
                 return bundle.urlForImageResource(self)
             #elseif os(iOS)
-                return bundle.urlForResource((self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
+                return bundle.url(forResource: (self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
             #endif
         case .filePath:
             return URL(fileURLWithPath: self, isDirectory: false)

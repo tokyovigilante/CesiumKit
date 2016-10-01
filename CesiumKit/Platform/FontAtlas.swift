@@ -522,11 +522,11 @@ final class FontAtlas: JSONEncodable {
         }
         do {
             // try to decode from JSON
-            let atlasFolderURL = try LocalStorage.sharedInstance
+            let atlasFolderURL = LocalStorage.sharedInstance
                 .getAppSupportURL()
                 .appendingPathComponent("FontAtlases")
             
-            let jsonURL = try atlasFolderURL
+            let jsonURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("json")
             let atlasJSONString = try String(contentsOf: jsonURL)
@@ -550,12 +550,12 @@ final class FontAtlas: JSONEncodable {
     
     class func writeToFile (_ atlas: FontAtlas) {
         do {
-            let atlasFolderURL = try LocalStorage.sharedInstance
+            let atlasFolderURL = LocalStorage.sharedInstance
                 .getAppSupportURL()
                 .appendingPathComponent("FontAtlases")
             
             let fontName = CTFontCopyPostScriptName(atlas.parentFont) as String
-            let jsonURL = try atlasFolderURL
+            let jsonURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("json")
             
@@ -563,7 +563,7 @@ final class FontAtlas: JSONEncodable {
             
             let atlasJSON = atlas.toJSON().object!
             
-            let textureDataURL = try! atlasFolderURL
+            let textureDataURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("textureData")
             
