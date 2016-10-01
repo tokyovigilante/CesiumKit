@@ -210,28 +210,28 @@ final class FontAtlas: JSONEncodable {
         let alphaInfo = CGImageAlphaInfo.none
         let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
         
-        let context = CGContext(data: &imageData,
-        width: width,
-        height: height,
-        bitsPerComponent: 8,
-        bytesPerRow: width,
-        space: colorSpace,
-        bitmapInfo: bitmapInfo.rawValue)
+        guard let context = CGContext(data: &imageData,
+                                width: width,
+                                height: height,
+                                bitsPerComponent: 8,
+                                bytesPerRow: width,
+                                space: colorSpace,
+                                bitmapInfo: bitmapInfo.rawValue) else { return [] }
         
         // Turn off antialiasing so we only get fully-on or fully-off pixels.
         // This implicitly disables subpixel antialiasing and hinting.
-        context?.setAllowsAntialiasing(false)
+        context.setAllowsAntialiasing(false)
         
         // Flip context coordinate space so y increases downward
-        context?.translateBy(x: 0, y: CGFloat(height))
-        context?.scaleBy(x: 1, y: -1)
+        context.translateBy(x: 0, y: CGFloat(height))
+        context.scaleBy(x: 1, y: -1)
         
         let fWidth = CGFloat(width)
         let fHeight = CGFloat(height)
         
         // Fill the context with an opaque black color
-        context?.setFillColor(red: 0, green: 0, blue: 0, alpha: 1)
-        context?.fill(CGRect(x: 0, y: 0, width: fWidth, height: fHeight))
+        context.setFillColor(red: 0, green: 0, blue: 0, alpha: 1)
+        context.fill(CGRect(x: 0, y: 0, width: fWidth, height: fHeight))
         
         _fontPointSize = pointSizeThatFits(forFont: font, inAtlasRect: CGRect(x: 0, y: 0, width: fWidth, height: fHeight))
         parentFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(_fontPointSize), nil, nil)
@@ -241,7 +241,7 @@ final class FontAtlas: JSONEncodable {
         let glyphMargin = CGFloat(estimatedLineWidthForFont(parentFont))
         
         // Set fill color so that glyphs are solid white
-        context?.setFillColor(red: 1, green: 1, blue: 1, alpha: 1)
+        context.setFillColor(red: 1, green: 1, blue: 1, alpha: 1)
         
         glyphDescriptors.removeAll()
         
@@ -271,22 +271,24 @@ final class FontAtlas: JSONEncodable {
             
             var glyphTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: glyphOriginX, ty: glyphOriginY)
             
-            let path = CTFontCreatePathForGlyph(parentFont, glyph, &glyphTransform)
-            context?.addPath(path!)
-            context?.fillPath()
+            guard let path = CTFontCreatePathForGlyph(parentFont, glyph, &glyphTransform) else {
+                continue
+            }
+            context.addPath(path)
+            context.fillPath()
             
-            var glyphPathBoundingRect = path?.boundingBoxOfPath
+            var glyphPathBoundingRect = path.boundingBoxOfPath
         
             // The null rect (i.e., the bounding rect of an empty path) is problematic
             // because it has its origin at (+inf, +inf); we fix that up here
-            if ((glyphPathBoundingRect?.equalTo(CGRect.null)) != nil) {
+            if ((glyphPathBoundingRect.equalTo(CGRect.null)) != nil) {
                 glyphPathBoundingRect = CGRect.zero
             }
             
-            let texCoordLeft = (glyphPathBoundingRect?.origin.x)! / fWidth
-            let texCoordRight = ((glyphPathBoundingRect?.origin.x)! + (glyphPathBoundingRect?.size.width)!) / fWidth
-            let texCoordTop = (glyphPathBoundingRect?.origin.y)! / fHeight
-            let texCoordBottom = ((glyphPathBoundingRect?.origin.y)! + (glyphPathBoundingRect?.size.height)!) / fHeight
+            let texCoordLeft = glyphPathBoundingRect.origin.x / fWidth
+            let texCoordRight = (glyphPathBoundingRect.origin.x + glyphPathBoundingRect.size.width) / fWidth
+            let texCoordTop = glyphPathBoundingRect.origin.y / fHeight
+            let texCoordBottom = (glyphPathBoundingRect.origin.y + glyphPathBoundingRect.size.height) / fHeight
             
             let descriptor = GlyphDescriptor(
                 glyphIndex: glyph,
