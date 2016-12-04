@@ -632,8 +632,8 @@ public struct Quaternion {
     }
     //>>includeEnd('debug');
     
-    lerpScratch = Quaternion.multiplyByScalar(end, t, lerpScratch);
-    result = Quaternion.multiplyByScalar(start, 1.0 - t, result);
+    lerpScratch = Quaternion.multiplyBy(scalar: end, t, lerpScratch);
+    result = Quaternion.multiplyBy(scalar: start, 1.0 - t, result);
     return Quaternion.add(lerpScratch, result, result);
     };
     
@@ -682,10 +682,10 @@ public struct Quaternion {
     }
     
     var theta = Math.acos(dot);
-    slerpScaledP = Quaternion.multiplyByScalar(start, Math.sin((1 - t) * theta), slerpScaledP);
-    slerpScaledR = Quaternion.multiplyByScalar(r, Math.sin(t * theta), slerpScaledR);
+    slerpScaledP = Quaternion.multiplyBy(scalar: start, Math.sin((1 - t) * theta), slerpScaledP);
+    slerpScaledR = Quaternion.multiplyBy(scalar: r, Math.sin(t * theta), slerpScaledR);
     result = Quaternion.add(slerpScaledP, slerpScaledR, result);
-    return Quaternion.multiplyByScalar(result, 1.0 / Math.sin(theta), result);
+    return Quaternion.multiplyBy(scalar: result, 1.0 / Math.sin(theta), result);
     };
     
     /**
@@ -714,7 +714,7 @@ public struct Quaternion {
     result = new Cartesian3();
     }
     
-    return Cartesian3.multiplyByScalar(quaternion, thetaOverSinTheta, result);
+    return Cartesian3.multiplyBy(scalar: quaternion, thetaOverSinTheta, result);
     };
     
     /**
@@ -784,7 +784,7 @@ public struct Quaternion {
     var cart1 = Quaternion.log(squadScratchQuaternion1, squadScratchCartesian1);
     
     Cartesian3.add(cart0, cart1, cart0);
-    Cartesian3.multiplyByScalar(cart0, 0.25, cart0);
+    Cartesian3.multiplyBy(scalar: cart0, 0.25, cart0);
     Cartesian3.negate(cart0, cart0);
     Quaternion.exp(cart0, squadScratchQuaternion0);
     
@@ -907,8 +907,8 @@ public struct Quaternion {
     1.0 + bD[0] * (1.0 + bD[1] * (1.0 + bD[2] * (1.0 + bD[3] * (
     1.0 + bD[4] * (1.0 + bD[5] * (1.0 + bD[6] * (1.0 + bD[7]))))))));
     
-    var temp = Quaternion.multiplyByScalar(start, cD, fastSlerpScratchQuaternion);
-    Quaternion.multiplyByScalar(end, cT, result);
+    var temp = Quaternion.multiplyBy(scalar: start, cD, fastSlerpScratchQuaternion);
+    Quaternion.multiplyBy(scalar: end, cT, result);
     return Quaternion.add(temp, result, result);
     };
     

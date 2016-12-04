@@ -135,7 +135,7 @@ struct BoundingSphere: BoundingVolume {
         let minBoxPt = Cartesian3(x: xMin.x, y: yMin.y, z: zMin.z)
         let maxBoxPt = Cartesian3(x: xMax.x, y: yMax.y, z: zMax.z)
         
-        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyBy(scalar: 0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0;
@@ -381,7 +381,7 @@ struct BoundingSphere: BoundingVolume {
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
         
-        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyByScalar(0.5)
+        let naiveCenter = minBoxPt.add(maxBoxPt).multiplyBy(scalar: 0.5)
         
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
@@ -448,7 +448,7 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
     
     var center = result.center;
     Cartesian3.add(corner, oppositeCorner, center);
-    Cartesian3.multiplyByScalar(center, 0.5, center);
+    Cartesian3.multiplyBy(scalar: center, 0.5, center);
     result.radius = Cartesian3.distance(center, oppositeCorner);
     return result;
 };
@@ -639,7 +639,7 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
         let halfDistanceBetweenTangentPoints = (leftRadius + centerSeparation + rightRadius) * 0.5
         
         // Compute the center point halfway between the two tangent points.
-        let center = toRightCenter.multiplyByScalar((-leftRadius + halfDistanceBetweenTangentPoints) / centerSeparation)
+        let center = toRightCenter.multiplyBy(scalar: (-leftRadius + halfDistanceBetweenTangentPoints) / centerSeparation)
         return BoundingSphere(center: center.add(leftCenter), radius: halfDistanceBetweenTangentPoints)
     }
 /*
@@ -796,7 +796,7 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     func computePlaneDistances(_ position: Cartesian3, direction: Cartesian3) -> Interval {
         
         let toCenter = center.subtract(position)
-        let proj = direction.multiplyByScalar(direction.dot(toCenter))
+        let proj = direction.multiplyBy(scalar: direction.dot(toCenter))
         let mag = proj.magnitude
         
         return Interval(start: mag - radius, stop: mag + radius)
@@ -840,9 +840,9 @@ BoundingSphere.projectTo2D = function(sphere, projection, result) {
     var north = Cartesian3.cross(normal, east, projectTo2DNorthScratch);
     Cartesian3.normalize(north, north);
     
-    Cartesian3.multiplyByScalar(normal, radius, normal);
-    Cartesian3.multiplyByScalar(north, radius, north);
-    Cartesian3.multiplyByScalar(east, radius, east);
+    Cartesian3.multiplyBy(scalar: normal, radius, normal);
+    Cartesian3.multiplyBy(scalar: north, radius, north);
+    Cartesian3.multiplyBy(scalar: east, radius, east);
     
     var south = Cartesian3.negate(north, projectTo2DSouthScratch);
     var west = Cartesian3.negate(east, projectTo2DWestScratch);

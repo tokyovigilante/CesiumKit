@@ -1050,7 +1050,7 @@ it('pick ellipsoid', function() {
 var ellipsoid = Ellipsoid.WGS84;
 var maxRadii = ellipsoid.maximumRadius;
 
-camera.position = Cartesian3.multiplyByScalar(Cartesian3.UNIT_X, 2.0 * maxRadii, new Cartesian3());
+camera.position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_X, 2.0 * maxRadii, new Cartesian3());
 camera.direction = Cartesian3.normalize(Cartesian3.negate(camera.position, new Cartesian3()), new Cartesian3());
 camera.up = Cartesian3.clone(Cartesian3.UNIT_Z);
 camera.right = Cartesian3.cross(camera.direction, camera.up, new Cartesian3());
@@ -1156,7 +1156,7 @@ var ellipsoid = Ellipsoid.WGS84;
 var projection = new GeographicProjection(ellipsoid);
 var maxRadii = ellipsoid.maximumRadius;
 
-camera.position = Cartesian3.multiplyByScalar(Cartesian3.normalize(new Cartesian3(0.0, -1.0, 1.0), new Cartesian3()), 5.0 * maxRadii, new Cartesian3());
+camera.position = Cartesian3.multiplyBy(scalar: Cartesian3.normalize(new Cartesian3(0.0, -1.0, 1.0), new Cartesian3()), 5.0 * maxRadii, new Cartesian3());
 camera.direction = Cartesian3.normalize(Cartesian3.subtract(Cartesian3.ZERO, camera.position, new Cartesian3()), new Cartesian3());
 camera.right = Cartesian3.normalize(Cartesian3.cross(camera.direction, Cartesian3.UNIT_Z, new Cartesian3()), new Cartesian3());
 camera.up = Cartesian3.cross(camera.right, camera.direction, new Cartesian3());
@@ -1183,7 +1183,7 @@ it('pick map in morph', function() {
 var ellipsoid = Ellipsoid.WGS84;
 var maxRadii = ellipsoid.maximumRadius;
 
-camera.position = Cartesian3.multiplyByScalar(Cartesian3.UNIT_X, 2.0 * maxRadii, new Cartesian3());
+camera.position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_X, 2.0 * maxRadii, new Cartesian3());
 camera.direction = Cartesian3.normalize(Cartesian3.negate(camera.position, new Cartesian3()), new Cartesian3());
 camera.up = Cartesian3.clone(Cartesian3.UNIT_Z);
 camera.right = Cartesian3.cross(camera.direction, camera.up, new Cartesian3());
@@ -1432,7 +1432,7 @@ frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight;
 frustum.near = 100;
 frustum.far = 60.0 * maxRadii;
 camera.frustum = frustum;
-camera.position = Cartesian3.multiplyByScalar(Cartesian3.UNIT_Z, maxRadii * 5.0, new Cartesian3());
+camera.position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_Z, maxRadii * 5.0, new Cartesian3());
 
 camera.update(SceneMode.COLUMBUS_VIEW);
 
@@ -1486,7 +1486,7 @@ frustum.aspectRatio = scene.drawingBufferWidth / scene.drawingBufferHeight;
 frustum.near = 100;
 frustum.far = 60.0 * maxRadii;
 mercatorCamera.frustum = frustum;
-mercatorCamera.position = Cartesian3.multiplyByScalar(Cartesian3.UNIT_Z, maxRadii * 5.0, new Cartesian3());
+mercatorCamera.position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_Z, maxRadii * 5.0, new Cartesian3());
 
 var max = projection.project(new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO));
 var factor = 1000.0;

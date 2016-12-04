@@ -438,7 +438,7 @@ open class Camera: DRU {
         
         var mag = position.magnitude
         mag += mag * defaultViewFactor
-        position  = position.normalize().multiplyByScalar(mag)
+        position  = position.normalize().multiplyBy(scalar: mag)
     }
     
     // Testing only
@@ -466,7 +466,7 @@ open class Camera: DRU {
         
             var mag = position.magnitude
             mag += mag * defaultViewFactor
-            position  = position.normalize().multiplyByScalar(mag)
+            position  = position.normalize().multiplyBy(scalar: mag)
     }
     
     
@@ -688,7 +688,7 @@ open class Camera: DRU {
             if abs(1.0 - det) > Math.Epsilon2 {
                
                 let invUpMag = 1.0 / up.magnitudeSquared
-                let w0 = direction.multiplyByScalar(up.dot(direction) * invUpMag)
+                let w0 = direction.multiplyBy(scalar: up.dot(direction) * invUpMag)
                 _up = up.subtract(w0).normalize()
                 up = _up
                 
@@ -1023,7 +1023,7 @@ open class Camera: DRU {
     var mag = Cartesian3.magnitude(destination);
     mag += mag * Camera.DEFAULT_VIEW_FACTOR;
     Cartesian3.normalize(destination, destination);
-    Cartesian3.multiplyByScalar(destination, mag, destination);
+    Cartesian3.multiplyBy(scalar: destination, mag, destination);
     
     this.flyTo({
     destination : destination,
@@ -1033,7 +1033,7 @@ open class Camera: DRU {
     } else if (mode === SceneMode.COLUMBUS_VIEW) {
     var maxRadii = this._projection.ellipsoid.maximumRadius;
     var position = new Cartesian3(0.0, -1.0, 1.0);
-    position = Cartesian3.multiplyByScalar(Cartesian3.normalize(position, position), 5.0 * maxRadii, position);
+    position = Cartesian3.multiplyBy(scalar: Cartesian3.normalize(position, position), 5.0 * maxRadii, position);
     this.flyTo({
     destination : position,
     duration : duration,
@@ -1197,7 +1197,7 @@ open class Camera: DRU {
     * @see Camera#moveDown
     */
     open func move (_ direction: Cartesian3, amount: Double) {
-        position = position.add(direction.multiplyByScalar(amount))
+        position = position.add(direction.multiplyBy(scalar: amount))
         if _mode == SceneMode.scene2D {
             assertionFailure("unimplemented")
             //clampMove2D(this, cameraPosition);
@@ -1871,7 +1871,7 @@ open class Camera: DRU {
                 computeD(direction, upOrRight: right, corner: equatorPosition, tanThetaOrPhi: tanTheta)
             )
         }
-        return center.add(direction.multiplyByScalar(-d))
+        return center.add(direction.multiplyBy(scalar: -d))
     }
     
     /*
@@ -2083,11 +2083,11 @@ open class Camera: DRU {
         
         let position = positionWC
         
-        var nearCenter = directionWC.multiplyByScalar(near)
+        var nearCenter = directionWC.multiplyBy(scalar: near)
         nearCenter = position.add(nearCenter)
         
-        let xDir = rightWC.multiplyByScalar(x * near * tanTheta)
-        let yDir = upWC.multiplyByScalar(y * near * tanPhi)
+        let xDir = rightWC.multiplyBy(scalar: x * near * tanTheta)
+        let yDir = upWC.multiplyBy(scalar: y * near * tanPhi)
         
         let direction = nearCenter.add(xDir).add(yDir).subtract(position).normalize()
         
@@ -2108,9 +2108,9 @@ open class Camera: DRU {
     var origin = result.origin;
     Cartesian3.clone(camera.position, origin);
     
-    Cartesian3.multiplyByScalar(camera.right, x, scratchDirection);
+    Cartesian3.multiplyBy(scalar: camera.right, x, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
-    Cartesian3.multiplyByScalar(camera.up, y, scratchDirection);
+    Cartesian3.multiplyBy(scalar: camera.up, y, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
     
     Cartesian3.clone(camera.directionWC, result.direction);
@@ -2146,7 +2146,7 @@ open class Camera: DRU {
      */
     func distanceToBoundingSphere (_ boundingSphere: BoundingSphere) -> Double {
         let toCenter = positionWC.subtract(boundingSphere.center)
-        let proj = directionWC.multiplyByScalar(toCenter.dot(directionWC))
+        let proj = directionWC.multiplyBy(scalar: toCenter.dot(directionWC))
         return max(0.0, proj.magnitude - boundingSphere.radius)
     }
     
@@ -2209,7 +2209,7 @@ open class Camera: DRU {
     
     var normal = camera.worldToCameraCoordinatesVector(Cartesian3.UNIT_X, normalScratch);
     var scalar = -Cartesian3.dot(normal, position) / Cartesian3.dot(normal, direction);
-    var center = Cartesian3.add(position, Cartesian3.multiplyByScalar(direction, scalar, centerScratch), centerScratch);
+    var center = Cartesian3.add(position, Cartesian3.multiplyBy(scalar: direction, scalar, centerScratch), centerScratch);
     camera.cameraToWorldCoordinatesPoint(center, center);
     
     position = camera.cameraToWorldCoordinatesPoint(camera.position, posScratch);
@@ -2596,7 +2596,7 @@ open class Camera: DRU {
     
     var position;
     if (scene2D) {
-    position = Cartesian3.multiplyByScalar(Cartesian3.UNIT_Z, offset.range, scratchflyToBoundingSphereDestination);
+    position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_Z, offset.range, scratchflyToBoundingSphereDestination);
     } else {
     position = offsetFromHeadingPitchRange(offset.heading, offset.pitch, offset.range);
     }
@@ -2665,10 +2665,10 @@ open class Camera: DRU {
      var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
      
      // Compute the center and offsets.
-     var center = Cartesian3.multiplyByScalar(qUnit, 1.0 / qMagnitude, scratchCartesian3_1);
+     var center = Cartesian3.multiplyBy(scalar: qUnit, 1.0 / qMagnitude, scratchCartesian3_1);
      var scalar = wMagnitude / qMagnitude;
-     var eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian3_2);
-     var northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3_3);
+     var eastOffset = Cartesian3.multiplyBy(scalar: eUnit, scalar, scratchCartesian3_2);
+     var northOffset = Cartesian3.multiplyBy(scalar: nUnit, scalar, scratchCartesian3_3);
      
      // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
      var upperLeft = Cartesian3.add(center, northOffset, horizonPoints[0]);

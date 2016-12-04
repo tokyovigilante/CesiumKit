@@ -98,9 +98,9 @@ class Occluder {
             
             horizonDistance = sqrt(invCameraToOccluderDistance - occluderRadiusSqrd)
             invCameraToOccluderDistance = 1.0 / sqrt(invCameraToOccluderDistance)
-            horizonPlaneNormal = cameraToOccluderVec.multiplyByScalar(invCameraToOccluderDistance)
+            horizonPlaneNormal = cameraToOccluderVec.multiplyBy(scalar: invCameraToOccluderDistance)
             let nearPlaneDistance = horizonDistance * horizonDistance * invCameraToOccluderDistance
-            horizonPlanePosition = cameraPosition.add(horizonPlaneNormal.multiplyByScalar(nearPlaneDistance))
+            horizonPlanePosition = cameraPosition.add(horizonPlaneNormal.multiplyBy(scalar: nearPlaneDistance))
         }
         else {
             horizonDistance = Double.infinity
@@ -332,7 +332,7 @@ class Occluder {
         }
         
         let distance = occluderRadius / dot
-        return occluderPosition.add(occluderPlaneNormal.multiplyByScalar(distance))
+        return occluderPosition.add(occluderPlaneNormal.multiplyBy(scalar: distance))
     }
 
 
@@ -388,7 +388,7 @@ class Occluder {
         }
         let u = (occluderPlaneNormal.dot(tempVec0) + occluderPlaneD) / -occluderPlaneNormal.dot(tempVec1)
         return tempVec0
-            .add(tempVec1.multiplyByScalar(u))
+            .add(tempVec1.multiplyBy(scalar: u))
             .subtract(occluderPosition)
             .normalize()
     }
@@ -430,7 +430,7 @@ class Occluder {
         let cosTheta = horizonDistance * invOccluderToPositionDistance
         let horizonPlaneDistance = cosTheta * horizonDistance
         positionToOccluder = positionToOccluder.normalize()
-        let horizonPlanePosition = position.add(positionToOccluder.multiplyByScalar(horizonPlaneDistance))
+        let horizonPlanePosition = position.add(positionToOccluder.multiplyBy(scalar: horizonPlaneDistance))
         let horizonCrossDistance = sqrt(horizonDistanceSquared - (horizonPlaneDistance * horizonPlaneDistance))
         
         //Rotate the position to occluder vector 90 degrees
@@ -441,7 +441,7 @@ class Occluder {
         let horizonCrossDirection = Cartesian3(x: x, y: y, z: z).normalize()
         
         //Horizon positions
-        let offset = horizonCrossDirection.multiplyByScalar(horizonCrossDistance)
+        let offset = horizonCrossDirection.multiplyBy(scalar: horizonCrossDistance)
         tempVec = horizonPlanePosition
             .add(offset)
             .subtract(occluderPosition)

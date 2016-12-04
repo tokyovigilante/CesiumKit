@@ -283,7 +283,7 @@ public struct Cartesian4 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func multiplyByScalar (_ scalar: Double) -> Cartesian4 {
+    public func multiplyBy (scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * scalar)
     }
     
@@ -295,7 +295,7 @@ public struct Cartesian4 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func divideByScalar (_ scalar: Double) -> Cartesian4 {
+    public func divideBy (scalar: Double) -> Cartesian4 {
         return Cartesian4(simd: simdType * (1/scalar))
     }
     

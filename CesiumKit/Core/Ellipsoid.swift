@@ -158,8 +158,8 @@ public struct Ellipsoid: Equatable {
         var k = radiiSquared.multiplyComponents(n)
         
         let gamma = sqrt(n.dot(k))
-        k = k.divideByScalar(gamma)
-        n = n.multiplyByScalar(cartographic.height)
+        k = k.divideBy(scalar: gamma)
+        n = n.multiplyBy(scalar: cartographic.height)
         
         return k.add(n)
     }
@@ -261,7 +261,7 @@ public struct Ellipsoid: Equatable {
         let ratio = sqrt(1.0 / squaredNorm)
         
         // As an initial approximation, assume that the radial intersection is the projection point.
-        let intersection = cartesian.multiplyByScalar(ratio)
+        let intersection = cartesian.multiplyBy(scalar: ratio)
         
         //* If the position is near the center, the iteration will not converge.
         if (squaredNorm < centerToleranceSquared) {
@@ -343,7 +343,7 @@ public struct Ellipsoid: Equatable {
             positionZ * positionZ * oneOverRadiiSquared.z
         let beta = 1.0 / sqrt(betaSquared)
         
-        return cartesian.multiplyByScalar(beta)
+        return cartesian.multiplyBy(scalar: beta)
     }
     
     /**

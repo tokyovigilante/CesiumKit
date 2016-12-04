@@ -1301,7 +1301,7 @@ Matrix4.multiplyByScale = function(matrix, scale, result) {
     * //     [18.0, 19.0, 20.0, 21.0]
     * //     [22.0, 23.0, 24.0, 25.0]
     *
-    * var a = Cesium.Matrix4.multiplyByScalar(m, -2);
+    * var a = Cesium.Matrix4.multiplyBy(scalar: m, -2);
     *
     * // m remains the same
     * // a = [-20.0, -22.0, -24.0, -26.0]

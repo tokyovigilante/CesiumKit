@@ -673,7 +673,7 @@ var left = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 var right = 2;
 var expected = new Matrix4(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32);
 var result = new Matrix4();
-var returnedResult = Matrix4.multiplyByScalar(left, right, result);
+var returnedResult = Matrix4.multiplyBy(scalar: left, right, result);
 expect(returnedResult).toBe(result);
 expect(result).toEqual(expected);
 });
@@ -1366,14 +1366,14 @@ Matrix4.multiplyByPoint(matrix, undefined);
 
 it('multiplyByScalar throws with no matrix parameter', function() {
 expect(function() {
-Matrix4.multiplyByScalar(undefined, 2);
+Matrix4.multiplyBy(scalar: undefined, 2);
 }).toThrowDeveloperError();
 });
 
 it('multiplyByScalar throws with non-numeric scalar parameter', function() {
 var matrix = new Matrix4();
 expect(function() {
-Matrix4.multiplyByScalar(matrix, {});
+Matrix4.multiplyBy(scalar: matrix, {});
 }).toThrowDeveloperError();
 });
 
@@ -1470,7 +1470,7 @@ Matrix4.multiplyByVector(new Matrix4(), new Cartesian4());
 
 it('multiplyByScalar throws without result parameter', function() {
 expect(function() {
-Matrix4.multiplyByScalar(new Matrix4(), 2);
+Matrix4.multiplyBy(scalar: new Matrix4(), 2);
 }).toThrowDeveloperError();
 });
 

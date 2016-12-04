@@ -57,7 +57,7 @@ class SkyAtmosphere {
         self.ellipsoid = ellipsoid
 
         let map = SkyAtmosphereUniformMap()
-        map.fOuterRadius = Float(ellipsoid.radii.multiplyByScalar(1.025).maximumComponent())
+        map.fOuterRadius = Float(ellipsoid.radii.multiplyBy(scalar: 1.025).maximumComponent())
         map.fOuterRadius2 = map.fOuterRadius * map.fOuterRadius
         map.fInnerRadius = Float(ellipsoid.maximumRadius)
         map.fScale = 1.0 / (map.fOuterRadius - map.fInnerRadius)
@@ -88,7 +88,7 @@ class SkyAtmosphere {
     
         if _command.vertexArray == nil {
             let geometry = EllipsoidGeometry(
-                radii : ellipsoid.radii.multiplyByScalar(1.025),
+                radii : ellipsoid.radii.multiplyBy(scalar: 1.025),
                 stackPartitions : 256,
                 slicePartitions : 256,
                 vertexFormat : VertexFormat.PositionOnly()

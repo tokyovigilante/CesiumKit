@@ -249,12 +249,12 @@ struct EllipsoidTangentPlane {
     
     for ( var i = 0; i < length; ++i) {
     var position = cartesians[i];
-    Cartesian3.multiplyByScalar(xAxis, position.x, tmp);
+    Cartesian3.multiplyBy(scalar: xAxis, position.x, tmp);
     if (!defined(result[i])) {
     result[i] = new Cartesian3();
     }
     var point = Cartesian3.add(origin, tmp, result[i]);
-    Cartesian3.multiplyByScalar(yAxis, position.y, tmp);
+    Cartesian3.multiplyBy(scalar: yAxis, position.y, tmp);
     Cartesian3.add(point, tmp, point);
     ellipsoid.scaleToGeocentricSurface(point, point);
     }

@@ -804,7 +804,7 @@ public struct Matrix3 {
     *
     * var lambda = Cesium.Matrix3.getColumn(result.diagonal, 0).x;  // first eigenvalue
     * var v = Cesium.Matrix3.getColumn(result.unitary, 0);          // first eigenvector
-    * var c = Cesium.Cartesian3.multiplyByScalar(v, lambda, new Cartesian3());        // equal to Cesium.Matrix3.multiplyByVector(a, v)
+    * var c = Cesium.Cartesian3.multiplyBy(scalar: v, lambda, new Cartesian3());        // equal to Cesium.Matrix3.multiplyByVector(a, v)
     */
     Matrix3.computeEigenDecomposition = function(matrix, result) {
     //>>includeStart('debug', pragmas.debug);

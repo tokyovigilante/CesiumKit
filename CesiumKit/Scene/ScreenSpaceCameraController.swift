@@ -341,12 +341,12 @@ open class ScreenSpaceCameraController {
                     
                     movementState.startPosition = lastMovement!.startPosition
                     
-                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyByScalar(d))
+                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyBy(scalar: d))
                     
                     movementState.active = true
                 } else {
                     movementState.startPosition = movementState.endPosition
-                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyByScalar(d))
+                    movementState.endPosition = movementState.startPosition.add(movementState.motion.multiplyBy(scalar: d))
                     
                     movementState.motion = Cartesian2.zero
                 }
@@ -759,7 +759,7 @@ open class ScreenSpaceCameraController {
     return;
     }
     
-    var center = Cartesian3.multiplyByScalar(direction, scalar, rotateCVCenter);
+    var center = Cartesian3.multiplyBy(scalar: direction, scalar, rotateCVCenter);
     Cartesian3.add(position, center, center);
     
     var projection = scene.mapProjection;
@@ -826,7 +826,7 @@ open class ScreenSpaceCameraController {
     return;
     }
     
-    center = Cartesian3.multiplyByScalar(direction, scalar, rotateCVCenter);
+    center = Cartesian3.multiplyBy(scalar: direction, scalar, rotateCVCenter);
     Cartesian3.add(position, center, center);
     }
     
@@ -933,7 +933,7 @@ open class ScreenSpaceCameraController {
     var magSqrd = Cartesian3.magnitudeSquared(originalPosition);
     if (Cartesian3.magnitudeSquared(camera.position) > magSqrd) {
     Cartesian3.normalize(camera.position, camera.position);
-    Cartesian3.multiplyByScalar(camera.position, Math.sqrt(magSqrd), camera.position);
+    Cartesian3.multiplyBy(scalar: camera.position, Math.sqrt(magSqrd), camera.position);
     }
     
     var angle = Cartesian3.angleBetween(originalPosition, camera.position);
@@ -1211,12 +1211,12 @@ open class ScreenSpaceCameraController {
             let startRho = p0.magnitude
             let startDot = basis0.dot(p0)
             let startTheta = acos(startDot / startRho)
-            let startRej = p0.subtract(basis0.multiplyByScalar(startDot)).normalize()
+            let startRej = p0.subtract(basis0.multiplyBy(scalar: startDot)).normalize()
             
             let endRho = p1.magnitude
             let endDot = basis0.dot(p1)
             let endTheta = acos(endDot / endRho)
-            let endRej = p1.subtract(basis0.multiplyByScalar(endDot)).normalize()
+            let endRej = p1.subtract(basis0.multiplyBy(scalar: endDot)).normalize()
             
             var startPhi = acos(startRej.dot(basis1))
             if startRej.dot(basis2) < 0 {
@@ -1517,7 +1517,7 @@ open class ScreenSpaceCameraController {
             var magSqrd = Cartesian3.magnitudeSquared(originalPosition);
             if (Cartesian3.magnitudeSquared(camera.position) > magSqrd) {
                 Cartesian3.normalize(camera.position, camera.position);
-                Cartesian3.multiplyByScalar(camera.position, Math.sqrt(magSqrd), camera.position);
+                Cartesian3.multiplyBy(scalar: camera.position, Math.sqrt(magSqrd), camera.position);
             }
             
             var angle = Cartesian3.angleBetween(originalPosition, camera.position);
@@ -1677,7 +1677,7 @@ open class ScreenSpaceCameraController {
             if (heightUpdated) {
                 camera.position = camera.position.normalize()
                 camera.direction = camera.position.negate()
-                camera.position = camera.position.multiplyByScalar(max(mag, minimumZoomDistance))
+                camera.position = camera.position.multiplyBy(scalar: max(mag, minimumZoomDistance))
                 camera.direction = camera.direction.normalize()
                 camera.right = camera.direction.cross(camera.up)
                 camera.up = camera.right.cross(camera.direction)

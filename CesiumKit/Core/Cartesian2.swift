@@ -248,7 +248,7 @@ public struct Cartesian2 {
      * @param {Cartesian3} [result] The object onto which to store the result.
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    public func multiplyByScalar(_ scalar: Double) -> Cartesian2 {
+    public func multiplyBy(scalar: Double) -> Cartesian2 {
         return Cartesian2(simd: simdType * scalar)
     }
     
@@ -261,7 +261,7 @@ public struct Cartesian2 {
      * @returns {Cartesian3} The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
     public func divideByScalar(_ scalar: Double) -> Cartesian2 {
-        return multiplyByScalar(1.0/scalar)
+        return multiplyBy(scalar: 1.0/scalar)
     }
     
     /**

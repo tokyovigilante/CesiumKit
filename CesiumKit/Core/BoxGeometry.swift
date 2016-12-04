@@ -71,7 +71,7 @@ struct BoxGeometry {
         
         assert(dimensions.x >= 0.0 || dimensions.y >= 0.0 || dimensions.z >= 0.0, "All dimensions components must be greater than or equal to zero")
         
-        let corner = dimensions.multiplyByScalar(0.5)
+        let corner = dimensions.multiplyBy(scalar: 0.5)
         
         self.init(
             minimum: corner.negate(),

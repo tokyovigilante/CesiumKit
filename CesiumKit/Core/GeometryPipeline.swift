@@ -1227,7 +1227,7 @@ struct GeometryPipeline {
             var n = Cartesian3.fromArray(normals, i03, normalScratch);
             var t = Cartesian3.fromArray(tan1, i03, tScratch);
             var scalar = Cartesian3.dot(n, t);
-            Cartesian3.multiplyByScalar(n, scalar, normalScale);
+            Cartesian3.multiplyBy(scalar: n, scalar, normalScale);
             Cartesian3.normalize(Cartesian3.subtract(t, normalScale, t), t);
 
             tangentValues[i03] = t.x;
@@ -1450,7 +1450,7 @@ struct GeometryPipeline {
 
     var c3 = new Cartesian3();
     function getXZIntersectionOffsetPoints(p, p1, u1, v1) {
-        Cartesian3.add(p, Cartesian3.multiplyByScalar(Cartesian3.subtract(p1, p, c3), p.y/(p.y-p1.y), c3), u1);
+        Cartesian3.add(p, Cartesian3.multiplyBy(scalar: Cartesian3.subtract(p1, p, c3), p.y/(p.y-p1.y), c3), u1);
         Cartesian3.clone(u1, v1);
         offsetPointFromXZPlane(u1, true);
         offsetPointFromXZPlane(v1, false);
@@ -1629,9 +1629,9 @@ struct GeometryPipeline {
             var coords = barycentricCoordinates(point, p0, p1, p2);
 
             if (defined(normals)) {
-                v0 = Cartesian3.multiplyByScalar(n0, coords.x, v0);
-                v1 = Cartesian3.multiplyByScalar(n1, coords.y, v1);
-                v2 = Cartesian3.multiplyByScalar(n2, coords.z, v2);
+                v0 = Cartesian3.multiplyBy(scalar: n0, coords.x, v0);
+                v1 = Cartesian3.multiplyBy(scalar: n1, coords.y, v1);
+                v2 = Cartesian3.multiplyBy(scalar: n2, coords.z, v2);
 
                 var normal = Cartesian3.add(v0, v1, computeScratch);
                 Cartesian3.add(normal, v2, normal);
@@ -1641,9 +1641,9 @@ struct GeometryPipeline {
             }
 
             if (defined(binormals)) {
-                v0 = Cartesian3.multiplyByScalar(b0, coords.x, v0);
-                v1 = Cartesian3.multiplyByScalar(b1, coords.y, v1);
-                v2 = Cartesian3.multiplyByScalar(b2, coords.z, v2);
+                v0 = Cartesian3.multiplyBy(scalar: b0, coords.x, v0);
+                v1 = Cartesian3.multiplyBy(scalar: b1, coords.y, v1);
+                v2 = Cartesian3.multiplyBy(scalar: b2, coords.z, v2);
 
                 var binormal = Cartesian3.add(v0, v1, computeScratch);
                 Cartesian3.add(binormal, v2, binormal);
@@ -1653,9 +1653,9 @@ struct GeometryPipeline {
             }
 
             if (defined(tangents)) {
-                v0 = Cartesian3.multiplyByScalar(t0, coords.x, v0);
-                v1 = Cartesian3.multiplyByScalar(t1, coords.y, v1);
-                v2 = Cartesian3.multiplyByScalar(t2, coords.z, v2);
+                v0 = Cartesian3.multiplyBy(scalar: t0, coords.x, v0);
+                v1 = Cartesian3.multiplyBy(scalar: t1, coords.y, v1);
+                v2 = Cartesian3.multiplyBy(scalar: t2, coords.z, v2);
 
                 var tangent = Cartesian3.add(v0, v1, computeScratch);
                 Cartesian3.add(tangent, v2, tangent);
@@ -1665,9 +1665,9 @@ struct GeometryPipeline {
             }
 
             if (defined(texCoords)) {
-                u0 = Cartesian2.multiplyByScalar(s0, coords.x, u0);
-                u1 = Cartesian2.multiplyByScalar(s1, coords.y, u1);
-                u2 = Cartesian2.multiplyByScalar(s2, coords.z, u2);
+                u0 = Cartesian2.multiplyBy(scalar: s0, coords.x, u0);
+                u1 = Cartesian2.multiplyBy(scalar: s1, coords.y, u1);
+                u2 = Cartesian2.multiplyBy(scalar: s2, coords.z, u2);
 
                 var texCoord = Cartesian2.add(u0, u1, u0);
                 Cartesian2.add(texCoord, u2, texCoord);
@@ -1803,7 +1803,7 @@ struct GeometryPipeline {
                 var intersection = IntersectionTests.lineSegmentPlane(prev, cur, xzPlane);
                 if (defined(intersection)) {
                     // move point on the xz-plane slightly away from the plane
-                    var offset = Cartesian3.multiplyByScalar(Cartesian3.UNIT_Y, 5.0 * CesiumMath.EPSILON9, offsetScratch);
+                    var offset = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_Y, 5.0 * CesiumMath.EPSILON9, offsetScratch);
                     if (prev.y < 0.0) {
                         Cartesian3.negate(offset, offset);
                     }

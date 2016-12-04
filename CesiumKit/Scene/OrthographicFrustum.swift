@@ -184,13 +184,13 @@ struct OrthographicFrustum: Frustum {
     
     var right = Cartesian3.cross(direction, up, getPlanesRight);
     var nearCenter = getPlanesNearCenter;
-    Cartesian3.multiplyByScalar(direction, n, nearCenter);
+    Cartesian3.multiplyBy(scalar: direction, n, nearCenter);
     Cartesian3.add(position, nearCenter, nearCenter);
     
     var point = getPlanesPoint;
     
     // Left plane
-    Cartesian3.multiplyByScalar(right, l, point);
+    Cartesian3.multiplyBy(scalar: right, l, point);
     Cartesian3.add(nearCenter, point, point);
     
     var plane = planes[0];
@@ -203,7 +203,7 @@ struct OrthographicFrustum: Frustum {
     plane.w = -Cartesian3.dot(right, point);
     
     // Right plane
-    Cartesian3.multiplyByScalar(right, r, point);
+    Cartesian3.multiplyBy(scalar: right, r, point);
     Cartesian3.add(nearCenter, point, point);
     
     plane = planes[1];
@@ -216,7 +216,7 @@ struct OrthographicFrustum: Frustum {
     plane.w = -Cartesian3.dot(Cartesian3.negate(right, negateScratch), point);
     
     // Bottom plane
-    Cartesian3.multiplyByScalar(up, b, point);
+    Cartesian3.multiplyBy(scalar: up, b, point);
     Cartesian3.add(nearCenter, point, point);
     
     plane = planes[2];
@@ -229,7 +229,7 @@ struct OrthographicFrustum: Frustum {
     plane.w = -Cartesian3.dot(up, point);
     
     // Top plane
-    Cartesian3.multiplyByScalar(up, t, point);
+    Cartesian3.multiplyBy(scalar: up, t, point);
     Cartesian3.add(nearCenter, point, point);
     
     plane = planes[3];
@@ -252,7 +252,7 @@ struct OrthographicFrustum: Frustum {
     plane.w = -Cartesian3.dot(direction, nearCenter);
     
     // Far plane
-    Cartesian3.multiplyByScalar(direction, f, point);
+    Cartesian3.multiplyBy(scalar: direction, f, point);
     Cartesian3.add(position, point, point);
     
     plane = planes[5];

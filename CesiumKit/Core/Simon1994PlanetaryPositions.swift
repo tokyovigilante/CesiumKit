@@ -525,7 +525,7 @@ class Simon1994PlanetaryPositions {
      */
     func computeSimonEarth (_ date: JulianDate) -> Cartesian3 {
         let result = computeSimonMoon(date)
-        return result.multiplyByScalar(_factor)
+        return result.multiplyBy(scalar: _factor)
     }
  
     // Values for the <code>axesTransformation</code> needed for the rotation were found using the STK Components

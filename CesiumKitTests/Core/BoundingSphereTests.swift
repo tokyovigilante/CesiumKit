@@ -393,7 +393,7 @@ expect(BoundingSphere.union(bs1, bs2)).toEqual(expected);
 });
 
 it('union result parameter is caller', function() {
-var bs1 = new BoundingSphere(Cartesian3.multiplyByScalar(Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()), 3.0, new Cartesian3()), 3.0);
+var bs1 = new BoundingSphere(Cartesian3.multiplyBy(scalar: Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()), 3.0, new Cartesian3()), 3.0);
 var bs2 = new BoundingSphere(Cartesian3.UNIT_X, 1.0);
 var expected = new BoundingSphere(Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()), 5.0);
 BoundingSphere.union(bs1, bs2, bs1);
