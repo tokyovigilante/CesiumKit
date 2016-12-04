@@ -36,39 +36,13 @@ class TileTerrain {
     var vertexArray: VertexArray? = nil
 
     var upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)?
+    
+    private var _pendingRequests = [NetworkOperation]()
 
     init (upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)? = nil) {
         self.upsampleDetails = upsampleDetails
     }
     
-    func freeResources (context: Context? = nil) {
-        self.state = .unloaded
-        
-        let freeResourcesRaw = { () -> () in
-            self.data = nil
-            self.mesh = nil
-            
-            //var indexBuffer: Buffer? = nil
-            if self.vertexArray != nil {
-                //let indexBuffer = self.vertexArray!.indexBuffer
-                self.vertexArray = nil
-            }
-        }
-        /*if let context = context {
-            dispatch_async(context.processorQueue, freeResourcesRaw)
-        } else {*/
-            freeResourcesRaw()
-        //}
-        // FIXME: Index buffer
-        /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
-        --indexBuffer.referenceCount;
-        if (indexBuffer.referenceCount === 0) {
-        indexBuffer.destroy();
-        }
-        }*/
-    }
-
-
     func publishToTile(_ tile: QuadtreeTile) {
         let surfaceTile = tile.data!
         guard let mesh = mesh else {
@@ -113,7 +87,9 @@ class TileTerrain {
     func requestTileGeometry(terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         
         self.state = .receiving
-        terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: true, completionBlock: { terrainData in
+        var request: NetworkOperation?
+        request = terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: true) { terrainData in
+            self._pendingRequests.removeObject(object: request!)
             if let terrainData = terrainData {
                 self.data = terrainData
                 self.state = .received
@@ -125,7 +101,8 @@ class TileTerrain {
                 let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
                 logPrint(.error, message)
             }
-        })
+        }
+        _pendingRequests.append(request!)
     }
     
     func processUpsampleStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
@@ -188,18 +165,18 @@ class TileTerrain {
         QueueManager.sharedInstance.processorQueue.async(execute: {
             data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, exaggeration: frameState.terrainExaggeration, completionBlock: { mesh in
                 
-                if let mesh = mesh {
-                    DispatchQueue.main.async(execute: {
-                        self.mesh = mesh
-                        self.state = .transformed
-                    })
-                } else {
+                guard let mesh = mesh else {
                     DispatchQueue.main.async(execute: {
                         self.state = .failed
                         let message = "Failed to transform terrain tile X: \(x) Y: \(y) Level: \(level) - terrain create mesh request failed"
                         logPrint(.error, message)
                     })
+                    return
                 }
+                DispatchQueue.main.async(execute: {
+                    self.mesh = mesh
+                    self.state = .transformed
+                })
             })
         })
     }
@@ -257,5 +234,40 @@ class TileTerrain {
             })
         })
     }
+    
+    deinit {
+        logPrint(.debug, "deinit tileterrain")
+        for operation in _pendingRequests {
+            operation.cancel()
+        }
+    }
+    
+    func freeResources (context: Context? = nil) {
+        self.state = .unloaded
+        
+        let freeResourcesRaw = { () -> () in
+            self.data = nil
+            self.mesh = nil
+            
+            //var indexBuffer: Buffer? = nil
+            if self.vertexArray != nil {
+                //let indexBuffer = self.vertexArray!.indexBuffer
+                self.vertexArray = nil
+            }
+        }
+        /*if let context = context {
+         dispatch_async(context.processorQueue, freeResourcesRaw)
+         } else {*/
+        freeResourcesRaw()
+        //}
+        // FIXME: Index buffer
+        /*if (!indexBuffer.isDestroyed() && defined(indexBuffer.referenceCount)) {
+         --indexBuffer.referenceCount;
+         if (indexBuffer.referenceCount === 0) {
+         indexBuffer.destroy();
+         }
+         }*/
+    }
+
     
 }

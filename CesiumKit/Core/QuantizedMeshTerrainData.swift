@@ -311,8 +311,9 @@ class QuantizedMeshTerrainData: TerrainData {
         
         let levelDifference = descendantLevel - thisLevel
         if levelDifference > 1 {
-            assertionFailure("Upsampling through more than one level at a time is not currently supported")
+            logPrint(.error, "Upsampling through more than one level at a time is not currently supported")
             completionBlock(nil)
+            return false
         }
         
         if _mesh != nil {

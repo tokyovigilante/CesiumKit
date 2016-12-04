@@ -95,12 +95,14 @@ class EllipsoidTerrainProvider: TerrainProvider {
      *          returns undefined instead of a promise, it is an indication that too many requests are already
      *          pending and the request will be retried later.
      */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> ()) {
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> ()) -> NetworkOperation? {
+        logPrint(.debug, "Requested terrain for L\(level)X\(x)Y\(y)")
         let terrainData = HeightmapTerrainData(
             buffer: [UInt16](repeating: 0, count: 16 * 16),
             width : 16,
             height : 16)
         completionBlock(terrainData)
+        return nil
     }
 
     /**

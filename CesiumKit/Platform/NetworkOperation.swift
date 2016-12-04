@@ -23,7 +23,7 @@ extension URLSessionConfiguration {
         let config = `default`
         // Eg we think 60s is too long a timeout time.
         config.timeoutIntervalForRequest = 20
-        config.httpMaximumConnectionsPerHost = 2
+        config.httpMaximumConnectionsPerHost = 6
         return config
     }
 }
@@ -236,7 +236,7 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
                 operation._incomingData = Data(capacity: capacity)
             }
         }
-        logPrint(.debug, "Received \(data.count) bytes from " + (dataTask.originalRequest?.url?.absoluteString ?? "unknown"))
+        //logPrint(.debug, "Received \(data.count) bytes from " + (dataTask.originalRequest?.url?.absoluteString ?? "unknown"))
         //As the data may be discontiguous, you should use [NSData enumerateByteRangesUsingBlock:] to access it.
         data.enumerateBytes { (buffer, byteIndex, stop) in
             operation._incomingData?.append(buffer.baseAddress!, count: buffer.count)

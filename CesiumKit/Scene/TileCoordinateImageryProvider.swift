@@ -237,7 +237,7 @@ open class TileCoordinateImageryProvider: ImageryProvider {
     *
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
-    open func tileCredits (_ x: Int, y: Int, level: Int) -> [Credit] {
+    open func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
         return [credit].flatMap { $0 }
     }
     
@@ -263,8 +263,9 @@ open class TileCoordinateImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
+    open func requestImage(x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
     
+        logPrint(.debug, "request for imagery L\(level)X\(x)Y\(y)")
         let bytesPerPixel: Int = 4
         let bytesPerRow = bytesPerPixel * tileWidth
         let bitsPerComponent = 8

@@ -554,7 +554,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @exception {DeveloperError} This function must not be called before {@link CesiumTerrainProvider#ready}
      *            returns true.
      */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: @escaping (TerrainData?) -> ()) {
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: @escaping (TerrainData?) -> ()) -> NetworkOperation? {
         assert(ready, "requestTileGeometry must not be called before the terrain provider is ready.")
         
         if _tileUrlTemplates.isEmpty {
@@ -601,6 +601,7 @@ class CesiumTerrainProvider: TerrainProvider {
             }
         }
         tileLoader.enqueue()
+        return tileLoader
     }
     
         /*

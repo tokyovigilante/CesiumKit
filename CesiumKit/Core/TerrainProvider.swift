@@ -107,11 +107,10 @@ protocol TerrainProvider {
     * @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
     *                  or false if the request should be initiated regardless of the number of requests
     *                  already in progress.
-    * @returns {Promise|TerrainData} A promise for the requested geometry.  If this method
-    *          returns undefined instead of a promise, it is an indication that too many requests are already
-    *          pending and the request will be retried later.
+    * @returns {NetworkOperation?} If the request involves a NetworkOperation, the NetworkOperation is returned
+    * to allow cancellation.
     */
-    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> () )
+    func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> ()) -> NetworkOperation?
     
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
@@ -157,9 +156,9 @@ protocol TerrainProvider {
 extension TerrainProvider {
     
     func getTileDataAvailable(x: Int, y: Int, level: Int) -> Bool? {
-        if level > 10 {
+        /*if level > 10 {
             return false
-        }
+        }*/
         return nil
     }
         

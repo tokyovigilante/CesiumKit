@@ -502,7 +502,7 @@ open class ImageryLayer {
             if let image = image {
                 DispatchQueue.main.async(execute: {
                     imagery.image = image
-                    imagery.credits = self.imageryProvider.tileCredits(imagery.x, y: imagery.y, level: imagery.level)
+                    imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
                     
                     imagery.state = .received
                 })
@@ -516,7 +516,7 @@ open class ImageryLayer {
             }
             
         }
-        self.imageryProvider.requestImage(imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
+        self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
     }
     
     /**
@@ -564,7 +564,7 @@ open class ImageryLayer {
                 )
             )
             
-            //println("created texture \(texture.textureName) for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
+            logPrint(.debug, "created texture for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             DispatchQueue.main.async(execute: {
                 //dispatch_async(context.renderQueue, {
                 imagery.texture = texture

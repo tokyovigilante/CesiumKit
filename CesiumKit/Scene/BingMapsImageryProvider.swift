@@ -520,7 +520,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * }
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
-    open func requestImage(_ x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
+    open func requestImage(x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void)) {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         let url = buildImageUrl(x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
@@ -596,7 +596,7 @@ open class BingMapsImageryProvider: ImageryProvider {
      *
      * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
      */
-    open func tileCredits (_ x: Int, y: Int, level: Int) -> [Credit] {
+    open func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
         assert(ready, "getTileCredits must not be called before the imagery provider is ready")
         
         let rectangle = _tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
