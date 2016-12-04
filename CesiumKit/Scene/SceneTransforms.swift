@@ -256,7 +256,7 @@ struct SceneTransforms {
     fileprivate static func clipToGLWindowCoordinates (_ viewport: Cartesian4, position: Cartesian4) -> Cartesian2 {
         
         // Perspective divide to transform from clip coordinates to normalized device coordinates
-        let positionNDC = position.divideByScalar(position.w)
+        let positionNDC = position.divideBy(scalar: position.w)
         
         // Viewport transform to transform from clip coordinates to window coordinates
         let viewportTransform = Matrix4.computeViewportTransformation(viewport)
@@ -314,7 +314,7 @@ struct SceneTransforms {
     
     // Reverse perspective divide
     var w = 1.0 / worldCoords.w;
-    Cartesian3.multiplyByScalar(worldCoords, w, worldCoords);
+    Cartesian3.multiplyBy(scalar: worldCoords, w, worldCoords);
     
     return Cartesian3.fromCartesian4(worldCoords, result);
     };

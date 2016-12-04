@@ -38,10 +38,10 @@ class DepthPlane {
         let wMagnitude = sqrt(q.magnitudeSquared - 1.0)
         
         // Compute the center and offsets.
-        let center = qUnit.multiplyByScalar(1.0 / qMagnitude)
+        let center = qUnit.multiplyBy(scalar: 1.0 / qMagnitude)
         let scalar = wMagnitude / qMagnitude
-        let eastOffset = eUnit.multiplyByScalar(scalar)
-        let northOffset = nUnit.multiplyByScalar(scalar)
+        let eastOffset = eUnit.multiplyBy(scalar: scalar)
+        let northOffset = nUnit.multiplyBy(scalar: scalar)
         
         var depthQuad = [Float](repeating: 0.0, count: 12)
         // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.

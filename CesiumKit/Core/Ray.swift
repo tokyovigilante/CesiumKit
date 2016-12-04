@@ -54,7 +54,7 @@ struct Ray {
     * var point = Ray.getPoint(ray, intersection.start);
     */
     func getPoint(_ t: Double) -> Cartesian3 {
-        return direction.multiplyByScalar(t).add(origin)
+        return direction.multiplyBy(scalar: t).add(origin)
     }
     
 }

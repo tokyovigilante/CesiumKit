@@ -52,7 +52,7 @@ class IntersectionTests {
         if t < 0 {
             return nil
         }
-        return origin.add(direction.multiplyByScalar(t))
+        return origin.add(direction.multiplyBy(scalar: t))
     }
     
     static fileprivate func _rayTriangle (_ ray: Ray, p0: Cartesian3, p1: Cartesian3, p2: Cartesian3, cullBackFaces: Bool = false) -> Double? {
@@ -133,7 +133,7 @@ class IntersectionTests {
         if t == nil || t < 0.0 {
             return nil
         }
-        return ray.origin.add(ray.direction.multiplyByScalar(t!))
+        return ray.origin.add(ray.direction.multiplyBy(scalar: t!))
     }
     
     /*
@@ -177,7 +177,7 @@ class IntersectionTests {
      result = new Cartesian3();
      }
      
-     Cartesian3.multiplyByScalar(ray.direction, t, result);
+     Cartesian3.multiplyBy(scalar: ray.direction, t, result);
      return Cartesian3.add(ray.origin, result, result);
      };
      */
@@ -620,7 +620,7 @@ class IntersectionTests {
      }
      
      // intersection is endPoint0 + t * (endPoint1 - endPoint0)
-     Cartesian3.multiplyByScalar(difference, t, result);
+     Cartesian3.multiplyBy(scalar: difference, t, result);
      Cartesian3.add(endPoint0, result, result);
      return result;
      };

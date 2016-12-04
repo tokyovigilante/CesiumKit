@@ -771,8 +771,8 @@ open class Scene {
 
     func cameraEqual(_ camera0: Camera, camera1: Camera, epsilon: Double) -> Bool {
         let scalar = 1 / max(1, maxComponent(camera0.position, b: camera1.position))
-        let position0 = camera0.position.multiplyByScalar(scalar)
-        let position1 = camera1.position.multiplyByScalar(scalar)
+        let position0 = camera0.position.multiplyBy(scalar: scalar)
+        let position1 = camera1.position.multiplyBy(scalar: scalar)
         return position0.equalsEpsilon(position1, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
             camera0.direction.equalsEpsilon(camera1.direction, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
             camera0.up.equalsEpsilon(camera1.up, relativeEpsilon: epsilon, absoluteEpsilon: epsilon) &&
@@ -1451,7 +1451,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             var near = camera.frustum.near;
             var fo = near * 5.0;
             var eyeSeparation = fo / 30.0;
-            var eyeTranslation = Cartesian3.multiplyByScalar(savedCamera.right, eyeSeparation * 0.5, scratchEyeTranslation);
+            var eyeTranslation = Cartesian3.multiplyBy(scalar: savedCamera.right, eyeSeparation * 0.5, scratchEyeTranslation);
             
             camera.frustum.aspectRatio = viewport.width / viewport.height;
             
@@ -1893,9 +1893,9 @@ function getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, h
     camera._setTransform(Matrix4.IDENTITY);
     
     var origin = Cartesian3.clone(camera.position, scratchOrigin);
-    Cartesian3.multiplyByScalar(camera.right, x, scratchDirection);
+    Cartesian3.multiplyBy(scalar: camera.right, x, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
-    Cartesian3.multiplyByScalar(camera.up, y, scratchDirection);
+    Cartesian3.multiplyBy(scalar: camera.up, y, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
     
     camera._setTransform(transform);

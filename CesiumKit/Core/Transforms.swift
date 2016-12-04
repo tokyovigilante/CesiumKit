@@ -575,7 +575,7 @@ struct Transforms {
     static func pointToGLWindowCoordinates (modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
         
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
-        coords = coords.multiplyByScalar(1.0 / coords.w)
+        coords = coords.multiplyBy(scalar: 1.0 / coords.w)
         coords = viewportTransformation.multiplyByVector(coords)
         
         return Cartesian2(cartesian4: coords)

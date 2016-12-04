@@ -255,7 +255,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func multiplyByScalar (_ scalar: Double) -> Cartesian3 {
+    public func multiplyBy (scalar: Double) -> Cartesian3 {
         return Cartesian3(simd: simdType * scalar)
     }
     
@@ -267,7 +267,7 @@ public struct Cartesian3 {
      * @param {Cartesian4} result The object onto which to store the result.
      * @returns {Cartesian4} The modified result parameter.
      */
-    public func divideByScalar (_ scalar: Double) -> Cartesian3 {
+    public func divideBy (scalar: Double) -> Cartesian3 {
         return Cartesian3(simd: simdType * (1/scalar))
     }
     
@@ -313,7 +313,7 @@ public struct Cartesian3 {
     * @param {Cartesian3} right The second Cartesian.
     * @returns {Number} The angle between the Cartesians.
     */
-    func angleBetween(_ other: Cartesian3) -> Double {
+    func angle(between other: Cartesian3) -> Double {
         let cosine = self.normalize().dot(other.normalize())
         let sine = self.normalize().cross(other.normalize()).magnitude
         return atan2(sine, cosine)
@@ -348,7 +348,7 @@ public struct Cartesian3 {
         return result;
     }
     
-    func equalsArray (_ array: [Float], offset: Int) -> Bool {
+    func equals (array: [Float], offset: Int) -> Bool {
         return Float(x) == array[offset] &&
             Float(y) == array[offset + 1] &&
             Float(z) == array[offset + 2]
@@ -398,11 +398,11 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromDegrees(-115.0, 37.0);
     */
-    public static func fromDegrees(_ longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    public static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
-        return Cartesian3.fromRadians(lon, latitude: lat, height: height, ellipsoid: ellipsoid)
+        return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
     }
     
     /**
@@ -418,14 +418,14 @@ public struct Cartesian3 {
     * @example
     * var position = Cartesian3.fromRadians(-2.007, 0.645);
     */
-    static func fromRadians(_ longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
+    static func fromRadians(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
         let cosLatitude = cos(latitude);
         let n = Cartesian3(x: cosLatitude * cos(longitude), y: cosLatitude * sin(longitude), z: sin(latitude)).normalize()
         let k = n.multiplyComponents(ellipsoid.radiiSquared)
         let gamma = sqrt(n.dot(k))
         
-        return k.divideByScalar(gamma).add(n.multiplyByScalar(height))
+        return k.divideBy(scalar: gamma).add(n.multiplyBy(scalar: height))
     }
     
     /**
@@ -466,7 +466,7 @@ public struct Cartesian3 {
         
         var cartesians = [Cartesian3]()
         for i in stride(from: 0, to: coordinates.count, by: 2) {
-            cartesians.append(Cartesian3.fromRadians(coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
+            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: 0, ellipsoid: ellipsoid))
         }
         return cartesians
     }
@@ -511,7 +511,7 @@ public struct Cartesian3 {
         
         var cartesians = [Cartesian3]()
         for i in stride(from: 0, to: coordinates.count, by: 3) {
-            cartesians.append(Cartesian3.fromRadians(coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
+            cartesians.append(Cartesian3.fromRadians(longitude: coordinates[i], latitude: coordinates[i+1], height: coordinates[i+2], ellipsoid: ellipsoid))
         }
         return cartesians
     }

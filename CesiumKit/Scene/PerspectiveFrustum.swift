@@ -207,7 +207,7 @@ class PerspectiveFrustum: Frustum {
     * var position = camera.position;
     * var direction = camera.direction;
     * var toCenter = Cesium.Cartesian3.subtract(primitive.boundingVolume.center, position, new Cesium.Cartesian3());      // vector from camera to a primitive
-    * var toCenterProj = Cesium.Cartesian3.multiplyByScalar(direction, Cesium.Cartesian3.dot(direction, toCenter)); // project vector onto camera direction vector
+    * var toCenterProj = Cesium.Cartesian3.multiplyBy(scalar: direction, Cesium.Cartesian3.dot(direction, toCenter)); // project vector onto camera direction vector
     * var distance = Cesium.Cartesian3.magnitude(toCenterProj);
     * var pixelSize = camera.frustum.getPixelSize({
     *     width : canvas.clientWidth,

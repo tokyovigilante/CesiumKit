@@ -51,7 +51,7 @@ struct AxisAlignedBoundingBox: Equatable {
             self.center = center
         } else {
             //If center was not defined, compute it.
-            self.center = minimum.add(maximum).multiplyByScalar(0.5)
+            self.center = minimum.add(maximum).multiplyBy(scalar: 0.5)
         }
     }
     /*
@@ -113,7 +113,7 @@ struct AxisAlignedBoundingBox: Equatable {
             maximum.z = maximumZ;
             
             var center = Cartesian3.add(minimum, maximum, result.center);
-            Cartesian3.multiplyByScalar(center, 0.5, center);
+            Cartesian3.multiplyBy(scalar: center, 0.5, center);
             
             return result;
         };
@@ -172,7 +172,7 @@ struct AxisAlignedBoundingBox: Equatable {
             //>>includeEnd('debug');
             
             intersectScratch = Cartesian3.subtract(box.maximum, box.minimum, intersectScratch);
-            var h = Cartesian3.multiplyByScalar(intersectScratch, 0.5, intersectScratch); //The positive half diagonal
+            var h = Cartesian3.multiplyBy(scalar: intersectScratch, 0.5, intersectScratch); //The positive half diagonal
             var normal = plane.normal;
             var e = h.x * Math.abs(normal.x) + h.y * Math.abs(normal.y) + h.z * Math.abs(normal.z);
             var s = Cartesian3.dot(box.center, normal) + plane.distance; //signed distance from center

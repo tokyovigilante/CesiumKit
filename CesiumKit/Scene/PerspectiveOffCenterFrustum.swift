@@ -153,26 +153,26 @@ class PerspectiveOffCenterFrustum: Frustum {
         
         let right2 = direction.cross(up)
         
-        let nearCenter = direction.multiplyByScalar(near).add(position)
+        let nearCenter = direction.multiplyBy(scalar: near).add(position)
         
-        let farCenter = direction.multiplyByScalar(far).add(position)
+        let farCenter = direction.multiplyBy(scalar: far).add(position)
         
         var planes = [Cartesian4]()
         
         //Left plane computation
-        let leftPlane = right2.multiplyByScalar(left).add(nearCenter).subtract(position).normalize().cross(up)
+        let leftPlane = right2.multiplyBy(scalar: left).add(nearCenter).subtract(position).normalize().cross(up)
         planes.append(Cartesian4(x: leftPlane.x, y: leftPlane.y, z: leftPlane.z, w: -leftPlane.dot(position)))
         
         //Right plane computation
-        let rightPlane = up.cross(right2.multiplyByScalar(right).add(nearCenter).subtract(position).normalize())
+        let rightPlane = up.cross(right2.multiplyBy(scalar: right).add(nearCenter).subtract(position).normalize())
         planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: rightPlane.z, w: -rightPlane.dot(position)))
         
         //Bottom plane computation
-        let bottomPlane = right2.cross(up.multiplyByScalar(bottom).add(nearCenter).subtract(position).normalize())
+        let bottomPlane = right2.cross(up.multiplyBy(scalar: bottom).add(nearCenter).subtract(position).normalize())
         planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: -bottomPlane.dot(position)))
         
         //Top plane computation
-        let topPlane = up.multiplyByScalar(top).add(nearCenter).subtract(position).normalize().cross(right2)
+        let topPlane = up.multiplyBy(scalar: top).add(nearCenter).subtract(position).normalize().cross(right2)
         planes.append(Cartesian4(x: topPlane.x, y: topPlane.y, z: topPlane.z, w: -topPlane.dot(position)))
         
         //Near plane computation
@@ -210,7 +210,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var position = camera.position;
     * var direction = camera.direction;
     * var toCenter = Cesium.Cartesian3.subtract(primitive.boundingVolume.center, position, new Cesium.Cartesian3());      // vector from camera to a primitive
-    * var toCenterProj = Cesium.Cartesian3.multiplyByScalar(direction, Cesium.Cartesian3.dot(direction, toCenter), new Cesium.Cartesian3()); // project vector onto camera direction vector
+    * var toCenterProj = Cesium.Cartesian3.multiplyBy(scalar: direction, Cesium.Cartesian3.dot(direction, toCenter), new Cesium.Cartesian3()); // project vector onto camera direction vector
     * var distance = Cesium.Cartesian3.magnitude(toCenterProj);
     * var pixelSize = camera.frustum.getPixelSize(new Cesium.Cartesian2(canvas.clientWidth, canvas.clientHeight), distance);
     */

@@ -73,7 +73,7 @@ struct OrientedBoundingBox: BoundingVolume {
             Cartesian3.add(meanPoint, positions[i], meanPoint);
         }
         var invLength = 1.0 / length;
-        Cartesian3.multiplyByScalar(meanPoint, invLength, meanPoint);
+        Cartesian3.multiplyBy(scalar: meanPoint, invLength, meanPoint);
         
         var exx = 0.0;
         var exy = 0.0;
@@ -127,12 +127,12 @@ struct OrientedBoundingBox: BoundingVolume {
         }
         
         var center = Cartesian3.add(minPoint, maxPoint, scratchCartesian3);
-        Cartesian3.multiplyByScalar(center, 0.5, center);
+        Cartesian3.multiplyBy(scalar: center, 0.5, center);
         Matrix3.multiplyByVector(rotation, center, center);
         Cartesian3.add(meanPoint, center, result.center);
         
         var scale = Cartesian3.subtract(maxPoint, minPoint, scratchCartesian3);
-        Cartesian3.multiplyByScalar(scale, 0.5, scale);
+        Cartesian3.multiplyBy(scalar: scale, 0.5, scale);
         Matrix3.multiplyByScale(result.halfAxes, scale, result.halfAxes);
         
         return result;*/

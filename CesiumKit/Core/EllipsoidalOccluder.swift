@@ -237,7 +237,7 @@ class EllipsoidalOccluder {
         let scaledSpacePosition = ellipsoid.transformPositionToScaledSpace(position)
         var magnitudeSquared = scaledSpacePosition.magnitudeSquared;
         var magnitude = sqrt(magnitudeSquared)
-        let direction = scaledSpacePosition.divideByScalar(magnitude)
+        let direction = scaledSpacePosition.divideBy(scalar: magnitude)
         
         // For the purpose of this computation, points below the ellipsoid are consider to be on it instead.
         magnitudeSquared = max(1.0, magnitudeSquared)
@@ -260,7 +260,7 @@ class EllipsoidalOccluder {
                 return nil
             }
             
-            return scaledSpaceDirectionToPoint.multiplyByScalar(resultMagnitude)
+        return scaledSpaceDirectionToPoint.multiplyBy(scalar: resultMagnitude)
     }
     
     func computeScaledSpaceDirectionToPoint(_ ellipsoid: Ellipsoid, directionToPoint: Cartesian3) -> Cartesian3 {
