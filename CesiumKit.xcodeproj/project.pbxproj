@@ -340,6 +340,8 @@
 		941EE9A71BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941EE9A81BC9FC7A001A40C8 /* EllipsoidTangentPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */; };
 		941F557A1AA13A5700FFAD81 /* ImageryLayerUniformMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */; };
+		9420FFEB1E10E43A001A40C8 /* FontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9420FFEA1E10E43A001A40C8 /* FontAtlas.swift */; };
+		9420FFEC1E10E43A001A40C8 /* FontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9420FFEA1E10E43A001A40C8 /* FontAtlas.swift */; };
 		942251421B1062CC0095A86F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251411B1062CC0095A86F /* Metal.framework */; };
 		942251441B1062D20095A86F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 942251431B1062D20095A86F /* QuartzCore.framework */; };
 		9427F3841CCCB3A00095A86F /* BufferSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9427F3831CCCB3A00095A86F /* BufferSyncState.swift */; };
@@ -585,8 +587,8 @@
 		94985A731A38444C00FFAD81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94985A711A38444C00FFAD81 /* Main.storyboard */; };
 		94985A751A38444C00FFAD81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94985A741A38444C00FFAD81 /* Images.xcassets */; };
 		94985A781A38444C00FFAD81 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94985A761A38444C00FFAD81 /* LaunchScreen.xib */; };
-		9498959D1C7DDF340095A86F /* FontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9498959C1C7DDF340095A86F /* FontAtlas.swift */; };
-		9498959E1C7DDF340095A86F /* FontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9498959C1C7DDF340095A86F /* FontAtlas.swift */; };
+		9498959D1C7DDF340095A86F /* FontAtlasCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9498959C1C7DDF340095A86F /* FontAtlasCache.swift */; };
+		9498959E1C7DDF340095A86F /* FontAtlasCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9498959C1C7DDF340095A86F /* FontAtlasCache.swift */; };
 		949C04311C1AD917001A40C8 /* ClockRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949C04301C1AD917001A40C8 /* ClockRange.swift */; };
 		949C04321C1AD917001A40C8 /* ClockRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949C04301C1AD917001A40C8 /* ClockRange.swift */; };
 		949C04341C1AD96A001A40C8 /* ClockStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949C04331C1AD96A001A40C8 /* ClockStep.swift */; };
@@ -878,6 +880,7 @@
 		941E2162199EDC3600012DC4 /* Imagebuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imagebuffer.swift; sourceTree = "<group>"; };
 		941EE9A51BC9FC76001A40C8 /* EllipsoidTangentPlane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EllipsoidTangentPlane.swift; sourceTree = "<group>"; };
 		941F55791AA13A5700FFAD81 /* ImageryLayerUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageryLayerUniformMap.swift; sourceTree = "<group>"; };
+		9420FFEA1E10E43A001A40C8 /* FontAtlas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontAtlas.swift; sourceTree = "<group>"; };
 		942251411B1062CC0095A86F /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		942251431B1062D20095A86F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		942251451B106CCF0095A86F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1011,7 +1014,7 @@
 		94985A721A38444C00FFAD81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		94985A741A38444C00FFAD81 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		94985A771A38444C00FFAD81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		9498959C1C7DDF340095A86F /* FontAtlas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontAtlas.swift; path = Platform/FontAtlas.swift; sourceTree = "<group>"; };
+		9498959C1C7DDF340095A86F /* FontAtlasCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontAtlasCache.swift; path = Platform/FontAtlasCache.swift; sourceTree = "<group>"; };
 		949AABAC199F730700037973 /* QuadtreePrimitive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreePrimitive.swift; sourceTree = "<group>"; };
 		949AABAE199F73C600037973 /* GlobeSurfaceTileProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GlobeSurfaceTileProvider.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		949ABA8019410120009B1183 /* Intersect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Intersect.swift; sourceTree = "<group>"; };
@@ -1677,7 +1680,8 @@
 				947B55561D1619140041F512 /* CesiumError.swift */,
 				9488A14B1CBE4BFC0095A86F /* Crypto.swift */,
 				947748731D1526230041F512 /* DebugLog.swift */,
-				9498959C1C7DDF340095A86F /* FontAtlas.swift */,
+				9420FFEA1E10E43A001A40C8 /* FontAtlas.swift */,
+				9498959C1C7DDF340095A86F /* FontAtlasCache.swift */,
 				941CE3771C7BA9380095A86F /* GlyphDescriptor.swift */,
 				946D129C1C2CBF40001A40C8 /* ImageExtensions.swift */,
 				947B55581D1619140041F512 /* JSONEncodable.swift */,
@@ -2361,7 +2365,7 @@
 				947E32321BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
 				94EFB05D1C84D7CD0095A86F /* Parser.swift in Sources */,
 				9413B7EE1A37B93D00FFAD81 /* UniformState.swift in Sources */,
-				9498959D1C7DDF340095A86F /* FontAtlas.swift in Sources */,
+				9498959D1C7DDF340095A86F /* FontAtlasCache.swift in Sources */,
 				9413B7EA1A37B93D00FFAD81 /* Sampler.swift in Sources */,
 				9413B7ED1A37B93D00FFAD81 /* Texture.swift in Sources */,
 				94B9DB601AC630E10095A86F /* CameraEvent.swift in Sources */,
@@ -2372,6 +2376,7 @@
 				9413B7BF1A37B93100FFAD81 /* Matrix4.swift in Sources */,
 				9413B81B1A37B94500FFAD81 /* TileReplacementQueue.swift in Sources */,
 				94B9DB621AC682E50095A86F /* ScreenSpaceEventType.swift in Sources */,
+				9420FFEB1E10E43A001A40C8 /* FontAtlas.swift in Sources */,
 				9403AC8B1C19A449001A40C8 /* TimeStandard.swift in Sources */,
 				9413B7D71A37B93D00FFAD81 /* AutomaticUniforms.swift in Sources */,
 				9413B8141A37B94500FFAD81 /* SceneTransitioner.swift in Sources */,
@@ -2639,6 +2644,7 @@
 				9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */,
 				947748751D1526230041F512 /* DebugLog.swift in Sources */,
 				947821661B5A2D7C0095A86F /* FrameState.swift in Sources */,
+				9420FFEC1E10E43A001A40C8 /* FontAtlas.swift in Sources */,
 				947821671B5A2D7C0095A86F /* Frustum.swift in Sources */,
 				94B119941C13038A0095A86F /* ColorMask.swift in Sources */,
 				94EFB0691C85C9690095A86F /* LocalStorage.swift in Sources */,
@@ -2682,7 +2688,7 @@
 				9429E27E1CDDBA090041F512 /* Offset.swift in Sources */,
 				947821801B5A2D7C0095A86F /* Scene.swift in Sources */,
 				947821811B5A2D7C0095A86F /* SceneMode.swift in Sources */,
-				9498959E1C7DDF340095A86F /* FontAtlas.swift in Sources */,
+				9498959E1C7DDF340095A86F /* FontAtlasCache.swift in Sources */,
 				94F4933A1D0C26050041F512 /* CreditDisplay.swift in Sources */,
 				947821821B5A2D7C0095A86F /* SceneTransitioner.swift in Sources */,
 				947821831B5A2D7C0095A86F /* ScreenSpaceCameraController.swift in Sources */,

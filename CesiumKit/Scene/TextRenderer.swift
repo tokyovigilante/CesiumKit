@@ -105,7 +105,7 @@ open class TextRenderer: Primitive {
 
     fileprivate let _command = DrawCommand()
     
-    fileprivate var _fontAtlas: FontAtlas! = nil
+    fileprivate var _fontAtlas: FontAtlas? = nil
     
     let fontName: String
     
@@ -172,18 +172,18 @@ open class TextRenderer: Primitive {
         }
 
         if _fontAtlas == nil {
-            _fontAtlas = FontAtlas.fromCache(context, fontName: fontName, pointSize: pointSize)
+            _fontAtlas = context.fontAtlasCache.atlas(forFont: fontName)
         }
         
-        guard let map = _command.uniformMap as? TextUniformMap else {
+        guard let atlas = _fontAtlas, let map = _command.uniformMap as? TextUniformMap else {
             return
         }
         
-        if !show || !_fontAtlas.ready || string == "" {
+        if !show || atlas.loadState != .ready || string == "" {
             return
         }
 
-        map._fontAtlasTexture = _fontAtlas.texture
+        map._fontAtlasTexture = atlas.texture
 
         if _command.pipeline == nil {
             _command.pipeline = RenderPipeline.withCompiledShader(
@@ -207,7 +207,7 @@ open class TextRenderer: Primitive {
             meshSize = Cartesian2(x: Double(meshCGSize.width), y: Double(meshCGSize.height))
             
             let meshRect = CGRect(x: 0, y: 0, width: meshCGSize.width, height: meshCGSize.height)
-            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: _fontAtlas, atSize: Int(Double(pointSize)))
+            _command.vertexArray = buildMesh(context, string: string, inRect: meshRect, withFontAtlas: atlas, atSize: Int(Double(pointSize)))
             
             _updateMesh = false
         }
@@ -249,7 +249,7 @@ open class TextRenderer: Primitive {
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
         
-        let font = CTFontCreateCopyWithAttributes(fontAtlas.parentFont, CGFloat(size), nil, nil)
+        let font = CTFontCreateWithName(fontName as CFString?, CGFloat(pointSize), nil)
         
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
         

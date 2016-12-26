@@ -18,15 +18,9 @@ import QuartzCore.CAMetalLayer
 class Context {
         
     fileprivate var _debug: (
-    renderCountThisFrame: Int,
-    renderCount: Int
+        renderCountThisFrame: Int,
+        renderCount: Int
     )
-    
-    /*var renderQueue: dispatch_queue_t {
-    get {
-    return view.renderQueue
-    }
-    }*/
 
     fileprivate let _inflight_semaphore: DispatchSemaphore
     
@@ -42,6 +36,8 @@ class Context {
     
     fileprivate var _drawable: CAMetalDrawable! = nil
     fileprivate var _commandBuffer: MTLCommandBuffer! = nil
+    
+    let fontAtlasCache: FontAtlasCache
     
     var limits: ContextLimits
         
@@ -179,7 +175,7 @@ class Context {
         
         _inflight_semaphore = DispatchSemaphore(value: 3)//kInFlightCommandBuffers)
         
-        //antialias = true
+        fontAtlasCache = FontAtlasCache()
         
         pickObjects = Array<AnyObject>()
         nextPickColor = Array<UInt32>(repeating: 0, count: 1)
@@ -200,21 +196,6 @@ class Context {
 
         wholeFrustumUniformBufferProvider = getFrustumUniformBufferProvider()
 
-        /**
-        * @example
-        * {
-        *   webgl : {
-        *     alpha : false,
-        *     depth : true,
-        *     stencil : false,
-        *     antialias : true,
-        *     premultipliedAlpha : true,
-        *     preserveDrawingBuffer : false
-        *     failIfMajorPerformanceCaveat : true
-        *   },
-        *   allowTextureFilterAnisotropic : true
-        * }
-        */
         //this.options = options;
         //_currentRenderState.apply(_defaultPassState)
         

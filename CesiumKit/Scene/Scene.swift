@@ -1811,7 +1811,7 @@ function callAfterRenderFunctions(frameState) {
         
         context.beginFrame()
         
-        FontAtlas.generateMipmapsIfRequired(context)
+        context.fontAtlasCache.loadTexturesIfRequired(frameState: frameState)
         
         updateEnvironment()
         updateFramerate(passState)
