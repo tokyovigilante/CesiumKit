@@ -2295,12 +2295,7 @@ Scene.prototype.isDestroyed = function() {
         if let debugString = globe.debugString {
             framerateDisplay.string += "\n\(debugString)"
         }
-        framerateDisplay.update(&frameState)/* {
-            _clearNullCommand.execute(context, passState: passState)
-            let textRenderPass = context.createRenderPass(passState)
-            command.execute(context, renderPass: textRenderPass)
-            textRenderPass.complete()
-        }*/
+        framerateDisplay.update(&frameState)
         frameState.creditDisplay.update(&frameState)
     }
 }

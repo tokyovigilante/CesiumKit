@@ -264,10 +264,10 @@ open class TextRenderer: Primitive {
         var vertices = [Float]()
         var indices = [Int]()
         
-        let glyphEnumeratorBlock = { (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) in
+        let glyphEnumeratorBlock = { (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> Bool in
             guard let glyphInfo = fontAtlas.glyphDescriptors[glyph] else {
                 logPrint(.debug, "Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
-                return
+                return false
             }
             let minX = Float(glyphBounds.minX)
             let maxX = Float(glyphBounds.maxX)
@@ -277,16 +277,18 @@ open class TextRenderer: Primitive {
             let maxS = Float(glyphInfo.bottomRightTexCoord.x)
             let minT = Float(glyphInfo.bottomRightTexCoord.y)
             let maxT = Float(glyphInfo.topLeftTexCoord.y)
-            vertices.append(contentsOf: [ minX, maxY, 0, 1, minS, maxT])
-            vertices.append(contentsOf: [ minX, minY, 0, 1, minS, minT])
-            vertices.append(contentsOf: [ maxX, minY, 0, 1, maxS, minT])
-            vertices.append(contentsOf: [ maxX, maxY, 0, 1, maxS, maxT])
+            vertices.append(contentsOf: [minX, maxY, 0, 1, minS, maxT])
+            vertices.append(contentsOf: [minX, minY, 0, 1, minS, minT])
+            vertices.append(contentsOf: [maxX, minY, 0, 1, maxS, minT])
+            vertices.append(contentsOf: [maxX, maxY, 0, 1, maxS, maxT])
             indices.append(glyphIndex * 4)
             indices.append(glyphIndex * 4 + 1)
             indices.append(glyphIndex * 4 + 2)
             indices.append(glyphIndex * 4 + 2)
             indices.append(glyphIndex * 4 + 3)
             indices.append(glyphIndex * 4)
+            
+            return true
         }
         enumerateGlyphsInFrame(frame, usingBlock: glyphEnumeratorBlock)
         
@@ -317,7 +319,7 @@ open class TextRenderer: Primitive {
         return VertexArray(attributes: attributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indices.count)
     }
     
-    fileprivate func enumerateGlyphsInFrame (_ frame: CTFrame, usingBlock block: (_ glyph: CGGlyph, _ glyphIndex: Int, _ glyphBounds: CGRect) -> ()) {
+    fileprivate func enumerateGlyphsInFrame (_ frame: CTFrame, usingBlock addGlyph: (_ glyph: CGGlyph, _ glyphIndex: Int, _ glyphBounds: CGRect) -> Bool) {
         
         let entire = CFRangeMake(0, 0)
         
@@ -358,9 +360,10 @@ open class TextRenderer: Primitive {
                     
                     glyphRect = glyphRect.applying(pathTransform)
                     
-                    block(glyph, glyphIndexInFrame, glyphRect)
-                    
-                    glyphIndexInFrame += 1
+                    let added = addGlyph(glyph, glyphIndexInFrame, glyphRect)
+                    if added {
+                        glyphIndexInFrame += 1
+                    }
                 }
             }
         }
