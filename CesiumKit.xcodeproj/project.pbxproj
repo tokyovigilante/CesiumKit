@@ -3223,6 +3223,12 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				"MODULEMAP_FILE[sdk=appletvsimulator*]" = "$(SRCROOT)/CommonCrypto/appletvsimulator.modulemap";
+				"MODULEMAP_FILE[sdk=iphoneos*]" = "$(SRCROOT)/CommonCrypto/iphoneos.modulemap";
+				"MODULEMAP_FILE[sdk=iphonesimulator*]" = "$(SRCROOT)/CommonCrypto/iphonesimulator.modulemap";
+				"MODULEMAP_FILE[sdk=macosx*]" = "$(SRCROOT)/CommonCrypto/macosx.modulemap";
+				"MODULEMAP_FILE[sdk=watchos*]" = "$(SRCROOT)/CommonCrypto/watchos.modulemap";
+				"MODULEMAP_FILE[sdk=watchsimulator*]" = "$(SRCROOT)/CommonCrypto/watchsimulator.modulemap";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.testtoast.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3264,6 +3270,11 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				"MODULEMAP_FILE[sdk=appletvsimulator*]" = "$(SRCROOT)/CommonCrypto/appletvsimulator.modulemap";
+				"MODULEMAP_FILE[sdk=iphoneos*]" = "$(SRCROOT)/CommonCrypto/iphoneos.modulemap";
+				"MODULEMAP_FILE[sdk=iphonesimulator*]" = "$(SRCROOT)/CommonCrypto/iphonesimulator.modulemap";
+				"MODULEMAP_FILE[sdk=watchos*]" = "$(SRCROOT)/CommonCrypto/watchos.modulemap";
+				"MODULEMAP_FILE[sdk=watchsimulator*]" = "$(SRCROOT)/CommonCrypto/watchsimulator.modulemap";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.testtoast.CommonCrypto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
