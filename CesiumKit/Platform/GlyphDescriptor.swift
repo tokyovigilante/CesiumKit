@@ -9,9 +9,9 @@
 import Foundation
 import CoreGraphics
 
-private let GlyphIndexKey = "glyphIndex"
-private let TopLeftTexCoordKey = "topLeftTexCoord"
-private let BottomRightTexCoordKey = "bottomRightTexCoord"
+private let GlyphIndexKey = "g"
+private let TopLeftTexCoordKey = "tl"
+private let BottomRightTexCoordKey = "br"
 
 struct GlyphDescriptor: JSONEncodable {
     

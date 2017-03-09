@@ -21,11 +21,10 @@ private var _cache = [String: FontAtlas]()
 
 let MBEFontAtlasSize = 4096
 
-private let FontNameKey = "fontName"
+private let FontNameKey = "name"
 private let PointSizeKey = "pointSize"
 private let FontSpreadKey = "spread"
-private let GlyphDescriptorsKey = "glyphDescriptors"
-private let TextureDataPathKey = "textureDataPath"
+private let GlyphDescriptorsKey = "descriptors"
 private let TextureSizeKey = "textureSize"
 
 /// Errors thrown by FontAtlas functions.
@@ -58,7 +57,7 @@ final class FontAtlas: JSONEncodable {
     
     fileprivate let _textureSize: Int
     
-    internal var glyphDescriptors = [GlyphDescriptor]()
+    internal var glyphDescriptors = [CGGlyph: GlyphDescriptor]()
     
     fileprivate var _textureData = [UInt8]()
     
@@ -110,10 +109,15 @@ final class FontAtlas: JSONEncodable {
         }
         parentFont = CTFontCreateWithName(fontName as CFString?, CGFloat(_fontPointSize), nil)
         
-        glyphDescriptors = try json
+        let glyphDescriptorArray = try json
             .getArray(GlyphDescriptorsKey)
             .map { try GlyphDescriptor(fromJSON: $0) }
             .sorted { $0.glyphIndex < $1.glyphIndex }
+        
+        glyphDescriptors = [CGGlyph: GlyphDescriptor]()
+        for descriptor in glyphDescriptorArray {
+            glyphDescriptors[descriptor.glyphIndex] = descriptor
+        }
         
         if glyphDescriptors.count <= 0 {
             throw FontAtlasError.invalidJSONError(json: json, message: "Encountered invalid persisted font (no glyph metrics).")
@@ -121,13 +125,13 @@ final class FontAtlas: JSONEncodable {
         
         _textureSize = try json.getInt(TextureSizeKey)
                
-        let textureDataURL = try LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
+        let textureDataURL = LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
             .appendingPathComponent(fontName)
             .appendingPathExtension("textureData")
 
         let textureData = try Data(contentsOf: textureDataURL, options: [.mappedIfSafe])
         if textureData.count <= 0 {
-            throw FontAtlasError.invalidTextureDataError(path: textureDataURL.absoluteString ?? "", message: "Texture data too short.")
+            throw FontAtlasError.invalidTextureDataError(path: textureDataURL.absoluteString, message: "Texture data too short.")
         }
         _textureData = textureData.getUInt8Array()
     }
@@ -138,7 +142,7 @@ final class FontAtlas: JSONEncodable {
                 FontNameKey: JSON(stringLiteral: (CTFontCopyPostScriptName(parentFont) as NSString) as String),
                 PointSizeKey: JSON(integerLiteral: Int64(_fontPointSize)),
                 FontSpreadKey: JSON(floatLiteral: _spread),
-                GlyphDescriptorsKey: JSON.array(ContiguousArray<JSON>(glyphDescriptors.map { $0.toJSON() })),
+                GlyphDescriptorsKey: JSON.array(ContiguousArray<JSON>(glyphDescriptors.values.map { $0.toJSON() })),
                 TextureSizeKey: JSON(integerLiteral: Int64(_textureSize))
             ]))
         return json
@@ -281,7 +285,7 @@ final class FontAtlas: JSONEncodable {
         
             // The null rect (i.e., the bounding rect of an empty path) is problematic
             // because it has its origin at (+inf, +inf); we fix that up here
-            if ((glyphPathBoundingRect.equalTo(CGRect.null)) != nil) {
+            if glyphPathBoundingRect.equalTo(CGRect.null) {
                 glyphPathBoundingRect = CGRect.zero
             }
             
@@ -295,7 +299,7 @@ final class FontAtlas: JSONEncodable {
                 topLeftTexCoord: CGPoint(x: texCoordLeft, y: texCoordTop),
                 bottomRightTexCoord: CGPoint(x: texCoordRight, y: texCoordBottom)
             )
-            glyphDescriptors.append(descriptor)
+            glyphDescriptors[glyph] = descriptor
             
             origin.x += boundingRect.width + glyphMargin
         }

@@ -49,4 +49,6 @@ fragment half4 text_fragment_shade(TransformedVertex vert [[stage_in]], constant
     // Smooth the glyph edge by interpolating across the boundary in a band with the width determined above
     float insideness = smoothstep(edgeDistance - edgeWidth, edgeDistance + edgeWidth, sampleDistance);
     return half4(color.r, color.g, color.b, insideness);
+    //return half4(color.r, color.g, color.b, 1.0);
+
 }
