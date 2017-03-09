@@ -6,6 +6,10 @@
 //  Copyright © 2016 Test Toast. All rights reserved.
 //
 
-MODULEMAP_FILE[sdk=iphoneos*] = $(SRCROOT)/CommonCrypto/iphoneos.modulemap
-MODULEMAP_FILE[sdk=iphonesimulator*] = $(SRCROOT)/CommonCrypto/iphonesimulator.modulemap
-MODULEMAP_FILE[sdk=macosx*] = $(SRCROOT)/CommonCrypto/macosx.modulemap
+MODULEMAP_FILE[sdk=iphoneos*] = $(SRCROOT)/CCommonCrypto/iphoneos.modulemap
+MODULEMAP_FILE[sdk=iphonesimulator*] = $(SRCROOT)/CCommonCrypto/iphonesimulator.modulemap
+MODULEMAP_FILE[sdk=macosx*] = $(SRCROOT)/CCommonCrypto/macosx.modulemap
+MODULEMAP_FILE[sdk=appletvos*] = $(SRCROOT)/CommonCrypto/appletvos.modulemap
+MODULEMAP_FILE[sdk=appletvsimulator*] = $(SRCROOT)/CCommonCrypto/appletvsimulator.modulemap
+MODULEMAP_FILE[sdk=watchos*] = $(SRCROOT)/CCommonCrypto/watchos.modulemap
+MODULEMAP_FILE[sdk=watchsimulator*] = $(SRCROOT)/CCommonCrypto/watchsimulator.modulemap
