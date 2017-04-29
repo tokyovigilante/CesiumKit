@@ -66,18 +66,6 @@ struct VertexFormat {
     var st: Bool = false
     
     /**
-    * When <code>true</code>, the vertex has a binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
-    * <p>
-    * 32-bit floating-point.  3 components per attribute.
-    * </p>
-    *
-    * @type Boolean
-    *
-    * @default false
-    */
-    var binormal: Bool = false
-    
-    /**
     * When <code>true</code>, the vertex has a tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
     * 32-bit floating-point.  3 components per attribute.
@@ -88,6 +76,18 @@ struct VertexFormat {
     * @default false
     */
     var tangent: Bool = false
+    
+    /**
+     * When <code>true</code>, the vertex has a bitangent attribute (normalized), which is used for tangent-space effects like bump mapping.
+     * <p>
+     * 32-bit floating-point.  3 components per attribute.
+     * </p>
+     *
+     * @type Boolean
+     *
+     * @default false
+     */
+    var bitangent: Bool = false
     
     /**
     * When <code>true</code>, the vertex has an RGB color attribute.
@@ -109,7 +109,7 @@ struct VertexFormat {
     * @see VertexFormat#position
     */
     static func PositionOnly() -> VertexFormat {
-        return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false, color: false)
+        return VertexFormat(position: true, normal: false, st: false, tangent: false, bitangent: false, color: false)
     }
     
     /**
@@ -122,7 +122,7 @@ struct VertexFormat {
     * @see VertexFormat#normal
     */
     static func PositionAndNormal() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: false, binormal: false, tangent: false, color: false)
+        return VertexFormat(position: true, normal: true, st: false, tangent: false, bitangent: false, color: false)
     }
     
     /**
@@ -137,7 +137,7 @@ struct VertexFormat {
     * @see VertexFormat#st
     */
     static func PositionNormalAndST() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: true, binormal: false, tangent: false, color: false)
+        return VertexFormat(position: true, normal: true, st: true, tangent: false, bitangent: false, color: false)
     }
     
     /**
@@ -150,7 +150,7 @@ struct VertexFormat {
     * @see VertexFormat#st
     */
     static func PositionAndST() -> VertexFormat {
-        return VertexFormat(position: true, normal: false, st: true, binormal: false, tangent: false, color: false)
+        return VertexFormat(position: true, normal: false, st: true, tangent: false, bitangent: false, color: false)
     }
     
     /**
@@ -163,7 +163,7 @@ struct VertexFormat {
     * @see VertexFormat#color
     */
     static func PositionAndColor() -> VertexFormat {
-        return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false, color: true)
+        return VertexFormat(position: true, normal: false, st: false, tangent: false, bitangent: false, color: true)
     }
 
     /**
@@ -178,7 +178,7 @@ struct VertexFormat {
     * @see VertexFormat#tangent
     */
     static func All() -> VertexFormat {
-        return VertexFormat(position: true, normal: true, st: true, binormal: true, tangent: true, color: false)
+        return VertexFormat(position: true, normal: true, st: true, tangent: true, bitangent: true, color: false)
     }
     
     /**
@@ -221,8 +221,8 @@ extension VertexFormat: Packable {
             position ? 1.0 : 0.0,
             normal ? 1.0 : 0.0,
             st ? 1.0 : 0.0,
-            binormal ? 1.0 : 0.0,
             tangent ? 1.0 : 0.0,
+            bitangent ? 1.0 : 0.0,
             color ? 1.0 : 0.0
         ]
     }
@@ -232,8 +232,8 @@ extension VertexFormat: Packable {
         position = array[startingIndex] == 1.0
         normal = array[startingIndex+1] == 1.0
         st = array[startingIndex+2] == 1.0
-        binormal = array[startingIndex+3] == 1.0
-        tangent = array[startingIndex+4] == 1.0
+        tangent = array[startingIndex+3] == 1.0
+        bitangent = array[startingIndex+4] == 1.0
         color = array[startingIndex+5] == 1.0
         
     }

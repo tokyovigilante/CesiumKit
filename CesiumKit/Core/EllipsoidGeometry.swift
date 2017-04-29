@@ -127,7 +127,7 @@ struct EllipsoidGeometry {
     
         var normals: [Float]? = _vertexFormat.normal ? [Float]() : nil
         var tangents: [Float]? = _vertexFormat.tangent ? [Float]() : nil
-        var binormals: [Float]? = _vertexFormat.binormal ? [Float]() : nil
+        var bitangents: [Float]? = _vertexFormat.bitangent ? [Float]() : nil
         var st: [Float]? = _vertexFormat.st ? [Float]() : nil
     
         var cosTheta = [Double]()
@@ -179,7 +179,7 @@ struct EllipsoidGeometry {
             )
         }
         
-        if _vertexFormat.st || _vertexFormat.normal || _vertexFormat.tangent || _vertexFormat.binormal {
+        if _vertexFormat.st || _vertexFormat.normal || _vertexFormat.tangent || _vertexFormat.bitangent {
             for i in 0..<vertexCount {
                 let position = Cartesian3(array: positions, startingIndex: i * 3)
                 let normal = ellipsoid.geodeticSurfaceNormal(position)
@@ -210,7 +210,7 @@ struct EllipsoidGeometry {
                     normals!.append(Float(normal.z))
                 }
             
-            if _vertexFormat.tangent || _vertexFormat.binormal {
+            if _vertexFormat.tangent || _vertexFormat.bitangent {
                 let tangent: Cartesian3
                 if i < slicePartitions || i > vertexCount - slicePartitions - 1 {
                     tangent = Cartesian3.unitX.cross(normal).normalize()
@@ -218,51 +218,51 @@ struct EllipsoidGeometry {
                     tangent = Cartesian3.unitZ.cross(normal).normalize()
                 }
                 
-                if _vertexFormat.tangent {
-                    tangents!.append(Float(tangent.x))
-                    tangents!.append(Float(tangent.y))
-                    tangents!.append(Float(tangent.z))
+                if _vertexFormat.tangent, var tangents = tangents {
+                    tangents.append(Float(tangent.x))
+                    tangents.append(Float(tangent.y))
+                    tangents.append(Float(tangent.z))
                 }
                 
-                if _vertexFormat.binormal {
-                    let binormal = normal.cross(tangent).normalize()
+                if _vertexFormat.bitangent, var bitangents = bitangents {
+                    let bitangent = normal.cross(tangent).normalize()
                     
-                    binormals!.append(Float(binormal.x))
-                    binormals!.append(Float(binormal.y))
-                    binormals!.append(Float(binormal.z))
+                    bitangents.append(Float(bitangent.x))
+                    bitangents.append(Float(bitangent.y))
+                    bitangents.append(Float(bitangent.z))
                 }
                 }
             }
             
-            if _vertexFormat.st {
+            if _vertexFormat.st, let st = st {
                 attributes.st = GeometryAttribute(
                     componentDatatype: .float32,
                     componentsPerAttribute: 2,
-                    values : Buffer(device: context.device, array: st!, componentDatatype: .float32, sizeInBytes: st!.sizeInBytes)
+                    values : Buffer(device: context.device, array: st, componentDatatype: .float32, sizeInBytes: st.sizeInBytes)
                 )
             }
             
-            if _vertexFormat.normal {
+            if _vertexFormat.normal, let normals = normals {
                 attributes.normal = GeometryAttribute(
                     componentDatatype : .float32,
                     componentsPerAttribute : 3,
-                    values : Buffer(device: context.device, array: normals!, componentDatatype: .float32, sizeInBytes: normals!.sizeInBytes)
+                    values : Buffer(device: context.device, array: normals, componentDatatype: .float32, sizeInBytes: normals.sizeInBytes)
                 )
             }
             
-            if _vertexFormat.tangent {
+            if _vertexFormat.tangent, let tangents = tangents {
                 attributes.tangent = GeometryAttribute(
                     componentDatatype: ComponentDatatype.float32,
                     componentsPerAttribute: 3,
-                    values: Buffer(device: context.device, array: tangents!, componentDatatype: .float64, sizeInBytes: tangents!.sizeInBytes)
+                    values: Buffer(device: context.device, array: tangents, componentDatatype: .float64, sizeInBytes: tangents.sizeInBytes)
                 )
             }
             
-            if _vertexFormat.binormal {
-                attributes.binormal = GeometryAttribute(
+            if _vertexFormat.bitangent, let bitangents = bitangents {
+                attributes.bitangent = GeometryAttribute(
                     componentDatatype : ComponentDatatype.float32,
                     componentsPerAttribute : 3,
-                    values : Buffer(device: context.device, array: binormals!, componentDatatype: .float64, sizeInBytes: binormals!.sizeInBytes)
+                    values : Buffer(device: context.device, array: bitangents, componentDatatype: .float64, sizeInBytes: bitangents.sizeInBytes)
                 )
             }
         }

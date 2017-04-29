@@ -119,6 +119,41 @@ public struct Cartesian4 {
     }
     
     /**
+     * Flattens an array of Cartesian4s into and array of components.
+     *
+     * @param {Cartesian4[]} array The array of cartesians to pack.
+     * @param {Number[]} result The array onto which to store the result.
+     * @returns {Number[]} The packed array.
+     */
+    static func packArray (array: [Cartesian4]) -> [Double] {
+        var result = [Double]()
+        for cartesian in array {
+            result.append(cartesian.x)
+            result.append(cartesian.y)
+            result.append(cartesian.z)
+            result.append(cartesian.w)
+        }
+        return result
+    }
+    
+    /**
+     * Unpacks an array of cartesian components into and array of Cartesian3s.
+     *
+     * @param {Number[]} array The array of components to unpack.
+     * @param {Cartesian3[]} result The array onto which to store the result.
+     * @returns {Cartesian3[]} The unpacked array.
+     */
+    static func unpackArray (array: [Double]) -> [Cartesian4] {
+        assert(array.count % 3 == 0, "invalid array")
+        
+        var result = [Cartesian4]()
+        for i in 0..<(array.count / 4) {
+            result.append(Cartesian4(x: array[i], y: array[i+1], z: array[i+2], w: array[i+3]))
+        }
+        return result
+    }
+    
+    /**
     * Computes the value of the maximum component for the supplied Cartesian.
     *
     * @param {Cartesian4} cartesian The cartesian to use.
@@ -251,6 +286,10 @@ public struct Cartesian4 {
         return Cartesian4(simd: simdType * other.simdType)
     }
 
+    public func divideComponents(_ other: Cartesian4) -> Cartesian4 {
+        return Cartesian4(simd: simdType / other.simdType)
+    }
+    
     /**
      * Computes the componentwise sum of two Cartesians.
      *

@@ -90,6 +90,40 @@ public struct Cartesian3 {
     }
     
     /**
+     * Flattens an array of Cartesian3s into and array of components.
+     *
+     * @param {Cartesian3[]} array The array of cartesians to pack.
+     * @param {Number[]} result The array onto which to store the result.
+     * @returns {Number[]} The packed array.
+     */
+    static func packArray (array: [Cartesian3]) -> [Double] {
+        var result = [Double]()
+        for cartesian in array {
+            result.append(cartesian.x)
+            result.append(cartesian.y)
+            result.append(cartesian.z)
+        }
+        return result
+    }
+    
+    /**
+     * Unpacks an array of cartesian components into and array of Cartesian3s.
+     *
+     * @param {Number[]} array The array of components to unpack.
+     * @param {Cartesian3[]} result The array onto which to store the result.
+     * @returns {Cartesian3[]} The unpacked array.
+     */
+    static func unpackArray (array: [Double]) -> [Cartesian3] {
+        assert(array.count % 3 == 0, "invalid array")
+        
+        var result = [Cartesian3]()
+        for i in 0..<(array.count / 3) {
+            result.append(Cartesian3(x: array[i], y: array[i+1], z: array[i+2]))
+        }
+        return result
+    }
+    
+    /**
     * Creates a Cartesian3 instance from an existing Cartesian4.  This simply takes the
     * x, y, and z properties of the Cartesian4 and drops w.
     * @function
@@ -221,6 +255,10 @@ public struct Cartesian3 {
     
     public func multiplyComponents(_ other: Cartesian3) -> Cartesian3 {
         return Cartesian3(simd: simdType * other.simdType)
+    }
+    
+    public func divideComponents(_ other: Cartesian3) -> Cartesian3 {
+        return Cartesian3(simd: simdType / other.simdType)
     }
     
     /**
@@ -400,9 +438,12 @@ public struct Cartesian3 {
     */
     public static func fromDegrees(longitude: Double, latitude: Double, height: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3 {
         
-        let lon = Math.toRadians(longitude)
-        let lat = Math.toRadians(latitude)
-        return Cartesian3.fromRadians(longitude: lon, latitude: lat, height: height, ellipsoid: ellipsoid)
+        return Cartesian3.fromRadians(
+            longitude: Math.toRadians(longitude),
+            latitude: Math.toRadians(latitude),
+            height: height,
+            ellipsoid: ellipsoid
+        )
     }
     
     /**

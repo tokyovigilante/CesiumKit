@@ -86,7 +86,39 @@ public struct Cartesian2 {
         self.init(x: cartesian4.x, y: cartesian4.y)
     }
     
+    /**
+     * Flattens an array of Cartesian2s into and array of components.
+     *
+     * @param {Cartesian2[]} array The array of cartesians to pack.
+     * @param {Number[]} result The array onto which to store the result.
+     * @returns {Number[]} The packed array.
+     */
+    static func packArray (array: [Cartesian2]) -> [Double] {
+        var result = [Double]()
+        for cartesian in array {
+            result.append(cartesian.x)
+            result.append(cartesian.y)
+        }
+        return result
+    }
     
+    /**
+     * Unpacks an array of cartesian components into and array of Cartesian2s.
+     *
+     * @param {Number[]} array The array of components to unpack.
+     * @param {Cartesian2[]} result The array onto which to store the result.
+     * @returns {Cartesian2[]} The unpacked array.
+     */
+    static func unpackArray (array: [Double]) -> [Cartesian2] {
+        assert(array.count % 2 == 0, "invalid array")
+        
+        var result = [Cartesian2]()
+        for i in 0..<(array.count / 2) {
+            result.append(Cartesian2(x: array[i], y: array[i+1]))
+        }
+        return result
+    }
+  
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
     *
@@ -214,6 +246,18 @@ public struct Cartesian2 {
      */
     public func multiplyComponents(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType * other.simdType)
+    }
+    
+    /**
+     * Computes the componentwise quotient of two Cartesians.
+     *
+     * @param {Cartesian2} left The first Cartesian.
+     * @param {Cartesian2} right The second Cartesian.
+     * @param {Cartesian2} result The object onto which to store the result.
+     * @returns {Cartesian2} The modified result parameter.
+     */
+    public func divideComponents (_ other: Cartesian2) -> Cartesian2 {
+        return Cartesian2(simd: simdType / other.simdType)
     }
     
     /**

@@ -239,7 +239,7 @@ struct BoxGeometry {
         let positions: [Double]
         
         if vertexFormat.position &&
-            (vertexFormat.st || vertexFormat.normal || vertexFormat.binormal || vertexFormat.tangent) {
+            (vertexFormat.st || vertexFormat.normal || vertexFormat.tangent || vertexFormat.bitangent) {
                 if (vertexFormat.position) {
                     // 8 corner points.  Duplicated 3 times each for each incident edge/face.
                     
@@ -308,8 +308,8 @@ struct BoxGeometry {
                     )
                 }
                 
-                if vertexFormat.binormal {
-                    let binormals: [Float] = [
+                if vertexFormat.bitangent {
+                    let bitangents: [Float] = [
                         0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // +z face
                         0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // -z face
                         0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // +x face
@@ -318,10 +318,10 @@ struct BoxGeometry {
                         0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0 // -y face
                     ]
                     
-                    attributes.binormal = GeometryAttribute(
+                    attributes.bitangent = GeometryAttribute(
                         componentDatatype : .float32,
                         componentsPerAttribute : 3,
-                        values : Buffer(device: context.device, array: binormals, componentDatatype: .float32, sizeInBytes: binormals.sizeInBytes)
+                        values : Buffer(device: context.device, array: bitangents, componentDatatype: .float32, sizeInBytes: bitangents.sizeInBytes)
                     )
                 }
                 

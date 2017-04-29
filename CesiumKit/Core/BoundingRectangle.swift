@@ -192,12 +192,21 @@ public struct BoundingRectangle: Equatable {
 }
 
 extension BoundingRectangle: Packable {
+    
+    init(array: [Double], startingIndex: Int) {
+        self.init()
+    }
+
     /**
      * The number of elements used to pack the object into an array.
      * @type {Number}
      */
-    func packedLength () -> Int {
+    static func packedLength() -> Int {
         return 4
+    }
+    
+    func checkPackedArrayLength(_ array: [Double], startingIndex: Int) -> Bool {
+        return false
     }
 
     /**

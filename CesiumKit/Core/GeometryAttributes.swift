@@ -83,26 +83,6 @@ class GeometryAttributes {
     }
     
     /**
-    * The binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
-    * <p>
-    * 32-bit floating-point.  3 components per attribute.
-    * </p>
-    *
-    * @type GeometryAttribute
-    *
-    * @default undefined
-    */
-    var binormal: GeometryAttribute? {
-        get {
-            return _attributes["binormal"]
-        }
-        set (binormal) {
-            binormal?.name = "binormal"
-            _attributes["binormal"] = binormal
-        }
-    }
-    
-    /**
     * The tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
     * 32-bit floating-point.  3 components per attribute.
@@ -119,6 +99,26 @@ class GeometryAttributes {
         set (tangent) {
             tangent?.name = "tangent"
             _attributes["tangent"] = tangent
+        }
+    }
+    
+    /**
+     * The bitangent attribute (normalized), which is used for tangent-space effects like bump mapping.
+     * <p>
+     * 32-bit floating-point.  3 components per attribute.
+     * </p>
+     *
+     * @type GeometryAttribute
+     *
+     * @default undefined
+     */
+    var bitangent: GeometryAttribute? {
+        get {
+            return _attributes["bitangent"]
+        }
+        set (bitangent) {
+            bitangent?.name = "bitangent"
+            _attributes["bitangent"] = bitangent
         }
     }
     
@@ -152,8 +152,8 @@ class GeometryAttributes {
             _attributes["position"] = position
             _attributes["normal"] = normal
             _attributes["st"] = st
-            _attributes["binormal"] = binormal
             _attributes["tangent"] = tangent
+            _attributes["bitangent"] = bitangent
             _attributes["color"] = color
             for (name, attribute) in _attributes {
                 attribute.name = name
@@ -169,9 +169,9 @@ class GeometryAttributes {
         case 2:
             return st
         case 3:
-            return binormal
-        case 4:
             return tangent
+        case 4:
+            return bitangent
         case 5:
             return color
         default:
