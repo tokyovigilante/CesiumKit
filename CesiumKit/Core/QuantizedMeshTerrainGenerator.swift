@@ -129,7 +129,7 @@ class QuantizedMeshTerrainGenerator {
                 let toPackY = octEncodedNormals![n + 1]
                 
                 if exaggeration != 1.0 {
-                    var normal = AttributeCompression.octDecode(x: toPackX, y: toPackY)
+                    var normal = AttributeCompression.octDecode(x: Int(toPackX), y: Int(toPackY))
                     let fromENUNormal = Transforms.eastNorthUpToFixedFrame(cartesian3Scratch, ellipsoid: ellipsoid)
                     let toENUNormal = fromENUNormal.inverse
                     
@@ -226,7 +226,7 @@ class QuantizedMeshTerrainGenerator {
                 let toPackY = vertexNormals[n + 1]
                 
                 if exaggeration != 1.0 {
-                    var normal = AttributeCompression.octDecode(x: toPackX, y: toPackY)
+                    var normal = AttributeCompression.octDecode(x: Int(toPackX), y: Int(toPackY))
                     let fromENUNormal = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: ellipsoid)
                     let toENUNormal = fromENUNormal.inverse
                     

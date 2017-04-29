@@ -191,6 +191,51 @@ public struct BoundingRectangle: Equatable {
     
 }
 
+extension BoundingRectangle: Packable {
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    func packedLength () -> Int {
+        return 4
+    }
+
+    /**
+     * Stores the provided instance into the provided array.
+     *
+     * @param {BoundingRectangle} value The value to pack.
+     * @param {Number[]} array The array to pack into.
+     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+     *
+     * @returns {Number[]} The array that was packed into
+     */
+    func pack (_ array: inout [Float], startingIndex: Int = 0) {
+        array[startingIndex] = Float(x)
+        array[startingIndex+1] = Float(y)
+        array[startingIndex+2] = Float(width)
+        array[startingIndex+3] = Float(height)
+    }
+    
+    /**
+     * Retrieves an instance from a packed array.
+     *
+     * @param {Number[]} array The packed array.
+     * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+     * @param {BoundingRectangle} [result] The object into which to store the result.
+     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
+     */
+    static func unpack (array: [Float], startingIndex: Int = 0) -> BoundingRectangle {
+        var result = BoundingRectangle()
+        result.x = Double(array[startingIndex])
+        result.y = Double(array[startingIndex+1])
+        result.width = Double(array[startingIndex+2])
+        result.height = Double(array[startingIndex+3])
+        return result
+    }
+    
+}
+
+
 /**
 * Compares the provided BoundingRectangles componentwise and returns
 * <code>true</code> if they are equal, <code>false</code> otherwise.

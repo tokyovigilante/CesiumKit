@@ -20,23 +20,24 @@ import Foundation
 class AttributeCompression {
     
     /**
-     * Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
+     * Encodes a normalized vector into 2 SNORM values in the range of [0-rangeMax] following the 'oct' encoding.
      *
-     * Oct encoding is a compact representation of unit length vectors.  The encoding and decoding functions are low cost, and represent the normalized vector within 1 degree of error.
+     * Oct encoding is a compact representation of unit length vectors.  
      * The 'oct' encoding is described in "A Survey of Efficient Representations of Independent Unit Vectors",
      * Cigolle et al 2014: {@link http://jcgt.org/published/0003/02/01/}
      *
-     * @param {Cartesian3} vector The normalized vector to be compressed into 2 byte 'oct' encoding.
-     * @param {Cartesian2} result The 2 byte oct-encoded unit length vector.
-     * @returns {Cartesian2} The 2 byte oct-encoded unit length vector.
+     * @param {Cartesian3} vector The normalized vector to be compressed into 2 component 'oct' encoding.
+     * @param {Cartesian2} result The 2 component oct-encoded unit length vector.
+     * @param {UInt8} rangeMax The maximum value of the SNORM range. The encoded vector is stored in log2(rangeMax+1) bits.
+     * @returns {Cartesian2} The 2 component oct-encoded unit length vector.
      *
      * @exception {DeveloperError} vector must be defined.
      * @exception {DeveloperError} result must be defined.
      * @exception {DeveloperError} vector must be normalized.
      *
-     * @see AttributeCompression.octDecode
+     * @see AttributeCompression.octDecodeInRange
      */
-    class func octEncode (_ vector: Cartesian3) -> Cartesian2 {
+    class func octEncodeInRange (_ vector: Cartesian3, rangeMax: Int) -> Cartesian2 {
         
         let magSquared = vector.magnitudeSquared
         assert(abs(magSquared - 1.0) <= Math.Epsilon6, "vector must be normalized.")
@@ -52,32 +53,50 @@ class AttributeCompression {
             result.y = (1.0 - abs(x)) * Double(Math.signNotZero(y))
         }
         
-        result.x = Double(Math.toSNorm(result.x))
-        result.y = Double(Math.toSNorm(result.y))
+        result.x = Double(Math.toSNorm(result.x, rangeMax: rangeMax))
+        result.y = Double(Math.toSNorm(result.y, rangeMax: rangeMax))
         
         return result
     }
-
+    
+    /**
+     * Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
+     *
+     * @param {Cartesian3} vector The normalized vector to be compressed into 2 byte 'oct' encoding.
+     * @param {Cartesian2} result The 2 byte oct-encoded unit length vector.
+     * @returns {Cartesian2} The 2 byte oct-encoded unit length vector.
+     *
+     * @exception {DeveloperError} vector must be normalized.
+     *
+     * @see AttributeCompression.octEncodeInRange
+     * @see AttributeCompression.octDecode
+     */
+    class func octEncode (_ vector: Cartesian3) -> Cartesian2 {
+        return AttributeCompression.octEncodeInRange(vector, rangeMax: 255)
+    }
+    
     /**
      * Decodes a unit-length vector in 'oct' encoding to a normalized 3-component vector.
      *
      * @param {Number} x The x component of the oct-encoded unit length vector.
      * @param {Number} y The y component of the oct-encoded unit length vector.
+     * @param {Number} rangeMax The maximum value of the SNORM range. The encoded vector is stored in log2(rangeMax+1) bits.
+     *
      * @param {Cartesian3} result The decoded and normalized vector
      * @returns {Cartesian3} The decoded and normalized vector.
      *
      * @exception {DeveloperError} result must be defined.
-     * @exception {DeveloperError} x and y must be a signed normalized integer between 0 and 255.
+     * @exception {DeveloperError} x and y must be a signed normalized integer between 0 and rangeMax.
      *
      * @see AttributeCompression.octEncode
      */
-    class func octDecode (x: UInt8, y: UInt8) -> Cartesian3 {
+    class func octDecode (x: Int, y: Int, rangeMax: Int = 255) -> Cartesian3 {
         
-        assert(x >= 0 && x <= 255 && y >= 0 && y <= 255, "x and y must be a signed normalized integer between 0 and 255")
+        assert(x >= 0 && x <= rangeMax && y >= 0 && y <= rangeMax, "x and y must be a signed normalized integer between 0 and rangeMax")
         
         var result = Cartesian3()
-        result.x = Math.fromSNorm(x)
-        result.y = Math.fromSNorm(y)
+        result.x = Math.fromSNorm(x, rangeMax: rangeMax)
+        result.y = Math.fromSNorm(y, rangeMax: rangeMax)
         result.z = 1.0 - (abs(result.x) + abs(result.y))
         
         if (result.z < 0.0)
@@ -86,10 +105,9 @@ class AttributeCompression {
             result.x = (1.0 - abs(result.y)) * Double(Math.signNotZero(oldVX))
             result.y = (1.0 - abs(oldVX)) * Double(Math.signNotZero(result.y))
         }
-        
         return result.normalize()
     }
-
+    
     /**
      * Packs an oct encoded vector into a single floating-point number.
      *
@@ -228,15 +246,14 @@ AttributeCompression.octDecode(x, y, v3);
 /**
 * Pack texture coordinates into a single float. The texture coordinates will only preserve 12 bits of precision.
 *
-* @param {Cartesian2} textureCoordinates The texture coordinates to compress
+* @param {Cartesian2} textureCoordinates The texture coordinates to compress. Both coordinates must be in the range 0.0-1.0.
 * @returns {Number} The packed texture coordinates.
 *
 * @exception {DeveloperError} textureCoordinates is required.
 */
-    static func compressTextureCoordinates (_ textureCoordinates: Cartesian2) -> Float {
-        
-        let x = textureCoordinates.x == 1.0 ? 4095.0 : floor(textureCoordinates.x * 4096.0)
-        let y = textureCoordinates.y == 1.0 ? 4095.0 : floor(textureCoordinates.y * 4096.0)
+    class func compressTextureCoordinates (_ textureCoordinates: Cartesian2) -> Float {
+        let x = Int(textureCoordinates.x * 4095.0) | 0
+        let y = Int(textureCoordinates.y * 4095.0) | 0
         return 4096.0 * Float(x) + Float(y)
     }
     
@@ -250,11 +267,12 @@ AttributeCompression.octDecode(x, y, v3);
      * @exception {DeveloperError} compressed is required.
      * @exception {DeveloperError} result is required.
      */
-    static func decompressTextureCoordinates(_ compressed: Float) -> Cartesian2 {
+    class func decompressTextureCoordinates(_ compressed: Float) -> Cartesian2 {
         let temp = Double(compressed) / 4096.0
+        let xZeroTo4095 = floor(temp)
         return Cartesian2(
-            x: floor(temp) / 4096.0,
-            y: temp - floor(temp)
+            x: xZeroTo4095 / 4095.0,
+            y: (Double(compressed) - xZeroTo4095 * 4096) / 4095
         )
     }
 

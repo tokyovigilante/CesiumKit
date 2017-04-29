@@ -208,25 +208,27 @@ public struct Math {
     }
     
     /**
-     * Converts a scalar value in the range [-1.0, 1.0] to a 8-bit 2's complement number.
+     * Converts a scalar value in the range [-1.0, 1.0] to a SNORM in the range [0, rangeMax]
      * @param {Number} value The scalar value in the range [-1.0, 1.0]
-     * @returns {Number} The 8-bit 2's complement number, where 0 maps to -1.0 and 255 maps to 1.0.
+     * @param {Number} [rangeMax=255] The maximum value in the mapped range, 255 by default.
+     * @returns {Number} A SNORM value, where 0 maps to -1.0 and rangeMax maps to 1.0.
      *
      * @see CesiumMath.fromSNorm
      */
-    static func toSNorm (_ value: Double) -> UInt8 {
-        return UInt8(round((Math.clamp(value, min: -1.0, max: 1.0) * 0.5 + 0.5) * 255.0))
+    static func toSNorm (_ value: Double, rangeMax: Int = 255) -> Int {
+        return Int(round((Math.clamp(value, min: -1.0, max: 1.0) * 0.5 + 0.5) * Double(rangeMax)))
     }
     
     /**
-     * Converts a SNORM value in the range [0, 255] to a scalar in the range [-1.0, 1.0].
+     * Converts a SNORM value in the range [0, rangeMax] to a scalar in the range [-1.0, 1.0].
      * @param {Number} value SNORM value in the range [0, 255]
+     * @param {Number} [rangeMax=255] The maximum value in the SNORM range, 255 by default.
      * @returns {Number} Scalar in the range [-1.0, 1.0].
      *
      * @see CesiumMath.toSNorm
      */
-    static func fromSNorm (_ value: UInt8) -> Double {
-        return Math.clamp(Double(value), min: 0.0, max: 255.0) / 255.0 * 2.0 - 1.0
+    static func fromSNorm (_ value: Int, rangeMax: Int = 255) -> Double {
+        return clamp(Double(value), min: 0.0, max: Double(rangeMax)) / Double(rangeMax) * 2.0 - 1.0
     }
 
     
@@ -447,14 +449,30 @@ CesiumMath.convertLongitudeRange = function(angle) {
     return simplified;
 };
 */
+    
+    /**
+     * Convenience function that clamps a latitude value, in radians, to the range [<code>-Math.PI/2</code>, <code>Math.PI/2</code>).
+     * Useful for sanitizing data before use in objects requiring correct range.
+     *
+     * @param {Number} angle The latitude value, in radians, to clamp to the range [<code>-Math.PI/2</code>, <code>Math.PI/2</code>).
+     * @returns {Number} The latitude value clamped to the range [<code>-Math.PI/2</code>, <code>Math.PI/2</code>).
+     *
+     * @example
+     * // Clamp 108 degrees latitude to 90 degrees latitude
+     * var latitude = Cesium.Math.clampToLatitudeRange(Cesium.Math.toRadians(108.0));
+     */
+    static func clampToLatitudeRange (angle: Double) -> Double {
+        return clamp(angle, min: -.pi/2, max: .pi/2)
+    }
+    
     /**
     * Produces an angle in the range -Pi <= angle <= Pi which is equivalent to the provided angle.
     *
     * @param {Number} angle in radians
     * @returns {Number} The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
     */
-    static func negativePiToPi (_ x: Double) -> Double {
-        return Math.zeroToTwoPi(x + .pi) - .pi
+    static func negativePiToPi (_ angle: Double) -> Double {
+        return zeroToTwoPi(angle + .pi) - .pi
     }
 
     /**
@@ -463,9 +481,9 @@ CesiumMath.convertLongitudeRange = function(angle) {
     * @param {Number} angle in radians
     * @returns {Number} The angle in the range [0, <code>CesiumMath.TWO_PI</code>].
     */
-    static func zeroToTwoPi (_ x: Double) -> Double {
-        let mod = Math.mod(x, Math.TwoPi)
-        if (abs(mod) < Math.Epsilon14 && abs(x) > Math.Epsilon14) {
+    static func zeroToTwoPi (_ angle: Double) -> Double {
+        let mod = Math.mod(angle, Math.TwoPi)
+        if (abs(mod) < Math.Epsilon14 && abs(angle) > Math.Epsilon14) {
             return Math.TwoPi
         }
         return mod

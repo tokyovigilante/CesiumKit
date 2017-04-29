@@ -454,8 +454,8 @@ private class Vertex {
         var first = cartesianScratch1[depth]
         var second = cartesianScratch2[depth]
         
-        first = AttributeCompression.octDecode(x: vertex.first!.getNormalX(), y: vertex.first!.getNormalY())
-        second = AttributeCompression.octDecode(x: vertex.second!.getNormalX(), y: vertex.second!.getNormalY())
+        first = AttributeCompression.octDecode(x: Int(vertex.first!.getNormalX()), y: Int(vertex.first!.getNormalY()))
+        second = AttributeCompression.octDecode(x: Int(vertex.second!.getNormalX()), y: Int(vertex.second!.getNormalY()))
         
         depth -= 1
         return AttributeCompression.octEncode(first.lerp(second, t: Double(vertex.ratio!)).normalize())
