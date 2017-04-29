@@ -177,11 +177,11 @@ class ShaderProgram {
     fileprivate func createMetalProgram(_ optimizer: GLSLOptimizer) {
         
         _vertexShader = optimizer.optimize(.vertex, shaderSource: _vertexShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
-        assert(_vertexShader.status(), _vertexShader.log() ?? "shader compile failed")
+        assert(_vertexShader.status(), _vertexShader.log())
         _metalVertexShaderSource = _vertexShader.output()
         
         _fragmentShader = optimizer.optimize(.fragment, shaderSource: _fragmentShaderText, manualUniformStruct: _manualUniformStruct, options: 0)
-        assert(_fragmentShader.status(), _fragmentShader.log() ?? "shader compile failed")
+        assert(_fragmentShader.status(), _fragmentShader.log())
         _metalFragmentShaderSource = _fragmentShader.output()
     }
     

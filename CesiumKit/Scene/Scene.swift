@@ -1203,7 +1203,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     func executeCommands(_ passState: PassState) {
         
         // Create a working frustum from the original camera frustum
-        let frustum: Frustum
+        var frustum: Frustum
         if camera.frustum.fovy != Double.nan {
             frustum = camera.frustum.clone(PerspectiveFrustum())
         } else if camera.frustum.infiniteProjectionMatrix != nil {

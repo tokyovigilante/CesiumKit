@@ -288,7 +288,7 @@ open class ScreenSpaceCameraController {
     
     init(scene: Scene) {
         _scene = scene
-        _maxCoord = _scene.mapProjection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
+        _maxCoord = _scene.mapProjection.project(Cartographic(longitude: .pi, latitude: .pi/2))
         _aggregator = CameraEventAggregator(/*layer: _scene.context.layer*/)
     }
     
@@ -1158,8 +1158,8 @@ open class ScreenSpaceCameraController {
         phiWindowRatio = min(phiWindowRatio, maximumMovementRatio)
         thetaWindowRatio = min(thetaWindowRatio, maximumMovementRatio)
         
-        let deltaPhi = rotateRate * phiWindowRatio * M_PI * 2.0
-        let deltaTheta = rotateRate * thetaWindowRatio * M_PI
+        let deltaPhi = rotateRate * phiWindowRatio * .pi * 2.0
+        let deltaTheta = rotateRate * thetaWindowRatio * .pi
         
         if !rotateOnlyVertical {
             camera.rotateRight(deltaPhi)

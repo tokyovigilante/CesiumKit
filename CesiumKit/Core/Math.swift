@@ -362,7 +362,7 @@ public struct Math {
     * @type {Number}
     * @constant
     */
-    static let TwoPi = 2.0 * M_PI
+    static let TwoPi = 2.0 * .pi
     /*
     /**
     * 1/2pi
@@ -379,7 +379,7 @@ public struct Math {
     * @constant
     * @default Math.PI / 180.0
     */
-    public static let RadiansPerDegree = M_PI / 180.0
+    public static let RadiansPerDegree = .pi / 180.0
     
     /**
     * The number of degrees in a radian.
@@ -388,7 +388,7 @@ public struct Math {
     * @constant
     * @default 180.0 / Math.PI
     */
-    public static let DegreesPerRadian = 180.0 / M_PI
+    public static let DegreesPerRadian = 180.0 / .pi
     
     /**
     * The number of radians in an arc second.
@@ -454,7 +454,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
     * @returns {Number} The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
     */
     static func negativePiToPi (_ x: Double) -> Double {
-        return Math.zeroToTwoPi(x + M_PI) - M_PI
+        return Math.zeroToTwoPi(x + .pi) - .pi
     }
 
     /**

@@ -30,8 +30,8 @@ class CameraTests: XCTestCase {
     var right: Cartesian3!
     
     var moveAmount = 3.0
-    var turnAmount = M_PI_2
-    var rotateAmount = M_PI_2
+    var turnAmount = .pi / 2
+    var rotateAmount = .pi / 2
     var zoomAmount = 1.0
 
     override func setUp() {
@@ -804,7 +804,7 @@ camera.viewRectangle();
 });
 */
     func testViewsRectangleIn3D1 () {
-        var rectangle = Rectangle(west: -M_PI, south: -M_PI_2, east: M_PI, north: M_PI_2)
+        var rectangle = Rectangle(west: -M_PI, south: -.pi / 2, east: M_PI, north: .pi / 2)
         camera.viewRectangle(rectangle)
         XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: 14680290.639204923, y: 0.0, z: 0.0), epsilon: Math.Epsilon6), "position equality")
         XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3.unitX().negate(), epsilon: Math.Epsilon10), "direction equality")
@@ -840,7 +840,7 @@ camera.viewRectangle();
     }
 
     func testViewsRectangleIn3DAcrossIDL () {
-        let rectangle = Rectangle(west: 0.1, south: -M_PI_2, east: -0.1, north: M_PI_2)
+        let rectangle = Rectangle(west: 0.1, south: -.pi / 2, east: -0.1, north: .pi / 2)
         camera.viewRectangle(rectangle)
         XCTAssertTrue(camera.position.equalsEpsilon(Cartesian3(x: -14680290.639204923, y: 0.0, z: 0.0), epsilon: Math.Epsilon6), "position equality")
         XCTAssertTrue(camera.direction.equalsEpsilon(Cartesian3.unitX(), epsilon: Math.Epsilon10), "direction equality")

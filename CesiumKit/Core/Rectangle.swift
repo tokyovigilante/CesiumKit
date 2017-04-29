@@ -112,10 +112,10 @@ public struct Rectangle {
             west = westOverIDL
             east = eastOverIDL
             
-            if east > M_PI {
+            if east > .pi {
                 east = east - Math.TwoPi
             }
-            if west > M_PI {
+            if west > .pi {
                 west = west - Math.TwoPi
             }
         }
@@ -200,10 +200,10 @@ public struct Rectangle {
     * @exception {DeveloperError} <code>west</code> must be in the interval [<code>-Pi</code>, <code>Pi</code>].
     */
     func validate() {
-        assert(north > -M_PI_2 && north < M_PI_2, "north must be in the interval [-Pi/2, Pi/2].")
-        assert(south > -M_PI_2 && south < M_PI_2, "south must be in the interval [-Pi/2, Pi/2].")
-        assert(west > -M_PI && west < M_PI, "west must be in the interval [-Pi, Pi].")
-        assert(east > -M_PI && east < M_PI, "east must be in the interval [-Pi, Pi].")
+        assert(north > -.pi/2 && north < .pi/2, "north must be in the interval [-Pi/2, Pi/2].")
+        assert(south > -.pi/2 && south < .pi/2, "south must be in the interval [-Pi/2, Pi/2].")
+        assert(west > -.pi && west < .pi, "west must be in the interval [-Pi, Pi].")
+        assert(east > -.pi && east < .pi, "east must be in the interval [-Pi, Pi].")
     }
     
     /**
@@ -443,7 +443,7 @@ public struct Rectangle {
         }
         
         for i in 1..<8 {
-            lla.longitude = -M_PI + Double(i) * M_PI_2
+            lla.longitude = -.pi + Double(i) * .pi/2
             if (contains(lla)) {
                 result.append(ellipsoid.cartographicToCartesian(lla))
             }
@@ -466,7 +466,7 @@ public struct Rectangle {
     * @constant
     */
     static func maxValue() -> Rectangle {
-        return Rectangle(west: -M_PI, south: -M_PI_2, east: M_PI, north: M_PI_2)
+        return Rectangle(west: -.pi, south: -.pi/2, east: .pi, north: .pi/2)
     }
     
 }

@@ -105,7 +105,7 @@ struct SceneTransforms {
         
         if frameState.mode == .scene2D {
             let projection = scene.mapProjection
-            let maxCartographic = Cartographic(longitude: M_PI, latitude: M_PI_2)
+            let maxCartographic = Cartographic(longitude: .pi, latitude: .pi/2)
             let maxCoord = projection.project(maxCartographic)
             
             let cameraPosition = camera.position

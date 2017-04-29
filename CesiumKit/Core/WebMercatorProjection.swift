@@ -41,7 +41,7 @@ struct WebMercatorProjection: MapProjection {
     *
     * @type {Number}
     */
-    static let maximumLatitude: Double = WebMercatorProjection.mercatorAngleToGeodeticLatitude(M_PI)
+    static let maximumLatitude: Double = WebMercatorProjection.mercatorAngleToGeodeticLatitude(.pi)
     
     init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         self.ellipsoid = ellipsoid
@@ -56,7 +56,7 @@ struct WebMercatorProjection: MapProjection {
     * @returns {Number} The geodetic latitude in radians.
     */
     static func mercatorAngleToGeodeticLatitude(_ mercatorAngle: Double) -> Double {
-        return M_PI_2 - (2.0 * atan(exp(-mercatorAngle)))
+        return .pi/2 - (2.0 * atan(exp(-mercatorAngle)))
     }
     
     /**

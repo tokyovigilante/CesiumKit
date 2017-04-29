@@ -104,7 +104,7 @@ class HeightmapTessellator {
         // so it employs a lot of inlining and unrolling as an optimization.
         // In particular, the functionality of Ellipsoid.cartographicToCartesian
         // is inlined.
-        let piOverTwo = M_PI_2
+        let piOverTwo = Double.pi/2
         
         let oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius
         

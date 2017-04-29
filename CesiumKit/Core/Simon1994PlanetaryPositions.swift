@@ -212,10 +212,10 @@ class Simon1994PlanetaryPositions {
         
         if inclination < 0.0 {
             inclination = -inclination
-            longitudeOfNode += M_PI
+            longitudeOfNode += .pi
         }
         
-        assert(inclination >= 0.0 && inclination <= M_PI, "The inclination is out of range. Inclination must be greater than or equal to zero and less than or equal to Pi radians.")
+        assert(inclination >= 0.0 && inclination <= .pi, "The inclination is out of range. Inclination must be greater than or equal to zero and less than or equal to Pi radians.")
         
         let radiusOfPeriapsis = semimajorAxis * (1.0 - eccentricity)
         let argumentOfPeriapsis = longitudeOfPerigee - longitudeOfNode

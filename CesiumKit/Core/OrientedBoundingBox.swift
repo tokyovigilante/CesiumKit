@@ -184,10 +184,10 @@ struct OrientedBoundingBox: BoundingVolume {
     
     init (fromRectangle rectangle: Rectangle, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         
-        if rectangle.width < 0.0 || rectangle.width > M_PI {
+        if rectangle.width < 0.0 || rectangle.width > .pi {
             fatalError("Rectangle width must be between 0 and pi")
         }
-        if rectangle.height < 0.0 || rectangle.height > M_PI {
+        if rectangle.height < 0.0 || rectangle.height > .pi {
             fatalError("Rectangle height must be between 0 and pi")
         }
         if !Math.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, relativeEpsilon: Math.Epsilon15) {

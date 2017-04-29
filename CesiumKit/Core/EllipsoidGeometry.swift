@@ -148,7 +148,7 @@ struct EllipsoidGeometry {
         }
     
         for i in 1..<(stackPartitions-1) {
-            let phi = M_PI * Double(i) / Double(stackPartitions - 1)
+            let phi = .pi * Double(i) / Double(stackPartitions - 1)
             let sinPhi = sin(phi)
             
             let xSinPhi = _radii.x * sinPhi
@@ -201,7 +201,7 @@ struct EllipsoidGeometry {
                     }
                     
                     st!.append(Float((atan2(normalST.y, normalST.x) / Math.TwoPi) + 0.5))
-                    st!.append(Float((asin(normal.z) / M_PI) + 0.5))
+                    st!.append(Float((asin(normal.z) / .pi) + 0.5))
                 }
     
                 if _vertexFormat.normal {

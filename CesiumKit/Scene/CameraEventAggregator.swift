@@ -143,10 +143,10 @@ class CameraEventAggregator {
                 // Make sure our aggregation of angles does not "flip" over 360 degrees.
                 var angle = movement!.angleEndPosition.x
                 let prevAngle = movement!.prevAngle
-                while angle >= (prevAngle + M_PI) {
+                while angle >= (prevAngle + .pi) {
                     angle -= Math.TwoPi
                 }
-                while angle < (prevAngle - M_PI) {
+                while angle < (prevAngle - .pi) {
                     angle += Math.TwoPi
                 }
                 //movement.angleAndHeight.endPosition.x = -angle * canvas.clientWidth / 12

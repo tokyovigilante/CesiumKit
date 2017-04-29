@@ -1109,8 +1109,8 @@ class UniformState {
         // there's not really any corresponding location in the real world.  So clamp the unprojected
         // longitude and latitude to their valid ranges.
         var cartographic = projection.unproject(p)
-        cartographic.longitude = Math.clamp(cartographic.longitude, min: -M_PI, max: M_PI)
-        cartographic.latitude = Math.clamp(cartographic.latitude, min: -M_PI_2, max: M_PI_2)
+        cartographic.longitude = Math.clamp(cartographic.longitude, min: -.pi, max: .pi)
+        cartographic.latitude = Math.clamp(cartographic.latitude, min: -.pi/2, max: .pi/2)
         let position3D = projection.ellipsoid.cartographicToCartesian(cartographic)
         
         // Compute the rotation from the local ENU at the real world camera position to the fixed axes.

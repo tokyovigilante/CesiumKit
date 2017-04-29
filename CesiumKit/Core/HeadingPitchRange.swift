@@ -52,8 +52,8 @@ public struct HeadingPitchRange {
 extension HeadingPitchRange: Offset {
     
     public var offset: Cartesian3 {
-        let pitch = Math.clamp(self.pitch, min: -M_PI_2, max: M_PI_2)
-        let heading = Math.zeroToTwoPi(self.heading) - M_PI_2
+        let pitch = Math.clamp(self.pitch, min: -.pi/2, max: .pi/2)
+        let heading = Math.zeroToTwoPi(self.heading) - .pi/2
         
         let pitchQuat = Quaternion(axis: Cartesian3.unitY, angle: -pitch)
         let headingQuat = Quaternion(axis: Cartesian3.unitZ, angle: -heading)

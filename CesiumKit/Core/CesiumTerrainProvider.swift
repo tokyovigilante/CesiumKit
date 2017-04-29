@@ -494,7 +494,7 @@ class CesiumTerrainProvider: TerrainProvider {
         
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         let orientedBoundingBox: OrientedBoundingBox?
-        if (rectangle.width < M_PI_2 + Math.Epsilon5) {
+        if (rectangle.width < .pi/2 + Math.Epsilon5) {
             // Here, rectangle.width < pi/2, and rectangle.height < pi
             // (though it would still work with rectangle.width up to pi)
             

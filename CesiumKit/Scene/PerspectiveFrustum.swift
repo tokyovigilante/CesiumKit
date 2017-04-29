@@ -112,7 +112,7 @@ class PerspectiveFrustum: Frustum {
             near != _near ||
             far != _far)
         {
-            assert(fov >= 0 && fov <= M_PI, "fov must be in the range [0, PI]")
+            assert(fov >= 0 && fov <= .pi, "fov must be in the range [0, PI]")
             
             assert(aspectRatio > 0, "aspectRatio must be positive")
             assert(near > 0 && near < far, "near must be greater than zero and less than far")

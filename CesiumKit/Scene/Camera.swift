@@ -345,7 +345,7 @@ open class Camera: DRU {
      * @type {Number}
      * @default Math.PI / 60.0
      */
-    var defaultLookAmount: Double = M_PI / 60.0
+    var defaultLookAmount: Double = .pi / 60.0
     
     /**
      * The default amount to rotate the camera when an argument is not
@@ -353,7 +353,7 @@ open class Camera: DRU {
      * @type {Number}
      * @default Math.PI / 3600.0
      */
-    var defaultRotateAmount = M_PI / 3600.0
+    var defaultRotateAmount = .pi / 3600.0
     /**
      * The default amount to move the camera when an argument is not
      * provided to the zoom methods.
@@ -420,7 +420,7 @@ open class Camera: DRU {
     init(projection: MapProjection, mode: SceneMode, initialWidth: Double, initialHeight: Double) {
         
         _projection = projection
-        _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
+        _maxCoord = _projection.project(Cartographic(longitude: .pi, latitude: .pi / 2))
         _mode = mode
         
         ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
@@ -450,7 +450,7 @@ open class Camera: DRU {
         /* tweens = new TweenCollection();*/)) {
             
             _projection = fakeScene.mapProjection
-            _maxCoord = _projection.project(Cartographic(longitude: M_PI, latitude: M_PI_2))
+            _maxCoord = _projection.project(Cartographic(longitude: .pi, latitude: .pi / 2))
             ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
 
             transform2DInverse = transform2D.inverse
@@ -717,15 +717,15 @@ open class Camera: DRU {
     func getHeading (_ direction: Cartesian3, up: Cartesian3) -> Double {
         let heading: Double
         if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
-            heading = atan2(direction.y, direction.x) - M_PI_2
+            heading = atan2(direction.y, direction.x) - .pi / 2
         } else {
-            heading = atan2(up.y, up.x) - M_PI_2
+            heading = atan2(up.y, up.x) - .pi / 2
         }
         return M_2_PI - Math.zeroToTwoPi(heading)
     }
     
     func getPitch(_ direction: Cartesian3) -> Double {
-        return M_PI_2 - Math.acosClamped(direction.z)
+        return .pi / 2 - Math.acosClamped(direction.z)
     }
     
     func getRoll (_ direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
@@ -798,7 +798,7 @@ open class Camera: DRU {
         
         self.position = Cartesian3.zero
         
-        let rotQuat = Quaternion(heading: heading - M_PI_2, pitch: pitch, roll: roll)
+        let rotQuat = Quaternion(heading: heading - .pi / 2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(quaternion: rotQuat)
         
         direction = rotMat.column(0)
@@ -837,7 +837,7 @@ open class Camera: DRU {
                 self.position = position
             }
         }
-        let rotQuat = Quaternion(heading: heading - M_PI_2, pitch: pitch, roll: roll)
+        let rotQuat = Quaternion(heading: heading - .pi / 2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(quaternion: rotQuat)
         
         
@@ -976,7 +976,7 @@ open class Camera: DRU {
         }
         
         var heading = 0.0
-        var pitch = -M_PI_2
+        var pitch = -.pi / 2.0
         var roll = 0.0
         
         if let orientation = orientation {
@@ -1788,7 +1788,7 @@ open class Camera: DRU {
         // rectangle that spans 178+ of the 180 degrees of latitude.
         let longitude = (west + east) * 0.5
         let latitude: Double
-        if south < -M_PI_2 + Math.RadiansPerDegree && north > M_PI_2 - Math.RadiansPerDegree {
+        if south < -.pi / 2 + Math.RadiansPerDegree && north > .pi / 2 - Math.RadiansPerDegree {
             latitude = 0.0
         } else {
             var northCartographic = Cartographic(longitude: longitude, latitude: north, height: 0.0)

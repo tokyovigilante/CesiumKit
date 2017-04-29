@@ -111,7 +111,7 @@ class EllipsoidGeodesic {
         let firstCartesian = ellipsoid.cartographicToCartesian(start).normalize()
         let lastCartesian = ellipsoid.cartographicToCartesian(end).normalize()
         
-        assert(abs(abs(firstCartesian.angle(between: lastCartesian)) - M_PI) >= 0.0125, "geodesic position is not unique")
+        assert(abs(abs(firstCartesian.angle(between: lastCartesian)) - .pi) >= 0.0125, "geodesic position is not unique")
         
         vincentyInverseFormula(major: ellipsoid.maximumRadius, minor: ellipsoid.minimumRadius,
             firstLongitude: start.longitude, firstLatitude: start.latitude, secondLongitude: end.longitude, secondLatitude: end.latitude)

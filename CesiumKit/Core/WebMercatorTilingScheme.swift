@@ -76,7 +76,7 @@ class WebMercatorTilingScheme: TilingScheme {
                 self.rectangleNortheastInMeters = rectangleNortheastInMeters!
             }
             else {
-                let semimajorAxisTimesPi = self.ellipsoid.maximumRadius * M_PI;
+                let semimajorAxisTimesPi = self.ellipsoid.maximumRadius * .pi;
                 self.rectangleSouthwestInMeters = Cartesian3(x: -semimajorAxisTimesPi, y: -semimajorAxisTimesPi, z: 0.0)
                 self.rectangleNortheastInMeters = Cartesian3(x: semimajorAxisTimesPi, y: semimajorAxisTimesPi, z: 0.0)
             }
