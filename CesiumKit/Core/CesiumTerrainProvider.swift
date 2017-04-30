@@ -65,6 +65,8 @@ class CesiumTerrainProvider: TerrainProvider {
     * @type {Event}
     */
     var errorEvent = Event()
+    
+    private (set) var availability: TileAvailability? = nil
 
     /**
     * Gets the tiling scheme used by the provider.  This function should
@@ -206,7 +208,9 @@ class CesiumTerrainProvider: TerrainProvider {
                         elementsPerHeight: 1,
                         stride: 1,
                         elementMultiplier: 256.0,
-                        isBigEndian: false
+                        isBigEndian: false,
+                        lowestEncodedHeight: 0,
+                        highestEncodedHeight: 256 * 256 - 1
                     )
                     self._hasWaterMask = true
                     self._requestWaterMask = true
@@ -238,12 +242,32 @@ class CesiumTerrainProvider: TerrainProvider {
                     return url + "/" + path
                 }
                 
-                self._availableTiles = try metadata.getArray("available").map { $0 }
+                if let availableTiles = try metadata.getArrayOrNil("available").map { $0 } {
+                    
+                    self.availability = TileAvailability(tilingScheme: tilingScheme, maximumLevel: availableTiles.count)
+                    
+                    for level in 0..<availableTiles.count {
+                        guard let rangesAtLevel = availableTiles[level].array else {
+                            logPrint(.warning, "invalid terrain data for level \(level)")
+                            continue
+                        }
+                        let yTiles = tilingScheme.numberOfYTilesAt(level: level)
+                        
+                        for rangeIndex in 0..<rangesAtLevel.count {
+                            let range = rangesAtLevel[rangeIndex]
+                            let startX = try range.getInt("startX")
+                            let endX = try range.getInt("endX")
+                            let startY = try range.getInt("startY")
+                            let endY = try range.getInt("endY")
+                            self.availability?.addAvailableTileRange(level: level, startX: startX, startY: yTiles - endY - 1, endX: endX, endY: yTiles - startY - 1)
+                        }
+                     }
+                }
                 
                 if let attribution = try metadata.getStringOrNil("attribution") {
                     self.credit = Credit(text: attribution)
                 }
-                
+            
                 // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
                 // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
                 // deprecated, as the extensionLength for this extension was incorrectly using big endian.
@@ -303,33 +327,33 @@ class CesiumTerrainProvider: TerrainProvider {
         metadataOperation.enqueue()
     }
 
-/**
-* When using the Quantized-Mesh format, a tile may be returned that includes additional extensions, such as PerVertexNormals, watermask, etc.
-* This enumeration defines the unique identifiers for each type of extension data that has been appended to the standard mesh data.
-*
-* @namespace
-* @alias QuantizedMeshExtensionIds
-* @see CesiumTerrainProvider
-* @private
-*/
+    /**
+     * When using the Quantized-Mesh format, a tile may be returned that includes additional extensions, such as PerVertexNormals, watermask, etc.
+     * This enumeration defines the unique identifiers for each type of extension data that has been appended to the standard mesh data.
+     *
+     * @namespace
+     * @alias QuantizedMeshExtensionIds
+     * @see CesiumTerrainProvider
+     * @private
+     */
     enum QuantizedMeshExtensionIds: UInt8 {
-    /**
-    * Oct-Encoded Per-Vertex Normals are included as an extension to the tile mesh
-    *
-    * @type {Number}
-    * @constant
-    * @default 1
-    */
-    case octVertexNormals = 1
-    /**
-    * A watermask is included as an extension to the tile mesh
-    *
-    * @type {Number}
-    * @constant
-    * @default 2
-    */
-    case waterMask
-}
+        /**
+         * Oct-Encoded Per-Vertex Normals are included as an extension to the tile mesh
+         *
+         * @type {Number}
+         * @constant
+         * @default 1
+         */
+        case octVertexNormals = 1
+        /**
+         * A watermask is included as an extension to the tile mesh
+         *
+         * @type {Number}
+         * @constant
+         * @default 2
+         */
+        case waterMask
+    }
     
     fileprivate func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
@@ -365,7 +389,10 @@ class CesiumTerrainProvider: TerrainProvider {
         let triangleElements = 3
         var bytesPerIndex = MemoryLayout<UInt16>.size
         var triangleLength = bytesPerIndex * triangleElements
-        
+        if data.count < 64 {
+            logPrint(.warning, "invalid short tile \(data.count) bytes")
+            return
+        }
         let center = Cartesian3(
             x: data.getFloat64(pos),
             y: data.getFloat64(pos + 8),

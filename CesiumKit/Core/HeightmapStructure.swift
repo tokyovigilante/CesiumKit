@@ -20,4 +20,6 @@ struct HeightmapStructure {
     var stride = 1
     var elementMultiplier = 256.0
     var isBigEndian = false
+    var lowestEncodedHeight = 0
+    var highestEncodedHeight = 256 * 256 - 1
 }

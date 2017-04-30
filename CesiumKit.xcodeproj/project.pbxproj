@@ -388,6 +388,12 @@
 		944787DA1A3D8BF500FFAD81 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F3ECA41A283ADB00FFAD81 /* String.swift */; };
 		9447FD971C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */; };
 		9447FD981C242C450095A86F /* Simon1994PlanetaryPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */; };
+		944A5EE71EB59107001A40C8 /* TileAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EE31EB56B70001A40C8 /* TileAvailability.swift */; };
+		944A5EE81EB59107001A40C8 /* TileAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EE31EB56B70001A40C8 /* TileAvailability.swift */; };
+		944A5EE91EB59117001A40C8 /* QuadtreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EE51EB56C89001A40C8 /* QuadtreeNode.swift */; };
+		944A5EEA1EB59118001A40C8 /* QuadtreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EE51EB56C89001A40C8 /* QuadtreeNode.swift */; };
+		944A5EEC1EB5F137001A40C8 /* RectangleWithLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EEB1EB5F137001A40C8 /* RectangleWithLevel.swift */; };
+		944A5EED1EB5F137001A40C8 /* RectangleWithLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944A5EEB1EB5F137001A40C8 /* RectangleWithLevel.swift */; };
 		944C5BE91AB70D8700FFAD81 /* CesiumKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 944C5BE81AB70D8700FFAD81 /* CesiumKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9455EB7F1A7CECAE00FFAD81 /* BingMapsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB7E1A7CECAE00FFAD81 /* BingMapsStyle.swift */; };
 		9455EB811A7CEE3E00FFAD81 /* BingMapsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455EB801A7CEE3E00FFAD81 /* BingMapsAPI.swift */; };
@@ -916,6 +922,9 @@
 		9444499D1948326C009D1703 /* MapProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapProjection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
 		9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Simon1994PlanetaryPositions.swift; sourceTree = "<group>"; };
+		944A5EE31EB56B70001A40C8 /* TileAvailability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileAvailability.swift; sourceTree = "<group>"; };
+		944A5EE51EB56C89001A40C8 /* QuadtreeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreeNode.swift; sourceTree = "<group>"; };
+		944A5EEB1EB5F137001A40C8 /* RectangleWithLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RectangleWithLevel.swift; path = CesiumKit/Core/RectangleWithLevel.swift; sourceTree = "<group>"; };
 		944C5BE81AB70D8700FFAD81 /* CesiumKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CesiumKit.h; sourceTree = SOURCE_ROOT; };
 		94540422199F045600012DC4 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		94540424199F05D300012DC4 /* FrustumCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrustumCommands.swift; sourceTree = "<group>"; };
@@ -1499,6 +1508,7 @@
 				94F0B82D1BC85DFC0095A86F /* OrientedBoundingBox.swift */,
 				948D03DC19449E9600DC0E52 /* Packable.swift */,
 				947E32341BC0D85E001A40C8 /* Plane.swift */,
+				944A5EE51EB56C89001A40C8 /* QuadtreeNode.swift */,
 				94EB4D9A1C2E633C001A40C8 /* QuantizedMeshTerrainData.swift */,
 				94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */,
 				94DA67BA1CABE4EC0095A86F /* QuantizedMeshUpsampler.swift */,
@@ -1515,6 +1525,7 @@
 				94786822194A959200B3F462 /* TerrainMesh.swift */,
 				9491BBAF1949D084007C1C4C /* TerrainProvider.swift */,
 				9438E0DF1CCD75E60095A86F /* TerrainQuantization.swift */,
+				944A5EE31EB56B70001A40C8 /* TileAvailability.swift */,
 				9491BBB51949D63A007C1C4C /* TilingScheme.swift */,
 				9403AC921C19A610001A40C8 /* TimeConstants.swift */,
 				9403AC8A1C19A449001A40C8 /* TimeStandard.swift */,
@@ -1735,6 +1746,7 @@
 		94DC79191918425300012DC4 = {
 			isa = PBXGroup;
 			children = (
+				944A5EEB1EB5F137001A40C8 /* RectangleWithLevel.swift */,
 				9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
@@ -2276,6 +2288,7 @@
 				9413B7C81A37B93100FFAD81 /* Rectangle.swift in Sources */,
 				9429E27D1CDDBA090041F512 /* Offset.swift in Sources */,
 				9413B80A1A37B94500FFAD81 /* PerspectiveFrustum.swift in Sources */,
+				944A5EE71EB59107001A40C8 /* TileAvailability.swift in Sources */,
 				9413B7B11A37B93100FFAD81 /* Geometry.swift in Sources */,
 				9413B7C11A37B93100FFAD81 /* Occluder.swift in Sources */,
 				94EFB0511C84D7CD0095A86F /* Encoder.swift in Sources */,
@@ -2444,6 +2457,8 @@
 				9488A14C1CBE4BFC0095A86F /* Crypto.swift in Sources */,
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
+				944A5EE91EB59117001A40C8 /* QuadtreeNode.swift in Sources */,
+				944A5EEC1EB5F137001A40C8 /* RectangleWithLevel.swift in Sources */,
 				94C9E4F61CD4EB8A0095A86F /* Fog.swift in Sources */,
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
 				94EFB04D1C84D7CD0095A86F /* DecimalNumber.swift in Sources */,
@@ -2550,6 +2565,7 @@
 				94D6531B1C26ACAE001A40C8 /* OrbitType.swift in Sources */,
 				9478212C1B5A2D7B0095A86F /* Quaternion.swift in Sources */,
 				9478212D1B5A2D7B0095A86F /* Queue.swift in Sources */,
+				944A5EED1EB5F137001A40C8 /* RectangleWithLevel.swift in Sources */,
 				9478212E1B5A2D7B0095A86F /* Ray.swift in Sources */,
 				9478212F1B5A2D7B0095A86F /* Rectangle.swift in Sources */,
 				947821301B5A2D7B0095A86F /* ScreenSpaceEventHandler.swift in Sources */,
@@ -2672,6 +2688,7 @@
 				947821791B5A2D7C0095A86F /* PerspectiveOffCenterFrustum.swift in Sources */,
 				9478217A1B5A2D7C0095A86F /* PrimitiveCollection.swift in Sources */,
 				9478217B1B5A2D7C0095A86F /* QuadtreeOccluders.swift in Sources */,
+				944A5EEA1EB59118001A40C8 /* QuadtreeNode.swift in Sources */,
 				9478217C1B5A2D7C0095A86F /* QuadtreePrimitive.swift in Sources */,
 				9478217D1B5A2D7C0095A86F /* QuadtreeTile.swift in Sources */,
 				9478217E1B5A2D7C0095A86F /* TileLoadState.swift in Sources */,
@@ -2695,6 +2712,7 @@
 				947821861B5A2D7C0095A86F /* TileCoordinateImageryProvider.swift in Sources */,
 				947821871B5A2D7C0095A86F /* TileDiscardPolicy.swift in Sources */,
 				941A28251BF40BBB001A40C8 /* HeightReference.swift in Sources */,
+				944A5EE81EB59107001A40C8 /* TileAvailability.swift in Sources */,
 				94EFB05E1C84D7CD0095A86F /* Parser.swift in Sources */,
 				947821881B5A2D7C0095A86F /* TileImagery.swift in Sources */,
 				940240241C1D982E0095A86F /* SkyAtmosphere.swift in Sources */,
