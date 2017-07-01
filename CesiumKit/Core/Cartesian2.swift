@@ -26,8 +26,8 @@ public struct Cartesian2 {
     
     fileprivate (set) internal var simdType: double2
     
-    var floatRepresentation: float2 {
-        return vector_float(simdType)
+    var floatRepresentation: simd_float2 {
+        return simd_float(simdType)
     }
     
     public var x: Double {
@@ -126,7 +126,7 @@ public struct Cartesian2 {
     * @returns {Number} The value of the maximum component.
     */
     public func maximumComponent() -> Double {
-        return vector_reduce_max(simdType)
+        return simd_reduce_max(simdType)
     }
     
     /**
@@ -136,7 +136,7 @@ public struct Cartesian2 {
     * @returns {Number} The value of the minimum component.
     */
     public func minimumComponent() -> Double {
-        return vector_reduce_min(simdType)
+        return simd_reduce_min(simdType)
     }
     
     /**
@@ -327,7 +327,7 @@ public struct Cartesian2 {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if one was not provided.
     */
     func absolute() -> Cartesian2 {
-        return Cartesian2(simd: vector_abs(simdType))
+        return Cartesian2(simd: simd_abs(simdType))
     }
     
     /**
@@ -401,7 +401,7 @@ public struct Cartesian2 {
     * @type {Cartesian2}
     * @constant
     */
-    static let zero = Cartesian2()
+    public static let zero = Cartesian2()
     
     /**
     * An immutable Cartesian2 instance initialized to (1.0, 0.0).
@@ -409,7 +409,7 @@ public struct Cartesian2 {
     * @type {Cartesian2}
     * @constant
     */
-    static let unitX = Cartesian2(x: 1.0, y: 0.0)
+    public static let unitX = Cartesian2(x: 1.0, y: 0.0)
     
     /**
     * An immutable Cartesian2 instance initialized to (0.0, 1.0).
@@ -417,7 +417,7 @@ public struct Cartesian2 {
     * @type {Cartesian2}
     * @constant
     */
-    static let unitY = Cartesian2(x: 1.0, y: 0.0)
+    public static let unitY = Cartesian2(x: 1.0, y: 0.0)
 }
 
 extension Cartesian2: Packable {

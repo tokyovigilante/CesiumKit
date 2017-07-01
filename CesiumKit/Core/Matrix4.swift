@@ -55,10 +55,10 @@ public struct Matrix4 {
     
     var floatRepresentation: float4x4 {
         return float4x4([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2]),
-            vector_float(simdType[3])
+            simd_float(simdType[0]),
+            simd_float(simdType[1]),
+            simd_float(simdType[2]),
+            simd_float(simdType[3])
         ])
     }
     
@@ -825,7 +825,8 @@ Matrix4.getElementIndex = function(column, row) {
      * @returns {Boolean} <code>true</code> if they are equal, <code>false</code> otherwise.
      */
     func equals(_ other: Matrix4) -> Bool {
-        return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
+        
+        return simd_equal(simdType, other.simdType)
     }
     
     /**
@@ -839,7 +840,7 @@ Matrix4.getElementIndex = function(column, row) {
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
     func equalsEpsilon(_ other: Matrix4, epsilon: Double) -> Bool {
-        return matrix_almost_equal_elements(self.simdType.cmatrix, other.simdType.cmatrix, epsilon)
+        return simd_almost_equal_elements(self.simdType, other.simdType, epsilon)
     }
     
 /*
@@ -1463,9 +1464,9 @@ Matrix4.abs = function(matrix, result) {
     * @type {Matrix4}
     * @constant
     */
-    static let identity = Matrix4(1.0)
+    public static let identity = Matrix4(1.0)
     
-    static let zero = Matrix4()
+    public static let zero = Matrix4()
 
     /**
     * @private

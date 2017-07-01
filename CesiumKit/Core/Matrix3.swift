@@ -39,9 +39,9 @@ public struct Matrix3 {
     
     var floatRepresentation: float3x3 {
         return float3x3([
-            vector_float(simdType[0]),
-            vector_float(simdType[1]),
-            vector_float(simdType[2])
+            simd_float(simdType[0]),
+            simd_float(simdType[1]),
+            simd_float(simdType[2])
         ])
     }
     
@@ -664,7 +664,7 @@ public struct Matrix3 {
     }
     
     public func equals(_ other: Matrix3) -> Bool {
-        return matrix_equal(simdType.cmatrix, other.simdType.cmatrix)
+        return simd_equal(simdType, other.simdType)
     }
     
     /**
@@ -678,7 +678,7 @@ public struct Matrix3 {
      * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
      */
     func equalsEpsilon(_ other: Matrix3, epsilon: Double) -> Bool {
-        return matrix_almost_equal_elements(simdType.cmatrix, other.simdType.cmatrix, epsilon)
+        return simd_almost_equal_elements(simdType, other.simdType, epsilon)
 
     }
     
