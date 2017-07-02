@@ -319,9 +319,8 @@ class ShaderProgram {
         fragmentUniformSize = offset - vertexUniformSize
     }
 
-    func createUniformBufferProvider(_ device: MTLDevice, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
-        let provider = UniformBufferProvider(device: device, bufferSize: max(uniformBufferSize, 256), deallocationBlock: deallocationBlock)
-        return provider
+    func createUniformBufferProvider(_ device: MTLDevice, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider? {
+        return UniformBufferProvider(device: device, bufferSize: max(uniformBufferSize, 256), deallocationBlock: deallocationBlock)
     }
     
     //MARK:- Set uniforms

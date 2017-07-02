@@ -18,8 +18,8 @@ import QuartzCore.CAMetalLayer
 class Context {
         
     fileprivate var _debug: (
-    renderCountThisFrame: Int,
-    renderCount: Int
+        renderCountThisFrame: Int,
+        renderCount: Int
     )
     
     /*var renderQueue: dispatch_queue_t {
@@ -159,20 +159,24 @@ class Context {
     */
     let defaultFramebuffer: Framebuffer
     
-    init (view: MTKView) {
+    init? (view: MTKView) {
         
         self.view = view
         
         device = view.device!
         limits = ContextLimits(device: device)
         
-        logPrint(.info, "Metal device: " + (device.name ?? "Unknown"))
+        logPrint(.info, "Metal device: " + device.name)
         #if os(OSX)
             logPrint(.info, "- Low power: " + (device.isLowPower ? "Yes" : "No"))
             logPrint(.info, "- Headless: " + (device.isHeadless ? "Yes" : "No"))
         #endif
         
-        _commandQueue = device.makeCommandQueue()
+        guard let commandQueue = device.makeCommandQueue() else {
+            logPrint(.error, "cannot create MTLCommandQueue")
+            return nil
+        }   
+        _commandQueue = commandQueue
         
         pipelineCache = PipelineCache(device: device)
         id = UUID().uuidString
@@ -191,7 +195,11 @@ class Context {
         
         _defaultRenderState = rs
         uniformState = us
-        _automaticUniformBufferProvider = UniformBufferProvider(device: device, bufferSize: MemoryLayout<AutomaticUniformBufferLayout>.stride, deallocationBlock: nil)
+        guard let automaticUniformBufferProvider = UniformBufferProvider(device: device, bufferSize: MemoryLayout<AutomaticUniformBufferLayout>.stride, deallocationBlock: nil) else {
+            logPrint(.critical, "Could not create uniform buffer provider")
+            return nil
+        }
+        _automaticUniformBufferProvider = automaticUniformBufferProvider
         _currentRenderState = rs
         defaultFramebuffer = Framebuffer(maximumColorAttachments: 1)
         _defaultPassState = PassState()
@@ -225,7 +233,7 @@ class Context {
     /**
     * Creates a compiled MTLSamplerState from a MTLSamplerDescriptor. These should generally be cached.
     */
-    func createSamplerState (_ descriptor: MTLSamplerDescriptor) -> MTLSamplerState {
+    func createSamplerState (_ descriptor: MTLSamplerDescriptor) -> MTLSamplerState? {
         return device.makeSamplerState(descriptor: descriptor)
     }
     
@@ -262,10 +270,9 @@ class Context {
         //updateDrawable()
     }
     
-    func createRenderPass(_ passState: PassState? = nil) -> RenderPass {
+    func createRenderPass(_ passState: PassState? = nil) -> RenderPass? {
         let passState = passState ?? _defaultPassState
-        let pass = RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: defaultFramebuffer)
-        return pass
+        return RenderPass(context: self, buffer: _commandBuffer, passState: passState, defaultFramebuffer: defaultFramebuffer)
     }
     
     func completeRenderPass(_ pass: RenderPass) {
@@ -276,7 +283,7 @@ class Context {
         pass.apply(renderState: renderState)
     }
     
-    func createBlitCommandEncoder (_ completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder {
+    func createBlitCommandEncoder (_ completionHandler: MTLCommandBufferHandler? = nil) -> MTLBlitCommandEncoder? {
         if let completionHandler = completionHandler {
             _commandBuffer.addCompletedHandler(completionHandler)
         }
@@ -287,7 +294,7 @@ class Context {
         encoder.endEncoding()
     }
     
-    func getFrustumUniformBufferProvider () -> UniformBufferProvider {
+    func getFrustumUniformBufferProvider () -> UniformBufferProvider? {
         if _frustumUniformBufferProviderPool.isEmpty {
             return UniformBufferProvider(device: device, bufferSize: MemoryLayout<FrustumUniformBufferLayout>.stride, deallocationBlock: { provider in
                     self._frustumUniformBufferProviderPool.append(provider)
@@ -399,36 +406,36 @@ class Context {
             }
             
             // automatic uniforms
-            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, at: 0)
+            commandEncoder.setVertexBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, index: 0)
 
             // frustum uniforms
-            commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, at: 1)
+            commandEncoder.setVertexBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, index: 1)
 
             // manual uniforms
             if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
-                commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, at: 2)
+                commandEncoder.setVertexBuffer(uniformBuffer.metalBuffer, offset: 0, index: 2)
             }
             
             for attribute in va.attributes {
                 if let buffer = attribute.buffer {
-                    commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, at: attribute.bufferIndex)
+                    commandEncoder.setVertexBuffer(buffer.metalBuffer, offset: 0, index: attribute.bufferIndex)
                 }
             }
             
             // automatic uniforms
-            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(_automaticUniformBufferProvider.currentBuffer(bufferSyncState).metalBuffer, offset: 0, index: 0)
             
             // frustum uniforms
-            commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, at: 1)
+            commandEncoder.setFragmentBuffer(frustumUniformBuffer?.metalBuffer, offset: 0, index: 1)
             
             // manual uniforms
             if let uniformBuffer = command.uniformMap?.uniformBufferProvider?.currentBuffer(bufferSyncState) {
-                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, at: 2)
+                commandEncoder.setFragmentBuffer(uniformBuffer.metalBuffer, offset: bufferParams.fragmentOffset, index: 2)
             }
             
             for (index, texture) in bufferParams.textures.enumerated() {
-                commandEncoder.setFragmentTexture(texture.metalTexture, at: index)
-                commandEncoder.setFragmentSamplerState(texture.sampler.state, at: index)
+                commandEncoder.setFragmentTexture(texture.metalTexture, index: index)
+                commandEncoder.setFragmentSamplerState(texture.sampler.state, index: index)
             }
             
             commandEncoder.drawIndexedPrimitives(type: primitiveType, indexCount: indexCount, indexType: indexType, indexBuffer: indexBuffer.metalBuffer, indexBufferOffset: 0)

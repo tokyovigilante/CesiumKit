@@ -91,7 +91,10 @@ class ComputeEngine {
             map.uniformBufferProvider = drawCommand.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
         
-        let renderPass = context.createRenderPass(passState)
+        guard let renderPass = context.createRenderPass(passState) else {
+            logPrint(.critical, "Cannot create renderPass")
+            return
+        }
         drawCommand.execute(context, renderPass: renderPass)
         renderPass.complete()
         //FIXME: postExecute

@@ -433,7 +433,10 @@ open class Texture {
     */
     func generateMipmaps (context: Context, completionBlock: MTLCommandBufferHandler? = nil) {
         assert(mipmapped, "mipmapping must be enabled during texture creation")
-        let blitEncoder = context.createBlitCommandEncoder(completionBlock)
+        guard let blitEncoder = context.createBlitCommandEncoder(completionBlock) else {
+            logPrint(.critical, "Could not create BlitCommandEncoder")
+            return
+        }
         blitEncoder.generateMipmaps(for: metalTexture)
         context.completeBlitPass(blitEncoder)
     }

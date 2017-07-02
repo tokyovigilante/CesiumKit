@@ -289,11 +289,14 @@ class VertexArray {
                 let vertexBufferSizeInBytes = numberOfVertices * vertexSizeInBytes
                 
                 // Create array for interleaved vertices.  Each attribute has a different view (pointer) into the array.
-                let buffer = Buffer(
+                guard let buffer = Buffer(
                     device: context.device,
                     array: nil,
                     componentDatatype: .float32,
-                    sizeInBytes: vertexBufferSizeInBytes)
+                    sizeInBytes: vertexBufferSizeInBytes) else {
+                        logPrint(.critical, "Could not create buffer")
+                        return nil
+                }
                 for i in 0..<numberOfVertices {
                     var attributeIndex = 0
                     for name in attributeNames {

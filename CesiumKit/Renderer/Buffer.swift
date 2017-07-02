@@ -27,28 +27,38 @@ class Buffer {
      Creates a Metal GPU buffer. If an allocated memory region is passed in, it will be
      copied to the buffer and can be released (or automatically released via ARC). 
     */
-    init (device: MTLDevice, array: UnsafeRawPointer? = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
+    init? (device: MTLDevice, array: UnsafeRawPointer? = nil, componentDatatype: ComponentDatatype, sizeInBytes: Int, label: String? = nil) {
         assert(sizeInBytes > 0, "bufferSize must be greater than zero")
         
         length = sizeInBytes
         self.componentDatatype = componentDatatype
         _entireRange = NSMakeRange(0, length)
-        
         if let array = array {
             #if os(OSX)
-                metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeManaged)
+                guard let metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeManaged) else {
+                    return nil
+                }
             #elseif os(iOS)
-                metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeShared)
+                guard let metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeShared) else {
+                    return nil
+                }
             #endif
+            self.metalBuffer = metalBuffer
         } else {
             #if os(OSX)
-                metalBuffer = device.makeBuffer(length: length, options: .storageModeManaged)
+                guard let metalBuffer = device.makeBuffer(length: length, options: .storageModeManaged) else {
+                    return nil
+                }
             #elseif os(iOS)
-                metalBuffer = device.makeBuffer(length: length, options: .storageModeShared)
+                guard let metalBuffer = device.makeBuffer(length: length, options: .storageModeShared) else {
+                    return nil
+                }
             #endif
+            self.metalBuffer = metalBuffer
+            
         }
         if let label = label {
-            metalBuffer.label = label
+            self.metalBuffer.label = label
         }
     }
     

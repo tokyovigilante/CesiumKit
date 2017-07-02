@@ -27,11 +27,15 @@ class RenderPass {
     
     let passState: PassState
     
-    init (context: Context, buffer: MTLCommandBuffer, passState: PassState, defaultFramebuffer: Framebuffer) {
+    init? (context: Context, buffer: MTLCommandBuffer, passState: PassState, defaultFramebuffer: Framebuffer) {
         _context = context
         self.passState = passState
         let passDescriptor = passState.framebuffer?.renderPassDescriptor ?? defaultFramebuffer.renderPassDescriptor
-        commandEncoder = buffer.makeRenderCommandEncoder(descriptor: passDescriptor)
+        guard let commandEncoder = buffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
+            logPrint(.error, "cannot create renderCommandEncoder")
+            return nil
+        }
+        self.commandEncoder = commandEncoder
     }
     
     func apply(renderState: RenderState) {

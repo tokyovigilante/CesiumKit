@@ -17,13 +17,17 @@ open class UniformBufferProvider {
     
     let deallocationBlock: UniformMapDeallocBlock?
     
-    init (device: MTLDevice, bufferSize: Int, deallocationBlock: UniformMapDeallocBlock?) {
+    init? (device: MTLDevice, bufferSize: Int, deallocationBlock: UniformMapDeallocBlock?) {
         
         self.bufferSize = bufferSize
         self.deallocationBlock = deallocationBlock
         
         for _ in 0..<BufferSyncState.count {
-            _buffers.append(Buffer(device: device, array: nil, componentDatatype: .byte, sizeInBytes: self.bufferSize))
+            guard let buffer = Buffer(device: device, array: nil, componentDatatype: .byte, sizeInBytes: self.bufferSize) else {
+                logPrint(.critical, "Buffer creation failed")
+                return nil
+            }
+            _buffers.append(buffer)
         }
     }
     
