@@ -107,7 +107,7 @@ class CesiumTerrainProvider: TerrainProvider {
     
     fileprivate var _tileUrlTemplates = [String]()
     
-    fileprivate var _availableTiles: [JSON]? = nil
+    fileprivate var _availableTiles = [TileMetadata]()
     
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
@@ -165,7 +165,17 @@ class CesiumTerrainProvider: TerrainProvider {
     
     fileprivate var _littleEndianExtensionSize = true
     
-    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
+    struct TileMetadata: Codable {
+        
+    }
+    
+    struct TerrainMetadataInfo: Codable {
+        var tiles: [TileMetadata]
+        var format: String
+        var version: String
+    }
+    
+    init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84, tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
         
         self.url = url
         self.ellipsoid = ellipsoid
@@ -187,21 +197,22 @@ class CesiumTerrainProvider: TerrainProvider {
         let metadataSuccess = { (data: Data) in
             
             do {
-                let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
+                let decoder = JSONDecoder()
+                let metadata = try decoder.decode(TerrainMetadataInfo.self, from: data)
                 
-                guard let tiles = try metadata.getArrayOrNil("tiles") else {
+                if metadata.tiles.count == 0 {
                     logPrint(.error, "The layer.json file does not specify any tile URL templates.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
 
-                guard let format = try metadata.getStringOrNil("format") else {
+                /*guard let format = try metadata.getStringOrNil("format") else {
                     logPrint(.error, "The tile format is not specified in the layer.json file.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
-                }
+                }*/
                 
-                if format == "heightmap-1.0" {
+                if metadata.format == "heightmap-1.0" {
                     self._heightmapStructure = HeightmapStructure(
                         heightScale: 1.0 / 5.0,
                         heightOffset: -1000.0,
@@ -214,13 +225,13 @@ class CesiumTerrainProvider: TerrainProvider {
                     )
                     self._hasWaterMask = true
                     self._requestWaterMask = true
-                } else if !format.hasPrefix("quantized-mesh-1.") {
-                    logPrint(.warning, "The tile format '" + format + "' is invalid or not supported.")
+                } else if !metadata.format.hasPrefix("quantized-mesh-1.") {
+                    logPrint(.warning, "The tile format '" + metadata.format + "' is invalid or not supported.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
-                let version = try metadata.getString("version")
-                
+                let version = metadata.version
+                /*
                 var baseURL: URLComponents = URLComponents(string: self.url)!
                 self._tileUrlTemplates = tiles.map {
                     var templateString = $0.string!
@@ -287,7 +298,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 }
                 DispatchQueue.main.async(execute: {
                     self.ready = true
-                })
+                })*/
                 //that._readyPromise.resolve(true);
             } catch {
                 logPrint(.error, "invalid JSON from terrain provider")
@@ -732,7 +743,9 @@ class CesiumTerrainProvider: TerrainProvider {
     }
     
     func calculateTileCount () {
-        var tileCount = 0
+        
+        //FIXME: disabled
+        /*var tileCount = 0
         do {
             guard let availableTiles = _availableTiles else {
                 return
@@ -758,11 +771,11 @@ class CesiumTerrainProvider: TerrainProvider {
             }
         } catch {
             return
-        }
+        }*/
     }
     
     func getChildMaskForTile(_ level: Int, x: Int, y: Int) -> Int {
-        guard let availableTiles = _availableTiles else {
+        /*guard let availableTiles = _availableTiles else {
             return 15
         }
         
@@ -778,16 +791,16 @@ class CesiumTerrainProvider: TerrainProvider {
         guard let levelAvailable = availableTiles[childLevel].array else {
             return 0
         }
-        
+        */
         var mask = 0
-        mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y) ? 1 : 0
+        /*mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y) ? 1 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y) ? 2 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y + 1) ? 4 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0
-        
+        */
         return mask
     }
-    
+    /*
     func isTileInRange(_ levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
         for range in levelAvailable {
             do {
@@ -806,7 +819,7 @@ class CesiumTerrainProvider: TerrainProvider {
 
         }
         return false
-    }
+    }*/
     /*
         /**
         * Determines whether data for a tile is available to be loaded.

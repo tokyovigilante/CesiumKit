@@ -98,7 +98,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         
         public let ellipsoid: Ellipsoid
         
-        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+        public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
             self.url = url
             self.tileProtocol = tileProtocol
             self.mapStyle = mapStyle
@@ -350,7 +350,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     
     fileprivate var _imageUrlTemplate: String? = nil
     
-    fileprivate var _imageUrlSubdomains: JSONArray? = nil
+    fileprivate var _imageUrlSubdomains = [String]()
     
     public init(key: String? = nil, options: Options = Options()) {
 
@@ -392,7 +392,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         let metadataSuccess = { (data: Data) -> () in
             
             do {
-                let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
+                /*let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
                 
                 guard let resourceSet = try metadata.getArray("resourceSets").first else {
                     let error = try metadata.getArray("errorDetails")
@@ -676,8 +676,11 @@ open class BingMapsImageryProvider: ImageryProvider {
         let quadkey = tileXYToQuadKey(x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
         
-        let subdomainIndex = (x + y + level) % _imageUrlSubdomains!.count
-        imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].string!)
+        if _imageUrlSubdomains.count > 0 {
+            let subdomainIndex = (x + y + level) % _imageUrlSubdomains.count
+            imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains[subdomainIndex])
+        }
+        
         
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;

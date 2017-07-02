@@ -9,53 +9,23 @@
 import Foundation
 import CoreGraphics
 
-private let GlyphIndexKey = "g"
-private let TopLeftTexCoordKey = "tl"
-private let BottomRightTexCoordKey = "br"
-
-struct GlyphDescriptor: JSONEncodable {
+struct GlyphDescriptor: Codable {
     
-    var glyphIndex: CGGlyph
+    var glyphIndex: Int
     
-    var topLeftTexCoord: CGPoint
+    var tl: GlyphPoint
     
-    var bottomRightTexCoord: CGPoint
+    var br: GlyphPoint
     
     init (glyphIndex: CGGlyph, topLeftTexCoord: CGPoint, bottomRightTexCoord: CGPoint) {
-        self.glyphIndex = glyphIndex
-        self.topLeftTexCoord = topLeftTexCoord
-        self.bottomRightTexCoord = bottomRightTexCoord
+        self.glyphIndex = Int(glyphIndex)
+        self.tl = GlyphPoint(x: Float(topLeftTexCoord.x), y: Float(topLeftTexCoord.y))
+        self.br = GlyphPoint(x: Float(bottomRightTexCoord.x), y: Float(bottomRightTexCoord.y))
     }
-    
-    init (fromJSON json: JSON) throws {
-        self.glyphIndex = try UInt16(json.getInt(GlyphIndexKey))
-        self.topLeftTexCoord = try CGPoint(fromJSON: JSON.object(json.getObject(TopLeftTexCoordKey)))
-        self.bottomRightTexCoord = try CGPoint(fromJSON: JSON.object(json.getObject(BottomRightTexCoordKey)))
-    }
-    
-    func toJSON() -> JSON {
-        let json = JSON.object(JSONObject([
-            GlyphIndexKey: JSON(integerLiteral: Int64(glyphIndex)),
-            TopLeftTexCoordKey: topLeftTexCoord.toJSON(),
-            BottomRightTexCoordKey: bottomRightTexCoord.toJSON()
-        ]))
-        return json
-    }
-    
 }
 
-extension CGPoint: JSONEncodable {
-    
-    init (fromJSON json: JSON) throws {
-        self.x = try CGFloat(json.getDouble("x"))
-        self.y = try CGFloat(json.getDouble("y"))
-    }
-    
-    func toJSON() -> JSON {
-        let json = JSON.object(JSONObject([
-            "x": JSON(floatLiteral: Double(x)),
-            "y": JSON(floatLiteral: Double(y))
-            ]))
-        return json
-    }
+struct GlyphPoint: Codable {
+    var x: Float
+    var y: Float
 }
+
