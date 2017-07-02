@@ -11,22 +11,55 @@ import Foundation
 import AppKit.NSImage
 #endif
  
- private struct AttributionArea {
-    
-    var zoomMin: Int
-    
-    var zoomMax: Int
-    
-    var bbox: Rectangle
-    
+ 
+ private struct BingMapsMetadata: Decodable {
+    var authenticationResultCode: String
+    var brandLogoUri: String
+    var copyright: String
+    var resourceSets: [BingResourceSet]
+    var errorDetails: [String]?
+    var statusCode: Int
+    var statusDescription: String
+    var traceId: String
  }
  
- private struct Attribution {
-    
-    var attribution: Credit
-    
-    var areas: [AttributionArea]
+ private struct BingResourceSet: Decodable {
+    var estimatedTotal: Int
+    var resources: [BingResource]
  }
+ 
+ private struct BingResource: Decodable {
+    var imageHeight: Int
+    var imageWidth: Int
+    var zoomMax: Int
+    var imageUrl: String
+    var imageUrlSubdomains: [String]
+    var imageryProviders: [BingImageryProvider]
+ }
+ 
+ private struct BingImageryProvider: Decodable {
+    var attribution: String
+    var coverageAreas: [BingCoverageArea]
+ }
+ 
+ private struct BingCoverageArea: Decodable {
+    var bbox: [Double]
+    var zoomMax: Int
+    var zoomMin: Int
+ }
+ 
+ private struct AttributedArea {
+    var attribution: Credit
+    var areas: [AttributedAreaCoverage]
+ }
+ 
+ private struct AttributedAreaCoverage {
+    var bbox: Rectangle
+    var zoomMin: Int
+    var zoomMax: Int
+ }
+ 
+ 
 
 /**
 * Provides tiled imagery using the Bing Maps Imagery REST API.
@@ -184,7 +217,6 @@ open class BingMapsImageryProvider: ImageryProvider {
     */
     open var rectangle: Rectangle {
         get  {
-            //>>includeStart('debug', pragmas.debug);
             assert(_ready, "rectangle must not be called before the imagery provider is ready")
             return _tilingScheme.rectangle
         }
@@ -302,7 +334,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     */
     open let credit: Credit?
     
-    fileprivate var _attributionList = [Attribution]()
+    fileprivate var _attributionList = [AttributedArea]()
     
     /**
     * Gets the proxy used by this provider.
@@ -390,33 +422,27 @@ open class BingMapsImageryProvider: ImageryProvider {
         //var metadataError;
         
         let metadataSuccess = { (data: Data) -> () in
-            
             do {
-                /*let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
-                
-                guard let resourceSet = try metadata.getArray("resourceSets").first else {
-                    let error = try metadata.getArray("errorDetails")
-                    logPrint(.error, "metadata error: ")// + error.first?)
+                let decoder = JSONDecoder()
+                let metadata = try decoder.decode(BingMapsMetadata.self, from: data)
+                guard let resourceSet = metadata.resourceSets.first else {
+                    logPrint(.error, "Bing metadata error: " + (metadata.errorDetails?.first ?? ""))
                     return
                 }
-                guard let resource = try resourceSet.getArray("resources").first else {
-                    let error = try metadata.getString("errorDetails")
-                    logPrint(.error, "metadata error: " + error)
+                guard let resource = resourceSet.resources.first else {
+                    logPrint(.error, "Bing metadata error: " + (metadata.errorDetails?.first ?? ""))
                     return
                 }
-                self._tileWidth = try resource.getInt("imageWidth")
-                self._tileHeight = try resource.getInt("imageHeight")
-                self._maximumLevel = try resource.getInt("zoomMax") - 1
-                self._imageUrlSubdomains = try resource.getArray("imageUrlSubdomains")
+                self._tileWidth = resource.imageWidth
+                self._tileHeight = resource.imageHeight
+                self._maximumLevel = resource.zoomMax - 1
+                self._imageUrlSubdomains = resource.imageUrlSubdomains
                 
-                 let imageUrlTemplate = try resource
-                    .getString("imageUrl")
+                 self._imageUrlTemplate = resource.imageUrl
                     .replace("{culture}", self.culture)
-                 
-                 // Force HTTPS
-                 self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
-                 
-                 
+                    // Force HTTPS
+                    .replace("http://", "https://")
+                
                  // Install the default tile discard policy if none has been supplied.
                  //FIXME: Tile discard policy
                  /*if (!defined(that._tileDiscardPolicy)) {
@@ -427,45 +453,35 @@ open class BingMapsImageryProvider: ImageryProvider {
                  });
                  }*/
                 
-                if let attributionList = try resource.getArrayOrNil("imageryProviders") {
+                for coverageArea in resource.imageryProviders {
+                    var attributedArea = AttributedArea(
+                        attribution: Credit(text: coverageArea.attribution),
+                        areas: [AttributedAreaCoverage]()
+                    )
                     
-                    for jsonAttribution in attributionList {
-                        
-                        var attribution = Attribution(
-                            attribution: Credit(text: try jsonAttribution.getString("attribution")),
-                            areas: [AttributionArea]()
-                        )
-                        
-                        let coverageAreas = try jsonAttribution.getArray("coverageAreas")
-                        
-                        for area in coverageAreas {
-                            let bbox = try area.getArray("bbox")
-                            let zoomMin = try area.getInt("zoomMin")
-                            let zoomMax = try area.getInt("zoomMax")
-                            attribution.areas.append(
-                                AttributionArea(
-                                    zoomMin: zoomMin,
-                                    zoomMax: zoomMax, bbox:
-                                    Rectangle(
-                                        west: Math.toRadians(try bbox[1].getDouble()),
-                                        south: Math.toRadians(try bbox[0].getDouble()),
-                                        east: Math.toRadians(try bbox[3].getDouble()),
-                                        north: Math.toRadians(try bbox[2].getDouble())
-                                    )
-                                )
+                    for area in coverageArea.coverageAreas {
+                        attributedArea.areas.append(
+                            AttributedAreaCoverage(
+                                bbox: Rectangle(
+                                    west: Math.toRadians(area.bbox[1]),
+                                    south: Math.toRadians(area.bbox[0]),
+                                    east: Math.toRadians(area.bbox[3]),
+                                    north: Math.toRadians(area.bbox[2])
+                                ),
+                                zoomMin: area.zoomMin,
+                                zoomMax: area.zoomMax
                             )
-                        }
-                        self._attributionList.append(attribution)
+                        )
                     }
-                    
+                    self._attributionList.append(attributedArea)
                 }
-
+                
                 DispatchQueue.main.async(execute: {
                     self._ready = true
                 })
                  //TileProviderError.handleSuccess(metadataError);*/
             } catch {
-                logPrint(.error, "Bing metadata decode failed - invalid JSON")
+                logPrint(.error, "Bing metadata decode failed - invalid JSON: " + error.localizedDescription)
                 return
             }
         }

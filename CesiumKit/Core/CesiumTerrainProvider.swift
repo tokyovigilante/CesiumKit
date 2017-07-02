@@ -9,6 +9,30 @@
 import Foundation
 import simd
 
+struct AvailableRange: Decodable {
+    var startX: Int
+    var startY: Int
+    var endX: Int
+    var endY: Int
+}
+
+struct TerrainProviderMetadata: Decodable {
+    var tilejson: String
+    var name: String
+    var description: String
+    var version: String
+    var format: String
+    var attribution: String?
+    var scheme: String
+    var extensions: [String]
+    var tiles: [String]
+    var minzoom: Int
+    var maxzoom: Int
+    var bounds: [Double]
+    var projection: String
+    var available: [[AvailableRange]]
+}
+
 /**
  * A {@link TerrainProvider} that access terrain data in a Cesium terrain format.
  * The format is described on the
@@ -107,8 +131,6 @@ class CesiumTerrainProvider: TerrainProvider {
     
     fileprivate var _tileUrlTemplates = [String]()
     
-    fileprivate var _availableTiles = [TileMetadata]()
-    
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
      * This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
@@ -165,15 +187,7 @@ class CesiumTerrainProvider: TerrainProvider {
     
     fileprivate var _littleEndianExtensionSize = true
     
-    struct TileMetadata: Codable {
-        
-    }
-    
-    struct TerrainMetadataInfo: Codable {
-        var tiles: [TileMetadata]
-        var format: String
-        var version: String
-    }
+    private var _metadata: TerrainProviderMetadata? = nil
     
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84, tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
         
@@ -185,33 +199,24 @@ class CesiumTerrainProvider: TerrainProvider {
         
         _levelZeroMaximumGeometricError = CesiumTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: _heightmapWidth, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAt(level: 0))
         
-        
         //this._readyPromise = when.defer();
         
         let metadataUrl = url + "/layer.json"
         /*if (defined(this._proxy)) {
             metadataUrl = this._proxy.getURL(metadataUrl);
         }*/
-        var metadataError: NSError? = nil
         
         let metadataSuccess = { (data: Data) in
-            
             do {
                 let decoder = JSONDecoder()
-                let metadata = try decoder.decode(TerrainMetadataInfo.self, from: data)
+                let metadata = try decoder.decode(TerrainProviderMetadata.self, from: data)
+                self._metadata = metadata
                 
                 if metadata.tiles.count == 0 {
                     logPrint(.error, "The layer.json file does not specify any tile URL templates.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
-
-                /*guard let format = try metadata.getStringOrNil("format") else {
-                    logPrint(.error, "The tile format is not specified in the layer.json file.")
-                    //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-                    return
-                }*/
-                
                 if metadata.format == "heightmap-1.0" {
                     self._heightmapStructure = HeightmapStructure(
                         heightScale: 1.0 / 5.0,
@@ -231,10 +236,10 @@ class CesiumTerrainProvider: TerrainProvider {
                     return
                 }
                 let version = metadata.version
-                /*
+                
                 var baseURL: URLComponents = URLComponents(string: self.url)!
-                self._tileUrlTemplates = tiles.map {
-                    var templateString = $0.string!
+                self._tileUrlTemplates = metadata.tiles.map {
+                    var templateString = $0
                     let template = URLComponents(string: templateString)
                     if template?.host != nil && baseURL.host == nil {
                         baseURL.host = template!.host
@@ -248,60 +253,50 @@ class CesiumTerrainProvider: TerrainProvider {
                     guard let url = baseURL.url?.absoluteString else {
                         return ""
                     }
-                    
                     let path = templateString.replace("{version}", version)
                     return url + "/" + path
                 }
                 
-                if let availableTiles = try metadata.getArrayOrNil("available").map { $0 } {
+                self.availability = TileAvailability(tilingScheme: tilingScheme, maximumLevel: metadata.available.count)
+                
+                for (level, ranges) in metadata.available.enumerated() {
+                    let yTiles = tilingScheme.numberOfYTilesAt(level: level)
                     
-                    self.availability = TileAvailability(tilingScheme: tilingScheme, maximumLevel: availableTiles.count)
-                    
-                    for level in 0..<availableTiles.count {
-                        guard let rangesAtLevel = availableTiles[level].array else {
-                            logPrint(.warning, "invalid terrain data for level \(level)")
-                            continue
-                        }
-                        let yTiles = tilingScheme.numberOfYTilesAt(level: level)
-                        
-                        for rangeIndex in 0..<rangesAtLevel.count {
-                            let range = rangesAtLevel[rangeIndex]
-                            let startX = try range.getInt("startX")
-                            let endX = try range.getInt("endX")
-                            let startY = try range.getInt("startY")
-                            let endY = try range.getInt("endY")
-                            self.availability?.addAvailableTileRange(level: level, startX: startX, startY: yTiles - endY - 1, endX: endX, endY: yTiles - startY - 1)
-                        }
-                     }
+                    for (rangeIndex, range) in ranges.enumerated() {
+                        self.availability?.addAvailableTileRange(
+                            level: level,
+                            startX: range.startX,
+                            startY: yTiles - range.endY - 1,
+                            endX: range.endX,
+                            endY: yTiles - range.startY - 1)
+                    }
                 }
                 
-                if let attribution = try metadata.getStringOrNil("attribution") {
+                if let attribution = metadata.attribution {
                     self.credit = Credit(text: attribution)
                 }
-            
                 // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
                 // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
                 // deprecated, as the extensionLength for this extension was incorrectly using big endian.
                 // We maintain backwards compatibility with the legacy 'vertexnormal' implementation
                 // by setting the _littleEndianExtensionSize to false. Always prefer 'octvertexnormals'
                 // over 'vertexnormals' if both extensions are supported by the server.
-                if let extensions = try metadata.getArrayOrNil("extensions") {
-                    if extensions.contains("octvertexnormals") {
-                        self._hasVertexNormals = true
-                    } else if extensions.contains("vertexnormals") {
-                        self._hasVertexNormals = true
-                        self._littleEndianExtensionSize = false
-                    }
-                    if extensions.contains("watermask") {
-                        self._hasWaterMask = true
-                    }
+                if metadata.extensions.contains("octvertexnormals") {
+                    self._hasVertexNormals = true
+                } else if metadata.extensions.contains("vertexnormals") {
+                    self._hasVertexNormals = true
+                    self._littleEndianExtensionSize = false
                 }
+                if metadata.extensions.contains("watermask") {
+                    self._hasWaterMask = true
+                }
+                
                 DispatchQueue.main.async(execute: {
                     self.ready = true
-                })*/
+                })
                 //that._readyPromise.resolve(true);
             } catch {
-                logPrint(.error, "invalid JSON from terrain provider")
+                logPrint(.error, "Invalid JSON from terrain provider")
                 return
             }
         }
