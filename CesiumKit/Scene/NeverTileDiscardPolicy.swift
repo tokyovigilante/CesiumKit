@@ -16,13 +16,17 @@ import Foundation
 *
 * @see DiscardMissingTileImagePolicy
 */
-class NeverTileDiscardPolicy: TileDiscardPolicy {
+public class NeverTileDiscardPolicy: TileDiscardPolicy {
+    
+    public init () {
+        
+    }
     
     /**
     * Determines if the discard policy is ready to process images.
     * @returns True if the discard policy is ready to process images; otherwise, false.
     */
-    var isReady: Bool {
+    public var isReady: Bool {
         get {
             return true
         }
@@ -34,7 +38,7 @@ class NeverTileDiscardPolicy: TileDiscardPolicy {
     * @param {Image|Promise} image An image, or a promise that will resolve to an image.
     * @returns A promise that will resolve to true if the tile should be discarded.
     */
-    func shouldDiscardImage (_ image: CGImage) -> Bool {
+    public func shouldDiscardImage (_ image: CGImage) -> Bool {
         return false
     }
 }

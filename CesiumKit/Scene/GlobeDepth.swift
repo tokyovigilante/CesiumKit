@@ -157,7 +157,10 @@ executeDebugGlobeDepth(this, context, passState);
 
         let origin = MTLOriginMake(0, 0, 0)
         let size = MTLSizeMake(_colorTexture.width, _colorTexture.height, 1)
-        let blitEncoder = context.createBlitCommandEncoder()
+        guard let blitEncoder = context.createBlitCommandEncoder() else {
+            logPrint(.critical, "Could not create BlitCommandEncoder")
+            return
+        }
         blitEncoder.copy(from: framebuffer.colorTextures![0].metalTexture,
             sourceSlice: 0,
             sourceLevel: 0,

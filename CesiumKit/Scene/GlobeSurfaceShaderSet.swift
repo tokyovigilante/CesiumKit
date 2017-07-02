@@ -95,18 +95,24 @@ class GlobeSurfaceShaderSet {
         
         let sceneMode = frameState.mode
         
-        let flags: Int = Int(sceneMode.rawValue) |
-            (Int(applyBrightness) << 2) |
-            (Int(applyContrast) << 3) |
-            (Int(applyHue) << 4) |
-            (Int(applySaturation) << 5) |
-            (Int(applyGamma) << 6) |
-            (Int(applyAlpha) << 7) |
-            (Int(showReflectiveOcean) << 8) |
+        var flags = Int(sceneMode.rawValue)
+        flags = flags | Int(applyBrightness) << 2
+        flags = flags |
+            Int(applyContrast) << 3 |
+            Int(applyHue) << 4
+        flags = flags |
+            Int(applySaturation) << 5 |
+            Int(applyGamma) << 6
+        flags = flags |
+            Int(applyAlpha) << 7 |
+            (Int(showReflectiveOcean) << 8) 
+        flags = flags |
             (Int(showOceanWaves) << 9) |
-            (Int(enableLighting) << 10) |
+            (Int(enableLighting) << 10)
+        flags = flags |
             (Int(hasVertexNormals) << 11) |
-            (Int(useWebMercatorProjection) << 12) |
+            (Int(useWebMercatorProjection) << 12)
+        flags = flags |
             (Int(enableFog) << 13) |
             (Int(quantization) << 14)
         

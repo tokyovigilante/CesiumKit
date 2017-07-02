@@ -107,7 +107,9 @@ open class OffscreenQuadPrimitive: Primitive {
      */
     func execute(_ context: Context) {
         
-        let renderPass = context.createRenderPass(_passState)
+        guard let renderPass = context.createRenderPass(_passState) else {
+            return
+        }
         _clearCommand.execute(context, passState: _passState)
         for command in _rectangles {
             command.execute(context, renderPass: renderPass)

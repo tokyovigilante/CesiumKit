@@ -492,10 +492,11 @@ class GlobeSurfaceTileProvider/*: QuadtreeTileProvider*/ {
     }
     
     
-    fileprivate func getManualUniformBufferProvider (_ context: Context, size: Int, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider {
+    fileprivate func getManualUniformBufferProvider (_ context: Context, size: Int, deallocationBlock: UniformMapDeallocBlock?) -> UniformBufferProvider? {
         if _manualUniformBufferProviderPool.count < 10 {
             QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
-                let newProviders = (0..<10).map { _ in return UniformBufferProvider(device: context.device, bufferSize: size, deallocationBlock: deallocationBlock)
+                let newProviders = (0..<10).flatMap { _ in
+                    return UniformBufferProvider(device: context.device, bufferSize: size, deallocationBlock: deallocationBlock)
                 }
                 DispatchQueue.main.async(execute: {
                     self._manualUniformBufferProviderPool.append(contentsOf: newProviders)

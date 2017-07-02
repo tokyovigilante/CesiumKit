@@ -208,7 +208,7 @@ open class ImageryLayer {
     
     init (
         imageryProvider: ImageryProvider,
-        rectangle: Rectangle = Rectangle.maxValue(),
+        rectangle: Rectangle = Rectangle.maxValue,
         alpha: @escaping (() -> Float) = { return 1.0 },
         brightness: @escaping (() -> Float) = { return 1.0 },
         contrast: @escaping (() -> Float) = { return 1.0 },
@@ -820,11 +820,17 @@ open class ImageryLayer {
                 positions.append(y)
             }
             
-            let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .float32, sizeInBytes: positions.sizeInBytes)
+            guard let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .float32, sizeInBytes: positions.sizeInBytes) else {
+                logPrint(.critical, "Cannot create vertex buffer")
+                return
+            }
             
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
             
-            let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .unsignedShort, sizeInBytes: indices.sizeInBytes)
+            guard let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .unsignedShort, sizeInBytes: indices.sizeInBytes) else {
+                logPrint(.critical, "Cannot create index buffer")
+                return
+            }
             
             let vertexAttributes = [
                 //position
@@ -859,7 +865,10 @@ open class ImageryLayer {
             )
             
             let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
-            let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
+            guard let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy)) else {
+                logPrint(.critical, "Cannot create sampler")
+                return
+            }
             
             reproject = Reproject(
                 vertexBuffer: vertexBuffer,

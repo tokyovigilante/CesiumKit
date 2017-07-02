@@ -680,15 +680,16 @@ open class Scene {
     */
     let id: String
     
-    init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
+    init? (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
         
-        context = Context(view: view)
-        
-        if let name = context.device.name {
-            if  name.hasPrefix("Apple") {
-                logPrint(.info, "FXAA disabled - Mobile")
-                fxaa = false
-            }
+        guard let context = Context(view: view) else {
+            logPrint(.critical, "Could not create renderer context")
+            return nil
+        }
+        self.context = context
+        if context.device.name.hasPrefix("Apple") {
+            logPrint(.info, "FXAA disabled - Mobile")
+            fxaa = false
         }
         
         _computeEngine = ComputeEngine(context: context)
@@ -825,8 +826,10 @@ open class Scene {
                 _frustumCommandsList[m].far = curFar
             }
             else {
-                let opaque = context.getFrustumUniformBufferProvider()
-                let transparent = context.getFrustumUniformBufferProvider()
+                guard let opaque = context.getFrustumUniformBufferProvider(), let transparent = context.getFrustumUniformBufferProvider() else {
+                    logPrint(.critical, "Failed to get uniform buffer provider")
+                    return
+                }
                 _frustumCommandsList.append(FrustumCommands(near: curNear, far: curFar, opaqueUniformBufferProvider: opaque, transparentUniformBufferProvider: transparent))
             }
         }
@@ -1222,7 +1225,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         context.uniformState.setFrustumUniforms(wholeFrustumUniformBuffer)
         wholeFrustumUniformBuffer.signalWriteComplete()
         
-        let spaceRenderPass = context.createRenderPass(passState)
+        guard let spaceRenderPass = context.createRenderPass(passState) else {
+            logPrint(.critical, "Cannot create renderpass")
+            return
+        }
         
         if let skyBoxCommand = _environmentState.skyBoxCommand {
             executeCommand(skyBoxCommand, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
@@ -1308,7 +1314,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             let globeCommandList = frustumCommands.commands[Pass.globe.rawValue]
             
             if !globeCommandList.isEmpty {
-                let globeRenderPass = context.createRenderPass(passState)
+                guard let globeRenderPass = context.createRenderPass(passState) else {
+                    logPrint(.critical, "Cannot create renderpass")
+                    return
+                }
                 
                 for command in globeCommandList {
                     executeCommand(command, renderPass: globeRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
@@ -1331,8 +1340,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             let groundCommandList = frustumCommands.commands[Pass.ground.rawValue]
             
             if !groundCommandList.isEmpty {
-                let groundRenderPass = context.createRenderPass(passState)
-                
+                guard let groundRenderPass = context.createRenderPass(passState) else {
+                    logPrint(.critical, "Cannot create renderpass")
+                    return
+                }
                 for command in groundCommandList {
                     executeCommand(command, renderPass: groundRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
@@ -1340,8 +1351,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
 
             if clearGlobeDepth {
-                let groundDepthRenderPass = context.createRenderPass(passState)
-                
+                guard let groundDepthRenderPass = context.createRenderPass(passState) else {
+                    logPrint(.critical, "Cannot create renderpass")
+                    return
+                }
                 clearDepth.execute(context, passState: passState)
                 if useDepthPlane {
                     _depthPlane.execute(context, renderPass: groundDepthRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
@@ -1358,8 +1371,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 context.uniformState.updatePass(Pass(rawValue: pass)!)
                 let commands = frustumCommands.commands[pass]
                 if !commands.isEmpty {
-                    let renderPass = context.createRenderPass(passState)
-                    
+                    guard let renderPass = context.createRenderPass(passState) else {
+                        logPrint(.critical, "Cannot create renderpass")
+                        return
+                    }
                     for command in commands {
                         executeCommand(command, renderPass: renderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                     }
@@ -1406,8 +1421,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         
         if !_overlayCommandList.isEmpty {
             _clearNullCommand.execute(context, passState: passState)
-            let overlayRenderPass = context.createRenderPass(passState)
-
+            guard let overlayRenderPass = context.createRenderPass(passState) else {
+                logPrint(.critical, "Cannot create renderpass")
+                return
+            }
             for command in _overlayCommandList {
                 command.execute(context, renderPass: overlayRenderPass)
             }
@@ -1419,7 +1436,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         if !_overlayTextCommandList.isEmpty {
             
             _clearNullCommand.execute(context, passState: passState)
-            let overlayTextRenderPass = context.createRenderPass(passState)
+            guard let overlayTextRenderPass = context.createRenderPass(passState) else {
+                logPrint(.critical, "Cannot create renderpass")
+                return
+            }
             for command in _overlayTextCommandList {
                 command.execute(context, renderPass: overlayTextRenderPass)
             }
@@ -1724,7 +1744,11 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 _globeDepth!.executeCopyColor(context, passState: passState)
             }
             passState.framebuffer = _environmentState.originalFramebuffer
-            let fxaaRenderPass = context.createRenderPass(passState)
+            guard let fxaaRenderPass = context.createRenderPass(passState) else {
+                logPrint(.critical, "Cannot create renderpass")
+                return
+            }
+            
             _fxaa.execute(context, renderPass: fxaaRenderPass)
             fxaaRenderPass.complete()
         }
