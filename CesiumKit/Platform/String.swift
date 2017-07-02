@@ -20,7 +20,7 @@ extension String {
             let startIndex = self.characters.index(self.startIndex, offsetBy: r.lowerBound)
             let endIndex = self.characters.index(self.startIndex, offsetBy: r.upperBound - r.lowerBound)
             
-            return self[startIndex..<endIndex]
+            return String(self[startIndex..<endIndex])
         }
     }
     
@@ -49,11 +49,7 @@ extension String {
         switch self.referenceType {
         case .bundleResource:
             let bundle = Bundle(identifier: "com.testtoast.CesiumKit") ?? Bundle.main
-            #if os(OSX)
-                return bundle.urlForImageResource(self)
-            #elseif os(iOS)
-                return bundle.url(forResource: (self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
-            #endif
+            return bundle.url(forResource: (self as NSString).deletingPathExtension, withExtension: (self as NSString).pathExtension)
         case .filePath:
             return URL(fileURLWithPath: self, isDirectory: false)
         case .networkURL:

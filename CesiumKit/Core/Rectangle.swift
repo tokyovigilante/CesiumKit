@@ -414,7 +414,7 @@ public struct Rectangle {
     * @param {Cartesian3[]} [result] The array of Cartesians onto which to store the result.
     * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
     */
-    func subsample(_ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
+    func subsample(_ ellipsoid: Ellipsoid = Ellipsoid.wgs84, surfaceHeight: Double = 0.0) -> [Cartesian3] {
         
         var result = [Cartesian3]()
         
@@ -425,18 +425,18 @@ public struct Rectangle {
         lla.latitude = north
         result.append(ellipsoid.cartographicToCartesian(lla))
         
-        lla.longitude = east;
+        lla.longitude = east
         result.append(ellipsoid.cartographicToCartesian(lla))
         
-        lla.latitude = south;
+        lla.latitude = south
         result.append(ellipsoid.cartographicToCartesian(lla))
         
-        lla.longitude = west;
+        lla.longitude = west
         result.append(ellipsoid.cartographicToCartesian(lla))
         
-        if (north < 0.0) {
+        if north < 0.0 {
             lla.latitude = north
-        } else if (south > 0.0) {
+        } else if south > 0.0 {
             lla.latitude = south
         } else {
             lla.latitude = 0.0
@@ -444,12 +444,12 @@ public struct Rectangle {
         
         for i in 1..<8 {
             lla.longitude = -.pi + Double(i) * .pi/2
-            if (contains(lla)) {
+            if contains(lla) {
                 result.append(ellipsoid.cartographicToCartesian(lla))
             }
         }
         
-        if (lla.latitude == 0.0) {
+        if lla.latitude == 0.0 {
             lla.longitude = west
             result.append(ellipsoid.cartographicToCartesian(lla))
             
@@ -465,9 +465,7 @@ public struct Rectangle {
     * @type {Rectangle}
     * @constant
     */
-    static func maxValue() -> Rectangle {
-        return Rectangle(west: -.pi, south: -.pi/2, east: .pi, north: .pi/2)
-    }
+    static var maxValue = Rectangle(west: -.pi, south: -.pi/2, east: .pi, north: .pi/2)
     
 }
 

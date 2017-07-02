@@ -43,7 +43,7 @@ struct WebMercatorProjection: MapProjection {
     */
     static let maximumLatitude: Double = WebMercatorProjection.mercatorAngleToGeodeticLatitude(.pi)
     
-    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis

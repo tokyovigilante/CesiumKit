@@ -53,7 +53,7 @@ class SkyAtmosphere {
     
     fileprivate var _rpSkyFromAtmosphere: RenderPipeline? = nil
     
-    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init (ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         self.ellipsoid = ellipsoid
 
         let map = SkyAtmosphereUniformMap()

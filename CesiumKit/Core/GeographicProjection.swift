@@ -28,7 +28,7 @@ public struct GeographicProjection: MapProjection {
     public let semimajorAxis: Double
     public let oneOverSemimajorAxis: Double
   
-    public init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    public init (ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis

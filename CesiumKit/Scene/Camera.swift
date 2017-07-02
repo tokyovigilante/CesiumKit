@@ -50,7 +50,7 @@ open class Camera: DRU {
     
     weak var scene: Scene!
     
-    let maxRadii: Double = Ellipsoid.wgs84().maximumRadius
+    let maxRadii: Double = Ellipsoid.wgs84.maximumRadius
     
     /**
      * The position of the camera.
@@ -1659,7 +1659,7 @@ open class Camera: DRU {
      */
     open func lookAt (_ target: Cartesian3, offset: Offset) {
         
-        let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
+        let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84)
         lookAtTransform(transform, offset: offset.offset)
     }
 
@@ -2002,7 +2002,7 @@ open class Camera: DRU {
         }
     }
 
-    func pickEllipsoid3D(_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func pickEllipsoid3D(_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84) -> Cartesian3? {
         
         let ray = getPickRay(windowPosition)
         let intersection = IntersectionTests.rayEllipsoid(ray, ellipsoid: ellipsoid)
@@ -2055,7 +2055,7 @@ open class Camera: DRU {
     * @returns {Cartesian3} If the ellipsoid or map was picked, returns the point on the surface of the ellipsoid or map
     * in world coordinates. If the ellipsoid or map was not picked, returns undefined.
     */
-    func pickEllipsoid (_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func pickEllipsoid (_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84) -> Cartesian3? {
         
         if _mode == .scene3D {
             return pickEllipsoid3D(windowPosition, ellipsoid: ellipsoid)

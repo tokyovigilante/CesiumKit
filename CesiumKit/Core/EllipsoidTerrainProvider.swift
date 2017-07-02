@@ -66,7 +66,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     
     var heightmapTerrainQuality = 0.25
     
-    required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         
         self.tilingScheme = tilingScheme
         self.ellipsoid = ellipsoid

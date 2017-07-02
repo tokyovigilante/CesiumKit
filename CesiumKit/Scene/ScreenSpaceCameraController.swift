@@ -1691,7 +1691,7 @@ open class ScreenSpaceCameraController {
     func update () {
         if _scene.camera.transform != Matrix4.identity {
             _globe = nil
-            _ellipsoid = Ellipsoid.unitSphere()
+            _ellipsoid = Ellipsoid.unitSphere
         } else {
             _globe = _scene.globe
             _ellipsoid = (_globe != nil ? _globe!.ellipsoid : _scene.mapProjection.ellipsoid)

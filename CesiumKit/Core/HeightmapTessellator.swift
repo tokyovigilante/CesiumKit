@@ -85,7 +85,7 @@ class HeightmapTessellator {
         nativeRectangle: Rectangle,
         rectangle: Rectangle?,
         isGeographic: Bool = true,
-        ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
+        ellipsoid: Ellipsoid = Ellipsoid.wgs84,
         structure: HeightmapStructure = HeightmapStructure(),
         relativeToCenter: Cartesian3? = nil,
         exaggeration: Double

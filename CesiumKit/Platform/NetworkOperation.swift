@@ -141,7 +141,7 @@ class NetworkOperation: Operation {
                 //setError
                 return
             }
-            urlComponents.percentEncodedQuery = encodeParameters(parameters)
+            urlComponents.percentEncodedQuery = encode(parameters: parameters)
             completeURL = urlComponents.url ?? URL(string: self.url)!
         } else {
             completeURL = URL(string: self.url)!
@@ -149,7 +149,7 @@ class NetworkOperation: Operation {
         
         var request = URLRequest(url: completeURL)
 
-        _ = headers?.map { request.setValue($1, forHTTPHeaderField: $0) }
+        _ = headers?.map { request.setValue($0.1, forHTTPHeaderField: $0.0) }
         
         let dataTask = session.dataTask(with: request)
         dataTask.networkOperation = self
@@ -157,8 +157,10 @@ class NetworkOperation: Operation {
         dataTask.resume()
     }
     
-    fileprivate func encodeParameters (_ parameters: [String: String]) -> String {
-        return (parameters.map { "\($0)=\($1)" }).joined(separator: "&")
+    fileprivate func encode(parameters: [String: String]) -> String {
+        return parameters
+            .map { "\($0.0)=\($0.1)" }
+            .joined(separator: "&")
     }
 }
 

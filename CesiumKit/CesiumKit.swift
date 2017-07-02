@@ -140,7 +140,7 @@ open class CesiumGlobe {
     */
     open let scene: Scene
     
-    open let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+    open let ellipsoid: Ellipsoid = Ellipsoid.wgs84
 
     var globe: Globe
     
@@ -228,7 +228,7 @@ open class CesiumGlobe {
         }
     }
 
-    public init (view: MTKView, options: CesiumOptions) {
+    public init? (view: MTKView, options: CesiumOptions) {
 
         /*
         var creditContainer = document.createElement('div');
@@ -244,7 +244,7 @@ open class CesiumGlobe {
         _lastFrameTime = nil
         
         globe = Globe(ellipsoid: ellipsoid, terrain: options.terrain, lighting: options.lighting)
-        scene = Scene(
+        guard let scene = Scene(
             view: view,
             globe: self.globe,
             /*canvas : canvas,
@@ -253,7 +253,11 @@ open class CesiumGlobe {
             mapProjection : options.mapProjection,*/
             useOIT: false,
             scene3DOnly: options.scene3DOnly
-        )
+            ) else {
+                logPrint(.critical, "Scene creation failed")
+                return nil
+        }
+        self.scene = scene
         scene.globe = globe
         scene.camera.constrainedAxis = Cartesian3.unitZ
         scene.backgroundColor = Cartesian4(red: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)

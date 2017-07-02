@@ -36,7 +36,7 @@ struct Transforms {
     * var center = Cesium.Cartesian3.fromDegrees(0.0, 0.0);
     * var transform = Cesium.Transforms.eastNorthUpToFixedFrame(center);
     */
-    static func eastNorthUpToFixedFrame (_ origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
+    static func eastNorthUpToFixedFrame (_ origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84) -> Matrix4 {
         
         // If x and y are zero, assume origin is at a pole, which is a special case.
         if Math.equalsEpsilon(origin.x, 0.0, relativeEpsilon: Math.Epsilon14) &&

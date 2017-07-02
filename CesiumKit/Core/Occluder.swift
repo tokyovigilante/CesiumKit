@@ -344,7 +344,7 @@ class Occluder {
 * @returns {Object} An object containing two attributes: <code>occludeePoint</code> and <code>valid</code>
 * which is a boolean value.
 */
-    func computeOccludeePointFromRectangle (_ rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
+    func computeOccludeePointFromRectangle (_ rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84) -> Cartesian3? {
         
         let positions = rectangle.subsample(ellipsoid, surfaceHeight: 0.0)
         let bs = BoundingSphere(fromPoints: positions)

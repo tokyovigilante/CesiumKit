@@ -33,7 +33,7 @@ open class TileCoordinateImageryProvider: ImageryProvider {
         
         let tilingScheme: TilingScheme = GeographicTilingScheme()
         
-        let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
+        let ellipsoid: Ellipsoid = Ellipsoid.wgs84
         
         let color = Cartesian4(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         
@@ -218,7 +218,7 @@ open class TileCoordinateImageryProvider: ImageryProvider {
     */
     open let hasAlphaChannel: Bool = true
     
-    public init (options: TileCoordinateImageryProvider.Options = TileCoordinateImageryProvider.Options()) {
+    public init (options: TileCoordinateImageryProvider.Options) {
         
         tilingScheme = options.tilingScheme
         tileWidth = options.tileWidth
@@ -295,7 +295,7 @@ open class TileCoordinateImageryProvider: ImageryProvider {
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), tileString as CFString!)
         
-        let font = CTFontCreateWithName("HelveticaNeue" as CFString?, 36, nil)
+        let font = CTFontCreateWithName("HelveticaNeue" as CFString, 36, nil)
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
 
         contextRef.setFillColor(drawColor!)

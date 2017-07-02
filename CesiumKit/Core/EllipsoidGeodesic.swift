@@ -87,7 +87,7 @@ class EllipsoidGeodesic {
     
     fileprivate var _constants = EllipsoidGeodesicConstants()
     
-    init (start: Cartographic? = nil, end: Cartographic? = nil, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init (start: Cartographic? = nil, end: Cartographic? = nil, ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         
         self.ellipsoid = ellipsoid
         

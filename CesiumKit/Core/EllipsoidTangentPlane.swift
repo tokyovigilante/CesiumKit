@@ -70,7 +70,7 @@ struct EllipsoidTangentPlane {
         return plane.normal
     }
     
-    init (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         
         guard let origin = ellipsoid.scaleToGeodeticSurface(origin) else {
             fatalError("origin must not be at the center of the ellipsoid.")

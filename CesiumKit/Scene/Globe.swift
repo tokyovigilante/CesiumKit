@@ -144,7 +144,7 @@ class Globe {
         return _surface.tileLoadProgressEvent
     }
     
-    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool, lighting: Bool) {
+    init(ellipsoid: Ellipsoid = Ellipsoid.wgs84, terrain: Bool, lighting: Bool) {
         
         if terrain {
             terrainProvider = CesiumTerrainProvider(

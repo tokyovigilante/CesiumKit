@@ -232,7 +232,7 @@ struct BoundingSphere: BoundingVolume {
     * @param {BoundingSphere} [result] The object onto which to store the result.
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
-    init (fromRectangle3D rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0) {
+    init (fromRectangle3D rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84, surfaceHeight: Double = 0) {
         let positions: [Cartesian3]
         positions = rectangle.subsample(ellipsoid, surfaceHeight: surfaceHeight)
         self.init(fromPoints: positions)

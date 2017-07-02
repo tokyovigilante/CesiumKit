@@ -182,7 +182,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @exception {DeveloperError} ellipsoid must be an ellipsoid of revolution (<code>radii.x == radii.y</code>)
     */
     
-    init (fromRectangle rectangle: Rectangle, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
+    init (fromRectangle rectangle: Rectangle, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84) {
         
         if rectangle.width < 0.0 || rectangle.width > .pi {
             fatalError("Rectangle width must be between 0 and pi")

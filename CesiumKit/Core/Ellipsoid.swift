@@ -85,9 +85,7 @@ public struct Ellipsoid: Equatable {
     * @type {Ellipsoid}
     * @constant
     */
-    static func wgs84() -> Ellipsoid {
-        return Ellipsoid(x: EarthEquatorialRadius, y: EarthEquatorialRadius, z: EarthPolarRadius)
-    }
+    public static let wgs84 = Ellipsoid(x: EarthEquatorialRadius, y: EarthEquatorialRadius, z: EarthPolarRadius)
     
     /**
     * An Ellipsoid instance initialized to radii of (1.0, 1.0, 1.0).
@@ -95,9 +93,7 @@ public struct Ellipsoid: Equatable {
     * @type {Ellipsoid}
     * @constant
     */
-    static func unitSphere() -> Ellipsoid {
-        return Ellipsoid(x: 1.0, y: 1.0, z: 1.0)
-    }
+    public static let unitSphere = Ellipsoid(x: 1.0, y: 1.0, z: 1.0)
     
     /**
     * Computes the unit vector directed from the center of this ellipsoid toward the provided Cartesian position.

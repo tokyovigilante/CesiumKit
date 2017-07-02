@@ -83,7 +83,7 @@ struct TileBoundingBox {
     
     let ellipsoid: Ellipsoid
     
-    init (rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84(), minimumHeight: Double = 0.0, maximumHeight: Double = 0.0) {
+    init (rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0) {
         self.rectangle = rectangle
         self.ellipsoid = ellipsoid
         self.minimumHeight = minimumHeight
