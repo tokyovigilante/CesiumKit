@@ -114,7 +114,7 @@ class FXAAUniformMap: NativeUniformMap {
     
     var step: Cartesian2 {
         get {
-            return Cartesian2(simd: vector_double(_uniformStruct.step))
+            return Cartesian2(simd: simd_double(_uniformStruct.step))
         }
         set {
             _uniformStruct.step = newValue.floatRepresentation

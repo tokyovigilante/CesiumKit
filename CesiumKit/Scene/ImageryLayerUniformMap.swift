@@ -18,7 +18,7 @@ class ImageryLayerUniformMap: NativeUniformMap {
     
     var textureDimensions: Cartesian2 {
         get {
-            return Cartesian2(simd: vector_double(_uniformStruct.textureDimensions))
+            return Cartesian2(simd: simd_double(_uniformStruct.textureDimensions))
         }
         set {
             _uniformStruct.textureDimensions = newValue.floatRepresentation
@@ -28,10 +28,10 @@ class ImageryLayerUniformMap: NativeUniformMap {
     var viewportOrthographic: Matrix4 {
         get {
             return Matrix4(simd: double4x4([
-                vector_double(_uniformStruct.viewportOrthographic[0]),
-                vector_double(_uniformStruct.viewportOrthographic[1]),
-                vector_double(_uniformStruct.viewportOrthographic[2]),
-                vector_double(_uniformStruct.viewportOrthographic[3])
+                simd_double(_uniformStruct.viewportOrthographic[0]),
+                simd_double(_uniformStruct.viewportOrthographic[1]),
+                simd_double(_uniformStruct.viewportOrthographic[2]),
+                simd_double(_uniformStruct.viewportOrthographic[3])
             ]))
         }
         set {

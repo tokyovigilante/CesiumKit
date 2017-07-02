@@ -21,10 +21,10 @@ class TextUniformMap: NativeUniformMap {
     var modelMatrix: Matrix4 {
         get {
             return Matrix4(simd: double4x4([
-                vector_double(_uniformStruct.modelMatrix[0]),
-                vector_double(_uniformStruct.modelMatrix[1]),
-                vector_double(_uniformStruct.modelMatrix[2]),
-                vector_double(_uniformStruct.modelMatrix[3])
+                simd_double(_uniformStruct.modelMatrix[0]),
+                simd_double(_uniformStruct.modelMatrix[1]),
+                simd_double(_uniformStruct.modelMatrix[2]),
+                simd_double(_uniformStruct.modelMatrix[3])
                 ]))
         }
         set {
@@ -35,10 +35,10 @@ class TextUniformMap: NativeUniformMap {
     var viewProjectionMatrix: Matrix4 {
         get {
             return Matrix4(simd: double4x4([
-                vector_double(_uniformStruct.viewProjectionMatrix[0]),
-                vector_double(_uniformStruct.viewProjectionMatrix[1]),
-                vector_double(_uniformStruct.viewProjectionMatrix[2]),
-                vector_double(_uniformStruct.viewProjectionMatrix[3])
+                simd_double(_uniformStruct.viewProjectionMatrix[0]),
+                simd_double(_uniformStruct.viewProjectionMatrix[1]),
+                simd_double(_uniformStruct.viewProjectionMatrix[2]),
+                simd_double(_uniformStruct.viewProjectionMatrix[3])
                 ]))
         }
         set {
@@ -48,7 +48,7 @@ class TextUniformMap: NativeUniformMap {
     
     var foregroundColor: Color {
         get {
-            return Color(simd: vector_double(_uniformStruct.foregroundColor))
+            return Color(simd: simd_double(_uniformStruct.foregroundColor))
         }
         set {
             _uniformStruct.foregroundColor = newValue.floatRepresentation
@@ -232,7 +232,7 @@ open class TextRenderer: Primitive {
         let constrainedWidth = width ?? viewportRect.width
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0)
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), string as CFString!)
-        let font = CTFontCreateWithName(fontName as CFString?, CGFloat(pointSize), nil)
+        let font = CTFontCreateWithName(fontName as CFString, CGFloat(pointSize), nil)
         let stringRange = CFRangeMake(0, CFAttributedStringGetLength(attrString))
         CFAttributedStringSetAttribute(attrString, stringRange, kCTFontAttributeName, font)
         
@@ -244,7 +244,7 @@ open class TextRenderer: Primitive {
         return textSize
     }
     
-    fileprivate func buildMesh (_ context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray
+    fileprivate func buildMesh (_ context: Context, string: String, inRect rect: CGRect, withFontAtlas fontAtlas: FontAtlas, atSize size: Int) -> VertexArray?
     {
         let attrString = NSMutableAttributedString(string: string)
         let stringRange = CFRangeMake(0, attrString.length)
@@ -273,10 +273,10 @@ open class TextRenderer: Primitive {
             let maxX = Float(glyphBounds.maxX)
             let minY = Float(glyphBounds.minY)
             let maxY = Float(glyphBounds.maxY)
-            let minS = Float(glyphInfo.topLeftTexCoord.x)
-            let maxS = Float(glyphInfo.bottomRightTexCoord.x)
-            let minT = Float(glyphInfo.bottomRightTexCoord.y)
-            let maxT = Float(glyphInfo.topLeftTexCoord.y)
+            let minS = Float(glyphInfo.tl.x)
+            let maxS = Float(glyphInfo.br.x)
+            let minT = Float(glyphInfo.br.y)
+            let maxT = Float(glyphInfo.tl.y)
             vertices.append(contentsOf: [minX, maxY, 0, 1, minS, maxT])
             vertices.append(contentsOf: [minX, minY, 0, 1, minS, minT])
             vertices.append(contentsOf: [maxX, minY, 0, 1, maxS, minT])
@@ -292,24 +292,35 @@ open class TextRenderer: Primitive {
         }
         enumerateGlyphsInFrame(frame, usingBlock: glyphEnumeratorBlock)
         
-        let vertexBuffer = Buffer(device: context.device, array: &vertices, componentDatatype: .float32, sizeInBytes: vertices.sizeInBytes)
+        guard let vertexBuffer = Buffer(device: context.device, array: &vertices, componentDatatype: .float32, sizeInBytes: vertices.sizeInBytes) else {
+            logPrint(.critical, "Cannot create Buffer")
+            return nil
+        }
         vertexBuffer.metalBuffer.label =  "Text Mesh Vertices"
         
         let indexBuffer: Buffer
         if indices.count < Math.SixtyFourKilobytes {
-            let indicesShort = indices.map({ UInt16($0) })
-            indexBuffer = Buffer(
+            let indicesShort = indices.map { UInt16($0) }
+            guard let shortBuffer = Buffer(
                 device: context.device,
                 array: indicesShort,
                 componentDatatype: ComponentDatatype.unsignedShort,
-                sizeInBytes: indicesShort.sizeInBytes)
+                sizeInBytes: indicesShort.sizeInBytes) else {
+                    logPrint(.critical, "Cannot create Buffer")
+                    return nil
+            }
+            indexBuffer = shortBuffer
         } else {
             let indicesInt = indices.map({ UInt32($0) })
-            indexBuffer = Buffer(
+            guard let longBuffer = Buffer(
                 device: context.device,
                 array: indicesInt,
                 componentDatatype: ComponentDatatype.unsignedInt,
-                sizeInBytes: indicesInt.sizeInBytes)
+                sizeInBytes: indicesInt.sizeInBytes) else {
+                    logPrint(.critical, "Cannot create Buffer")
+                    return nil
+            }
+            indexBuffer = longBuffer
         }
         indexBuffer.metalBuffer.label = "Text Mesh Indices"
         
