@@ -7,9 +7,4 @@ CesiumKit/Core/.DS_Store
 CesiumKit/Platform/.DS_Store
 CesiumKitRunner/.DS_Store
 build/
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
-
-Carthage
+CesiumKit/Platform/Dependencies
