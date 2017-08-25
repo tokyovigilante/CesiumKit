@@ -11,21 +11,23 @@ import CoreGraphics
 
 struct GlyphDescriptor: Codable {
     
-    var glyphIndex: Int
+    enum CodingKeys: String, CodingKey {
+        case topLeft = "tl"
+        case bottomRight = "br"
+    }
     
-    var tl: GlyphPoint
+    var topLeft: GlyphPoint
     
-    var br: GlyphPoint
+    var bottomRight: GlyphPoint
     
-    init (glyphIndex: CGGlyph, topLeftTexCoord: CGPoint, bottomRightTexCoord: CGPoint) {
-        self.glyphIndex = Int(glyphIndex)
-        self.tl = GlyphPoint(x: Float(topLeftTexCoord.x), y: Float(topLeftTexCoord.y))
-        self.br = GlyphPoint(x: Float(bottomRightTexCoord.x), y: Float(bottomRightTexCoord.y))
+    init (topLeftTexCoord: CGPoint, bottomRightTexCoord: CGPoint) {
+        topLeft = GlyphPoint(x: Double(topLeftTexCoord.x), y: Double(topLeftTexCoord.y))
+        bottomRight = GlyphPoint(x: Double(bottomRightTexCoord.x), y: Double(bottomRightTexCoord.y))
     }
 }
 
 struct GlyphPoint: Codable {
-    var x: Float
-    var y: Float
+    var x: Double
+    var y: Double
 }
 

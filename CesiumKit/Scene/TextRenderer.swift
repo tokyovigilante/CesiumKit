@@ -265,7 +265,7 @@ open class TextRenderer: Primitive {
         var indices = [Int]()
         
         let glyphEnumeratorBlock = { (glyph: CGGlyph, glyphIndex: Int, glyphBounds: CGRect) -> Bool in
-            guard let glyphInfo = fontAtlas.glyphDescriptors[glyph] else {
+            guard let glyphInfo = fontAtlas.glyphDescriptors[Int(glyph)] else {
                 logPrint(.debug, "Font atlas has no entry corresponding to glyph \(glyph): Skipping...")
                 return false
             }
@@ -273,10 +273,10 @@ open class TextRenderer: Primitive {
             let maxX = Float(glyphBounds.maxX)
             let minY = Float(glyphBounds.minY)
             let maxY = Float(glyphBounds.maxY)
-            let minS = Float(glyphInfo.tl.x)
-            let maxS = Float(glyphInfo.br.x)
-            let minT = Float(glyphInfo.br.y)
-            let maxT = Float(glyphInfo.tl.y)
+            let minS = Float(glyphInfo.topLeft.x)
+            let maxS = Float(glyphInfo.bottomRight.x)
+            let minT = Float(glyphInfo.bottomRight.y)
+            let maxT = Float(glyphInfo.topLeft.y)
             vertices.append(contentsOf: [minX, maxY, 0, 1, minS, maxT])
             vertices.append(contentsOf: [minX, minY, 0, 1, minS, minT])
             vertices.append(contentsOf: [maxX, minY, 0, 1, maxS, minT])

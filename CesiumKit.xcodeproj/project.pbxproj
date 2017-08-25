@@ -899,6 +899,7 @@
 		943D25B01947128A00263D91 /* Rectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 		9444499D1948326C009D1703 /* MapProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapProjection.swift; sourceTree = "<group>"; };
 		9444499F1948331C009D1703 /* GeographicProjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeographicProjection.swift; sourceTree = "<group>"; };
+		944688511F50306500172718 /* RectangleWithLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleWithLevel.swift; sourceTree = "<group>"; };
 		9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Simon1994PlanetaryPositions.swift; sourceTree = "<group>"; };
 		944A5EE31EB56B70001A40C8 /* TileAvailability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileAvailability.swift; sourceTree = "<group>"; };
 		944A5EE51EB56C89001A40C8 /* QuadtreeNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadtreeNode.swift; sourceTree = "<group>"; };
@@ -1483,6 +1484,7 @@
 				949E67A419D6BCB200012DC4 /* Queue.swift */,
 				946D25A919592BFD0080379D /* Ray.swift */,
 				943D25B01947128A00263D91 /* Rectangle.swift */,
+				944688511F50306500172718 /* RectangleWithLevel.swift */,
 				94E7A862199DD71600012DC4 /* ScreenSpaceEventHandler.swift */,
 				94B9DB611AC682E50095A86F /* ScreenSpaceEventType.swift */,
 				9447FD961C242C450095A86F /* Simon1994PlanetaryPositions.swift */,
