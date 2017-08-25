@@ -17,7 +17,7 @@ class Buffer {
     // bytes
     let length: Int
     
-    fileprivate let _entireRange: NSRange
+    fileprivate let _entireRange: Range<Int>
     
     var count: Int {
         return length / componentDatatype.elementSize
@@ -32,7 +32,7 @@ class Buffer {
         
         length = sizeInBytes
         self.componentDatatype = componentDatatype
-        _entireRange = NSMakeRange(0, length)
+		_entireRange = 0..<length
         if let array = array {
             #if os(OSX)
                 guard let metalBuffer = device.makeBuffer(bytes: array, length: length, options: .storageModeManaged) else {
@@ -78,7 +78,7 @@ class Buffer {
         memcpy(metalBuffer.contents()+targetOffset, other.metalBuffer.contents()+sourceOffset, copyLength)
     }
     
-    func signalWriteComplete (_ range: NSRange? = nil) {
+    func signalWriteComplete (_ range: Range<Int>? = nil) {
         #if os(OSX)
             metalBuffer.didModifyRange(range ?? _entireRange)
         #endif
