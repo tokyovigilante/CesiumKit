@@ -22,7 +22,7 @@ enum IndexDatatype: UInt {
     var metalIndexType: MTLIndexType {
         return MTLIndexType(rawValue: self.rawValue)!
     }
-    
+
     /**
     * Returns the size, in bytes, of the corresponding datatype.
     *
@@ -41,7 +41,7 @@ enum IndexDatatype: UInt {
             return MemoryLayout<UInt32>.size
         }
     }
-    
+
     static func createIntegerIndexArrayFromData (_ data: Data, numberOfVertices: Int, byteOffset: Int, length: Int) -> [Int] {
         if numberOfVertices > Math.SixtyFourKilobytes {
             return data.getUInt32Array(byteOffset, elementCount: length).map { Int($0) }

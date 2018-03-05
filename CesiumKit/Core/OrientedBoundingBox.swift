@@ -30,7 +30,7 @@ import Foundation
 * var obb = new Cesium.OrientedBoundingBox(center, halfAxes);
 */
 struct OrientedBoundingBox: BoundingVolume {
-    
+
     /**
     * The center of the box.
     * @type {Cartesian3}
@@ -43,7 +43,7 @@ struct OrientedBoundingBox: BoundingVolume {
     * @default {@link Matrix3.IDENTITY}
     */
     fileprivate (set) var halfAxes = Matrix3.zero
-    
+
     /**
     * Computes an instance of an OrientedBoundingBox of the given positions.
     * This is an implementation of Stefan Gottschalk's Collision Queries using Oriented Bounding Boxes solution (PHD thesis).
@@ -65,16 +65,16 @@ struct OrientedBoundingBox: BoundingVolume {
             //halfAxes = Matrix3.zero()
             return
         }
-        
+
         var length = positions.length;
-        
+
         var meanPoint = Cartesian3.clone(positions[0], scratchCartesian1);
         for (i = 1; i < length; i++) {
             Cartesian3.add(meanPoint, positions[i], meanPoint);
         }
         var invLength = 1.0 / length;
         Cartesian3.multiplyBy(scalar: meanPoint, invLength, meanPoint);
-        
+
         var exx = 0.0;
         var exy = 0.0;
         var exz = 0.0;
@@ -82,7 +82,7 @@ struct OrientedBoundingBox: BoundingVolume {
         var eyz = 0.0;
         var ezz = 0.0;
         var p;
-        
+
         for (i = 0; i < length; i++) {
             p = Cartesian3.subtract(positions[i], meanPoint, scratchCartesian2);
             exx += p.x * p.x;
@@ -92,14 +92,14 @@ struct OrientedBoundingBox: BoundingVolume {
             eyz += p.y * p.z;
             ezz += p.z * p.z;
         }
-        
+
         exx *= invLength;
         exy *= invLength;
         exz *= invLength;
         eyy *= invLength;
         eyz *= invLength;
         ezz *= invLength;
-        
+
         var covarianceMatrix = scratchCovarianceResult;
         covarianceMatrix[0] = exx;
         covarianceMatrix[1] = exy;
@@ -110,34 +110,34 @@ struct OrientedBoundingBox: BoundingVolume {
         covarianceMatrix[6] = exz;
         covarianceMatrix[7] = eyz;
         covarianceMatrix[8] = ezz;
-        
+
         var eigenDecomposition = Matrix3.computeEigenDecomposition(covarianceMatrix, scratchEigenResult);
         var rotation = Matrix3.transpose(eigenDecomposition.unitary, result.halfAxes);
-        
+
         p = Cartesian3.subtract(positions[0], meanPoint, scratchCartesian2);
         var tempPoint = Matrix3.multiplyByVector(rotation, p, scratchCartesian3);
         var maxPoint = Cartesian3.clone(tempPoint, scratchCartesian4);
         var minPoint = Cartesian3.clone(tempPoint, scratchCartesian5);
-        
+
         for (i = 1; i < length; i++) {
             p = Cartesian3.subtract(positions[i], meanPoint, p);
             Matrix3.multiplyByVector(rotation, p, tempPoint);
             Cartesian3.minimumByComponent(minPoint, tempPoint, minPoint);
             Cartesian3.maximumByComponent(maxPoint, tempPoint, maxPoint);
         }
-        
+
         var center = Cartesian3.add(minPoint, maxPoint, scratchCartesian3);
         Cartesian3.multiplyBy(scalar: center, 0.5, center);
         Matrix3.multiplyByVector(rotation, center, center);
         Cartesian3.add(meanPoint, center, result.center);
-        
+
         var scale = Cartesian3.subtract(maxPoint, minPoint, scratchCartesian3);
         Cartesian3.multiplyBy(scalar: scale, 0.5, scale);
         Matrix3.multiplyByScale(result.halfAxes, scale, result.halfAxes);
-        
+
         return result;*/
     }
-    
+
     /**
     * Computes an OrientedBoundingBox given extents in the east-north-up space of the tangent plane.
     *
@@ -151,21 +151,21 @@ struct OrientedBoundingBox: BoundingVolume {
     * @returns {OrientedBoundingBox} The modified result parameter or a new OrientedBoundingBox instance if one was not provided.
     */
     init (fromTangentPlaneExtents tangentPlane: EllipsoidTangentPlane, minimumX: Double, maximumX: Double, minimumY: Double, maximumY: Double, minimumZ: Double, maximumZ: Double) {
-        
+
         var halfAxes = Matrix3()
         halfAxes = halfAxes.setColumn(0, cartesian: tangentPlane.xAxis)
         halfAxes = halfAxes.setColumn(1, cartesian: tangentPlane.yAxis)
         halfAxes = halfAxes.setColumn(2, cartesian: tangentPlane.zAxis)
-        
+
         var centerOffset = Cartesian3(x: (minimumX + maximumX) / 2.0, y: (minimumY + maximumY) / 2.0, z: (minimumZ + maximumZ) / 2.0)
         let scale = Cartesian3(x: (maximumX - minimumX) / 2.0, y: (maximumY - minimumY) / 2.0, z: (maximumZ - minimumZ) / 2.0)
-        
+
         centerOffset = halfAxes.multiplyByVector(centerOffset)
         center = tangentPlane.origin.add(centerOffset)
         halfAxes = halfAxes.multiplyByScale(scale)
         self.halfAxes = halfAxes
     }
-    
+
     /**
     * Computes an OrientedBoundingBox that bounds a {@link Rectangle} on the surface of an {@link Ellipsoid}.
     * There are no guarantees about the orientation of the bounding box.
@@ -181,9 +181,9 @@ struct OrientedBoundingBox: BoundingVolume {
     * @exception {DeveloperError} rectangle.height must be between 0 and pi.
     * @exception {DeveloperError} ellipsoid must be an ellipsoid of revolution (<code>radii.x == radii.y</code>)
     */
-    
+
     init (fromRectangle rectangle: Rectangle, minimumHeight: Double = 0.0, maximumHeight: Double = 0.0, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
-        
+
         if rectangle.width < 0.0 || rectangle.width > .pi {
             fatalError("Rectangle width must be between 0 and pi")
         }
@@ -193,16 +193,16 @@ struct OrientedBoundingBox: BoundingVolume {
         if !Math.equalsEpsilon(ellipsoid.radii.x, ellipsoid.radii.y, relativeEpsilon: Math.Epsilon15) {
             fatalError("Ellipsoid must be an ellipsoid of revolution (radii.x == radii.y)")
         }
-        
+
         // The bounding box will be aligned with the tangent plane at the center of the rectangle.
         let tangentPointCartographic = rectangle.center
         let tangentPoint = ellipsoid.cartographicToCartesian(tangentPointCartographic)
         let tangentPlane = EllipsoidTangentPlane(origin: tangentPoint, ellipsoid: ellipsoid)
         let plane = tangentPlane.plane
-        
+
         let lonCenter = tangentPointCartographic.longitude
         let latCenter = (rectangle.south < 0.0 && rectangle.north > 0.0) ? 0.0 : tangentPointCartographic.latitude
-        
+
         // Corner arrangement:
         //          N/+y
         //      [0] [1] [2]
@@ -223,17 +223,17 @@ struct OrientedBoundingBox: BoundingVolume {
             Cartographic(longitude: rectangle.west, latitude: rectangle.south, height: maximumHeight), // perimeterSW
             Cartographic(longitude: rectangle.west, latitude: latCenter, height: maximumHeight) // perimeterCW
         ]
-        
+
         let perimeterCartesian = ellipsoid.cartographicArrayToCartesianArray(cartographicArray)
         let perimeterProjected = tangentPlane.projectPointsToNearestOnPlane(perimeterCartesian)
-        
+
         assert(perimeterProjected.count == 8, "invalid perimeter")
         // See the `perimeterXX` definitions above for what these are
         let minX = min(perimeterProjected[6].x, perimeterProjected[7].x, perimeterProjected[0].x)
         let maxX = max(perimeterProjected[2].x, perimeterProjected[3].x, perimeterProjected[4].x)
         let minY = min(perimeterProjected[4].y, perimeterProjected[5].y, perimeterProjected[6].y)
         let maxY = max(perimeterProjected[0].y, perimeterProjected[1].y, perimeterProjected[2].y)
-        
+
         // Compute minimum Z using the rectangle at minimum height
         let cartographicMinHeightArray = cartographicArray.map({ Cartographic(longitude: $0.longitude, latitude: $0.latitude, height: minimumHeight) })
         let perimeterMinHeightCartesian = ellipsoid.cartographicArrayToCartesianArray(cartographicMinHeightArray)
@@ -243,7 +243,7 @@ struct OrientedBoundingBox: BoundingVolume {
             plane.getPointDistance(perimeterMinHeightCartesian[4]),
             plane.getPointDistance(perimeterMinHeightCartesian[6]))
         let maxZ = maximumHeight  // Since the tangent plane touches the surface at height = 0, this is okay
-        
+
         self.init(fromTangentPlaneExtents: tangentPlane, minimumX: minX, maximumX: maxX, minimumY: minY, maximumY: maxY, minimumZ: minZ, maximumZ: maxZ)
     }
     /*
@@ -258,14 +258,14 @@ struct OrientedBoundingBox: BoundingVolume {
     if (!defined(box)) {
     return undefined;
     }
-    
+
     if (!defined(result)) {
     return new OrientedBoundingBox(box.center, box.halfAxes);
     }
-    
+
     Cartesian3.clone(box.center, result.center);
     Matrix3.clone(box.halfAxes, result.halfAxes);
-    
+
     return result;
     };
     */
@@ -280,17 +280,17 @@ struct OrientedBoundingBox: BoundingVolume {
     *                      intersects the plane.
     */
     func intersectPlane(_ plane: Plane) -> Intersect {
-        
+
         let normal = plane.normal
         let normalX = normal.x, normalY = normal.y, normalZ = normal.z
-        
+
         // plane is used as if it is its normal; the first three components are assumed to be normalized
         let radEffective1 = abs(normalX * halfAxes[0,0] + normalY * halfAxes[0,1] + normalZ * halfAxes[0,2])
         let radEffective2 = abs(normalX * halfAxes[1,0] + normalY * halfAxes[1,1] + normalZ * halfAxes[1,2])
         let radEffective3 = abs(normalX * halfAxes[2,0] + normalY * halfAxes[2,1] + normalZ * halfAxes[2,2])
         let radEffective = radEffective1 + radEffective2 + radEffective3
         let distanceToPlane = normal.dot(center) + plane.distance
-        
+
         if distanceToPlane <= -radEffective {
             // The entire box is on the negative side of the plane normal
             return .outside
@@ -332,30 +332,30 @@ struct OrientedBoundingBox: BoundingVolume {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     var offset = Cartesian3.subtract(cartesian, box.center, scratchOffset);
-    
+
     var halfAxes = box.halfAxes;
     var u = Matrix3.getColumn(halfAxes, 0, scratchCartesianU);
     var v = Matrix3.getColumn(halfAxes, 1, scratchCartesianV);
     var w = Matrix3.getColumn(halfAxes, 2, scratchCartesianW);
-    
+
     var uHalf = Cartesian3.magnitude(u);
     var vHalf = Cartesian3.magnitude(v);
     var wHalf = Cartesian3.magnitude(w);
-    
+
     Cartesian3.normalize(u, u);
     Cartesian3.normalize(v, v);
     Cartesian3.normalize(w, w);
-    
+
     var pPrime = scratchPPrime;
     pPrime.x = Cartesian3.dot(offset, u);
     pPrime.y = Cartesian3.dot(offset, v);
     pPrime.z = Cartesian3.dot(offset, w);
-    
+
     var distanceSquared = 0.0;
     var d;
-    
+
     if (pPrime.x < -uHalf) {
     d = pPrime.x + uHalf;
     distanceSquared += d * d;
@@ -363,7 +363,7 @@ struct OrientedBoundingBox: BoundingVolume {
     d = pPrime.x - uHalf;
     distanceSquared += d * d;
     }
-    
+
     if (pPrime.y < -vHalf) {
     d = pPrime.y + vHalf;
     distanceSquared += d * d;
@@ -371,7 +371,7 @@ struct OrientedBoundingBox: BoundingVolume {
     d = pPrime.y - vHalf;
     distanceSquared += d * d;
     }
-    
+
     if (pPrime.z < -wHalf) {
     d = pPrime.z + wHalf;
     distanceSquared += d * d;
@@ -382,7 +382,7 @@ struct OrientedBoundingBox: BoundingVolume {
     */
     return distanceSquared
     }
-    
+
     /*var scratchCorner = new Cartesian3();
     var scratchToCenter = new Cartesian3();
     var scratchProj = new Cartesian3();
@@ -400,103 +400,103 @@ struct OrientedBoundingBox: BoundingVolume {
     * @returns {Interval} The nearest and farthest distances on the bounding box from position in direction.
     */
     func computePlaneDistances (_ position: Cartesian3, direction: Cartesian3) -> Interval {
-    
+
     let minDist = Double.infinity
     let maxDist = Double.infinity * -1.0
         assertionFailure("not implemented")
     /*
     var center = box.center;
     var halfAxes = box.halfAxes;
-    
+
     var u = Matrix3.getColumn(halfAxes, 0, scratchCartesianU);
     var v = Matrix3.getColumn(halfAxes, 1, scratchCartesianV);
     var w = Matrix3.getColumn(halfAxes, 2, scratchCartesianW);
-    
+
     // project first corner
     var corner = Cartesian3.add(u, v, scratchCorner);
     Cartesian3.add(corner, w, corner);
     Cartesian3.add(corner, center, corner);
-    
+
     var toCenter = Cartesian3.subtract(corner, position, scratchToCenter);
     var mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project second corner
     Cartesian3.add(center, u, corner);
     Cartesian3.add(corner, v, corner);
     Cartesian3.subtract(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project third corner
     Cartesian3.add(center, u, corner);
     Cartesian3.subtract(corner, v, corner);
     Cartesian3.add(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project fourth corner
     Cartesian3.add(center, u, corner);
     Cartesian3.subtract(corner, v, corner);
     Cartesian3.subtract(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project fifth corner
     Cartesian3.subtract(center, u, corner);
     Cartesian3.add(corner, v, corner);
     Cartesian3.add(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project sixth corner
     Cartesian3.subtract(center, u, corner);
     Cartesian3.add(corner, v, corner);
     Cartesian3.subtract(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project seventh corner
     Cartesian3.subtract(center, u, corner);
     Cartesian3.subtract(corner, v, corner);
     Cartesian3.add(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
-    
+
     // project eighth corner
     Cartesian3.subtract(center, u, corner);
     Cartesian3.subtract(corner, v, corner);
     Cartesian3.subtract(corner, w, corner);
-    
+
     Cartesian3.subtract(corner, position, toCenter);
     mag = Cartesian3.dot(direction, toCenter);
-    
+
     minDist = Math.min(mag, minDist);
     maxDist = Math.max(mag, maxDist);
     */
@@ -517,11 +517,11 @@ struct OrientedBoundingBox: BoundingVolume {
 
         return !occluder.isBoundingSphereVisible(BoundingSphere(center: center, radius: max(uHalf, vHalf, wHalf)))
     }
-    
-    /*
-       
 
-        
+    /*
+
+
+
     /**
     * Compares the provided OrientedBoundingBox componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -537,7 +537,7 @@ struct OrientedBoundingBox: BoundingVolume {
     Cartesian3.equals(left.center, right.center) &&
     Matrix3.equals(left.halfAxes, right.halfAxes));
     };
-    
+
     /**
     * Duplicates this OrientedBoundingBox instance.
     *
@@ -547,7 +547,7 @@ struct OrientedBoundingBox: BoundingVolume {
     OrientedBoundingBox.prototype.clone = function(result) {
     return OrientedBoundingBox.clone(this, result);
     };
-    
+
     /**
     * Compares this OrientedBoundingBox against the provided OrientedBoundingBox componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -558,7 +558,7 @@ struct OrientedBoundingBox: BoundingVolume {
     OrientedBoundingBox.prototype.equals = function(right) {
     return OrientedBoundingBox.equals(this, right);
     };
-    
+
 
     */
 }

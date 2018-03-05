@@ -15,154 +15,154 @@ public struct Math {
     * @constant
     */
     static let Epsilon1: Double = 0.1
-    
+
     /**
     * 0.01
     * @type {Number}
     * @constant
     */
     static let Epsilon2: Double = 0.01
-    
+
     /**
     * 0.001
     * @type {Number}
     * @constant
     */
     static let Epsilon3: Double = 0.001
-    
+
     /**
     * 0.0001
     * @type {Number}
     * @constant
     */
     static let Epsilon4: Double = 0.0001
-    
+
     /**
     * 0.00001
     * @type {Number}
     * @constant
     */
     static let Epsilon5: Double = 0.00001
-    
+
     /**
     * 0.000001
     * @type {Number}
     * @constant
     */
     static let Epsilon6: Double = 0.000001
-    
+
     /**
     * 0.0000001
     * @type {Number}
     * @constant
     */
     static let Epsilon7: Double = 0.0000001
-    
+
     /**
     * 0.00000001
     * @type {Number}
     * @constant
     */
     static let Epsilon8: Double = 0.00000001
-    
+
     /**
     * 0.000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon9: Double = 0.000000001
-    
+
     /**
     * 0.0000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon10: Double = 0.0000000001
-    
+
     /**
     * 0.00000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon11: Double = 0.00000000001
-    
+
     /**
     * 0.000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon12: Double = 0.000000000001
-    
+
     /**
     * 0.0000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon13: Double = 0.0000000000001
-    
+
     /**
     * 0.00000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon14: Double = 0.00000000000001
-    
+
     /**
     * 0.000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon15: Double = 0.000000000000001
-    
+
     /**
     * 0.0000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon16: Double = 0.0000000000000001
-    
+
     /**
     * 0.00000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon17: Double = 0.00000000000000001
-    
+
     /**
     * 0.000000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon18: Double = 0.000000000000000001
-    
+
     /**
     * 0.0000000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon19: Double = 0.0000000000000000001
-    
+
     /**
     * 0.00000000000000000001
     * @type {Number}
     * @constant
     */
     static let Epsilon20: Double = 0.00000000000000000001
-    
+
     /**
     * 3.986004418e14
     * @type {Number}
     * @constant
     */
     static let GravitationalParameter: Double = 3.986004418e14
-    
+
     /**
     * Radius of the sun in meters: 6.955e8
     * @type {Number}
     * @constant
     */
     static let SolarRadius: Double = 6.955e8
-    
+
     /**
     * The mean radius of the moon, according to the "Report of the IAU/IAG Working Group on
     * Cartographic Coordinates and Rotational Elements of the Planets and satellites: 2000",
@@ -171,14 +171,14 @@ public struct Math {
     * @constant
     */
     static let LunarRadius: Double = 1737400.0
-    
+
     /**
     * 64 * 1024
     * @type {Number}
     * @constant
     */
     static let SixtyFourKilobytes: Int = 64 * 1024
-    
+
     /**
     * Returns the sign of the value; 1 if the value is positive, -1 if the value is
     * negative, or 0 if the value is 0.
@@ -195,7 +195,7 @@ public struct Math {
         }
         return 0
     }
-    
+
     /**
      * Returns 1.0 if the given value is positive or zero, and -1.0 if it is negative.
      * This is similar to {@link CesiumMath#sign} except that returns 1.0 instead of
@@ -206,7 +206,7 @@ public struct Math {
     static func signNotZero (_ value: Double) -> Int {
         return value < 0.0 ? -1 : 1
     }
-    
+
     /**
      * Converts a scalar value in the range [-1.0, 1.0] to a 8-bit 2's complement number.
      * @param {Number} value The scalar value in the range [-1.0, 1.0]
@@ -217,7 +217,7 @@ public struct Math {
     static func toSNorm (_ value: Double) -> UInt8 {
         return UInt8(round((Math.clamp(value, min: -1.0, max: 1.0) * 0.5 + 0.5) * 255.0))
     }
-    
+
     /**
      * Converts a SNORM value in the range [0, 255] to a scalar in the range [-1.0, 1.0].
      * @param {Number} value SNORM value in the range [0, 255]
@@ -229,7 +229,7 @@ public struct Math {
         return Math.clamp(Double(value), min: 0.0, max: 255.0) / 255.0 * 2.0 - 1.0
     }
 
-    
+
     /*
     /**
     * Returns the hyperbolic sine of a number.
@@ -255,10 +255,10 @@ public struct Math {
     CesiumMath.sinh = function(value) {
     var part1 = Math.pow(Math.E, value);
     var part2 = Math.pow(Math.E, -1.0 * value);
-    
+
     return (part1 - part2) * 0.5;
     };
-    
+
     /**
     * Returns the hyperbolic cosine of a number.
     * The hyperbolic cosine of <strong>value</strong> is defined to be
@@ -281,7 +281,7 @@ public struct Math {
     CesiumMath.cosh = function(value) {
     var part1 = Math.pow(Math.E, value);
     var part2 = Math.pow(Math.E, -1.0 * value);
-    
+
     return (part1 + part2) * 0.5;
     };
     */
@@ -307,7 +307,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.PI = Math.PI;
-    
+
     /**
     * 1/pi
     *
@@ -315,7 +315,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.ONE_OVER_PI = 1.0 / Math.PI;
-    
+
     /**
     * pi/2
     *
@@ -323,7 +323,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.PI_OVER_TWO = Math.PI * 0.5;
-    
+
     /**
     * pi/3
     *
@@ -331,7 +331,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.PI_OVER_THREE = Math.PI / 3.0;
-    
+
     /**
     * pi/4
     *
@@ -339,7 +339,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.PI_OVER_FOUR = Math.PI / 4.0;
-    
+
     /**
     * pi/6
     *
@@ -347,7 +347,7 @@ public struct Math {
     * @constant
     */
     CesiumMath.PI_OVER_SIX = Math.PI / 6.0;
-    
+
     /**
     * 3pi/2
     *
@@ -380,7 +380,7 @@ public struct Math {
     * @default Math.PI / 180.0
     */
     public static let RadiansPerDegree = .pi / 180.0
-    
+
     /**
     * The number of degrees in a radian.
     *
@@ -389,7 +389,7 @@ public struct Math {
     * @default 180.0 / Math.PI
     */
     public static let DegreesPerRadian = 180.0 / .pi
-    
+
     /**
     * The number of radians in an arc second.
     *
@@ -398,7 +398,7 @@ public struct Math {
     * @default {@link CesiumMath.RADIANS_PER_DEGREE} / 3600.0
     */
     static let RadiansPerArcSecond = RadiansPerDegree / 3600.0
-    
+
     /**
     * Converts degrees to radians.
     * @param {Number} degrees The angle to convert in degrees.
@@ -434,16 +434,16 @@ CesiumMath.convertLongitudeRange = function(angle) {
     }
     //>>includeEnd('debug');
     var twoPi = CesiumMath.TWO_PI;
-    
+
     var simplified = angle - Math.floor(angle / twoPi) * twoPi;
-    
+
     if (simplified < -Math.PI) {
         return simplified + twoPi;
     }
     if (simplified >= Math.PI) {
         return simplified - twoPi;
     }
-    
+
     return simplified;
 };
 */
@@ -470,7 +470,7 @@ CesiumMath.convertLongitudeRange = function(angle) {
         }
         return mod
     }
-    
+
     /**
     * The modulo operation that also works for negative dividends.
     *
@@ -528,7 +528,7 @@ CesiumMath.factorial = function(n) {
         throw new DeveloperError('A number greater than or equal to 0 is required.');
     }
     //>>includeEnd('debug');
-    
+
     var length = factorials.length;
     if (n >= length) {
         var sum = factorials[length - 1];
@@ -554,7 +554,7 @@ CesiumMath.factorial = function(n) {
 * var n = Cesium.Math.incrementWrap(10, 10, 0); // returns 0
 */
     static func incrementWrap (_ n: Int, maximumValue: Int, minimumValue: Int) -> Int {
-        
+
         var result = n
         assert(maximumValue > minimumValue, "maximumValue must be greater than minimumValue")
         result += 1
@@ -598,7 +598,7 @@ CesiumMath.nextPowerOfTwo = function(n) {
         throw new DeveloperError('A number greater than or equal to 0 is required.');
     }
     //>>includeEnd('debug');
-    
+
     // From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
     --n;
     n |= n >> 1;
@@ -607,7 +607,7 @@ CesiumMath.nextPowerOfTwo = function(n) {
     n |= n >> 8;
     n |= n >> 16;
     ++n;
-    
+
     return n;
 };*/
 
@@ -637,7 +637,7 @@ CesiumMath.setRandomNumberSeed = function(seed) {
         throw new DeveloperError('seed is required.');
     }
     //>>includeEnd('debug');
-    
+
     randomNumberGenerator = new MersenneTwister(seed);
 };
 
@@ -675,7 +675,7 @@ CesiumMath.nextRandomNumber = function() {
     static func asinClamped (_ value: Double) -> Double {
         return asin(clamp(value, min: -1.0, max: 1.0))
     }
-    
+
     /*
 /**
 * Finds the chord length between two points given the circle's radius and the angle between the points.
@@ -706,7 +706,7 @@ return 2.0 * radius * Math.sin(angle * 0.5);
     static func logBase (_ number: Double, base: Double) -> Double {
         return log(number) / log(base)
     }
-    
+
     /**
      * @private
      */
@@ -718,35 +718,35 @@ return 2.0 * radius * Math.sin(angle * 0.5);
 }
 
 public extension Double {
-    
+
     var wholeComponent: Double {
         return self - (self.truncatingRemainder(dividingBy: 1.0))
     }
-    
+
     var fractionalComponent: Double {
         return self.truncatingRemainder(dividingBy: 1.0)
     }
-    
+
     // Given a value to round and a factor to round to,
     // round the value to the nearest multiple of that factor.
     func roundTo(_ nearest: Double) -> Double {
         return (self / nearest).rounded() * nearest
     }
-    
+
     // Given a value to round and a factor to round to,
     // round the value DOWN to the largest previous multiple
     // of that factor.
     func roundDown(_ nearest: Double) -> Double {
         return floor(self / nearest) * nearest
     }
-    
+
     // Given a value to round and a factor to round to,
     // round the value DOWN to the largest previous multiple
     // of that factor.
     func roundUp(_ nearest: Double) -> Double {
         return ceil(self / nearest) * nearest
     }
-    
+
     func roundToPlaces(_ decimalPlaces: Int) -> Double {
         let divisor = pow(10.0, Double(decimalPlaces))
         return (self * divisor).rounded() / divisor

@@ -24,25 +24,25 @@ private var _creditToId = [String: Int]()
 * var credit = new Cesium.Credit('Cesium', '/images/cesium_logo.png', 'http://cesiumjs.org/');
 */
 public struct Credit: Equatable {
-    
+
     public let text: String?
-    
+
     public let imageUrl: String?
-    
+
     public let link: String?
-    
+
     var hasText: Bool {
         return text != nil
     }
-    
+
     var hasImage: Bool {
         return imageUrl != nil
     }
-    
+
     var hasLink: Bool {
         return link != nil
     }
-    
+
     /**
     * @memberof Credit.prototype
     * @type {Number}
@@ -50,7 +50,7 @@ public struct Credit: Equatable {
     * @private
     */
     let id: Int
-    
+
     init (text: String? = nil, imageUrl: String? = nil, link: String? = nil) {
         assert(text != nil || imageUrl != nil || link != nil, "text, imageUrl or link is required")
 
@@ -61,7 +61,7 @@ public struct Credit: Equatable {
         }
         self.imageUrl = imageUrl
         self.link = link
-        
+
         // Credits are immutable so generate an id to use to optimize equal()
         let key = "[\(text ?? ""):\(imageUrl ?? ""):\(link ?? "")]"
         if let creditToId = _creditToId[key] {

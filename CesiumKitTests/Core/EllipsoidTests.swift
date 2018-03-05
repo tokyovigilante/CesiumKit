@@ -9,7 +9,7 @@
 import XCTest
 
 class EllipsoidTests: XCTestCase {
-    
+
     var radii = Cartesian3()
     var radiiSquared = Cartesian3()
     var radiiToTheFourth = Cartesian3()
@@ -17,34 +17,34 @@ class EllipsoidTests: XCTestCase {
     var oneOverRadiiSquared = Cartesian3()
     var minimumRadius: Double = 1.0
     var maximumRadius: Double = 1.0
-    
+
     //All values computes using STK Components
     var spaceCartesian = Cartesian3()
     var spaceCartesianGeodeticSurfaceNormal = Cartesian3()
-    
+
     var spaceCartographic = Cartographic()
     var spaceCartographicGeodeticSurfaceNormal = Cartesian3()
-    
+
     var surfaceCartesian = Cartesian3()
     var surfaceCartographic = Cartographic()
-    
+
     override func setUp() {
         radii = Cartesian3(x: 1.0, y: 2.0, z: 3.0)
         radiiSquared = radii.multiplyComponents(radii)
         radiiToTheFourth = radiiSquared.multiplyComponents(radiiSquared)
         oneOverRadii = Cartesian3(x: 1.0 / radii.x, y: 1.0 / radii.y, z: 1.0 / radii.z)
         oneOverRadiiSquared = Cartesian3(x: 1.0 / radiiSquared.x, y: 1.0 / radiiSquared.y, z: 1.0 / radiiSquared.z)
-        
+
         spaceCartesian = Cartesian3(x: 4582719.8827300891, y: -4582719.8827300882, z: 1725510.4250797231)
         spaceCartesianGeodeticSurfaceNormal = Cartesian3(x: 0.6829975339864266, y: -0.68299753398642649, z: 0.25889908678270795);
-        
+
         spaceCartographic = Cartographic(longitude: Math.toRadians(-45.0), latitude: Math.toRadians(15.0), height: 330000.0)
         spaceCartographicGeodeticSurfaceNormal = Cartesian3(x: 0.68301270189221941, y: -0.6830127018922193, z: 0.25881904510252074)
-        
+
         surfaceCartesian = Cartesian3(x: 4094327.7921465295, y: 1909216.4044747739, z: 4487348.4088659193)
         surfaceCartographic = Cartographic(longitude: Math.toRadians(25.0), latitude: Math.toRadians(45.0), height: 0.0)
     }
-    
+
     //func testisPointVisibleExample () {
 /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn,runs,waits,waitsFor
 

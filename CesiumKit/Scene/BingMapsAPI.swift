@@ -4,9 +4,9 @@
 * @namespace
 * @alias BingMapsApi
 */
-    
+
 class BingMapsAPI {
-    
+
     class func getKey(_ key: String?) -> String {
         if key != nil {
             return key!

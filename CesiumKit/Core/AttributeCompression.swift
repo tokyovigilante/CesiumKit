@@ -18,7 +18,7 @@ import Foundation
 * @private
 */
 class AttributeCompression {
-    
+
     /**
      * Encodes a normalized vector into 2 SNORM values in the range of [0-255] following the 'oct' encoding.
      *
@@ -37,12 +37,12 @@ class AttributeCompression {
      * @see AttributeCompression.octDecode
      */
     class func octEncode (_ vector: Cartesian3) -> Cartesian2 {
-        
+
         let magSquared = vector.magnitudeSquared
         assert(abs(magSquared - 1.0) <= Math.Epsilon6, "vector must be normalized.")
-        
+
         var result = Cartesian2()
-        
+
         result.x = vector.x / (abs(vector.x) + abs(vector.y) + abs(vector.z))
         result.y = vector.y / (abs(vector.x) + abs(vector.y) + abs(vector.z))
         if (vector.z < 0) {
@@ -51,10 +51,10 @@ class AttributeCompression {
             result.x = (1.0 - abs(y)) * Double(Math.signNotZero(x))
             result.y = (1.0 - abs(x)) * Double(Math.signNotZero(y))
         }
-        
+
         result.x = Double(Math.toSNorm(result.x))
         result.y = Double(Math.toSNorm(result.y))
-        
+
         return result
     }
 
@@ -72,21 +72,21 @@ class AttributeCompression {
      * @see AttributeCompression.octEncode
      */
     class func octDecode (x: UInt8, y: UInt8) -> Cartesian3 {
-        
+
         assert(x >= 0 && x <= 255 && y >= 0 && y <= 255, "x and y must be a signed normalized integer between 0 and 255")
-        
+
         var result = Cartesian3()
         result.x = Math.fromSNorm(x)
         result.y = Math.fromSNorm(y)
         result.z = 1.0 - (abs(result.x) + abs(result.y))
-        
+
         if (result.z < 0.0)
         {
             let oldVX = result.x
             result.x = (1.0 - abs(result.y)) * Double(Math.signNotZero(oldVX))
             result.y = (1.0 - abs(oldVX)) * Double(Math.signNotZero(result.y))
         }
-        
+
         return result.normalize()
     }
 
@@ -234,12 +234,12 @@ AttributeCompression.octDecode(x, y, v3);
 * @exception {DeveloperError} textureCoordinates is required.
 */
     static func compressTextureCoordinates (_ textureCoordinates: Cartesian2) -> Float {
-        
+
         let x = textureCoordinates.x == 1.0 ? 4095.0 : floor(textureCoordinates.x * 4096.0)
         let y = textureCoordinates.y == 1.0 ? 4095.0 : floor(textureCoordinates.y * 4096.0)
         return 4096.0 * Float(x) + Float(y)
     }
-    
+
     /**
      * Decompresses texture coordinates that were packed into a single float.
      *

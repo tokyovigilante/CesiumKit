@@ -17,11 +17,11 @@
 * @constructor
 */
 class GeometryAttributes {
-    
+
     fileprivate var _maxAttributes = 6
-    
+
     fileprivate var _attributes = [String: GeometryAttribute]()
-    
+
     /**
     * The 3D position attribute.
     * <p>
@@ -41,7 +41,7 @@ class GeometryAttributes {
             _attributes["position"] = position
         }
     }
-    
+
     /**
     * The normal attribute (normalized), which is commonly used for lighting.
     * <p>
@@ -61,7 +61,7 @@ class GeometryAttributes {
             _attributes["normal"] = normal
         }
     }
-    
+
     /**
     * The 2D texture coordinate attribute.
     * <p>
@@ -81,7 +81,7 @@ class GeometryAttributes {
             _attributes["st"] = st
         }
     }
-    
+
     /**
     * The binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
@@ -101,7 +101,7 @@ class GeometryAttributes {
             _attributes["binormal"] = binormal
         }
     }
-    
+
     /**
     * The tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
@@ -121,7 +121,7 @@ class GeometryAttributes {
             _attributes["tangent"] = tangent
         }
     }
-    
+
     /**
     * The color attribute.
     * <p>
@@ -141,7 +141,7 @@ class GeometryAttributes {
             _attributes["color"] = color
         }
     }
-    
+
     init(
         position: GeometryAttribute? = nil,
         normal: GeometryAttribute? = nil,
@@ -159,7 +159,7 @@ class GeometryAttributes {
                 attribute.name = name
             }
     }
-    
+
     subscript(index: Int) -> GeometryAttribute? {
         switch index {
         case 0:
@@ -179,7 +179,7 @@ class GeometryAttributes {
             return nil
         }
     }
-    
+
     subscript(name: String) -> GeometryAttribute? {
         return _attributes[name]
     }
@@ -187,9 +187,9 @@ class GeometryAttributes {
 }
 
 extension GeometryAttributes: Sequence {
-    
+
     typealias Iterator = AnyIterator<GeometryAttribute>
-    
+
     func makeIterator() -> Iterator {
         var index = 0
         return AnyIterator {

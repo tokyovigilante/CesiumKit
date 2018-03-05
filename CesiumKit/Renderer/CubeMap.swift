@@ -13,37 +13,37 @@ struct CubeMapSources {
 }
 
 extension CubeMapSources {
-    
+
     var positiveX: CGImage {
         return sources[0]
     }
-    
+
     var negativeX: CGImage {
         return sources[1]
     }
-    
+
     var positiveY: CGImage {
         return sources[2]
     }
-    
+
     var negativeY: CGImage {
         return sources[3]
     }
-    
+
     var positiveZ: CGImage {
         return sources[4]
     }
-    
+
     var negativeZ: CGImage {
         return sources[5]
     }
-    
+
 }
 
 class CubeMap {
-    
+
     class func loadImagesForSources (_ sources: [String]) -> CubeMapSources {
         return CubeMapSources(sources: sources.flatMap { $0.loadImageForCubeMapSource() })
     }
-    
+
 }

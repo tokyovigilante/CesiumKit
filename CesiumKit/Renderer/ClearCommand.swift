@@ -17,7 +17,7 @@ struct ClearCommand {
 
     let boundingVolume: BoundingVolume? = nil
     let cull: Bool = false
-    
+
     /**
     * The value to clear the color buffer to.  When <code>undefined</code>, the color buffer is not cleared.
     *
@@ -26,7 +26,7 @@ struct ClearCommand {
     * @default undefined
     */
     var color: Color?
-    
+
     /**
     * The value to clear the depth buffer to.  When <code>undefined</code>, the depth buffer is not cleared.
     *
@@ -35,7 +35,7 @@ struct ClearCommand {
     * @default undefined
     */
     var depth: Double?
-    
+
     /**
     * The value to clear the stencil buffer to.  When <code>undefined</code>, the stencil buffer is not cleared.
     *
@@ -44,7 +44,7 @@ struct ClearCommand {
     * @default undefined
     */
     var stencil: UInt32?
-    
+
     /**
     * The render state to apply when executing the clear command.  The following states affect clearing:
     * scissor test, color mask, depth mask, and stencil mask.  When the render state is
@@ -57,7 +57,7 @@ struct ClearCommand {
     * @see Context#createRenderState
     */
     var renderState: RenderState?
-    
+
     /**
     * The framebuffer to clear.
     *
@@ -66,7 +66,7 @@ struct ClearCommand {
     * @default undefined
     */
     var framebuffer: Framebuffer?
-    
+
     /**
     * The object who created this command.  This is useful for debugging command
     * execution; it allows you to see who created a command when you only have a
@@ -81,7 +81,7 @@ struct ClearCommand {
     */
     // FIXME: Owner
     weak var owner: AnyObject? = nil
-    
+
     var debugOverlappingFrustums: Int = 0
     var executeInClosestFrustum: Bool = false
 
@@ -93,7 +93,7 @@ struct ClearCommand {
     * @constant
     */
     init (color: Cartesian4? = nil, depth: Double? = nil, stencil: UInt32? = nil, renderState: RenderState? = nil, framebuffer: Framebuffer? = nil, owner: AnyObject? = nil) {
-        
+
         self.color = color
         self.depth = depth
         self.stencil = stencil
@@ -101,7 +101,7 @@ struct ClearCommand {
         self.framebuffer = framebuffer
         self.owner = owner
     }
-    
+
     static func all() -> ClearCommand {
         return ClearCommand(color: Cartesian4(), depth: 1.0, stencil: 1, renderState: nil)
     }
@@ -109,5 +109,5 @@ struct ClearCommand {
     func execute(_ context: Context, passState: PassState?) {
         context.clear(self, passState: passState)
     }
-    
+
 }

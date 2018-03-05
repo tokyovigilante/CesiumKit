@@ -74,11 +74,11 @@ private let OpaqueFrustumNearOffset = 0.99
 */
 
 open class Scene {
-    
+
     let context: Context
-    
+
     fileprivate let _computeEngine: ComputeEngine
-    
+
     /*
     if (!defined(creditContainer)) {
         creditContainer = document.createElement('div');
@@ -90,14 +90,14 @@ open class Scene {
         creditContainer.style['padding-right'] = '5px';
         canvas.parentNode.appendChild(creditContainer);
     }*/
-    
+
     /**
     * Gets or sets the depth-test ellipsoid.
     * @memberof Scene.prototype
     * @type {Globe}
     */
     var globe: Globe!
-    
+
     /**
     * Gets the collection of primitives.
     * @memberof Scene.prototype
@@ -113,11 +113,11 @@ open class Scene {
      * @readonly
      */
     open let groundPrimitives = PrimitiveCollection()
-    
+
     open var offscreenPrimitives = [OffscreenQuadPrimitive]()
-    
+
     //var pickFramebuffer: Framebuffer? = nil
-    
+
     //TODO: TweenCollection
 //    var tweens = TweenCollection()
 
@@ -141,9 +141,9 @@ open class Scene {
     lazy open var screenSpaceCameraController: ScreenSpaceCameraController = {
         ScreenSpaceCameraController(scene: self)
         }()
-    
+
     fileprivate var _environmentState = EnvironmentState()
-    
+
     /**
      * When <code>true</code>, splits the scene into two viewports with steroscopic views for the left and right eyes.
      * Used for cardboard and WebVR.
@@ -163,23 +163,23 @@ open class Scene {
              if (!defined(this._deviceOrientationCameraController)) {
              this._deviceOrientationCameraController = new DeviceOrientationCameraController(this);
              }
-             
+
              this._aspectRatioVR = this._camera.frustum.aspectRatio;
              } else {
              this._frameState.creditDisplay.container.style.visibility = 'visible';
              this._cameraVR = undefined;
              this._deviceOrientationCameraController = this._deviceOrientationCameraController && !this._deviceOrientationCameraController.isDestroyed() && this._deviceOrientationCameraController.destroy();
-             
+
              this._camera.frustum.aspectRatio = this._aspectRatioVR;
              this._camera.frustum.xOffset = 0.0;
              }*/
         }
     }
-    
+
     fileprivate var _useWebVR = false;
     fileprivate var _cameraVR: Camera? = nil
     fileprivate var _aspectRatioVR: Double? = nil
-    
+
     /**
      * Get the map projection to use in 2D and Columbus View modes.
      * @memberof Scene.prototype
@@ -190,7 +190,7 @@ open class Scene {
      * @default new GeographicProjection()
      */
     fileprivate(set) var mapProjection: MapProjection
-    
+
     /**
     * Gets state information about the current scene. If called outside of a primitive's <code>update</code>
     * function, the previous frame's state is returned.
@@ -198,7 +198,7 @@ open class Scene {
     * @type {FrameState}
     */
     fileprivate (set) var frameState: FrameState
-    
+
     fileprivate var _passState: PassState
 
     /**
@@ -208,20 +208,20 @@ open class Scene {
     */
     // TODO: AnimationCollection
     //var animations = AnimationCollection()
-    
-    
+
+
     var shaderFrameCount = 0
-    
+
     //this._sunPostProcess = undefined;
-    
+
     fileprivate var _computeCommandList = [ComputeCommand]()
     fileprivate var _frustumCommandsList = [FrustumCommands]()
     fileprivate var _overlayCommandList = [DrawCommand]()
     fileprivate var _overlayTextCommandList = [DrawCommand]()
 
-    
+
     // TODO: OIT
-    
+
     fileprivate var _globeDepth: GlobeDepth? = nil
     fileprivate var _depthPlane = DepthPlane()
     fileprivate var _oit: OIT? = nil
@@ -230,21 +230,21 @@ open class Scene {
         _ executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
         _ passState: PassState,
         _ commands: [DrawCommand]) -> ())? = nil
-    
+
     fileprivate let _fxaa = FXAA()
-    
-    
+
+
     var _clearColorCommand = ClearCommand(color: Cartesian4.zero/*, owner: self*/)
-    
+
     let _clearDepthCommand = ClearCommand(depth: 1.0/*, owner: self*/)
-    
+
     let _clearNullCommand = ClearCommand()
-    
+
     lazy var transitioner: SceneTransitioner = { return SceneTransitioner(owner: self, projection: self.mapProjection) }()
-    
+
     fileprivate var _pickDepths = [Int: PickDepth]()
     fileprivate var _debugGlobeDepths = [Int: GlobeDepth]()
-    
+
     /**
     * Gets the event that will be raised when an error is thrown inside the <code>render</code> function.
     * The Scene instance and the thrown error are the only two parameters passed to the event handler.
@@ -254,7 +254,7 @@ open class Scene {
     * @type {Event}
     */
     var renderError = Event()
-    
+
     /**
     * Gets the event that will be raised at the start of each call to <code>render</code>.  Subscribers to the event
     * receive the Scene instance as the first parameter and the current time as the second parameter.
@@ -262,7 +262,7 @@ open class Scene {
     * @type {Event}
     */
     var preRender = Event()
-    
+
     /**
     * Gets the event that will be raised at the end of each call to <code>render</code>.  Subscribers to the event
     * receive the Scene instance as the first parameter and the current time as the second parameter.
@@ -270,10 +270,10 @@ open class Scene {
     * @type {Event}
     */
     var postRender = Event()
-    
+
     fileprivate var _cameraStartFired = false
     fileprivate var _cameraMovedTime: Double? = nil
-    
+
     /*
     /**
     * Exceptions occurring in <code>render</code> are always caught in order to raise the
@@ -286,7 +286,7 @@ open class Scene {
     */
     this.rethrowRenderErrors = false;
     */
-    
+
     /**
     * Determines whether or not to instantly complete the
     * scene transition animation on user input.
@@ -295,21 +295,21 @@ open class Scene {
     * @default true
     */
     var completeMorphOnUserInput = true
-    
+
     /**
     * The event fired at the beginning of a scene transition.
     * @type {Event}
     * @default Event()
     */
     var morphStart = Event()
-    
+
     /**
     * The event fired at the completion of a scene transition.
     * @type {Event}
     * @default Event()
     */
     var morphComplete = Event()
-    
+
     /**
     * The {@link SkyBox} used to draw the stars.
     *
@@ -319,7 +319,7 @@ open class Scene {
     * @see Scene#backgroundColor
     */
     var skyBox: SkyBox? = nil
-    
+
     /**
     * The sky atmosphere drawn around the globe.
     *
@@ -327,7 +327,7 @@ open class Scene {
     * @default undefined
     */
     var skyAtmosphere: SkyAtmosphere? = nil
-    
+
     /**
     * The {@link Sun}.
     *
@@ -335,7 +335,7 @@ open class Scene {
     * @default undefined
     */
     //this.sun = undefined;
-    
+
     /**
     * Uses a bloom filter on the sun when enabled.
     *
@@ -344,7 +344,7 @@ open class Scene {
     */
     //this.sunBloom = true;
     //this._sunBloom = undefined;
-    
+
     /**
     * The {@link Moon}
     *
@@ -352,7 +352,7 @@ open class Scene {
     * @default undefined
     */
     //this.moon = undefined;
-    
+
     /**
     * The background color, which is only visible if there is no sky box, i.e., {@link Scene#skyBox} is undefined.
     *
@@ -362,7 +362,7 @@ open class Scene {
     * @see Scene#skyBox
     */
     var backgroundColor = Cartesian4.zero
-    
+
     /**
     * The current mode of the scene.
     *
@@ -376,7 +376,7 @@ open class Scene {
             }
         }
     }
-    
+
     /**
      * Gets the number of frustums used in the last frame.
      * @memberof Scene.prototype
@@ -385,7 +385,7 @@ open class Scene {
      * @private
      */
     var numberOfFrustums: Int { return _frustumCommandsList.count }
-    
+
     /**
     * The current morph transition time between 2D/Columbus View and 3D,
     * with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -402,7 +402,7 @@ open class Scene {
     * @default 1000.0
     */
     var farToNearRatio = 1000.0
-    
+
     /**
     * This property is for debugging only; it is not for production use.
     * <p>
@@ -434,7 +434,7 @@ open class Scene {
     * @see ClearCommand
     */
     //var debugCommandFilter = () -> ()?
-    
+
     /**
     * This property is for debugging only; it is not for production use.
     * <p>
@@ -448,7 +448,7 @@ open class Scene {
     * @default false
     */
     open var debugShowCommands = false
-    
+
     /**
     * This property is for debugging only; it is not for production use.
     * <p>
@@ -465,7 +465,7 @@ open class Scene {
     * @default false
     */
     var _debugShowFrustums = false
-    
+
     /**
     * This property is for debugging only; it is not for production use.
     * <p>
@@ -485,7 +485,7 @@ open class Scene {
     * @default undefined
     */
     fileprivate var _debugFrustumStatistics: (totalCommands: Int, commandsInFrustums: [Int]) = (0, [Int]())
-    
+
     /**
     * This property is for debugging only; it is not for production use.
     * <p>
@@ -496,7 +496,7 @@ open class Scene {
     *
     */
     fileprivate (set) var framerateDisplay: TextRenderer
-    
+
     /**
     * Gets whether or not the scene is optimized for 3D only viewing.
     * @memberof Scene.prototype
@@ -504,7 +504,7 @@ open class Scene {
     * @readonly
     */
     var scene3DOnly: Bool { return frameState.scene3DOnly }
-    
+
     /**
     * Gets whether or not the scene has order independent translucency enabled.
     * Note that this only reflects the original construction option, and there are
@@ -514,7 +514,7 @@ open class Scene {
     * @readonly
     */
     var orderIndependentTranslucency: Bool { return _oit != nil }
-    
+
     /**
      * This property is for debugging only; it is not for production use.
      * <p>
@@ -525,7 +525,7 @@ open class Scene {
      * @default false
      */
     var debugShowGlobeDepth = false
-    
+
     /**
      * This property is for debugging only; it is not for production use.
      * <p>
@@ -537,7 +537,7 @@ open class Scene {
      * @default 1
      */
     var debugShowDepthFrustum = 1
-    
+
     /**
     * When <code>true</code>, enables Fast Approximate Anti-aliasing even when order independent translucency
     * is unsupported.
@@ -546,7 +546,7 @@ open class Scene {
     * @default true
     */
     var fxaa = false
-    
+
     /**
      * When <code>true</code>, enables picking using the depth buffer.
      *
@@ -554,7 +554,7 @@ open class Scene {
      * @default true
      */
     var useDepthPicking = true
-    
+
     /**
      * The time in milliseconds to wait before checking if the camera has not moved and fire the cameraMoveEnd event.
      * @type {Number}
@@ -562,7 +562,7 @@ open class Scene {
      * @private
      */
     var cameraEventWaitTime = 500.0
-    
+
     /**
      * Set to true to copy the depth texture after rendering the globe. Makes czm_globeDepthTexture valid.
      * @type {Boolean}
@@ -570,21 +570,21 @@ open class Scene {
      * @private
      */
     var copyGlobeDepth = false
-    
+
     /**
      * Blends the atmosphere to geometry far from the camera for horizon views. Allows for additional
      * performance improvements by rendering less geometry and dispatching less terrain requests.
      * @type {Fog}
      */
     let fog = Fog()
-    
+
     fileprivate var _terrainExaggeration = 1.0
-    
+
     //this._performanceDisplay = undefined;
     fileprivate var _debugVolume: BoundingVolume? = nil
-    
 
-    
+
+
     /**
     * The drawingBufferWidth of the underlying GL context.
     * @memberof Scene.prototype
@@ -599,7 +599,7 @@ open class Scene {
             context.height = newValue
         }
     }
-    
+
     /**
     * The drawingBufferHeight of the underlying GL context.
     * @memberof Scene.prototype
@@ -622,7 +622,7 @@ open class Scene {
     * @see {@link http://www.khronos.org/opengles/sdk/2.0/docs/man/glGet.xml|glGet} with <code>ALIASED_LINE_WIDTH_RANGE</code>.
     */
     open var maximumAliasedLineWidth: Int { return context.limits.maximumAliasedLineWidth }
-    
+
     /**
      * The maximum length in pixels of a texture, supported by this Metal implementation.  It will be at least 16.
      * @memberof Scene.prototype
@@ -632,7 +632,7 @@ open class Scene {
      *
      */
     open var maximumTextureSize: Int { return context.limits.maximumTextureSize }
-    
+
     /**
      * The maximum length in pixels of one edge of a cube map, supported by this WebGL implementation.  It will be at least 16.
      * @memberof Scene.prototype
@@ -642,7 +642,7 @@ open class Scene {
      *
      */
     open var maximumCubeMapSize: Int { return context.limits.maximumCubeMapSize }
-    
+
     /**
      * Returns true if the pickPosition function is supported.
      *
@@ -650,7 +650,7 @@ open class Scene {
      * @readonly
      */
     var pickPositionSupported: Bool { return context.depthTexture }
-    
+
     /**
     * Gets the collection of image layers that will be rendered on the globe.
     * @memberof Scene.prototype
@@ -671,7 +671,7 @@ open class Scene {
             globe.terrainProvider = newTerrainProvider
         }
     }
-    
+
     /**
     * Gets the unique identifier for this scene.
     * @memberof Scene.prototype
@@ -679,34 +679,34 @@ open class Scene {
     * @readonly
     */
     let id: String
-    
+
     init (view: MTKView, globe: Globe, useOIT: Bool = true, scene3DOnly: Bool = false, projection: MapProjection = GeographicProjection()) {
-        
+
         context = Context(view: view)
-        
+
         if let name = context.device.name {
             if  name.hasPrefix("Apple") {
                 logPrint(.info, "FXAA disabled - Mobile")
                 fxaa = false
             }
         }
-        
+
         _computeEngine = ComputeEngine(context: context)
-        
+
         self.globe = globe
-        
+
         self.mapProjection = projection
-        
+
         id = UUID().uuidString
-            
+
         frameState = FrameState()
         frameState.context = context/*new CreditDisplay(creditContainer*/
         frameState.scene3DOnly = scene3DOnly
-        
+
         _passState = PassState()
         _passState.context = context
         _passState.viewport = Cartesian4(x: 0.0, y: 0.0, width: Double(context.width), height: Double(context.height))
-        
+
         // initial guess at frustums.
         camera = Camera(
             projection: projection,
@@ -720,15 +720,15 @@ open class Scene {
             initialWidth: Double(view.drawableSize.width),
             initialHeight: Double(view.drawableSize.height)
         )
-        
+
         let globeDepth: GlobeDepth?
-        
+
         if context.depthTexture {
             globeDepth = GlobeDepth()
         } else {
             globeDepth = nil
         }
-        
+
         let oit: OIT?
         if useOIT && globeDepth != nil {
             oit = OIT(context: context)
@@ -737,7 +737,7 @@ open class Scene {
         }
         _globeDepth = globeDepth
         _oit = oit
-        
+
         framerateDisplay = TextRenderer(
             string: "CesiumKit",
             fontName: "HelveticaNeue",
@@ -745,17 +745,17 @@ open class Scene {
             pointSize: 40,
             viewportRect: Cartesian4(x: 40, y: 40, width: 2000, height: 120)
         )
-                
+
         #if os(iOS)
             touchEventHandler = TouchEventHandler(scene: self, view: view)
         #endif
-        
+
         camera.scene = self
         let near = camera.frustum.near
         let far = camera.frustum.far
         let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
         updateFrustums(near, far: far, farToNearRatio: farToNearRatio, numFrustums: numFrustums)
-        
+
         // give frameState, camera, and screen space camera controller initial state before rendering
         updateFrameState(0, time: JulianDate.now())
         initializeFrame()
@@ -813,13 +813,13 @@ open class Scene {
 
         clearPasses(&frameState.passes)
     }
-    
+
     func updateFrustums(_ near: Double, far: Double, farToNearRatio: Double, numFrustums: Int) {
-        
+
         for m in 0..<numFrustums {
             let curNear = max(near, pow(farToNearRatio, Double(m)) * near)
             let curFar = min(far, farToNearRatio * curNear)
-            
+
             if _frustumCommandsList.count > m {
                 _frustumCommandsList[m].near = curNear
                 _frustumCommandsList[m].far = curFar
@@ -844,23 +844,23 @@ open class Scene {
         if _debugShowFrustums {
             command.debugOverlappingFrustums = 0
         }
-        
+
         if command.dirty {
             command.dirty = false
-            
+
             if let oit = _oit {
                 if command.pass == .translucent && oit.isSupported {
                    // oit.createDerivedCommands(command, scene._context)
                 }
             }
         }
-        
-        
+
+
         for frustumCommands in _frustumCommandsList {
             if distance.start > frustumCommands.far {
                 continue
             }
-            
+
             if distance.stop < frustumCommands.near {
                 break
             }
@@ -893,15 +893,15 @@ open class Scene {
             cullingVolume!.visibility(boundingVolume) != .outside &&
                 (occluder == nil || !boundingVolume.isOccluded(occluder!))
     }
-    
+
     func createPotentiallyVisibleSet() {
-        
+
         var distances = Interval()
-        
+
         let direction = camera.directionWC
         let position = camera.positionWC
-        
-        
+
+
         //FIXME debugShowFrustums
         if _debugShowFrustums {
             _debugFrustumStatistics = (
@@ -909,7 +909,7 @@ open class Scene {
                 commandsInFrustums : [Int]()
             )
         }
-        
+
         let numberOfFrustums = _frustumCommandsList.count
         for frustumCommands in _frustumCommandsList {
             frustumCommands.removeAll()
@@ -917,26 +917,26 @@ open class Scene {
         var near: Double = Double.infinity
         var far: Double = -Double.infinity
         var undefBV = false
-        
+
         let occluder: Occluder?
         if frameState.mode == .scene3D {
             occluder = frameState.occluder
         } else {
             occluder = nil
         }
-        
+
         // get user culling volume minus the far plane.
         var planes = frameState.cullingVolume!.planes[0...4]
         let cullingVolume = CullingVolume(planes: Array(planes[0..<planes.count]))
         frameState.cullingVolume = cullingVolume
-        
+
         // Determine visibility of celestial and terrestrial environment effects.
         _environmentState.isSkyAtmosphereVisible = _environmentState.skyAtmosphereCommand != nil && globe != nil && globe!.surfaceTilesToRenderCount > 0
         //_environmentState.isSunVisible = isVisible(_environmentState.sunDrawCommand, cullingVolume: cullingVolume, occluder: occluder)
         //_environmentState.isMoonVisible = isVisible(_environmentState.moonCommand, cullingVolume: cullingVolume, occluder: occluder)
-        
+
         for command in frameState.commandList {
-            
+
             if command.pass == .compute {
                 _computeCommandList.append(command as! ComputeCommand)
             } else if command.pass == .overlay {
@@ -960,11 +960,11 @@ open class Scene {
                     distances.stop = camera.frustum.far
                     undefBV = true//!(command is ClearCommand)
                 }
-                
+
                 insertIntoBin(command, distance: distances)
             }
         }
-        
+
         if (undefBV) {
             near = camera.frustum.near
             far = camera.frustum.far
@@ -975,7 +975,7 @@ open class Scene {
             near = min(max(near, camera.frustum.near), camera.frustum.far)
             far = max(min(far, camera.frustum.far), near)
         }
-        
+
         // Exploit temporal coherence. If the frustums haven't changed much, use the frustums computed
         // last frame, else compute the new frustums and sort them by frustum again.
         let numFrustums = Int(ceil(log(far / near) / log(farToNearRatio)))
@@ -989,7 +989,7 @@ open class Scene {
                 createPotentiallyVisibleSet()
         }
     }
-    
+
 /*
 function getAttributeLocations(shaderProgram) {
     var attributeLocations = {};
@@ -999,7 +999,7 @@ function getAttributeLocations(shaderProgram) {
             attributeLocations[a] = attributes[a].index;
         }
     }
-    
+
     return attributeLocations;
 }
 
@@ -1007,17 +1007,17 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
     var context = scene.context;
     var sp = defaultValue(shaderProgram, command.shaderProgram);
     var fs = sp.fragmentShaderSource.clone();
-    
+
     fs.sources = fs.sources.map(function(source) {
     source = source.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, 'void czm_Debug_main()');
     return source;
     });
-    
+
     var newMain =
     'void main() \n' +
     '{ \n' +
         '    czm_Debug_main(); \n';
-        
+
         if (scene.debugShowCommands) {
             if (!defined(command._debugColor)) {
                 command._debugColor = Color.fromRandom();
@@ -1025,7 +1025,7 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
             var c = command._debugColor;
             newMain += '    gl_FragColor.rgb *= vec3(' + c.red + ', ' + c.green + ', ' + c.blue + '); \n';
         }
-        
+
         if (scene.debugShowFrustums) {
             // Support up to three frustums.  If a command overlaps all
             // three, it's code is not changed.
@@ -1034,9 +1034,9 @@ function createDebugFragmentShaderProgram(command, scene, shaderProgram) {
             var b = (command.debugOverlappingFrustums & (1 << 2)) ? '1.0' : '0.0';
             newMain += '    gl_FragColor.rgb *= vec3(' + r + ', ' + g + ', ' + b + '); \n';
         }
-        
+
         newMain += '}';
-    
+
     fs.sources.push(newMain);
     var attributeLocations = getAttributeLocations(sp);
     return ShaderProgram.fromCache({
@@ -1060,7 +1060,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         0.0, 1.0, 0.0, 0.0, //
         0.0, 0.0, 0.0, 1.0));
 */
-    
+
     func executeCommand(_ command: DrawCommand, renderPass: RenderPass, renderPipeline: RenderPipeline? = nil, frustumUniformBuffer: Buffer? = nil) {
         // FIXME: scene.debugCommandFilter
         /*if ((defined(scene.debugCommandFilter)) && !scene.debugCommandFilter(command)) {
@@ -1073,31 +1073,31 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         } else {*/
         command.execute(context, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
         //}
-        
+
         /*if (command.debugShowBoundingVolume && (defined(command.boundingVolume))) {
             // Debug code to draw bounding volume for command.  Not optimized!
         +            // Assumes bounding volume is a bounding sphere or box
 
-        
+
             var frameState = scene._frameState;
             var boundingVolume = command.boundingVolume;
 
-            
+
         +            if (defined(scene._debugVolume)) {
         +                scene._debugVolume.destroy();
         +            }
         +
         +            var geometry;
-        
+
         +            var center = Cartesian3.clone(boundingVolume.center);
-            
+
             if (frameState.mode !== SceneMode.SCENE3D) {
                 center = Matrix4.multiplyByPoint(transformFrom2D, center);
                 var projection = frameState.scene2D.projection;
                 var centerCartographic = projection.unproject(center);
                 center = projection.ellipsoid.cartographicToCartesian(centerCartographic);
             }
-            
+
         if (defined(boundingVolume.radius)) {
         +                var radius = boundingVolume.radius;
         +
@@ -1143,19 +1143,19 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         +                    asynchronous : false
         +                });
         +            }
-        
-            
+
+
             var commandList = [];
         +            scene._debugVolume.update(context, frameState, commandList);
-        
+
             var framebuffer;
             if (defined(debugFramebuffer)) {
                 framebuffer = passState.framebuffer;
                 passState.framebuffer = debugFramebuffer;
             }
-            
+
             commandList[0].execute(context, passState);
-            
+
             if (defined(framebuffer)) {
                 passState.framebuffer = framebuffer;
             }
@@ -1169,14 +1169,14 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         _ scene: Scene, executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()), passState: PassState, commands: [DrawCommand]) {
         // FIXME: sorting
         //mergeSort(commands, translucentCompare, scene._camera.positionWC)
-        
+
         //var length = commands.count
         //for (var j = 0; j < length; ++j) {
         //    executeFunction(commands[j], context: context, passState: passState)
         //}
     }
 
-    
+
     func getDebugGlobeDepth(_ index: Int) -> GlobeDepth {
         var globeDepth = _debugGlobeDepths[index]
         if globeDepth == nil && context.depthTexture {
@@ -1185,7 +1185,7 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         }
         return globeDepth!
     }
-    
+
     func getPickDepth(_ index: Int) -> PickDepth {
         var pickDepth = _pickDepths[index]
         if pickDepth == nil {
@@ -1195,13 +1195,13 @@ var transformFrom2D = Matrix4.inverseTransformation(//
         return pickDepth!
     }
     /*
-    
+
     var scratchPerspectiveFrustum = new PerspectiveFrustum();
 var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
 var scratchOrthographicFrustum = new OrthographicFrustum();
 */
     func executeCommands(_ passState: PassState) {
-        
+
         // Create a working frustum from the original camera frustum
         var frustum: Frustum
         if camera.frustum.fovy != Double.nan {
@@ -1211,26 +1211,26 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         } else {
             frustum = camera.frustum.clone(OrthographicFrustum())
         }
-        
+
         // Ideally, we would render the sky box and atmosphere last for
         // early-z, but we would have to draw it in each frustum
         frustum.near = camera.frustum.near
         frustum.far = camera.frustum.far
         context.uniformState.updateFrustum(frustum)
-        
+
         let wholeFrustumUniformBuffer = context.wholeFrustumUniformBufferProvider.currentBuffer(context.bufferSyncState)
         context.uniformState.setFrustumUniforms(wholeFrustumUniformBuffer)
         wholeFrustumUniformBuffer.signalWriteComplete()
-        
+
         let spaceRenderPass = context.createRenderPass(passState)
-        
+
         if let skyBoxCommand = _environmentState.skyBoxCommand {
             executeCommand(skyBoxCommand, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
         if _environmentState.isSkyAtmosphereVisible {
             executeCommand(_environmentState.skyAtmosphereCommand!, renderPass: spaceRenderPass, frustumUniformBuffer: wholeFrustumUniformBuffer)
         }
-        
+
         /*
         if (sunVisible) {
             if (defined(sunComputeCommand)) {
@@ -1262,7 +1262,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         _ executeFunction: ((DrawCommand, RenderPass, RenderPipeline?, Buffer?) -> ()),
         _ passState: PassState,
         _ commands: [DrawCommand]) -> ())
-        
+
         if _environmentState.useOIT {
             if _executeOITFunction == nil {
                 _executeOITFunction = { scene, executeFunction, passState, commands in
@@ -1273,20 +1273,20 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         } else {
             executeTranslucentCommands = executeTranslucentCommandsSorted
         }
-        
+
         let clearGlobeDepth = _environmentState.clearGlobeDepth
         let useDepthPlane = _environmentState.useDepthPlane
         let clearDepth = _clearDepthCommand
 
         // Execute commands in each frustum in back to front order
         for (index, frustumCommands) in _frustumCommandsList.reversed().enumerated() {
-            
+
             // Avoid tearing artifacts between adjacent frustums in the opaque passes
             frustum.near = index != 0 ? frustumCommands.near * OpaqueFrustumNearOffset : frustumCommands.near
             frustum.far = frustumCommands.far
-            
+
             let globeDepth = debugShowGlobeDepth ? getDebugGlobeDepth(index) : _globeDepth
-            
+
             let fb: Framebuffer?
             if debugShowGlobeDepth && globeDepth != nil && _environmentState.useGlobeDepthFramebuffer {
                 fb = passState.framebuffer
@@ -1294,45 +1294,45 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             } else {
                 fb = nil
             }
-            
+
             context.uniformState.updateFrustum(frustum)
-            
+
             let opaqueFrustumUniformBuffer = frustumCommands.opaqueUniformBufferProvider.currentBuffer(context.bufferSyncState)
             context.uniformState.setFrustumUniforms(opaqueFrustumUniformBuffer)
             opaqueFrustumUniformBuffer.signalWriteComplete()
-            
+
             clearDepth.execute(context, passState: passState)
-            
+
             context.uniformState.updatePass(.globe)
-        
+
             let globeCommandList = frustumCommands.commands[Pass.globe.rawValue]
-            
+
             if !globeCommandList.isEmpty {
                 let globeRenderPass = context.createRenderPass(passState)
-                
+
                 for command in globeCommandList {
                     executeCommand(command, renderPass: globeRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
-                
+
                 if globeDepth != nil && _environmentState.useGlobeDepthFramebuffer && (copyGlobeDepth || debugShowGlobeDepth) {
                     globeDepth!.update(context)
                     globeDepth!.executeCopyDepth(context, passState: passState)
                 }
-                
+
                 if debugShowGlobeDepth && globeDepth != nil && _environmentState.useGlobeDepthFramebuffer {
                     passState.framebuffer = fb
                 }
-                
+
                 globeRenderPass.complete()
             }
-            
+
             context.uniformState.updatePass(.ground)
-            
+
             let groundCommandList = frustumCommands.commands[Pass.ground.rawValue]
-            
+
             if !groundCommandList.isEmpty {
                 let groundRenderPass = context.createRenderPass(passState)
-                
+
                 for command in groundCommandList {
                     executeCommand(command, renderPass: groundRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
@@ -1341,32 +1341,32 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
 
             if clearGlobeDepth {
                 let groundDepthRenderPass = context.createRenderPass(passState)
-                
+
                 clearDepth.execute(context, passState: passState)
                 if useDepthPlane {
                     _depthPlane.execute(context, renderPass: groundDepthRenderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                 }
                 groundDepthRenderPass.complete()
             }
-            
+
             // Execute commands in order by pass up to the translucent pass.
             // Translucent geometry needs special handling (sorting/OIT).
             let startPass = Pass.ground.rawValue + 1
             let endPass = Pass.translucent.rawValue
-            
+
             for pass in startPass..<endPass {
                 context.uniformState.updatePass(Pass(rawValue: pass)!)
                 let commands = frustumCommands.commands[pass]
                 if !commands.isEmpty {
                     let renderPass = context.createRenderPass(passState)
-                    
+
                     for command in commands {
                         executeCommand(command, renderPass: renderPass, frustumUniformBuffer: opaqueFrustumUniformBuffer)
                     }
                     renderPass.complete()
                 }
             }
-            
+
             if index != 0 {
                 // Do not overlap frustums in the translucent pass to avoid blending artifacts
                 frustum.near = frustumCommands.near
@@ -1375,10 +1375,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             let transparentUniformBuffer = frustumCommands.transparentUniformBufferProvider.currentBuffer(context.bufferSyncState)
             context.uniformState.setFrustumUniforms(transparentUniformBuffer)
             transparentUniformBuffer.signalWriteComplete()
-            
+
             let commands = frustumCommands.commands[Pass.translucent.rawValue]
             executeTranslucentCommands(self, executeCommand, passState, commands)
-            
+
             // FIXME: Pickdepth
             /*if globeDepth != nil && useGlobeDepthFramebuffer {
                 // PERFORMANCE_IDEA: Use MRT to avoid the extra copy.
@@ -1388,22 +1388,22 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }*/
         }
     }
-    
+
     func executeComputeCommands () {
 
         context.uniformState.updatePass(.compute)
-        
+
         if let sunComputeCommand = _environmentState.sunComputeCommand {
             sunComputeCommand.execute(_computeEngine)
         }
         // each command has a different render target so needs separate pass
-        for command in _computeCommandList { 
+        for command in _computeCommandList {
             command.execute(_computeEngine)
         }
     }
-    
+
     func executeOverlayCommands(_ passState: PassState) {
-        
+
         if !_overlayCommandList.isEmpty {
             _clearNullCommand.execute(context, passState: passState)
             let overlayRenderPass = context.createRenderPass(passState)
@@ -1414,10 +1414,10 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             overlayRenderPass.complete()
         }
     }
-    
+
     func executeOverlayTextCommands(_ passState: PassState) {
         if !_overlayTextCommandList.isEmpty {
-            
+
             _clearNullCommand.execute(context, passState: passState)
             let overlayTextRenderPass = context.createRenderPass(passState)
             for command in _overlayTextCommandList {
@@ -1426,53 +1426,53 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             overlayTextRenderPass.complete()
         }
     }
-    
+
     func updateAndExecuteCommands(_ passState: PassState, backgroundColor: Cartesian4, picking: Bool = false) {
-        
+
         let camera = frameState.camera
         let mode = frameState.mode
-    
+
         if _useWebVR && mode != SceneMode.scene3D {
             /*updatePrimitives(scene);
             createPotentiallyVisibleSet(scene);
             updateAndClearFramebuffers(scene, passState, backgroundColor, picking);
             executeComputeCommands(scene);
-            
+
             // Based on Calculating Stereo pairs by Paul Bourke
             // http://paulbourke.net/stereographics/stereorender/
-            
+
             viewport.x = 0;
             viewport.y = 0;
             viewport.width = context.drawingBufferWidth * 0.5;
             viewport.height = context.drawingBufferHeight;
-            
+
             var savedCamera = Camera.clone(camera, scene._cameraVR);
-            
+
             var near = camera.frustum.near;
             var fo = near * 5.0;
             var eyeSeparation = fo / 30.0;
             var eyeTranslation = Cartesian3.multiplyBy(scalar: savedCamera.right, eyeSeparation * 0.5, scratchEyeTranslation);
-            
+
             camera.frustum.aspectRatio = viewport.width / viewport.height;
-            
+
             var offset = 0.5 * eyeSeparation * near / fo;
-            
+
             Cartesian3.add(savedCamera.position, eyeTranslation, camera.position);
             camera.frustum.xOffset = offset;
-            
+
             executeCommands(scene, passState);
-            
+
             viewport.x = passState.viewport.width;
-            
+
             Cartesian3.subtract(savedCamera.position, eyeTranslation, camera.position);
             camera.frustum.xOffset = -offset;
-            
+
             executeCommands(scene, passState);
-            
+
             Camera.clone(savedCamera, camera);*/
         } else {
             passState.viewport = Cartesian4(x: 0, y: 0, width: Double(context.width), height: Double(context.height))
-            
+
             if mode != SceneMode.scene2D {
                 executeCommandsInViewport(true, passState: passState, backgroundColor: backgroundColor, picking: picking)
             } else {
@@ -1480,7 +1480,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             }
         }
     }
-    
+
     /*var scratch2DViewportCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
     var scratch2DViewportMaxCoord = new Cartesian3();
     var scratch2DViewportSavedPosition = new Cartesian3();
@@ -1488,106 +1488,106 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
     var scratch2DViewportCameraTransform = new Matrix4();
     var scratch2DViewportEyePoint = new Cartesian3();
     var scratch2DViewportWindowCoords = new Cartesian3();*/
-    
+
     func execute2DViewportCommands(_ passState: PassState, backgroundColor: Color, picking: Bool = false) {
         /*var context = scene.context;
         var frameState = scene.frameState;
         var camera = scene.camera;
         var viewport = passState.viewport;
-        
+
         var maxCartographic = scratch2DViewportCartographic;
         var maxCoord = scratch2DViewportMaxCoord;
-        
+
         var projection = scene.mapProjection;
         projection.project(maxCartographic, maxCoord);
-        
+
         var position = Cartesian3.clone(camera.position, scratch2DViewportSavedPosition);
         var transform = Matrix4.clone(camera.transform, scratch2DViewportCameraTransform);
         var frustum = camera.frustum.clone();
-        
+
         camera._setTransform(Matrix4.IDENTITY);
-        
+
         var viewportTransformation = Matrix4.computeViewportTransformation(viewport, 0.0, 1.0, scratch2DViewportTransform);
         var projectionMatrix = camera.frustum.projectionMatrix;
-        
+
         var x = camera.positionWC.y;
         var eyePoint = Cartesian3.fromElements(CesiumMath.sign(x) * maxCoord.x - x, 0.0, -camera.positionWC.x, scratch2DViewportEyePoint);
         var windowCoordinates = Transforms.pointToGLWindowCoordinates(projectionMatrix, viewportTransformation, eyePoint, scratch2DViewportWindowCoords);
-        
+
         windowCoordinates.x = Math.floor(windowCoordinates.x);
-        
+
         var viewportX = viewport.x;
         var viewportWidth = viewport.width;
-        
+
         if (x === 0.0 || windowCoordinates.x <= 0.0 || windowCoordinates.x >= context.drawingBufferWidth) {
             executeCommandsInViewport(true, scene, passState, backgroundColor, picking);
         } else if (windowCoordinates.x > context.drawingBufferWidth * 0.5) {
             viewport.width = windowCoordinates.x;
-            
+
             camera.frustum.right = maxCoord.x - x;
-            
+
             executeCommandsInViewport(true, scene, passState, backgroundColor, picking);
-            
+
             viewport.x += windowCoordinates.x;
-            
+
             camera.position.x = -camera.position.x;
-            
+
             var right = camera.frustum.right;
             camera.frustum.right = -camera.frustum.left;
             camera.frustum.left = -right;
-            
+
             frameState.cullingVolume = camera.frustum.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC);
             context.uniformState.update(frameState);
-            
+
             executeCommandsInViewport(false, scene, passState, backgroundColor, picking);
         } else {
             viewport.x += windowCoordinates.x;
             viewport.width -= windowCoordinates.x;
-            
+
             camera.frustum.left = -maxCoord.x - x;
-            
+
             executeCommandsInViewport(true, scene, passState, backgroundColor, picking);
-            
+
             viewport.x = viewport.x - viewport.width;
-            
+
             camera.position.x = -camera.position.x;
-            
+
             var left = camera.frustum.left;
             camera.frustum.left = -camera.frustum.right;
             camera.frustum.right = -left;
-            
+
             frameState.cullingVolume = camera.frustum.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC);
             context.uniformState.update(frameState);
-            
+
             executeCommandsInViewport(false, scene, passState, backgroundColor, picking);
         }
-        
+
         camera._setTransform(transform);
         Cartesian3.clone(position, camera.position);
         camera.frustum = frustum.clone();
-        
+
         viewport.x = viewportX;
         viewport.width = viewportWidth;*/
     }
-    
+
     func executeCommandsInViewport(_ firstViewport: Bool, passState: PassState, backgroundColor: Color, picking: Bool) {
         if !firstViewport {
             frameState.commandList.removeAll()
         }
-        
+
         updatePrimitives()
         createPotentiallyVisibleSet()
-        
+
         if firstViewport {
             updateAndClearFramebuffers(passState, clearColor: backgroundColor, picking: picking)
             executeComputeCommands()
         }
-        
+
         executeCommands(passState)
     }
-    
+
     func updateEnvironment () {
-        
+
         // Update celestial and terrestrial environment effects
         let renderPass = frameState.passes.render
         _environmentState.skyBoxCommand = renderPass && skyBox != nil ? skyBox!.update(frameState) : nil
@@ -1596,7 +1596,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         environmentState.sunDrawCommand = defined(sunCommands) ? sunCommands.drawCommand : undefined;
         environmentState.sunComputeCommand = defined(sunCommands) ? sunCommands.computeCommand : undefined;
         environmentState.moonCommand = (renderPass && defined(scene.moon)) ? scene.moon.update(frameState) : undefined;*/
-        
+
         _environmentState.clearGlobeDepth = globe != nil && (!globe!.depthTestAgainstTerrain || mode == .scene2D)
         _environmentState.useDepthPlane = _environmentState.clearGlobeDepth && mode == .scene3D
         if _environmentState.useDepthPlane {
@@ -1606,31 +1606,31 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             _depthPlane.update(frameState)
         }
     }
-    
+
 
 
     func updatePrimitives() {
-        
+
         if globe != nil {
             globe.update(&frameState)
         }
-        
+
         groundPrimitives.update(&frameState)
         primitives.update(&frameState)
-        
+
         for primitive in offscreenPrimitives {
             primitive.update(&frameState)
         }
     }
-    
+
     func updateAndClearFramebuffers(_ passState: PassState, clearColor: Cartesian4, picking: Bool = false) {
         let useWebVR = _useWebVR && mode != SceneMode.scene2D
-        
+
         // Preserve the reference to the original framebuffer.
         _environmentState.originalFramebuffer = passState.framebuffer ?? context.defaultFramebuffer
 
         // Manage sun bloom post-processing effect.
-        
+
         // FIXME: SunBloom
         /*if (defined(scene.sun) && scene.sunBloom !== scene._sunBloom) {
          if (scene.sunBloom) {
@@ -1638,24 +1638,24 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
          } else if(defined(scene._sunPostProcess)){
          scene._sunPostProcess = scene._sunPostProcess.destroy();
          }
-         
+
          scene._sunBloom = scene.sunBloom;
          } else if (!defined(scene.sun) && defined(scene._sunPostProcess)) {
          scene._sunPostProcess = scene._sunPostProcess.destroy();
          scene._sunBloom = false;
          }*/
-        
+
         // Clear the pass state framebuffer.
         _clearColorCommand.color = clearColor
         _clearColorCommand.execute(context, passState: passState)
-        
+
         // Update globe depth rendering based on the current context and clear the globe depth framebuffer.
         _environmentState.useGlobeDepthFramebuffer = !picking && _globeDepth != nil
         if _environmentState.useGlobeDepthFramebuffer {
             _globeDepth!.update(context)
             _globeDepth!.clear(context, passState: passState, clearColor: clearColor)
         }
-        
+
         // Determine if there are any translucent surfaces in any of the frustums.
         var renderTranslucentCommands = false
         for frustum in _frustumCommandsList {
@@ -1664,7 +1664,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
                 break
             }
         }
-        
+
         // If supported, configure OIT to use the globe depth framebuffer and clear the OIT framebuffer.
         _environmentState.useOIT = !picking && renderTranslucentCommands && _oit != nil && _oit!.isSupported
         if _environmentState.useOIT {
@@ -1673,14 +1673,14 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             //_oit.clear(context, passState, clearColor);
             _environmentState.useOIT = _oit!.isSupported
         }
-        
+
         // If supported, configure FXAA to use the globe depth color texture and clear the FXAA framebuffer.
         _environmentState.useFXAA = !picking && fxaa
         if _environmentState.useFXAA {
             _fxaa.update(context)
             _fxaa.clear(context, passState: passState, clearColor: clearColor)
         }
-        
+
         if false /*sunVisible && scene.sunBloom)&& !useWebVR*/ {
             //passState.framebuffer = scene._sunPostProcess.update(context);
         } else if _environmentState.useGlobeDepthFramebuffer {
@@ -1688,36 +1688,36 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
         } else if _environmentState.useFXAA {
             passState.framebuffer = _fxaa.getColorFramebuffer()
         }
-        
+
         if passState.framebuffer != nil {
             _clearColorCommand.execute(context, passState: passState)
         }
     }
-    
+
     func resolveFramebuffers(_ passState: PassState) {
-        
+
         let useGlobeDepthFramebuffer = _environmentState.useGlobeDepthFramebuffer
-        
+
         // FIXME: Pickdepth
         if debugShowGlobeDepth && useGlobeDepthFramebuffer {
             //var gd = getDebugGlobeDepth(scene, scene.debugShowDepthFrustum - 1);
             //gd.executeDebugGlobeDepth(context, passState);
         }
-        
+
         // FIXME: debugShowPickDepth
         /*if debugShowPickDepth && useGlobeDepthFramebuffer {
             //var pd = getPickDepth(scene, scene.debugShowDepthFrustum - 1);
             //pd.executeDebugPickDepth(context, passState);
         }*/
-        
+
         let useOIT = _environmentState.useOIT
         let useFXAA = _environmentState.useFXAA
-        
+
         if useOIT {
             passState.framebuffer = useFXAA ? _fxaa.getColorFramebuffer() : nil
             _oit!.execute(context, passState: passState)
         }
-        
+
         if useFXAA {
             if !useOIT && useGlobeDepthFramebuffer {
                 passState.framebuffer = _fxaa.getColorFramebuffer()
@@ -1728,7 +1728,7 @@ var scratchOrthographicFrustum = new OrthographicFrustum();
             _fxaa.execute(context, renderPass: fxaaRenderPass)
             fxaaRenderPass.complete()
         }
-        
+
         if !useOIT && !useFXAA && useGlobeDepthFramebuffer {
             passState.framebuffer = _environmentState.originalFramebuffer
             _globeDepth!.executeCopyColor(context, passState: passState)
@@ -1760,15 +1760,15 @@ function callAfterRenderFunctions(frameState) {
             shaderFrameCount = 0
             context.shaderCache.destroyReleasedShaderPrograms()
         }*/
-        
+
         //tweens.update()
         camera.update(mode)
         screenSpaceCameraController.update()
     }
 
-    
+
     func render(_ time: JulianDate = JulianDate.now()) {
-        
+
         /*var camera = scene._camera;
         if (!cameraEqual(camera, scene._cameraClone, CesiumMath.EPSILON6)) {
         if (!scene._cameraStartFired) {
@@ -1790,34 +1790,34 @@ function callAfterRenderFunctions(frameState) {
         let frameNumber = Math.incrementWrap(frameState.frameNumber, maximumValue: 15000000, minimumValue: 1)
         updateFrameState(frameNumber, time: time)
         frameState.passes.render = true
-        
+
         frameState.creditDisplay.beginFrame()
-        
+
         fog.update(&frameState)
-        
+
         uniformState.update(context, frameState: frameState)
         _computeCommandList.removeAll()
         _overlayCommandList.removeAll()
         _overlayTextCommandList.removeAll()
-        
+
         let passState = _passState
         passState.framebuffer = nil
         passState.blendingEnabled = nil
         passState.scissorTest = nil
-        
+
         if let globe = globe {
             globe.beginFrame(&frameState)
         }
-        
+
         context.beginFrame()
-        
+
         FontAtlas.generateMipmapsIfRequired(context)
-        
+
         updateEnvironment()
         updateFramerate(passState)
 
         updateAndExecuteCommands(passState, backgroundColor: backgroundColor)
-        
+
         if !context.updateDrawable() {
             context.endFrame()
             return
@@ -1825,11 +1825,11 @@ function callAfterRenderFunctions(frameState) {
         resolveFramebuffers(passState)
         executeOverlayCommands(passState)
         executeOverlayTextCommands(passState)
-        
+
         if let globe = globe {
             globe.endFrame(&frameState)
         }
-        
+
         frameState.creditDisplay.endFrame()
         /*
         if (scene.debugShowFramesPerSecond) {
@@ -1845,20 +1845,20 @@ function callAfterRenderFunctions(frameState) {
                 scene._performanceDisplay = performanceDisplay;
                 scene._performanceContainer = performanceContainer;
             }
-            
+
             //scene._performanceDisplay.update();
         } else if (defined(scene._performanceDisplay)) {
             scene._performanceDisplay = scene._performanceDisplay && scene._performanceDisplay.destroy();
             scene._performanceContainer.parentNode.removeChild(scene._performanceContainer);*/
         }
         */
-        
+
         context.endFrame()
         //callAfterRenderFunctions(frameState);
-        
+
         // FIXME: events
         //scene._postRender.raiseEvent(scene, time)
-        
+
 }
 
 /*
@@ -1880,33 +1880,33 @@ var scratchPickVolumeMatrix4 = new Matrix4();
 function getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, height) {
     var camera = scene._camera;
     var frustum = camera.frustum;
-    
+
     var drawingBufferWidth = scene.drawingBufferWidth;
     var drawingBufferHeight = scene.drawingBufferHeight;
-    
+
     var x = (2.0 / drawingBufferWidth) * drawingBufferPosition.x - 1.0;
     x *= (frustum.right - frustum.left) * 0.5;
     var y = (2.0 / drawingBufferHeight) * (drawingBufferHeight - drawingBufferPosition.y) - 1.0;
     y *= (frustum.top - frustum.bottom) * 0.5;
-    
+
     var transform = Matrix4.clone(camera.transform, scratchPickVolumeMatrix4);
     camera._setTransform(Matrix4.IDENTITY);
-    
+
     var origin = Cartesian3.clone(camera.position, scratchOrigin);
     Cartesian3.multiplyBy(scalar: camera.right, x, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
     Cartesian3.multiplyBy(scalar: camera.up, y, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
-    
+
     camera._setTransform(transform);
-    
+
     Cartesian3.fromElements(origin.z, origin.x, origin.y, origin);
-    
+
     scratchBufferDimensions.x = drawingBufferWidth;
     scratchBufferDimensions.y = drawingBufferHeight;
-    
+
     var pixelSize = frustum.getPixelSize(scratchBufferDimensions, undefined, scratchPixelSize);
-    
+
     var ortho = orthoPickingFrustum;
     ortho.right = pixelSize.x * 0.5;
     ortho.left = -ortho.right;
@@ -1914,7 +1914,7 @@ function getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, h
     ortho.bottom = -ortho.top;
     ortho.near = frustum.near;
     ortho.far = frustum.far;
-    
+
     return ortho.computeCullingVolume(origin, camera.directionWC, camera.upWC);
 }
 
@@ -1924,26 +1924,26 @@ function getPickPerspectiveCullingVolume(scene, drawingBufferPosition, width, he
     var camera = scene._camera;
     var frustum = camera.frustum;
     var near = frustum.near;
-    
+
     var drawingBufferWidth = scene.drawingBufferWidth;
     var drawingBufferHeight = scene.drawingBufferHeight;
-    
+
     var tanPhi = Math.tan(frustum.fovy * 0.5);
     var tanTheta = frustum.aspectRatio * tanPhi;
-    
+
     var x = (2.0 / drawingBufferWidth) * drawingBufferPosition.x - 1.0;
     var y = (2.0 / drawingBufferHeight) * (drawingBufferHeight - drawingBufferPosition.y) - 1.0;
-    
+
     var xDir = x * near * tanTheta;
     var yDir = y * near * tanPhi;
-    
+
     scratchBufferDimensions.x = drawingBufferWidth;
     scratchBufferDimensions.y = drawingBufferHeight;
-    
+
     var pixelSize = frustum.getPixelSize(scratchBufferDimensions, undefined, scratchPixelSize);
     var pickWidth = pixelSize.x * width * 0.5;
     var pickHeight = pixelSize.y * height * 0.5;
-    
+
     var offCenter = perspPickingFrustum;
     offCenter.top = yDir + pickHeight;
     offCenter.bottom = yDir - pickHeight;
@@ -1951,7 +1951,7 @@ function getPickPerspectiveCullingVolume(scene, drawingBufferPosition, width, he
     offCenter.left = xDir - pickWidth;
     offCenter.near = near;
     offCenter.far = frustum.far;
-    
+
     return offCenter.computeCullingVolume(camera.positionWC, camera.directionWC, camera.upWC);
 }
 
@@ -1959,7 +1959,7 @@ function getPickCullingVolume(scene, drawingBufferPosition, width, height) {
     if (scene.mode === SceneMode.SCENE2D) {
         return getPickOrthographicCullingVolume(scene, drawingBufferPosition, width, height);
     }
-    
+
     return getPickPerspectiveCullingVolume(scene, drawingBufferPosition, width, height);
 }
 
@@ -1989,31 +1989,31 @@ Scene.prototype.pick = function(windowPosition) {
         throw new DeveloperError('windowPosition is undefined.');
     }
     //>>includeEnd('debug');
-    
+
     var context = this._context;
     var us = context.uniformState;
     var frameState = this._frameState;
-    
+
     var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
-    
+
     if (!defined(this._pickFramebuffer)) {
         this._pickFramebuffer = context.createPickFramebuffer();
     }
-    
+
     // Update with previous frame's number and time, assuming that render is called before picking.
     updateFrameState(this, frameState.frameNumber, frameState.time);
     frameState.cullingVolume = getPickCullingVolume(this, drawingBufferPosition, rectangleWidth, rectangleHeight);
     frameState.passes.pick = true;
-    
+
     us.update(context, frameState);
-    
+
     this._commandList.length = 0;
     updatePrimitives(this);
     createPotentiallyVisibleSet(this);
-    
+
     scratchRectangle.x = drawingBufferPosition.x - ((rectangleWidth - 1.0) * 0.5);
     scratchRectangle.y = (this.drawingBufferHeight - drawingBufferPosition.y) - ((rectangleHeight - 1.0) * 0.5);
-    
+
     executeCommands(this, this._pickFramebuffer.begin(scratchRectangle), scratchColorZero, true);
     var object = this._pickFramebuffer.end(scratchRectangle);
     context.endFrame();
@@ -2036,18 +2036,18 @@ Scene.prototype.pick = function(windowPosition) {
      * @exception {DeveloperError} 2D is not supported. An orthographic projection matrix is not invertible.
      */
     func pickPosition (_ windowPosition: Cartesian2) -> Cartesian3? {
-        
+
         assert(_globeDepth != nil, "Picking from the depth buffer is not supported. Check pickPositionSupported.")
         //return Cartesian3()
-            
+
         //assertionFailure("Not implemented")
         //let uniformState = context.uniformState
         /*
         var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(this, windowPosition, scratchPosition);
         drawingBufferPosition.y = this.drawingBufferHeight - drawingBufferPosition.y;
-        
+
         var camera = this._camera;
-        
+
         // Create a working frustum from the original camera frustum.
         var frustum;
         if (defined(camera.frustum.fov)) {
@@ -2060,7 +2060,7 @@ Scene.prototype.pick = function(windowPosition) {
             //>>includeEnd('debug');
         }
         var packedDepthScale = new Cartesian4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 160581375.0);
-        
+
         var numFrustums = this.numberOfFrustums;
         for (var i = 0; i < numFrustums; ++i) {
             var pickDepth = getPickDepth(this, i);
@@ -2071,17 +2071,17 @@ Scene.prototype.pick = function(windowPosition) {
                 height : 1,
                 framebuffer : pickDepth.framebuffer
             });
-            
+
             var packedDepth = Cartesian4.unpack(pixels, 0, scratchPackedDepth);
             Cartesian4.divideByScalar(packedDepth, 255.0, packedDepth);
             var depth = Cartesian4.dot(packedDepth, packedDepthScale);
-            
+
             if (depth > 0.0 && depth < 1.0) {
                 var renderedFrustum = this._frustumCommandsList[i];
                 frustum.near = renderedFrustum.near * (i !== 0 ? OPAQUE_FRUSTUM_NEAR_OFFSET : 1.0);
                 frustum.far = renderedFrustum.far;
                 uniformState.updateFrustum(frustum);
-                
+
                 return SceneTransforms.drawingBufferToWgs84Coordinates(this, drawingBufferPosition, depth, result);
             }
         }
@@ -2111,13 +2111,13 @@ Scene.prototype.pick = function(windowPosition) {
     // PERFORMANCE_IDEA: This function calls each primitive's update for each pass. Instead
     // we could update the primitive once, and then just execute their commands for each pass,
     // and cull commands for picked primitives.  e.g., base on the command's owner.
-    
+
     //>>includeStart('debug', pragmas.debug);
     /*if (!defined(windowPosition)) {
     throw new DeveloperError('windowPosition is undefined.');
     }
     //>>includeEnd('debug');
-    
+
     var i;
     var attributes;
     var result = [];
@@ -2126,7 +2126,7 @@ Scene.prototype.pick = function(windowPosition) {
     if (!defined(limit)) {
     limit = Number.MAX_VALUE;
     }
-    
+
     var pickedResult = this.pick(windowPosition);
     while (defined(pickedResult) && defined(pickedResult.primitive)) {
     result.push(pickedResult);
@@ -2135,7 +2135,7 @@ Scene.prototype.pick = function(windowPosition) {
     }
     var primitive = pickedResult.primitive;
     var hasShowAttribute = false;
-    
+
     //If the picked object has a show attribute, use it.
     if (typeof primitive.getGeometryInstanceAttributes === 'function') {
     attributes = primitive.getGeometryInstanceAttributes(pickedResult.id);
@@ -2151,17 +2151,17 @@ Scene.prototype.pick = function(windowPosition) {
     }
     pickedResult = this.pick(windowPosition);
     }
-    
+
     // unhide everything we hid while drill picking
     for (i = 0; i < pickedPrimitives.length; ++i) {
     pickedPrimitives[i].show = true;
     }
-    
+
     for (i = 0; i < pickedAttributes.length; ++i) {
     attributes = pickedAttributes[i];
     attributes.show = ShowGeometryInstanceAttribute.toValue(true, attributes.show);
     }
-    
+
     return result;*/
     }
 
@@ -2258,18 +2258,18 @@ Scene.prototype.isDestroyed = function() {
         this._debugSphere = this._debugSphere && this._debugSphere.destroy();
         this.sun = this.sun && this.sun.destroy();
         this._sunPostProcess = this._sunPostProcess && this._sunPostProcess.destroy();
-        
+
         this._transitioner.destroy();
-        
+
         this._oit.destroy();
-        
+
         this._context = this._context && this._context.destroy();
         this._frameState.creditDisplay.destroy();
         if (defined(this._performanceDisplay)){
         this._performanceDisplay = this._performanceDisplay && this._performanceDisplay.destroy();
         this._performanceContainer.parentNode.removeChild(this._performanceContainer);
         }
-        
+
         return destroyObject(this);*/
     }
 
@@ -2279,18 +2279,18 @@ Scene.prototype.isDestroyed = function() {
             quad.execute(context)
         }
     }
-    
+
     // FIXME: move to primitivecollection
     open func addOffscreenQuad(_ width: Int, height: Int) -> OffscreenQuadPrimitive {
         let quad = OffscreenQuadPrimitive(context: context, width: width, height: height)
         offscreenPrimitives.append(quad)
         return quad
     }
-    
+
     var framerate: String = ""
-    
+
     func updateFramerate (_ passState: PassState) {
-        
+
         framerateDisplay.string = "\(framerate)"
         if let debugString = globe.debugString {
             framerateDisplay.string += "\n\(debugString)"

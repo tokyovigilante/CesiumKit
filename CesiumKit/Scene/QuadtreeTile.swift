@@ -20,13 +20,13 @@
 * @param  This tile's parent, or undefined if this is a root tile.
 */
 class QuadtreeTile: Equatable {
-    
+
     let level: Int
     let x: Int
     let y: Int
     let tilingScheme: TilingScheme
     let parent: QuadtreeTile?
-    
+
     /**
     * Gets the cartographic rectangle of the tile, with north, south, east and
     * west properties in radians.
@@ -34,30 +34,30 @@ class QuadtreeTile: Equatable {
     * @type {Rectangle}
     */
     let rectangle: Rectangle
-    
+
     /**
     * Gets or sets the current state of the tile in the tile load pipeline.
     * @type {QuadtreeTileLoadState}
     * @default {@link QuadtreeTileLoadState.START}
     */
     var state: TileLoadState = .start
-    
+
     /**
     * Gets or sets a value indicating whether or not the tile is currently renderable.
     * @type {Boolean}
     * @default false
     */
     var renderable = false
-    
+
     /**
     * tile imagery or terrain has changed, so draw commands need updating
     */
     var invalidateCommandCache = true
-    
+
     // QuadtreeTileReplacementQueue gets/sets these private properties.
     var replacementPrevious: QuadtreeTile? = nil
     var replacementNext: QuadtreeTile? = nil
-    
+
     // The distance from the camera to this tile, updated when the tile is selected
     // for rendering.  We can get rid of this if we have a better way to sort by
     // distance - for example, by using the natural ordering of a quadtree.
@@ -70,10 +70,10 @@ class QuadtreeTile: Equatable {
      * @type {Array}
      */
     var customData = [CustomData]()
-    
+
     fileprivate (set) var frameUpdated = Int.max
     var frameRendered = Int.max
-    
+
     /**
     * Gets or set a value indicating whether or not the tile was entire upsampled from its
     * parent tile.  If all four children of a parent tile were upsampled from the parent,
@@ -83,7 +83,7 @@ class QuadtreeTile: Equatable {
     * @default false
     */
     var upsampledFromParent = false
-    
+
     /**
     * Gets a value indicating whether or not this tile needs further loading.
     * This property will return true if the {@link QuadtreeTile#state} is
@@ -96,7 +96,7 @@ class QuadtreeTile: Equatable {
             return state == .start || state == .loading
         }
     }
-    
+
     /**
     * Gets a value indicating whether or not this tile is eligible to be unloaded.
     * Typically, a tile is ineligible to be unloaded while an asynchronous operation,
@@ -139,9 +139,9 @@ class QuadtreeTile: Equatable {
             return _children!
         }
     }
-    
+
     var _children: [QuadtreeTile]?
-    
+
     /**
     * Gets or sets the additional data associated with this tile.  The exact content is specific to the
     * {@link QuadtreeTileProvider}.
@@ -149,13 +149,13 @@ class QuadtreeTile: Equatable {
     * @default undefined
     */
     var data: GlobeSurfaceTile? = nil
-    
+
     var _cachedCommands = [DrawCommand]()
     var _cachedCredits = [Credit]()
     var _cachedTextureArrays = [Array<Texture>]()
-    
+
     init(level: Int, x: Int, y: Int, tilingScheme: TilingScheme, parent: QuadtreeTile?) {
-        
+
         assert(x >= 0 && y >= 0, "x and y must be greater than or equal to zero")
         assert(level >= 0, "level must be greater than or equal to zero.")
         self.tilingScheme = tilingScheme
@@ -165,7 +165,7 @@ class QuadtreeTile: Equatable {
         self.parent = parent
         self.rectangle = self.tilingScheme.tileXYToRectangle(x: self.x, y: self.y, level: self.level)
     }
-    
+
     /**
     * Creates a rectangular set of tiles for level of detail zero, the coarsest, least detailed level.
     *
@@ -176,12 +176,12 @@ class QuadtreeTile: Equatable {
     * tile in the northwest corner and followed by the tile (if any) to its east.
     */
     class func createLevelZeroTiles (_ tilingScheme: TilingScheme) -> [QuadtreeTile] {
-        
+
         let numberOfLevelZeroTilesX = tilingScheme.numberOfXTilesAt(level: 0)
         let numberOfLevelZeroTilesY = tilingScheme.numberOfYTilesAt(level: 0)
-        
+
         var result = [QuadtreeTile]()
-        
+
         for y in 0..<numberOfLevelZeroTilesY {
             for x in 0..<numberOfLevelZeroTilesX {
                 result.append(QuadtreeTile(level: 0, x: x, y: y, tilingScheme: tilingScheme, parent: nil))
@@ -189,15 +189,15 @@ class QuadtreeTile: Equatable {
         }
         return result
     }
-    
+
     fileprivate func updateCustomData (_ frameNumber: Int, added: [CustomData]? = nil, removed: [CustomData]? = nil) {
-        
-        
+
+
         if added != nil && removed != nil {
             // level zero tile
-            
+
             for (i, data) in removed!.enumerated() {
-                
+
                 for j in 0..<customData.count {
                     if (customData[j] === data) {
                         customData.remove(at: j)
@@ -205,32 +205,32 @@ class QuadtreeTile: Equatable {
                     }
                 }
             }
-            
+
             for (i, data) in added!.enumerated() {
                 if rectangle.contains(data.positionCartographic) {
                     customData.append(data)
                 }
             }
-            
+
             frameUpdated = frameNumber
         } else {
             // interior or leaf tile, update from parent
             if parent != nil && frameUpdated != parent!.frameUpdated {
                 customData.removeAll()
-                
+
                 var parentCustomData = parent!.customData
                 for data in parent!.customData {
                     if rectangle.contains(data.positionCartographic) {
                         customData.append(data)
                     }
                 }
-                
+
                 frameUpdated = parent!.frameUpdated
             }
         }
-    
+
     }
-    
+
     /**
     * Frees the resources assocated with this tile and returns it to the <code>START</code>
     * {@link QuadtreeTileLoadState}.  If the {@link QuadtreeTile#data} property is defined and it
@@ -244,7 +244,7 @@ class QuadtreeTile: Equatable {
         upsampledFromParent = false
 
         data?.freeResources()
-        
+
         if _children != nil {
             for tile in _children! {
                 tile.freeResources(provider)
@@ -252,7 +252,7 @@ class QuadtreeTile: Equatable {
             _children = nil
         }
     }
-    
+
 }
 
 func ==(lhs: QuadtreeTile, rhs: QuadtreeTile) -> Bool {
@@ -276,6 +276,6 @@ extension QuadTreeTileData {
     var eligibleForUnloading: Bool {
         return true
     }
-    
+
 }
 

@@ -23,12 +23,12 @@ class CameraTests: XCTestCase {
         mapProjection: GeographicProjection()//,
         /* tweens = new TweenCollection();*/
     )
-    
+
     var position: Cartesian3!
     var up: Cartesian3!
     var dir: Cartesian3!
     var right: Cartesian3!
-    
+
     var moveAmount = 3.0
     var turnAmount = .pi / 2
     var rotateAmount = .pi / 2
@@ -36,18 +36,18 @@ class CameraTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        
+
         camera = Camera(fakeScene: scene)
         position = Cartesian3.unitZ()
         up = Cartesian3.unitY()
         dir = Cartesian3.unitZ().negate()
         right = dir.cross(up)
-        
+
         camera.position = position
         camera.up = up
         camera.direction = dir
         camera.right = right
-        
+
         //camera.minimumZoomDistance = 0.0
     }
 /*
@@ -811,7 +811,7 @@ camera.viewRectangle();
         XCTAssertTrue(camera.up.equalsEpsilon(Cartesian3.unitZ(), epsilon: Math.Epsilon10), "up equality")
         XCTAssertTrue(camera.right.equalsEpsilon(Cartesian3.unitY(), epsilon: Math.Epsilon10), "right equality")
     }
-    
+
     func testViewsRectangleIn3D2 () {
         let rectangle = Rectangle(
             west: Math.toRadians(21.25),

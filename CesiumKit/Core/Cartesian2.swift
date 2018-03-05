@@ -23,13 +23,13 @@ import simd
 */
 
 public struct Cartesian2 {
-    
+
     fileprivate (set) internal var simdType: double2
-    
+
     var floatRepresentation: float2 {
         return vector_float(simdType)
     }
-    
+
     public var x: Double {
         get {
             return simdType.x
@@ -38,7 +38,7 @@ public struct Cartesian2 {
             simdType.x = new
         }
     }
-    
+
     public var y: Double {
         get {
             return simdType.y
@@ -47,19 +47,19 @@ public struct Cartesian2 {
             simdType.y = new
         }
     }
-    
+
     public init (x: Double, y: Double) {
         simdType = double2(x, y)
     }
-    
+
     public init(_ scalar: Double = 0.0) {
         simdType = double2(scalar)
     }
-    
+
     init(simd: double2) {
         simdType = simd
     }
-    
+
     /**
     * Creates a Cartesian2 instance from an existing Cartesian3.  This simply takes the
     * x and y properties of the Cartesian3 and drops z.
@@ -72,7 +72,7 @@ public struct Cartesian2 {
     public init (cartesian3: Cartesian3) {
         self.init(x: cartesian3.x, y: cartesian3.y)
     }
-    
+
     /**
     * Creates a Cartesian2 instance from an existing Cartesian4.  This simply takes the
     * x and y properties of the Cartesian4 and drops z and w.
@@ -85,8 +85,8 @@ public struct Cartesian2 {
     public init (cartesian4: Cartesian4) {
         self.init(x: cartesian4.x, y: cartesian4.y)
     }
-    
-    
+
+
     /**
     * Computes the value of the maximum component for the supplied Cartesian.
     *
@@ -96,7 +96,7 @@ public struct Cartesian2 {
     public func maximumComponent() -> Double {
         return vector_reduce_max(simdType)
     }
-    
+
     /**
     * Computes the value of the minimum component for the supplied Cartesian.
     *
@@ -106,7 +106,7 @@ public struct Cartesian2 {
     public func minimumComponent() -> Double {
         return vector_reduce_min(simdType)
     }
-    
+
     /**
     * Compares two Cartesians and computes a Cartesian which contains the minimum components of the supplied Cartesians.
     *
@@ -118,7 +118,7 @@ public struct Cartesian2 {
     public func minimumByComponent(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: min(simdType, other.simdType))
     }
-    
+
     /**
     * Compares two Cartesians and computes a Cartesian which contains the maximum components of the supplied Cartesians.
     *
@@ -139,7 +139,7 @@ public struct Cartesian2 {
     public func magnitudeSquared() -> Double {
         return length_squared(simdType)
     }
-    
+
     /**
     * Computes the Cartesian's magnitude (length).
     *
@@ -149,8 +149,8 @@ public struct Cartesian2 {
     public func magnitude() -> Double {
         return length(simdType)
     }
-    
-    
+
+
     /**
     * Computes the distance between two points.
     *
@@ -165,7 +165,7 @@ public struct Cartesian2 {
     public func distance(_ other: Cartesian2) -> Double {
         return simd.distance(simdType, other.simdType)
     }
-    
+
     /**
     * Computes the squared distance between two points.  Comparing squared distances
     * using this function is more efficient than comparing distances using {@link Cartesian2#distance}.
@@ -192,7 +192,7 @@ public struct Cartesian2 {
     public func normalize() -> Cartesian2 {
         return Cartesian2(simd: simd.normalize(simdType))
     }
-    
+
     /**
     * Computes the dot (scalar) product of two Cartesians.
     *
@@ -203,7 +203,7 @@ public struct Cartesian2 {
     public func dot(_ other: Cartesian2) -> Double {
         return simd.dot(simdType, other.simdType)
     }
-    
+
     /**
      * Computes the componentwise product of two Cartesians.
      *
@@ -215,7 +215,7 @@ public struct Cartesian2 {
     public func multiplyComponents(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType * other.simdType)
     }
-    
+
     /**
      * Computes the componentwise sum of two Cartesians.
      *
@@ -227,7 +227,7 @@ public struct Cartesian2 {
     public func add(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType + other.simdType)
     }
-    
+
     /**
      * Computes the componentwise difference of two Cartesians.
      *
@@ -239,7 +239,7 @@ public struct Cartesian2 {
     public func subtract(_ other: Cartesian2) -> Cartesian2 {
         return Cartesian2(simd: simdType - other.simdType)
     }
-    
+
     /**
      * Multiplies the provided Cartesian componentwise by the provided scalar.
      *
@@ -251,7 +251,7 @@ public struct Cartesian2 {
     public func multiplyBy(scalar: Double) -> Cartesian2 {
         return Cartesian2(simd: simdType * scalar)
     }
-    
+
     /**
      * Divides the provided Cartesian componentwise by the provided scalar.
      *
@@ -263,7 +263,7 @@ public struct Cartesian2 {
     public func divideByScalar(_ scalar: Double) -> Cartesian2 {
         return multiplyBy(scalar: 1.0/scalar)
     }
-    
+
     /**
      * Negates the provided Cartesian.
      *
@@ -285,7 +285,7 @@ public struct Cartesian2 {
     func absolute() -> Cartesian2 {
         return Cartesian2(simd: vector_abs(simdType))
     }
-    
+
     /**
     * Computes the linear interpolation or extrapolation at t using the provided cartesians.
     *
@@ -298,7 +298,7 @@ public struct Cartesian2 {
     func lerp(_ end: Cartesian2, t: Double) -> Cartesian2 {
         return  Cartesian2(simd: mix(simdType, end.simdType, t: t))
     }
-    
+
     /**
     * Returns the angle, in radians, between the provided Cartesians.
     *
@@ -309,7 +309,7 @@ public struct Cartesian2 {
     func angleBetween(_ other: Cartesian2) -> Double {
         return Math.acosClamped(normalize().dot(other.normalize()))
     }
-    
+
     /**
     * Returns the axis that is most orthogonal to the provided Cartesian.
     *
@@ -318,10 +318,10 @@ public struct Cartesian2 {
     * @returns {Cartesian2} The most orthogonal axis.
     */
     func mostOrthogonalAxis() -> Cartesian2 {
-        
+
         let f = normalize().absolute()
         var result: Cartesian2
-        
+
         if (f.x <= f.y) {
             result = Cartesian2.unitX
         } else {
@@ -329,11 +329,11 @@ public struct Cartesian2 {
         }
         return result
     }
-    
+
     func equalsArray (_ array: [Float], offset: Int) -> Bool {
         return Float(x) == array[offset] && Float(y) == array[offset + 1]
     }
-    
+
     /**
     * Compares the provided Cartesians componentwise and returns
     * <code>true</code> if they pass an absolute or relative tolerance test,
@@ -342,7 +342,7 @@ public struct Cartesian2 {
     * @param {Cartesian2} [left] The first Cartesian.
     * @param {Cartesian2} [right] The second Cartesian.
     * @param {Number} relativeEpsilon The relative epsilon tolerance to use for equality testing.
-    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.    
+    * @param {Number} [absoluteEpsilon=relativeEpsilon] The absolute epsilon tolerance to use for equality testing.
     * @returns {Boolean} <code>true</code> if left and right are within the provided epsilon, <code>false</code> otherwise.
     */
     func equalsEpsilon(_ other: Cartesian2, relativeEpsilon: Double, absoluteEpsilon: Double? = nil) -> Bool {
@@ -350,7 +350,7 @@ public struct Cartesian2 {
                 (Math.equalsEpsilon(self.x, other.x, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon) &&
                 Math.equalsEpsilon(self.y, other.y, relativeEpsilon: relativeEpsilon, absoluteEpsilon: absoluteEpsilon))
     }
-    
+
     /**
     * An immutable Cartesian2 instance initialized to (0.0, 0.0).
     *
@@ -358,7 +358,7 @@ public struct Cartesian2 {
     * @constant
     */
     static let zero = Cartesian2()
-    
+
     /**
     * An immutable Cartesian2 instance initialized to (1.0, 0.0).
     *
@@ -366,7 +366,7 @@ public struct Cartesian2 {
     * @constant
     */
     static let unitX = Cartesian2(x: 1.0, y: 0.0)
-    
+
     /**
     * An immutable Cartesian2 instance initialized to (0.0, 1.0).
     *
@@ -377,7 +377,7 @@ public struct Cartesian2 {
 }
 
 extension Cartesian2: Packable {
-    
+
     /**
      * The number of elements used to pack the object into an array.
      * @type {Number}
@@ -385,7 +385,7 @@ extension Cartesian2: Packable {
     static func packedLength () -> Int {
         return 2
     }
-    
+
     init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")

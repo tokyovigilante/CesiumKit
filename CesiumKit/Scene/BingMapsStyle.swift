@@ -15,7 +15,7 @@ public enum BingMapsStyle: String {
     * @constant
     */
     case Aerial = "Aerial",
-    
+
     /**
     * Aerial imagery with a road overlay.
     *
@@ -23,7 +23,7 @@ public enum BingMapsStyle: String {
     * @constant
     */
     AerialWithLabels = "AerialWithLabels",
-    
+
     /**
     * Roads without additional imagery.
     *
@@ -31,7 +31,7 @@ public enum BingMapsStyle: String {
     * @constant
     */
     Road = "Road",
-    
+
     /**
     * Ordnance Survey imagery
     *
@@ -39,7 +39,7 @@ public enum BingMapsStyle: String {
     * @constant
     */
     OrdnanceSurvey = "OrdnanceSurvey",
-    
+
     /**
     * Collins Bart imagery.
     *

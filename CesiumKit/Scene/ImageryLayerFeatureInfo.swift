@@ -15,34 +15,34 @@ import Foundation
  * @constructor
  */
 public struct ImageryLayerFeatureInfo {
-    
+
     /**
      * Gets or sets the name of the feature.
      * @type {String}
      */
     var name: String
-    
+
     /**
      * Gets or sets an HTML description of the feature.  The HTML is not trusted and should
      * be sanitized before display to the user.
      * @type {String}
      */
     var description: String
-    
+
     /**
      * Gets or sets the position of the feature, or undefined if the position is not known.
      *
      * @type {Cartographic}
      */
     var position: Cartographic
-    
+
     /**
      * Gets or sets the raw data describing the feature.  The raw data may be in any
      * number of formats, such as GeoJSON, KML, etc.
      * @type {Object}
      */
     var data: Data
-    
+
     /**
      * Configures the name of this feature by selecting an appropriate property.  The name will be obtained from
      * one of the following sources, in this order: 1) the property with the name 'name', 2) the property with the name 'title',
@@ -55,11 +55,11 @@ public struct ImageryLayerFeatureInfo {
         /*
         var namePropertyPrecedence = 10;
         var nameProperty;
-        
+
         for (var key in properties) {
         if (properties.hasOwnProperty(key) && properties[key]) {
         var lowerKey = key.toLowerCase();
-        
+
         if (namePropertyPrecedence > 1 && lowerKey === 'name') {
         namePropertyPrecedence = 1;
         nameProperty = key;
@@ -75,12 +75,12 @@ public struct ImageryLayerFeatureInfo {
         }
         }
         }
-        
+
         if (defined(nameProperty)) {
         this.name = properties[nameProperty];
         }*/
     }
-    
+
     /**
      * Configures the description of this feature by creating an HTML table of properties and their values.
      *
@@ -102,10 +102,10 @@ public struct ImageryLayerFeatureInfo {
         }
         }
         html += '</table>';
-        
+
         return html;
         }
-        
+
         this.description = describe(properties);*/
     }
 }

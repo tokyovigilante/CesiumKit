@@ -19,19 +19,19 @@ extension String {
         get {
             let startIndex = self.characters.index(self.startIndex, offsetBy: r.lowerBound)
             let endIndex = self.characters.index(self.startIndex, offsetBy: r.upperBound - r.lowerBound)
-            
+
             return self[startIndex..<endIndex]
         }
     }
-    
+
     func replace(_ existingString: String, _ newString: String) -> String {
         return self.replacingOccurrences(of: existingString, with: newString, options: .literal, range: nil)
     }
-    
+
     func indexOf(_ findStr:String, startIndex: String.Index? = nil) -> String.Index? {
         return self.range(of: findStr, options: [], range: nil, locale: nil)?.lowerBound
     }
-    
+
 }
 // FIXME: move to cubemap
 extension String {
@@ -43,8 +43,8 @@ extension String {
         }
         return .bundleResource
     }
-    
-    
+
+
     func urlForSource () -> URL? {
         switch self.referenceType {
         case .bundleResource:
@@ -60,7 +60,7 @@ extension String {
             return URL(string: self)
         }
     }
-    
+
     func loadImageForCubeMapSource () -> CGImage? {
 
         guard let sourceURL = urlForSource() else {
@@ -74,5 +74,5 @@ extension String {
         }
 
     }
-    
+
 }

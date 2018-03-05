@@ -17,7 +17,7 @@ import Foundation
 * @see DiscardMissingTileImagePolicy
 */
 class NeverTileDiscardPolicy: TileDiscardPolicy {
-    
+
     /**
     * Determines if the discard policy is ready to process images.
     * @returns True if the discard policy is ready to process images; otherwise, false.
@@ -27,7 +27,7 @@ class NeverTileDiscardPolicy: TileDiscardPolicy {
             return true
         }
     }
-    
+
     /**
     * Given a tile image, decide whether to discard that image.
     *

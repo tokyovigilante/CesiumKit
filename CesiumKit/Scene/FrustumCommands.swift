@@ -22,10 +22,10 @@ class FrustumCommands {
     var far = 0.0
 
     var commands = Array<[DrawCommand]>()
-    
+
     let opaqueUniformBufferProvider: UniformBufferProvider
     let transparentUniformBufferProvider: UniformBufferProvider
-    
+
     init (near: Double = 0.0, far: Double = 0.0, opaqueUniformBufferProvider: UniformBufferProvider, transparentUniformBufferProvider: UniformBufferProvider) {
         self.near = near
         self.far = far
@@ -33,9 +33,9 @@ class FrustumCommands {
         self.transparentUniformBufferProvider = transparentUniformBufferProvider
         removeAll()
     }
-    
+
     func removeAll() {
         commands = (0..<Pass.count).map { _ in [DrawCommand]() }
     }
-    
+
 }

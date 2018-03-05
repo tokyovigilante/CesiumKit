@@ -21,7 +21,7 @@ class PassState {
     * @type {Context}
     */
     weak var context: Context! = nil
-    
+
     /**
     * The framebuffer to render to.  This framebuffer is used unless a {@link DrawCommand}
     * or {@link ClearCommand} explicitly define a framebuffer, which is used for off-screen
@@ -31,7 +31,7 @@ class PassState {
     * @default undefined
     */
     var framebuffer: Framebuffer! = nil
-    
+
     /**
     * When defined, this overrides the blending property of a {@link DrawCommand}'s render state.
     * This is used to, for example, to allow the renderer to turn off blending during the picking pass.
@@ -43,7 +43,7 @@ class PassState {
     * @default undefined
     */
     var blendingEnabled: Bool? = nil
-    
+
     /**
     * When defined, this overrides the scissor test property of a {@link DrawCommand}'s render state.
     * This is used to, for example, to allow the renderer to scissor out the pick region during the picking pass.
@@ -62,7 +62,7 @@ class PassState {
      * @default undefined
      */
     var viewport: Cartesian4? = nil
-    
+
 }
 
 

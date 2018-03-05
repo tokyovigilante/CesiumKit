@@ -10,9 +10,9 @@ import Foundation
 
 public enum Destination {
     case cartesian(Cartesian3)
-    
+
     case rectangle(Rectangle)
-    
+
     var cartesian: Cartesian3? {
         switch self {
         case let .cartesian(cartesian):
@@ -21,7 +21,7 @@ public enum Destination {
             return nil
         }
     }
-    
+
     var rectangle: Rectangle? {
         switch self {
         case let .rectangle(rectangle):

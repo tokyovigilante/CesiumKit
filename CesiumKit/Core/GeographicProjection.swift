@@ -23,17 +23,17 @@ import Foundation
 * @see WebMercatorProjection
 */
 public struct GeographicProjection: MapProjection {
-    
+
     public let ellipsoid: Ellipsoid
     public let semimajorAxis: Double
     public let oneOverSemimajorAxis: Double
-  
+
     public init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
         oneOverSemimajorAxis = 1.0 / semimajorAxis
     }
-    
+
     /**
     * Projects a set of {@link Cartographic} coordinates, in radians, to map coordinates, in meters.
     * X and Y are the longitude and latitude, respectively, multiplied by the maximum radius of the
@@ -52,7 +52,7 @@ public struct GeographicProjection: MapProjection {
             y: cartographic.latitude * semimajorAxis,
             z: cartographic.height)
     }
-    
+
     /**
     * Unprojects a set of projected {@link Cartesian3} coordinates, in meters, to {@link Cartographic}
     * coordinates, in radians.  Longitude and Latitude are the X and Y coordinates, respectively,
@@ -71,5 +71,5 @@ public struct GeographicProjection: MapProjection {
         let height = cartesian.z
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
     }
-    
+
 }

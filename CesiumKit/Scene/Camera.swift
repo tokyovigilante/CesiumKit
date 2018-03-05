@@ -45,23 +45,23 @@ import Foundation
  * camera.frustum.far = 2.0;
  */
 open class Camera: DRU {
-    
+
     var isUpdated = false
-    
+
     weak var scene: Scene!
-    
+
     let maxRadii: Double = Ellipsoid.wgs84().maximumRadius
-    
+
     /**
      * The position of the camera.
      *
      * @type {Cartesian3}
      */
-    
+
     var position = Cartesian3()
     fileprivate var _position = Cartesian3()
     fileprivate var _positionWC = Cartesian3()
-    
+
     /**
      * Gets the position of the camera in world coordinates.
      * @memberof Camera.prototype
@@ -75,7 +75,7 @@ open class Camera: DRU {
             return _positionWC
         }
     }
-    
+
     /**
      * Gets the {@link Cartographic} position of the camera, with longitude and latitude
      * expressed in radians and height in meters.  In 2D and Columbus View, it is possible
@@ -92,7 +92,7 @@ open class Camera: DRU {
         }
     }
     fileprivate var _positionCartographic = Cartographic()
-    
+
     /**
      * The view direction of the camera.
      *
@@ -101,14 +101,14 @@ open class Camera: DRU {
     var direction = Cartesian3()
     fileprivate var _direction = Cartesian3()
     fileprivate var _directionWC = Cartesian3()
-    
+
     var directionWC: Cartesian3 {
         get {
             updateMembers()
             return _directionWC
         }
     }
-    
+
     /**
      * The up direction of the camera.
      *
@@ -117,7 +117,7 @@ open class Camera: DRU {
     var up = Cartesian3()
     var _up = Cartesian3()
     fileprivate var _upWC = Cartesian3()
-    
+
     /**
      * Gets the up direction of the camera in world coordinates.
      * @memberof Camera.prototype
@@ -131,7 +131,7 @@ open class Camera: DRU {
             return _upWC
         }
     }
-    
+
     /**
      * The right direction of the camera.
      *
@@ -140,7 +140,7 @@ open class Camera: DRU {
     var right = Cartesian3()
     fileprivate var _right = Cartesian3()
     fileprivate var _rightWC = Cartesian3()
-    
+
     /**
      * Gets the right direction of the camera in world coordinates.
      * @memberof Camera.prototype
@@ -154,7 +154,7 @@ open class Camera: DRU {
             return _rightWC
         }
     }
-    
+
     /**
      * Gets the camera heading in radians.
      * @memberof Camera.prototype
@@ -167,17 +167,17 @@ open class Camera: DRU {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
-            
+
             let heading = getHeading(direction, up: up)
-            
+
             _setTransform(oldTransform);
-            
+
             return heading;
         }
         return Double.nan
     }
-    
-    
+
+
     /**
      * Gets the camera pitch in radians.
      * @memberof Camera.prototype
@@ -187,22 +187,22 @@ open class Camera: DRU {
      */
     var pitch: Double {
         if _mode != .morphing {
-            
+
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
-            
+
             let pitch = getPitch(direction)
-            
+
             _setTransform(oldTransform)
-            
+
             return pitch
         }
-        
+
         return Double.nan
     }
-    
-    
+
+
     /**
      * Gets the camera roll in radians.
      * @memberof Camera.prototype
@@ -215,18 +215,18 @@ open class Camera: DRU {
             let oldTransform = _transform
             let transform = Transforms.eastNorthUpToFixedFrame(positionWC, ellipsoid: _projection.ellipsoid)
             _setTransform(transform)
-            
+
             let roll = getRoll(direction, up: up, right: right)
-            
+
             _setTransform(oldTransform)
-            
+
             return roll
         }
-        
+
         return Double.nan
     }
-    
-    
+
+
     /**
      * Gets the event that will be raised at when the camera starts to move.
      * @memberof Camera.prototype
@@ -234,7 +234,7 @@ open class Camera: DRU {
      * @readonly
      */
     fileprivate (set) var moveStart = Event()
-    
+
     /**
      * Gets the event that will be raised at when the camera has stopped moving.
      * @memberof Camera.prototype
@@ -242,7 +242,7 @@ open class Camera: DRU {
      * @readonly
      */
     fileprivate (set) var moveEnd = Event()
-    
+
     /**
      * Gets the camera's reference frame. The inverse of this transformation is appended to the view matrix.
      * @memberof Camera.prototype
@@ -255,14 +255,14 @@ open class Camera: DRU {
     var transform: Matrix4 {
         return _transform
     }
-    
+
     fileprivate var _transform = Matrix4.identity
     fileprivate var _invTransform = Matrix4.identity
     fileprivate var _actualTransform = Matrix4.identity
     fileprivate var _actualInvTransform = Matrix4.identity
     fileprivate var _transformChanged = false
-    
-    
+
+
     /**
      * Gets the inverse camera transform.
      * @memberof Camera.prototype
@@ -278,7 +278,7 @@ open class Camera: DRU {
             return _invTransform
         }
     }
-    
+
     /**
      * Gets the view matrix.
      * @memberof Camera.prototype
@@ -297,9 +297,9 @@ open class Camera: DRU {
             _viewMatrix = value
         }
     }
-    
+
     fileprivate var _viewMatrix = Matrix4()
-    
+
     /**
      * Gets the inverse view matrix.
      * @memberof Camera.prototype
@@ -315,9 +315,9 @@ open class Camera: DRU {
             return _invViewMatrix
         }
     }
-    
+
     fileprivate var _invViewMatrix = Matrix4()
-    
+
     /**
      * The region of space in view.
      *
@@ -330,7 +330,7 @@ open class Camera: DRU {
      */
      //let frustum: PerspectiveFrustum
     var frustum: Frustum
-    
+
     /**
      * The default amount to move the camera when an argument is not
      * provided to the move methods.
@@ -338,7 +338,7 @@ open class Camera: DRU {
      * @default 100000.0;
      */
     var defaultMoveAmount = 100000.0
-    
+
     /**
      * The default amount to rotate the camera when an argument is not
      * provided to the look methods.
@@ -346,7 +346,7 @@ open class Camera: DRU {
      * @default Math.PI / 60.0
      */
     var defaultLookAmount: Double = .pi / 60.0
-    
+
     /**
      * The default amount to rotate the camera when an argument is not
      * provided to the rotate methods.
@@ -361,7 +361,7 @@ open class Camera: DRU {
      * @default 100000.0;
      */
     var defaultZoomAmount = 100000.0
-    
+
     /**
      * If set, the camera will not be able to rotate past this axis in either direction.
      * @type {Cartesian3}
@@ -382,33 +382,33 @@ open class Camera: DRU {
      * @default 2.5
      */
     var maximumZoomFactor = 2.5
-    
+
     fileprivate var _mode: SceneMode = .scene3D
-    
+
     fileprivate var _modeChanged = true
-    
+
     fileprivate var _projection: MapProjection {
         didSet {
             ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
         }
     }
-    
+
     var ellipsoidGeodesic: EllipsoidGeodesic
 
     fileprivate var _maxCoord = Cartesian3()
-    
+
     fileprivate var _max2Dfrustum: Frustum? = nil
-    
+
     var transform2D = Matrix4(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)
-    
+
     var transform2DInverse: Matrix4
-    
+
     /**
      * The default extent the camera will view on creation.
      * @type Rectangle
      */
     var defaultViewRectangle = Rectangle(fromDegreesWest: -95.0, south: -20.0, east: -70.0, north: 90.0)
-    
+
     /**
      * A scalar to multiply to the camera position and add it back after setting the camera to view the rectangle.
      * A value of zero means the camera will view the entire {@link Camera#DEFAULT_VIEW_RECTANGLE}, a value greater than zero
@@ -416,31 +416,31 @@ open class Camera: DRU {
      * @type Number
      */
     var defaultViewFactor = 0.5
-    
+
     init(projection: MapProjection, mode: SceneMode, initialWidth: Double, initialHeight: Double) {
-        
+
         _projection = projection
         _maxCoord = _projection.project(Cartographic(longitude: .pi, latitude: .pi / 2))
         _mode = mode
-        
+
         ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
-        
+
         transform2DInverse = transform2D.inverse
-        
+
         frustum = PerspectiveFrustum()
         frustum.aspectRatio = Double(initialWidth) / Double(initialHeight)
         frustum.fov = Math.toRadians(60.0)
-        
+
         updateViewMatrix()
-        
+
         // set default view
         position = rectangleCameraPosition3D(defaultViewRectangle, updateCamera: true)
-        
+
         var mag = position.magnitude
         mag += mag * defaultViewFactor
         position  = position.normalize().multiplyBy(scalar: mag)
     }
-    
+
     // Testing only
     init(fakeScene: (
         canvas: (width: Int, height: Int),
@@ -448,30 +448,30 @@ open class Camera: DRU {
         height: Int,
         mapProjection: MapProjection//,
         /* tweens = new TweenCollection();*/)) {
-            
+
             _projection = fakeScene.mapProjection
             _maxCoord = _projection.project(Cartographic(longitude: .pi, latitude: .pi / 2))
             ellipsoidGeodesic = EllipsoidGeodesic(ellipsoid: _projection.ellipsoid)
 
             transform2DInverse = transform2D.inverse
-            
+
             frustum = PerspectiveFrustum()
             frustum.aspectRatio = Double(fakeScene.canvas.width) / Double(fakeScene.canvas.height)
             frustum.fov = Math.toRadians(60.0)
-            
+
             updateViewMatrix()
-            
+
             // set default view
             position = rectangleCameraPosition3D(defaultViewRectangle, updateCamera: true)
-        
+
             var mag = position.magnitude
             mag += mag * defaultViewFactor
             position  = position.normalize().multiplyBy(scalar: mag)
     }
-    
-    
+
+
     func updateViewMatrix() {
-        
+
         let newViewMatrix = Matrix4(
             right.x, right.y, right.z, -right.dot(position),
             up.x, up.y, up.z, -up.dot(position),
@@ -490,45 +490,45 @@ open class Camera: DRU {
     var scratchCartesian4NewXAxis = new Cartesian4();
     var scratchCartesian4NewYAxis = new Cartesian4();
     var scratchCartesian4NewZAxis = new Cartesian4();
-    
+
     function convertTransformForColumbusView(camera) {
     var projection = camera._projection;
     var ellipsoid = projection.ellipsoid;
-    
+
     var origin = Matrix4.getColumn(camera._transform, 3, scratchCartesian4Origin);
     var cartographic = ellipsoid.cartesianToCartographic(origin, scratchCartographic);
-    
+
     var projectedPosition = projection.project(cartographic, scratchCartesian3Projection);
     var newOrigin = scratchCartesian4NewOrigin;
     newOrigin.x = projectedPosition.z;
     newOrigin.y = projectedPosition.x;
     newOrigin.z = projectedPosition.y;
     newOrigin.w = 1.0;
-    
+
     var xAxis = Cartesian4.add(Matrix4.getColumn(camera._transform, 0, scratchCartesian3), origin, scratchCartesian3);
     ellipsoid.cartesianToCartographic(xAxis, cartographic);
-    
+
     projection.project(cartographic, projectedPosition);
     var newXAxis = scratchCartesian4NewXAxis;
     newXAxis.x = projectedPosition.z;
     newXAxis.y = projectedPosition.x;
     newXAxis.z = projectedPosition.y;
     newXAxis.w = 0.0;
-    
+
     Cartesian3.subtract(newXAxis, newOrigin, newXAxis);
-    
+
     var yAxis = Cartesian4.add(Matrix4.getColumn(camera._transform, 1, scratchCartesian3), origin, scratchCartesian3);
     ellipsoid.cartesianToCartographic(yAxis, cartographic);
-    
+
     projection.project(cartographic, projectedPosition);
     var newYAxis = scratchCartesian4NewYAxis;
     newYAxis.x = projectedPosition.z;
     newYAxis.y = projectedPosition.x;
     newYAxis.z = projectedPosition.y;
     newYAxis.w = 0.0;
-    
+
     Cartesian3.subtract(newYAxis, newOrigin, newYAxis);
-    
+
     var newZAxis = scratchCartesian4NewZAxis;
     Cartesian3.cross(newXAxis, newYAxis, newZAxis);
     Cartesian3.normalize(newZAxis, newZAxis);
@@ -536,114 +536,114 @@ open class Camera: DRU {
     Cartesian3.normalize(newXAxis, newXAxis);
     Cartesian3.cross(newZAxis, newXAxis, newYAxis);
     Cartesian3.normalize(newYAxis, newYAxis);
-    
+
     Matrix4.setColumn(camera._actualTransform, 0, newXAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 1, newYAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 2, newZAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 3, newOrigin, camera._actualTransform);
     }
-    
+
     function convertTransformFor2D(camera) {
     var projection = camera._projection;
     var ellipsoid = projection.ellipsoid;
-    
+
     var origin = Matrix4.getColumn(camera._transform, 3, scratchCartesian4Origin);
     var cartographic = ellipsoid.cartesianToCartographic(origin, scratchCartographic);
-    
+
     var projectedPosition = projection.project(cartographic, scratchCartesian3Projection);
     var newOrigin = scratchCartesian4NewOrigin;
     newOrigin.x = projectedPosition.z;
     newOrigin.y = projectedPosition.x;
     newOrigin.z = projectedPosition.y;
     newOrigin.w = 1.0;
-    
+
     var newZAxis = Cartesian4.clone(Cartesian4.UNIT_X, scratchCartesian4NewZAxis);
-    
+
     var xAxis = Cartesian4.add(Matrix4.getColumn(camera._transform, 0, scratchCartesian3), origin, scratchCartesian3);
     ellipsoid.cartesianToCartographic(xAxis, cartographic);
-    
+
     projection.project(cartographic, projectedPosition);
     var newXAxis = scratchCartesian4NewXAxis;
     newXAxis.x = projectedPosition.z;
     newXAxis.y = projectedPosition.x;
     newXAxis.z = projectedPosition.y;
     newXAxis.w = 0.0;
-    
+
     Cartesian3.subtract(newXAxis, newOrigin, newXAxis);
     newXAxis.x = 0.0;
-    
+
     var newYAxis = scratchCartesian4NewYAxis;
     if (Cartesian3.magnitudeSquared(newXAxis) > CesiumMath.EPSILON10) {
     Cartesian3.cross(newZAxis, newXAxis, newYAxis);
     } else {
     var yAxis = Cartesian4.add(Matrix4.getColumn(camera._transform, 1, scratchCartesian3), origin, scratchCartesian3);
     ellipsoid.cartesianToCartographic(yAxis, cartographic);
-    
+
     projection.project(cartographic, projectedPosition);
     newYAxis.x = projectedPosition.z;
     newYAxis.y = projectedPosition.x;
     newYAxis.z = projectedPosition.y;
     newYAxis.w = 0.0;
-    
+
     Cartesian3.subtract(newYAxis, newOrigin, newYAxis);
     newYAxis.x = 0.0;
-    
+
     if (Cartesian3.magnitudeSquared(newYAxis) < CesiumMath.EPSILON10) {
     Cartesian4.clone(Cartesian4.UNIT_Y, newXAxis);
     Cartesian4.clone(Cartesian4.UNIT_Z, newYAxis);
     }
     }
-    
+
     Cartesian3.cross(newYAxis, newZAxis, newXAxis);
     Cartesian3.normalize(newXAxis, newXAxis);
     Cartesian3.cross(newZAxis, newXAxis, newYAxis);
     Cartesian3.normalize(newYAxis, newYAxis);
-    
+
     Matrix4.setColumn(camera._actualTransform, 0, newXAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 1, newYAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 2, newZAxis, camera._actualTransform);
     Matrix4.setColumn(camera._actualTransform, 3, newOrigin, camera._actualTransform);
     }
-    
+
     */
     func updateMembers() {
-        
+
         var heightChanged = false
         var height = 0.0
         if _mode == .scene2D {
             height = frustum.right - frustum.left;
             heightChanged = height != _positionCartographic.height
         }
-        
+
         let positionChanged = _position != position || heightChanged
         if positionChanged {
             _position = position
         }
-        
+
         let directionChanged = _direction != direction
         if directionChanged {
             direction = direction.normalize()
             _direction = direction
         }
-        
+
         let upChanged = _up != up
         if upChanged {
             up = up.normalize()
             _up = up
         }
-        
+
         let rightChanged = _right != right
         if rightChanged {
             right = right.normalize()
             _right = right
         }
-        
+
         let transformChanged = _transformChanged || _modeChanged
         _transformChanged = false
-        
+
         if transformChanged {
             _invTransform = _transform.inverse
-            
+
             if _mode == .columbusView || _mode == .scene2D {
                 if _transform.equals(Matrix4.identity) {
                     _actualTransform = transform2D
@@ -659,10 +659,10 @@ open class Camera: DRU {
             _actualInvTransform = _actualTransform.inverse
             _modeChanged = false
         }
-        
+
         if positionChanged || transformChanged {
             _positionWC = _actualTransform.multiplyByPoint(_position)
-            
+
             // Compute the Cartographic position of the camera.
             if _mode == .scene3D || _mode == .morphing {
                 if let positionCartographic = _projection.ellipsoid.cartesianToCartographic(_positionWC) {
@@ -673,7 +673,7 @@ open class Camera: DRU {
                 // the Z axis is to the North, and the X axis is out of the map.  Express them instead in the ENU axes where
                 // X is to the East, Y is to the North, and Z is out of the local horizontal plane.
                 var positionENU = Cartesian3(x: _positionWC.y, y: _positionWC.z, z: _positionWC.x)
-                
+
                 // In 2D, the camera height is always 12.7 million meters.
                 // The apparent height is equal to half the frustum width.
                 if _mode == .scene2D {
@@ -682,38 +682,38 @@ open class Camera: DRU {
                 _positionCartographic = _projection.unproject(positionENU)
             }
         }
-        
+
         if directionChanged || upChanged || rightChanged {
             let det = _direction.dot(up.cross(right))
             if abs(1.0 - det) > Math.Epsilon2 {
-               
+
                 let invUpMag = 1.0 / up.magnitudeSquared
                 let w0 = direction.multiplyBy(scalar: up.dot(direction) * invUpMag)
                 _up = up.subtract(w0).normalize()
                 up = _up
-                
+
                 _right = direction.cross(up)
                 right = _right
             }
         }
-        
+
         if directionChanged || transformChanged {
             _directionWC = _actualTransform.multiplyByPointAsVector(direction)
         }
-        
+
         if upChanged || transformChanged {
             _upWC = _actualTransform.multiplyByPointAsVector(up)
         }
-        
+
         if rightChanged || transformChanged {
             _rightWC = _actualTransform.multiplyByPointAsVector(right)
         }
-        
+
         if positionChanged || directionChanged || upChanged || rightChanged || transformChanged {
             updateViewMatrix()
         }
     }
-    
+
     func getHeading (_ direction: Cartesian3, up: Cartesian3) -> Double {
         let heading: Double
         if !Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
@@ -723,11 +723,11 @@ open class Camera: DRU {
         }
         return M_2_PI - Math.zeroToTwoPi(heading)
     }
-    
+
     func getPitch(_ direction: Cartesian3) -> Double {
         return .pi / 2 - Math.acosClamped(direction.z)
     }
-    
+
     func getRoll (_ direction: Cartesian3, up: Cartesian3, right: Cartesian3) -> Double {
         var roll = 0.0
         if Math.equalsEpsilon(abs(direction.z), 1.0, relativeEpsilon: Math.Epsilon3) {
@@ -735,33 +735,33 @@ open class Camera: DRU {
         }
         return roll
     }
-    
-   
+
+
     //var scratchUpdateCartographic = new Cartographic(Math.PI, CesiumMath.PI_OVER_TWO);
     /**
     * @private
     */
     func update (_ mode: SceneMode) {
         var updateFrustum = false
-        
+
         if mode != _mode {
             _mode = mode
             _modeChanged = mode != .morphing
             updateFrustum = _mode == .scene2D
         }
-        
+
         if updateFrustum {
             // FIXME: updateFrustum
             /*_max2Dfrustum = frustum
             var frustum = this._max2Dfrustum = this.frustum.clone()
-            
+
             //>>includeStart('debug', pragmas.debug);
             if (!defined(frustum.left) || !defined(frustum.right) ||
             !defined(frustum.top) || !defined(frustum.bottom)) {
             throw new DeveloperError('The camera frustum is expected to be orthographic for 2D camera control.');
             }
             //>>includeEnd('debug');
-            
+
             var maxZoomOut = 2.0;
             var ratio = frustum.top / frustum.right;
             frustum.right = this._maxCoord.x * maxZoomOut;
@@ -773,62 +773,62 @@ open class Camera: DRU {
            }*/
         }
     }
-    
+
     func _setTransform (_ transform: Matrix4) {
         let position = positionWC
         let up = upWC
         let direction = directionWC
-        
+
         _transform = transform
         _transformChanged = true
         updateMembers()
-        
+
         self.position = _actualInvTransform.multiplyByPoint(position)
         self.direction = _actualInvTransform.multiplyByPointAsVector(direction)
         self.up = _actualInvTransform.multiplyByPointAsVector(up)
         self.right = self.direction.cross(self.up)
         updateMembers()
     }
-    
+
     fileprivate func setView3D (_ position: Cartesian3, heading: Double, pitch: Double, roll: Double) {
-        
+
         let currentTransform = transform
         let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
-        
+
         self.position = Cartesian3.zero
-        
+
         let rotQuat = Quaternion(heading: heading - .pi / 2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(quaternion: rotQuat)
-        
+
         direction = rotMat.column(0)
         up = rotMat.column(2)
         right = direction.cross(up)
-        
+
         _setTransform(currentTransform)
     }
-    
+
     open func setView3D (_ location: Cartographic, rotation: Matrix3) {
-        
+
         let position = _projection.ellipsoid.cartographicToCartesian(location)
         let currentTransform = transform
         let localTransform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
         _setTransform(localTransform)
-        
+
         self.position = Cartesian3.zero
-        
+
         direction = rotation.column(0)
         up = rotation.column(2)
         right = direction.cross(up)
-        
+
         _setTransform(currentTransform)
     }
-    
+
     fileprivate func setViewCV(_ position: Cartesian3, heading: Double, pitch: Double, roll: Double, convert: Bool) {
-        
+
         let currentTransform = transform
         _setTransform(Matrix4.identity)
-        
+
         if position != positionWC {
             if (convert) {
                 let cartographic = _projection.ellipsoid.cartesianToCartographic(position)
@@ -839,19 +839,19 @@ open class Camera: DRU {
         }
         let rotQuat = Quaternion(heading: heading - .pi / 2, pitch: pitch, roll: roll)
         let rotMat = Matrix3(quaternion: rotQuat)
-        
-        
+
+
         direction = rotMat.column(0)
         up = rotMat.column(2)
         right = direction.cross(up)
-        
+
         _setTransform(currentTransform)
     }
-    
+
     fileprivate func setView2D(_ position: Cartesian3, convert: Bool) {
         let currentTransform = transform
         _setTransform(Matrix4.identity)
-        
+
         if position != positionWC {
             if (convert) {
                 let cartographic = _projection.ellipsoid.cartesianToCartographic(position)
@@ -859,10 +859,10 @@ open class Camera: DRU {
             } else {
                 self.position = position
             }
-            
+
             let newLeft = -self.position.z * 0.5
             let newRight = -newLeft
-            
+
             if newRight > newLeft {
                 let ratio = frustum.top / frustum.right
                 frustum.right = newRight
@@ -873,9 +873,9 @@ open class Camera: DRU {
         }
         _setTransform(currentTransform)
     }
-    
+
     fileprivate func directionUpToHeadingPitchRoll(_ position: Cartesian3, orientation: Orientation) -> Orientation {
-        
+
         var direction: Cartesian3
         var up: Cartesian3
         if case let Orientation.directionUp(directionIn, upIn) = orientation {
@@ -884,24 +884,24 @@ open class Camera: DRU {
         } else {
             return orientation
         }
-        
+
         if _mode == .scene3D {
             let transform = Transforms.eastNorthUpToFixedFrame(position, ellipsoid: _projection.ellipsoid)
             let invTransform = transform.inverse
-            
+
             direction = invTransform.multiplyByPointAsVector(direction)
             up = invTransform.multiplyByPointAsVector(up)
         }
-        
+
         let right = direction.cross(up)
-        
+
         return Orientation.headingPitchRoll(
             heading: getHeading(direction, up: up),
             pitch: getPitch(direction),
             roll: getRoll(direction, up: up, right: right)
         )
     }
-    
+
     /**
      * Sets the camera position, orientation and transform.
      *
@@ -956,14 +956,14 @@ open class Camera: DRU {
         if _mode == .morphing {
             return
         }
-        
+
         if let endTransform  = endTransform {
             _setTransform(endTransform)
         }
-        
+
         var convert = true
         var destination = destination ?? .cartesian(positionWC)
-        
+
         if case let Destination.rectangle(rectangle) = destination {
             destination = Destination.cartesian(getRectangleCameraCoordinates(rectangle))
             convert = false
@@ -974,11 +974,11 @@ open class Camera: DRU {
                 orientation = directionUpToHeadingPitchRoll(destination.cartesian!, orientation: orientation!)
             }
         }
-        
+
         var heading = 0.0
         var pitch = -.pi / 2.0
         var roll = 0.0
-        
+
         if let orientation = orientation {
             if case let Orientation.headingPitchRoll(headingIn, pitchIn, rollIn) = orientation {
                 heading = headingIn
@@ -1006,11 +1006,11 @@ open class Camera: DRU {
     /*
     Camera.prototype.flyHome = function(duration) {
     var mode = this._mode;
-    
+
     if (mode === SceneMode.MORPHING) {
     this._scene.completeMorph();
     }
-    
+
     if (mode === SceneMode.SCENE2D) {
     this.flyTo({
     destination : Rectangle.MAX_VALUE,
@@ -1019,12 +1019,12 @@ open class Camera: DRU {
     });
     } else if (mode === SceneMode.SCENE3D) {
     var destination = this.getRectangleCameraCoordinates(Camera.DEFAULT_VIEW_RECTANGLE);
-    
+
     var mag = Cartesian3.magnitude(destination);
     mag += mag * Camera.DEFAULT_VIEW_FACTOR;
     Cartesian3.normalize(destination, destination);
     Cartesian3.multiplyBy(scalar: destination, mag, destination);
-    
+
     this.flyTo({
     destination : destination,
     duration : duration,
@@ -1047,7 +1047,7 @@ open class Camera: DRU {
     });
     }
     };*/
-    
+
     /**
      * Transform a vector or point from world coordinates to the camera's reference frame.
      * @memberof Camera
@@ -1077,11 +1077,11 @@ open class Camera: DRU {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     updateMembers(this);
     return Matrix4.multiplyByPoint(this._actualInvTransform, cartesian, result);
     };
-    
+
     /**
     * Transform a vector from world coordinates to the camera's reference frame.
     * @memberof Camera
@@ -1097,11 +1097,11 @@ open class Camera: DRU {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     updateMembers(this);
     return Matrix4.multiplyByPointAsVector(this._actualInvTransform, cartesian, result);
     };
-    
+
     /**
     * Transform a vector or point from the camera's reference frame to world coordinates.
     * @memberof Camera
@@ -1117,11 +1117,11 @@ open class Camera: DRU {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     updateMembers(this);
     return Matrix4.multiplyByVector(this._actualTransform, cartesian, result);
     };
-    
+
     /**
     * Transform a point from the camera's reference frame to world coordinates.
     * @memberof Camera
@@ -1137,11 +1137,11 @@ open class Camera: DRU {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     updateMembers(this);
     return Matrix4.multiplyByPoint(this._actualTransform, cartesian, result);
     };
-    
+
     /**
     * Transform a vector from the camera's reference frame to world coordinates.
     * @memberof Camera
@@ -1157,11 +1157,11 @@ open class Camera: DRU {
     throw new DeveloperError('cartesian is required.');
     }
     //>>includeEnd('debug');
-    
+
     updateMembers(this);
     return Matrix4.multiplyByPointAsVector(this._actualTransform, cartesian, result);
     };
-    
+
     function clampMove2D(camera, position) {
     var maxX = camera._maxCoord.x;
     if (position.x > maxX) {
@@ -1170,7 +1170,7 @@ open class Camera: DRU {
     if (position.x < -maxX) {
     position.x = position.x + maxX * 2.0;
     }
-    
+
     var maxY = camera._maxCoord.y;
     if (position.y > maxY) {
     position.y = maxY;
@@ -1180,7 +1180,7 @@ open class Camera: DRU {
     }
     }
     */
-    
+
     /**
     * Translates the camera's position by <code>amount</code> along <code>direction</code>.
     *
@@ -1203,7 +1203,7 @@ open class Camera: DRU {
             //clampMove2D(this, cameraPosition);
         }
     }
-    
+
     /**
      * Translates the camera's position by <code>amount</code> along the camera's view vector.
      *
@@ -1231,7 +1231,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultMoveAmount);
      this.move(this.direction, -amount);
      };
-     
+
      /**
      * Translates the camera's position by <code>amount</code> along the camera's up vector.
      *
@@ -1245,7 +1245,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultMoveAmount);
      this.move(this.up, amount);
      };
-     
+
      /**
      * Translates the camera's position by <code>amount</code> along the opposite direction
      * of the camera's up vector.
@@ -1260,7 +1260,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultMoveAmount);
      this.move(this.up, -amount);
      };
-     
+
      /**
      * Translates the camera's position by <code>amount</code> along the camera's right vector.
      *
@@ -1274,7 +1274,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultMoveAmount);
      this.move(this.right, amount);
      };
-     
+
      /**
      * Translates the camera's position by <code>amount</code> along the opposite direction
      * of the camera's right vector.
@@ -1289,7 +1289,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultMoveAmount);
      this.move(this.right, -amount);
      };
-     
+
      /**
      * Rotates the camera around its up vector by amount, in radians, in the opposite direction
      * of its right vector.
@@ -1304,7 +1304,7 @@ open class Camera: DRU {
      amount = defaultValue(amount, this.defaultLookAmount);
      this.look(this.up, -amount);
      };
-     
+
      /**
      * Rotates the camera around its up vector by amount, in radians, in the direction
      * of its right vector.
@@ -1349,7 +1349,7 @@ open class Camera: DRU {
     this.look(this.right, amount);
     };
     */
-    
+
     /**
     * Rotate each of the camera's orientation vectors around <code>axis</code> by <code>angle</code>
     *
@@ -1364,11 +1364,11 @@ open class Camera: DRU {
     * @see Camera#lookRight
     */
     open func look (_ axis: Cartesian3, angle: Double? = nil) {
-        
+
         let turnAngle = angle ?? defaultLookAmount
         let quaternion = Quaternion(axis: axis, angle: -turnAngle)
         let rotation = Matrix3(quaternion: quaternion)
-        
+
         direction = rotation.multiplyByVector(direction)
         up = rotation.multiplyByVector(up)
         right = rotation.multiplyByVector(right)
@@ -1387,7 +1387,7 @@ open class Camera: DRU {
     amount = defaultValue(amount, this.defaultLookAmount);
     this.look(this.direction, amount);
     };
-    
+
     /**
     * Rotate the camera clockwise around its direction vector by amount, in radians.
     *
@@ -1402,7 +1402,7 @@ open class Camera: DRU {
     this.look(this.direction, -amount);
     };
     */
-    
+
     /**
     * Rotates the camera around <code>axis</code> by <code>angle</code>. The distance
     * of the camera's position to the center of the camera's reference frame remains the same.
@@ -1423,7 +1423,7 @@ open class Camera: DRU {
     * camera.rotate(axis, angle);
     */
     func rotate (_ axis: Cartesian3, angle: Double? = nil) {
-        
+
         let turnAngle = angle ?? defaultRotateAmount
         let quaternion = Quaternion(axis: axis, angle: -turnAngle)
         let rotation = Matrix3(quaternion: quaternion)
@@ -1464,12 +1464,12 @@ open class Camera: DRU {
         let rotateAngle = angle ?? defaultRotateAmount
         rotateVertical(-rotateAngle)
     }
-    
+
     func rotateVertical(_ angle: Double) {
-        
+
         var angle = angle
         let p = position.normalize()
-        
+
         if constrainedAxis != nil {
             let northParallel = p.equalsEpsilon(constrainedAxis!, relativeEpsilon: Math.Epsilon2)
             let southParallel = p.equalsEpsilon(constrainedAxis!.negate(), relativeEpsilon: Math.Epsilon2)
@@ -1480,13 +1480,13 @@ open class Camera: DRU {
                 if angle > 0 && angle > angleToAxis {
                     angle = angleToAxis
                 }
-                
+
                 dot = p.dot(constrainedAxis.negate())
                 angleToAxis = acos(dot)
                 if angle < 0 && -angle > angleToAxis {
                     angle = -angleToAxis
                 }
-                
+
                 let tangent = constrainedAxis.cross(p)
                 rotate(tangent, angle: angle)
             } else if (northParallel && angle < 0 || southParallel && angle > 0) {
@@ -1496,7 +1496,7 @@ open class Camera: DRU {
             rotate(right, angle: angle)
         }
     }
-    
+
     /**
      * Rotates the camera around the center of the camera's reference frame by angle to the right.
      *
@@ -1527,7 +1527,7 @@ open class Camera: DRU {
     rotateHorizontal(this, angle);
     };
     */
-    
+
     func rotateHorizontal(_ angle: Double) {
         if constrainedAxis != nil {
             rotate(constrainedAxis!, angle: angle)
@@ -1535,43 +1535,43 @@ open class Camera: DRU {
             rotate(up, angle: angle)
         }
     }
-    
+
     func zoom2D(_ amount: Double) {
         assertionFailure("unimplemented")
         /*var frustum = camera.frustum;
-        
+
         //>>includeStart('debug', pragmas.debug);
         if (!defined(frustum.left) || !defined(frustum.right) || !defined(frustum.top) || !defined(frustum.bottom)) {
         throw new DeveloperError('The camera frustum is expected to be orthographic for 2D camera control.');
         }
         //>>includeEnd('debug');
-        
+
         amount = amount * 0.5;
         var newRight = frustum.right - amount;
         var newLeft = frustum.left + amount;
-        
+
         var maxRight = camera._maxCoord.x;
         if (newRight > maxRight) {
         newRight = maxRight;
         newLeft = -maxRight;
         }
-        
+
         if (newRight <= newLeft) {
         newRight = 1.0;
         newLeft = -1.0;
         }
-        
+
         var ratio = frustum.top / frustum.right;
         frustum.right = newRight;
         frustum.left = newLeft;
         frustum.top = frustum.right * ratio;
         frustum.bottom = -frustum.top;*/
     }
-    
+
     func zoom3D(_ amount: Double) {
         move(direction, amount: amount)
     }
-    
+
     /**
      * Zooms <code>amount</code> along the camera's view vector.
      *
@@ -1589,7 +1589,7 @@ open class Camera: DRU {
             zoom3D(amount)
         }
     }
-    
+
     /**
      * Zooms <code>amount</code> along the opposite direction of
      * the camera's view vector.
@@ -1627,7 +1627,7 @@ open class Camera: DRU {
         }
         return 0.0
     }
-        
+
      /**
      * Sets the camera position and orientation using a target and offset. The target must be given in
      * world coordinates. The offset can be either a cartesian or heading/pitch/range in the local east-north-up reference frame centered at the target.
@@ -1658,7 +1658,7 @@ open class Camera: DRU {
      * viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
     open func lookAt (_ target: Cartesian3, offset: Offset) {
-        
+
         let transform = Transforms.eastNorthUpToFixedFrame(target, ellipsoid: Ellipsoid.wgs84())
         lookAtTransform(transform, offset: offset.offset)
     }
@@ -1697,11 +1697,11 @@ open class Camera: DRU {
      * var range = 5000.0;
      * viewer.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(heading, pitch, range));
      */
-    
+
     open func lookAtTransform (_ transform: Matrix4, offset: Offset) {
-        
+
         assert(_mode != .morphing, "lookAtTransform is not supported while morphing.")
-        
+
         let actualOffset = offset.offset
 
         _setTransform(transform)
@@ -1709,27 +1709,27 @@ open class Camera: DRU {
         if _mode == .scene2D {
             position.x = 0.0
             position.y = 0.0
-            
+
             up = actualOffset.negate()
             up.z = 0.0
-            
+
             if up.magnitudeSquared < Math.Epsilon10 {
                 up = Cartesian3.unitY
             }
-            
+
             up = up.normalize()
-            
+
             _setTransform(Matrix4.identity)
             direction = Cartesian3.unitZ.negate()
             right = direction.cross(self.up).normalize()
-            
+
             let ratio = frustum.top / frustum.right
             frustum.right = actualOffset.magnitude * 0.5
             frustum.left = -frustum.right
             frustum.top = ratio * frustum.right
             frustum.bottom = -frustum.top
             _setTransform(transform)
-            
+
             return
         }
         position = actualOffset
@@ -1740,7 +1740,7 @@ open class Camera: DRU {
         }
         up = right.cross(direction).normalize()
     }
-    
+
     /*
     var viewRectangle3DCartographic1 = new Cartographic();
     var viewRectangle3DCartographic2 = new Cartographic();
@@ -1753,29 +1753,29 @@ open class Camera: DRU {
     var viewRectangle3DCenter = new Cartesian3();
     var viewRectangle3DEquator = new Cartesian3();
     var defaultRF = {direction: new Cartesian3(), right: new Cartesian3(), up: new Cartesian3()};*/
-    
+
     fileprivate struct DefaultRF: DRU {
         var direction = Cartesian3()
         var right = Cartesian3()
         var up = Cartesian3()
     }
-    
+
     func rectangleCameraPosition3D (_ rectangle: Rectangle, updateCamera: Bool) -> Cartesian3 {
-        
+
         let ellipsoid = _projection.ellipsoid
-        
+
         var camera: DRU = updateCamera ? self : DefaultRF()
-        
+
         var north = rectangle.north
         var south = rectangle.south
         var east = rectangle.east
         var west = rectangle.west
-        
+
         // If we go across the International Date Line
         if (west > east) {
             east += M_2_PI
         }
-        
+
         // Find the midpoint latitude.
         //
         // EllipsoidGeodesic will fail if the north and south edges are very close to being on opposite sides of the ellipsoid.
@@ -1793,17 +1793,17 @@ open class Camera: DRU {
         } else {
             var northCartographic = Cartographic(longitude: longitude, latitude: north, height: 0.0)
             var southCartographic = Cartographic(longitude: longitude, latitude: south, height: 0.0)
-            
+
             ellipsoidGeodesic.setEndPoints(start: northCartographic, end: southCartographic)
             latitude = ellipsoidGeodesic.interpolate(fraction: 0.5).latitude
         }
-        
+
         let centerCartographic = Cartographic(longitude: longitude, latitude: latitude)
-        
+
         let center = ellipsoid.cartographicToCartesian(centerCartographic)
-        
+
         var cart = Cartographic(longitude: east, latitude: north)
-        
+
         var northEast = ellipsoid.cartographicToCartesian(cart)
         cart.longitude = west
         var northWest = ellipsoid.cartographicToCartesian(cart)
@@ -1815,29 +1815,29 @@ open class Camera: DRU {
         var southEast = ellipsoid.cartographicToCartesian(cart)
         cart.longitude = west;
         var southWest = ellipsoid.cartographicToCartesian(cart)
-        
+
         northWest = northWest.subtract(center)
         southEast = southEast.subtract(center)
         northEast = northEast.subtract(center)
         southWest = southWest.subtract(center)
         northCenter = northCenter.subtract(center)
         southCenter = southCenter.subtract(center)
-        
+
         let direction = ellipsoid.geodeticSurfaceNormal(center).negate()
         camera.direction = direction
         let right = direction.cross(Cartesian3.unitZ).normalize()
         camera.right = right
         let up = right.cross(direction)
         camera.up = up
-        
+
         var tanPhi = tan(frustum.fovy * 0.5)
         var tanTheta = frustum.aspectRatio * tanPhi
-        
+
         func computeD(_ direction: Cartesian3, upOrRight: Cartesian3, corner: Cartesian3, tanThetaOrPhi: Double) -> Double {
             let opposite = abs(upOrRight.dot(corner))
             return opposite / tanThetaOrPhi - direction.dot(corner)
         }
-        
+
         var d = max(
             computeD(direction, upOrRight: up, corner: northWest, tanThetaOrPhi: tanPhi),
             computeD(direction, upOrRight: up, corner: southEast, tanThetaOrPhi: tanPhi),
@@ -1852,7 +1852,7 @@ open class Camera: DRU {
             computeD(direction, upOrRight: right, corner: northCenter, tanThetaOrPhi: tanTheta),
             computeD(direction, upOrRight: right, corner: southCenter, tanThetaOrPhi: tanTheta)
         )
-        
+
         // If the rectangle crosses the equator, compute D at the equator, too, because that's the
         // widest part of the rectangle when projected onto the globe.
         if south < 0 && north > 0 {
@@ -1863,7 +1863,7 @@ open class Camera: DRU {
                 computeD(direction, upOrRight: up, corner: equatorPosition, tanThetaOrPhi: tanPhi),
                 computeD(direction, upOrRight: right, corner: equatorPosition, tanThetaOrPhi: tanTheta)
             )
-            
+
             equatorCartographic.longitude = east
             equatorPosition = ellipsoid.cartographicToCartesian(equatorCartographic).subtract(center)
             d = max(d,
@@ -1873,7 +1873,7 @@ open class Camera: DRU {
         }
         return center.add(direction.multiplyBy(scalar: -d))
     }
-    
+
     /*
     var viewRectangleCVCartographic = new Cartographic();
     var viewRectangleCVNorthEast = new Cartesian3();
@@ -1885,40 +1885,40 @@ open class Camera: DRU {
     var west = rectangle.west;
     var transform = camera._actualTransform;
     var invTransform = camera._actualInvTransform;
-    
+
     var cart = viewRectangleCVCartographic;
     cart.longitude = east;
     cart.latitude = north;
     var northEast = projection.project(cart, viewRectangleCVNorthEast);
     Matrix4.multiplyByPoint(transform, northEast, northEast);
     Matrix4.multiplyByPoint(invTransform, northEast, northEast);
-    
+
     cart.longitude = west;
     cart.latitude = south;
     var southWest = projection.project(cart, viewRectangleCVSouthWest);
     Matrix4.multiplyByPoint(transform, southWest, southWest);
     Matrix4.multiplyByPoint(invTransform, southWest, southWest);
-    
+
     var tanPhi = Math.tan(camera.frustum.fovy * 0.5);
     var tanTheta = camera.frustum.aspectRatio * tanPhi;
     if (!defined(result)) {
     result = new Cartesian3();
     }
-    
+
     result.x = (northEast.x - southWest.x) * 0.5 + southWest.x;
     result.y = (northEast.y - southWest.y) * 0.5 + southWest.y;
     result.z = Math.max((northEast.x - southWest.x) / tanTheta, (northEast.y - southWest.y) / tanPhi) * 0.5;
-    
+
     if (!positionOnly) {
     var direction = Cartesian3.clone(Cartesian3.UNIT_Z, camera.direction);
     Cartesian3.negate(direction, direction);
     Cartesian3.clone(Cartesian3.UNIT_X, camera.right);
     Cartesian3.clone(Cartesian3.UNIT_Y, camera.up);
     }
-    
+
     return result;
     }
-    
+
     var viewRectangle2DCartographic = new Cartographic();
     var viewRectangle2DNorthEast = new Cartesian3();
     var viewRectangle2DSouthWest = new Cartesian3();
@@ -1927,7 +1927,7 @@ open class Camera: DRU {
     var south = rectangle.south;
     var east = rectangle.east;
     var west = rectangle.west;
-    
+
     var cart = viewRectangle2DCartographic;
     cart.longitude = east;
     cart.latitude = north;
@@ -1935,10 +1935,10 @@ open class Camera: DRU {
     cart.longitude = west;
     cart.latitude = south;
     var southWest = projection.project(cart, viewRectangle2DSouthWest);
-    
+
     var width = Math.abs(northEast.x - southWest.x) * 0.5;
     var height = Math.abs(northEast.y - southWest.y) * 0.5;
-    
+
     var right, top;
     var ratio = camera.frustum.right / camera.frustum.top;
     var heightRatio = height * ratio;
@@ -1949,15 +1949,15 @@ open class Camera: DRU {
     top = height;
     right = heightRatio;
     }
-    
+
     height = Math.max(2.0 * right, 2.0 * top);
-    
+
     if (!defined(result)) {
     result = new Cartesian3();
     }
     result.x = (northEast.x - southWest.x) * 0.5 + southWest.x;
     result.y = (northEast.y - southWest.y) * 0.5 + southWest.y;
-    
+
     if (positionOnly) {
     cart = projection.unproject(result, cart);
     cart.height = height;
@@ -1968,13 +1968,13 @@ open class Camera: DRU {
     frustum.left = -right;
     frustum.top = top;
     frustum.bottom = -top;
-    
+
     var direction = Cartesian3.clone(Cartesian3.UNIT_Z, camera.direction);
     Cartesian3.negate(direction, direction);
     Cartesian3.clone(Cartesian3.UNIT_X, camera.right);
     Cartesian3.clone(Cartesian3.UNIT_Y, camera.up);
     }
- 
+
     return result;
     }
      */
@@ -1989,7 +1989,7 @@ open class Camera: DRU {
     * @returns {Cartesian3} The camera position needed to view the rectangle
     */
     fileprivate func getRectangleCameraCoordinates (_ rectangle: Rectangle) -> Cartesian3 {
-    
+
         switch _mode {
         case .scene3D:
             return rectangleCameraPosition3D(rectangle, updateCamera: false)
@@ -2003,13 +2003,13 @@ open class Camera: DRU {
     }
 
     func pickEllipsoid3D(_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
-        
+
         let ray = getPickRay(windowPosition)
         let intersection = IntersectionTests.rayEllipsoid(ray, ellipsoid: ellipsoid)
         if intersection == nil {
             return nil
         }
-        
+
         return ray.getPoint(intersection!.start)
     }
     /*
@@ -2019,27 +2019,27 @@ open class Camera: DRU {
     var position = ray.origin;
     position.z = 0.0;
     var cart = projection.unproject(position);
-    
+
     if (cart.latitude < -CesiumMath.PI_OVER_TWO || cart.latitude > CesiumMath.PI_OVER_TWO) {
     return undefined;
     }
-    
+
     return projection.ellipsoid.cartographicToCartesian(cart, result);
     }
-    
+
     var pickEllipsoidCVRay = new Ray();
     function pickMapColumbusView(camera, windowPosition, projection, result) {
     var ray = camera.getPickRay(windowPosition, pickEllipsoidCVRay);
     var scalar = -ray.origin.x / ray.direction.x;
     Ray.getPoint(ray, scalar, result);
-    
+
     var cart = projection.unproject(new Cartesian3(result.y, result.z, 0.0));
-    
+
     if (cart.latitude < -CesiumMath.PI_OVER_TWO || cart.latitude > CesiumMath.PI_OVER_TWO ||
     cart.longitude < - Math.PI || cart.longitude > Math.PI) {
     return undefined;
     }
-    
+
     return projection.ellipsoid.cartographicToCartesian(cart, result);
     }
     */
@@ -2056,7 +2056,7 @@ open class Camera: DRU {
     * in world coordinates. If the ellipsoid or map was not picked, returns undefined.
     */
     func pickEllipsoid (_ windowPosition: Cartesian2, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Cartesian3? {
-        
+
         if _mode == .scene3D {
             return pickEllipsoid3D(windowPosition, ellipsoid: ellipsoid)
         } else if _mode == .scene2D {
@@ -2068,53 +2068,53 @@ open class Camera: DRU {
         }
         return nil
     }
-    
+
     func getPickRayPerspective(_ windowPosition: Cartesian2) -> Ray {
-        
+
         let width = Double(scene!.context.width)
         let height = Double(scene!.context.height)
-        
+
         let tanPhi = tan(frustum.fovy * 0.5)
         let tanTheta = frustum.aspectRatio * tanPhi
         let near = frustum.near
-        
+
         let x = (2.0 / width) * windowPosition.x - 1.0
         let y = (2.0 / height) * (height - windowPosition.y) - 1.0
-        
+
         let position = positionWC
-        
+
         var nearCenter = directionWC.multiplyBy(scalar: near)
         nearCenter = position.add(nearCenter)
-        
+
         let xDir = rightWC.multiplyBy(scalar: x * near * tanTheta)
         let yDir = upWC.multiplyBy(scalar: y * near * tanPhi)
-        
+
         let direction = nearCenter.add(xDir).add(yDir).subtract(position).normalize()
-        
+
         return Ray(origin: position, direction: direction)
     }
     /*
     var scratchDirection = new Cartesian3();
-    
+
     function getPickRayOrthographic(camera, windowPosition, result) {
     var width = camera._scene.canvas.clientWidth;
     var height = camera._scene.canvas.clientHeight;
-    
+
     var x = (2.0 / width) * windowPosition.x - 1.0;
     x *= (camera.frustum.right - camera.frustum.left) * 0.5;
     var y = (2.0 / height) * (height - windowPosition.y) - 1.0;
     y *= (camera.frustum.top - camera.frustum.bottom) * 0.5;
-    
+
     var origin = result.origin;
     Cartesian3.clone(camera.position, origin);
-    
+
     Cartesian3.multiplyBy(scalar: camera.right, x, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
     Cartesian3.multiplyBy(scalar: camera.up, y, scratchDirection);
     Cartesian3.add(scratchDirection, origin, origin);
-    
+
     Cartesian3.clone(camera.directionWC, result.direction);
-    
+
     return result;
     }
     */
@@ -2129,7 +2129,7 @@ open class Camera: DRU {
     * @returns {Ray} Returns the {@link Cartesian3} position and direction of the ray.
     */
     func getPickRay (_ windowPosition: Cartesian2) -> Ray {
-        
+
         if frustum.aspectRatio != Double.nan && frustum.fovy != Double.nan && frustum.near != Double.nan {
             return getPickRayPerspective(windowPosition)
         }
@@ -2137,7 +2137,7 @@ open class Camera: DRU {
         return Ray()
         //return getPickRayOrthographic(windowPosition)
     }
-    
+
     /**
      * Return the distance from the camera to the front of the bounding sphere.
      *
@@ -2149,7 +2149,7 @@ open class Camera: DRU {
         let proj = directionWC.multiplyBy(scalar: toCenter.dot(directionWC))
         return max(0.0, proj.magnitude - boundingSphere.radius)
     }
-    
+
     /**
      * Return the pixel size in meters.
      *
@@ -2164,27 +2164,27 @@ open class Camera: DRU {
         return max(pixelSize.x, pixelSize.y)
     }
     /*
-     
+
     function createAnimationTemplateCV(camera, position, center, maxX, maxY, duration) {
     var newPosition = Cartesian3.clone(position);
-    
+
     if (center.y > maxX) {
     newPosition.y -= center.y - maxX;
     } else if (center.y < -maxX) {
     newPosition.y += -maxX - center.y;
     }
-    
+
     if (center.z > maxY) {
     newPosition.z -= center.z - maxY;
     } else if (center.z < -maxY) {
     newPosition.z += -maxY - center.z;
     }
-    
+
     var updateCV = function(value) {
     var interp = Cartesian3.lerp(position, newPosition, value.time);
     camera.worldToCameraCoordinatesPoint(interp, camera.position);
     };
-    
+
     return {
     easingFunction : Tween.Easing.Exponential.Out,
     startValue : {
@@ -2197,35 +2197,35 @@ open class Camera: DRU {
     onUpdate : updateCV
     };
     }
-    
+
     var normalScratch = new Cartesian3();
     var centerScratch = new Cartesian3();
     var posScratch = new Cartesian3();
     var scratchCartesian3Subtract = new Cartesian3();
-    
+
     function createAnimationCV(camera, duration) {
     var position = camera.position;
     var direction = camera.direction;
-    
+
     var normal = camera.worldToCameraCoordinatesVector(Cartesian3.UNIT_X, normalScratch);
     var scalar = -Cartesian3.dot(normal, position) / Cartesian3.dot(normal, direction);
     var center = Cartesian3.add(position, Cartesian3.multiplyBy(scalar: direction, scalar, centerScratch), centerScratch);
     camera.cameraToWorldCoordinatesPoint(center, center);
-    
+
     position = camera.cameraToWorldCoordinatesPoint(camera.position, posScratch);
-    
+
     var tanPhi = Math.tan(camera.frustum.fovy * 0.5);
     var tanTheta = camera.frustum.aspectRatio * tanPhi;
     var distToC = Cartesian3.magnitude(Cartesian3.subtract(position, center, scratchCartesian3Subtract));
     var dWidth = tanTheta * distToC;
     var dHeight = tanPhi * distToC;
-    
+
     var mapWidth = camera._maxCoord.x;
     var mapHeight = camera._maxCoord.y;
-    
+
     var maxX = Math.max(dWidth - mapWidth, mapWidth);
     var maxY = Math.max(dHeight - mapHeight, mapHeight);
-    
+
     if (position.z < -maxX || position.z > maxX || position.y < -maxY || position.y > maxY) {
     var translateX = center.y < -maxX || center.y > maxX;
     var translateY = center.z < -maxY || center.z > maxY;
@@ -2233,10 +2233,10 @@ open class Camera: DRU {
     return createAnimationTemplateCV(camera, position, center, maxX, maxY, duration);
     }
     }
-    
+
     return undefined;
     }
-    
+
     /**
     * Create an animation to move the map into view. This method is only valid for 2D and Columbus modes.
     *
@@ -2254,15 +2254,15 @@ open class Camera: DRU {
     throw new DeveloperError('duration is required.');
     }
     //>>includeEnd('debug');
-    
+
     } else if (this._mode === SceneMode.COLUMBUS_VIEW) {
     return createAnimationCV(this, duration);
     }
-    
+
     return undefined;
     };
     */
-    
+
     /*var scratchFlyToDestination = new Cartesian3();
     var scratchFlyToQuaternion = new Quaternion();
     var scratchFlyToMatrix3 = new Matrix3();
@@ -2281,12 +2281,12 @@ open class Camera: DRU {
     maximumHeight : undefined,
     easingFunction : undefined
     };
-    
+
     var scratchFlyDirection = new Cartesian3();
     var scratchFlyUp = new Cartesian3();
     var scratchFlyRight = new Cartesian3();
     */
-    
+
     /**
     * Flies the camera from its current position to a new position.
     *
@@ -2390,17 +2390,17 @@ open class Camera: DRU {
          throw new DeveloperError('destination is required.');
          }
          //>>includeEnd('debug');
-         
+
          var mode = this._mode;
          if (mode === SceneMode.MORPHING) {
          return;
          }
-         
+
          var orientation = defaultValue(options.orientation, defaultValue.EMPTY_OBJECT);
          if (defined(orientation.direction)) {
          orientation = directionUpToHeadingPitchRoll(this, destination, orientation, scratchSetViewOptions.orientation);
          }
-         
+
          if (defined(options.duration) && options.duration <= 0.0) {
          var setViewOptions = scratchSetViewOptions;
          setViewOptions.destination = options.destination;
@@ -2415,19 +2415,19 @@ open class Camera: DRU {
          }
          return;
          }
-         
+
          var isRectangle = defined(destination.west);
          if (isRectangle) {
          destination = this.getRectangleCameraCoordinates(destination, scratchFlyToDestination);
          }
-         
+
          var sscc = this._scene.screenSpaceCameraController;
-         
+
          if (defined(sscc) || mode === SceneMode.SCENE2D) {
          var ellipsoid = this._scene.mapProjection.ellipsoid;
          var destinationCartographic = ellipsoid.cartesianToCartographic(destination, scratchFlyToCarto);
          var height = destinationCartographic.height;
-         
+
          // Make sure camera doesn't zoom outside set limits
          if (defined(sscc)) {
          //The computed height for rectangle in 2D/CV is stored in the 'z' component of Cartesian3
@@ -2437,7 +2437,7 @@ open class Camera: DRU {
          destinationCartographic.height = CesiumMath.clamp(destinationCartographic.height, sscc.minimumZoomDistance, sscc.maximumZoomDistance);
          }
          }
-         
+
          // The max height in 2D might be lower than the max height for sscc.
          if (mode === SceneMode.SCENE2D) {
          var maxHeight = ellipsoid.maximumRadius * Math.PI * 2.0;
@@ -2447,13 +2447,13 @@ open class Camera: DRU {
          destinationCartographic.height = Math.min(destinationCartographic.height, maxHeight);
          }
          }
-         
+
          //Only change if we clamped the height
          if (destinationCartographic.height !== height) {
          destination = ellipsoid.cartographicToCartesian(destinationCartographic, scratchFlyToDestination);
          }
          }
-         
+
          newOptions.destination = destination;
          newOptions.heading = orientation.heading;
          newOptions.pitch = orientation.pitch;
@@ -2465,23 +2465,23 @@ open class Camera: DRU {
          newOptions.convert = isRectangle ? false : options.convert;
          newOptions.maximumHeight = options.maximumHeight;
          newOptions.easingFunction = options.easingFunction;
-         
+
          var scene = this._scene;
          scene.tweens.add(CameraFlightPath.createTween(scene, newOptions));
          };
 */
     }
-    
+
     /*function distanceToBoundingSphere3D(camera, radius) {
     var frustum = camera.frustum;
     var tanPhi = Math.tan(frustum.fovy * 0.5);
     var tanTheta = frustum.aspectRatio * tanPhi;
     return Math.max(radius / tanTheta, radius / tanPhi);
     }
-    
+
     function distanceToBoundingSphere2D(camera, radius) {
     var frustum = camera.frustum;
-    
+
     var right, top;
     var ratio = frustum.right / frustum.top;
     var heightRatio = radius * ratio;
@@ -2492,18 +2492,18 @@ open class Camera: DRU {
     top = radius;
     right = heightRatio;
     }
-    
+
     return Math.max(right, top) * 1.50;
     }
-    
+
     var scratchDefaultOffset = new HeadingPitchRange(0.0, -CesiumMath.PI_OVER_FOUR, 0.0);
     var MINIMUM_ZOOM = 100.0;
-    
+
     function adjustBoundingSphereOffset(camera, boundingSphere, offset) {
     if (!defined(offset)) {
     offset = HeadingPitchRange.clone(scratchDefaultOffset);
     }
-    
+
     var range = offset.range;
     if (!defined(range) || range === 0.0) {
     var radius = boundingSphere.radius;
@@ -2513,10 +2513,10 @@ open class Camera: DRU {
     offset.range = camera._mode === SceneMode.SCENE2D ? distanceToBoundingSphere2D(camera, radius) : distanceToBoundingSphere3D(camera, radius);
     }
     }
-    
+
     return offset;
     }
-    
+
     /**
     * Sets the camera so that the current view contains the provided bounding sphere.
     *
@@ -2541,15 +2541,15 @@ open class Camera: DRU {
     throw new DeveloperError('boundingSphere is required.');
     }
     //>>includeEnd('debug');
-    
+
     if (this._mode === SceneMode.MORPHING) {
     throw new DeveloperError('viewBoundingSphere is not supported while morphing.');
     }
-    
+
     offset = adjustBoundingSphereOffset(this, boundingSphere, offset);
     this.lookAt(boundingSphere.center, offset);
     };
-    
+
     var scratchflyToBoundingSphereTransform = new Matrix4();
     var scratchflyToBoundingSphereDestination = new Cartesian3();
     var scratchflyToBoundingSphereDirection = new Cartesian3();
@@ -2558,7 +2558,7 @@ open class Camera: DRU {
     var scratchFlyToBoundingSphereCart4 = new Cartesian4();
     var scratchFlyToBoundingSphereQuaternion = new Quaternion();
     var scratchFlyToBoundingSphereMatrix3 = new Matrix3();
-    
+
     /**
     * Flies the camera to a location where the current view contains the provided bounding sphere.
     *
@@ -2587,44 +2587,44 @@ open class Camera: DRU {
     throw new DeveloperError('boundingSphere is required.');
     }
     //>>includeEnd('debug');
-    
+
     options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    
+
     var scene2D = this._mode === SceneMode.SCENE2D || this._mode === SceneMode.COLUMBUS_VIEW;
     this._setTransform(Matrix4.IDENTITY);
     var offset = adjustBoundingSphereOffset(this, boundingSphere, options.offset);
-    
+
     var position;
     if (scene2D) {
     position = Cartesian3.multiplyBy(scalar: Cartesian3.UNIT_Z, offset.range, scratchflyToBoundingSphereDestination);
     } else {
     position = offsetFromHeadingPitchRange(offset.heading, offset.pitch, offset.range);
     }
-    
+
     var transform = Transforms.eastNorthUpToFixedFrame(boundingSphere.center, Ellipsoid.WGS84, scratchflyToBoundingSphereTransform);
     Matrix4.multiplyByPoint(transform, position, position);
-    
+
     var direction;
     var up;
-    
+
     if (!scene2D) {
     direction = Cartesian3.subtract(boundingSphere.center, position, scratchflyToBoundingSphereDirection);
     Cartesian3.normalize(direction, direction);
-    
+
     up = Matrix4.multiplyByPointAsVector(transform, Cartesian3.UNIT_Z, scratchflyToBoundingSphereUp);
     if (1.0 - Math.abs(Cartesian3.dot(direction, up)) < CesiumMath.EPSILON6) {
     var rotateQuat = Quaternion.fromAxisAngle(direction, offset.heading, scratchFlyToBoundingSphereQuaternion);
     var rotation = Matrix3.fromQuaternion(rotateQuat, scratchFlyToBoundingSphereMatrix3);
-    
+
     Cartesian3.fromCartesian4(Matrix4.getColumn(transform, 1, scratchFlyToBoundingSphereCart4), up);
     Matrix3.multiplyByVector(rotation, up, up);
     }
-    
+
     var right = Cartesian3.cross(direction, up, scratchflyToBoundingSphereRight);
     Cartesian3.cross(right, direction, up);
     Cartesian3.normalize(up, up);
     }
-    
+
     this.flyTo({
     destination : position,
     orientation : {
@@ -2639,57 +2639,57 @@ open class Camera: DRU {
     easingFunction : options.easingFunction
     });
     };
-     
-     
+
+
      var scratchCartesian3_1 = new Cartesian3();
      var scratchCartesian3_2 = new Cartesian3();
      var scratchCartesian3_3 = new Cartesian3();
      var scratchCartesian3_4 = new Cartesian3();
      var horizonPoints = [new Cartesian3(), new Cartesian3(), new Cartesian3(), new Cartesian3()];
-     
+
      function computeHorizonQuad(camera, ellipsoid) {
      var radii = ellipsoid.radii;
      var p = camera.positionWC;
-     
+
      // Find the corresponding position in the scaled space of the ellipsoid.
      var q = Cartesian3.multiplyComponents(ellipsoid.oneOverRadii, p, scratchCartesian3_1);
-     
+
      var qMagnitude = Cartesian3.magnitude(q);
      var qUnit = Cartesian3.normalize(q, scratchCartesian3_2);
-     
+
      // Determine the east and north directions at q.
      var eUnit = Cartesian3.normalize(Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3_3), scratchCartesian3_3);
      var nUnit = Cartesian3.normalize(Cartesian3.cross(qUnit, eUnit, scratchCartesian3_4), scratchCartesian3_4);
-     
+
      // Determine the radius of the 'limb' of the ellipsoid.
      var wMagnitude = Math.sqrt(Cartesian3.magnitudeSquared(q) - 1.0);
-     
+
      // Compute the center and offsets.
      var center = Cartesian3.multiplyBy(scalar: qUnit, 1.0 / qMagnitude, scratchCartesian3_1);
      var scalar = wMagnitude / qMagnitude;
      var eastOffset = Cartesian3.multiplyBy(scalar: eUnit, scalar, scratchCartesian3_2);
      var northOffset = Cartesian3.multiplyBy(scalar: nUnit, scalar, scratchCartesian3_3);
-     
+
      // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
      var upperLeft = Cartesian3.add(center, northOffset, horizonPoints[0]);
      Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
      Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
-     
+
      var lowerLeft = Cartesian3.subtract(center, northOffset, horizonPoints[1]);
      Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
      Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
-     
+
      var lowerRight = Cartesian3.subtract(center, northOffset, horizonPoints[2]);
      Cartesian3.add(lowerRight, eastOffset, lowerRight);
      Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
-     
+
      var upperRight = Cartesian3.add(center, northOffset, horizonPoints[3]);
      Cartesian3.add(upperRight, eastOffset, upperRight);
      Cartesian3.multiplyComponents(radii, upperRight, upperRight);
-     
+
      return horizonPoints;
      }
-     
+
      var scratchPickCartesian2 = new Cartesian2();
      var scratchRectCartesian = new Cartesian3();
      var cartoArray = [new Cartographic(), new Cartographic(), new Cartographic(), new Cartographic()];
@@ -2720,27 +2720,27 @@ open class Camera: DRU {
      if (visibility === Intersect.OUTSIDE) {
      return undefined;
      }
-     
+
      var canvas = this._scene.canvas;
      var width = canvas.clientWidth;
      var height = canvas.clientHeight;
-     
+
      var successfulPickCount = 0;
-     
+
      var computedHorizonQuad = computeHorizonQuad(this, ellipsoid);
-     
+
      successfulPickCount += addToResult(0, 0, 0, this, ellipsoid, computedHorizonQuad);
      successfulPickCount += addToResult(0, height, 1, this, ellipsoid, computedHorizonQuad);
      successfulPickCount += addToResult(width, height, 2, this, ellipsoid, computedHorizonQuad);
      successfulPickCount += addToResult(width, 0, 3, this, ellipsoid, computedHorizonQuad);
-     
+
      if (successfulPickCount < 2) {
      // If we have space non-globe in 3 or 4 corners then return the whole globe
      return Rectangle.MAX_VALUE;
      }
-     
+
      result = Rectangle.fromCartographicArray(cartoArray, result);
-     
+
      // Detect if we go over the poles
      var distance = 0;
      var lastLon = cartoArray[3].longitude;
@@ -2753,10 +2753,10 @@ open class Camera: DRU {
      } else {
      distance += diff;
      }
-     
+
      lastLon = lon;
      }
-     
+
      // We are over one of the poles so adjust the rectangle accordingly
      if (CesiumMath.equalsEpsilon(Math.abs(distance), CesiumMath.TWO_PI, CesiumMath.EPSILON9)) {
      result.west = -CesiumMath.PI;
@@ -2767,7 +2767,7 @@ open class Camera: DRU {
      result.south = -CesiumMath.PI_OVER_TWO;
      }
      }
-     
+
      return result;
      };
     */
@@ -2775,7 +2775,7 @@ open class Camera: DRU {
     * @private
     */
     func clone () -> Camera {
-        
+
         let camera = Camera(projection: _projection, mode: _mode, initialWidth: 0, initialHeight: 0)
         camera.position = position
         camera.direction = direction
@@ -2783,21 +2783,21 @@ open class Camera: DRU {
         camera.right = right
         // FIXME: Clone
         //camera.transform = transform
-        
+
         return camera
     }
-    
+
     /*
     /**
     * A function that will execute when a flight completes.
     * @callback Camera~FlightCompleteCallback
     */
-    
+
     /**
     * A function that will execute when a flight is cancelled.
     * @callback Camera~FlightCancelledCallback
     */
-    
+
     return Camera;*/
-    
+
 }

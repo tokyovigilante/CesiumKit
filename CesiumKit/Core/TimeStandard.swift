@@ -26,7 +26,7 @@ public enum TimeStandard {
     *
     */
     case utc
-    
+
     /**
     * Represents the International Atomic Time (TAI) time standard.
     * TAI is the principal time standard to which the other time standards are related.

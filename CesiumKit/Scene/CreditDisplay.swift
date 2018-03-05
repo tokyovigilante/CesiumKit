@@ -21,9 +21,9 @@ import Foundation
  * var creditDisplay = new Cesium.CreditDisplay(creditContainer);
  */
 class CreditDisplay {
-    
+
     fileprivate var _creditRenderer: TextRenderer
-    
+
     /*func displayImageCredits(creditDisplay, imageCredits) {
         var i;
         var index;
@@ -47,28 +47,28 @@ class CreditDisplay {
             }
         }
     }*/
-    
+
     let delimiter: String
-    
-    
+
+
     fileprivate var _defaultImageCredits = [Credit]()
     fileprivate var _defaultTextCredits = [Credit]()
-    
-    
-    
+
+
+
     fileprivate var _displayedCredits = (
         imageCredits: [Credit](),
         textCredits: [Credit]()
     )
-    
+
     fileprivate var _currentFrameCredits = (
         imageCredits: [Int: Credit](),
         textCredits: [Int: Credit]()
     )
-    
+
     init (delimiter: String = ". ") {
         self.delimiter = delimiter
-        
+
         _creditRenderer = TextRenderer(
             string: "CesiumKit",
             fontName: "HelveticaNeue",
@@ -77,13 +77,13 @@ class CreditDisplay {
             viewportRect: Cartesian4(x: 40, y: 40, width: 2000, height: 240)
         )
     }
-    
+
     func update(_ frameState: inout FrameState) {
-        
+
         guard let context = frameState.context else {
             return
         }
-        
+
         let meshSize = _creditRenderer.computeSize(constrainingTo: Double(context.width - 80))
         let viewPortRect = Cartesian4(
             x: 40,
@@ -94,7 +94,7 @@ class CreditDisplay {
         _creditRenderer.viewportRect = viewPortRect
         _creditRenderer.update(&frameState)
     }
-    
+
     fileprivate func contains(_ credit: Credit, inCredits credits: [Credit]) -> Bool {
         for existingCredit in credits {
             if credit == existingCredit {
@@ -103,7 +103,7 @@ class CreditDisplay {
         }
         return false
     }
-    
+
     /**
      * Adds a credit to the list of current credits to be displayed in the credit container
      *
@@ -120,14 +120,14 @@ class CreditDisplay {
             }
         }
     }
-    
+
     /**
      * Adds credits that will persist until they are removed
      *
      * @param {Credit} credit The credit to added to defaults
      */
     func addDefaultCredit (_ credit: Credit) {
-        
+
         if false/*credit.hasImage*/ {
             /*if !contains(credit, inCredits: _defaultImageCredits) {
                 _defaultImageCredits.append(credit)
@@ -138,8 +138,8 @@ class CreditDisplay {
             }
         }
     }
-    
-    
+
+
     /**
      * Removes a default credit
      *
@@ -160,7 +160,7 @@ class CreditDisplay {
             }
         }*/
     }
-    
+
     /**
      * Resets the credit display to a beginning of frame state, clearing out current credits.
      *
@@ -170,7 +170,7 @@ class CreditDisplay {
         _currentFrameCredits.imageCredits.removeAll()
         _currentFrameCredits.textCredits.removeAll()
     }
-    
+
     /**
      * Sets the credit display to the end of frame state, displaying current credits in the credit container
      *
@@ -184,9 +184,9 @@ class CreditDisplay {
             .reduce("") { $0 + $1.text! + delimiter }
         //displayTextCredits(_currentFrameCredits.textCredits)//textCredits)
         //displayImageCredits(imageCredits)
-        
+
         //_displayedCredits.textCredits = textCredits
         //_displayedCredits.imageCredits = imageCredits
     }
-    
+
 }

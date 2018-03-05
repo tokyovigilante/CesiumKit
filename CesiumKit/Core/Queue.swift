@@ -15,7 +15,7 @@
 */
 class Queue<T: Equatable> {
     fileprivate var _array = [T]()
-    
+
     /**
     * Enqueues the specified item.
     *
@@ -24,7 +24,7 @@ class Queue<T: Equatable> {
     func enqueue(_ item: T) {
         _array.append(item)
     }
-    
+
     /**
     * Dequeues an item.  Returns undefined if the queue is empty.
     */
@@ -34,7 +34,7 @@ class Queue<T: Equatable> {
         }
         return _array.remove(at: 0)
     }
-    
+
     var head: T? {
         get {
             if _array.count == 0 {
@@ -43,19 +43,19 @@ class Queue<T: Equatable> {
             return _array[0]
         }
     }
-    
+
     var tail: T? {
         get {
             return _array.last
         }
     }
-    
+
     var count: Int {
         get {
             return _array.count
         }
     }
-    
+
     /**
     * Check whether this queue contains the specified item.
     *
@@ -69,7 +69,7 @@ class Queue<T: Equatable> {
         }
         return false
     }
-    
+
     /**
     * Remove all items from the queue.
     */
@@ -89,7 +89,7 @@ class Queue<T: Equatable> {
             this._array = this._array.slice(this._offset);
             this._offset = 0;
         }
-        
+
         this._array.sort(compareFunction);
     };
     */

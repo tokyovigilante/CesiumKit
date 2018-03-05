@@ -27,7 +27,7 @@ import Foundation
  * @see Scene.skyAtmosphere
  */
 class SkyAtmosphere {
-    
+
     /**
     * Determines if the atmosphere is shown.
     *
@@ -35,7 +35,7 @@ class SkyAtmosphere {
     * @default true
     */
     var show = true
-    
+
     /**
      * Gets the ellipsoid the atmosphere is drawn around.
      * @memberof SkyAtmosphere.prototype
@@ -44,15 +44,15 @@ class SkyAtmosphere {
      * @readonly
      */
     fileprivate (set) var ellipsoid: Ellipsoid
-    
+
     fileprivate let _command = DrawCommand()
-    
+
     fileprivate let _rayleighScaleDepth: Float = 0.25
-    
+
     fileprivate var _rpSkyFromSpace: RenderPipeline? = nil
-    
+
     fileprivate var _rpSkyFromAtmosphere: RenderPipeline? = nil
-    
+
     init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         self.ellipsoid = ellipsoid
 
@@ -66,26 +66,26 @@ class SkyAtmosphere {
         _command.uniformMap = map
         _command.owner = self
     }
-    
+
     func update (_ frameState: FrameState) -> DrawCommand? {
 
         if !show {
             return nil
         }
-        
+
         if frameState.mode != .scene3D && frameState.mode != SceneMode.morphing {
             return nil
         }
-        
+
         // The atmosphere is only rendered during the render pass; it is not pickable, it doesn't cast shadows, etc.
         if !frameState.passes.render {
             return nil
         }
-        
+
         guard let context = frameState.context else {
             return nil
         }
-    
+
         if _command.vertexArray == nil {
             let geometry = EllipsoidGeometry(
                 radii : ellipsoid.radii.multiplyBy(scalar: 1.025),
@@ -93,7 +93,7 @@ class SkyAtmosphere {
                 slicePartitions : 256,
                 vertexFormat : VertexFormat.PositionOnly()
             ).createGeometry(context)
-            
+
             _command.vertexArray = VertexArray(
                 fromGeometry: geometry,
                 context: context,
@@ -103,9 +103,9 @@ class SkyAtmosphere {
                 device: context.device,
                 cullFace: .front
             )
-            
+
             let metalStruct = (_command.uniformMap as! NativeUniformMap).generateMetalUniformStruct()
-            
+
             _rpSkyFromSpace = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
@@ -121,7 +121,7 @@ class SkyAtmosphere {
                 manualUniformStruct: metalStruct,
                 uniformStructSize: MemoryLayout<SkyAtmosphereUniformStruct>.stride
             )
-                        
+
             _rpSkyFromAtmosphere = RenderPipeline.fromCache(
                 context : context,
                 vertexShaderSource : ShaderSource(
@@ -137,16 +137,16 @@ class SkyAtmosphere {
                 manualUniformStruct: metalStruct,
                 uniformStructSize: MemoryLayout<SkyAtmosphereUniformStruct>.stride
             )
-            
+
             _command.uniformMap?.uniformBufferProvider = _rpSkyFromSpace!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
         }
-    
+
         let cameraPosition = frameState.camera!.positionWC
-        
+
         let map = _command.uniformMap as! SkyAtmosphereUniformMap
         map.fCameraHeight2 = Float(cameraPosition.magnitudeSquared)
         map.fCameraHeight = sqrt(map.fCameraHeight2)
-        
+
         if map.fCameraHeight > map.fOuterRadius {
             // Camera in space
             _command.pipeline = _rpSkyFromSpace
@@ -170,7 +170,7 @@ struct SkyAtmosphereUniformStruct: UniformStruct {
 }
 
 private class SkyAtmosphereUniformMap: NativeUniformMap {
-    
+
     var fCameraHeight: Float {
         get {
             return _uniformStruct.u_cameraHeight
@@ -179,7 +179,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_cameraHeight = newValue
         }
     }
-    
+
     var fCameraHeight2: Float {
         get {
             return _uniformStruct.u_cameraHeight2
@@ -188,7 +188,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_cameraHeight2 = newValue
         }
     }
-    
+
     var fOuterRadius: Float {
         get {
             return _uniformStruct.u_outerRadius
@@ -197,7 +197,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_outerRadius = newValue
         }
     }
-    
+
     var fOuterRadius2: Float {
         get {
             return _uniformStruct.u_outerRadius2
@@ -206,7 +206,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_outerRadius2 = newValue
         }
     }
-    
+
     var fInnerRadius: Float {
         get {
             return _uniformStruct.u_innerRadius
@@ -215,7 +215,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_innerRadius = newValue
         }
     }
-    
+
     var fScale: Float {
         get {
             return _uniformStruct.u_scale
@@ -224,7 +224,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_scale = newValue
         }
     }
-    
+
     var fScaleDepth: Float {
         get {
             return _uniformStruct.u_scaleDepth
@@ -233,7 +233,7 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_scaleDepth = newValue
         }
     }
-    
+
     var fScaleOverScaleDepth: Float {
         get {
             return _uniformStruct.u_scaleOverScaleDepth
@@ -242,16 +242,16 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
             _uniformStruct.u_scaleOverScaleDepth = newValue
         }
     }
-    
+
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
+
     lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
         buffer.write(from: &self._uniformStruct, length: MemoryLayout<SkyAtmosphereUniformStruct>.size)
         return []
     }
-    
+
     fileprivate var _uniformStruct = SkyAtmosphereUniformStruct()
-    
+
     let uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name: "u_cameraHeight", type: .floatVec1, count: 1),
         UniformDescriptor(name: "u_cameraHeight2", type: .floatVec1, count: 1),
@@ -262,6 +262,6 @@ private class SkyAtmosphereUniformMap: NativeUniformMap {
         UniformDescriptor(name: "u_scaleDepth", type: .floatVec1, count: 1),
         UniformDescriptor(name: "u_scaleOverScaleDepth", type: .floatVec1, count: 1)
     ]
-    
+
 }
 

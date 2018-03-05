@@ -19,7 +19,7 @@ import Foundation
  * @see ClockStep
  */
 public enum ClockRange {
-    
+
     /**
     * {@link Clock#tick} will always advances the clock in its current direction.
     *
@@ -27,7 +27,7 @@ public enum ClockRange {
     * @constant
     */
     case unbounded
-    
+
     /**
     * When {@link Clock#startTime} or {@link Clock#stopTime} is reached,
     * {@link Clock#tick} will not advance {@link Clock#currentTime} any further.
@@ -36,7 +36,7 @@ public enum ClockRange {
     * @constant
     */
     case clamped
-    
+
     /**
     * When {@link Clock#stopTime} is reached, {@link Clock#tick} will advance
     * {@link Clock#currentTime} to the opposite end of the interval.  When

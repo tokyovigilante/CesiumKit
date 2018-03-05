@@ -15,7 +15,7 @@ import Foundation
  * @alias Intersections2D
  */
 class Intersections2D {
-    
+
      /**
      * Splits a 2D triangle at given axis-aligned threshold value and returns the resulting
      * polygon on a given side of the threshold.  The resulting polygon may have 0, 1, 2,
@@ -43,13 +43,13 @@ class Intersections2D {
      * // result === [2, 0, -1, 1, 0, 0.25, -1, 1, 2, 0.5]
      */
     class func clipTriangleAtAxisAlignedThreshold (threshold thresholdInt: Int, keepAbove: Bool, u0 u0Int: Int, u1 u1Int: Int, u2 u2Int: Int) -> [Double] {
-        
+
         var result = [Double]()
         let threshold = Double(thresholdInt)
         let u0 = Double(u0Int)
         let u1 = Double(u1Int)
         let u2 = Double(u2Int)
-        
+
         let u0Behind: Bool
         let u1Behind: Bool
         let u2Behind: Bool
@@ -62,32 +62,32 @@ class Intersections2D {
             u1Behind = u1 > threshold
             u2Behind = u2 > threshold
         }
-        
+
         let numBehind = Int(u0Behind) + Int(u1Behind) + Int(u2Behind)
-        
+
         var u01Ratio: Double
         var u02Ratio: Double
         var u12Ratio: Double
         var u10Ratio: Double
         var u20Ratio: Double
         var u21Ratio: Double
-        
+
         if numBehind == 1 {
             if u0Behind {
                 u01Ratio = (threshold - u0) / (u1 - u0)
                 u02Ratio = (threshold - u0) / (u2 - u0)
-                
+
                 result.append(1)
-                
+
                 result.append(2)
-                
+
                 if u02Ratio != 1.0 {
                     result.append(-1)
                     result.append(0)
                     result.append(2)
                     result.append(u02Ratio)
                 }
-                
+
                 if u01Ratio != 1.0 {
                     result.append(-1)
                     result.append(0)
@@ -97,18 +97,18 @@ class Intersections2D {
             } else if u1Behind {
                 u12Ratio = (threshold - u1) / (u2 - u1)
                 u10Ratio = (threshold - u1) / (u0 - u1)
-                
+
                 result.append(2);
-                
+
                 result.append(0);
-                
+
                 if u10Ratio != 1.0 {
                     result.append(-1)
                     result.append(1)
                     result.append(0)
                     result.append(u10Ratio)
                 }
-                
+
                 if u12Ratio != 1.0 {
                     result.append(-1)
                     result.append(1)
@@ -118,18 +118,18 @@ class Intersections2D {
             } else if (u2Behind) {
                 u20Ratio = (threshold - u2) / (u0 - u2);
                 u21Ratio = (threshold - u2) / (u1 - u2);
-                
+
                 result.append(0)
-                
+
                 result.append(1)
-                
+
                 if u21Ratio != 1.0 {
                     result.append(-1)
                     result.append(2)
                     result.append(1)
                     result.append(u21Ratio)
                 }
-                
+
                 if u20Ratio != 1.0 {
                     result.append(-1)
                     result.append(2)
@@ -141,14 +141,14 @@ class Intersections2D {
             if !u0Behind && u0 != threshold {
                 u10Ratio = (threshold - u1) / (u0 - u1)
                 u20Ratio = (threshold - u2) / (u0 - u2)
-                
+
                 result.append(0)
-                
+
                 result.append(-1)
                 result.append(1)
                 result.append(0)
                 result.append(u10Ratio)
-                
+
                 result.append(-1)
                 result.append(2)
                 result.append(0)
@@ -156,14 +156,14 @@ class Intersections2D {
             } else if !u1Behind && u1 != threshold {
                 u21Ratio = (threshold - u2) / (u1 - u2)
                 u01Ratio = (threshold - u0) / (u1 - u0)
-                
+
                 result.append(1)
-                
+
                 result.append(-1)
                 result.append(2)
                 result.append(1)
                 result.append(u21Ratio)
-                
+
                 result.append(-1)
                 result.append(0)
                 result.append(1)
@@ -171,14 +171,14 @@ class Intersections2D {
             } else if !u2Behind && u2 != threshold {
                 u02Ratio = (threshold - u0) / (u2 - u0)
                 u12Ratio = (threshold - u1) / (u2 - u1)
-                
+
                 result.append(2);
-                
+
                 result.append(-1)
                 result.append(0)
                 result.append(2)
                 result.append(u02Ratio)
-                
+
                 result.append(-1)
                 result.append(1)
                 result.append(2)
@@ -193,7 +193,7 @@ class Intersections2D {
         // else Completely behind threshold
         return result
     }
-    
+
      /**
      * Compute the barycentric coordinates of a 2D position within a 2D triangle.
      *
@@ -214,7 +214,7 @@ class Intersections2D {
      * // result === new Cesium.Cartesian3(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0);
      */
     static func computeBarycentricCoordinates (x: Double, y: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Cartesian3 {
-        
+
         let x1mx3 = x1 - x3
         let x3mx2 = x3 - x2
         let y2my3 = y2 - y3
@@ -225,7 +225,7 @@ class Intersections2D {
         let l1 = (y2my3 * xmx3 + x3mx2 * ymy3) * inverseDeterminant
         let l2 = (-y1my3 * xmx3 + x1mx3 * ymy3) * inverseDeterminant
         let l3 = 1.0 - l1 - l2
-        
+
         return Cartesian3(x: l1, y: l2, z: l3)
     }
 

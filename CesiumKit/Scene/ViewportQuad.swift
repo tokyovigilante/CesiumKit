@@ -22,7 +22,7 @@ import Foundation
 * viewportQuad.material.uniforms.color = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
 */
 open class ViewportQuad: Primitive {
-        
+
     /**
      * The BoundingRectangle defining the quad's position within the viewport.
      *
@@ -32,7 +32,7 @@ open class ViewportQuad: Primitive {
      * viewportQuad.rectangle = new Cesium.BoundingRectangle(0, 0, 80, 40);
      */
     open var rectangle: Cartesian4
-    
+
     /**
      * The surface appearance of the viewport quad.  This can be one of several built-in {@link Material} objects or a custom material, scripted with
      * {@link https://github.com/AnalyticalGraphicsInc/cesium/wiki/Fabric|Fabric}.
@@ -52,18 +52,18 @@ open class ViewportQuad: Primitive {
      * @see {@link https://github.com/AnalyticalGraphicsInc/cesium/wiki/Fabric|Fabric}
      */
     var material: Material
-    
+
     fileprivate var _material: Material! = nil
-    
+
     fileprivate var _overlayCommand: DrawCommand! = nil
-    
+
     fileprivate var _rs: RenderState! = nil
-    
+
     public init (rectangle: Cartesian4, material: Material = Material(fromType: ColorMaterialType(fabric: ColorFabricDescription(), source: nil))) {
         self.rectangle = rectangle
         self.material = material
     }
-    
+
     /**
     * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
     * get the draw commands needed to render this primitive.
@@ -92,15 +92,15 @@ open class ViewportQuad: Primitive {
                 overlayCommand.renderState = _rs
             }
         }
-        
+
         if !frameState.passes.render {
             return
         }
-        
+
         if _material !== material || _overlayCommand == nil {
             // Recompile shader when material changes
             _material = material
-            
+
             let fs = ShaderSource(
                 sources: [_material.shaderSource, Shaders["ViewportQuadFS"]].flatMap { $0 }
             )
@@ -114,30 +114,30 @@ open class ViewportQuad: Primitive {
                 depthStencil: context.depthTexture,
                 blendingState: BlendingState.AlphaBlend()
             )
-            
+
             _overlayCommand.pass = .overlay
-            
+
             if let map = _overlayCommand.uniformMap {
                 map.uniformBufferProvider = _overlayCommand.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
             }
         }
-        
+
         _material.update(context)
-        
+
         _overlayCommand.uniformMap = _material.uniformMap
-        
+
         frameState.commandList.append(_overlayCommand)
-        
+
     }
-    
+
 }
 
 struct ViewportQuadOverrides {
-    
+
     var renderState: RenderState? = nil
-    
+
     var uniformMap: UniformMap? = nil
-    
+
     var owner: AnyObject? = nil
 }
 

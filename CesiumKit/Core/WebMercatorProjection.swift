@@ -22,11 +22,11 @@ import Foundation
 * @see GeographicProjection
 */
 struct WebMercatorProjection: MapProjection {
-    
+
     let ellipsoid: Ellipsoid
     let semimajorAxis: Double
     let oneOverSemimajorAxis: Double
-    
+
     /**
     * The maximum latitude (both North and South) supported by a Web Mercator
     * (EPSG:3857) projection.  Technically, the Mercator projection is defined
@@ -42,7 +42,7 @@ struct WebMercatorProjection: MapProjection {
     * @type {Number}
     */
     static let maximumLatitude: Double = WebMercatorProjection.mercatorAngleToGeodeticLatitude(.pi)
-    
+
     init (ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
         self.ellipsoid = ellipsoid
         semimajorAxis = ellipsoid.maximumRadius
@@ -58,7 +58,7 @@ struct WebMercatorProjection: MapProjection {
     static func mercatorAngleToGeodeticLatitude(_ mercatorAngle: Double) -> Double {
         return .pi/2 - (2.0 * atan(exp(-mercatorAngle)))
     }
-    
+
     /**
     * Converts a geodetic latitude in radians, in the range -PI/2 to PI/2, to a Mercator
     * angle in the range -PI to PI.
@@ -77,7 +77,7 @@ struct WebMercatorProjection: MapProjection {
         let sinLatitude = sin(clampedLat);
         return 0.5 * log((1.0 + sinLatitude) / (1.0 - sinLatitude));
     }
-    
+
     /**
     * Converts geodetic ellipsoid coordinates, in radians, to the equivalent Web Mercator
     * X, Y, Z coordinates expressed in meters and returned in a {@link Cartesian3}.  The height
@@ -93,7 +93,7 @@ struct WebMercatorProjection: MapProjection {
             y: WebMercatorProjection.geodeticLatitudeToMercatorAngle(cartographic.latitude) * semimajorAxis,
             z: cartographic.height)
     }
-    
+
     /**
     * Converts Web Mercator X, Y coordinates, expressed in meters, to a {@link Cartographic}
     * containing geodetic ellipsoid coordinates.  The Z coordinate is copied unmodified to the

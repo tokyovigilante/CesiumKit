@@ -26,7 +26,7 @@ public struct Rectangle {
     var south: Double
     var east: Double
     var north: Double
-    
+
     /**
     * Gets the width of the rectangle in radians.
     * @memberof Rectangle.prototype
@@ -41,7 +41,7 @@ public struct Rectangle {
             }
         }
     }
-    
+
     /**
     * Gets the height of the rectangle in radians.
     * @memberof Rectangle.prototype
@@ -52,14 +52,14 @@ public struct Rectangle {
             return north - south
         }
     }
-    
+
     public init(west: Double = 0.0, south: Double = 0.0, east: Double = 0.0, north: Double = 0.0) {
         self.west = west
         self.south = south
         self.east = east
         self.north = north
     }
-    
+
     /**
     * Creates an rectangle given the boundary longitude and latitude in degrees.
     *
@@ -79,8 +79,8 @@ public struct Rectangle {
         self.east = Math.toRadians(east)
         self.north = Math.toRadians(north)
     }
-    
-    
+
+
     /**
     * Creates the smallest possible Rectangle that encloses all positions in the provided array.
     *
@@ -89,29 +89,29 @@ public struct Rectangle {
     * @returns {Rectangle} The modified result parameter or a new Rectangle instance if none was provided.
     */
     static func fromCartographicArray(_ cartographics: [Cartographic]) -> Rectangle {
-        
+
         var west = Double.infinity
         var east = -Double.infinity
         var westOverIDL = Double.infinity
         var eastOverIDL = -Double.infinity
         var south = Double.infinity
         var north = -Double.infinity
-        
+
         for cartographic in cartographics {
             west = min(west, cartographic.longitude)
             east = max(east, cartographic.longitude)
             south = min(south, cartographic.latitude)
             north = max(north, cartographic.latitude)
-            
+
             let lonAdjusted = cartographic.longitude >= 0 ? cartographic.longitude : cartographic.longitude +  Math.TwoPi
             westOverIDL = min(westOverIDL, lonAdjusted)
             eastOverIDL = max(eastOverIDL, lonAdjusted)
         }
-        
+
         if east - west > eastOverIDL - westOverIDL {
             west = westOverIDL
             east = eastOverIDL
-            
+
             if east > .pi {
                 east = east - Math.TwoPi
             }
@@ -121,7 +121,7 @@ public struct Rectangle {
         }
         return Rectangle(west: west, south: south, east: east, north: north)
     }
-    
+
     /**
     * Stores the provided instance into the provided array.
     *
@@ -130,7 +130,7 @@ public struct Rectangle {
     * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
     */
     /*func pack(inout array: [Float], startingIndex: Int = 0)  {
-    
+
     if array.count < startingIndex - Int(Rectangle.packedLength)
     {
     array.append(Float(west))
@@ -143,7 +143,7 @@ public struct Rectangle {
     array.insert(Float(east), atIndex: startingIndex+2)
     array.insert(Float(north), atIndex: startingIndex+3)
     }
-    
+
     /**
     * Retrieves an instance from a packed array.
     *
@@ -159,8 +159,8 @@ public struct Rectangle {
     east: Double(array[startingIndex+2]),
     north: Double(array[startingIndex+3]))
     }*/
-    
-    
+
+
     /**
     * Compares the provided rectangles and returns <code>true</code> if they are equal,
     * <code>false</code> otherwise.
@@ -172,7 +172,7 @@ public struct Rectangle {
     func equals(_ other: Rectangle) -> Bool {
         return (west == other.west) && (south == other.south) && (east == other.east) && (north == other.north)
     }
-    
+
     /**
     * Compares the provided Rectangle with this Rectangle componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -188,7 +188,7 @@ public struct Rectangle {
             abs(east - other.east) <= epsilon &&
             abs(north - other.north) <= epsilon
     }
-    
+
     /**
     * Checks an Rectangle's properties and throws if they are not in valid ranges.
     *
@@ -205,7 +205,7 @@ public struct Rectangle {
         assert(west > -.pi && west < .pi, "west must be in the interval [-Pi, Pi].")
         assert(east > -.pi && east < .pi, "east must be in the interval [-Pi, Pi].")
     }
-    
+
     /**
     * Computes the southwest corner of an rectangle.
     *
@@ -216,7 +216,7 @@ public struct Rectangle {
     var southwest: Cartographic {
         return Cartographic(longitude: west, latitude: south, height:0.0)
     }
-    
+
     /**
     * Computes the northwest corner of an rectangle.
     *
@@ -227,8 +227,8 @@ public struct Rectangle {
     var northwest: Cartographic {
         return Cartographic(longitude: west, latitude: north, height:0.0)
     }
-    
-    
+
+
     /**
     * Computes the northeast corner of an rectangle.
     *
@@ -239,8 +239,8 @@ public struct Rectangle {
     var northeast: Cartographic {
         return Cartographic(longitude: east, latitude: north, height:0.0)
     }
-    
-    
+
+
     /**
     * Computes the southeast corner of an rectangle.
     *
@@ -251,7 +251,7 @@ public struct Rectangle {
     var southeast: Cartographic {
         return Cartographic(longitude: east, latitude: south, height:0.0)
     }
-    
+
     /**
     * Computes the center of an rectangle.
     *
@@ -268,10 +268,10 @@ public struct Rectangle {
         }
         let longitude = Math.negativePiToPi((west + east) * 0.5)
         let latitude = (south + north) * 0.5
-        
+
         return Cartographic(longitude: longitude, latitude: latitude)
     }
-    
+
     /**
     * Computes the intersection of two rectangles
     *
@@ -281,39 +281,39 @@ public struct Rectangle {
     * @returns {Rectangle|undefined} The modified result parameter, a new Rectangle instance if none was provided or undefined if there is no intersection.
     */
     func intersection(_ other: Rectangle) -> Rectangle? {
-        
+
         var thisEast = self.east
         var thisWest = self.west
-        
+
         var otherEast = other.east
         var otherWest = other.west
-        
+
         if (thisEast < thisWest && otherEast > 0.0) {
             thisEast += Math.TwoPi
         } else if (otherEast < otherWest && thisEast > 0.0) {
             otherEast += Math.TwoPi
         }
-        
+
         if (thisEast < thisWest && otherWest < 0.0) {
             otherWest += Math.TwoPi
         } else if (otherEast < otherWest && thisWest < 0.0) {
             thisWest += Math.TwoPi
         }
-        
+
         let west = Math.negativePiToPi(max(thisWest, otherWest))
         let east = Math.negativePiToPi(min(thisEast, otherEast))
-        
+
         if (self.west < self.east || other.west < other.east) && east <= west {
             return nil
         }
-        
+
         let south = max(self.south, other.south)
         let north = min(self.north, other.north)
-        
+
         if south > north {
             return nil
         }
-        
+
         return Rectangle(west: west, south: south, east: east, north: north)
     }
     /*
@@ -334,19 +334,19 @@ public struct Rectangle {
     throw new DeveloperError('otherRectangle is required.');
     }
     //>>includeEnd('debug');
-    
+
     if (!defined(result)) {
     result = new Rectangle();
     }
-    
+
     result.west = Math.min(rectangle.west, otherRectangle.west);
     result.south = Math.min(rectangle.south, otherRectangle.south);
     result.east = Math.max(rectangle.east, otherRectangle.east);
     result.north = Math.max(rectangle.north, otherRectangle.north);
-    
+
     return result;
     };
-    
+
     /**
      * Computes a rectangle by enlarging the provided rectangle until it contains the provided cartographic.
      *
@@ -364,16 +364,16 @@ public struct Rectangle {
     throw new DeveloperError('cartographic is required.');
     }
     //>>includeEnd('debug');
-    
+
     if (!defined(result)) {
     result = new Rectangle();
     }
-    
+
     result.west = Math.min(rectangle.west, cartographic.longitude);
     result.south = Math.min(rectangle.south, cartographic.latitude);
     result.east = Math.max(rectangle.east, cartographic.longitude);
     result.north = Math.max(rectangle.north, cartographic.latitude);
-    
+
     return result;
     }
 
@@ -388,7 +388,7 @@ public struct Rectangle {
     func contains(_ cartographic: Cartographic) -> Bool {
         var longitude = cartographic.longitude
         let latitude = cartographic.latitude
-        
+
         let west = self.west
         var east = self.east
         if east < west {
@@ -402,7 +402,7 @@ public struct Rectangle {
             latitude >= south &&
             latitude <= north
     }
-    
+
     /**
     * Samples an rectangle so that it includes a list of Cartesian points suitable for passing to
     * {@link BoundingSphere#fromPoints}.  Sampling is necessary to account
@@ -415,25 +415,25 @@ public struct Rectangle {
     * @returns {Cartesian3[]} The modified result parameter or a new Array of Cartesians instances if none was provided.
     */
     func subsample(_ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), surfaceHeight: Double = 0.0) -> [Cartesian3] {
-        
+
         var result = [Cartesian3]()
-        
+
         var lla = Cartographic()
         lla.height = surfaceHeight
-        
+
         lla.longitude = west
         lla.latitude = north
         result.append(ellipsoid.cartographicToCartesian(lla))
-        
+
         lla.longitude = east;
         result.append(ellipsoid.cartographicToCartesian(lla))
-        
+
         lla.latitude = south;
         result.append(ellipsoid.cartographicToCartesian(lla))
-        
+
         lla.longitude = west;
         result.append(ellipsoid.cartographicToCartesian(lla))
-        
+
         if (north < 0.0) {
             lla.latitude = north
         } else if (south > 0.0) {
@@ -441,24 +441,24 @@ public struct Rectangle {
         } else {
             lla.latitude = 0.0
         }
-        
+
         for i in 1..<8 {
             lla.longitude = -.pi + Double(i) * .pi/2
             if (contains(lla)) {
                 result.append(ellipsoid.cartographicToCartesian(lla))
             }
         }
-        
+
         if (lla.latitude == 0.0) {
             lla.longitude = west
             result.append(ellipsoid.cartographicToCartesian(lla))
-            
+
             lla.longitude = east
             result.append(ellipsoid.cartographicToCartesian(lla))
         }
         return result;
     }
-    
+
     /**
     * The largest possible rectangle.
     *
@@ -468,11 +468,11 @@ public struct Rectangle {
     static func maxValue() -> Rectangle {
         return Rectangle(west: -.pi, south: -.pi/2, east: .pi, north: .pi/2)
     }
-    
+
 }
 
 extension Rectangle: Packable {
-    
+
     /**
      * The number of elements used to pack the object into an array.
      * @type {Number}
@@ -480,7 +480,7 @@ extension Rectangle: Packable {
     static func packedLength () -> Int {
         return 4
     }
-    
+
     init(array: [Double], startingIndex: Int = 0) {
         self.init()
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
@@ -488,8 +488,8 @@ extension Rectangle: Packable {
             memcpy(&self, pointer.baseAddress, Rectangle.packedLength() * MemoryLayout<Double>.stride)
         }
     }
-    
-    
+
+
 }
 
 

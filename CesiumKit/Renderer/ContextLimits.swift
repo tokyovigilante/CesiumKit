@@ -11,9 +11,9 @@ import Metal
 
 // see https://developer.apple.com/library/mac/documentation/Miscellaneous/Conceptual/MetalProgrammingGuide/MetalFeatureSetTables/MetalFeatureSetTables.html
 class ContextLimits {
-    
+
     fileprivate let _highestSupportedFeatureSet: MTLFeatureSet
-    
+
     /**
     * The maximum number of texture units that can be used from the vertex and fragment
     * shader with this WebGL implementation.  The minimum is eight.  If both shaders access the
@@ -47,7 +47,7 @@ class ContextLimits {
             }
         #endif
     }
-    
+
     /**
     * The approximate maximum cube mape width and height supported by this WebGL implementation.
     * The minimum is 16, but most desktop and laptop implementations will support much larger sizes like 8,192.
@@ -58,7 +58,7 @@ class ContextLimits {
     var maximumCubeMapSize: Int {
         return maximumTextureSize
     }
-    
+
     /*
     /**
     * The maximum number of <code>vec4</code>, <code>ivec4</code>, and <code>bvec4</code>
@@ -141,7 +141,7 @@ class ContextLimits {
     return ContextLimits._maximumVaryingVectors;
     }
     },
-    
+
     /**
     * The maximum number of <code>vec4</code> vertex attributes supported by this WebGL implementation.  The minimum is eight.
     * @memberof ContextLimits
@@ -187,7 +187,7 @@ class ContextLimits {
     var minimumAliasedLineWidth: Int {
         return 1
     }
-    
+
     /**
     * The maximum aliased line width, in pixels, supported by this WebGL implementation.  It will be at least one.
     * @memberof ContextLimits
@@ -197,7 +197,7 @@ class ContextLimits {
     var maximumAliasedLineWidth: Int {
         return 511
     }
-    
+
     /**
     * The minimum aliased point size, in pixels, supported by this WebGL implementation.  It will be at most one.
     * @memberof ContextLimits
@@ -207,7 +207,7 @@ class ContextLimits {
     var minimumAliasedPointSize: Int {
         return 1
     }
-    
+
     /**
     * The maximum aliased point size, in pixels, supported by this WebGL implementation.  It will be at least one.
     * @memberof ContextLimits
@@ -217,7 +217,7 @@ class ContextLimits {
     var maximumAliasedPointSize: Int {
         return 511
     }
-    
+
     /**
     * The maximum supported width of the viewport.  It will be at least as large as the visible width of the associated canvas.
     * @memberof ContextLimits
@@ -227,7 +227,7 @@ class ContextLimits {
     var maximumViewportWidth: Int {
         return maximumTextureSize
     }
-    
+
     /**
     * The maximum supported height of the viewport.  It will be at least as large as the visible height of the associated canvas.
     * @memberof ContextLimits
@@ -237,7 +237,7 @@ class ContextLimits {
     var maximumViewportHeight: Int {
         return maximumTextureSize
     }
-    
+
     /**
     * The maximum degree of anisotropy for texture filtering
     * @memberof ContextLimits
@@ -258,7 +258,7 @@ class ContextLimits {
     }
     },
     */
-    
+
     /**
     * The maximum number of color attachments supported.
     * @memberof ContextLimits
@@ -288,9 +288,9 @@ class ContextLimits {
                 fatalError("Unknown Metal GPU feature set")
             }
         #endif
-        
+
     }
-    
+
     /**
     * High precision float supported (<code>highp</code>) in fragment shaders.
     * @memberof ContextLimits
@@ -299,7 +299,7 @@ class ContextLimits {
     var highpFloatSupported: Bool {
         return true
     }
-    
+
     /**
     * High precision int supported (<code>highp</code>) in fragment shaders.
     * @memberof ContextLimits
@@ -308,18 +308,18 @@ class ContextLimits {
     var highpIntSupported: Bool {
         return true
     }
-    
+
     init (device: MTLDevice) {
-        
+
         var highestSupportedFeatureSet: MTLFeatureSet
         #if os(OSX)
             let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.osx_GPUFamily1_v1
             highestSupportedFeatureSet = .osx_GPUFamily1_v1
-            
+
             #elseif os(iOS)
             let maxKnownFeatureSet: MTLFeatureSet = MTLFeatureSet.iOS_GPUFamily1_v1
             highestSupportedFeatureSet = .iOS_GPUFamily1_v1
-            
+
         #endif
         for featureSet in stride(from: maxKnownFeatureSet.rawValue, through: 0, by: -1) {
             let currentFeatureSet = MTLFeatureSet(rawValue: featureSet)!
@@ -331,5 +331,5 @@ class ContextLimits {
         }
         _highestSupportedFeatureSet = highestSupportedFeatureSet
     }
-    
+
 }

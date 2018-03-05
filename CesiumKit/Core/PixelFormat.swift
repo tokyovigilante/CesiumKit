@@ -16,7 +16,7 @@ enum PixelFormat: Int {
     * @constant
     */
     case DepthComponent = 0x1902,
-    
+
     /**
     * 0x84F9.  A pixel format containing a depth and stencil value, most often used with {@link PixelDatatype.UNSIGNED_INT_24_8_WEBGL}.
     *
@@ -24,7 +24,7 @@ enum PixelFormat: Int {
     * @constant
     */
     DepthStencil = 0x84F9,
-    
+
     /**
     * 0x1906.  A pixel format containing an alpha channel.
     *
@@ -32,7 +32,7 @@ enum PixelFormat: Int {
     * @constant
     */
     Alpha = 0x1906,
-    
+
     /**
     * 0x1907.  A pixel format containing red, green, and blue channels.
     *
@@ -40,7 +40,7 @@ enum PixelFormat: Int {
     * @constant
     */
     RGB = 0x1907,
-    
+
     /**
     * 0x1908.  A pixel format containing red, green, blue, and alpha channels.
     *
@@ -48,7 +48,7 @@ enum PixelFormat: Int {
     * @constant
     */
     RGBA = 0x1908,
-    
+
     /**
     * 0x1909.  A pixel format containing a luminance (intensity) channel.
     *
@@ -56,7 +56,7 @@ enum PixelFormat: Int {
     * @constant
     */
     Luminance = 0x1909,
-    
+
     /**
     * 0x190A.  A pixel format containing luminance (intensity) and alpha channels.
     *
@@ -65,7 +65,7 @@ enum PixelFormat: Int {
     * @default 0x190A
     */
     LuminanceAlpha = 0x190A
-    
+
     func isColorFormat() -> Bool {
         return self == PixelFormat.Alpha ||
             self == PixelFormat.RGB ||
@@ -73,7 +73,7 @@ enum PixelFormat: Int {
             self == PixelFormat.Luminance ||
             self == PixelFormat.LuminanceAlpha
     }
-    
+
     func isDepthFormat() -> Bool {
         return self == PixelFormat.DepthComponent ||
             self == PixelFormat.DepthStencil

@@ -17,18 +17,18 @@ private let _gregorianGMTCalendar: Calendar = {
 
 
 extension Date {
-    
+
     /**
      Calculate the [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time) offset for a given UTC date
-     
+
      - parameter date: UTC date to calculate offset for.
     */
     static func taiOffsetForDate (_ date: Date? = nil) -> TimeInterval {
-        
+
         let taiDate = date ?? Date()
-        
+
         var taiOffset = 0
-    
+
         for leapSecond in _leapSeconds {
             if leapSecond.date.compare(taiDate) == .orderedAscending {
                 taiOffset = leapSecond.offset
@@ -38,18 +38,18 @@ extension Date {
         }
         return TimeInterval(taiOffset)
     }
-    
+
     static func taiDate() -> Date {
         return Date().taiOffsetDateForUTCDate()
     }
-    
+
     /**
      Returns an NSDate using [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time) for a date in UTC.
     */
     func taiOffsetDateForUTCDate() -> Date {
         return self.addingTimeInterval(Date.taiOffsetForDate(self))
     }
-    
+
     /**
      Creates an NSDate using UTC for a date in TAI.
      */
@@ -65,14 +65,14 @@ extension Date {
         let macReferenceOffset = TimeConstants.JulianEpochToMacEpochDifference - timeInterval
         self.init(timeIntervalSinceReferenceDate: macReferenceOffset)
     }
-    
+
     func computeJulianDateComponents() -> (dayNumber: Int, secondsOfDay: Double) {
         // Algorithm from page 604 of the Explanatory Supplement to the
         // Astronomical Almanac (Seidelmann 1992).
-        
+
         let calendar = _gregorianGMTCalendar
         let dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second, .nanosecond], from: self)
-        
+
         let a = ((dateComponents.month! - 14) / 12) | 0
         let b = dateComponents.year! + 4800 + a
         var dayNumber: Int = ((1461 * b) / 4) | 0
@@ -80,33 +80,33 @@ extension Date {
         dayNumber -= ((3 * (((b + 100) / 100) | 0)) / 4) | 0
         dayNumber += dateComponents.day!
         dayNumber -= 32075
-        
+
         // JulianDates are noon-based
         var hour = dateComponents.hour! - 12
         if hour < 0 {
             hour += 24
         }
-        
+
         let secondsOfDay: Double = Double(dateComponents.second!) + (Double(hour) * TimeConstants.SecondsPerHour) + (Double(dateComponents.minute!) * TimeConstants.SecondsPerMinute) + (Double(dateComponents.nanosecond!) * TimeConstants.SecondsPerNanosecond)
-        
+
         if secondsOfDay >= 43200.0 {
             dayNumber -= 1
         }
 
         return (dayNumber, secondsOfDay)
     }
-    
+
     /**
      Returns an NSDate formatted from an ISO8601 date in UTC with the format yyyy-MM-ddTHH:mm:ssZ
-     
+
      - parameter isoDate: Date string to generate date from.
-     
+
      - returns: An NSDate object from the provided string or nil if the conversion failed.
      */
     static func fromUTCISO8601String (_ isoDate: String) -> Date? {
         return _iso8601Formatter.date(from: isoDate)
     }
-    
+
     fileprivate static let _leapSeconds: [(date: Date, offset: Int)] = [
         (Date.fromUTCISO8601String("1972-01-01T00:00:00Z")!, 10), // January 1, 1972 00:00:00 UTC
         (Date.fromUTCISO8601String("1972-07-01T00:00:00Z")!, 11), // July 1, 1972 00:00:00 UTC
@@ -136,7 +136,7 @@ extension Date {
         (Date.fromUTCISO8601String("2012-07-01T00:00:00Z")!, 35), // July 1, 2012 00:00:00 UTC
         (Date.fromUTCISO8601String("2015-07-01T00:00:00Z")!, 36)  // July 1, 2015 00:00:00 UTC
     ]
-    
+
 }
 
 private var _iso8601Formatter: DateFormatter {

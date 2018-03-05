@@ -27,7 +27,7 @@ public enum HorizontalOrigin {
      * @constant
      */
     case center
-    
+
     /**
      * The origin is on the left side of the object.
      *

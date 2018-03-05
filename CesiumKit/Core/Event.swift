@@ -17,7 +17,7 @@ open class Event {
     defineProperties,
     DeveloperError) {
     "use strict";
-    
+
     /**
     * A generic utility class for managing subscribers for a particular event.
     * This class is usually instantiated inside of a container class and
@@ -44,7 +44,7 @@ open class Event {
     this._toRemove = [];
     this._insideRaiseEvent = false;
     };
-    
+
     defineProperties(Event.prototype, {
     /**
     * The number of listeners currently subscribed to the event.
@@ -57,7 +57,7 @@ open class Event {
     }
     }
     });
-    
+
     /**
     * Registers a callback function to be executed whenever the event is raised.
     * An optional scope can be provided to serve as the <code>this</code> pointer
@@ -77,16 +77,16 @@ open class Event {
     throw new DeveloperError('listener is required and must be a function.');
     }
     //>>includeEnd('debug');
-    
+
     this._listeners.push(listener);
     this._scopes.push(scope);
-    
+
     var event = this;
     return function() {
     event.removeEventListener(listener, scope);
     };
     };
-    
+
     /**
     * Unregisters a previously registered callback.
     *
@@ -103,10 +103,10 @@ open class Event {
     throw new DeveloperError('listener is required and must be a function.');
     }
     //>>includeEnd('debug');
-    
+
     var listeners = this._listeners;
     var scopes = this._scopes;
-    
+
     var index = -1;
     for (var i = 0; i < listeners.length; i++) {
     if (listeners[i] === listener && scopes[i] === scope) {
@@ -114,7 +114,7 @@ open class Event {
     break;
     }
     }
-    
+
     if (index !== -1) {
     if (this._insideRaiseEvent) {
     //In order to allow removing an event subscription from within
@@ -129,7 +129,7 @@ open class Event {
     }
     return true;
     }
-    
+
     return false;
     };
     */
@@ -143,19 +143,19 @@ open class Event {
     */
     func raiseEvent() {
         /*this._insideRaiseEvent = true;
-        
+
         var i;
         var listeners = this._listeners;
         var scopes = this._scopes;
         var length = listeners.length;
-        
+
         for (i = 0; i < length; i++) {
         var listener = listeners[i];
         if (defined(listener)) {
         listeners[i].apply(scopes[i], arguments);
         }
         }
-        
+
         //Actually remove items removed in removeEventListener.
         var toRemove = this._toRemove;
         length = toRemove.length;
@@ -165,10 +165,10 @@ open class Event {
         scopes.splice(index, 1);
         }
         toRemove.length = 0;
-        
+
         this._insideRaiseEvent = false;*/
     }
-    
+
     /**
     * A function that removes a listener.
     * @callback Event~RemoveCallback

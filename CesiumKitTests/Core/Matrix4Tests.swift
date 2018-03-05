@@ -9,7 +9,7 @@
 import XCTest
 
 class Matrix4Tests: XCTestCase {
-    
+
     override func setUp() {
 
     }
@@ -338,7 +338,7 @@ expect(returnedResult).toBe(result);
         var result = Matrix4.computePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1, far: 2)
         XCTAssertTrue(expected.equals(result), "testComputePerspectiveOffCenterWorks")
     }
-    
+
     func testComputeInfinitePerspectiveOffCenterWorks () {
         let expected = Matrix4(2, 0, 3, 0, 0, 2, 5, 0, 0, 0, -1, -2, 0, 0, -1, 0)
         var result = Matrix4.computeInfinitePerspectiveOffCenter(left: 1, right: 2, bottom: 2, top: 3, near: 1)
@@ -407,7 +407,7 @@ expect(resultColumn3).toEqual(expectedColumn3);
 */
     func testSetColumnWorksForEachColumn () {
         let matrix = Matrix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0)
-        
+
         let expected = Matrix4(17.0, 2.0, 3.0, 4.0, 18.0, 6.0, 7.0, 8.0, 19.0, 10.0, 11.0, 12.0, 20.0, 14.0, 15.0, 16.0)
         let returnedResult = matrix.setColumn(0, cartesian: Cartesian4(x: 17.0, y: 18.0, z: 19.0, w: 20.0))
         XCTAssertEqual(expected, returnedResult, "testSetColumnWorksForEachColumn 1")
@@ -416,12 +416,12 @@ expect(resultColumn3).toEqual(expectedColumn3);
         returnedResult = Matrix4.setColumn(matrix, 1, new Cartesian4(17.0, 18.0, 19.0, 20.0), result);
         expect(result).toBe(returnedResult);
         expect(result).toEqual(expected);
-        
+
         expected = new Matrix4(1.0, 2.0, 17.0, 4.0, 5.0, 6.0, 18.0, 8.0, 9.0, 10.0, 19.0, 12.0, 13.0, 14.0, 20.0, 16.0);
         returnedResult = Matrix4.setColumn(matrix, 2, new Cartesian4(17.0, 18.0, 19.0, 20.0), result);
         expect(result).toBe(returnedResult);
         expect(result).toEqual(expected);
-        
+
         expected = new Matrix4(1.0, 2.0, 3.0, 17.0, 5.0, 6.0, 7.0, 18.0, 9.0, 10.0, 11.0, 19.0, 13.0, 14.0, 15.0, 20.0);
         returnedResult = Matrix4.setColumn(matrix, 3, new Cartesian4(17.0, 18.0, 19.0, 20.0), result);
         expect(result).toBe(returnedResult);
@@ -858,14 +858,14 @@ var matrix = new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 expect(matrix.toString()).toEqual('(1, 2, 3, 4)\n(5, 6, 7, 8)\n(9, 10, 11, 12)\n(13, 14, 15, 16)');
 });
 */
-    
+
     func testGetTranslationWorks () {
         var matrix = Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         var expected = Cartesian3(x: 4, y: 8, z: 12)
         var result = matrix.translation()
         XCTAssertTrue(expected == result, "getTranslation works")
     }
-    
+
     func testGetRotationWorks () {
         let matrix = Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         let expected = Matrix3(1, 2, 3, 5, 6, 7, 9, 10, 11);
@@ -879,13 +879,13 @@ expect(matrix.toString()).toEqual('(1, 2, 3, 4)\n(5, 6, 7, 8)\n(9, 10, 11, 12)\n
             -0.40,  0.41, 0.82,  0.00,
             0.57, -0.59, 0.57, -3.86,
             0.00,  0.00, 0.00,  1.00)
-        
+
         var expected = Matrix4(
             0.7150830193944467,    -0.3976559229803265,  0.5720664155155574,  2.2081763638900513,
             0.6930574657657118,    0.40901752077976433, -0.5884111702445733, -2.271267117144053,
             0.0022922521876059163, 0.8210249357172755,   0.5732623731786561,  2.2127927604696125,
             0.0,                   0.0,                  0.0,                 1.0);
-        
+
         var result = matrix.inverse()
         println("expect \(expected)")
         println("expect \(result)")
@@ -894,7 +894,7 @@ expect(matrix.toString()).toEqual('(1, 2, 3, 4)\n(5, 6, 7, 8)\n(9, 10, 11, 12)\n
         expect(expected).toEqualEpsilon(returnedResult, CesiumMath.EPSILON20);
         expect(Matrix4.multiply(returnedResult, matrix, new Matrix4())).toEqualEpsilon(Matrix4.IDENTITY, CesiumMath.EPSILON15);*/
     }
-    
+
 
     func testInverseTransformationWorks () {
         let matrix = Matrix4(

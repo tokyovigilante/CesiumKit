@@ -18,13 +18,13 @@ import Foundation
 * @see PackableForInterpolation
 */
 protocol Packable {
-    
+
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
     static func packedLength () -> Int
-    
+
     init (array: [Double], startingIndex: Int)
 
     /**
@@ -35,9 +35,9 @@ protocol Packable {
     * @param {Number[]} array The array to pack into.
     */
     func pack (_ array: inout [Float], startingIndex: Int)
-    
+
     func toArray () -> [Double]
-   
+
     /**
     * Retrieves an instance from a packed array.
     * @function
@@ -47,12 +47,12 @@ protocol Packable {
     * @param {Object} [result] The object into which to store the result.
     */
     static func unpack(_ array: [Float], startingIndex: Int) -> Self
-    
+
     func checkPackedArrayLength(_ array: [Double], startingIndex: Int) -> Bool
 }
 
 extension Packable {
-    
+
     /**
      * Stores the provided instance into the provided array.
      *
@@ -61,9 +61,9 @@ extension Packable {
      * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
      */
     func pack(_ array: inout [Float], startingIndex: Int = 0) {
-        
+
         let doubleArray = self.toArray()
-        
+
         //let floatArray = self.toArray().map { Float($0) }
         //let fs = strideof(Float)
         //let arrayLength = array.count
@@ -87,7 +87,7 @@ extension Packable {
             //array.replaceRange(Range(start: startingIndex, end: startingIndex+floatArray.count), with: floatArray)
         /*}*/
     }
-    
+
     /**
      * Creates an Array from the provided Matrix3 instance.
      * The array will be in column-major order.
@@ -105,7 +105,7 @@ extension Packable {
         }*/
         return grid
     }
-    
+
     /**
      * Retrieves an instance from a packed array.
      *
@@ -116,11 +116,11 @@ extension Packable {
     static func unpack(_ array: [Float], startingIndex: Int = 0) -> Self {
         return Self(array: array.map { Double($0) }, startingIndex: startingIndex)
     }
-    
+
     func checkPackedArrayLength(_ array: [Double], startingIndex: Int) -> Bool {
         return array.count - startingIndex >= Self.packedLength()
     }
-    
+
 }
 
 

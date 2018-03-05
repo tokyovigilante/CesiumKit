@@ -35,7 +35,7 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {Event}
     */
     var errorEvent: Event
-    
+
     /**
     * Gets the tiling scheme used by the provider.  This function should
     * not be called before {@link TerrainProvider#ready} returns true.
@@ -43,9 +43,9 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {TilingScheme}
     */
     let tilingScheme: TilingScheme
-    
+
     let ellipsoid: Ellipsoid
-    
+
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
     * the source of the terrain. This function should
@@ -54,25 +54,25 @@ class EllipsoidTerrainProvider: TerrainProvider {
     * @type {Credit}
     */
     var credit: Credit? = nil
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
     fileprivate (set) var ready = true
-    
+
     fileprivate var _levelZeroMaximumGeometricError: Double = 0.0
-    
+
     var heightmapTerrainQuality = 0.25
-    
+
     required init(tilingScheme: TilingScheme = GeographicTilingScheme(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
-        
+
         self.tilingScheme = tilingScheme
         self.ellipsoid = ellipsoid
-        
+
         credit = nil
-        
+
         errorEvent = Event()
 
         // Note: the 64 below does NOT need to match the actual vertex dimensions, because
@@ -125,9 +125,9 @@ class EllipsoidTerrainProvider: TerrainProvider {
     var hasWaterMask: Bool {
         return false
     }
-    
+
     var hasVertexNormals: Bool {
         return false
     }
-    
+
 }

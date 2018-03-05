@@ -32,11 +32,11 @@ import Foundation
  */
 
 open class PrimitiveCollection: Primitive {
-    
+
     let guid: String
-    
+
     fileprivate var _primitives = [Primitive]()
-    
+
     override init () {
         guid = UUID().uuidString
     }
@@ -116,7 +116,7 @@ return this._primitives.length;
          };
          */
         _primitives.append(primitive)
-        
+
         return primitive
     }
 /*
@@ -333,10 +333,10 @@ return this._primitives[index];
         if !show {
             return
         }
-        
+
         for primitive in _primitives {
             primitive.update(&frameState)
-            
+
         }
     }
 }

@@ -22,32 +22,32 @@ import Foundation
  * @param {TimeStandard} [timeStandard=TimeStandard.UTC] The time standard in which the first two parameters are defined.
  */
 public struct JulianDate {
-    
+
     /**
      * Gets or sets the number of whole days.
      * @type {Number}
      */
     public fileprivate (set) var dayNumber: Int = -1
-    
+
     /**
      * Gets or sets the number of seconds into the current day.
      * @type {Number}
      */
     public fileprivate (set) var secondsOfDay: Double = Double.nan
-    
+
     public init (julianDayNumber: Double = 0.0, secondsOfDay: Double = 0.0, timeStandard: TimeStandard = .utc) {
 
         //If julianDayNumber is fractional, make it an integer and add the number of seconds the fraction represented.
         let wholeDays = julianDayNumber.wholeComponent
         let secondsOfDay = secondsOfDay + (julianDayNumber - wholeDays) * TimeConstants.SecondsPerDay
-        
+
         setComponents(Int(wholeDays), secondsOfDay: secondsOfDay)
-        
+
         if timeStandard == .utc {
             convertUtcToTai()
         }
     }
-    
+
     public init (fromNSDate date: Date) {
         let components = date.computeJulianDateComponents()
         self.init(julianDayNumber: Double(components.dayNumber), secondsOfDay: components.secondsOfDay, timeStandard: .utc)
@@ -61,24 +61,24 @@ public struct JulianDate {
     fileprivate func compareLeapSecondDates (_ leapSecond: LeapSecond, dateToFind: LeapSecond) -> Int {
         return Int(leapSecond.julianDate.compare(dateToFind.julianDate))
     }
-    
+
     func convertUtcToTai() -> JulianDate {
         //Even though julianDate is in UTC, we'll treat it as TAI and
         //search the leap second table for it.
-        
+
         // we don't really need a leap second instance, anything with a julianDate property will do
         let binarySearchScratchLeapSecond = LeapSecond(julianDate: self, offset: 0)
-        
+
         var index = JulianDate._leapSeconds.binarySearch(binarySearchScratchLeapSecond, comparator: compareLeapSecondDates)
-        
+
         if (index < 0) {
             index = ~index
         }
-        
+
         if index >= JulianDate._leapSeconds.count {
             index = JulianDate._leapSeconds.count - 1
         }
-        
+
         var offset = Double(JulianDate._leapSeconds[index].offset)
         if index > 0 {
             //Now we have the index of the closest leap second that comes on or after our UTC time.
@@ -91,7 +91,7 @@ public struct JulianDate {
                 offset = Double(JulianDate._leapSeconds[index].offset)
             }
         }
-        
+
         return self.addSeconds(offset)
     }
 
@@ -103,53 +103,53 @@ public struct JulianDate {
     if (index < 0) {
     index = ~index;
     }
-    
+
     //All times before our first leap second get the first offset.
     if (index === 0) {
     return JulianDate.addSeconds(julianDate, -leapSeconds[0].offset, result);
     }
-    
+
     //All times after our leap second get the last offset.
     if (index >= leapSeconds.length) {
     return JulianDate.addSeconds(julianDate, -leapSeconds[index - 1].offset, result);
     }
-    
+
     //Compute the difference between the found leap second and the time we are converting.
     var difference = JulianDate.secondsDifference(leapSeconds[index].julianDate, julianDate);
-    
+
     if (difference === 0) {
     //The date is in our leap second table.
     return JulianDate.addSeconds(julianDate, -leapSeconds[index].offset, result);
     }
-    
+
     if (difference <= 1.0) {
     //The requested date is during the moment of a leap second, then we cannot convert to UTC
     return undefined;
     }
-    
+
     //The time is in between two leap seconds, index is the leap second after the date
     //we're converting, so we subtract one to get the correct LeapSecond instance.
     return JulianDate.addSeconds(julianDate, -leapSeconds[--index].offset, result);
     }
     */
     mutating func setComponents(_ wholeDays: Int, secondsOfDay: Double) {
-        
+
         let extraDays = Int(trunc(secondsOfDay / TimeConstants.SecondsPerDay))
-        
+
         var wholeDays = wholeDays + extraDays
         var secondsOfDay = secondsOfDay - TimeConstants.SecondsPerDay * Double(extraDays)
-        
+
         if secondsOfDay < 0 {
             wholeDays -= 1
             secondsOfDay += TimeConstants.SecondsPerDay
         }
-        
+
         self.dayNumber = wholeDays
         self.secondsOfDay = secondsOfDay
     }
 
     /*
-    
+
     //Regular expressions used for ISO8601 date parsing.
     //YYYY
     var matchCalendarYear = /^(\d{4})$/;
@@ -169,9 +169,9 @@ public struct JulianDate {
     var matchHoursMinutes = /^(\d{2}):?(\d{2})(\.\d+)?/.source + utcOffset.source;
     // Match hours/minutes HH:MM:SS HHMMSS.xxxxx
     var matchHoursMinutesSeconds = /^(\d{2}):?(\d{2}):?(\d{2})(\.\d+)?/.source + utcOffset.source;
-    
+
     var iso8601ErrorMessage = 'Invalid ISO 8601 date.';
-    
+
     /**
     * Creates a new instance from a JavaScript Date.
     *
@@ -187,7 +187,7 @@ public struct JulianDate {
     throw new DeveloperError('date must be a valid JavaScript Date.');
     }
     //>>includeEnd('debug');
-    
+
     var components = computeJulianDateComponents(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
     if (!defined(result)) {
     return new JulianDate(components[0], components[1], TimeStandard.UTC);
@@ -196,7 +196,7 @@ public struct JulianDate {
     convertUtcToTai(result);
     return result;
     };
-    
+
     /**
     * Creates a new instance from a from an {@link http://en.wikipedia.org/wiki/ISO_8601|ISO 8601} date.
     * This method is superior to <code>Date.parse</code> because it will handle all valid formats defined by the ISO 8601
@@ -214,11 +214,11 @@ public struct JulianDate {
     throw new DeveloperError(iso8601ErrorMessage);
     }
     //>>includeEnd('debug');
-    
+
     //Comma and decimal point both indicate a fractional number according to ISO 8601,
     //start out by blanket replacing , with . which is the only valid such symbol in JS.
     iso8601String = iso8601String.replace(',', '.');
-    
+
     //Split the string into its date and time components, denoted by a mandatory T
     var tokens = iso8601String.split('T');
     var year;
@@ -228,7 +228,7 @@ public struct JulianDate {
     var minute = 0;
     var second = 0;
     var millisecond = 0;
-    
+
     //Lacking a time is okay, but a missing date is illegal.
     var date = tokens[0];
     var time = tokens[1];
@@ -237,9 +237,9 @@ public struct JulianDate {
     if (!defined(date)) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     var dashCount;
-    
+
     //First match the date against possible regular expressions.
     tokens = date.match(matchCalendarDate);
     if (tokens !== null) {
@@ -264,11 +264,11 @@ public struct JulianDate {
     var dayOfYear;
     tokens = date.match(matchOrdinalDate);
     if (tokens !== null) {
-    
+
     year = +tokens[1];
     dayOfYear = +tokens[2];
     inLeapYear = isLeapYear(year);
-    
+
     //This validation is only applicable for this format.
     if (dayOfYear < 1 || (inLeapYear && dayOfYear > 366) || (!inLeapYear && dayOfYear > 365)) {
     throw new DeveloperError(iso8601ErrorMessage);
@@ -281,14 +281,14 @@ public struct JulianDate {
     year = +tokens[1];
     var weekNumber = +tokens[2];
     var dayOfWeek = +tokens[3] || 0;
-    
+
     dashCount = date.split('-').length - 1;
     if (dashCount > 0 &&
     ((!defined(tokens[3]) && dashCount !== 1) ||
     (defined(tokens[3]) && dashCount !== 2))) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     var january4 = new Date(Date.UTC(year, 0, 4));
     dayOfYear = (weekNumber * 7) + dayOfWeek - january4.getUTCDay() - 3;
     } else {
@@ -304,13 +304,13 @@ public struct JulianDate {
     }
     }
     }
-    
+
     //Now that we have all of the date components, validate them to make sure nothing is out of range.
     inLeapYear = isLeapYear(year);
     if (month < 1 || month > 12 || day < 1 || ((month !== 2 || !inLeapYear) && day > daysInMonth[month - 1]) || (inLeapYear && month === 2 && day > daysInLeapFeburary)) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     //Not move onto the time string, which is much simpler.
     var offsetIndex;
     if (defined(time)) {
@@ -320,7 +320,7 @@ public struct JulianDate {
     if (dashCount > 0 && dashCount !== 2 && dashCount !== 3) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     hour = +tokens[1];
     minute = +tokens[2];
     second = +tokens[3];
@@ -333,7 +333,7 @@ public struct JulianDate {
     if (dashCount > 0 && dashCount !== 1) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     hour = +tokens[1];
     minute = +tokens[2];
     second = +(tokens[3] || 0) * 60.0;
@@ -349,12 +349,12 @@ public struct JulianDate {
     }
     }
     }
-    
+
     //Validate that all values are in proper range.  Minutes and hours have special cases at 60 and 24.
     if (minute >= 60 || second >= 61 || hour > 24 || (hour === 24 && (minute > 0 || second > 0 || millisecond > 0))) {
     throw new DeveloperError(iso8601ErrorMessage);
     }
-    
+
     //Check the UTC offset value, if no value exists, use local time
     //a Z indicates UTC, + or - are offsets.
     var offset = tokens[offsetIndex];
@@ -379,7 +379,7 @@ public struct JulianDate {
     //If no time is specified, it is considered the beginning of the day, local time.
     minute = minute + new Date(year, month - 1, day).getTimezoneOffset();
     }
-    
+
     //ISO8601 denotes a leap second by any time having a seconds component of 60 seconds.
     //If that's the case, we need to temporarily subtract a second in order to build a UTC date.
     //Then we add it back in after converting to TAI.
@@ -387,71 +387,71 @@ public struct JulianDate {
     if (isLeapSecond) {
     second--;
     }
-    
+
     //Even if we successfully parsed the string into its components, after applying UTC offset or
     //special cases like 24:00:00 denoting midnight, we need to normalize the data appropriately.
-    
+
     //milliseconds can never be greater than 1000, and seconds can't be above 60, so we start with minutes
     while (minute >= 60) {
     minute -= 60;
     hour++;
     }
-    
+
     while (hour >= 24) {
     hour -= 24;
     day++;
     }
-    
+
     tmp = (inLeapYear && month === 2) ? daysInLeapFeburary : daysInMonth[month - 1];
     while (day > tmp) {
     day -= tmp;
     month++;
-    
+
     if (month > 12) {
     month -= 12;
     year++;
     }
-    
+
     tmp = (inLeapYear && month === 2) ? daysInLeapFeburary : daysInMonth[month - 1];
     }
-    
+
     //If UTC offset is at the beginning/end of the day, minutes can be negative.
     while (minute < 0) {
     minute += 60;
     hour--;
     }
-    
+
     while (hour < 0) {
     hour += 24;
     day--;
     }
-    
+
     while (day < 1) {
     month--;
     if (month < 1) {
     month += 12;
     year--;
     }
-    
+
     tmp = (inLeapYear && month === 2) ? daysInLeapFeburary : daysInMonth[month - 1];
     day += tmp;
     }
-    
+
     //Now create the JulianDate components from the Gregorian date and actually create our instance.
     var components = computeJulianDateComponents(year, month, day, hour, minute, second, millisecond);
-    
+
     if (!defined(result)) {
     result = new JulianDate(components[0], components[1], TimeStandard.UTC);
     } else {
     setComponents(components[0], components[1], result);
     convertUtcToTai(result);
     }
-    
+
     //If we were on a leap second, add it back.
     if (isLeapSecond) {
     JulianDate.addSeconds(result, 1, result);
     }
-    
+
     return result;
     };
     */
@@ -467,7 +467,7 @@ public struct JulianDate {
     }
     /*
     var toGregorianDateScratch = new JulianDate(0, 0, TimeStandard.TAI);
-    
+
     /**
     * Creates a {@link GregorianDate} from the provided instance.
     *
@@ -481,7 +481,7 @@ public struct JulianDate {
     throw new DeveloperError('julianDate is required.');
     }
     //>>includeEnd('debug');
-    
+
     var isLeapSecond = false;
     var thisUtc = convertTaiToUtc(julianDate, toGregorianDateScratch);
     if (!defined(thisUtc)) {
@@ -492,14 +492,14 @@ public struct JulianDate {
     thisUtc = convertTaiToUtc(toGregorianDateScratch, toGregorianDateScratch);
     isLeapSecond = true;
     }
-    
+
     var julianDayNumber = thisUtc.dayNumber;
     var secondsOfDay = thisUtc.secondsOfDay;
-    
+
     if (secondsOfDay >= 43200.0) {
     julianDayNumber += 1;
     }
-    
+
     // Algorithm from page 604 of the Explanatory Supplement to the
     // Astronomical Almanac (Seidelmann 1992).
     var L = (julianDayNumber + 68569) | 0;
@@ -512,29 +512,29 @@ public struct JulianDate {
     L = (J / 11) | 0;
     var month = (J + 2 - 12 * L) | 0;
     var year = (100 * (N - 49) + I + L) | 0;
-    
+
     var hour = (secondsOfDay / TimeConstants.SECONDS_PER_HOUR) | 0;
     var remainingSeconds = secondsOfDay - (hour * TimeConstants.SECONDS_PER_HOUR);
     var minute = (remainingSeconds / TimeConstants.SECONDS_PER_MINUTE) | 0;
     remainingSeconds = remainingSeconds - (minute * TimeConstants.SECONDS_PER_MINUTE);
     var second = remainingSeconds | 0;
     var millisecond = ((remainingSeconds - second) / TimeConstants.SECONDS_PER_MILLISECOND);
-    
+
     // JulianDates are noon-based
     hour += 12;
     if (hour > 23) {
     hour -= 24;
     }
-    
+
     //If we were on a leap second, add it back.
     if (isLeapSecond) {
     second += 1;
     }
-    
+
     if (!defined(result)) {
     return new GregorianDate(year, month, day, hour, minute, second, millisecond, isLeapSecond);
     }
-    
+
     result.year = year;
     result.month = month;
     result.day = day;
@@ -545,7 +545,7 @@ public struct JulianDate {
     result.isLeapSecond = isLeapSecond;
     return result;
     };
-    
+
     /**
     * Creates a JavaScript Date from the provided instance.
     * Since JavaScript dates are only accurate to the nearest millisecond and
@@ -561,7 +561,7 @@ public struct JulianDate {
     throw new DeveloperError('julianDate is required.');
     }
     //>>includeEnd('debug');
-    
+
     var gDate = JulianDate.toGregorianDate(julianDate, gregorianDateScratch);
     var second = gDate.second;
     if (gDate.isLeapSecond) {
@@ -569,7 +569,7 @@ public struct JulianDate {
     }
     return new Date(Date.UTC(gDate.year, gDate.month - 1, gDate.day, gDate.hour, gDate.minute, second, gDate.millisecond));
     };
-    
+
     /**
     * Creates an ISO8601 representation of the provided date.
     *
@@ -583,26 +583,26 @@ public struct JulianDate {
     throw new DeveloperError('julianDate is required.');
     }
     //>>includeEnd('debug');
-    
+
     var gDate = JulianDate.toGregorianDate(julianDate, gDate);
     var millisecondStr;
-    
+
     if (!defined(precision) && gDate.millisecond !== 0) {
     //Forces milliseconds into a number with at least 3 digits to whatever the default toString() precision is.
     millisecondStr = (gDate.millisecond * 0.01).toString().replace('.', '');
     return sprintf("%04d-%02d-%02dT%02d:%02d:%02d.%sZ", gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second, millisecondStr);
     }
-    
+
     //Precision is either 0 or milliseconds is 0 with undefined precision, in either case, leave off milliseconds entirely
     if (!defined(precision) || precision === 0) {
     return sprintf("%04d-%02d-%02dT%02d:%02d:%02dZ", gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second);
     }
-    
+
     //Forces milliseconds into a number with at least 3 digits to whatever the specified precision is.
     millisecondStr = (gDate.millisecond * 0.01).toFixed(precision).replace('.', '').slice(0, precision);
     return sprintf("%04d-%02d-%02dT%02d:%02d:%02d.%sZ", gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second, millisecondStr);
     };
-    
+
     /**
     * Duplicates a JulianDate instance.
     *
@@ -630,7 +630,7 @@ public struct JulianDate {
     * @returns {Number} A negative value if left is less than right, a positive value if left is greater than right, or zero if left and right are equal.
     */
     func compare (_ other: JulianDate) -> Int {
-        
+
         let julianDayNumberDifference = self.dayNumber - other.dayNumber
         if (julianDayNumberDifference != 0) {
             return julianDayNumberDifference
@@ -652,7 +652,7 @@ public struct JulianDate {
     left.dayNumber === right.dayNumber &&
     left.secondsOfDay === right.secondsOfDay);
     };
-    
+
     /**
     * Compares two instances and returns <code>true</code> if they are within <code>epsilon</code> seconds of
     * each other.  That is, in order for the dates to be considered equal (and for
@@ -670,7 +670,7 @@ public struct JulianDate {
     throw new DeveloperError('epsilon is required.');
     }
     //>>includeEnd('debug');
-    
+
     return (left === right) ||
     (defined(left) &&
     defined(right) &&
@@ -686,7 +686,7 @@ public struct JulianDate {
     func totalDays () -> Double {
         return Double(dayNumber) + (secondsOfDay / TimeConstants.SecondsPerDay)
     }
-    
+
     /**
     * Computes the difference in seconds between the provided instance.
     *
@@ -715,7 +715,7 @@ public struct JulianDate {
     throw new DeveloperError('right is required.');
     }
     //>>includeEnd('debug');
-    
+
     var dayDifference = (left.dayNumber - right.dayNumber);
     var secondDifference = (left.secondsOfDay - right.secondsOfDay) / TimeConstants.SECONDS_PER_DAY;
     return dayDifference + secondDifference;
@@ -740,7 +740,7 @@ public struct JulianDate {
         }
         return JulianDate._leapSeconds[index].offset
     }
-    
+
     /**
     * Adds the provided number of seconds to the provided date instance.
     *
@@ -773,11 +773,11 @@ public struct JulianDate {
     throw new DeveloperError('result is required.');
     }
     //>>includeEnd('debug');
-    
+
     var newSecondsOfDay = julianDate.secondsOfDay + (minutes * TimeConstants.SECONDS_PER_MINUTE);
     return setComponents(julianDate.dayNumber, newSecondsOfDay, result);
     };
-    
+
     /**
     * Adds the provided number of hours to the provided date instance.
     *
@@ -798,7 +798,7 @@ public struct JulianDate {
     throw new DeveloperError('result is required.');
     }
     //>>includeEnd('debug');
-    
+
     var newSecondsOfDay = julianDate.secondsOfDay + (hours * TimeConstants.SECONDS_PER_HOUR);
     return setComponents(julianDate.dayNumber, newSecondsOfDay, result);
     };
@@ -814,7 +814,7 @@ public struct JulianDate {
     func addDays (_ days: Double) -> JulianDate {
         return JulianDate(julianDayNumber: Double(self.dayNumber) + days, secondsOfDay: self.secondsOfDay)
     }
-    
+
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is earlier than <code>right</code>, <code>false</code> otherwise.
     *
@@ -825,7 +825,7 @@ public struct JulianDate {
     func lessThan (_ other: JulianDate) -> Bool {
         return self.compare(other) < 0
     }
-    
+
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is earlier than or equal to <code>right</code>, <code>false</code> otherwise.
     *
@@ -836,7 +836,7 @@ public struct JulianDate {
     func lessThanOrEquals (_ other: JulianDate) -> Bool {
         return self.compare(other) <= 0
     }
-    
+
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is later than <code>right</code>, <code>false</code> otherwise.
     *
@@ -847,7 +847,7 @@ public struct JulianDate {
     func greaterThan (_ other: JulianDate) -> Bool {
         return self.compare(other) > 0
     }
-    
+
     /**
     * Compares the provided instances and returns <code>true</code> if <code>left</code> is later than or equal to <code>right</code>, <code>false</code> otherwise.
     *
@@ -868,7 +868,7 @@ public struct JulianDate {
     JulianDate.prototype.equals = function(right) {
     return JulianDate.equals(this, right);
     };
-    
+
     /**
     * Compares this and the provided instance and returns <code>true</code> if they are within <code>epsilon</code> seconds of
     * each other.  That is, in order for the dates to be considered equal (and for
@@ -882,7 +882,7 @@ public struct JulianDate {
     JulianDate.prototype.equalsEpsilon = function(right, epsilon) {
     return JulianDate.equalsEpsilon(this, right, epsilon);
     };
-    
+
     /**
     * Creates a string representing this date in ISO8601 format.
     *

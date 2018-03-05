@@ -9,8 +9,8 @@
 import Foundation
 
 protocol JSONEncodable {
-    
+
     init (fromJSON json: JSON) throws
-    
+
     func toJSON () -> JSON
 }

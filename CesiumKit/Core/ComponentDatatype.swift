@@ -25,7 +25,7 @@ enum ComponentDatatype {
     * @default 0x1400
     */
     case byte,
-    
+
     /**
     * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
     * of an element in <code>Uint8Array</code>.
@@ -35,7 +35,7 @@ enum ComponentDatatype {
     * @default 0x1401
     */
     unsignedByte,
-    
+
     /**
     * 16-bit signed short corresponding to <code>SHORT</code> and the type
     * of an element in <code>Int16Array</code>.
@@ -45,7 +45,7 @@ enum ComponentDatatype {
     * @default 0x1402
     */
     short,
-    
+
     /**
     * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
     * of an element in <code>Uint16Array</code>.
@@ -55,9 +55,9 @@ enum ComponentDatatype {
     * @default 0x1403
     */
     unsignedShort,
-    
+
     unsignedInt,
-    
+
     /**
     * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
     * of an element in <code>Float32Array</code>.
@@ -67,7 +67,7 @@ enum ComponentDatatype {
     * @default 0x1406
     */
     float32,
-    
+
     /**
     * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
     * this is not supported in WebGL, and is emulated in Cesium via {@link GeometryPipeline.encodeAttribute})
@@ -80,7 +80,7 @@ enum ComponentDatatype {
     * @default 0x140A
     */
     float64
-    
+
     /**
     * Returns the size, in bytes, of the corresponding datatype.
     *
@@ -111,7 +111,7 @@ enum ComponentDatatype {
             return MemoryLayout<Double>.size
         }
     }
-    
+
     func toVertexType (_ attributeCount: Int) -> VertexType {
         var metalIndex: UInt = 0
         let attributeCount: UInt = UInt(attributeCount)
@@ -133,7 +133,7 @@ enum ComponentDatatype {
         }
         return VertexType(rawValue: metalIndex) ?? .invalid
     }
-    
+
     func toMTLIndexType () -> MTLIndexType {
         switch (self) {
         case .unsignedShort:
@@ -145,6 +145,6 @@ enum ComponentDatatype {
             return .uint16
         }
     }
-    
+
 }
 

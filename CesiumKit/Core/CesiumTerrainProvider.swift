@@ -52,11 +52,11 @@ import simd
  * viewer.scene.globe.enableLighting = true;
  */
 class CesiumTerrainProvider: TerrainProvider {
-    
+
     let url: String
 
     //private var _proxy: Proxy
-    
+
     /**
     * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -73,12 +73,12 @@ class CesiumTerrainProvider: TerrainProvider {
     * @type {TilingScheme}
     */
     let tilingScheme: TilingScheme
-    
+
     /**
      * Gets the ellipsoid used by the provider. Default is WGS84.
      */
     let ellipsoid: Ellipsoid
-    
+
     /**
      * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
      * the source of the terrain. This function should
@@ -87,26 +87,26 @@ class CesiumTerrainProvider: TerrainProvider {
      * @type {Credit}
      */
     fileprivate (set) var credit: Credit? = nil
-    
+
     /**
      * Gets a value indicating whether or not the provider is ready for use.
      * @memberof TerrainProvider.prototype
      * @type {Boolean}
      */
     fileprivate (set) var ready = false
-    
+
     fileprivate let _levelZeroMaximumGeometricError: Double
-    
+
     var heightmapTerrainQuality = 0.25
-    
+
     fileprivate let _heightmapWidth = 65
-    
+
     fileprivate var _heightmapStructure: HeightmapStructure? = nil
-    
+
     fileprivate var _tileUrlTemplates = [String]()
-    
+
     fileprivate var _availableTiles: [JSON]? = nil
-    
+
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
      * This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
@@ -119,7 +119,7 @@ class CesiumTerrainProvider: TerrainProvider {
         // returns true if we can request vertex normals from the server
         return _hasVertexNormals && requestVertexNormals
     }
-    
+
     /**
      * Boolean flag that indicates if the Terrain Server can provide vertex normals.
      * @type {Boolean}
@@ -136,7 +136,7 @@ class CesiumTerrainProvider: TerrainProvider {
      * @type {Boolean}
      */
     fileprivate (set) var requestVertexNormals: Bool
-    
+
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
      * indicates which areas of the globe are water rather than land, so they can be rendered
@@ -150,9 +150,9 @@ class CesiumTerrainProvider: TerrainProvider {
         assert(ready, "hasWaterMask must not be called before the terrain provider is ready.")
         return _hasWaterMask && _requestWaterMask
     }
-    
+
     fileprivate var _hasWaterMask = false
-    
+
     /**
      * Boolean flag that indicates if the client should request tile watermasks from the server.
      * @type {Boolean}
@@ -160,33 +160,33 @@ class CesiumTerrainProvider: TerrainProvider {
      * @private
      */
     fileprivate var _requestWaterMask: Bool
-    
+
     fileprivate var _littleEndianExtensionSize = true
-    
+
     init (url: String, /*proxy: Proxy,*/ ellipsoid: Ellipsoid = Ellipsoid.wgs84(), tilingScheme: TilingScheme = GeographicTilingScheme(), requestVertexNormals: Bool = false, requestWaterMask: Bool = false) {
-        
+
         self.url = url
         self.ellipsoid = ellipsoid
         self.tilingScheme = tilingScheme
         self.requestVertexNormals = requestVertexNormals
         _requestWaterMask = requestWaterMask
-        
+
         _levelZeroMaximumGeometricError = CesiumTerrainProvider.estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: self.ellipsoid, tileImageWidth: _heightmapWidth, numberOfTilesAtLevelZero: tilingScheme.numberOfXTilesAt(level: 0))
-        
-        
+
+
         //this._readyPromise = when.defer();
-        
+
         let metadataUrl = url + "/layer.json"
         /*if (defined(this._proxy)) {
             metadataUrl = this._proxy.getURL(metadataUrl);
         }*/
         var metadataError: NSError? = nil
-        
+
         let metadataSuccess = { (data: Data) in
-            
+
             do {
                 let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
-                
+
                 guard let tiles = try metadata.getArrayOrNil("tiles") else {
                     logPrint(.error, "The layer.json file does not specify any tile URL templates.")
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
@@ -198,7 +198,7 @@ class CesiumTerrainProvider: TerrainProvider {
                     //metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
                     return
                 }
-                
+
                 if format == "heightmap-1.0" {
                     self._heightmapStructure = HeightmapStructure(
                         heightScale: 1.0 / 5.0,
@@ -216,7 +216,7 @@ class CesiumTerrainProvider: TerrainProvider {
                     return
                 }
                 let version = try metadata.getString("version")
-                
+
                 var baseURL: URLComponents = URLComponents(string: self.url)!
                 self._tileUrlTemplates = tiles.map {
                     var templateString = $0.string!
@@ -233,17 +233,17 @@ class CesiumTerrainProvider: TerrainProvider {
                     guard let url = baseURL.url?.absoluteString else {
                         return ""
                     }
-                    
+
                     let path = templateString.replace("{version}", version)
                     return url + "/" + path
                 }
-                
+
                 self._availableTiles = try metadata.getArray("available").map { $0 }
-                
+
                 if let attribution = try metadata.getStringOrNil("attribution") {
                     self.credit = Credit(text: attribution)
                 }
-                
+
                 // The vertex normals defined in the 'octvertexnormals' extension is identical to the original
                 // contents of the original 'vertexnormals' extension.  'vertexnormals' extension is now
                 // deprecated, as the extensionLength for this extension was incorrectly using big endian.
@@ -270,7 +270,7 @@ class CesiumTerrainProvider: TerrainProvider {
                 return
             }
         }
-     
+
         let metadataFailure = { (data: Data) in
             // If the metadata is not found, assume this is a pre-metadata heightmap tileset.
             /*if (defined(data) && data.statusCode === 404) {
@@ -288,11 +288,11 @@ class CesiumTerrainProvider: TerrainProvider {
             var message = 'An error occurred while accessing ' + metadataUrl + '.';
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
-        
+
         let metadataHeaders = ["Accept": "application/json"]
-        
+
         let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders)
-        
+
         metadataOperation.completionBlock = {
             if let error = metadataOperation.error {
                 metadataFailure(metadataOperation.data)
@@ -330,7 +330,7 @@ class CesiumTerrainProvider: TerrainProvider {
     */
     case waterMask
 }
-    
+
     fileprivate func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
             return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
@@ -353,7 +353,7 @@ class CesiumTerrainProvider: TerrainProvider {
      });
      }
      */
-    
+
     func createQuantizedMeshTerrainData(_ data: Data, level: Int, x: Int, y: Int, tmsY: Int, completionBlock: (_ data: TerrainData) -> ()) {
         var pos = 0
         let cartesian3Elements = 3
@@ -365,19 +365,19 @@ class CesiumTerrainProvider: TerrainProvider {
         let triangleElements = 3
         var bytesPerIndex = MemoryLayout<UInt16>.size
         var triangleLength = bytesPerIndex * triangleElements
-        
+
         let center = Cartesian3(
             x: data.getFloat64(pos),
             y: data.getFloat64(pos + 8),
             z: data.getFloat64(pos + 16)
         )
         pos += cartesian3Length
-        
+
         let minimumHeight = Double(data.getFloat32(pos))
         pos += MemoryLayout<Float>.size
         let maximumHeight = Double(data.getFloat32(pos))
         pos += MemoryLayout<Float>.size
-        
+
         let boundingSphere = BoundingSphere(
             center: Cartesian3(
                 x: data.getFloat64(pos),
@@ -386,35 +386,35 @@ class CesiumTerrainProvider: TerrainProvider {
             radius: data.getFloat64(pos + cartesian3Length)
         )
         pos += boundingSphereLength
-        
+
         let horizonOcclusionPoint = Cartesian3(
             x: data.getFloat64(pos),
             y: data.getFloat64(pos + 8),
             z: data.getFloat64(pos + 16)
         )
         pos += cartesian3Length
-        
+
         let vertexCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.size
-        
+
         var encodedVertexBuffer = data.getUInt16Array(pos, elementCount: vertexCount * encodedVertexElements)
         pos += vertexCount * encodedVertexLength
-        
+
         if vertexCount > Math.SixtyFourKilobytes {
             // More than 64k vertices, so indices are 32-bit.
             bytesPerIndex = MemoryLayout<UInt32>.size
             triangleLength = bytesPerIndex * triangleElements
         }
-        
+
         func zigZagDecode(_ value: UInt16) -> Int16 {
             let int32Value = Int32(value)
             return Int16((int32Value >> 1) ^ (-(int32Value & 1)))
         }
-        
+
         var u: UInt16 = 0
         var v: UInt16 = 0
         var height: UInt16 = 0
-        
+
         // Decode the vertex buffer.
         let uBuffer = encodedVertexBuffer[0..<vertexCount].map { (value) -> UInt16 in
             u = u &+ UInt16(bitPattern: zigZagDecode(value))
@@ -433,15 +433,15 @@ class CesiumTerrainProvider: TerrainProvider {
         if pos % bytesPerIndex != 0 {
             pos += (bytesPerIndex - (pos % bytesPerIndex))
         }
-        
+
         let triangleCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.stride
-        
+
         // High water mark decoding based on decompressIndices_ in webgl-loader's loader.js.
         // https://code.google.com/p/webgl-loader/source/browse/trunk/samples/loader.js?r=99#55
         // Copyright 2012 Google Inc., Apache 2.0 license.
         var highest = 0
-        
+
         let indices = IndexDatatype
             .createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: triangleCount * triangleElements)
             .map { (value: Int) -> Int in
@@ -451,29 +451,29 @@ class CesiumTerrainProvider: TerrainProvider {
                 }
                 return result
         }
-        
+
         pos += triangleCount * triangleLength
-                
+
         let westVertexCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.size
         let westIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: westVertexCount)
         pos += westVertexCount * bytesPerIndex
-        
+
         let southVertexCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.size
         let southIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: southVertexCount)
         pos += southVertexCount * bytesPerIndex
-        
+
         let eastVertexCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.size
         let eastIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: eastVertexCount)
         pos += eastVertexCount * bytesPerIndex
-        
+
         let northVertexCount = Int(data.getUInt32(pos))
         pos += MemoryLayout<UInt32>.size
         let northIndices = IndexDatatype.createIntegerIndexArrayFromData(data, numberOfVertices: vertexCount, byteOffset: pos, length: northVertexCount)
         pos += northVertexCount * bytesPerIndex
-        
+
         var encodedNormalBuffer: [UInt8]? = nil
         var waterMaskBuffer: [UInt8]? = nil
         while pos < data.count {
@@ -481,7 +481,7 @@ class CesiumTerrainProvider: TerrainProvider {
             pos += MemoryLayout<UInt8>.size
             let extensionLength = Int(data.getUInt32(pos, littleEndian: _littleEndianExtensionSize))
             pos += MemoryLayout<UInt32>.size
-            
+
             if extensionId == .octVertexNormals && requestVertexNormals {
                 encodedNormalBuffer = data.getUInt8Array(pos, elementCount: vertexCount * 2)
             } else if extensionId == .waterMask && _requestWaterMask {
@@ -489,15 +489,15 @@ class CesiumTerrainProvider: TerrainProvider {
             }
             pos += extensionLength
         }
-        
+
         let skirtHeight = levelMaximumGeometricError(level) * 5.0
-        
+
         let rectangle = tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         let orientedBoundingBox: OrientedBoundingBox?
         if (rectangle.width < .pi/2 + Math.Epsilon5) {
             // Here, rectangle.width < pi/2, and rectangle.height < pi
             // (though it would still work with rectangle.width up to pi)
-            
+
             // The skirt is not included in the OBB computation. If this ever
             // causes any rendering artifacts (cracks), they are expected to be
             // minor and in the corners of the screen. It's possible that this
@@ -534,8 +534,8 @@ class CesiumTerrainProvider: TerrainProvider {
         )
         completionBlock(terrainData)
     }
- 
-    
+
+
     /**
      * Requests the geometry for a given tile.  This function should not be called before
      * {@link CesiumTerrainProvider#ready} returns true.  The result must include terrain data and
@@ -556,23 +556,23 @@ class CesiumTerrainProvider: TerrainProvider {
      */
     func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool = true, completionBlock: @escaping (TerrainData?) -> ()) -> NetworkOperation? {
         assert(ready, "requestTileGeometry must not be called before the terrain provider is ready.")
-        
+
         if _tileUrlTemplates.isEmpty {
             completionBlock(nil)
         }
-        
+
         let yTiles = tilingScheme.numberOfYTilesAt(level: level)
-        
+
         let tmsY = yTiles - y - 1
-        
+
         let url = _tileUrlTemplates[(x + tmsY + level) % _tileUrlTemplates.count].replace("{z}", "\(level)").replace("{x}", "\(x)").replace("{y}", "\(tmsY)")
-        
+
         /*
          var proxy = this._proxy;
          if (defined(proxy)) {
          url = proxy.getURL(url);
          }*/
-        
+
         var extensionList = [String]()
         if hasVertexNormals {
             extensionList.append(_littleEndianExtensionSize ? "octvertexnormals" : "vertexnormals")
@@ -580,7 +580,7 @@ class CesiumTerrainProvider: TerrainProvider {
         if _requestWaterMask && _hasWaterMask {
             extensionList.append("watermask")
         }
-        
+
         let tileLoader = NetworkOperation(url: url, headers: getRequestHeader(extensionList))
         tileLoader.completionBlock = {
             if let error = tileLoader.error {
@@ -603,7 +603,7 @@ class CesiumTerrainProvider: TerrainProvider {
         tileLoader.enqueue()
         return tileLoader
     }
-    
+
         /*
         defineProperties(CesiumTerrainProvider.prototype, {
         /**
@@ -618,7 +618,7 @@ class CesiumTerrainProvider: TerrainProvider {
         return this._errorEvent;
         }
         },
-        
+
         /**
         * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
         * the source of the terrain.  This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
@@ -632,11 +632,11 @@ class CesiumTerrainProvider: TerrainProvider {
         throw new DeveloperError('credit must not be called before the terrain provider is ready.');
         }
         //>>includeEnd('debug');
-        
+
         return this._credit;
         }
         },
-        
+
         /**
         * Gets the tiling scheme used by this provider.  This function should
         * not be called before {@link CesiumTerrainProvider#ready} returns true.
@@ -650,11 +650,11 @@ class CesiumTerrainProvider: TerrainProvider {
         throw new DeveloperError('tilingScheme must not be called before the terrain provider is ready.');
         }
         //>>includeEnd('debug');
-        
+
         return this._tilingScheme;
         }
         },
-        
+
         /**
         * Gets a value indicating whether or not the provider is ready for use.
         * @memberof CesiumTerrainProvider.prototype
@@ -665,7 +665,7 @@ class CesiumTerrainProvider: TerrainProvider {
         return this._ready;
         }
         },
-        
+
         /**
         * Gets a promise that resolves to true when the provider is ready for use.
         * @memberof CesiumTerrainProvider.prototype
@@ -693,7 +693,7 @@ class CesiumTerrainProvider: TerrainProvider {
         }
         });
         */
-    
+
     /**
      * Gets the maximum geometric error allowed in a tile at a given level.
      *
@@ -703,7 +703,7 @@ class CesiumTerrainProvider: TerrainProvider {
     func levelMaximumGeometricError (_ level: Int) -> Double {
         return _levelZeroMaximumGeometricError / Double(1 << level)
     }
-    
+
     func calculateTileCount () {
         var tileCount = 0
         do {
@@ -727,22 +727,22 @@ class CesiumTerrainProvider: TerrainProvider {
                 }
                 tileCount += thisLevelCount
                 print("\(thisLevelCount) tiles at level \(i), \(tileCount) total")
-                
+
             }
         } catch {
             return
         }
     }
-    
+
     func getChildMaskForTile(_ level: Int, x: Int, y: Int) -> Int {
         guard let availableTiles = _availableTiles else {
             return 15
         }
-        
+
         if availableTiles.count == 0 {
             return 15
         }
-        
+
         let childLevel = level + 1
         if childLevel >= availableTiles.count {
             return 0
@@ -751,16 +751,16 @@ class CesiumTerrainProvider: TerrainProvider {
         guard let levelAvailable = availableTiles[childLevel].array else {
             return 0
         }
-        
+
         var mask = 0
         mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y) ? 1 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y) ? 2 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x, y: 2 * y + 1) ? 4 : 0
         mask |= isTileInRange(levelAvailable, x: 2 * x + 1, y: 2 * y + 1) ? 8 : 0
-        
+
         return mask
     }
-    
+
     func isTileInRange(_ levelAvailable: JSONArray, x: Int, y: Int) -> Bool {
         for range in levelAvailable {
             do {
@@ -768,11 +768,11 @@ class CesiumTerrainProvider: TerrainProvider {
                 let endX = try range.getInt("endX")
                 let startY = try range.getInt("startY")
                 let endY = try range.getInt("endY")
-                
+
                 if x >= startX && x <= endX && y >= startY && y <= endY {
                     return true
                 }
-                
+
             } catch {
                 return false
             }
@@ -791,7 +791,7 @@ class CesiumTerrainProvider: TerrainProvider {
         */
         CesiumTerrainProvider.prototype.getTileDataAvailable = function(x, y, level) {
         var available = this._availableTiles;
-        
+
         if (!available || available.length === 0) {
         return undefined;
         } else {
@@ -804,7 +804,7 @@ class CesiumTerrainProvider: TerrainProvider {
         return isTileInRange(levelAvailable, x, tmsY);
         }
         };
-        
+
         return CesiumTerrainProvider;
         });
 
@@ -815,5 +815,5 @@ class CesiumTerrainProvider: TerrainProvider {
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
-    
+
 }

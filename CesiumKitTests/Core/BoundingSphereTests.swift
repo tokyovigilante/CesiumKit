@@ -9,9 +9,9 @@
 import XCTest
 
 class BoundingSphereTests: XCTestCase {
-    
+
     override func setUp() {
-        
+
     }
 /*
 /*global defineSuite*/

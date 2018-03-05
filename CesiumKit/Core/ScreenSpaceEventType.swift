@@ -20,7 +20,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     case leftDown = 0,
-    
+
     /**
     * Represents a mouse left button up event.
     *
@@ -28,7 +28,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     leftUp,
-    
+
     /**
     * Represents a mouse left click event.
     *
@@ -36,7 +36,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     leftClick,
-    
+
     /**
     * Represents a mouse left double click event.
     *
@@ -44,7 +44,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     leftDoubleClick,
-    
+
     /**
     * Represents a mouse left button down event.
     *
@@ -52,7 +52,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     rightDown,
-    
+
     /**
     * Represents a mouse right button up event.
     *
@@ -60,7 +60,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     rightUp,
-    
+
     /**
     * Represents a mouse right click event.
     *
@@ -68,7 +68,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     rightClick,
-    
+
     /**
     * Represents a mouse right double click event.
     *
@@ -76,7 +76,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     rightDoubleClick,
-    
+
     /**
     * Represents a mouse middle button down event.
     *
@@ -84,7 +84,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     middleDown,
-    
+
     /**
     * Represents a mouse middle button up event.
     *
@@ -92,7 +92,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     middleUp,
-    
+
     /**
     * Represents a mouse middle click event.
     *
@@ -100,7 +100,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     middleClick,
-    
+
     /**
     * Represents a mouse middle double click event.
     *
@@ -108,7 +108,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     middleDoubleClick,
-    
+
     /**
     * Represents a mouse move event.
     *
@@ -116,7 +116,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     mouseMove,
-    
+
     /**
     * Represents a mouse wheel event.
     *
@@ -124,7 +124,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     wheel,
-    
+
     /**
     * Represents the start of a two-finger event on a touch surface.
     *
@@ -132,7 +132,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     pinchStart,
-    
+
     /**
     * Represents the end of a two-finger event on a touch surface.
     *
@@ -140,7 +140,7 @@ enum ScreenSpaceEventType: Int {
     * @constant
     */
     pinchEnd,
-    
+
     /**
     * Represents a change of a two-finger event on a touch surface.
     *

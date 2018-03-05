@@ -32,14 +32,14 @@ import Foundation
 * var plane = new Cesium.Plane(Cesium.Cartesian3.UNIT_X, 0.0);
 */
 struct Plane {
-    
+
     /**
     * The plane's normal.
     *
     * @type {Cartesian3}
     */
     let normal: Cartesian3
-    
+
     /**
     * The shortest distance from the origin to the plane.  The sign of
     * <code>distance</code> determines which side of the plane the origin
@@ -50,12 +50,12 @@ struct Plane {
     * @type {Number}
     */
     let distance: Double
-    
+
     init(normal: Cartesian3, distance: Double) {
         self.normal = normal
         self.distance = distance
     }
-    
+
     /**
     * Creates a plane from a normal and a point on the plane.
     *
@@ -70,11 +70,11 @@ struct Plane {
     * var tangentPlane = Cesium.Plane.fromPointNormal(point, normal);
     */
     init (fromPoint point: Cartesian3, normal: Cartesian3) {
-        
+
         let distance = -normal.dot(point)
         self = Plane(normal: normal, distance: distance)
     }
-    
+
     /**
     * Creates a plane from the general equation
     *
@@ -86,8 +86,8 @@ struct Plane {
         normal = Cartesian3(cartesian4: coefficients)
         distance = coefficients.w
     }
-    
-    
+
+
     /**
     * Computes the signed shortest distance of a point to a plane.
     * The sign of the distance determines which side of the plane the point
@@ -102,7 +102,7 @@ struct Plane {
     func getPointDistance (_ point: Cartesian3) -> Double {
         return normal.dot(point) + distance
     }
-    
+
     /*
     /**
     * A constant initialized to the XY plane passing through the origin, with normal in positive Z.
@@ -111,7 +111,7 @@ struct Plane {
     * @constant
     */
     Plane.ORIGIN_XY_PLANE = freezeObject(new Plane(Cartesian3.UNIT_Z, 0.0));
-    
+
     /**
     * A constant initialized to the YZ plane passing through the origin, with normal in positive X.
     *
@@ -119,7 +119,7 @@ struct Plane {
     * @constant
     */
     Plane.ORIGIN_YZ_PLANE = freezeObject(new Plane(Cartesian3.UNIT_X, 0.0));
-    
+
     /**
     * A constant initialized to the ZX plane passing through the origin, with normal in positive Y.
     *

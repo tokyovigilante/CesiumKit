@@ -42,11 +42,11 @@ class GridImageryProvider/*: ImageryProvider*/ {
     Event,
     GeographicTilingScheme) {
     "use strict";
-    
+
     var defaultColor = new Color(1.0, 1.0, 1.0, 0.4);
     var defaultGlowColor = new Color(0.0, 1.0, 0.0, 0.05);
     var defaultBackgroundColor = new Color(0.0, 0.5, 0.0, 0.2);
-    
+
     /**
     * An {@link ImageryProvider} that draws a wireframe grid on every tile with controllable background and glow.
     * May be useful for custom rendering effects or debugging terrain.
@@ -70,7 +70,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     */
     var GridImageryProvider = function GridImageryProvider(options) {
     options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    
+
     this._tilingScheme = defined(options.tilingScheme) ? options.tilingScheme : new GeographicTilingScheme({ ellipsoid : options.ellipsoid });
     this._cells = defaultValue(options.cells, 8);
     this._color = defaultValue(options.color, defaultColor);
@@ -78,18 +78,18 @@ class GridImageryProvider/*: ImageryProvider*/ {
     this._glowWidth = defaultValue(options.glowWidth, 6);
     this._backgroundColor = defaultValue(options.backgroundColor, defaultBackgroundColor);
     this._errorEvent = new Event();
-    
+
     this._tileWidth = defaultValue(options.tileWidth, 256);
     this._tileHeight = defaultValue(options.tileHeight, 256);
-    
+
     // A little larger than tile size so lines are sharper
     // Note: can't be too much difference otherwise texture blowout
     this._canvasSize = defaultValue(options.canvasSize, 256);
-    
+
     // We only need a single canvas since all tiles will be the same
     this._canvas = this._createGridCanvas();
     };
-    
+
     defineProperties(GridImageryProvider.prototype, {
     /**
     * Gets the proxy used by this provider.
@@ -102,7 +102,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return undefined;
     }
     },
-    
+
     /**
     * Gets the width of each tile, in pixels. This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -115,7 +115,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return this._tileWidth;
     }
     },
-    
+
     /**
     * Gets the height of each tile, in pixels.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -128,7 +128,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return this._tileHeight;
     }
     },
-    
+
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -141,7 +141,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return undefined;
     }
     },
-    
+
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -154,7 +154,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return undefined;
     }
     },
-    
+
     /**
     * Gets the tiling scheme used by this provider.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -167,7 +167,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return this._tilingScheme;
     }
     },
-    
+
     /**
     * Gets the rectangle, in radians, of the imagery provided by this instance.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -180,7 +180,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return this._tilingScheme.rectangle;
     }
     },
-    
+
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
     * for filtering out "missing" tiles via its shouldDiscardImage function.  If this function
@@ -195,7 +195,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return undefined;
     }
     },
-    
+
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -209,7 +209,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return this._errorEvent;
     }
     },
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof GridImageryProvider.prototype
@@ -221,7 +221,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return true;
     }
     },
-    
+
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     * the source of the imagery.  This function should not be called before {@link GridImageryProvider#ready} returns true.
@@ -234,7 +234,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     return undefined;
     }
     },
-    
+
     /**
     * Gets a value indicating whether or not the images provided by this imagery provider
     * include an alpha channel.  If this property is false, an alpha channel, if present, will
@@ -251,7 +251,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     }
     }
     });
-    
+
     /**
     * Draws a grid of lines into a canvas.
     */
@@ -261,7 +261,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     for (var x = 0; x <= this._cells; ++x) {
     var nx = x / this._cells;
     var val = 1 + nx * (maxPixel - 1);
-    
+
     context.moveTo(val, minPixel);
     context.lineTo(val, maxPixel);
     context.moveTo(minPixel, val);
@@ -269,7 +269,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     }
     context.stroke();
     };
-    
+
     /**
     * Render a grid into a canvas with background and glow
     */
@@ -279,14 +279,14 @@ class GridImageryProvider/*: ImageryProvider*/ {
     canvas.height = this._canvasSize;
     var minPixel = 0;
     var maxPixel = this._canvasSize;
-    
+
     var context = canvas.getContext('2d');
-    
+
     // Fill the background
     var cssBackgroundColor = this._backgroundColor.toCssColorString();
     context.fillStyle = cssBackgroundColor;
     context.fillRect(minPixel, minPixel, maxPixel, maxPixel);
-    
+
     // Glow for grid lines
     var cssGlowColor = this._glowColor.toCssColorString();
     context.strokeStyle = cssGlowColor;
@@ -298,7 +298,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     context.lineWidth = this._glowWidth * 0.5;
     context.strokeRect(minPixel, minPixel, maxPixel, maxPixel);
     this._drawGrid(context);
-    
+
     // Grid lines
     var cssColor = this._color.toCssColorString();
     // Border
@@ -308,10 +308,10 @@ class GridImageryProvider/*: ImageryProvider*/ {
     // Inner
     context.lineWidth = 1;
     this._drawGrid(context);
-    
+
     return canvas;
     };
-    
+
     /**
     * Gets the credits to be displayed when a given tile is displayed.
     *
@@ -325,7 +325,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     GridImageryProvider.prototype.getTileCredits = function(x, y, level) {
     return undefined;
     };
-    
+
     /**
     * Requests the image for a given tile.  This function should
     * not be called before {@link GridImageryProvider#ready} returns true.
@@ -341,7 +341,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     GridImageryProvider.prototype.requestImage = function(x, y, level) {
     return this._canvas;
     };
-    
+
     /**
     * Picking features is not currently supported by this imagery provider, so this function simply returns
     * undefined.
@@ -359,7 +359,7 @@ class GridImageryProvider/*: ImageryProvider*/ {
     GridImageryProvider.prototype.pickFeatures = function() {
     return undefined;
     };
-    
+
     return GridImageryProvider;
     });
 

@@ -30,7 +30,7 @@ public enum SceneMode: Int {
     * @constant
     */
     columbusView,
-    
+
     /**
     * 3D mode.  A traditional 3D perspective view of the globe.
     *
@@ -38,7 +38,7 @@ public enum SceneMode: Int {
     * @constant
     */
     scene3D,
-    
+
     /**
     * Morphing between mode, e.g., 3D to 2D.
     *
@@ -46,7 +46,7 @@ public enum SceneMode: Int {
     * @constant
     */
     morphing
-    
+
     /**
     * Returns the morph time for the given scene mode
     * @param {SceneMode} value The scene mode
@@ -61,8 +61,8 @@ public enum SceneMode: Int {
         default:
             return 0.0
         }
-        
+
     }
-    
+
 }
 

@@ -22,7 +22,7 @@ enum BlendEquation: UInt {
     * @constant
     */
     case add // WebGL: FUNC_ADD
-    
+
     /**
     * 0x800A.  Pixel values are subtracted componentwise (source - destination).  This is used in alpha blending for translucency.
     *
@@ -30,7 +30,7 @@ enum BlendEquation: UInt {
     * @constant
     */
     case subtract // WebGL: FUNC_SUBTRACT
-    
+
     /**
     * 0x800B.  Pixel values are subtracted componentwise (destination - source).
     *
@@ -38,14 +38,14 @@ enum BlendEquation: UInt {
     * @constant
     */
     case reverseSubtract // WebGL: FUNC_REVERSE_SUBTRACT
-    
+
     case min
     case max
-    
+
     // No min and max like in ColladaFX GLES2 profile
-    
+
     func toMetal() -> MTLBlendOperation {
         return MTLBlendOperation(rawValue: self.rawValue)!
     }
 }
-   
+

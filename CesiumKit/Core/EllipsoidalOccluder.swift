@@ -31,9 +31,9 @@ import Foundation
 */
 
 class EllipsoidalOccluder {
-    
+
     var ellipsoid: Ellipsoid
-    
+
     var cameraPosition: Cartesian3 = Cartesian3() {
         didSet {
             // See http://cesiumjs.org/2013/04/25/Horizon-culling/
@@ -41,13 +41,13 @@ class EllipsoidalOccluder {
             _distanceToLimbInScaledSpaceSquared = _cameraPositionInScaledSpace.magnitudeSquared - 1.0
         }
     }
-    
+
     fileprivate var _cameraPositionInScaledSpace: Cartesian3
     fileprivate var _distanceToLimbInScaledSpaceSquared: Double
-    
+
     init(ellipsoid: Ellipsoid, cameraPosition: Cartesian3? = nil) {
         self.ellipsoid = ellipsoid
-        
+
         if let cameraPosition = cameraPosition {
             self.cameraPosition = cameraPosition
             _cameraPositionInScaledSpace = ellipsoid.transformPositionToScaledSpace(self.cameraPosition)
@@ -59,7 +59,7 @@ class EllipsoidalOccluder {
             _distanceToLimbInScaledSpaceSquared = 0.0
         }
     }
-    
+
     /**
     * Determines whether or not a point, the <code>occludee</code>, is hidden from view by the occluder.
     *
@@ -80,7 +80,7 @@ class EllipsoidalOccluder {
         let occludeeScaledSpacePosition = ellipsoid.transformPositionToScaledSpace(occludee)
         return isScaledSpacePointVisible(occludeeScaledSpacePosition: occludeeScaledSpacePosition)
     }
-    
+
     /**
     * Determines whether or not a point expressed in the ellipsoid scaled space, is hidden from view by the
     * occluder.  To transform a Cartesian X, Y, Z position in the coordinate system aligned with the ellipsoid
@@ -110,7 +110,7 @@ class EllipsoidalOccluder {
             vtDotVc * vtDotVc / vt.magnitudeSquared > _distanceToLimbInScaledSpaceSquared)
         return !isOccluded
     }
-    
+
     /**
     * Computes a point that can be used for horizon culling from a list of positions.  If the point is below
     * the horizon, all of the positions are guaranteed to be below the horizon as well.  The returned point
@@ -134,10 +134,10 @@ class EllipsoidalOccluder {
             let candidateMagnitude = computeMagnitude(ellipsoid: ellipsoid, position: positions[i], scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
             resultMagnitude = max(resultMagnitude, candidateMagnitude)
         }
-        
+
         return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)
     }
-    
+
     /**
     * Computes a point that can be used for horizon culling from a list of positions.  If the point is below
     * the horizon, all of the positions are guaranteed to be below the horizon as well.  The returned point
@@ -162,11 +162,11 @@ class EllipsoidalOccluder {
         stride increment: Int,
         center: Cartesian3 = Cartesian3.zero
         ) -> Cartesian3? {
-            
+
         let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
-        
+
         var resultMagnitude = 0.0
-        
+
         var positionScratch: Cartesian3
         for i in stride(from: 0, to: vertices.count, by: increment) {
             positionScratch = Cartesian3(
@@ -178,9 +178,9 @@ class EllipsoidalOccluder {
             resultMagnitude = max(resultMagnitude, candidateMagnitude)
         }
         return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)
-        
+
     }
-    
+
     /**
      * Computes a point that can be used for horizon culling from a list of positions.  If the point is below
      * the horizon, all of the positions are guaranteed to be below the horizon as well.  The returned point
@@ -198,17 +198,17 @@ class EllipsoidalOccluder {
      * @returns {Cartesian3} The computed horizon culling point, expressed in the ellipsoid-scaled space.
      */
     func computeHorizonCullingPoint (directionToPoint: Cartesian3, fromPoints points: [Cartesian3]) -> Cartesian3 {
-        
+
         let scaledSpaceDirectionToPoint = computeScaledSpaceDirectionToPoint(ellipsoid, directionToPoint: directionToPoint)
         var resultMagnitude = 0.0
-        
+
         for point in points {
             let candidateMagnitude = computeMagnitude(ellipsoid: ellipsoid, position: point, scaledSpaceDirectionToPoint: scaledSpaceDirectionToPoint)
             resultMagnitude = max(resultMagnitude, candidateMagnitude)
         }
         return magnitudeToPoint(scaledSpaceDirectionToPoint, resultMagnitude: resultMagnitude)!
     }
-    
+
     /**
     * Computes a point that can be used for horizon culling of an rectangle.  If the point is below
     * the horizon, the ellipsoid-conforming rectangle is guaranteed to be below the horizon as well.
@@ -224,7 +224,7 @@ class EllipsoidalOccluder {
     func computeHorizonCullingPointFrom(rectangle: Rectangle, ellipsoid: Ellipsoid) -> Cartesian3? {
         let positions = rectangle.subsample(ellipsoid)
         let bs = BoundingSphere(fromPoints: positions)
-        
+
         // If the bounding sphere center is too close to the center of the occluder, it doesn't make
         // sense to try to horizon cull it.
         if bs.center.magnitude < 0.1 * ellipsoid.minimumRadius {
@@ -232,25 +232,25 @@ class EllipsoidalOccluder {
         }
         return computeHorizonCullingPoint(directionToPoint: bs.center, positions: positions)
     }
-    
+
     func computeMagnitude(ellipsoid: Ellipsoid, position: Cartesian3, scaledSpaceDirectionToPoint: Cartesian3) -> Double {
         let scaledSpacePosition = ellipsoid.transformPositionToScaledSpace(position)
         var magnitudeSquared = scaledSpacePosition.magnitudeSquared;
         var magnitude = sqrt(magnitudeSquared)
         let direction = scaledSpacePosition.divideBy(scalar: magnitude)
-        
+
         // For the purpose of this computation, points below the ellipsoid are consider to be on it instead.
         magnitudeSquared = max(1.0, magnitudeSquared)
         magnitude = max(1.0, magnitude)
-        
+
         let cosAlpha = direction.dot(scaledSpaceDirectionToPoint)
         let sinAlpha = direction.cross(scaledSpaceDirectionToPoint).magnitude
         let cosBeta = 1.0 / magnitude
         let sinBeta = sqrt(magnitudeSquared - 1.0) * cosBeta
-        
+
         return 1.0 / (cosAlpha * cosBeta - sinAlpha * sinBeta)
     }
-    
+
     func magnitudeToPoint(
         _ scaledSpaceDirectionToPoint: Cartesian3,
         resultMagnitude: Double) -> Cartesian3? {
@@ -259,10 +259,10 @@ class EllipsoidalOccluder {
             if (resultMagnitude <= 0.0 || resultMagnitude == 1.0 / 0.0 || resultMagnitude != resultMagnitude) {
                 return nil
             }
-            
+
         return scaledSpaceDirectionToPoint.multiplyBy(scalar: resultMagnitude)
     }
-    
+
     func computeScaledSpaceDirectionToPoint(_ ellipsoid: Ellipsoid, directionToPoint: Cartesian3) -> Cartesian3 {
         return ellipsoid.transformPositionToScaledSpace(directionToPoint).normalize();
     }

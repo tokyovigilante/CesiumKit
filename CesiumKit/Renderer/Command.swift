@@ -10,7 +10,7 @@ import Foundation
 
 protocol Command {
     var pass: Pass { get }
-    
+
     var boundingVolume: BoundingVolume? { get }
 }
 

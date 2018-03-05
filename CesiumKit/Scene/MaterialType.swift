@@ -18,22 +18,22 @@ public protocol MaterialType {
 }
 
 public struct ColorMaterialType: MaterialType {
-    
+
     public let name = "Color"
-    
+
     public var fabric: FabricDescription
-    
+
     public var source: String? = nil
-    
+
     public let components = [
         "diffuse": "u_color.rgb",
         "alpha": "u_color.a"
     ]
-    
+
     public let translucent = { (material: Material) in
         return (material.type.fabric as! ColorFabricDescription).color.alpha < 1.0
     }
-    
+
     public init (fabric: ColorFabricDescription = ColorFabricDescription(), source: String? = nil) {
         self.fabric = fabric
         self.source = source
@@ -48,7 +48,7 @@ open class FabricDescription {
 }
 
 open class ColorFabricDescription: FabricDescription {
-    
+
     open var color: Color {
         get {
             return _uniformMap.color
@@ -57,31 +57,31 @@ open class ColorFabricDescription: FabricDescription {
             _uniformMap.color = newValue
         }
     }
-    
+
     override var uniformMap: LegacyUniformMap {
         return _uniformMap
     }
-    
+
     fileprivate let _uniformMap = ColorFabricUniformMap()
-    
+
     public override init () {
-        
+
     }
 }
 
 class ColorFabricUniformMap: LegacyUniformMap {
-    
+
     var color = Color()
-    
+
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
+
     let uniforms: [String: UniformFunc] = [
         "u_color": { map, buffer, offset in
             let simd = (map as! ColorFabricUniformMap).color.floatRepresentation
             buffer.write(from: [simd], length: MemoryLayout.size(ofValue: simd))
         }
     ]
-    
+
     let uniformDescriptors = [
         UniformDescriptor(name: "u_color", type: .floatVec4, count: 1)
     ]
@@ -92,11 +92,11 @@ class ColorFabricUniformMap: LegacyUniformMap {
 
 
 open class ImageFabricDescription: FabricDescription {
-    
+
     //var uniformMap: UniformMap = NullUniformMap()
 
     //public var uniforms: [String: UniformFunc]
-    
+
     //public var uniformTypes: [String : UniformDataType]
-    
+
 }

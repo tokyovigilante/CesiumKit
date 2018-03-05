@@ -19,7 +19,7 @@ import CoreGraphics
 * @see NeverTileDiscardPolicy
 */
 public protocol TileDiscardPolicy {
-    
+
     /**
     * Determines if the discard policy is ready to process images.
     * @function
@@ -27,7 +27,7 @@ public protocol TileDiscardPolicy {
     * @returns {Boolean} True if the discard policy is ready to process images; otherwise, false.
     */
     var isReady: Bool { get }
-    
+
     /**
     * Given a tile image, decide whether to discard that image.
     * @function

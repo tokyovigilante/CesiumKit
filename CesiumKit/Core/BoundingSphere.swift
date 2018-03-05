@@ -27,19 +27,19 @@ struct BoundingSphere: BoundingVolume {
     * @default {@link Cartesian3.ZERO}
     */
     var center: Cartesian3 = Cartesian3.zero
-    
+
     /**
     * The radius of the sphere.
     * @type {Number}
     * @default 0.0
     */
     var radius: Double = 0.0
-    
+
     init (center: Cartesian3 = Cartesian3.zero, radius: Double = 0.0) {
         self.center = center
         self.radius = radius
     }
-    
+
     /**
     * Computes a tight-fitting bounding sphere enclosing a list of 3D Cartesian points.
     * The bounding sphere is computed by running two algorithms, a naive algorithm and
@@ -50,62 +50,62 @@ struct BoundingSphere: BoundingVolume {
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if one was not provided.
     */
     init(fromPoints points: [Cartesian3]) {
-        
+
         self.init()
 
         if (points.count == 0) {
             return
         }
-        
+
         var currentPos = points[points.startIndex]
 
         var xMin = currentPos
         var yMin = currentPos
         var zMin = currentPos
-        
+
         var xMax = currentPos
         var yMax = currentPos
         var zMax = currentPos
-        
+
         for i in 1..<points.count {
-            
+
             currentPos = points[i]
-            
+
             let x = currentPos.x
             let y = currentPos.y
             let z = currentPos.z
-            
+
             // Store points containing the the smallest and largest components
             if (x < xMin.x) {
                 xMin = currentPos
             }
-            
+
             if (x > xMax.x) {
                 xMax = currentPos
             }
-            
+
             if (y < yMin.y) {
                 yMin = currentPos
             }
-            
+
             if (y > yMax.y) {
                 yMax = currentPos
             }
-            
+
             if (z < zMin.z) {
                 zMin = currentPos
             }
-            
+
             if (z > zMax.z) {
                 zMax = currentPos
             }
         }
-        
+
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
         let xSpan = xMax.subtract(xMin).magnitudeSquared
         let ySpan = yMax.subtract(yMin).magnitudeSquared
         let zSpan = zMax.subtract(zMin).magnitudeSquared
-        
+
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
         var diameter2 = xMax
@@ -120,34 +120,34 @@ struct BoundingSphere: BoundingVolume {
             diameter1 = zMin
             diameter2 = zMax
         }
-        
+
         // Calculate the center of the initial sphere found by Ritter's algorithm
         var ritterCenter = Cartesian3();
         ritterCenter.x = (diameter1.x + diameter2.x) * 0.5
         ritterCenter.y = (diameter1.y + diameter2.y) * 0.5
         ritterCenter.z = (diameter1.z + diameter2.z) * 0.5
-        
+
         // Calculate the radius of the initial sphere found by Ritter's algorithm
         var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared
         var ritterRadius = sqrt(radiusSquared)
-        
+
         // Find the center of the sphere found using the Naive method.
         let minBoxPt = Cartesian3(x: xMin.x, y: yMin.y, z: zMin.z)
         let maxBoxPt = Cartesian3(x: xMax.x, y: yMax.y, z: zMax.z)
-        
+
         let naiveCenter = minBoxPt.add(maxBoxPt).multiplyBy(scalar: 0.5)
-        
+
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0;
         for i in 0..<points.count {
             currentPos = points[i]
-            
+
             // Find the furthest point from the naive center to calculate the naive radius.
             let r = currentPos.subtract(naiveCenter).magnitude
             if (r > naiveRadius) {
                 naiveRadius = r
             }
-            
+
             // Make adjustments to the Ritter Sphere to include all points.
             let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared
             if (oldCenterToPointSquared > radiusSquared) {
@@ -170,7 +170,7 @@ struct BoundingSphere: BoundingVolume {
             radius = naiveRadius
         }
     }
-   
+
     /**
     * Computes a bounding sphere from an rectangle projected in 2D.
     *
@@ -205,23 +205,23 @@ struct BoundingSphere: BoundingVolume {
             guard let rectangle = rectangle else {
                 return
             }
-            
+
             var fromRectangle2DSouthwest = rectangle.southwest
             fromRectangle2DSouthwest.height = minimumHeight
             var fromRectangle2DNortheast = rectangle.northeast
             fromRectangle2DNortheast.height = maximumHeight
-            
+
             let lowerLeft = projection.project(fromRectangle2DSouthwest)
             let upperRight = projection.project(fromRectangle2DNortheast)
-            
+
             let width = upperRight.x - lowerLeft.x
             let height = upperRight.y - lowerLeft.y
             let elevation = upperRight.z - lowerLeft.z
-            
+
             center = Cartesian3(x: lowerLeft.x + width * 0.5, y: lowerLeft.y + height * 0.5, z: lowerLeft.z + elevation * 0.5)
             radius = sqrt(width * width + height * height + elevation * elevation) * 0.5
     }
-    
+
     /**
     * Computes a bounding sphere from an rectangle in 3D. The bounding sphere is created using a subsample of points
     * on the ellipsoid and contained in the rectangle. It may not be accurate for all rectangles on all types of ellipsoids.
@@ -270,7 +270,7 @@ struct BoundingSphere: BoundingVolume {
     *               7.0, 8.0, 9.0, 0.1, 0.2];
     * var sphere = Cesium.BoundingSphere.fromVertices(points, center, 5);
     */
-    
+
     /*var fromPointsXMin = new Cartesian3();
     var fromPointsYMin = new Cartesian3();
     var fromPointsZMin = new Cartesian3();
@@ -283,67 +283,67 @@ struct BoundingSphere: BoundingVolume {
     var fromPointsMinBoxPt = new Cartesian3();
     var fromPointsMaxBoxPt = new Cartesian3();
     var fromPointsNaiveCenterScratch = new Cartesian3();*/
-    
+
     static func fromVertices(_ positions: [Float], center: Cartesian3 = Cartesian3.zero, stride increment: Int = 3) -> BoundingSphere {
-        
+
         var result = BoundingSphere()
         if (positions.count == 0) {
             return result
         }
-        
+
         assert(increment >= 3, "stride must be 3 or greater")
-        
+
         var currentPos = Cartesian3(x: Double(positions[0]) + center.x, y: Double(positions[1]) + center.y, z: Double(positions[2]) + center.z)
-        
+
         var xMin = currentPos
         var yMin = currentPos
         var zMin = currentPos
-        
+
         var xMax = currentPos
         var yMax = currentPos
         var zMax = currentPos
-        
+
         let numElements = positions.count
         for i in stride(from: 0, to: numElements, by: increment) {
             let x = Double(positions[i]) + center.x
             let y = Double(positions[i + 1]) + center.y
             let z = Double(positions[i + 2]) + center.z
-            
+
             currentPos.x = x
             currentPos.y = y
             currentPos.z = z
-            
+
             // Store points containing the the smallest and largest components
             if (x < xMin.x) {
                 xMin = currentPos
             }
-            
+
             if (x > xMax.x) {
                 xMax = currentPos
             }
-            
+
             if (y < yMin.y) {
                 yMin = currentPos
             }
-            
+
             if (y > yMax.y) {
                 yMax = currentPos
             }
-            
+
             if (z < zMin.z) {
                 zMin = currentPos
             }
-            
+
             if (z > zMax.z) {
                 zMax = currentPos
             }
         }
-        
+
         // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
         let xSpan = xMax.subtract(xMin).magnitudeSquared
         let ySpan = yMax.subtract(yMin).magnitudeSquared
         let zSpan = zMax.subtract(zMin).magnitudeSquared
-        
+
         // Set the diameter endpoints to the largest span.
         var diameter1 = xMin
         var diameter2 = xMax
@@ -358,44 +358,44 @@ struct BoundingSphere: BoundingVolume {
             diameter1 = zMin
             diameter2 = zMax
         }
-        
+
         // Calculate the center of the initial sphere found by Ritter's algorithm
         var ritterCenter = Cartesian3();
         ritterCenter.x = (diameter1.x + diameter2.x) * 0.5
         ritterCenter.y = (diameter1.y + diameter2.y) * 0.5
         ritterCenter.z = (diameter1.z + diameter2.z) * 0.5
 
-        
+
         // Calculate the radius of the initial sphere found by Ritter's algorithm
         var radiusSquared = diameter2.subtract(ritterCenter).magnitudeSquared
         var ritterRadius = sqrt(radiusSquared)
-        
+
         // Find the center of the sphere found using the Naive method.
         var minBoxPt = Cartesian3()
         minBoxPt.x = xMin.x
         minBoxPt.y = yMin.y
         minBoxPt.z = zMin.z
-        
+
         var maxBoxPt = Cartesian3()
         maxBoxPt.x = xMax.x
         maxBoxPt.y = yMax.y
         maxBoxPt.z = zMax.z
-        
+
         let naiveCenter = minBoxPt.add(maxBoxPt).multiplyBy(scalar: 0.5)
-        
+
         // Begin 2nd pass to find naive radius and modify the ritter sphere.
         var naiveRadius = 0.0
         for i in stride(from: 0, to: numElements, by: increment) {
             currentPos.x = Double(positions[i]) + center.x
             currentPos.y = Double(positions[i + 1]) + center.y
             currentPos.z = Double(positions[i + 2]) + center.z
-            
+
             // Find the furthest point from the naive center to calculate the naive radius.
             let r = currentPos.subtract(naiveCenter).magnitude
             if (r > naiveRadius) {
                 naiveRadius = r
             }
-            
+
             // Make adjustments to the Ritter Sphere to include all points.
             let oldCenterToPointSquared = currentPos.subtract(ritterCenter).magnitudeSquared
             if (oldCenterToPointSquared > radiusSquared) {
@@ -441,11 +441,11 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
         throw new DeveloperError('corner and oppositeCorner are required.');
     }
     //>>includeEnd('debug');
-    
+
     if (!defined(result)) {
         result = new BoundingSphere();
     }
-    
+
     var center = result.center;
     Cartesian3.add(corner, oppositeCorner, center);
     Cartesian3.multiplyBy(scalar: center, 0.5, center);
@@ -479,29 +479,29 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
     if (!defined(result)) {
     result = new BoundingSphere();
     }
-    
+
     if (!defined(boundingSpheres) || boundingSpheres.length === 0) {
     result.center = Cartesian3.clone(Cartesian3.ZERO, result.center);
     result.radius = 0.0;
     return result;
     }
-    
+
     var length = boundingSpheres.length;
     if (length === 1) {
     return BoundingSphere.clone(boundingSpheres[0], result);
     }
-    
+
     if (length === 2) {
     return BoundingSphere.union(boundingSpheres[0], boundingSpheres[1], result);
     }
-    
+
     var positions = [];
     for (var i = 0; i < length; i++) {
     positions.push(boundingSpheres[i].center);
     }
-    
+
     result = BoundingSphere.fromPoints(positions, result);
-    
+
     var center = result.center;
     var radius = result.radius;
     for (i = 0; i < length; i++) {
@@ -509,12 +509,12 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
     radius = Math.max(radius, Cartesian3.distance(center, tmp.center, fromBoundingSpheresScratch) + tmp.radius);
     }
     result.radius = radius;
-    
+
     return result;
     };
 
         +var fromBoundingSpheresScratch = new Cartesian3();
-    
+
         /**
          * Computes a tight-fitting bounding sphere enclosing the provided array of bounding spheres.
          *
@@ -526,7 +526,7 @@ BoundingSphere.fromCornerPoints = function(corner, oppositeCorner, result) {
             if (!defined(result)) {
                 result = new BoundingSphere();
             }
-    
+
 /**
 * Duplicates a BoundingSphere instance.
 *
@@ -538,11 +538,11 @@ BoundingSphere.clone = function(sphere, result) {
     if (!defined(sphere)) {
         return undefined;
     }
-    
+
     if (!defined(result)) {
         return new BoundingSphere(sphere.center, sphere.radius);
     }
-    
+
     result.center = Cartesian3.clone(sphere.center, result.center);
     result.radius = sphere.radius;
     return result;
@@ -566,14 +566,14 @@ BoundingSphere.pack = function(value, array, startingIndex) {
     if (!defined(value)) {
         throw new DeveloperError('value is required');
     }
-    
+
     if (!defined(array)) {
         throw new DeveloperError('array is required');
     }
     //>>includeEnd('debug');
-    
+
     startingIndex = defaultValue(startingIndex, 0);
-    
+
     var center = value.center;
     array[startingIndex++] = center.x;
     array[startingIndex++] = center.y;
@@ -594,13 +594,13 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
         throw new DeveloperError('array is required');
     }
     //>>includeEnd('debug');
-    
+
     startingIndex = defaultValue(startingIndex, 0);
-    
+
     if (!defined(result)) {
         result = new BoundingSphere();
     }
-    
+
     var center = result.center;
     center.x = array[startingIndex++];
     center.y = array[startingIndex++];
@@ -618,26 +618,26 @@ BoundingSphere.unpack = function(array, startingIndex, result) {
     * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
     */
     func union(_ other: BoundingSphere) -> BoundingSphere {
-        
+
         let leftCenter = self.center
         let leftRadius = self.radius
         let rightCenter = other.center
         let rightRadius = other.radius
-        
+
         let toRightCenter = rightCenter.subtract(leftCenter)
         let centerSeparation = toRightCenter.magnitude
-        
+
         if leftRadius >= (centerSeparation + rightRadius) {
             return self
         }
-        
+
         if rightRadius >= (centerSeparation + leftRadius) {
             return other
         }
-        
+
         // There are two tangent points, one on far side of each sphere.
         let halfDistanceBetweenTangentPoints = (leftRadius + centerSeparation + rightRadius) * 0.5
-        
+
         // Compute the center point halfway between the two tangent points.
         let center = toRightCenter.multiplyBy(scalar: (-leftRadius + halfDistanceBetweenTangentPoints) / centerSeparation)
         return BoundingSphere(center: center.add(leftCenter), radius: halfDistanceBetweenTangentPoints)
@@ -657,19 +657,19 @@ BoundingSphere.expand = function(sphere, point, result) {
     if (!defined(sphere)) {
         throw new DeveloperError('sphere is required.');
     }
-    
+
     if (!defined(point)) {
         throw new DeveloperError('point is required.');
     }
     //>>includeEnd('debug');
-    
+
     result = BoundingSphere.clone(sphere, result);
-    
+
     var radius = Cartesian3.magnitude(Cartesian3.subtract(point, result.center, expandScratch));
     if (radius > result.radius) {
         result.radius = radius;
     }
-    
+
     return result;
 };
 */
@@ -686,7 +686,7 @@ BoundingSphere.expand = function(sphere, point, result) {
     func intersectPlane(_ plane: Plane) -> Intersect {
 
         let distanceToPlane = plane.normal.dot(center) + plane.distance
-        
+
         if distanceToPlane < -radius {
             // The center point is negative side of the plane normal
             return Intersect.outside
@@ -710,19 +710,19 @@ BoundingSphere.transform = function(sphere, transform, result) {
     if (!defined(sphere)) {
         throw new DeveloperError('sphere is required.');
     }
-    
+
     if (!defined(transform)) {
         throw new DeveloperError('transform is required.');
     }
     //>>includeEnd('debug');
-    
+
     if (!defined(result)) {
         result = new BoundingSphere();
     }
-    
+
     result.center = Matrix4.multiplyByPoint(transform, sphere.center, result.center);
     result.radius = Matrix4.getMaximumScale(transform) * sphere.radius;
-    
+
     return result;
 };
 
@@ -765,19 +765,19 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     if (!defined(sphere)) {
         throw new DeveloperError('sphere is required.');
     }
-    
+
     if (!defined(transform)) {
         throw new DeveloperError('transform is required.');
     }
     //>>includeEnd('debug');
-    
+
     if (!defined(result)) {
         result = new BoundingSphere();
     }
-    
+
     result.center = Matrix4.multiplyByPoint(transform, sphere.center, result.center);
     result.radius = sphere.radius;
-    
+
     return result;
 };
 */
@@ -794,11 +794,11 @@ BoundingSphere.transformWithoutScale = function(sphere, transform, result) {
     * @returns {Interval} The nearest and farthest distances on the bounding sphere from position in direction.
     */
     func computePlaneDistances(_ position: Cartesian3, direction: Cartesian3) -> Interval {
-        
+
         let toCenter = center.subtract(position)
         let proj = direction.multiplyBy(scalar: direction.dot(toCenter))
         let mag = proj.magnitude
-        
+
         return Interval(start: mag - radius, stop: mag + radius)
     }
 /*
@@ -827,70 +827,70 @@ BoundingSphere.projectTo2D = function(sphere, projection, result) {
         throw new DeveloperError('sphere is required.');
     }
     //>>includeEnd('debug');
-    
+
     projection = defaultValue(projection, projectTo2DProjection);
-    
+
     var ellipsoid = projection.ellipsoid;
     var center = sphere.center;
     var radius = sphere.radius;
-    
+
     var normal = ellipsoid.geodeticSurfaceNormal(center, projectTo2DNormalScratch);
     var east = Cartesian3.cross(Cartesian3.UNIT_Z, normal, projectTo2DEastScratch);
     Cartesian3.normalize(east, east);
     var north = Cartesian3.cross(normal, east, projectTo2DNorthScratch);
     Cartesian3.normalize(north, north);
-    
+
     Cartesian3.multiplyBy(scalar: normal, radius, normal);
     Cartesian3.multiplyBy(scalar: north, radius, north);
     Cartesian3.multiplyBy(scalar: east, radius, east);
-    
+
     var south = Cartesian3.negate(north, projectTo2DSouthScratch);
     var west = Cartesian3.negate(east, projectTo2DWestScratch);
-    
+
     var positions = projectTo2DPositionsScratch;
-    
+
     // top NE corner
     var corner = positions[0];
     Cartesian3.add(normal, north, corner);
     Cartesian3.add(corner, east, corner);
-    
+
     // top NW corner
     corner = positions[1];
     Cartesian3.add(normal, north, corner);
     Cartesian3.add(corner, west, corner);
-    
+
     // top SW corner
     corner = positions[2];
     Cartesian3.add(normal, south, corner);
     Cartesian3.add(corner, west, corner);
-    
+
     // top SE corner
     corner = positions[3];
     Cartesian3.add(normal, south, corner);
     Cartesian3.add(corner, east, corner);
-    
+
     Cartesian3.negate(normal, normal);
-    
+
     // bottom NE corner
     corner = positions[4];
     Cartesian3.add(normal, north, corner);
     Cartesian3.add(corner, east, corner);
-    
+
     // bottom NW corner
     corner = positions[5];
     Cartesian3.add(normal, north, corner);
     Cartesian3.add(corner, west, corner);
-    
+
     // bottom SW corner
     corner = positions[6];
     Cartesian3.add(normal, south, corner);
     Cartesian3.add(corner, west, corner);
-    
+
     // bottom SE corner
     corner = positions[7];
     Cartesian3.add(normal, south, corner);
     Cartesian3.add(corner, east, corner);
-    
+
     var length = positions.length;
     for (var i = 0; i < length; ++i) {
         var position = positions[i];
@@ -898,9 +898,9 @@ BoundingSphere.projectTo2D = function(sphere, projection, result) {
         var cartographic = ellipsoid.cartesianToCartographic(position, projectTo2DCartographicScratch);
         projection.project(cartographic, position);
     }
-    
+
     result = BoundingSphere.fromPoints(positions, result);
-    
+
     // swizzle center components
     center = result.center;
     var x = center.x;
@@ -909,7 +909,7 @@ BoundingSphere.projectTo2D = function(sphere, projection, result) {
     center.x = z;
     center.y = x;
     center.z = y;
-    
+
     return result;
 };
 

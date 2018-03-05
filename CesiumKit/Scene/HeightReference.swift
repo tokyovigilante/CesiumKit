@@ -15,26 +15,26 @@ import Foundation
  * @alias HeightReference
  */
 enum HeightReference {
-    
+
     /**
     * The position is absolute.
     * @type {Number}
     * @constant
     */
     case none
-    
+
     /**
     * The position is clamped to the terrain.
     * @type {Number}
     * @constant
     */
     case clampToGround
-    
+
     /**
     * The position height is the height above the terrain.
     * @type {Number}
     * @constant
     */
     case relativeToGround
-    
+
 }

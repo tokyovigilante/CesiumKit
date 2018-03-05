@@ -18,7 +18,7 @@ import Foundation
  * @private
  */
 struct TileBoundingBox {
-    
+
     /**
      * The world coordinates of the southwest corner of the tile's rectangle.
      *
@@ -26,7 +26,7 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var southwestCornerCartesian = Cartesian3()
-    
+
     /**
      * The world coordinates of the northeast corner of the tile's rectangle.
      *
@@ -34,7 +34,7 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var northeastCornerCartesian = Cartesian3()
-    
+
     /**
      * A normal that, along with southwestCornerCartesian, defines a plane at the western edge of
      * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
@@ -43,7 +43,7 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var westNormal = Cartesian3()
-    
+
     /**
      * A normal that, along with southwestCornerCartesian, defines a plane at the southern edge of
      * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
@@ -54,7 +54,7 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var southNormal = Cartesian3()
-    
+
     /**
      * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
      * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
@@ -63,7 +63,7 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var eastNormal = Cartesian3()
-    
+
     /**
      * A normal that, along with northeastCornerCartesian, defines a plane at the eastern edge of
      * the tile.  Any position above (in the direction of the normal) this plane is outside the tile.
@@ -74,15 +74,15 @@ struct TileBoundingBox {
      * @default Cartesian3()
      */
     fileprivate (set) var northNormal = Cartesian3()
-    
+
     let rectangle: Rectangle
-    
+
     let minimumHeight: Double
-    
+
     let maximumHeight: Double
-    
+
     let ellipsoid: Ellipsoid
-    
+
     init (rectangle: Rectangle, ellipsoid: Ellipsoid = Ellipsoid.wgs84(), minimumHeight: Double = 0.0, maximumHeight: Double = 0.0) {
         self.rectangle = rectangle
         self.ellipsoid = ellipsoid
@@ -91,11 +91,11 @@ struct TileBoundingBox {
 
         computeBox()
     }
-    
+
     fileprivate mutating func computeBox() {
         southwestCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.southwest)
         northeastCornerCartesian = ellipsoid.cartographicToCartesian(rectangle.northeast)
-        
+
         // The middle latitude on the western edge.
         let westernMidpointCartesian = ellipsoid.cartographicToCartesian(
             Cartographic(
@@ -108,7 +108,7 @@ struct TileBoundingBox {
         westNormal = westernMidpointCartesian
             .cross(Cartesian3.unitZ)
             .normalize()
-        
+
         // The middle latitude on the eastern edge.
         let easternMidpointCartesian = ellipsoid.cartographicToCartesian(
             Cartographic(
@@ -117,30 +117,30 @@ struct TileBoundingBox {
                 height: 0.0
             )
         )
-        
+
         // Compute the normal of the plane on the eastern edge of the tile.
         eastNormal = Cartesian3
             .unitZ
             .cross(easternMidpointCartesian)
             .normalize()
-        
+
         // Compute the normal of the plane bounding the southern edge of the tile.
         let southeastCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.southeast)
         let westVector = westernMidpointCartesian.subtract(easternMidpointCartesian)
         southNormal = southeastCornerNormal
             .cross(westVector)
             .normalize()
-        
+
         // Compute the normal of the plane bounding the northern edge of the tile.
         let northwestCornerNormal = ellipsoid.geodeticSurfaceNormalCartographic(rectangle.northwest)
         northNormal = westVector
             .cross(northwestCornerNormal)
             .normalize()
     }
-    
+
     fileprivate let negativeUnitY = Cartesian3(x: 0.0, y: -1.0, z: 0.0)
     fileprivate let negativeUnitZ = Cartesian3(x: 0.0, y: 0.0, z: -1.0)
-    
+
     /**
      * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.
      *
@@ -152,7 +152,7 @@ struct TileBoundingBox {
         let camera = frameState.camera!
         let cameraCartesianPosition = camera.positionWC
         let cameraCartographicPosition = camera.positionCartographic
-        
+
         var result = 0.0
         if !rectangle.contains(cameraCartographicPosition) {
             var southwestCornerCartesian = self.southwestCornerCartesian
@@ -161,7 +161,7 @@ struct TileBoundingBox {
             var southNormal = self.southNormal
             var eastNormal = self.eastNormal
             var northNormal = self.northNormal
-            
+
             if frameState.mode != .scene3D {
                 southwestCornerCartesian = frameState.mapProjection.project(rectangle.southwest)
                 southwestCornerCartesian.z = southwestCornerCartesian.y
@@ -176,42 +176,42 @@ struct TileBoundingBox {
                 southNormal = negativeUnitZ
                 northNormal = Cartesian3.unitZ
             }
-            
+
             let vectorFromSouthwestCorner = cameraCartesianPosition.subtract(southwestCornerCartesian)
             let distanceToWestPlane = vectorFromSouthwestCorner.dot(westNormal)
             let distanceToSouthPlane = vectorFromSouthwestCorner.dot(southNormal)
-            
+
             let vectorFromNortheastCorner = cameraCartesianPosition.subtract(northeastCornerCartesian)
             let distanceToEastPlane = vectorFromNortheastCorner.dot(eastNormal)
             let distanceToNorthPlane = vectorFromNortheastCorner.dot(northNormal)
-            
+
             if distanceToWestPlane > 0.0 {
                 result += distanceToWestPlane * distanceToWestPlane
             } else if distanceToEastPlane > 0.0 {
                 result += distanceToEastPlane * distanceToEastPlane
             }
-            
+
             if distanceToSouthPlane > 0.0 {
                 result += distanceToSouthPlane * distanceToSouthPlane
             } else if distanceToNorthPlane > 0.0 {
                 result += distanceToNorthPlane * distanceToNorthPlane
             }
         }
-        
+
         let cameraHeight: Double
         if frameState.mode == SceneMode.scene3D {
             cameraHeight = cameraCartographicPosition.height
         } else {
             cameraHeight = cameraCartesianPosition.x
         }
-        
+
         let maximumHeight = frameState.mode == SceneMode.scene3D ? self.maximumHeight : 0.0
         let distanceFromTop = cameraHeight - maximumHeight
         if distanceFromTop > 0.0 {
             result += distanceFromTop * distanceFromTop
         }
-        
+
         return sqrt(result)
     }
-    
+
 }

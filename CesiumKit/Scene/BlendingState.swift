@@ -26,7 +26,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
     let functionDestinationRgb: BlendFunction
     let functionDestinationAlpha: BlendFunction
     let color: Cartesian4?
-    
+
     /**
     * Blending is disabled.
     *
@@ -43,7 +43,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
             functionDestinationAlpha: .zero,
             color: nil)
     }
-    
+
     /**
     * Blending is enabled using alpha blending, <code>source(source.alpha) + destination(1 - source.alpha)</code>.
     *
@@ -60,7 +60,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
             functionDestinationAlpha : .oneMinusSourceAlpha,
             color: nil)
     }
-    
+
     static func AlphaBlend(_ color: Cartesian4) -> BlendingState {
         return BlendingState(enabled: true,
             equationRgb : .add,
@@ -71,7 +71,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
             functionDestinationAlpha : .oneMinusSourceAlpha,
             color: color)
     }
-    
+
     /**
     * Blending is enabled using alpha blending with premultiplied alpha, <code>source + destination(1 - source.alpha)</code>.
     *
@@ -88,7 +88,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
             functionDestinationAlpha : .oneMinusSourceAlpha,
             color: color)
     }
-    
+
     /**
     * Blending is enabled using additive blending, <code>source(source.alpha) + destination</code>.
     *
@@ -105,7 +105,7 @@ struct BlendingState: Equatable, CustomStringConvertible {
             functionDestinationAlpha : .one,
             color: color)
     }
-    
+
     var description: String {
         return "r\(equationRgb.rawValue):a\(equationAlpha.rawValue):sr\(functionSourceRgb.rawValue):sa\(functionSourceAlpha.rawValue):dr\(functionDestinationRgb.rawValue):da\(functionDestinationAlpha.rawValue):c\(color?.simdType.debugDescription)"
 

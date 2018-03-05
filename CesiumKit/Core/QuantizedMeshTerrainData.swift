@@ -86,41 +86,41 @@ private let maxShort = Double(Int16.max)
  * });
  */
 class QuantizedMeshTerrainData: TerrainData {
-    
+
     fileprivate var _quantizedVertices: [UInt16]!
-    
+
     fileprivate var _uValues: ArraySlice<UInt16>!
-    
+
     fileprivate var _vValues: ArraySlice<UInt16>!
-    
+
     fileprivate var _heightValues: ArraySlice<UInt16>!
-    
+
     fileprivate var _encodedNormals: [UInt8]?
-    
+
     fileprivate var _indices: [Int]!
-    
+
     fileprivate let _minimumHeight: Double
-    
+
     fileprivate let _maximumHeight: Double
-    
+
     fileprivate let _boundingSphere: BoundingSphere
-    
+
     fileprivate let _orientedBoundingBox: OrientedBoundingBox?
-    
+
     fileprivate let _horizonOcclusionPoint: Cartesian3
-    
+
     fileprivate var _westIndices: [Int]! = nil
     fileprivate var _southIndices: [Int]! = nil
     fileprivate var _eastIndices: [Int]! = nil
     fileprivate var _northIndices: [Int]! = nil
-    
+
     fileprivate let _westSkirtHeight: Double
     fileprivate let _southSkirtHeight: Double
     fileprivate let _eastSkirtHeight: Double
     fileprivate let _northSkirtHeight: Double
-    
+
     fileprivate var _mesh: TerrainMesh? = nil
-    
+
     /**
      * The water mask included in this terrain data, if any.  A water mask is a rectangular
      * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
@@ -129,7 +129,7 @@ class QuantizedMeshTerrainData: TerrainData {
      * @type {Uint8Array|Image|Canvas}
      */
     let waterMask: [UInt8]?
-    
+
     /**
      * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
      * terrain data.  If this value is false, the data was obtained from some other source, such
@@ -139,9 +139,9 @@ class QuantizedMeshTerrainData: TerrainData {
      * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
      */
     let createdByUpsampling: Bool
-    
+
     var childTileMask: Int
-    
+
     init (
         quantizedVertices: [UInt16],
         indices: [Int],
@@ -171,39 +171,39 @@ class QuantizedMeshTerrainData: TerrainData {
         _boundingSphere = boundingSphere
         _orientedBoundingBox = orientedBoundingBox
         _horizonOcclusionPoint = horizonOcclusionPoint
-        
+
         let vertexCount = _quantizedVertices.count / 3
         _uValues = _quantizedVertices[0..<vertexCount]
         _vValues = _quantizedVertices[vertexCount..<(vertexCount * 2)]
         _heightValues = _quantizedVertices[(vertexCount * 2)..<(vertexCount * 3)]
-        
+
         _westSkirtHeight = westSkirtHeight
         _southSkirtHeight = southSkirtHeight
         _eastSkirtHeight = eastSkirtHeight
         _northSkirtHeight = northSkirtHeight
-        
+
         self.childTileMask = childTileMask
-        
+
         self.createdByUpsampling = createdByUpsampling
         self.waterMask = waterMask
-        
+
         // We don't assume that we can count on the edge vertices being sorted by u or v.
         let sortByV = { (a: Int, b: Int) -> Bool in
             let startIndex = self._vValues.startIndex
             return Int(self._vValues[startIndex + a]) - Int(self._vValues[startIndex + b]) <= 0
         }
-        
+
         let sortByU = { (a: Int, b: Int) -> Bool in
             let startIndex = self._uValues.startIndex
             return Int(self._uValues[startIndex + a]) - Int(self._uValues[startIndex + b]) <= 0
         }
-        
+
         _westIndices = sortIndicesIfNecessary(westIndices, sortFunction: sortByV, vertexCount: vertexCount)
         _southIndices = sortIndicesIfNecessary(southIndices, sortFunction: sortByU, vertexCount: vertexCount)
         _eastIndices = sortIndicesIfNecessary(eastIndices, sortFunction: sortByV, vertexCount: vertexCount)
         _northIndices = sortIndicesIfNecessary(northIndices, sortFunction: sortByU, vertexCount: vertexCount)
     }
-    
+
     func sortIndicesIfNecessary(_ indices: [Int], sortFunction: (_ a: Int, _ b: Int) -> Bool, vertexCount: Int) -> [Int] {
 
         var needsSort = false
@@ -218,8 +218,8 @@ class QuantizedMeshTerrainData: TerrainData {
         }
         return indices
     }
-    
-    
+
+
 
 /*
  var createMeshTaskProcessor = new TaskProcessor('createVerticesFromQuantizedTerrainMesh');
@@ -257,7 +257,7 @@ class QuantizedMeshTerrainData: TerrainData {
             ellipsoid : tilingScheme.ellipsoid,
             exaggeration: exaggeration
         )
- 
+
         _mesh = TerrainMesh(
             center: result.center,
             vertices: result.vertices,
@@ -271,17 +271,17 @@ class QuantizedMeshTerrainData: TerrainData {
             encoding: result.encoding,
             exaggeration: exaggeration
         )
-        
+
         //Free memory received from server after mesh is created.
-        
+
         _quantizedVertices = nil
         _encodedNormals = nil
         _indices = nil
-        
+
         _uValues = nil
         _vValues = nil
         _heightValues = nil
-        
+
         _westIndices = nil
         _southIndices = nil
         _eastIndices = nil
@@ -308,25 +308,25 @@ class QuantizedMeshTerrainData: TerrainData {
  *          deferred.
  */
     func upsample(tilingScheme: TilingScheme, thisX: Int, thisY: Int, thisLevel: Int, descendantX: Int, descendantY: Int, descendantLevel: Int, completionBlock: (TerrainData?) -> ()) -> Bool {
-        
+
         let levelDifference = descendantLevel - thisLevel
         if levelDifference > 1 {
             logPrint(.error, "Upsampling through more than one level at a time is not currently supported")
             completionBlock(nil)
             return false
         }
-        
+
         if _mesh != nil {
             completionBlock(nil)
             return false
         }
-        
+
         let isEastChild = thisX * 2 != descendantX
         let isNorthChild = thisY * 2 == descendantY
-        
+
         let ellipsoid = tilingScheme.ellipsoid
         let childRectangle = tilingScheme.tileXYToRectangle(x: descendantX, y: descendantY, level: descendantLevel)
-        
+
         let upsampledMesh = QuantizedMeshUpsampler.upsampleQuantizedTerrainMesh(
             vertices: _quantizedVertices,
             indices: _indices,
@@ -339,12 +339,12 @@ class QuantizedMeshTerrainData: TerrainData {
             ellipsoid: ellipsoid)
 
         let shortestSkirt = min(_westSkirtHeight, _eastSkirtHeight, _northSkirtHeight, _southSkirtHeight)
-        
+
         let westSkirtHeight = isEastChild ? shortestSkirt * 0.5 : _westSkirtHeight
         let southSkirtHeight = isNorthChild ? shortestSkirt * 0.5 : _southSkirtHeight
         let eastSkirtHeight = isEastChild ? _eastSkirtHeight : shortestSkirt * 0.5
         let northSkirtHeight = isNorthChild ? _northSkirtHeight : shortestSkirt * 0.5
-        
+
         let data = QuantizedMeshTerrainData(
             quantizedVertices : upsampledMesh.vertices,
             indices: upsampledMesh.indices,
@@ -365,7 +365,7 @@ class QuantizedMeshTerrainData: TerrainData {
             childTileMask: 0,
             createdByUpsampling: true
         )
-        
+
         completionBlock(data)
         return true
     }
@@ -381,13 +381,13 @@ class QuantizedMeshTerrainData: TerrainData {
     func interpolateHeight (_ rectangle: Rectangle, longitude: Double, latitude: Double) -> Double? {
         let u = Math.clamp((longitude - rectangle.west) / rectangle.width, min: 0.0, max: 1.0) * maxShort
         let v = Math.clamp((latitude - rectangle.south) / rectangle.height, min: 0.0, max: 1.0) * maxShort
-        
+
         if _mesh != nil {
             return interpolateMeshHeight(u, v: v)
         }
         return interpolateHeight(u, v: v)
     }
-    
+
     fileprivate func interpolateMeshHeight (_ u: Double, v: Double) -> Double? {
 
         guard let mesh = _mesh else {
@@ -397,16 +397,16 @@ class QuantizedMeshTerrainData: TerrainData {
         let vertices = mesh.vertices
         let encoding = mesh.encoding
         let indices = mesh.indices
-        
+
         for i in stride(from: 0, to: indices.count, by: 3) {
             let i0 = indices[i]
             let i1 = indices[i + 1]
             let i2 = indices[i + 2]
-            
+
             let uv0 = encoding.decodeTextureCoordinates(vertices, index: i0)
             let uv1 = encoding.decodeTextureCoordinates(vertices, index: i1)
             let uv2 = encoding.decodeTextureCoordinates(vertices, index: i2)
-            
+
             let barycentric = Intersections2D.computeBarycentricCoordinates(x: u, y: v, x1: uv0.x, y1: uv0.y, x2: uv1.x, y2: uv1.y, x3: uv2.x, y3: uv2.y)
             if barycentric.x >= -1e-15 && barycentric.y >= -1e-15 && barycentric.z >= -1e-15 {
                 let h0 = encoding.decodeHeight(vertices, index: i0)
@@ -418,22 +418,22 @@ class QuantizedMeshTerrainData: TerrainData {
         // Position does not lie in any triangle in this mesh.
         return nil
     }
-    
+
     fileprivate func interpolateHeight (_ u: Double, v: Double) -> Double? {
 
         for i in stride(from: 0, to: _indices.count, by: 3) {
             let i0 = _indices[i]
             let i1 = _indices[i + 1]
             let i2 = _indices[i + 2]
-            
+
             let u0 = Double(_uValues[i0])
             let u1 = Double(_uValues[i1])
             let u2 = Double(_uValues[i2])
-            
+
             let v0 = Double(_vValues[i0])
             let v1 = Double(_vValues[i1])
             let v2 = Double(_vValues[i2])
-            
+
             var barycentric = Intersections2D.computeBarycentricCoordinates(x: u, y: v, x1: u0, y1: v0, x2: u1, y2: v1, x3: u2, y3: v2)
             if barycentric.x >= -1e-15 && barycentric.y >= -1e-15 && barycentric.z >= -1e-15 {
                 let quantizedHeight = barycentric.x * Double(_heightValues[i0]) +

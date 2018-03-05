@@ -10,10 +10,10 @@ import Foundation
 
 /// Functions to store support files on device
 class LocalStorage {
-    
+
     // Singleton
     static let sharedInstance = LocalStorage()
-    
+
     func getAppSupportURL () -> URL {
         #if os(OSX)
             return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent(getExecutableName())
@@ -21,9 +21,9 @@ class LocalStorage {
             return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         #endif
     }
-    
+
     func getExecutableName () -> String {
         return ProcessInfo.processInfo.processName
     }
-    
+
 }

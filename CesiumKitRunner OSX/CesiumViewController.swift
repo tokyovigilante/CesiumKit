@@ -11,31 +11,31 @@ import MetalKit
 import CesiumKit
 
 class CesiumViewController: NSViewController {
-    
+
     fileprivate var _cesiumKitController: CesiumKitController! = nil
-    
+
     @IBOutlet var _metalView: MTKView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.layer!.contentsScale = NSScreen.main()?.backingScaleFactor ?? 1.0
         _cesiumKitController = CesiumKitController(view: _metalView)
         _metalView.delegate = _cesiumKitController
         _cesiumKitController.startRendering()
     }
-    
+
     override func viewWillAppear() {
         _metalView.window?.acceptsMouseMovedEvents = true
     }
-    
+
     override func mouseDown(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
         let localPoint = _metalView.convert(locationInWindow, from: nil)
-       
+
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
-        
+
         let modifier: KeyboardEventModifier?
         if event.modifierFlags.contains(.control) {
             modifier = .ctrl
@@ -48,13 +48,13 @@ class CesiumViewController: NSViewController {
         }
         _cesiumKitController.handleMouseDown(.left, position: position, modifier: modifier)
     }
-    
+
     override func mouseDragged(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
         let localPoint = _metalView.convert(locationInWindow, from: nil)
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
-        
+
         let modifier: KeyboardEventModifier?
         if event.modifierFlags.contains(.control) {
             modifier = .ctrl
@@ -67,17 +67,17 @@ class CesiumViewController: NSViewController {
         }
         _cesiumKitController.handleMouseMove(.left, position: position, modifier: modifier)
     }
-    
+
     override func mouseMoved(with event: NSEvent) {
-    
+
     }
-    
+
     override func mouseUp(with event: NSEvent) {
         let locationInWindow = event.locationInWindow
         let localPoint = _metalView.convert(locationInWindow, from: nil)
         let viewHeight = Double(_metalView.bounds.height)
         let position = Cartesian2(x: Double(localPoint.x), y: viewHeight - Double(localPoint.y))
-        
+
         let modifier: KeyboardEventModifier?
         if event.modifierFlags.contains(.control) {
             modifier = .ctrl
@@ -90,11 +90,11 @@ class CesiumViewController: NSViewController {
         }
         _cesiumKitController.handleMouseUp(.left, position: position, modifier: modifier)
     }
-    
+
     override func scrollWheel(with event: NSEvent) {
         _cesiumKitController.handleWheel(Double(event.deltaX), deltaY: Double(event.deltaY))
     }
-    
-    
+
+
 }
 

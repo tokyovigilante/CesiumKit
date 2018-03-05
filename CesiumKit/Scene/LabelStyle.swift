@@ -24,7 +24,7 @@ public enum LabelStyle {
      * @constant
      */
     case fill
-    
+
     /**
      * Outline the text of the label, but do not fill.
      *
@@ -32,7 +32,7 @@ public enum LabelStyle {
      * @constant
      */
     case outline
-    
+
     /**
      * Fill and outline the text of the label.
      *

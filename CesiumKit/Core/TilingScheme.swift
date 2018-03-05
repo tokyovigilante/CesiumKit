@@ -21,31 +21,31 @@
 * @see GeographicTilingScheme
 */
 public protocol TilingScheme {
-    
+
     /**
     * Gets the ellipsoid that is tiled by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Ellipsoid}
     */
     var ellipsoid: Ellipsoid { get }
-    
+
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
     var rectangle : Rectangle { get }
-    
+
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Projection}
     */
     var projection : MapProjection { get }
-    
+
     var numberOfLevelZeroTilesX: Int { get }
     var numberOfLevelZeroTilesY: Int { get }
-    
+
     /**
     * Gets the total number of tiles in the X direction at a specified level-of-detail.
     * @function
@@ -54,7 +54,7 @@ public protocol TilingScheme {
     * @returns {Number} The number of tiles in the X direction at the given level.
     */
     func numberOfXTilesAt(level: Int) -> Int
-    
+
     /**
     * Gets the total number of tiles in the Y direction at a specified level-of-detail.
     * @function
@@ -63,7 +63,7 @@ public protocol TilingScheme {
     * @returns {Number} The number of tiles in the Y direction at the given level.
     */
     func numberOfYTilesAt(level: Int) -> Int
-    
+
     /**
     * Transforms an rectangle specified in geodetic radians to the native coordinate system
     * of this tiling scheme.
@@ -76,7 +76,7 @@ public protocol TilingScheme {
     *          is undefined.
     */
     func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle
-    
+
     /**
     * Converts tile x, y coordinates and level to an rectangle expressed in the native coordinates
     * of the tiling scheme.
@@ -91,7 +91,7 @@ public protocol TilingScheme {
     *          if 'result' is undefined.
     */
     func tileXYToNativeRectangle(x: Int, y: Int, level: Int) -> Rectangle
-    
+
     /**
     * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
     * @function
@@ -118,5 +118,5 @@ public protocol TilingScheme {
     *          if 'result' is undefined.
     */
     func positionToTileXY(position: Cartographic, level: Int) -> (x: Int, y: Int)?
-    
+
 }

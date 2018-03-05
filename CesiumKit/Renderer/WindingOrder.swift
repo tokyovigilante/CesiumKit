@@ -22,7 +22,7 @@ enum WindingOrder {
     * @constant
     */
     case clockwise, // WebGL: CW
-    
+
     /**
     * 0x0901. Vertices are in counter-clockwise order.
     *
@@ -30,7 +30,7 @@ enum WindingOrder {
     * @constant
     */
     counterClockwise // WebGL: CCW
-    
+
     func toMetal() -> MTLWinding {
         switch self {
         case .clockwise:

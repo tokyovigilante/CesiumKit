@@ -15,7 +15,7 @@ import Foundation
  }
  label._rebindAllGlyphs = true;
  }
- 
+
  function repositionAllGlyphs(label) {
  if (!label._rebindAllGlyphs && !label._repositionAllGlyphs) {
  // only push label if it's not already been marked dirty
@@ -43,7 +43,7 @@ import Foundation
  */
 
 open class Label {
-    
+
     init (
         show: Bool = true,
         position: Cartesian3 = Cartesian3.zero,
@@ -59,14 +59,14 @@ open class Label {
         scale: Double = 1.0,
         collection: LabelCollection
     ) {
-    
+
     }
     /*
-  
-  
+
+
   var Label = function(options, labelCollection) {
  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
- 
+
  //>>includeStart('debug', pragmas.debug);
  if (defined(options.translucencyByDistance) && options.translucencyByDistance.far <= options.translucencyByDistance.near) {
  throw new DeveloperError('translucencyByDistance.far must be greater than translucencyByDistance.near.');
@@ -75,7 +75,7 @@ open class Label {
  throw new DeveloperError('pixelOffsetScaleByDistance.far must be greater than pixelOffsetScaleByDistance.near.');
  }
  //>>includeEnd('debug');
- 
+
  this._text = defaultValue(options.text, '');
  this._show = defaultValue(options.show, true);
  this._font = defaultValue(options.font, '30px sans-serif');
@@ -93,20 +93,20 @@ open class Label {
  this._translucencyByDistance = options.translucencyByDistance;
  this._pixelOffsetScaleByDistance = options.pixelOffsetScaleByDistance;
  this._heightReference = defaultValue(options.heightReference, HeightReference.NONE);
- 
+
  this._labelCollection = labelCollection;
  this._glyphs = [];
- 
+
  this._rebindAllGlyphs = true;
  this._repositionAllGlyphs = true;
- 
+
  this._actualClampedPosition = undefined;
  this._removeCallbackFunc = undefined;
  this._mode = undefined;
- 
+
  this._updateClamping();
  };
- 
+
  defineProperties(Label.prototype, {
  /**
  * Determines if this label will be shown.  Use this to hide or show a label, instead
@@ -124,10 +124,10 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._show !== value) {
  this._show = value;
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -138,7 +138,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets the Cartesian position of this label.
  * @memberof Label.prototype
@@ -154,11 +154,11 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  var position = this._position;
  if (!Cartesian3.equals(position, value)) {
  Cartesian3.clone(value, position);
- 
+
  if (this._heightReference === HeightReference.NONE) {
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
@@ -173,7 +173,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets the height reference of this billboard.
  * @memberof Label.prototype
@@ -189,14 +189,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (value !== this._heightReference) {
  this._heightReference = value;
  this._updateClamping();
  }
  }
  },
- 
+
  /**
  * Gets or sets the text of this label.
  * @memberof Label.prototype
@@ -212,14 +212,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._text !== value) {
  this._text = value;
  rebindAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the font used to draw this label. Fonts are specified using the same syntax as the CSS 'font' property.
  * @memberof Label.prototype
@@ -236,14 +236,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._font !== value) {
  this._font = value;
  rebindAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the fill color of this label.
  * @memberof Label.prototype
@@ -260,7 +260,7 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  var fillColor = this._fillColor;
  if (!Color.equals(fillColor, value)) {
  Color.clone(value, fillColor);
@@ -268,7 +268,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets the outline color of this label.
  * @memberof Label.prototype
@@ -285,7 +285,7 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  var outlineColor = this._outlineColor;
  if (!Color.equals(outlineColor, value)) {
  Color.clone(value, outlineColor);
@@ -293,7 +293,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets the outline width of this label.
  * @memberof Label.prototype
@@ -310,14 +310,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._outlineWidth !== value) {
  this._outlineWidth = value;
  rebindAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the style of this label.
  * @memberof Label.prototype
@@ -333,14 +333,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._style !== value) {
  this._style = value;
  rebindAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the pixel offset in screen space from the origin of this label.  This is commonly used
  * to align multiple labels and billboards at the same position, e.g., an image and text.  The
@@ -367,11 +367,11 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  var pixelOffset = this._pixelOffset;
  if (!Cartesian2.equals(pixelOffset, value)) {
  Cartesian2.clone(value, pixelOffset);
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -382,7 +382,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets near and far translucency properties of a Label based on the Label's distance from the camera.
  * A label's translucency will interpolate between the {@link NearFarScalar#nearValue} and
@@ -415,11 +415,11 @@ open class Label {
  throw new DeveloperError('far distance must be greater than near distance.');
  }
  //>>includeEnd('debug');
- 
+
  var translucencyByDistance = this._translucencyByDistance;
  if (!NearFarScalar.equals(translucencyByDistance, value)) {
  this._translucencyByDistance = NearFarScalar.clone(value, translucencyByDistance);
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -430,7 +430,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets near and far pixel offset scaling properties of a Label based on the Label's distance from the camera.
  * A label's pixel offset will be scaled between the {@link NearFarScalar#nearValue} and
@@ -464,11 +464,11 @@ open class Label {
  throw new DeveloperError('far distance must be greater than near distance.');
  }
  //>>includeEnd('debug');
- 
+
  var pixelOffsetScaleByDistance = this._pixelOffsetScaleByDistance;
  if (!NearFarScalar.equals(pixelOffsetScaleByDistance, value)) {
  this._pixelOffsetScaleByDistance = NearFarScalar.clone(value, pixelOffsetScaleByDistance);
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -479,7 +479,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets and sets the 3D Cartesian offset applied to this label in eye coordinates.  Eye coordinates is a left-handed
  * coordinate system, where <code>x</code> points towards the viewer's right, <code>y</code> points up, and
@@ -512,11 +512,11 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  var eyeOffset = this._eyeOffset;
  if (!Cartesian3.equals(eyeOffset, value)) {
  Cartesian3.clone(value, eyeOffset);
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -527,7 +527,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Gets or sets the horizontal origin of this label, which determines if the label is drawn
  * to the left, center, or right of its position.
@@ -552,14 +552,14 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._horizontalOrigin !== value) {
  this._horizontalOrigin = value;
  repositionAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the vertical origin of this label, which determines if the label is
  * to the above, below, or at the center of its position.
@@ -584,10 +584,10 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._verticalOrigin !== value) {
  this._verticalOrigin = value;
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -595,12 +595,12 @@ open class Label {
  glyph.billboard.verticalOrigin = value;
  }
  }
- 
+
  repositionAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the uniform scale that is multiplied with the label's size in pixels.
  * A scale of <code>1.0</code> does not change the size of the label; a scale greater than
@@ -628,10 +628,10 @@ open class Label {
  throw new DeveloperError('value is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (this._scale !== value) {
  this._scale = value;
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -639,12 +639,12 @@ open class Label {
  glyph.billboard.scale = value;
  }
  }
- 
+
  repositionAllGlyphs(this);
  }
  }
  },
- 
+
  /**
  * Gets or sets the user-defined object returned when the label is picked.
  * @memberof Label.prototype
@@ -657,7 +657,7 @@ open class Label {
  set : function(value) {
  if (this._id !== value) {
  this._id = value;
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -668,7 +668,7 @@ open class Label {
  }
  }
  },
- 
+
  /**
  * Keeps track of the position of the label based on the height reference.
  * @memberof Label.prototype
@@ -681,7 +681,7 @@ open class Label {
  },
  set : function(value) {
  this._actualClampedPosition = Cartesian3.clone(value, this._actualClampedPosition);
- 
+
  var glyphs = this._glyphs;
  for (var i = 0, len = glyphs.length; i < len; i++) {
  var glyph = glyphs[i];
@@ -692,11 +692,11 @@ open class Label {
  }
  }
  });
- 
+
  Label.prototype._updateClamping = function() {
  Billboard._updateClamping(this._labelCollection, this);
  };
- 
+
  /**
  * Computes the screen-space position of the label's origin, taking into account eye and pixel offsets.
  * The screen space origin is the top, left corner of the canvas; <code>x</code> increases from
@@ -718,21 +718,21 @@ open class Label {
  throw new DeveloperError('scene is required.');
  }
  //>>includeEnd('debug');
- 
+
  if (!defined(result)) {
  result = new Cartesian2();
  }
- 
+
  var labelCollection = this._labelCollection;
  var modelMatrix = labelCollection.modelMatrix;
  var actualPosition = Billboard._computeActualPosition(this, this._position, scene.frameState, modelMatrix);
- 
+
  var windowCoordinates = Billboard._computeScreenSpacePosition(modelMatrix, actualPosition,
  this._eyeOffset, this._pixelOffset, scene, result);
  windowCoordinates.y = scene.canvas.clientHeight - windowCoordinates.y;
  return windowCoordinates;
  };
- 
+
  /**
  * Determines if this label equals another label.  Labels are equal if all their properties
  * are equal.  Labels in different collections can be equal.
@@ -759,7 +759,7 @@ open class Label {
  NearFarScalar.equals(this._pixelOffsetScaleByDistance, other._pixelOffsetScaleByDistance) &&
  this._id === other._id;
  };
- 
+
  /**
  * Returns true if this object was destroyed; otherwise, false.
  * <br /><br />
@@ -771,7 +771,7 @@ open class Label {
  Label.prototype.isDestroyed = function() {
  return false;
  };
- 
+
  return Label;
  });
 */

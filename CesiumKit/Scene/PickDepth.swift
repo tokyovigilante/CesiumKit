@@ -32,20 +32,20 @@ class PickDepth {
     Texture,
     PassThrough) {
     "use strict";
-    
+
     /**
     * @private
     */
     var PickDepth = function() {
     this.framebuffer = undefined;
-    
+
     this._depthTexture = undefined;
     this._textureToCopy = undefined;
     this._copyDepthCommand = undefined;
-    
+
     this._debugPickDepthViewportCommand = undefined;
     };
-    
+
     function executeDebugPickDepth(pickDepth, context, passState) {
     if (!defined(pickDepth._debugPickDepthViewportCommand)) {
     var fs =
@@ -60,7 +60,7 @@ class PickDepth {
     '    float scale = pow(z_ndc * 0.5 + 0.5, 8.0);\n' +
     '    gl_FragColor = vec4(mix(vec3(0.0), vec3(1.0), scale), 1.0);\n' +
     '}\n';
-    
+
     pickDepth._debugPickDepthViewportCommand = context.createViewportQuadCommand(fs, {
     uniformMap : {
     u_texture : function() {
@@ -70,18 +70,18 @@ class PickDepth {
     owner : pickDepth
     });
     }
-    
+
     pickDepth._debugPickDepthViewportCommand.execute(context, passState);
     }
-    
+
     function destroyTextures(pickDepth) {
     pickDepth._depthTexture = pickDepth._depthTexture && !pickDepth._depthTexture.isDestroyed() && pickDepth._depthTexture.destroy();
     }
-    
+
     function destroyFramebuffers(pickDepth) {
     pickDepth.framebuffer = pickDepth.framebuffer && !pickDepth.framebuffer.isDestroyed() && pickDepth.framebuffer.destroy();
     }
-    
+
     function createTextures(pickDepth, context, width, height) {
     pickDepth._depthTexture = new Texture({
     context : context,
@@ -91,31 +91,31 @@ class PickDepth {
     pixelDatatype : PixelDatatype.UNSIGNED_BYTE
     });
     }
-    
+
     function createFramebuffers(pickDepth, context, width, height) {
     destroyTextures(pickDepth);
     destroyFramebuffers(pickDepth);
-    
+
     createTextures(pickDepth, context, width, height);
-    
+
     pickDepth.framebuffer = new Framebuffer({
     context : context,
     colorTextures : [pickDepth._depthTexture],
     destroyAttachments : false
     });
     }
-    
+
     function updateFramebuffers(pickDepth, context, depthTexture) {
     var width = depthTexture.width;
     var height = depthTexture.height;
-    
+
     var texture = pickDepth._depthTexture;
     var textureChanged = !defined(texture) || texture.width !== width || texture.height !== height;
     if (!defined(pickDepth.framebuffer) || textureChanged) {
     createFramebuffers(pickDepth, context, width, height);
     }
     }
-    
+
     function updateCopyCommands(pickDepth, context, depthTexture) {
     if (!defined(pickDepth._copyDepthCommand)) {
     var fs =
@@ -135,11 +135,11 @@ class PickDepth {
     owner : pickDepth
     });
     }
-    
+
     pickDepth._textureToCopy = depthTexture;
     pickDepth._copyDepthCommand.framebuffer = pickDepth.framebuffer;
     }
-    
+
     PickDepth.prototype.executeDebugPickDepth = function(context, passState) {
     executeDebugPickDepth(this, context, passState);
     };
@@ -152,20 +152,20 @@ class PickDepth {
     PickDepth.prototype.executeCopyDepth = function(context, passState) {
     this._copyDepthCommand.execute(context, passState);
     };
-    
+
     PickDepth.prototype.isDestroyed = function() {
     return false;
     };
-    
+
     PickDepth.prototype.destroy = function() {
     destroyTextures(this);
     destroyFramebuffers(this);
-    
+
     this._copyDepthCommand.shaderProgram = defined(this._copyDepthCommand.shaderProgram) && this._copyDepthCommand.shaderProgram.destroy();
-    
+
     return destroyObject(this);
     };
-    
+
     return PickDepth;
     });
 */

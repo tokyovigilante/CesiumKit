@@ -38,9 +38,9 @@ fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html|Cesium Sandcastle Imagery Manipulation Demo}
 */
 open class ImageryLayerCollection {
-    
+
     fileprivate var _layers = [ImageryLayer]()
-    
+
     /**
     * An event that is raised when a layer is added to the collection.  Event handlers are passed the layer that
     * was added and the index at which it was added.
@@ -48,7 +48,7 @@ open class ImageryLayerCollection {
     * @default Event()
     */
     var layerAdded = Event()
-    
+
     /**
     * An event that is raised when a layer is removed from the collection.  Event handlers are passed the layer that
     * was removed and the index from which it was removed.
@@ -56,7 +56,7 @@ open class ImageryLayerCollection {
     * @default Event()
     */
     var layerRemoved = Event()
-    
+
     /**
     * An event that is raised when a layer changes position in the collection.  Event handlers are passed the layer that
     * was moved, its new index after the move, and its old index prior to the move.
@@ -64,7 +64,7 @@ open class ImageryLayerCollection {
     * @default Event()
     */
     var layerMoved = Event()
-    
+
     /**
     * An event that is raised when a layer is shown or hidden by setting the
     * {@link ImageryLayer#show} property.  Event handlers are passed a reference to this layer,
@@ -86,7 +86,7 @@ open class ImageryLayerCollection {
             return _layers.count
         }
     }
-    
+
     /**
     * Adds a layer to the collection.
     *
@@ -99,9 +99,9 @@ open class ImageryLayerCollection {
     func add (_ layer: ImageryLayer, index: Int? = nil) {
         //FIXME: Unimplemented
         let hasIndex = index != nil
-        
+
         var insertIndex: Int
-        
+
         if hasIndex {
             insertIndex = index!
             assert(index! >= 0, "index must be greater than or equal to zero")
@@ -111,7 +111,7 @@ open class ImageryLayerCollection {
             insertIndex = _layers.count
             _layers.append(layer)
         }
-        
+
         update()
             //FIXME: raiseevent
         //this.layerAdded.raiseEvent(layer, insertIndex)
@@ -127,7 +127,7 @@ open class ImageryLayerCollection {
     */
     // FIXME: ImageryProvider
     open func addImageryProvider(_ imageryProvider: ImageryProvider, index: Int? = nil) -> ImageryLayer {
-        
+
         let layer = ImageryLayer(imageryProvider: imageryProvider)
         add(layer, index: index)
         return layer
@@ -143,22 +143,22 @@ open class ImageryLayerCollection {
 */
 ImageryLayerCollection.prototype.remove = function(layer, destroy) {
     destroy = defaultValue(destroy, true);
-    
+
     var index = this._layers.indexOf(layer);
     if (index !== -1) {
         this._layers.splice(index, 1);
-        
+
         this._update();
-        
+
         this.layerRemoved.raiseEvent(layer, index);
-        
+
         if (destroy) {
             layer.destroy();
         }
-        
+
         return true;
     }
-    
+
     return false;
 };
 
@@ -169,17 +169,17 @@ ImageryLayerCollection.prototype.remove = function(layer, destroy) {
 */
 ImageryLayerCollection.prototype.removeAll = function(destroy) {
     destroy = defaultValue(destroy, true);
-    
+
     var layers = this._layers;
     for ( var i = 0, len = layers.length; i < len; i++) {
         var layer = layers[i];
         this.layerRemoved.raiseEvent(layer, i);
-        
+
         if (destroy) {
             layer.destroy();
         }
     }
-    
+
     this._layers = [];
 };
 
@@ -213,7 +213,7 @@ ImageryLayerCollection.prototype.indexOf = function(layer) {
     * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
     */
     subscript(index: Int) -> ImageryLayer? {
-        
+
         if index > _layers.count {
             return nil
         }
@@ -227,15 +227,15 @@ function getLayerIndex(layers, layer) {
         throw new DeveloperError('layer is required.');
     }
     //>>includeEnd('debug');
-    
+
     var index = layers.indexOf(layer);
-    
+
     //>>includeStart('debug', pragmas.debug);
     if (index === -1) {
         throw new DeveloperError('layer is not in this collection.');
     }
     //>>includeEnd('debug');
-    
+
     return index;
 }
 
@@ -243,17 +243,17 @@ function swapLayers(collection, i, j) {
     var arr = collection._layers;
     i = CesiumMath.clamp(i, 0, arr.length - 1);
     j = CesiumMath.clamp(j, 0, arr.length - 1);
-    
+
     if (i === j) {
         return;
     }
-    
+
     var temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
-    
+
     collection._update();
-    
+
     collection.layerMoved.raiseEvent(temp, j, i);
 }
 
@@ -298,9 +298,9 @@ ImageryLayerCollection.prototype.raiseToTop = function(layer) {
     }
     this._layers.splice(index, 1);
     this._layers.push(layer);
-    
+
     this._update();
-    
+
     this.layerMoved.raiseEvent(layer, this._layers.length - 1, index);
 };
 
@@ -319,13 +319,13 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
     }
     this._layers.splice(index, 1);
     this._layers.splice(0, 0, layer);
-    
+
     this._update();
-    
+
     this.layerMoved.raiseEvent(layer, 0, index);
 };
         var applicableRectangleScratch = new Rectangle();
-    
+
         /**
          * Asynchronously determines the imagery layer features that are intersected by a pick ray.  The intersected imagery
          * layer features are found by invoking {@link ImageryProvider#pickFeatures} for each imagery layer tile intersected
@@ -360,27 +360,27 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
             if (!defined(pickedPosition)) {
                 return undefined;
             }
-    
+
             var pickedLocation = scene.globe.ellipsoid.cartesianToCartographic(pickedPosition);
-    
+
             // Find the terrain tile containing the picked location.
             var tilesToRender = scene.globe._surface._tilesToRender;
             var pickedTile;
-    
+
             for (var textureIndex = 0; !defined(pickedTile) && textureIndex < tilesToRender.length; ++textureIndex) {
                 var tile = tilesToRender[textureIndex];
                 if (Rectangle.contains(tile.rectangle, pickedLocation)) {
                     pickedTile = tile;
                 }
             }
-    
+
             if (!defined(pickedTile)) {
                 return undefined;
             }
-    
+
             // Pick against all attached imagery tiles containing the pickedLocation.
             var imageryTiles = pickedTile.data.imagery;
-    
+
             var promises = [];
             for (var i = imageryTiles.length - 1; i >= 0; --i) {
                 var terrainImagery = imageryTiles[i];
@@ -392,15 +392,15 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
                 if (!defined(provider.pickFeatures)) {
                     continue;
                 }
-    
+
                 if (!Rectangle.contains(imagery.rectangle, pickedLocation)) {
                     continue;
                 }
-    
+
                 // If this imagery came from a parent, it may not be applicable to its entire rectangle.
                 // Check the textureCoordinateRectangle.
                 var applicableRectangle = applicableRectangleScratch;
-    
+
                 var epsilon = 1 / 1024; // 1/4 of a pixel in a typical 256x256 tile.
                 applicableRectangle.west = CesiumMath.lerp(pickedTile.rectangle.west, pickedTile.rectangle.east, terrainImagery.textureCoordinateRectangle.x - epsilon);
                 applicableRectangle.east = CesiumMath.lerp(pickedTile.rectangle.west, pickedTile.rectangle.east, terrainImagery.textureCoordinateRectangle.z + epsilon);
@@ -409,39 +409,39 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
                 if (!Rectangle.contains(applicableRectangle, pickedLocation)) {
                     continue;
                 }
-    
+
                 var promise = provider.pickFeatures(imagery.x, imagery.y, imagery.level, pickedLocation.longitude, pickedLocation.latitude);
                 if (!defined(promise)) {
                     continue;
                 }
-    
+
                 promises.push(promise);
             }
-    
+
             if (promises.length === 0) {
                 return undefined;
             }
-    
+
             return when.all(promises, function(results) {
                 var features = [];
-    
+
                 for (var resultIndex = 0; resultIndex < results.length; ++resultIndex) {
                     var result = results[resultIndex];
-    
+
                     if (defined(result) && result.length > 0) {
                         for (var featureIndex = 0; featureIndex < result.length; ++featureIndex) {
                             var feature = result[featureIndex];
-    
+
                             // For features without a position, use the picked location.
                             if (!defined(feature.position)) {
                                 feature.position = pickedLocation;
                             }
-    
+
                             features.push(feature);
                         }
                     }
                 }
-    
+
                 return features;
             });
         };
@@ -458,7 +458,7 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
             layer.queueReprojectionCommands(frameState: &frameState)
         }
     }
-    
+
     /**
      * Cancels re-projection commands queued for the next frame.
      *
@@ -469,9 +469,9 @@ ImageryLayerCollection.prototype.lowerToBottom = function(layer) {
             layer.cancelReprojections()
         }
     }
-    
+
     /*
-     
+
 /**
 * Returns true if this object was destroyed; otherwise, false.
 * <br /><br />
@@ -513,17 +513,17 @@ ImageryLayerCollection.prototype.destroy = function() {
         var isBaseLayer = true
         var layersShownOrHidden = [ImageryLayer]()
         var layer: ImageryLayer
-        
+
         for (index, layer) in _layers.enumerated() {
             layer.layerIndex = index
-            
+
             if (layer.show) {
                 layer.isBaseLayer = isBaseLayer
                 isBaseLayer = false
             } else {
                 layer.isBaseLayer = false
             }
-            
+
             if (layer.show != layer._show) {
                 //if (defined(layer._show)) {
                 layersShownOrHidden.append(layer)

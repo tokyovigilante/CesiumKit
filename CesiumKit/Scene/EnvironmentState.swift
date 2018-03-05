@@ -18,14 +18,14 @@ struct EnvironmentState {
     var sunDrawCommand: DrawCommand! = nil
     var sunComputeCommand: ComputeCommand! = nil
     var moonCommand: DrawCommand! = nil
-    
+
     var isSunVisible: Bool = false
     var isMoonVisible: Bool = false
     var isSkyAtmosphereVisible: Bool = false
-    
+
     var clearGlobeDepth: Bool = false
     var useDepthPlane: Bool = false
-    
+
     var originalFramebuffer: Framebuffer! = nil
     var useGlobeDepthFramebuffer: Bool = false
     var useOIT: Bool = false

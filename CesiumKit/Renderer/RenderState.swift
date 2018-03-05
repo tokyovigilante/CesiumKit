@@ -120,59 +120,59 @@ import Metal
 * @see ClearCommand
 */
 struct RenderState/*: Printable*/ {
-    
+
     let windingOrder: WindingOrder// = .CounterClockwise
-    
+
     let cullFace: CullFace// = .Back
-    
+
     struct PolygonOffset {
         var enabled: Bool = false
         var factor : Float = 0.0
         var units : Float = 0.0
     }
     let polygonOffset: PolygonOffset// = PolygonOffset()
-    
+
     let lineWidth: Double// = 1.0
-    
+
     struct ScissorTest {
         var enabled: Bool = false
         var rectangle: BoundingRectangle? = nil
     }
     let scissorTest: ScissorTest// = ScissorTest()
-    
+
     struct DepthRange {
         var near = 0.0
         var far = 1.0
     }
-    
+
     let depthRange: DepthRange// = DepthRange()
-    
+
     fileprivate let _depthStencilState: MTLDepthStencilState?
-    
+
     struct DepthTest {
         var enabled: Bool = false
         var function: DepthFunction = .less  // function, because func is a Swift keyword ;)
     }
     let depthTest: DepthTest// = DepthTest()
-    
+
     let depthMask: Bool// = false
-    
+
     let stencilMask: Int// = 0
-    
+
     struct StencilTest {
         var enabled: Bool = false
         var frontFunction: Int = 0
         var backFunction: Int = 0
         var reference: Int = 0
         var mask: Int = 0
-        
+
         struct FrontOperation {
             var fail: MTLStencilOperation = .keep
             var zFail: MTLStencilOperation = .keep
             var zPass: MTLStencilOperation = .keep
         }
         let frontOperation = FrontOperation()
-        
+
         struct BackOperation {
             var fail: MTLStencilOperation = .keep
             var zFail: MTLStencilOperation = .keep
@@ -181,20 +181,20 @@ struct RenderState/*: Printable*/ {
         let backOperation = BackOperation()
     }
     let stencilTest: StencilTest// = StencilTest()
-    
+
     struct SampleCoverage {
         var enabled = false
         var value: Float = 1.0
         var invert = false
     }
     let sampleCoverage: SampleCoverage// = SampleCoverage()
-    
+
     let viewport: Cartesian4?
-    
+
     var wireFrame: Bool = false
-    
+
     let hash: String
-    
+
     init(
         device: MTLDevice,
         windingOrder: WindingOrder = WindingOrder.counterClockwise,
@@ -224,13 +224,13 @@ struct RenderState/*: Printable*/ {
             self.sampleCoverage  = sampleCoverage
             self.viewport = viewport
             self.wireFrame = wireFrame
-            
+
             //FIXME: checks disabled
             /*if self.lineWidth < ContextLimits.minimumAliasedLineWidth ||
                 self.lineWidth > ContextLimits.maximumAliasedLineWidth {
                     fatalError("renderState.lineWidth is out of range.  Check minimumAliasedLineWidth and maximumAliasedLineWidth.")
             }*/
-            
+
             assert(viewport == nil || (viewport != nil && viewport!.width >= 0), "renderState.viewport.width must be greater than or equal to zero")
             assert(viewport == nil || (viewport != nil && viewport!.height >= 0), "renderState.viewport.height must be greater than or equal to zero")
             /*
@@ -246,10 +246,10 @@ struct RenderState/*: Printable*/ {
 
             // frontFace
             hash += "\(self.windingOrder.toMetal().rawValue)"
-            
+
             // cull
             hash += "\(self.cullFace.toMetal().rawValue)"
-            
+
             // polygonOffset
             hash += polygonOffset.enabled ? "p1" : "p0" + "f\(polygonOffset.factor)u\(polygonOffset.units)"
 
@@ -258,7 +258,7 @@ struct RenderState/*: Printable*/ {
 
             // scissorTest
             hash += scissorTest.enabled ? "s1" : "s0" + (scissorTest.rectangle == nil ? "" : "srx\(scissorTest.rectangle!.x)y\(scissorTest.rectangle!.y)w\(scissorTest.rectangle!.width)h\(scissorTest.rectangle!.height)")
-            
+
             // depthRange
             hash += "dn\(depthRange.near)df\(depthRange.far)"
 
@@ -267,21 +267,21 @@ struct RenderState/*: Printable*/ {
 
             // depthMask
             hash += "dm" + (depthMask ? "1" : "0")
-            
+
             // stencilMask
             hash += "sm\(stencilMask)"
-            
+
             // stencilTest
             hash += "st" + (stencilTest.enabled ? "1" : "0") + "ff\(stencilTest.frontFunction)" + "bf\(stencilTest.backFunction)" + "r\(stencilTest.reference)" + "m\(stencilTest.mask)" + "ff\(stencilTest.frontOperation.fail)" + "zf\(stencilTest.frontOperation.zFail)" + "zp\(stencilTest.frontOperation.zPass)" + "bf\(stencilTest.backOperation.fail)" + "bzf\(stencilTest.backOperation.zFail)" + "bzp\(stencilTest.backOperation.zPass)"
 
             // sampleCoverage
             hash += "sc" + (sampleCoverage.enabled ? "1" : "0") + "v\(sampleCoverage.value)" + "i\(sampleCoverage.invert)"
-            
+
             // viewPort
             hash += "v" + (viewport == nil ? "0" : "x\(viewport!.x)y\(viewport!.y)w\(viewport!.width)h\(viewport!.height)")
-            
+
             self.hash = hash
-            
+
             let depthStencilDescriptor = MTLDepthStencilDescriptor()
 
             if self.depthTest.enabled {
@@ -290,14 +290,14 @@ struct RenderState/*: Printable*/ {
             }
             _depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }
-    
+
     /*func validate() {
-    
+
         if ((this.lineWidth < context.minimumAliasedLineWidth) ||
         (this.lineWidth > context.maximumAliasedLineWidth)) {
         throw new RuntimeError('renderState.lineWidth is out of range.  Check minimumAliasedLineWidth and maximumAliasedLineWidth.');
         }
-        
+
         //>>includeStart('debug', pragmas.debug);
         if (!WindingOrder.validate(this.frontFace)) {
         throw new DeveloperError('Invalid renderState.frontFace.');
@@ -374,7 +374,7 @@ struct RenderState/*: Printable*/ {
         throw new DeveloperError('Invalid renderState.stencilTest.backOperation.zPass.');
         }
         //>>includeEnd('debug');
-        
+
         if (defined(this.viewport)) {
         //>>includeStart('debug', pragmas.debug);
         if (this.viewport.width < 0) {
@@ -384,7 +384,7 @@ struct RenderState/*: Printable*/ {
         throw new DeveloperError('renderState.viewport.height must be greater than or equal to zero.');
         }
         //>>includeEnd('debug');
-        
+
         if (this.viewport.width > context.maximumViewportWidth) {
         throw new RuntimeError('renderState.viewport.width must be less than or equal to the maximum viewport width (' + this.maximumViewportWidth.toString() + ').  Check maximumViewportWidth.');
         }
@@ -393,7 +393,7 @@ struct RenderState/*: Printable*/ {
         }
         }
         */
-        
+
     //}
     /*
     func enableOrDisable(feature: GLenum, enable: Bool) {
@@ -403,11 +403,11 @@ struct RenderState/*: Printable*/ {
             glDisable(feature)
         }
     }*/
-    
+
     func applyWindingOrder(_ encoder: MTLRenderCommandEncoder) {
         encoder.setFrontFacing(windingOrder.toMetal())
     }
-    
+
     func applyCullFace(_ encoder: MTLRenderCommandEncoder) {
         encoder.setCullMode(cullFace.toMetal())
     }
@@ -415,111 +415,111 @@ struct RenderState/*: Printable*/ {
     func applyLineWidth() {
         glLineWidth(GLfloat(lineWidth))
     }
-    
+
     func applyPolygonOffset() {
         enableOrDisable(GLenum(GL_POLYGON_OFFSET_FILL), enable: polygonOffset.enabled)
-        
+
         if (polygonOffset.enabled) {
             glPolygonOffset(polygonOffset.factor, polygonOffset.units)
         }
     }
-    
+
     func applyScissorTest(passState: PassState) {
-        
+
         let enabled = (passState.scissorTest != nil ? passState.scissorTest!.enabled : scissorTest.enabled)
-        
+
         enableOrDisable(GLenum(GL_SCISSOR_TEST), enable: enabled)
-        
+
         if (enabled) {
             let rectangle = passState.scissorTest != nil ? passState.scissorTest!.rectangle! : scissorTest.rectangle!
             glScissor(GLint(rectangle.x), GLint(rectangle.y), GLsizei(rectangle.width), GLsizei(rectangle.height))
         }
     }
-    
+
     func applyDepthRange() {
         glDepthRangef(GLclampf(depthRange.near), GLclampf(depthRange.far))
     }
     */
     func applyDepthTest(_ encoder: MTLRenderCommandEncoder) {
-        
+
         if depthTest.enabled {
             encoder.setDepthStencilState(_depthStencilState)
         }
     }
-    
+
     /*
     func applyDepthMask() {
         glDepthMask(GLboolean(Int(depthMask)))
     }
-    
+
     func applyStencilMask() {
         glStencilMask(stencilMask)
     }
-    
+
     var applyBlendingColor = function(gl, color) {
             gl.blendColor(color.red, color.green, color.blue, color.alpha);
         };
-    
+
     func applyBlending(passState: PassState) {
-        
+
         let enabled = passState.blendingEnabled != nil ? passState.blendingEnabled! : blending.enabled
-        
+
         enableOrDisable(GLenum(GL_BLEND), enable: enabled)
-        
+
         if enabled {
             glBlendColor(GLfloat(blending.color.x), GLfloat(blending.color.y), GLfloat(blending.color.z), GLfloat(blending.color.w))
             glBlendEquationSeparate(blending.equationRgb.toGL(), blending.equationAlpha.toGL())
             glBlendFuncSeparate(blending.functionSourceRgb.toGL(), blending.functionDestinationRgb.toGL(), blending.functionSourceAlpha.toGL(), blending.functionDestinationAlpha.toGL())
         }
     }
-    
+
     func applyStencilTest() {
-        
+
         enableOrDisable(GLenum(GL_STENCIL_TEST), enable: stencilTest.enabled)
-        
+
         if (stencilTest.enabled) {
-            
+
             // Section 6.8 of the WebGL spec requires the reference and masks to be the same for
             // front- and back-face tests.  This call prevents invalid operation errors when calling
             // stencilFuncSeparate on Firefox.  Perhaps they should delay validation to avoid requiring this.
             glStencilFunc(stencilTest.frontFunction, stencilTest.reference, stencilTest.mask);
             glStencilFuncSeparate(GLenum(GL_BACK), stencilTest.backFunction, stencilTest.reference, stencilTest.mask);
             glStencilFuncSeparate(GLenum(GL_FRONT), stencilTest.frontFunction, stencilTest.reference, stencilTest.mask);
-            
+
             let frontOperation = stencilTest.frontOperation;
             glStencilOpSeparate(GLenum(GL_FRONT), frontOperation.fail, frontOperation.zFail, frontOperation.zPass)
-            
+
             let backOperation = stencilTest.backOperation;
             glStencilOpSeparate(GLenum(GL_BACK), backOperation.fail, backOperation.zFail, backOperation.zPass)
         }
     }
-    
+
     func applySampleCoverage() {
-        
+
         enableOrDisable(GLenum(GL_SAMPLE_COVERAGE), enable: sampleCoverage.enabled)
-        
+
         if sampleCoverage.enabled {
             glSampleCoverage(sampleCoverage.value, sampleCoverage.invert)
         }
     }
     */
-    
+
     func applyViewport(_ encoder: MTLRenderCommandEncoder, passState: PassState) {
-        
+
         var actualViewport = Cartesian4()
         let context = passState.context!
-        
+
         if viewport == nil {
             actualViewport.width = Double(context.width)
             actualViewport.height = Double(context.height)
         } else {
             actualViewport = viewport!
         }
-        
+
         context.uniformState.viewport = actualViewport
         encoder.setViewport(MTLViewport(originX: actualViewport.x, originY: actualViewport.y, width: actualViewport.width, height: actualViewport.height, znear: 0.0, zfar: 1.0))
     }
-    
+
     func applyWireFrame(_ encoder: MTLRenderCommandEncoder) {
         if wireFrame {
             encoder.setTriangleFillMode(.lines)
@@ -527,7 +527,7 @@ struct RenderState/*: Printable*/ {
             encoder.setTriangleFillMode(.fill)
         }
     }
-    
+
     func apply(_ encoder: MTLRenderCommandEncoder, passState: PassState) {
         applyWindingOrder(encoder)
         applyCullFace(encoder)
@@ -544,7 +544,7 @@ struct RenderState/*: Printable*/ {
         applyViewport(encoder, passState: passState)
         applyWireFrame(encoder)
     }
-    
+
 /*
 /**
 * Duplicates a RenderState instance. The object returned must still be created with {@link Context#createRenderState}.

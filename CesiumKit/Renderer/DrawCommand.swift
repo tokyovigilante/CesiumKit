@@ -14,7 +14,7 @@ import Metal
 * @private
 */
 class DrawCommand: Command {
-        
+
     /**
     * The bounding volume of the geometry in world space.  This is used for culling and frustum selection.
     * <p>
@@ -30,7 +30,7 @@ class DrawCommand: Command {
     * @see DrawCommand#debugShowBoundingVolume
     */
     var boundingVolume: BoundingVolume? = nil
-    
+
     /**
     * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
     * {@link DrawCommand#boundingVolume} for plane intersection testing.
@@ -41,7 +41,7 @@ class DrawCommand: Command {
     * @see DrawCommand#debugShowBoundingVolume
     */
     var orientedBoundingBox: OrientedBoundingBox? = nil
-    
+
     /**
     * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
     * If the command was already culled, set this to <code>false</code> for a performance improvement.
@@ -50,7 +50,7 @@ class DrawCommand: Command {
     * @default true
     */
     var cull: Bool
-    
+
     /**
     * The transformation from the geometry in model space to world space.
     * <p>
@@ -61,7 +61,7 @@ class DrawCommand: Command {
     * @default undefined
     */
     var modelMatrix: Matrix4?
-    
+
     /**
     * The type of geometry in the vertex array.
     *
@@ -69,7 +69,7 @@ class DrawCommand: Command {
     * @default PrimitiveType.TRIANGLES
     */
     var primitiveType: MTLPrimitiveType = .triangle
-    
+
     /**
     * The vertex array.
     *
@@ -77,7 +77,7 @@ class DrawCommand: Command {
     * @default undefined
     */
     var vertexArray: VertexArray?
-    
+
     /**
     * The number of vertices to draw in the vertex array.
     *
@@ -93,7 +93,7 @@ class DrawCommand: Command {
     * @default 0
     */
     var offset: Int = 0
-    
+
     /**
     * An object with functions whose names match the uniforms in the shader program
     * and return values to set those uniforms.
@@ -102,7 +102,7 @@ class DrawCommand: Command {
     * @default undefined
     */
     var uniformMap: UniformMap?
-    
+
     /**
      * The render state.
      *
@@ -110,7 +110,7 @@ class DrawCommand: Command {
      * @default undefined
      */
     var renderState: RenderState?
-    
+
     /**
     * The render pipeline to apply.
     *
@@ -118,7 +118,7 @@ class DrawCommand: Command {
     * @default undefined
     */
     var pipeline: RenderPipeline? = nil
-    
+
     /**
     * The pass when to render.
     *
@@ -126,7 +126,7 @@ class DrawCommand: Command {
     * @default undefined
     */
     var pass: Pass = .globe
-    
+
     /**
     * Specifies if this command is only to be executed in the frustum closest
     * to the eye containing the bounding volume. Defaults to <code>false</code>.
@@ -135,7 +135,7 @@ class DrawCommand: Command {
     * @default false
     */
     var executeInClosestFrustum: Bool = false
-    
+
     /**
     * The object who created this command.  This is useful for debugging command
     * execution; it allows us to see who created a command when we only have a
@@ -148,7 +148,7 @@ class DrawCommand: Command {
     * @see Scene#debugCommandFilter
     */
     var owner: AnyObject? = nil
-    
+
     /**
      * This property is for debugging only; it is not for production use nor is it optimized.
      * <p>
@@ -161,20 +161,20 @@ class DrawCommand: Command {
      * @see DrawCommand#boundingVolume
      */
     var debugShowBoundingVolume: Bool
-    
+
     /**
      * Used to implement Scene.debugShowFrustums.
      * @private
      */
     var debugOverlappingFrustums: Int
-    
+
     /**
     * @private
     */
     //var oit = undefined;
-    
+
     var dirty: Bool = true
-    
+
     init(
         boundingVolume: BoundingVolume? = nil,
         orientedBoundingBox: OrientedBoundingBox? = nil,
@@ -220,7 +220,7 @@ class DrawCommand: Command {
     func execute(_ context: Context, renderPass: RenderPass, frustumUniformBuffer: Buffer? = nil) {
         context.draw(self, renderPass: renderPass, frustumUniformBuffer: frustumUniformBuffer)
     }
-    
+
     deinit {
         guard let provider = uniformMap?.uniformBufferProvider else {
             return

@@ -35,19 +35,19 @@ import Foundation
  */
 
 struct BoxGeometry {
-    
+
     fileprivate var _minimum: Cartesian3
-    
+
     fileprivate var _maximum: Cartesian3
-    
+
     fileprivate var _vertexFormat: VertexFormat
-    
+
     init (minimum min: Cartesian3, maximum max: Cartesian3, vertexFormat vf: VertexFormat = .Default()) {
         _minimum = min
         _maximum = max
         _vertexFormat = vf
     }
-    
+
     /**
      * Creates a cube centered at the origin given its dimensions.
      *
@@ -68,11 +68,11 @@ struct BoxGeometry {
      * var geometry = Cesium.BoxGeometry.createGeometry(box);
      */
     init (fromDimensions dimensions: Cartesian3, vertexFormat: VertexFormat = .Default()) {
-        
+
         assert(dimensions.x >= 0.0 || dimensions.y >= 0.0 || dimensions.z >= 0.0, "All dimensions components must be greater than or equal to zero")
-        
+
         let corner = dimensions.multiplyBy(scalar: 0.5)
-        
+
         self.init(
             minimum: corner.negate(),
             maximum: corner,
@@ -106,13 +106,13 @@ struct BoxGeometry {
     if (!defined(boundingBox)) {
     throw new DeveloperError('boundingBox is required.');
     }
-    
+
     return new BoxGeometry({
     minimum: boundingBox.minimum,
     maximum: boundingBox.maximum
     });
     };
-    
+
     /**
     * Creates a cube from the dimensions of an AxisAlignedBoundingBox.
     *
@@ -139,19 +139,19 @@ struct BoxGeometry {
     if (!defined(boundingBox)) {
     throw new DeveloperError('boundingBox is required.');
     }
-    
+
     return new BoxGeometry({
     minimum : boundingBox.minimum,
     maximum : boundingBox.maximum
     });
     };
-    
+
     /**
     * The number of elements used to pack the object into an array.
     * @type {Number}
     */
     BoxGeometry.packedLength = 2 * Cartesian3.packedLength + VertexFormat.packedLength;
-    
+
     /**
     * Stores the provided instance into the provided array.
     * @function
@@ -169,14 +169,14 @@ struct BoxGeometry {
     throw new DeveloperError('array is required');
     }
     //>>includeEnd('debug');
-    
+
     startingIndex = defaultValue(startingIndex, 0);
-    
+
     Cartesian3.pack(value._minimum, array, startingIndex);
     Cartesian3.pack(value._maximum, array, startingIndex + Cartesian3.packedLength);
     VertexFormat.pack(value._vertexFormat, array, startingIndex + 2 * Cartesian3.packedLength);
     };
-    
+
     var scratchMin = new Cartesian3();
     var scratchMax = new Cartesian3();
     var scratchVertexFormat = new VertexFormat();
@@ -185,7 +185,7 @@ struct BoxGeometry {
     maximum: scratchMax,
     vertexFormat: scratchVertexFormat
     };
-    
+
     /**
     * Retrieves an instance from a packed array.
     *
@@ -200,21 +200,21 @@ struct BoxGeometry {
     throw new DeveloperError('array is required');
     }
     //>>includeEnd('debug');
-    
+
     startingIndex = defaultValue(startingIndex, 0);
-    
+
     var min = Cartesian3.unpack(array, startingIndex, scratchMin);
     var max = Cartesian3.unpack(array, startingIndex + Cartesian3.packedLength, scratchMax);
     var vertexFormat = VertexFormat.unpack(array, startingIndex + 2 * Cartesian3.packedLength, scratchVertexFormat);
-    
+
     if (!defined(result)) {
     return new BoxGeometry(scratchOptions);
     }
-    
+
     result._minimum = Cartesian3.clone(min, result._minimum);
     result._maximum = Cartesian3.clone(max, result._maximum);
     result._vertexFormat = VertexFormat.clone(vertexFormat, result._vertexFormat);
-    
+
     return result;
     };
     */
@@ -227,22 +227,22 @@ struct BoxGeometry {
     func createGeometry (_ context: Context) -> Geometry {
         let min = _minimum
         let max = _maximum
-        
+
         /*if min == max {
             return
         }*/
-        
+
         let vertexFormat = _vertexFormat
-        
+
         let attributes = GeometryAttributes()
         let indices: [Int]
         let positions: [Double]
-        
+
         if vertexFormat.position &&
             (vertexFormat.st || vertexFormat.normal || vertexFormat.binormal || vertexFormat.tangent) {
                 if (vertexFormat.position) {
                     // 8 corner points.  Duplicated 3 times each for each incident edge/face.
-                    
+
                     positions = [
                         min.x, min.y, max.z, max.x, min.y, max.z, max.x, max.y, max.z, min.x, max.y, max.z, // +z face
                         min.x, min.y, min.z, max.x, min.y, min.z, max.x, max.y, min.z, min.x, max.y, min.z, // -z face
@@ -251,14 +251,14 @@ struct BoxGeometry {
                         min.x, max.y, min.z, max.x, max.y, min.z, max.x, max.y, max.z, min.x, max.y, max.z, // +y face
                         min.x, min.y, min.z, max.x, min.y, min.z, max.x, min.y, max.z, min.x, min.y, max.z // -y face
                     ]
-                    
+
                     attributes.position = GeometryAttribute(
                         componentDatatype : ComponentDatatype.float64,
                         componentsPerAttribute : 3,
                         values : Buffer(device: context.device, array: positions, componentDatatype: .float64, sizeInBytes: positions.sizeInBytes)
                     )
                 }
-                
+
                 if vertexFormat.normal {
                     let normals: [Float] = [
                         0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // +z face
@@ -267,14 +267,14 @@ struct BoxGeometry {
                         -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, // -x face
                         0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // +y face
                         0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0] // -y face
-                    
+
                     attributes.normal = GeometryAttribute(
                         componentDatatype : .float32,
                         componentsPerAttribute : 3,
                         values : Buffer(device: context.device, array: normals, componentDatatype: .float32, sizeInBytes: normals.sizeInBytes)
                     )
                 }
-                
+
                 if vertexFormat.st {
                     let texCoords: [Float] = [
                         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, // +z face
@@ -284,14 +284,14 @@ struct BoxGeometry {
                         1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, // +y face
                         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0 // -y face
                     ]
-                    
+
                     attributes.st = GeometryAttribute(
                         componentDatatype : .float32,
                         componentsPerAttribute : 2,
                         values : Buffer(device: context.device, array: texCoords, componentDatatype: .float32, sizeInBytes: texCoords.sizeInBytes)
                     )
                 }
-                
+
                 if vertexFormat.tangent {
                     let tangents: [Float] = [
                         1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, // +z face
@@ -307,7 +307,7 @@ struct BoxGeometry {
                         values : Buffer(device: context.device, array: tangents, componentDatatype: .float32, sizeInBytes: tangents.sizeInBytes)
                     )
                 }
-                
+
                 if vertexFormat.binormal {
                     let binormals: [Float] = [
                         0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // +z face
@@ -317,14 +317,14 @@ struct BoxGeometry {
                         0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // +y face
                         0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0 // -y face
                     ]
-                    
+
                     attributes.binormal = GeometryAttribute(
                         componentDatatype : .float32,
                         componentsPerAttribute : 3,
                         values : Buffer(device: context.device, array: binormals, componentDatatype: .float32, sizeInBytes: binormals.sizeInBytes)
                     )
                 }
-                
+
                 // 12 triangles:  6 faces, 2 triangles each.
                 indices = [
                     0, 1, 2, 0, 2, 3, // +z face
@@ -346,13 +346,13 @@ struct BoxGeometry {
                 max.x, max.y, max.z,
                 min.x, max.y, max.z
             ]
-            
+
             attributes.position = GeometryAttribute(
                 componentDatatype : .float64,
                 componentsPerAttribute : 3,
                 values : Buffer(device: context.device, array: positions, componentDatatype: .float64, sizeInBytes: positions.sizeInBytes)
             )
-            
+
             // 12 triangles:  6 faces, 2 triangles each.
             indices = [
                 4 , 5 , 6 , 4 , 6 , 7, // plane z = corner.Z
@@ -363,10 +363,10 @@ struct BoxGeometry {
                 0 , 1 , 5 , 0 , 5 , 4  // plane y = -corner.Y
             ]
         }
-        
+
         let diff = max.subtract(min)
         let radius = diff.magnitude * 0.5
-        
+
         return Geometry(
             attributes: attributes,
             indices: indices,
@@ -374,5 +374,5 @@ struct BoxGeometry {
             boundingSphere: BoundingSphere(center: Cartesian3.zero, radius: radius)
         )
     }
-    
+
 }
